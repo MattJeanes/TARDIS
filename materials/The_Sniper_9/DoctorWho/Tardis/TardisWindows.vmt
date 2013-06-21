@@ -1,0 +1,8 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "The_Sniper_9/DoctorWho/Tardis/TardisWindows"
+	"$normalmap" "The_Sniper_9/DoctorWho/Tardis/TardisWindows_NRM"
+	"$surfaceprop" "Glass"
+	"$selfillum" 1
+	"$translucent" 1
+}

@@ -1,0 +1,10 @@
+{
+	"title"		:	"TARDIS",
+	"type"		:	"vehicle",
+	"tags"		:	[ "roleplay", "fun" ],
+	"ignore"	:
+	[
+		"*.md",
+		"*.git*"
+	]
+}
