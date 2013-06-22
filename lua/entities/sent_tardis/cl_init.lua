@@ -5,9 +5,11 @@ include('shared.lua')
    Purpose: Draw the model in-game.
    Remember, the things you render first will be underneath!
 ---------------------------------------------------------]]
-function ENT:Draw()
-    self.BaseClass.Draw(self)
-	//custom code below
+function ENT:Draw() 
+	self.Entity:DrawModel()
+	if WireLib then
+		Wire_Render(self.Entity)
+	end
 end
 
 hook.Add("CalcView", "TARDIS_CLView", function( ply, origin, angles, fov )

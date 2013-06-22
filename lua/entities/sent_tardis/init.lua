@@ -28,6 +28,11 @@ function ENT:Initialize()
 	self.pilotcur=0
 	self.Pilot = nil
 	self.occupants={}
+	if WireLib then
+		self.wirepos=Vector(0,0,0)
+		self.wireang=Angle(0,0,0)
+		Wire_CreateInputs(self, { "Go", "X", "Y", "Z", "XYZ [VECTOR]", "Rot" })
+	end
 	
 	self.dematvalues={
 		{150,200},
@@ -60,9 +65,11 @@ function ENT:ToggleLight()
 end
 
 function ENT:Teleport()
-	if self.vec and self.ang then
+	if self.vec then
 		self:SetPos(self.vec)
-		self:SetAngles(self.ang)
+		if self.ang then
+			self:SetAngles(self.ang)
+		end
 		self:PhysWake() // to stop it freezing in mid air
 	end
 end
@@ -75,10 +82,14 @@ function ENT:GetNumber()
 	end
 end
 
-function ENT:Go()
-	if not self.moving and self.vec and self.ang then
+function ENT:Go(vec,ang)
+	if not self.moving and vec then
 		self.demat=true
 		self.moving=true
+		self.vec=vec
+		if ang then
+			self.ang=ang
+		end
 		self:SetLight(true)
 		sound.Play("tardis/demat.wav", self:GetPos(), 100)
 		sound.Play("tardis/mat.wav", self.vec, 100)
@@ -91,7 +102,27 @@ function ENT:Stop()
 		self.step=1
 		self.mat=false
 		self.moving=false
+		self.vec=nil
+		self.ang=nil
 		self:SetLight(false)
+	end
+end
+
+if WireLib then
+	function ENT:TriggerInput(k,v)
+		if k=="Go" and v==1 and self.wirepos and self.wireang and not self.moving then
+			self:Go(self.wirepos, self.wireang)
+		elseif k=="X" then
+			self.wirepos.x=v
+		elseif k=="Y" then
+			self.wirepos.y=v
+		elseif k=="Z" then
+			self.wirepos.z=v
+		elseif k=="XYZ" then
+			self.wirepos=v
+		elseif k=="Rot" then
+			self.wireang.y=v
+		end
 	end
 end
 

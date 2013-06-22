@@ -1,5 +1,9 @@
 ENT.Type = "anim"
-ENT.Base = "base_gmodentity"
+if WireLib then
+	ENT.Base 			= "base_wire_entity"
+else
+	ENT.Base			= "base_gmodentity"
+end 
 ENT.PrintName		= "TARDIS"
 ENT.Author			= "Dr. Matt"
 ENT.Contact			= "mattjeanes23@gmail.com"
