@@ -23,6 +23,9 @@ function ENT:OnRemove()
 end
 
 function ENT:Think()
+	if not self.flightloop then
+		self:Initialize()
+	end
 	local flying=self:GetNWBool("flightmode",false)
 	if flying then
 		if !self.flightloop:IsPlaying() then
