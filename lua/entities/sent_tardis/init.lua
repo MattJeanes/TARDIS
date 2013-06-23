@@ -10,12 +10,10 @@ function ENT:Initialize()
 	self:SetSolid( SOLID_VPHYSICS )
 	self:SetRenderMode( RENDERMODE_TRANSALPHA )
 	
-	local phys = self:GetPhysicsObject()
-	if (phys:IsValid()) then
-		phys:Wake()
+	self.phys = self:GetPhysicsObject()
+	if (self.phys:IsValid()) then
+		self.phys:Wake()
 	end
-	
-	//self:StartMotionController() -- what the hell, this is being stupid
 	
 	self.light = self:SpawnLight()
 	self:SetLight(false)
@@ -25,8 +23,8 @@ function ENT:Initialize()
 	self.cycle=1
 	self.step=1
 	self.exitcur=0
-	self.pilotcur=0
-	self.Pilot = nil
+	self.flightcur=0
+	self.flightmode=false
 	self.occupants={}
 	if WireLib then
 		self.wirepos=Vector(0,0,0)
@@ -300,7 +298,7 @@ function ENT:Use( ply, caller )
 		ply:CrosshairDisable(true)
 		table.insert(self.occupants,ply)
 		if #self.occupants==1 then
-			self.Pilot=ply
+			self.pilot=ply
 		end
 	end
 end
@@ -309,35 +307,37 @@ function ENT:OnRemove()
 	for k,v in pairs(player.GetAll()) do
 		local tardis=v:GetNWEntity("TARDIS")
 		if tardis and IsValid(tardis) and tardis==self then
-			self:PlayerExit(v,true)
+			self:PlayerExit(v)
 		end
 	end
 	self.light:Remove()
 	self.light=nil
 end
 
-function ENT:PlayerExit( ply, override )
-	if (CurTime() > self.exitcur) or override then
-		self.exitcur=CurTime()+1
-		ply:UnSpectate()
-		ply:DrawViewModel(true)
-		ply:DrawWorldModel(true)
-		ply:Spawn()
-		ply:SetNWEntity("TARDIS", nil)
-		ply:SetNWBool("InTARDIS", false)
-		ply:CrosshairDisable(false)
-		ply:CrosshairEnable(true)
-		if ply.weps then
-			for k,v in pairs(ply.weps) do
-				ply:Give(tostring(v))
-			end
+function ENT:PlayerExit( ply )
+	self.exitcur=CurTime()+1
+	ply:UnSpectate()
+	ply:DrawViewModel(true)
+	ply:DrawWorldModel(true)
+	ply:Spawn()
+	ply:SetNWEntity("TARDIS", nil)
+	ply:SetNWBool("InTARDIS", false)
+	ply:CrosshairDisable(false)
+	ply:CrosshairEnable(true)
+	if ply.weps then
+		for k,v in pairs(ply.weps) do
+			ply:Give(tostring(v))
 		end
-		ply:SetPos(self:GetPos()+self:GetForward()*75)
-		ply:SetEyeAngles((self:GetPos()-ply:GetPos()):Angle()) // make you face the tardis
-		self.occupants[ply]=nil
-		if self.Pilot and self.Pilot==ply then
-			self.Pilot=nil
+	end
+	ply:SetPos(self:GetPos()+self:GetForward()*75)
+	ply:SetEyeAngles((self:GetPos()-ply:GetPos()):Angle()) // make you face the tardis
+	for k,v in pairs(self.occupants) do
+		if v==ply then
+			self.occupants[k]=nil
 		end
+	end
+	if self.pilot and self.pilot==ply then
+		self.pilot=nil
 	end
 end
 
@@ -360,25 +360,106 @@ function ENT:UpdateAlpha()
 	end
 end
 
+function ENT:PhysicsUpdate( ph )
+	if self.pilot and self.flightmode then
+		local p=self.pilot
+		local phm=FrameTime()*66
+		local eye=p:EyeAngles()
+		local fwd=eye:Forward()
+		local ri=eye:Right()
+		local up=self:GetUp()
+		local force=15
+		if p:KeyDown(IN_SPEED) then
+			force=force*2
+		end
+		
+		if p:KeyDown(IN_FORWARD) then
+			ph:AddVelocity(fwd*force*phm)
+		end
+		if p:KeyDown(IN_BACK) then
+			ph:AddVelocity(fwd*-force*phm)
+		end
+		if p:KeyDown(IN_MOVERIGHT) then
+			ph:AddVelocity(ri*force*phm)
+		end
+		if p:KeyDown(IN_MOVELEFT) then
+			ph:AddVelocity(ri*-force*phm)
+		end
+		
+		local twist=Vector(0,0,ph:GetVelocity():Length()/500)
+		ph:AddAngleVelocity(twist)
+		
+		local angbrake=ph:GetAngleVelocity()*-0.01
+		ph:AddAngleVelocity(angbrake)
+		
+		local brake=self:GetVelocity()*-0.01
+		ph:AddVelocity(brake)
+	end
+end
+
+function ENT:ToggleFlight()
+	self.flightmode=(not self.flightmode)
+	if self.flightmode then //on
+		if self.phys and IsValid(self.phys) then
+			self.phys:EnableGravity(false)
+		end
+		self:SetLight(true)
+		self:SetNWBool("flightmode", true)
+	else //off
+		if self.phys and IsValid(self.phys) then
+			self.phys:EnableGravity(true)
+		end
+		self:SetLight(false)
+		self:SetNWBool("flightmode", false)
+	end
+end
+
 function ENT:Think()
 	for k,v in pairs(player.GetAll()) do
 		local tardis=v:GetNWEntity("TARDIS")
-		if v:KeyDown(IN_USE) and tardis and IsValid(tardis) and tardis==self then
+		if CurTime()>self.exitcur and v:KeyDown(IN_USE) and tardis and IsValid(tardis) and tardis==self then
+			self.exitcur=CurTime()+1
 			self:PlayerExit(v)
 		end
 	end
 	
-	/* hopefully i'll get this working one day - stupid weird bugs
-	if self.Pilot and IsValid(self.Pilot) and self.Pilot:KeyDown(IN_RELOAD) and CurTime()>self.pilotcur then
-		self.pilotcur=CurTime()+1
-		self.Flying=(not self.Flying)
-		if self.Flying then
-			self.Pilot:ChatPrint("TARDIS now flying.")
-		else
-			self.Pilot:ChatPrint("TARDIS no longer flying.")
+	if self.moving then
+		local a1=self:GetPos()
+		for k,v in pairs(ents.FindInSphere(self:GetPos(),150)) do
+			if v:GetClass()=="prop_physics" then
+				local a2=v:GetPos()
+				local force=5
+				local vec=a2-a1
+				vec:Normalize()
+				v:GetPhysicsObject():AddVelocity(vec*force)
+			end
+		end
+		if !self.RotorWash then
+			self.RotorWash = ents.Create("env_rotorwash_emitter")
+			self.RotorWash:SetPos(self:GetPos())
+			self.RotorWash:SetParent(self)
+			self.RotorWash:Activate()
+		end
+	else
+		if self.RotorWash then
+			self.RotorWash:Remove()
+			self.RotorWash = nil
 		end
 	end
-	*/
+	
+	if self.phys and IsValid(self.phys) then
+		self.phys:Wake()
+	end
+	
+	if CurTime() > self.flightcur and self.pilot and IsValid(self.pilot) and self.pilot:KeyDown(IN_RELOAD) then
+		self.flightcur=CurTime()+1
+		self:ToggleFlight()
+		if self.flightmode then
+			self.pilot:ChatPrint("flying")
+		else
+			self.pilot:ChatPrint("not flying")
+		end
+	end
 
 	if CurTime() > self.cur then
 		if self.demat then
