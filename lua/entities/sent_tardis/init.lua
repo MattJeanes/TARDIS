@@ -66,11 +66,39 @@ end
 
 function ENT:Teleport()
 	if self.vec then
+		self:GetPhysicsObject():EnableMotion(false)
+		if self.attachedents then
+			for k,v in pairs(self.attachedents) do
+				if IsValid(v) then
+					local phys=v:GetPhysicsObject()
+					if phys and IsValid(phys) then
+						if not phys:IsMotionEnabled() then
+							v.frozen=true
+						end
+						phys:EnableMotion(false)
+					end
+					v.telepos=v:GetPos()-self:GetPos()
+				end
+			end
+		end
 		self:SetPos(self.vec)
 		if self.ang then
 			self:SetAngles(self.ang)
 		end
-		self:PhysWake() // to stop it freezing in mid air
+		if self.attachedents then
+			for k,v in pairs(self.attachedents) do
+				if IsValid(v) then
+					v:SetPos(self:GetPos()+v.telepos)
+					v.telepos=nil
+					local phys=v:GetPhysicsObject()
+					if phys and IsValid(phys) and not v.frozen then
+						phys:EnableMotion(true)
+					end
+					v.frozen=nil
+				end
+			end
+		end
+		self:GetPhysicsObject():EnableMotion(true)
 	end
 end
 
@@ -87,6 +115,8 @@ function ENT:Go(vec,ang)
 		self.demat=true
 		self.moving=true
 		self.vec=vec
+		self.attachedents = constraint.GetAllConstrainedEntities(self)
+		
 		if ang then
 			self.ang=ang
 		end
@@ -104,6 +134,7 @@ function ENT:Stop()
 		self.moving=false
 		self.vec=nil
 		self.ang=nil
+		self.attachedents=nil
 		self:SetLight(false)
 	end
 end
@@ -295,7 +326,18 @@ end
 function ENT:UpdateAlpha()
 	// utility functions!
 	local c=self:GetColor()
-	self:SetColor(Color(c.r,c.g,c.b,self.a))
+	local newc=Color(c.r,c.g,c.b,self.a)
+	self:SetColor(newc)
+	if self.attachedents then
+		for k,v in pairs(self.attachedents) do
+			if IsValid(v) then
+				if not (v:GetRenderMode()==RENDERMODE_TRANSALPHA) then
+					v:SetRenderMode(RENDERMODE_TRANSALPHA)
+				end
+				v:SetColor(newc)
+			end
+		end
+	end
 end
 
 function ENT:Think()
