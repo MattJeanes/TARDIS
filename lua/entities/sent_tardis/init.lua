@@ -69,7 +69,7 @@ function ENT:Teleport()
 		self:GetPhysicsObject():EnableMotion(false)
 		if self.attachedents then
 			for k,v in pairs(self.attachedents) do
-				if IsValid(v) then
+				if IsValid(v) and not IsValid(v:GetParent()) then
 					local phys=v:GetPhysicsObject()
 					if phys and IsValid(phys) then
 						if not phys:IsMotionEnabled() then
@@ -87,7 +87,7 @@ function ENT:Teleport()
 		end
 		if self.attachedents then
 			for k,v in pairs(self.attachedents) do
-				if IsValid(v) then
+				if IsValid(v) and not IsValid(v:GetParent()) then
 					v:SetPos(self:GetPos()+v.telepos)
 					v.telepos=nil
 					local phys=v:GetPhysicsObject()
@@ -116,7 +116,15 @@ function ENT:Go(vec,ang)
 		self.moving=true
 		self.vec=vec
 		self.attachedents = constraint.GetAllConstrainedEntities(self)
-		
+		if self.attachedents then
+			for k,v in pairs(self.attachedents) do
+				local a=v:GetColor().a
+				if not (a==255) then
+					v.tempa=a
+					print(v.tempa)
+				end
+			end
+		end
 		if ang then
 			self.ang=ang
 		end
@@ -134,6 +142,16 @@ function ENT:Stop()
 		self.moving=false
 		self.vec=nil
 		self.ang=nil
+		if self.attachedents then
+			for k,v in pairs(self.attachedents) do
+				if v.tempa then
+					local col=v:GetColor()
+					col=Color(col.r,col.g,col.b,v.tempa)
+					v:SetColor(col)
+					v.tempa=nil
+				end
+			end
+		end
 		self.attachedents=nil
 		self:SetLight(false)
 	end
@@ -325,16 +343,18 @@ end
 
 function ENT:UpdateAlpha()
 	// utility functions!
-	local c=self:GetColor()
-	local newc=Color(c.r,c.g,c.b,self.a)
-	self:SetColor(newc)
+	local maincol=self:GetColor()
+	maincol=Color(maincol.r,maincol.g,maincol.b,self.a)
+	self:SetColor(maincol)
 	if self.attachedents then
 		for k,v in pairs(self.attachedents) do
-			if IsValid(v) then
+			local col=v:GetColor()
+			col=Color(col.r,col.g,col.b,self.a)
+			if IsValid(v) and not (v.tempa==0) then
 				if not (v:GetRenderMode()==RENDERMODE_TRANSALPHA) then
 					v:SetRenderMode(RENDERMODE_TRANSALPHA)
 				end
-				v:SetColor(newc)
+				v:SetColor(col)
 			end
 		end
 	end
