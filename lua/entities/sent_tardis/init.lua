@@ -455,9 +455,9 @@ function ENT:Think()
 		self.flightcur=CurTime()+1
 		self:ToggleFlight()
 		if self.flightmode then
-			self.pilot:ChatPrint("flying")
+			self.pilot:ChatPrint("Flight-mode activated.")
 		else
-			self.pilot:ChatPrint("not flying")
+			self.pilot:ChatPrint("Flight-mode deactivated.")
 		end
 	end
 
