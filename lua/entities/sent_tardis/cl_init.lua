@@ -33,8 +33,8 @@ function ENT:Think()
 		end
 		local e = LocalPlayer():GetViewEntity()
 		if !IsValid(e) then e = LocalPlayer() end
-		local tardis=LocalPlayer():GetNWEntity("TARDIS",nil)
-		if not (tardis and IsValid(tardis) and LocalPlayer():GetNWBool("InTARDIS", false)) then
+		local tardis=LocalPlayer().tardis
+		if not (tardis and IsValid(tardis) and tardis==self and e==LocalPlayer()) then
 			local pos = e:GetPos()
 			local spos = self:GetPos()
 			local doppler = (pos:Distance(spos+e:GetVelocity())-pos:Distance(spos+self:GetVelocity()))/150
@@ -49,12 +49,19 @@ function ENT:Think()
 	end
 end
 
+net.Receive("Player-SetTARDIS", function()
+	local ply=net.ReadEntity()
+	ply.tardis=net.ReadEntity()
+end)
+
 
 hook.Add("CalcView", "TARDIS_CLView", function( ply, origin, angles, fov )
-	local tardis=LocalPlayer():GetNWEntity("TARDIS",nil)
+	local tardis=LocalPlayer().tardis
+	local viewent = LocalPlayer():GetViewEntity()
+	if !IsValid(viewent) then viewent = LocalPlayer() end
 	local dist= -300
 	
-	if tardis and IsValid(tardis) and LocalPlayer():GetNWBool("InTARDIS", false) then
+	if tardis and IsValid(tardis) and viewent==LocalPlayer() then
 		local view = {}
 		view.origin = tardis:GetPos()+(tardis:GetUp()*50)+ply:GetAimVector():GetNormal()*dist
 		view.angles = angles

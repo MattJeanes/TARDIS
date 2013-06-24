@@ -1,6 +1,8 @@
 AddCSLuaFile( "cl_init.lua" ) -- Make sure clientside
 AddCSLuaFile( "shared.lua" )  -- and shared scripts are sent.
 include('shared.lua')
+
+util.AddNetworkString("Player-SetTARDIS")
  
 function ENT:Initialize()
 	self:SetModel( "models/tardis.mdl" )
@@ -284,29 +286,40 @@ end
  
 function ENT:Use( ply, caller )
 	if CurTime()>self.exitcur then
+		if self.occupants then
+			for k,v in pairs(self.occupants) do
+				if ply==v then return end
+			end
+		end
 		self.exitcur=CurTime()+1
-		ply:SetNWEntity("TARDIS", self)
-		ply:SetNWBool("InTARDIS", true)
-		ply:Spectate( OBS_MODE_ROAMING )
-		ply:DrawWorldModel(false)
-		ply:DrawViewModel(false)
-		ply.weps={}
-		for k,v in pairs(ply:GetWeapons()) do
-			table.insert(ply.weps, v:GetClass())
-		end
-		ply:StripWeapons()
-		ply:CrosshairDisable(true)
-		table.insert(self.occupants,ply)
-		if #self.occupants==1 then
-			self.pilot=ply
-		end
+		self:PlayerEnter(ply)
+	end
+end
+
+function ENT:PlayerEnter( ply )
+	net.Start("Player-SetTARDIS")
+		net.WriteEntity(ply)
+		net.WriteEntity(self)
+	net.Broadcast()
+	ply.tardis=self
+	ply:Spectate( OBS_MODE_ROAMING )
+	ply:DrawWorldModel(false)
+	ply:DrawViewModel(false)
+	ply.weps={}
+	for k,v in pairs(ply:GetWeapons()) do
+		table.insert(ply.weps, v:GetClass())
+	end
+	ply:StripWeapons()
+	ply:CrosshairDisable(true)
+	table.insert(self.occupants,ply)
+	if #self.occupants==1 then
+		self.pilot=ply
 	end
 end
 
 function ENT:OnRemove()
-	for k,v in pairs(player.GetAll()) do
-		local tardis=v:GetNWEntity("TARDIS")
-		if tardis and IsValid(tardis) and tardis==self then
+	if self.occupants then
+		for k,v in pairs(self.occupants) do
 			self:PlayerExit(v)
 		end
 	end
@@ -315,13 +328,15 @@ function ENT:OnRemove()
 end
 
 function ENT:PlayerExit( ply )
-	self.exitcur=CurTime()+1
+	net.Start("Player-SetTARDIS")
+		net.WriteEntity(ply)
+		net.WriteEntity(NULL)
+	net.Broadcast()
+	ply.tardis=nil
 	ply:UnSpectate()
 	ply:DrawViewModel(true)
 	ply:DrawWorldModel(true)
 	ply:Spawn()
-	ply:SetNWEntity("TARDIS", nil)
-	ply:SetNWBool("InTARDIS", false)
 	ply:CrosshairDisable(false)
 	ply:CrosshairEnable(true)
 	if ply.weps then
@@ -331,15 +346,26 @@ function ENT:PlayerExit( ply )
 	end
 	ply:SetPos(self:GetPos()+self:GetForward()*75)
 	ply:SetEyeAngles((self:GetPos()-ply:GetPos()):Angle()) // make you face the tardis
-	for k,v in pairs(self.occupants) do
-		if v==ply then
-			self.occupants[k]=nil
+	if self.occupants then
+		for k,v in pairs(self.occupants) do
+			if v==ply then
+				self.occupants[k]=nil
+			end
 		end
 	end
 	if self.pilot and self.pilot==ply then
 		self.pilot=nil
 	end
 end
+
+hook.Add("PlayerSpawn", "TARDIS_PLDeath", function( ply )
+	timer.Simple(0.1,function()
+		local tardis=ply.tardis
+		if tardis and IsValid(tardis) then
+			tardis:PlayerExit(ply)
+		end
+	end)
+end)
 
 function ENT:UpdateAlpha()
 	// utility functions!
@@ -361,13 +387,11 @@ function ENT:UpdateAlpha()
 end
 
 function ENT:PhysicsUpdate( ph )
-	if self.pilot and self.flightmode then
-		local p=self.pilot
-		local pos=self:GetPos()
+	local pos=self:GetPos()
+	
+	if self.flightmode then		
 		local phm=FrameTime()*66
-		local eye=p:EyeAngles()
-		local fwd=eye:Forward()
-		local ri=eye:Right()
+		
 		local up=self:GetUp()
 		local ri2=self:GetRight()
 		local fwd2=self:GetForward()
@@ -375,32 +399,38 @@ function ENT:PhysicsUpdate( ph )
 		local force=15
 		local vforce=5
 		local tilt=0
-		if p:KeyDown(IN_SPEED) then
-			force=force*2
-			tilt=5
-		end
 		
-		if p:KeyDown(IN_FORWARD) then
-			ph:AddVelocity(fwd*force*phm)
-			tilt=tilt+5
-		end
-		if p:KeyDown(IN_BACK) then
-			ph:AddVelocity(-fwd*force*phm)
-			tilt=tilt+5
-		end	
-		if p:KeyDown(IN_MOVERIGHT) then
-			ph:AddVelocity(ri*force*phm)
-			tilt=tilt+5
-		end
-		if p:KeyDown(IN_MOVELEFT) then
-			ph:AddVelocity(-ri*force*phm)
-			tilt=tilt+5
-		end
-		
-		if p:KeyDown(IN_DUCK) then
-			ph:AddVelocity(-up*vforce*phm)
-		elseif p:KeyDown(IN_JUMP) then
-			ph:AddVelocity(up*vforce*phm)
+		if self.pilot then
+			local p=self.pilot
+			local eye=p:EyeAngles()
+			local fwd=eye:Forward()
+			local ri=eye:Right()
+			if p:KeyDown(IN_SPEED) then
+				force=force*2
+				tilt=5
+			end
+			if p:KeyDown(IN_FORWARD) then
+				ph:AddVelocity(fwd*force*phm)
+				tilt=tilt+5
+			end
+			if p:KeyDown(IN_BACK) then
+				ph:AddVelocity(-fwd*force*phm)
+				tilt=tilt+5
+			end	
+			if p:KeyDown(IN_MOVERIGHT) then
+				ph:AddVelocity(ri*force*phm)
+				tilt=tilt+5
+			end
+			if p:KeyDown(IN_MOVELEFT) then
+				ph:AddVelocity(-ri*force*phm)
+				tilt=tilt+5
+			end
+			
+			if p:KeyDown(IN_DUCK) then
+				ph:AddVelocity(-up*vforce*phm)
+			elseif p:KeyDown(IN_JUMP) then
+				ph:AddVelocity(up*vforce*phm)
+			end
 		end
 		
 		local cen=ph:GetMassCenter()
@@ -420,11 +450,11 @@ function ENT:PhysicsUpdate( ph )
 		
 		local brake=self:GetVelocity()*-0.01
 		ph:AddVelocity(brake)
-		
-		if self.occupants then
-			for k,v in pairs(self.occupants) do
-				v:SetPos(pos)
-			end
+	end
+	
+	if self.occupants then
+		for k,v in pairs(self.occupants) do
+			v:SetPos(pos)
 		end
 	end
 end
@@ -447,11 +477,13 @@ function ENT:ToggleFlight()
 end
 
 function ENT:Think()
-	for k,v in pairs(player.GetAll()) do
-		local tardis=v:GetNWEntity("TARDIS")
-		if CurTime()>self.exitcur and v:KeyDown(IN_USE) and tardis and IsValid(tardis) and tardis==self then
-			self.exitcur=CurTime()+1
-			self:PlayerExit(v)
+	if self.occupants then
+		for k,v in pairs(self.occupants) do
+			if CurTime()>self.exitcur and v:KeyDown(IN_USE) then
+				print("exit")
+				self.exitcur=CurTime()+1
+				self:PlayerExit(v)
+			end
 		end
 	end
 	
