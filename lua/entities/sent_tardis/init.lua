@@ -368,25 +368,50 @@ function ENT:PhysicsUpdate( ph )
 		local fwd=eye:Forward()
 		local ri=eye:Right()
 		local up=self:GetUp()
+		local ri2=self:GetRight()
+		local fwd2=self:GetForward()
+		local ang=self:GetAngles()
 		local force=15
+		local vforce=5
+		local tilt=0
 		if p:KeyDown(IN_SPEED) then
 			force=force*2
+			tilt=5
 		end
 		
 		if p:KeyDown(IN_FORWARD) then
 			ph:AddVelocity(fwd*force*phm)
+			tilt=tilt+5
 		end
 		if p:KeyDown(IN_BACK) then
-			ph:AddVelocity(fwd*-force*phm)
-		end
+			ph:AddVelocity(-fwd*force*phm)
+			tilt=tilt+5
+		end	
 		if p:KeyDown(IN_MOVERIGHT) then
 			ph:AddVelocity(ri*force*phm)
+			tilt=tilt+5
 		end
 		if p:KeyDown(IN_MOVELEFT) then
-			ph:AddVelocity(ri*-force*phm)
+			ph:AddVelocity(-ri*force*phm)
+			tilt=tilt+5
 		end
 		
-		local twist=Vector(0,0,ph:GetVelocity():Length()/500)
+		if p:KeyDown(IN_WALK) then
+			ph:AddVelocity(-up*vforce*phm)
+		elseif p:KeyDown(IN_JUMP) then
+			ph:AddVelocity(up*vforce*phm)
+		end
+		
+		local cen=ph:GetMassCenter()
+		local lev=ph:GetInertia():Length()
+		ph:ApplyForceOffset( up*-ang.p,cen-fwd2*lev)
+		ph:ApplyForceOffset(-up*-ang.p,cen+fwd2*lev)
+		//ph:ApplyForceOffset( ri2*-ang2.y,cen-fwd2*lev)
+		//ph:ApplyForceOffset(-ri2*-ang2.y,cen+fwd2*lev)
+		ph:ApplyForceOffset( up*-(ang.r-tilt),cen-ri2*lev)
+		ph:ApplyForceOffset(-up*-(ang.r-tilt),cen+ri2*lev)
+		
+		local twist=Vector(0,0,ph:GetVelocity():Length()/400)
 		ph:AddAngleVelocity(twist)
 		
 		local angbrake=ph:GetAngleVelocity()*-0.01
