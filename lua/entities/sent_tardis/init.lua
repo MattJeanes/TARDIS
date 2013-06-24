@@ -363,6 +363,7 @@ end
 function ENT:PhysicsUpdate( ph )
 	if self.pilot and self.flightmode then
 		local p=self.pilot
+		local pos=self:GetPos()
 		local phm=FrameTime()*66
 		local eye=p:EyeAngles()
 		local fwd=eye:Forward()
@@ -396,7 +397,7 @@ function ENT:PhysicsUpdate( ph )
 			tilt=tilt+5
 		end
 		
-		if p:KeyDown(IN_WALK) then
+		if p:KeyDown(IN_DUCK) then
 			ph:AddVelocity(-up*vforce*phm)
 		elseif p:KeyDown(IN_JUMP) then
 			ph:AddVelocity(up*vforce*phm)
@@ -419,6 +420,12 @@ function ENT:PhysicsUpdate( ph )
 		
 		local brake=self:GetVelocity()*-0.01
 		ph:AddVelocity(brake)
+		
+		if self.occupants then
+			for k,v in pairs(self.occupants) do
+				v:SetPos(pos)
+			end
+		end
 	end
 end
 
