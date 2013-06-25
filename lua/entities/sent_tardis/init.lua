@@ -3,6 +3,16 @@ AddCSLuaFile( "shared.lua" )  -- and shared scripts are sent.
 include('shared.lua')
 
 util.AddNetworkString("Player-SetTARDIS")
+util.AddNetworkString("TARDIS-SetHealth")
+util.AddNetworkString("TARDIS-Go")
+util.AddNetworkString("TARDIS-Explode")
+util.AddNetworkString("TARDIS-TakeDamage")
+
+net.Receive("TARDIS-TakeDamage", function(len,ply)
+	if ply:IsAdmin() or ply:IsSuperAdmin() then
+		RunConsoleCommand("tardis_takedamage", net.ReadFloat())
+	end
+end)
  
 function ENT:Initialize()
 	self:SetModel( "models/tardis.mdl" )
@@ -27,6 +37,8 @@ function ENT:Initialize()
 	self.exitcur=0
 	self.flightcur=0
 	self.flightmode=false
+	self.health=100
+	self.exploded=false
 	self.occupants={}
 	if WireLib then
 		self.wirepos=Vector(0,0,0)
@@ -46,8 +58,87 @@ function ENT:Initialize()
 	}
 end
 
+function ENT:ShouldTakeDamage()
+	return tobool(GetConVarNumber("tardis_takedamage"))==true
+end
+
+function ENT:Explode()
+	self.exploded=true
+	self:SetLight(false)
+	
+	net.Start("TARDIS-Explode")
+		net.WriteEntity(self)
+	net.Broadcast()
+	
+	self.fire = ents.Create("env_fire_trail")
+	self.fire:SetPos(self:LocalToWorld(Vector(0,0,50)))
+	self.fire:Spawn()
+	self.fire:SetParent(self)
+	
+	self.smoke=self:CreateSmoke()
+	
+	local explode = ents.Create("env_explosion")
+	explode:SetPos( self:LocalToWorld(Vector(0,0,50)) ) //Puts the explosion where you are aiming
+	explode:SetOwner( self ) //Sets the owner of the explosion
+	explode:Spawn()
+	explode:SetKeyValue("iMagnitude","175") //Sets the magnitude of the explosion
+	explode:Fire("Explode", 0, 0 ) //Tells the explode entity to explode
+	//explode:EmitSound("weapon_AWP.Single", 400, 400 ) //Adds sound to the explosion
+	
+	self:SetColor(Color(255,190,0,255))
+end
+
+function ENT:CreateSmoke()
+	local smoke = ents.Create("env_smokestack")
+	smoke:SetPos(self:LocalToWorld(Vector(0,0,80)))
+	smoke:SetAngles(self:GetAngles()+Angle(-90,0,0))
+	smoke:SetKeyValue("InitialState", "1")
+	smoke:SetKeyValue("WindAngle", "0 0 0")
+	smoke:SetKeyValue("WindSpeed", "0")
+	smoke:SetKeyValue("rendercolor", "50 50 50")
+	smoke:SetKeyValue("renderamt", "170")
+	smoke:SetKeyValue("SmokeMaterial", "particle/smokesprites_0001.vmt")
+	smoke:SetKeyValue("BaseSpread", "2")
+	smoke:SetKeyValue("SpreadSpeed", "2")
+	smoke:SetKeyValue("Speed", "50")
+	smoke:SetKeyValue("StartSize", "30")
+	smoke:SetKeyValue("EndSize", "70")
+	smoke:SetKeyValue("roll", "20")
+	smoke:SetKeyValue("Rate", "15")
+	smoke:SetKeyValue("JetLength", "40")
+	smoke:SetKeyValue("twist", "5")
+	smoke:Spawn()
+	smoke:SetParent(self)
+	smoke:Activate()
+	return smoke
+end
+
+function ENT:SetHP(hp)
+	if not hp or self.exploded or not self:ShouldTakeDamage() then return end
+	if hp < 0 then hp=0 end
+	net.Start("TARDIS-SetHealth")
+		net.WriteEntity(self)
+		net.WriteFloat(hp)
+	net.Broadcast()
+	self.health=hp
+	if hp==0 then
+		self:Explode()
+	end
+end
+
+function ENT:TakeHP(hp)
+	if not hp or not self:ShouldTakeDamage() then return end
+	self:SetHP(self.health-hp)
+end
+
+function ENT:OnTakeDamage(dmginfo)
+	if not self:ShouldTakeDamage() then return end
+	local hp=dmginfo:GetDamage()
+	self:TakeHP(hp/4)
+end
+
 function ENT:SetLight(on)
-	if on then
+	if on and not self.exploded then
 		self.light:Fire("showsprite","",0)
 		self.light.on=true
 	else
@@ -111,7 +202,7 @@ function ENT:GetNumber()
 end
 
 function ENT:Go(vec,ang)
-	if not self.moving and vec then
+	if not self.moving and vec and not self.exploded then
 		self.demat=true
 		self.moving=true
 		self.vec=vec
@@ -129,8 +220,10 @@ function ENT:Go(vec,ang)
 			self.ang=ang
 		end
 		self:SetLight(true)
-		sound.Play("tardis/demat.wav", self:GetPos(), 100)
-		sound.Play("tardis/mat.wav", self.vec, 100)
+		net.Start("TARDIS-Go")
+			net.WriteVector(self:GetPos())
+			net.WriteVector(self.vec)
+		net.Broadcast()
 	end
 end
 
@@ -402,7 +495,7 @@ function ENT:PhysicsUpdate( ph )
 		local vforce=5
 		local tilt=0
 		
-		if self.pilot then
+		if self.pilot and not self.exploded then
 			local p=self.pilot
 			local eye=p:EyeAngles()
 			local fwd=eye:Forward()
@@ -435,23 +528,31 @@ function ENT:PhysicsUpdate( ph )
 			end
 		end
 		
-		local cen=ph:GetMassCenter()
-		local lev=ph:GetInertia():Length()
-		ph:ApplyForceOffset( up*-ang.p,cen-fwd2*lev)
-		ph:ApplyForceOffset(-up*-ang.p,cen+fwd2*lev)
-		//ph:ApplyForceOffset( ri2*-ang2.y,cen-fwd2*lev)
-		//ph:ApplyForceOffset(-ri2*-ang2.y,cen+fwd2*lev)
-		ph:ApplyForceOffset( up*-(ang.r-tilt),cen-ri2*lev)
-		ph:ApplyForceOffset(-up*-(ang.r-tilt),cen+ri2*lev)
+		if not self.exploded then
+			local cen=ph:GetMassCenter()
+			local lev=ph:GetInertia():Length()
+			ph:ApplyForceOffset( up*-ang.p,cen-fwd2*lev)
+			ph:ApplyForceOffset(-up*-ang.p,cen+fwd2*lev)
+			//ph:ApplyForceOffset( ri2*-ang2.y,cen-fwd2*lev)
+			//ph:ApplyForceOffset(-ri2*-ang2.y,cen+fwd2*lev)
+			ph:ApplyForceOffset( up*-(ang.r-tilt),cen-ri2*lev)
+			ph:ApplyForceOffset(-up*-(ang.r-tilt),cen+ri2*lev)
+		end
 		
-		local twist=Vector(0,0,ph:GetVelocity():Length()/400)
-		ph:AddAngleVelocity(twist)
-		
-		local angbrake=ph:GetAngleVelocity()*-0.01
-		ph:AddAngleVelocity(angbrake)
-		
-		local brake=self:GetVelocity()*-0.01
-		ph:AddVelocity(brake)
+		if not self.exploded then
+			local twist=Vector(0,0,ph:GetVelocity():Length()/400)
+			ph:AddAngleVelocity(twist)
+			local angbrake=ph:GetAngleVelocity()*-0.01
+			ph:AddAngleVelocity(angbrake)
+			local brake=self:GetVelocity()*-0.01
+			ph:AddVelocity(brake)
+		elseif self.exploded and ph:GetVelocity():Length()<1500 then
+			local speed=ph:GetVelocity()*0.01
+			ph:AddVelocity(speed)
+			
+			local angle=AngleRand():Forward()*75
+			ph:AddAngleVelocity(angle)
+		end
 	end
 	
 	if self.occupants then
