@@ -153,7 +153,9 @@ function ENT:Stop()
 			end
 		end
 		self.attachedents=nil
-		self:SetLight(false)
+		if not self.flightmode then
+			self:SetLight(false)
+		end
 	end
 end
 
@@ -467,20 +469,38 @@ function ENT:ToggleFlight()
 		end
 		self:SetLight(true)
 		self:SetNWBool("flightmode", true)
+		if !self.RotorWash then
+			self.RotorWash = ents.Create("env_rotorwash_emitter")
+			self.RotorWash:SetPos(self:GetPos())
+			self.RotorWash:SetParent(self)
+			self.RotorWash:Activate()
+		end		
 	else //off
 		if self.phys and IsValid(self.phys) then
 			self.phys:EnableGravity(true)
 		end
 		self:SetLight(false)
 		self:SetNWBool("flightmode", false)
+		if self.RotorWash and not self.moving then
+			self.RotorWash:Remove()
+			self.RotorWash = nil
+		end
 	end
 end
 
 function ENT:Think()
+	if CurTime() > self.cur then
+		if self.demat then
+			self:Dematerialize()
+		elseif self.mat then
+			self:Materialize()
+		end
+		self.cur=CurTime()+self.curdelay
+	end
+
 	if self.occupants then
 		for k,v in pairs(self.occupants) do
 			if CurTime()>self.exitcur and v:KeyDown(IN_USE) then
-				print("exit")
 				self.exitcur=CurTime()+1
 				self:PlayerExit(v)
 			end
@@ -505,7 +525,7 @@ function ENT:Think()
 			self.RotorWash:Activate()
 		end
 	else
-		if self.RotorWash then
+		if self.RotorWash and not self.flightmode then
 			self.RotorWash:Remove()
 			self.RotorWash = nil
 		end
@@ -523,15 +543,6 @@ function ENT:Think()
 		else
 			self.pilot:ChatPrint("Flight-mode deactivated.")
 		end
-	end
-
-	if CurTime() > self.cur then
-		if self.demat then
-			self:Dematerialize()
-		elseif self.mat then
-			self:Materialize()
-		end
-		self.cur=CurTime()+self.curdelay
 	end
 	
 	// this bit makes it all run faster and smoother
