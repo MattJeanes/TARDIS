@@ -97,6 +97,8 @@ net.Receive("TARDIS-SetHealth", function()
 	tardis.health=net.ReadFloat()
 end)
 
+surface.CreateFont( "HUDNumber", {font="Trebuchet MS", size=40, weight=900} )
+
 hook.Add("HUDPaint", "TARDIS-DrawHUD", function()
 	local p = LocalPlayer()
 	local tardis = p.tardis
