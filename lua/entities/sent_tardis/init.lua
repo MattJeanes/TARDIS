@@ -221,6 +221,7 @@ function ENT:Go(vec,ang)
 		end
 		self:SetLight(true)
 		net.Start("TARDIS-Go")
+			net.WriteEntity(self)
 			net.WriteVector(self:GetPos())
 			net.WriteVector(self.vec)
 		net.Broadcast()
@@ -469,13 +470,15 @@ function ENT:UpdateAlpha()
 	self:SetColor(maincol)
 	if self.attachedents then
 		for k,v in pairs(self.attachedents) do
-			local col=v:GetColor()
-			col=Color(col.r,col.g,col.b,self.a)
-			if IsValid(v) and not (v.tempa==0) then
-				if not (v:GetRenderMode()==RENDERMODE_TRANSALPHA) then
-					v:SetRenderMode(RENDERMODE_TRANSALPHA)
+			if IsValid(v) then
+				local col=v:GetColor()
+				col=Color(col.r,col.g,col.b,self.a)
+				if not (v.tempa==0) then
+					if not (v:GetRenderMode()==RENDERMODE_TRANSALPHA) then
+						v:SetRenderMode(RENDERMODE_TRANSALPHA)
+					end
+					v:SetColor(col)
 				end
-				v:SetColor(col)
 			end
 		end
 	end
@@ -580,7 +583,9 @@ function ENT:ToggleFlight()
 		if self.phys and IsValid(self.phys) then
 			self.phys:EnableGravity(true)
 		end
-		self:SetLight(false)
+		if not self.moving then
+			self:SetLight(false)
+		end
 		self:SetNWBool("flightmode", false)
 		if self.RotorWash and not self.moving then
 			self.RotorWash:Remove()

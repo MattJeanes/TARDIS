@@ -82,8 +82,13 @@ end)
 
 net.Receive("TARDIS-Go", function()
 	if tobool(GetConVarNumber("tardis_matsound"))==true then
-		sound.Play("tardis/demat.wav", net.ReadVector())
-		sound.Play("tardis/mat.wav", net.ReadVector())
+		local tardis=net.ReadEntity()
+		if IsValid(tardis) and LocalPlayer().tardis==tardis then
+			tardis:EmitSound("tardis/full.wav")
+		else
+			sound.Play("tardis/demat.wav", net.ReadVector())
+			sound.Play("tardis/mat.wav", net.ReadVector())
+		end
 	end
 end)
 
