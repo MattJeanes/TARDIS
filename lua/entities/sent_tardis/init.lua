@@ -497,7 +497,7 @@ function ENT:PhysicsUpdate( ph )
 		local vforce=5
 		local tilt=0
 		
-		if self.pilot and IsValid(self.pilot) not self.exploded then
+		if self.pilot and IsValid(self.pilot) and not self.exploded then
 			local p=self.pilot
 			local eye=p:EyeAngles()
 			local fwd=eye:Forward()
