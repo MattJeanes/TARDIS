@@ -134,7 +134,7 @@ end
 function ENT:OnTakeDamage(dmginfo)
 	if not self:ShouldTakeDamage() then return end
 	local hp=dmginfo:GetDamage()
-	self:TakeHP(hp/4)
+	self:TakeHP(hp/8) //takes an 8th of normal damage a player would take
 end
 
 function ENT:SetLight(on)
@@ -486,7 +486,6 @@ end
 
 function ENT:PhysicsUpdate( ph )
 	local pos=self:GetPos()
-	
 	if self.flightmode then		
 		local phm=FrameTime()*66
 		
@@ -498,7 +497,7 @@ function ENT:PhysicsUpdate( ph )
 		local vforce=5
 		local tilt=0
 		
-		if self.pilot and not self.exploded then
+		if self.pilot and IsValid(self.pilot) not self.exploded then
 			local p=self.pilot
 			local eye=p:EyeAngles()
 			local fwd=eye:Forward()
@@ -603,9 +602,17 @@ function ENT:Think()
 		end
 		self.cur=CurTime()+self.curdelay
 	end
+	
+	if self.pilot and not IsValid(self.pilot) then
+		self.pilot=nil
+	end
 
 	if self.occupants then
 		for k,v in pairs(self.occupants) do
+			if not IsValid(v) then
+				self.occupants[k]=nil
+				continue
+			end
 			if CurTime()>self.exitcur and v:KeyDown(IN_USE) then
 				self.exitcur=CurTime()+1
 				self:PlayerExit(v)
