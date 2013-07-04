@@ -6,10 +6,49 @@ include('shared.lua')
    Remember, the things you render first will be underneath!
 ---------------------------------------------------------]]
 function ENT:Draw() 
-	self.Entity:DrawModel()
-	if WireLib then
-		Wire_Render(self.Entity)
+	if not self.phasing and self.visible then
+		self:DrawModel()
+		if WireLib then
+			Wire_Render(self.Entity)
+		end
+	elseif self.phasing then
+		local normal = self:GetUp()
+		local max=125
+		if CurTime()>self.phasedraw then
+			self.phasedraw=CurTime()+0.005
+			if self.z >= max and self.phasemode then
+				self.phasemode=false
+				self.phaseactive=false
+				self.visible=false
+				self.phasing=false
+			elseif self.z <= 0 and not self.phasemode then
+				self.phasemode=true
+				self.phaseactive=false
+				self.visible=true
+				self.phasing=false
+			elseif self.phasemode and self.phaseactive then
+				self.z=math.Clamp(self.z+1,0,max)
+			elseif not self.phasemode and self.phaseactive then
+				self.z=math.Clamp(self.z-1,0,max)
+			end
+		end
+		
+		local pos=self:LocalToWorld(Vector(0,0,self.z))
+		local distance = normal:Dot( pos )
+		local alreadyClipping = render.EnableClipping( true )
+		render.PushCustomClipPlane( normal, distance )
+			self:DrawModel()
+			if WireLib then
+				Wire_Render(self.Entity)
+			end
+		render.PopCustomClipPlane()
+		render.EnableClipping( alreadyClipping ) -- We must not disable clipping if there is already clipping ongoing.
 	end
+end
+
+function ENT:PhaseToggle()
+	self.phasing=true
+	self.phaseactive=true
 end
 
 CreateClientConVar("tardis_flightsound", "1", true)
@@ -21,6 +60,10 @@ function ENT:Initialize()
 		self.flightloop:Stop()
 	end
 	self.health=100
+	self.phasemode=true
+	self.visible=true
+	self.z=0
+	self.phasedraw=0
 end
 
 function ENT:OnRemove()
@@ -43,7 +86,8 @@ function ENT:Think()
 		self.flightloop:Stop()
 	end
 	local flying=self:GetNWBool("flightmode",false)
-	if flying then
+	local silent=self:GetNWBool("silent",false)
+	if flying and not silent then
 		if !self.flightloop:IsPlaying() then
 			self.flightloop:Play()
 		end
@@ -75,14 +119,20 @@ function ENT:Think()
 	end
 end
 
+net.Receive("TARDIS-Phase", function()
+	local ent=net.ReadEntity()
+	ent:PhaseToggle()
+end)
+
 net.Receive("TARDIS-Explode", function()
 	local ent=net.ReadEntity()
 	ent.exploded=true
 end)
 
 net.Receive("TARDIS-Go", function()
-	if tobool(GetConVarNumber("tardis_matsound"))==true then
-		local tardis=net.ReadEntity()
+	local tardis=net.ReadEntity()
+	local silent=tardis:GetNWBool("silent",false)
+	if tobool(GetConVarNumber("tardis_matsound"))==true and not silent then
 		if IsValid(tardis) and LocalPlayer().tardis==tardis then
 			tardis:EmitSound("tardis/full.wav")
 		else
@@ -128,8 +178,14 @@ hook.Add("CalcView", "TARDIS_CLView", function( ply, origin, angles, fov )
 	local dist= -300
 	
 	if tardis and IsValid(tardis) and viewent==LocalPlayer() then
+		local pos=tardis:GetPos()+(tardis:GetUp()*50)
+		local tracedata={}
+		tracedata.start=pos
+		tracedata.endpos=pos+ply:GetAimVector():GetNormal()*dist
+		tracedata.mask=MASK_NPCWORLDSTATIC
+		local trace=util.TraceLine(tracedata)
 		local view = {}
-		view.origin = tardis:GetPos()+(tardis:GetUp()*50)+ply:GetAimVector():GetNormal()*dist
+		view.origin = trace.HitPos
 		view.angles = angles
 		return view
 	end

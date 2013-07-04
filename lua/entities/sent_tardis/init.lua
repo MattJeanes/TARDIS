@@ -7,6 +7,7 @@ util.AddNetworkString("TARDIS-SetHealth")
 util.AddNetworkString("TARDIS-Go")
 util.AddNetworkString("TARDIS-Explode")
 util.AddNetworkString("TARDIS-TakeDamage")
+util.AddNetworkString("TARDIS-Phase")
 
 net.Receive("TARDIS-TakeDamage", function(len,ply)
 	if ply:IsAdmin() or ply:IsSuperAdmin() then
@@ -39,6 +40,8 @@ function ENT:Initialize()
 	self.flightmode=false
 	self.health=100
 	self.exploded=false
+	self.visible=true
+	self.phasecur=0
 	self.occupants={}
 	if WireLib then
 		self.wirepos=Vector(0,0,0)
@@ -219,7 +222,9 @@ function ENT:Go(vec,ang)
 		if ang then
 			self.ang=ang
 		end
-		self:SetLight(true)
+		if self.visible then
+			self:SetLight(true)
+		end
 		net.Start("TARDIS-Go")
 			net.WriteEntity(self)
 			net.WriteVector(self:GetPos())
@@ -247,7 +252,7 @@ function ENT:Stop()
 			end
 		end
 		self.attachedents=nil
-		if not self.flightmode then
+		if not self.flightmode and self.visible then
 			self:SetLight(false)
 		end
 	end
@@ -493,8 +498,8 @@ function ENT:PhysicsUpdate( ph )
 		local ri2=self:GetRight()
 		local fwd2=self:GetForward()
 		local ang=self:GetAngles()
-		local force=15
-		local vforce=5
+		local force=20
+		local vforce=7.5
 		local tilt=0
 		
 		if self.pilot and IsValid(self.pilot) and not self.exploded then
@@ -503,7 +508,7 @@ function ENT:PhysicsUpdate( ph )
 			local fwd=eye:Forward()
 			local ri=eye:Right()
 			if p:KeyDown(IN_SPEED) then
-				force=force*2
+				force=force*2.5
 				tilt=5
 			end
 			if p:KeyDown(IN_FORWARD) then
@@ -570,27 +575,58 @@ function ENT:ToggleFlight()
 		if self.phys and IsValid(self.phys) then
 			self.phys:EnableGravity(false)
 		end
-		self:SetLight(true)
+		if self.visible then
+			self:SetLight(true)
+		end
 		self:SetNWBool("flightmode", true)
-		if !self.RotorWash then
-			self.RotorWash = ents.Create("env_rotorwash_emitter")
-			self.RotorWash:SetPos(self:GetPos())
-			self.RotorWash:SetParent(self)
-			self.RotorWash:Activate()
+		if !self.RotorWash and self.visible then
+			self:CreateRotorWash()
 		end		
 	else //off
 		if self.phys and IsValid(self.phys) then
 			self.phys:EnableGravity(true)
 		end
-		if not self.moving then
+		if not self.moving and self.visible then
 			self:SetLight(false)
 		end
 		self:SetNWBool("flightmode", false)
-		if self.RotorWash and not self.moving then
+		if self.RotorWash and not self.moving and self.visible then
 			self.RotorWash:Remove()
 			self.RotorWash = nil
 		end
 	end
+end
+
+function ENT:CreateRotorWash()
+	if IsValid(self.RotorWash) then return end
+	self.RotorWash = ents.Create("env_rotorwash_emitter")
+	self.RotorWash:SetPos(self:GetPos())
+	self.RotorWash:SetParent(self)
+	self.RotorWash:Activate()
+end
+
+function ENT:TogglePhase()
+	if CurTime()>self.phasecur then
+		self.phasecur=CurTime()+2
+		net.Start("TARDIS-Phase")
+			net.WriteEntity(self)
+		net.Broadcast()
+		self.visible=(not self.visible)
+		self:SetNWBool("silent", (not self.visible))
+		if self.visible and (self.moving or self.flightmode) then
+			self:SetLight(true)
+		else
+			self:SetLight(false)
+		end
+		if self.RotorWash and not self.visible then
+			self.RotorWash:Remove()
+			self.RotorWash = nil
+		elseif !self.RotorWash and self.visible then
+			self:CreateRotorWash()
+		end
+		return true
+	end
+	return false
 end
 
 function ENT:Think()
@@ -631,14 +667,11 @@ function ENT:Think()
 				v:GetPhysicsObject():AddVelocity(vec*force)
 			end
 		end
-		if !self.RotorWash then
-			self.RotorWash = ents.Create("env_rotorwash_emitter")
-			self.RotorWash:SetPos(self:GetPos())
-			self.RotorWash:SetParent(self)
-			self.RotorWash:Activate()
+		if !self.RotorWash and self.visible then
+			self:CreateRotorWash()
 		end
 	else
-		if self.RotorWash and not self.flightmode then
+		if self.RotorWash and not self.flightmode and self.visible then
 			self.RotorWash:Remove()
 			self.RotorWash = nil
 		end
@@ -655,6 +688,33 @@ function ENT:Think()
 			self.pilot:ChatPrint("Flight-mode activated.")
 		else
 			self.pilot:ChatPrint("Flight-mode deactivated.")
+		end
+	end
+	
+	if CurTime() > self.phasecur and self.pilot and IsValid(self.pilot) and self.pilot:KeyDown(IN_ATTACK2) then
+		local success=self:TogglePhase()
+		if success then
+			if self.visible then
+				self.pilot:ChatPrint("TARDIS now visible.")
+			else
+				self.pilot:ChatPrint("TARDIS no longer visible.")
+			end
+		end
+	end
+	
+	if not self.moving and self.pilot and IsValid(self.pilot) and self.pilot:KeyDown(IN_ATTACK) then
+		if self.pilot.linked_tardis and self.pilot.linked_tardis==self and self.pilot.tardis_vec and self.pilot.tardis_ang then
+			self:Go(self.pilot.tardis_vec, self.pilot.tardis_ang)
+			self.pilot.tardis_vec=nil
+			self.pilot.tardis_ang=nil
+			self.pilot:ChatPrint("TARDIS moving to set destination.")
+		else
+			local filter=table.Copy(self.occupants)
+			table.insert(filter,self)
+			local trace = util.QuickTrace( self.pilot:EyePos(), self.pilot:GetAimVector() * 9999999, filter)
+			local angle = Angle(0,self.pilot:GetAngles().y+180,0)
+			self:Go(trace.HitPos, angle)
+			self.pilot:ChatPrint("TARDIS moving to AimPos.")
 		end
 	end
 	
