@@ -694,11 +694,7 @@ function ENT:Think()
 	if CurTime() > self.phasecur and self.pilot and IsValid(self.pilot) and self.pilot:KeyDown(IN_ATTACK2) then
 		local success=self:TogglePhase()
 		if success then
-			if self.visible then
-				self.pilot:ChatPrint("TARDIS now visible.")
-			else
-				self.pilot:ChatPrint("TARDIS no longer visible.")
-			end
+			self.pilot:ChatPrint("TARDIS phasing.")
 		end
 	end
 	
