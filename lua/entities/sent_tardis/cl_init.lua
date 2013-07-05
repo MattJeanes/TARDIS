@@ -9,45 +9,71 @@ function ENT:Draw()
 	if not self.phasing and self.visible then
 		self:DrawModel()
 		if WireLib then
-			Wire_Render(self.Entity)
+			Wire_Render(self)
 		end
 	elseif self.phasing then
-		local normal = self:GetUp()
-		local max=125
-		if CurTime()>self.phasedraw then
-			self.phasedraw=CurTime()+0.01
-			if self.z >= max and self.phasemode then
-				self.phaseactive=false
-				self.visible=false
+		if self.percent then
+			if not self.phasemode and self.highPer <= 0 then
 				self.phasing=false
-			elseif self.z <= 0 and not self.phasemode then
-				self.phaseactive=false
-				self.visible=true
+			elseif self.phasemode and self.percent >= 1 then
 				self.phasing=false
-			elseif self.phasemode and self.phaseactive then
-				self.z=math.Clamp(self.z+2,0,max)
-			elseif not self.phasemode and self.phaseactive then
-				self.z=math.Clamp(self.z-2,0,max)
 			end
 		end
 		
-		local pos=self:LocalToWorld(Vector(0,0,self.z))
-		local distance = normal:Dot( pos )
-		local alreadyClipping = render.EnableClipping( true )
+		self.percent = (self.phaselifetime - CurTime())
+		self.highPer = self.percent + 0.5
+		if self.phasemode then
+			self.percent = (1-self.percent)-0.5
+			self.highPer = self.percent+0.5
+		end
+		self.percent = math.Clamp( self.percent, 0, 1 )
+		self.highPer = math.Clamp( self.highPer, 0, 1 )
+
+		--Drawing original model
+		local normal = self:GetUp()
+		local origin = self:GetPos() + self:GetUp() * (self.maxs.z - ( self.height * self.highPer ))
+		local distance = normal:Dot( origin )
+		
+		render.EnableClipping( true )
 		render.PushCustomClipPlane( normal, distance )
 			self:DrawModel()
-			if WireLib then
-				Wire_Render(self.Entity)
-			end
 		render.PopCustomClipPlane()
-		render.EnableClipping( alreadyClipping ) -- We must not disable clipping if there is already clipping ongoing.
+		
+		local restoreT = self:GetMaterial()
+		
+		--Drawing wire frame
+		render.MaterialOverride( self.wiremat )
+
+		normal = self:GetUp()
+		distance = normal:Dot( origin )
+		render.PushCustomClipPlane( normal, distance )
+		
+		local normal2 = self:GetUp() * -1
+		local origin2 = self:GetPos() + self:GetUp() * (self.maxs.z - ( self.height * self.percent ))
+		local distance2 = normal2:Dot( origin2 )
+		render.PushCustomClipPlane( normal2, distance2 )
+		
+		self:DrawModel()
+		
+		render.PopCustomClipPlane()
+		render.PopCustomClipPlane()
+
+		
+		render.MaterialOverride( restoreT )
+		
+		render.EnableClipping( false )
 	end
 end
 
-function ENT:PhaseToggle()
+function ENT:Phase(mode)
 	self.phasing=true
 	self.phaseactive=true
-	self.phasemode=(not self.phasemode)
+	self.phaselifetime=CurTime()+1
+	self.phasemode=not mode // it likes to reverse
+	self.mins = self:OBBMins()
+	self.maxs = self:OBBMaxs()
+	self.wiremat = Material( "The_Sniper_9/DoctorWho/Tardis/phase" )
+	self.height = self.maxs.z - self.mins.z
 end
 
 CreateClientConVar("tardis_flightsound", "1", true)
@@ -60,6 +86,8 @@ function ENT:Initialize()
 	end
 	self.health=100
 	self.phasemode=false
+	self.visible=true
+	self.flightmode=false
 	self.visible=true
 	self.z=0
 	self.phasedraw=0
@@ -84,9 +112,7 @@ function ENT:Think()
 		self.flightloop=CreateSound(self, "tardis/flight_loop.wav")
 		self.flightloop:Stop()
 	end
-	local flying=self:GetNWBool("flightmode",false)
-	local silent=self:GetNWBool("silent",false)
-	if flying and not silent then
+	if self.flightmode and self.visible then
 		if !self.flightloop:IsPlaying() then
 			self.flightloop:Play()
 		end
@@ -120,7 +146,8 @@ end
 
 net.Receive("TARDIS-Phase", function()
 	local ent=net.ReadEntity()
-	ent:PhaseToggle()
+	ent.visible=tobool(net.ReadBit())
+	ent:Phase(not ent.visible) // it likes to reverse
 end)
 
 net.Receive("TARDIS-Explode", function()
@@ -128,10 +155,14 @@ net.Receive("TARDIS-Explode", function()
 	ent.exploded=true
 end)
 
+net.Receive("TARDIS-Flightmode", function()
+	local ent=net.ReadEntity()
+	ent.flightmode=tobool(net.ReadBit())
+end)
+
 net.Receive("TARDIS-Go", function()
 	local tardis=net.ReadEntity()
-	local silent=tardis:GetNWBool("silent",false)
-	if tobool(GetConVarNumber("tardis_matsound"))==true and not silent then
+	if tobool(GetConVarNumber("tardis_matsound"))==true and tardis.visible then
 		if IsValid(tardis) and LocalPlayer().tardis==tardis then
 			tardis:EmitSound("tardis/full.wav")
 		else

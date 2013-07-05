@@ -6,6 +6,7 @@ util.AddNetworkString("Player-SetTARDIS")
 util.AddNetworkString("TARDIS-SetHealth")
 util.AddNetworkString("TARDIS-Go")
 util.AddNetworkString("TARDIS-Explode")
+util.AddNetworkString("TARDIS-Flightmode")
 util.AddNetworkString("TARDIS-TakeDamage")
 util.AddNetworkString("TARDIS-Phase")
 
@@ -46,7 +47,7 @@ function ENT:Initialize()
 	if WireLib then
 		self.wirepos=Vector(0,0,0)
 		self.wireang=Angle(0,0,0)
-		Wire_CreateInputs(self, { "Go", "X", "Y", "Z", "XYZ [VECTOR]", "Rot" })
+		Wire_CreateInputs(self, { "Demat", "Phase", "X", "Y", "Z", "XYZ [VECTOR]", "Rot" })
 	end
 	
 	self.dematvalues={
@@ -260,8 +261,10 @@ end
 
 if WireLib then
 	function ENT:TriggerInput(k,v)
-		if k=="Go" and v==1 and self.wirepos and self.wireang and not self.moving then
+		if k=="Demat" and v==1 and self.wirepos and self.wireang and not self.moving then
 			self:Go(self.wirepos, self.wireang)
+		elseif k=="Phase" and v==1 then
+			self:TogglePhase()
 		elseif k=="X" then
 			self.wirepos.x=v
 		elseif k=="Y" then
@@ -571,30 +574,26 @@ end
 
 function ENT:ToggleFlight()
 	self.flightmode=(not self.flightmode)
-	if self.flightmode then //on
-		if self.phys and IsValid(self.phys) then
-			self.phys:EnableGravity(false)
-		end
-		if self.visible then
-			self:SetLight(true)
-		end
-		self:SetNWBool("flightmode", true)
+	if self.flightmode then
 		if !self.RotorWash and self.visible then
 			self:CreateRotorWash()
 		end		
-	else //off
-		if self.phys and IsValid(self.phys) then
-			self.phys:EnableGravity(true)
-		end
-		if not self.moving and self.visible then
-			self:SetLight(false)
-		end
-		self:SetNWBool("flightmode", false)
+	else
 		if self.RotorWash and not self.moving and self.visible then
 			self.RotorWash:Remove()
 			self.RotorWash = nil
 		end
 	end
+	if self.phys and IsValid(self.phys) then
+		self.phys:EnableGravity(not self.flightmode)
+	end
+	if self.visible and not self.moving then
+		self:SetLight(self.flightmode)
+	end
+	net.Start("TARDIS-Flightmode")
+		net.WriteEntity(self)
+		net.WriteBit(tobool(self.flightmode))
+	net.Broadcast()
 end
 
 function ENT:CreateRotorWash()
@@ -608,11 +607,12 @@ end
 function ENT:TogglePhase()
 	if CurTime()>self.phasecur then
 		self.phasecur=CurTime()+2
+		self.visible=(not self.visible)
 		net.Start("TARDIS-Phase")
 			net.WriteEntity(self)
+			net.WriteBit(tobool(self.visible))
 		net.Broadcast()
-		self.visible=(not self.visible)
-		self:SetNWBool("silent", (not self.visible))
+		self:DrawShadow(self.visible)
 		if self.visible and (self.moving or self.flightmode) then
 			self:SetLight(true)
 		else

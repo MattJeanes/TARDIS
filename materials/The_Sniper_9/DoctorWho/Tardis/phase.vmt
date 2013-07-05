@@ -1,0 +1,22 @@
+"Refract"
+{
+ 	"$model" 1
+
+ 	"$refractamount" ".1"
+ 	"$bluramount" "0"
+	"$REFRACTTINT" "{255 255 255}"
+ 	"$normalmap" "The_Sniper_9/DoctorWho/Tardis/Tardis_NRM"
+	"$bumpframe" "0"
+	
+	"Proxies"
+	{
+
+		"AnimatedTexture"
+		{
+			"animatedtexturevar" "$normalmap"
+			"animatedtextureframenumvar" "$bumpframe"
+			"animatedtextureframerate" 100.00
+		}
+
+	}
+}
