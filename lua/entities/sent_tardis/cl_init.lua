@@ -41,7 +41,7 @@ function ENT:Draw()
 		
 		local restoreT = self:GetMaterial()
 		
-		--Drawing wire frame
+		--Drawing phase texture
 		render.MaterialOverride( self.wiremat )
 
 		normal = self:GetUp()
@@ -52,15 +52,11 @@ function ENT:Draw()
 		local origin2 = self:GetPos() + self:GetUp() * (self.maxs.z - ( self.height * self.percent ))
 		local distance2 = normal2:Dot( origin2 )
 		render.PushCustomClipPlane( normal2, distance2 )
-		
-		self:DrawModel()
-		
+			self:DrawModel()
 		render.PopCustomClipPlane()
 		render.PopCustomClipPlane()
-
 		
 		render.MaterialOverride( restoreT )
-		
 		render.EnableClipping( false )
 	end
 end
@@ -144,6 +140,11 @@ function ENT:Think()
 	end
 end
 
+net.Receive("TARDIS-UpdateVis", function()
+	local ent=net.ReadEntity()
+	ent.visible=tobool(net.ReadBit())
+end)
+
 net.Receive("TARDIS-Phase", function()
 	local ent=net.ReadEntity()
 	ent.visible=tobool(net.ReadBit())
@@ -162,12 +163,14 @@ end)
 
 net.Receive("TARDIS-Go", function()
 	local tardis=net.ReadEntity()
+	local exploded=tobool(net.ReadBit())
+	local pitch=(exploded and 110 or 100)
 	if tobool(GetConVarNumber("tardis_matsound"))==true and tardis.visible then
 		if IsValid(tardis) and LocalPlayer().tardis==tardis then
-			tardis:EmitSound("tardis/full.wav")
+			tardis:EmitSound("tardis/full.wav", 100, pitch)
 		else
-			sound.Play("tardis/demat.wav", net.ReadVector())
-			sound.Play("tardis/mat.wav", net.ReadVector())
+			sound.Play("tardis/demat.wav", net.ReadVector(), 75, pitch)
+			sound.Play("tardis/mat.wav", net.ReadVector(), 75, pitch)
 		end
 	end
 end)

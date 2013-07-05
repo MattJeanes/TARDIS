@@ -9,6 +9,7 @@ util.AddNetworkString("TARDIS-Explode")
 util.AddNetworkString("TARDIS-Flightmode")
 util.AddNetworkString("TARDIS-TakeDamage")
 util.AddNetworkString("TARDIS-Phase")
+util.AddNetworkString("TARDIS-UpdateVis")
 
 net.Receive("TARDIS-TakeDamage", function(len,ply)
 	if ply:IsAdmin() or ply:IsSuperAdmin() then
@@ -206,7 +207,7 @@ function ENT:GetNumber()
 end
 
 function ENT:Go(vec,ang)
-	if not self.moving and vec and not self.exploded then
+	if not self.moving and vec then
 		self.demat=true
 		self.moving=true
 		self.vec=vec
@@ -216,18 +217,24 @@ function ENT:Go(vec,ang)
 				local a=v:GetColor().a
 				if not (a==255) then
 					v.tempa=a
-					print(v.tempa)
 				end
 			end
 		end
 		if ang then
 			self.ang=ang
 		end
-		if self.visible then
+		if self.exploded then
+			local randvec=VectorRand()*1000
+			randvec.z=0
+			self.vec=self:GetPos()+randvec
+			self.ang=self:GetAngles()+AngleRand()
+		end
+		if self.visible and not self.exploded then
 			self:SetLight(true)
 		end
 		net.Start("TARDIS-Go")
 			net.WriteEntity(self)
+			net.WriteBit(tobool(self.exploded))
 			net.WriteVector(self:GetPos())
 			net.WriteVector(self.vec)
 		net.Broadcast()
@@ -462,11 +469,25 @@ function ENT:PlayerExit( ply )
 	end
 end
 
-hook.Add("PlayerSpawn", "TARDIS_PLDeath", function( ply )
+hook.Add("PlayerSpawn", "TARDIS_PlayerSpawn", function( ply )
 	timer.Simple(0.1,function()
 		local tardis=ply.tardis
 		if tardis and IsValid(tardis) then
 			tardis:PlayerExit(ply)
+		end
+	end)
+end)
+
+hook.Add("PlayerInitialSpawn", "TARDIS_PlayerInitialSpawn", function( ply )
+	timer.Simple(5,function()
+		if not IsValid(ply) then return end
+		for k,v in pairs(ents.FindByClass("sent_tardis")) do
+			if v and IsValid(v) then
+				net.Start("TARDIS-UpdateVis")
+					net.WriteEntity(v)
+					net.WriteBit(tobool(v.visible))
+				net.Send(ply)
+			end
 		end
 	end)
 end)
@@ -567,7 +588,7 @@ function ENT:PhysicsUpdate( ph )
 	
 	if self.occupants then
 		for k,v in pairs(self.occupants) do
-			v:SetPos(pos)
+			v:SetPos(pos+Vector(0,0,50))
 		end
 	end
 end
@@ -587,7 +608,7 @@ function ENT:ToggleFlight()
 	if self.phys and IsValid(self.phys) then
 		self.phys:EnableGravity(not self.flightmode)
 	end
-	if self.visible and not self.moving then
+	if self.visible and not self.moving and not self.exploded then
 		self:SetLight(self.flightmode)
 	end
 	net.Start("TARDIS-Flightmode")
@@ -605,7 +626,7 @@ function ENT:CreateRotorWash()
 end
 
 function ENT:TogglePhase()
-	if CurTime()>self.phasecur then
+	if CurTime()>self.phasecur and not self.exploded then
 		self.phasecur=CurTime()+2
 		self.visible=(not self.visible)
 		net.Start("TARDIS-Phase")
