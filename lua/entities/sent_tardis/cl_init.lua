@@ -15,21 +15,19 @@ function ENT:Draw()
 		local normal = self:GetUp()
 		local max=125
 		if CurTime()>self.phasedraw then
-			self.phasedraw=CurTime()+0.005
+			self.phasedraw=CurTime()+0.01
 			if self.z >= max and self.phasemode then
-				self.phasemode=false
 				self.phaseactive=false
 				self.visible=false
 				self.phasing=false
 			elseif self.z <= 0 and not self.phasemode then
-				self.phasemode=true
 				self.phaseactive=false
 				self.visible=true
 				self.phasing=false
 			elseif self.phasemode and self.phaseactive then
-				self.z=math.Clamp(self.z+1,0,max)
+				self.z=math.Clamp(self.z+2,0,max)
 			elseif not self.phasemode and self.phaseactive then
-				self.z=math.Clamp(self.z-1,0,max)
+				self.z=math.Clamp(self.z-2,0,max)
 			end
 		end
 		
@@ -49,6 +47,7 @@ end
 function ENT:PhaseToggle()
 	self.phasing=true
 	self.phaseactive=true
+	self.phasemode=(not self.phasemode)
 end
 
 CreateClientConVar("tardis_flightsound", "1", true)
@@ -60,7 +59,7 @@ function ENT:Initialize()
 		self.flightloop:Stop()
 	end
 	self.health=100
-	self.phasemode=true
+	self.phasemode=false
 	self.visible=true
 	self.z=0
 	self.phasedraw=0
