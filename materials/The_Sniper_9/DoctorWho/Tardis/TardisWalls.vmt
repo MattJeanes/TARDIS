@@ -1,0 +1,6 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "The_Sniper_9/DoctorWho/Tardis/TardisWalls"
+	"$bumpmap" "The_Sniper_9/DoctorWho/Tardis/TardisWalls_NRM"
+	"$surfaceprop" "Concrete"
+}

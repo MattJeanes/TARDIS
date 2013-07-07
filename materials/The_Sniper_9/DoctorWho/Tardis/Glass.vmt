@@ -1,0 +1,6 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "The_Sniper_9/DoctorWho/Daleks/Glass"
+	"$surfaceprop" "Glass"
+	"$translucent" 1
+}

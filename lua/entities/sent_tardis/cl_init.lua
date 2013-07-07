@@ -66,10 +66,6 @@ function ENT:Phase(mode)
 	self.phaseactive=true
 	self.phaselifetime=CurTime()+1
 	self.phasemode=not mode // it likes to reverse
-	self.mins = self:OBBMins()
-	self.maxs = self:OBBMaxs()
-	self.wiremat = Material( "The_Sniper_9/DoctorWho/Tardis/phase" )
-	self.height = self.maxs.z - self.mins.z
 end
 
 CreateClientConVar("tardis_flightsound", "1", true)
@@ -87,6 +83,10 @@ function ENT:Initialize()
 	self.visible=true
 	self.z=0
 	self.phasedraw=0
+	self.mins = self:OBBMins()
+	self.maxs = self:OBBMaxs()
+	self.wiremat = Material( "The_Sniper_9/DoctorWho/Tardis/phase" )
+	self.height = self.maxs.z - self.mins.z
 end
 
 function ENT:OnRemove()
@@ -101,6 +101,10 @@ function ENT:Think()
 		if self.flightloop then
 			self.flightloop:Stop()
 			self.flightloop=nil
+		end
+		if self.flightloop2 then
+			self.flightloop2:Stop()
+			self.flightloop2=nil
 		end
 		return
 	end
@@ -138,6 +142,27 @@ function ENT:Think()
 			self.flightloop:Stop()
 		end
 	end
+	
+	local interior=self:GetNWEntity("interior",NULL)
+	if not self.flightloop2 and interior and IsValid(interior) then
+		self.flightloop2=CreateSound(interior, "tardis/flight_loop.wav")
+		self.flightloop2:Stop()
+	end
+	if self.flightloop2 and self.flightmode and LocalPlayer().tardis_viewmode and interior and IsValid(interior) then
+		if !self.flightloop2:IsPlaying() then
+			self.flightloop2:Play()
+		end
+		if self.exploded then
+			local r=math.random(90,130)
+			self.flightloop2:ChangePitch(r,0.1)
+		else
+			self.flightloop2:ChangePitch(100,0.1)
+		end
+	elseif self.flightloop2 and not self.flightmode and LocalPlayer().tardis_viewmode and interior and IsValid(interior) then
+		if self.flightloop2:IsPlaying() then
+			self.flightloop2:Stop()
+		end
+	end
 end
 
 net.Receive("TARDIS-UpdateVis", function()
@@ -161,13 +186,24 @@ net.Receive("TARDIS-Flightmode", function()
 	ent.flightmode=tobool(net.ReadBit())
 end)
 
+net.Receive("TARDIS-SetInterior", function()
+	local ent=net.ReadEntity()
+	ent.interior=net.ReadEntity()
+end)
+
 net.Receive("TARDIS-Go", function()
 	local tardis=net.ReadEntity()
+	local interior=net.ReadEntity()
 	local exploded=tobool(net.ReadBit())
 	local pitch=(exploded and 110 or 100)
-	if tobool(GetConVarNumber("tardis_matsound"))==true and tardis.visible then
+	if tobool(GetConVarNumber("tardis_matsound"))==true then
 		if IsValid(tardis) and LocalPlayer().tardis==tardis then
-			tardis:EmitSound("tardis/full.wav", 100, pitch)
+			if tardis.visible then
+				tardis:EmitSound("tardis/full.wav", 100, pitch)
+			end
+			if interior and IsValid(interior) and LocalPlayer().tardis_viewmode then
+				interior:EmitSound("tardis/full.wav", 100, pitch)
+			end
 		else
 			sound.Play("tardis/demat.wav", net.ReadVector(), 75, pitch)
 			sound.Play("tardis/mat.wav", net.ReadVector(), 75, pitch)
@@ -183,6 +219,10 @@ end)
 net.Receive("TARDIS-SetHealth", function()
 	local tardis=net.ReadEntity()
 	tardis.health=net.ReadFloat()
+end)
+
+net.Receive("TARDIS-SetViewmode", function()
+	LocalPlayer().tardis_viewmode=tobool(net.ReadBit())
 end)
 
 surface.CreateFont( "HUDNumber", {font="Trebuchet MS", size=40, weight=900} )
@@ -210,7 +250,7 @@ hook.Add("CalcView", "TARDIS_CLView", function( ply, origin, angles, fov )
 	if !IsValid(viewent) then viewent = LocalPlayer() end
 	local dist= -300
 	
-	if tardis and IsValid(tardis) and viewent==LocalPlayer() then
+	if tardis and IsValid(tardis) and viewent==LocalPlayer() and not LocalPlayer().tardis_viewmode then
 		local pos=tardis:GetPos()+(tardis:GetUp()*50)
 		local tracedata={}
 		tracedata.start=pos
@@ -224,12 +264,12 @@ hook.Add("CalcView", "TARDIS_CLView", function( ply, origin, angles, fov )
 	end
 end)
 
-hook.Add("PopulateToolMenu", "AddPopulateSCarAdminMenu", function()
+hook.Add("PopulateToolMenu", "TARDIS-PopulateToolMenu", function()
 	spawnmenu.AddToolMenuOption("Options", "Doctor Who", "TARDIS_Options", "TARDIS", "", "", function(panel)
 		panel:ClearControls()
 		//Do menu things here
-		local checkBox = vgui.Create( "DCheckBoxLabel" ) 
-		checkBox:SetText( "Take damage (Admin Only)" ) 
+		local checkBox = vgui.Create( "DCheckBoxLabel" )
+		checkBox:SetText( "Take damage (Admin Only)" )
 		checkBox:SetValue( GetConVarNumber( "tardis_takedamage" ) )
 		checkBox:SetDisabled(not (LocalPlayer():IsAdmin() or LocalPlayer():IsSuperAdmin()))
 		checkBox.OnChange = function(self,val)
@@ -241,6 +281,22 @@ hook.Add("PopulateToolMenu", "AddPopulateSCarAdminMenu", function()
 				chat.AddText(Color(255,62,62), "WARNING: ", Color(255,255,255), "You must be an admin to change this option.")
 				chat.PlaySound()
 			end			
+		end
+		panel:AddItem(checkBox)
+		
+		local checkBox = vgui.Create( "DCheckBoxLabel" )
+		checkBox:SetText( "Allow phasing in flightmode (Admin Only)" )
+		checkBox:SetValue( GetConVarNumber( "tardis_flightphase" ) )
+		checkBox:SetDisabled(not (LocalPlayer():IsAdmin() or LocalPlayer():IsSuperAdmin()))
+		checkBox.OnChange = function(self,val)
+			if LocalPlayer():IsAdmin() or LocalPlayer():IsSuperAdmin() then
+				net.Start("TARDIS-FlightPhase")
+					net.WriteFloat(val==true and 1 or 0)
+				net.SendToServer()
+			else
+				chat.AddText(Color(255,62,62), "WARNING: ", Color(255,255,255), "You must be an admin to change this option.")
+				chat.PlaySound()
+			end
 		end
 		panel:AddItem(checkBox)
 		
@@ -256,4 +312,11 @@ hook.Add("PopulateToolMenu", "AddPopulateSCarAdminMenu", function()
 		checkBox:SetConVar( "tardis_matsound" )
 		panel:AddItem(checkBox)
 	end)
+end)
+
+hook.Add( "HUDShouldDraw", "TARDIS-HideHUD", function(name)
+	local viewmode=LocalPlayer().tardis_viewmode
+	if ((name == "CHudHealth") or (name == "CHudBattery")) and viewmode then
+		return false
+	end
 end)

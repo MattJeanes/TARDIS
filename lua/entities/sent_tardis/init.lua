@@ -8,12 +8,21 @@ util.AddNetworkString("TARDIS-Go")
 util.AddNetworkString("TARDIS-Explode")
 util.AddNetworkString("TARDIS-Flightmode")
 util.AddNetworkString("TARDIS-TakeDamage")
+util.AddNetworkString("TARDIS-FlightPhase")
 util.AddNetworkString("TARDIS-Phase")
 util.AddNetworkString("TARDIS-UpdateVis")
+util.AddNetworkString("TARDIS-SetInterior")
+util.AddNetworkString("TARDIS-SetViewmode")
 
 net.Receive("TARDIS-TakeDamage", function(len,ply)
 	if ply:IsAdmin() or ply:IsSuperAdmin() then
 		RunConsoleCommand("tardis_takedamage", net.ReadFloat())
+	end
+end)
+
+net.Receive("TARDIS-FlightPhase", function(len,ply)
+	if ply:IsAdmin() or ply:IsSuperAdmin() then
+		RunConsoleCommand("tardis_flightphase", net.ReadFloat())
 	end
 end)
  
@@ -44,11 +53,12 @@ function ENT:Initialize()
 	self.exploded=false
 	self.visible=true
 	self.phasecur=0
+	self.interiorcur=0
 	self.occupants={}
 	if WireLib then
 		self.wirepos=Vector(0,0,0)
 		self.wireang=Angle(0,0,0)
-		Wire_CreateInputs(self, { "Demat", "Phase", "X", "Y", "Z", "XYZ [VECTOR]", "Rot" })
+		Wire_CreateInputs(self, { "Demat", "Phase", "Flightmode", "X", "Y", "Z", "XYZ [VECTOR]", "Rot" })
 	end
 	
 	self.dematvalues={
@@ -61,6 +71,24 @@ function ENT:Initialize()
 		{150,100},
 		{200,150},
 	}
+	
+	local trdata={}
+	trdata.start=self:GetPos()+Vector(0,0,99999999)
+	trdata.endpos=self:GetPos()
+	trdata.filter={self}
+	//trdata.mask=MASK_NPCWORLDSTATIC
+	local trace=util.TraceLine(trdata)
+	self.interior=ents.Create("sent_tardis_interior")
+	self.interior:SetPos(trace.HitPos+Vector(0,0,-500))
+	self.interior.tardis=self
+	self.interior:Spawn()
+	self.interior:Activate()
+	self:SetNWEntity("interior",self.interior)
+	
+	net.Start("TARDIS-SetInterior")
+		net.WriteEntity(self)
+		net.WriteEntity(self.interior)
+	net.Broadcast()
 end
 
 function ENT:ShouldTakeDamage()
@@ -234,6 +262,7 @@ function ENT:Go(vec,ang)
 		end
 		net.Start("TARDIS-Go")
 			net.WriteEntity(self)
+			net.WriteEntity(self.interior)
 			net.WriteBit(tobool(self.exploded))
 			net.WriteVector(self:GetPos())
 			net.WriteVector(self.vec)
@@ -272,6 +301,8 @@ if WireLib then
 			self:Go(self.wirepos, self.wireang)
 		elseif k=="Phase" and v==1 then
 			self:TogglePhase()
+		elseif k=="Flightmode" and v==1 then
+			self:ToggleFlight()
 		elseif k=="X" then
 			self.wirepos.x=v
 		elseif k=="Y" then
@@ -413,6 +444,7 @@ function ENT:PlayerEnter( ply )
 		net.WriteEntity(self)
 	net.Broadcast()
 	ply.tardis=self
+	ply.tardis_viewmode=false
 	ply:Spectate( OBS_MODE_ROAMING )
 	ply:DrawWorldModel(false)
 	ply:DrawViewModel(false)
@@ -436,14 +468,24 @@ function ENT:OnRemove()
 	end
 	self.light:Remove()
 	self.light=nil
+	if self.interior and IsValid(self.interior) then
+		self.interior:Remove()
+		self.interior=nil
+	end
 end
 
-function ENT:PlayerExit( ply )
+function ENT:PlayerExit( ply, angreverse )
 	net.Start("Player-SetTARDIS")
 		net.WriteEntity(ply)
 		net.WriteEntity(NULL)
 	net.Broadcast()
 	ply.tardis=nil
+	ply.tardis_viewmode=false
+	ply.tardisint_pos=nil
+	ply.tardisint_ang=nil
+	net.Start("TARDIS-SetViewmode")
+		net.WriteBit(tobool(ply.tardis_viewmode))
+	net.Send(ply)
 	ply:UnSpectate()
 	ply:DrawViewModel(true)
 	ply:DrawWorldModel(true)
@@ -455,8 +497,8 @@ function ENT:PlayerExit( ply )
 			ply:Give(tostring(v))
 		end
 	end
-	ply:SetPos(self:GetPos()+self:GetForward()*75)
-	ply:SetEyeAngles((self:GetPos()-ply:GetPos()):Angle()) // make you face the tardis
+	ply:SetPos(self:GetPos()+self:GetForward()*(angreverse and 50 or 75))
+	ply:SetEyeAngles((self:GetPos()-ply:GetPos()):Angle()+(angreverse and Angle(0,180,0) or Angle(0,0,0))) // make you face the tardis
 	if self.occupants then
 		for k,v in pairs(self.occupants) do
 			if v==ply then
@@ -472,7 +514,7 @@ end
 hook.Add("PlayerSpawn", "TARDIS_PlayerSpawn", function( ply )
 	timer.Simple(0.1,function()
 		local tardis=ply.tardis
-		if tardis and IsValid(tardis) then
+		if tardis and IsValid(tardis) and ply.tardis_mode then
 			tardis:PlayerExit(ply)
 		end
 	end)
@@ -526,7 +568,7 @@ function ENT:PhysicsUpdate( ph )
 		local vforce=7.5
 		local tilt=0
 		
-		if self.pilot and IsValid(self.pilot) and not self.exploded then
+		if self.pilot and IsValid(self.pilot) and not self.pilot.tardis_viewmode and not self.exploded then
 			local p=self.pilot
 			local eye=p:EyeAngles()
 			local fwd=eye:Forward()
@@ -588,12 +630,16 @@ function ENT:PhysicsUpdate( ph )
 	
 	if self.occupants then
 		for k,v in pairs(self.occupants) do
-			v:SetPos(pos+Vector(0,0,50))
+			if not v.tardis_viewmode then
+				v:SetPos(pos+Vector(0,0,50))
+			end
 		end
 	end
 end
 
 function ENT:ToggleFlight()
+	if not (CurTime()>self.flightcur) then return end
+	self.flightcur=CurTime()+1
 	self.flightmode=(not self.flightmode)
 	if self.flightmode then
 		if !self.RotorWash and self.visible then
@@ -626,7 +672,9 @@ function ENT:CreateRotorWash()
 end
 
 function ENT:TogglePhase()
+	local flightphase=tobool(GetConVarNumber("tardis_flightphase"))==true
 	if CurTime()>self.phasecur and not self.exploded then
+		if self.flightmode and not flightphase then return false end
 		self.phasecur=CurTime()+2
 		self.visible=(not self.visible)
 		net.Start("TARDIS-Phase")
@@ -650,6 +698,39 @@ function ENT:TogglePhase()
 	return false
 end
 
+function ENT:ToggleViewmode(ply,deldata)
+	if not (self.interior and IsValid(self.interior)) then return end
+	ply.tardis_viewmode=(not ply.tardis_viewmode)
+	net.Start("TARDIS-SetViewmode")
+		net.WriteBit(tobool(ply.tardis_viewmode))
+	net.Send(ply)
+	if ply.tardis_viewmode then
+		ply:UnSpectate()
+		ply:DrawViewModel(true)
+		ply:DrawWorldModel(true)
+		ply:Spawn()
+		if not deldata and ply.tardisint_pos and ply.tardisint_ang then
+			ply:SetPos(self.interior:LocalToWorld(ply.tardisint_pos))
+			ply:SetEyeAngles(ply.tardisint_ang)
+			ply.tardisint_pos=nil
+			ply.tardisint_ang=nil
+		else
+			ply:SetPos(self.interior:GetPos()+Vector(325,295,122))
+			ply:SetEyeAngles(self.interior:GetAngles()+Angle(0,-140,0))
+		end
+	else
+		if not deldata then
+			ply.tardisint_pos=self.interior:WorldToLocal(ply:GetPos())
+			ply.tardisint_ang=ply:EyeAngles()
+		end
+		ply:Spectate( OBS_MODE_ROAMING )
+		ply:DrawViewModel(false)
+		ply:DrawWorldModel(false)
+		ply:CrosshairDisable(true)
+		ply:StripWeapons()
+	end
+end
+
 function ENT:Think()
 	if CurTime() > self.cur then
 		if self.demat then
@@ -670,9 +751,13 @@ function ENT:Think()
 				self.occupants[k]=nil
 				continue
 			end
-			if CurTime()>self.exitcur and v:KeyDown(IN_USE) then
+			if CurTime()>self.exitcur and v:KeyDown(IN_USE) and not v.tardis_viewmode then
 				self.exitcur=CurTime()+1
 				self:PlayerExit(v)
+			end
+			if CurTime() > (v.tardis_intcur or 0) and self.interior and v:KeyDown(IN_ATTACK2) then
+				v.tardis_intcur=CurTime()+1
+				self:ToggleViewmode(v)
 			end
 		end
 	end
@@ -702,8 +787,7 @@ function ENT:Think()
 		self.phys:Wake()
 	end
 	
-	if CurTime() > self.flightcur and self.pilot and IsValid(self.pilot) and self.pilot:KeyDown(IN_RELOAD) then
-		self.flightcur=CurTime()+1
+	if CurTime() > self.flightcur and self.pilot and IsValid(self.pilot) and self.pilot:KeyDown(IN_RELOAD) and not self.pilot.tardis_viewmode then
 		self:ToggleFlight()
 		if self.flightmode then
 			self.pilot:ChatPrint("Flight-mode activated.")
@@ -712,14 +796,14 @@ function ENT:Think()
 		end
 	end
 	
-	if CurTime() > self.phasecur and self.pilot and IsValid(self.pilot) and self.pilot:KeyDown(IN_ATTACK2) then
+	if CurTime() > self.phasecur and self.pilot and IsValid(self.pilot) and self.pilot:KeyDown(IN_WALK) and not self.pilot.tardis_viewmode then
 		local success=self:TogglePhase()
 		if success then
 			self.pilot:ChatPrint("TARDIS phasing.")
 		end
 	end
 	
-	if not self.moving and self.pilot and IsValid(self.pilot) and self.pilot:KeyDown(IN_ATTACK) then
+	if not self.moving and self.pilot and IsValid(self.pilot) and self.pilot:KeyDown(IN_ATTACK) and not self.pilot.tardis_viewmode then
 		if self.pilot.linked_tardis and self.pilot.linked_tardis==self and self.pilot.tardis_vec and self.pilot.tardis_ang then
 			self:Go(self.pilot.tardis_vec, self.pilot.tardis_ang)
 			self.pilot.tardis_vec=nil
