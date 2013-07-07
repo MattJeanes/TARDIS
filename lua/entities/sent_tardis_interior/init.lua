@@ -16,6 +16,10 @@ function ENT:Initialize()
 	if (self.phys:IsValid()) then
 		self.phys:EnableMotion(false)
 	end
+	
+	if self.tardis then
+		self:SetNWEntity("TARDIS",self.tardis)
+	end
 end
 
 function ENT:Use( ply )

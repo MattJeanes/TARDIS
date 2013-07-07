@@ -439,6 +439,9 @@ function ENT:Use( ply, caller )
 end
 
 function ENT:PlayerEnter( ply )
+	if ply.tardis then
+		ply.tardis:PlayerExit( ply )
+	end
 	net.Start("Player-SetTARDIS")
 		net.WriteEntity(ply)
 		net.WriteEntity(self)
@@ -508,6 +511,14 @@ function ENT:PlayerExit( ply, angreverse )
 	end
 	if self.pilot and self.pilot==ply then
 		self.pilot=nil
+	end
+	if self.occupants then
+		for k,v in pairs(self.occupants) do
+			if v and IsValid(v) and v:IsPlayer() then
+				self.pilot=v
+				break
+			end
+		end
 	end
 end
 
@@ -638,7 +649,9 @@ function ENT:PhysicsUpdate( ph )
 end
 
 function ENT:ToggleFlight()
-	if not (CurTime()>self.flightcur) then return end
+	if not (CurTime()>self.flightcur) then return false end
+	local flightphase=tobool(GetConVarNumber("tardis_flightphase"))==true
+	if not flightphase and not self.visible then return false end
 	self.flightcur=CurTime()+1
 	self.flightmode=(not self.flightmode)
 	if self.flightmode then
@@ -661,6 +674,7 @@ function ENT:ToggleFlight()
 		net.WriteEntity(self)
 		net.WriteBit(tobool(self.flightmode))
 	net.Broadcast()
+	return true
 end
 
 function ENT:CreateRotorWash()
@@ -709,6 +723,11 @@ function ENT:ToggleViewmode(ply,deldata)
 		ply:DrawViewModel(true)
 		ply:DrawWorldModel(true)
 		ply:Spawn()
+		if ply.weps then
+			for k,v in pairs(ply.weps) do
+				ply:Give(tostring(v))
+			end
+		end
 		if not deldata and ply.tardisint_pos and ply.tardisint_ang then
 			ply:SetPos(self.interior:LocalToWorld(ply.tardisint_pos))
 			ply:SetEyeAngles(ply.tardisint_ang)
@@ -722,6 +741,10 @@ function ENT:ToggleViewmode(ply,deldata)
 		if not deldata then
 			ply.tardisint_pos=self.interior:WorldToLocal(ply:GetPos())
 			ply.tardisint_ang=ply:EyeAngles()
+		end
+		ply.weps={}
+		for k,v in pairs(ply:GetWeapons()) do
+			table.insert(ply.weps, v:GetClass())
 		end
 		ply:Spectate( OBS_MODE_ROAMING )
 		ply:DrawViewModel(false)
@@ -755,7 +778,7 @@ function ENT:Think()
 				self.exitcur=CurTime()+1
 				self:PlayerExit(v)
 			end
-			if CurTime() > (v.tardis_intcur or 0) and self.interior and v:KeyDown(IN_ATTACK2) then
+			if CurTime() > (v.tardis_intcur or 0) and self.interior and v:KeyDown(IN_WALK) then
 				v.tardis_intcur=CurTime()+1
 				self:ToggleViewmode(v)
 			end
@@ -788,15 +811,17 @@ function ENT:Think()
 	end
 	
 	if CurTime() > self.flightcur and self.pilot and IsValid(self.pilot) and self.pilot:KeyDown(IN_RELOAD) and not self.pilot.tardis_viewmode then
-		self:ToggleFlight()
-		if self.flightmode then
-			self.pilot:ChatPrint("Flight-mode activated.")
-		else
-			self.pilot:ChatPrint("Flight-mode deactivated.")
+		local success=self:ToggleFlight()
+		if success then
+			if self.flightmode then
+				self.pilot:ChatPrint("Flight-mode activated.")
+			else
+				self.pilot:ChatPrint("Flight-mode deactivated.")
+			end
 		end
 	end
 	
-	if CurTime() > self.phasecur and self.pilot and IsValid(self.pilot) and self.pilot:KeyDown(IN_WALK) and not self.pilot.tardis_viewmode then
+	if CurTime() > self.phasecur and self.pilot and IsValid(self.pilot) and self.pilot:KeyDown(IN_ATTACK2) and not self.pilot.tardis_viewmode then
 		local success=self:TogglePhase()
 		if success then
 			self.pilot:ChatPrint("TARDIS phasing.")

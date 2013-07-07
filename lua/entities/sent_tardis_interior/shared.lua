@@ -20,24 +20,22 @@ local function CanTouch(e)
 	end
 end
 
-hook.Add("PhysgunPickup", "TARDISInt-StopTouch", function(_,e)
+hook.Add("PhysgunPickup", "TARDISInt-PhysgunPickup", function(_,e)
 	return CanTouch(e)
 end)
 
-hook.Add("OnPhysgunReload", "TARDISInt-StopTouch", function(_,p)
+hook.Add("OnPhysgunReload", "TARDISInt-OnPhysgunReload", function(_,p)
 	local e = p:GetEyeTraceNoCursor().Entity
 	return CanTouch(e)
 end)
 
-hook.Add("CanTool", "TARDISInt-StopTouch", function(_,tr)
-	local e=tr.Entity
-	return CanTouch(e)
+hook.Add("CanTool", "TARDISInt-CanTool", function(_,tr,mode)
+	if mode=="remover" or mode=="ignite" then
+		local e=tr.Entity
+		return CanTouch(e)
+	end
 end)
 
-hook.Add("CanProperty", "TARDISInt-StopTouch", function(_,_,e)
+hook.Add("CanProperty", "TARDISInt-CanProperty", function(_,_,e)
 	return CanTouch(e)
-end)
-
-hook.Add("PlayerNoClip", "TARDISInt-StopNoclip", function(ply)
-	return (not ply.tardis_viewmode)
 end)

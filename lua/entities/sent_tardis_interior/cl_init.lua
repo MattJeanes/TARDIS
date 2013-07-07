@@ -6,7 +6,7 @@ include('shared.lua')
    Remember, the things you render first will be underneath!
 ---------------------------------------------------------]]
 function ENT:Draw()
-	if LocalPlayer().tardis_viewmode then
+	if LocalPlayer().tardis_viewmode and self:GetNWEntity("TARDIS",NULL)==LocalPlayer().tardis then
 		self:DrawModel()
 		if WireLib then
 			Wire_Render(self)
