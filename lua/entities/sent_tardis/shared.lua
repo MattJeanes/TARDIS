@@ -14,5 +14,5 @@ ENT.AdminSpawnable	= true
 ENT.RenderGroup = RENDERGROUP_TRANSLUCENT
 ENT.Category		= "Doctor Who"
 
-CreateConVar("tardis_takedamage", "1", {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_SERVER_CAN_EXECUTE, FCVAR_REPLICATED})
-CreateConVar("tardis_flightphase", "1", {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_SERVER_CAN_EXECUTE, FCVAR_REPLICATED})
+CreateConVar("tardis_takedamage", "1", {FCVAR_NOTIFY, FCVAR_SERVER_CAN_EXECUTE, FCVAR_REPLICATED})
+CreateConVar("tardis_flightphase", "1", {FCVAR_NOTIFY, FCVAR_SERVER_CAN_EXECUTE, FCVAR_REPLICATED})

@@ -39,3 +39,9 @@ end)
 hook.Add("CanProperty", "TARDISInt-CanProperty", function(_,_,e)
 	return CanTouch(e)
 end)
+
+hook.Add("InitPostEntity", "TARDISInt-InitPostEntity", function()
+	if pewpew and pewpew.NeverEverList then
+		table.insert(pewpew.NeverEverList, "sent_tardis_interior")
+	end
+end)

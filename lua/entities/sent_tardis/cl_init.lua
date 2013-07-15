@@ -158,7 +158,7 @@ function ENT:Think()
 		else
 			self.flightloop2:ChangePitch(100,0.1)
 		end
-	elseif self.flightloop2 and not self.flightmode and LocalPlayer().tardis_viewmode and interior and IsValid(interior) then
+	elseif self.flightloop2 then
 		if self.flightloop2:IsPlaying() then
 			self.flightloop2:Stop()
 		end
@@ -231,7 +231,7 @@ hook.Add("HUDPaint", "TARDIS-DrawHUD", function()
 	local p = LocalPlayer()
 	local tardis = p.tardis
 	if tardis and IsValid(tardis) and (tobool(GetConVarNumber("tardis_takedamage"))==true or tardis.exploded) then
-		local health = tardis.health
+		local health = math.floor(tardis.health)
 		local n=0
 		if health <= 99 then
 			n=20
@@ -240,7 +240,7 @@ hook.Add("HUDPaint", "TARDIS-DrawHUD", function()
 			n=40
 		end
 		draw.RoundedBox( 0, 5, ScrH()-55, 220-n, 50, Color(0, 0, 0, 180) )
-		draw.DrawText("Health: "..math.floor(health).."%","HUDNumber", 15, ScrH()-52)
+		draw.DrawText("Health: "..health.."%","HUDNumber", 15, ScrH()-52)
 	end
 end)
 

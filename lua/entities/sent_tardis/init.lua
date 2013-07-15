@@ -25,6 +25,23 @@ net.Receive("TARDIS-FlightPhase", function(len,ply)
 		RunConsoleCommand("tardis_flightphase", net.ReadFloat())
 	end
 end)
+
+//make the player name invisible while tardis is invisible
+hook.Add("EV_ShowPlayerName", "TARDIS-EV_ShowPlayerName", function(ply)
+	if ply.tardis and IsValid(ply.tardis) and not ply.tardis.visible then
+		return false
+	end
+end)
+
+//stop pewpew damaging when main damage is off
+hook.Add("PewPew_ShouldDamage","TARDIS-PewPew_ShouldDamage",function(_,ent,dmg)
+	if ent and IsValid(ent) and ent:GetClass()=="sent_tardis" then
+		if ent:ShouldTakeDamage() then
+			ent:TakeHP(dmg/32)
+		end
+		return false
+	end
+end)
  
 function ENT:Initialize()
 	self:SetModel( "models/tardis.mdl" )
@@ -72,11 +89,17 @@ function ENT:Initialize()
 		{200,150},
 	}
 	
+	// this is a bit hacky but from testing it seems to work well
 	local trdata={}
 	trdata.start=self:GetPos()+Vector(0,0,99999999)
 	trdata.endpos=self:GetPos()
 	trdata.filter={self}
-	//trdata.mask=MASK_NPCWORLDSTATIC
+	local trace=util.TraceLine(trdata)
+	//another trace is run here incase the mapper has placed the 3d skybox above the map
+	local trdata={}
+	trdata.start=trace.HitPos+Vector(0,0,-2000)
+	trdata.endpos=trace.HitPos
+	trdata.filter={self}
 	local trace=util.TraceLine(trdata)
 	self.interior=ents.Create("sent_tardis_interior")
 	self.interior:SetPos(trace.HitPos+Vector(0,0,-500))
@@ -96,6 +119,7 @@ function ENT:ShouldTakeDamage()
 end
 
 function ENT:Explode()
+	if not self:ShouldTakeDamage() then return end
 	self.exploded=true
 	self:SetLight(false)
 	
@@ -167,7 +191,7 @@ end
 function ENT:OnTakeDamage(dmginfo)
 	if not self:ShouldTakeDamage() then return end
 	local hp=dmginfo:GetDamage()
-	self:TakeHP(hp/8) //takes an 8th of normal damage a player would take
+	self:TakeHP(hp/32) //takes 32th of normal damage a player would take
 end
 
 function ENT:SetLight(on)
