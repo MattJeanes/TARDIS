@@ -71,6 +71,7 @@ function ENT:Initialize()
 	self.visible=true
 	self.phasecur=0
 	self.interiorcur=0
+	self.viewmodecur=0
 	self.occupants={}
 	if WireLib then
 		self.wirepos=Vector(0,0,0)
@@ -186,6 +187,9 @@ end
 function ENT:TakeHP(hp)
 	if not hp or not self:ShouldTakeDamage() then return end
 	self:SetHP(self.health-hp)
+	if self.interior and IsValid(self.interior) then
+		sound.Play("Default.ImpactSoft",self.interior:LocalToWorld(Vector(335, 310, 120)))
+	end
 end
 
 function ENT:OnTakeDamage(dmginfo)
@@ -466,30 +470,27 @@ function ENT:PlayerEnter( ply )
 	if ply.tardis then
 		ply.tardis:PlayerExit( ply )
 	end
+	ply.tardis=self
 	net.Start("Player-SetTARDIS")
 		net.WriteEntity(ply)
 		net.WriteEntity(self)
 	net.Broadcast()
-	ply.tardis=self
-	ply.tardis_viewmode=false
-	ply:Spectate( OBS_MODE_ROAMING )
-	ply:DrawWorldModel(false)
-	ply:DrawViewModel(false)
-	ply.weps={}
-	for k,v in pairs(ply:GetWeapons()) do
-		table.insert(ply.weps, v:GetClass())
-	end
-	ply:StripWeapons()
-	ply:CrosshairDisable(true)
+	net.Start("TARDIS-SetViewmode")
+		net.WriteBit(true)
+	net.Send(ply)
+	ply:SetPos(self.interior:GetPos()+Vector(335,305,123))
+	local ang=(ply:EyeAngles()-self:GetAngles())+self.interior:GetAngles()+Angle(0,50,0)
+	ply:SetEyeAngles(Angle(ang.p,ang.y,0))
+	ply.tardis_viewmode=true
 	table.insert(self.occupants,ply)
-	if #self.occupants==1 then
-		self.pilot=ply
-	end
 end
 
 function ENT:OnRemove()
 	if self.occupants then
 		for k,v in pairs(self.occupants) do
+			if not v.tardis_viewmode then
+				self:ToggleViewmode(v,true)
+			end
 			self:PlayerExit(v)
 		end
 	end
@@ -501,11 +502,14 @@ function ENT:OnRemove()
 	end
 end
 
-function ENT:PlayerExit( ply, angreverse )
+function ENT:PlayerExit( ply )
 	net.Start("Player-SetTARDIS")
 		net.WriteEntity(ply)
 		net.WriteEntity(NULL)
 	net.Broadcast()
+	net.Start("TARDIS-SetViewmode")
+		net.WriteBit(false)
+	net.Send(ply)
 	ply.tardis=nil
 	ply.tardis_viewmode=false
 	ply.tardisint_pos=nil
@@ -513,46 +517,32 @@ function ENT:PlayerExit( ply, angreverse )
 	net.Start("TARDIS-SetViewmode")
 		net.WriteBit(tobool(ply.tardis_viewmode))
 	net.Send(ply)
-	ply:UnSpectate()
-	ply:DrawViewModel(true)
-	ply:DrawWorldModel(true)
-	ply:Spawn()
-	ply:CrosshairDisable(false)
-	ply:CrosshairEnable(true)
-	if ply.weps then
-		for k,v in pairs(ply.weps) do
-			ply:Give(tostring(v))
-		end
-	end
-	ply:SetPos(self:GetPos()+self:GetForward()*(angreverse and 50 or 75))
-	ply:SetEyeAngles((self:GetPos()-ply:GetPos()):Angle()+(angreverse and Angle(0,180,0) or Angle(0,0,0))) // make you face the tardis
+	ply:SetPos(self:GetPos()+self:GetForward()*55)
+	local ang=ply:EyeAngles()+(self:GetPos()-ply:GetPos()):Angle()+Angle(0,130,0)
+	ply:SetEyeAngles(Angle(ang.p,ang.y,0))
 	if self.occupants then
 		for k,v in pairs(self.occupants) do
 			if v==ply then
-				self.occupants[k]=nil
+				table.remove(self.occupants,k)
 			end
 		end
 	end
-	if self.pilot and self.pilot==ply then
+	if ply==self.pilot then // not sure how, but failsafes
 		self.pilot=nil
-	end
-	if self.occupants then
-		for k,v in pairs(self.occupants) do
-			if v and IsValid(v) and v:IsPlayer() then
-				self.pilot=v
-				break
-			end
-		end
 	end
 end
 
 hook.Add("PlayerSpawn", "TARDIS_PlayerSpawn", function( ply )
-	timer.Simple(0.1,function()
-		local tardis=ply.tardis
-		if tardis and IsValid(tardis) and ply.tardis_mode then
+	local tardis=ply.tardis
+	if tardis and IsValid(tardis) then
+		if ply.tardis_viewmode and tardis.interior and IsValid(tardis.interior) then
+			ply:SetPos(tardis.interior:GetPos()+Vector(325,295,122))
+			local ang=tardis.interior:GetAngles()+Angle(0,-140,0)
+			ply:SetEyeAngles(Angle(ang.p,ang.y,0))
+		else
 			tardis:PlayerExit(ply)
 		end
-	end)
+	end
 end)
 
 hook.Add("PlayerInitialSpawn", "TARDIS_PlayerInitialSpawn", function( ply )
@@ -666,9 +656,16 @@ function ENT:PhysicsUpdate( ph )
 	if self.occupants then
 		for k,v in pairs(self.occupants) do
 			if not v.tardis_viewmode then
-				v:SetPos(pos+Vector(0,0,50))
+				v:SetPos(pos)
 			end
 		end
+	end
+end
+
+function ENT:PhysicsCollide( data, physobj )
+	if self.interior and IsValid(self.interior) and data.Speed and data.Speed>200 then
+		local n=math.Clamp(data.Speed*0.01,0,16)
+		util.ScreenShake(self.interior:GetPos(),n,5,0.5,700)
 	end
 end
 
@@ -738,7 +735,7 @@ end
 
 function ENT:ToggleViewmode(ply,deldata)
 	if not (self.interior and IsValid(self.interior)) then return end
-	ply.tardis_viewmode=(not ply.tardis_viewmode)
+	ply.tardis_viewmode=(not ply.tardis_viewmode) // true = inside, false = third-person view
 	net.Start("TARDIS-SetViewmode")
 		net.WriteBit(tobool(ply.tardis_viewmode))
 	net.Send(ply)
@@ -759,7 +756,31 @@ function ENT:ToggleViewmode(ply,deldata)
 			ply.tardisint_ang=nil
 		else
 			ply:SetPos(self.interior:GetPos()+Vector(325,295,122))
-			ply:SetEyeAngles(self.interior:GetAngles()+Angle(0,-140,0))
+			local ang=self.interior:GetAngles()+Angle(0,-140,0)
+			ply:SetEyeAngles(Angle(ang.p,ang.y,0))
+		end
+		local waspilot=false
+		if self.pilot and IsValid(self.pilot) and self.pilot==ply then
+			self.pilot=nil
+			waspilot=true
+		end
+		local tbl={}
+		for k,v in pairs(self.occupants) do
+			if not v.tardis_viewmode then
+				table.insert(tbl,v)
+			end
+		end
+		if #tbl>0 then
+			local newpilot=tbl[math.random(#tbl)]
+			if newpilot and IsValid(newpilot) and newpilot:IsPlayer() then
+				self.pilot=newpilot
+				self.pilot:ChatPrint("You are now the pilot.")
+				ply:ChatPrint(self.pilot:Nick().." is now the pilot.")
+			elseif waspilot then
+				ply:ChatPrint("You are no longer the pilot.")
+			end
+		elseif waspilot then
+			ply:ChatPrint("You are no longer the pilot.")
 		end
 	else
 		if not deldata then
@@ -775,6 +796,12 @@ function ENT:ToggleViewmode(ply,deldata)
 		ply:DrawWorldModel(false)
 		ply:CrosshairDisable(true)
 		ply:StripWeapons()
+		if self.pilot then
+			ply:ChatPrint(self.pilot:Nick().." is the pilot.")
+		else
+			self.pilot=ply
+			self.pilot:ChatPrint("You are now the pilot.")
+		end
 	end
 end
 
@@ -798,13 +825,9 @@ function ENT:Think()
 				self.occupants[k]=nil
 				continue
 			end
-			if CurTime()>self.exitcur and v:KeyDown(IN_USE) and not v.tardis_viewmode then
-				self.exitcur=CurTime()+1
-				self:PlayerExit(v)
-			end
-			if CurTime() > (v.tardis_intcur or 0) and self.interior and v:KeyDown(IN_WALK) then
-				v.tardis_intcur=CurTime()+1
+			if CurTime()>self.viewmodecur and v:KeyDown(IN_USE) and not v.tardis_viewmode then
 				self:ToggleViewmode(v)
+				self.viewmodecur=CurTime()+1
 			end
 		end
 	end
@@ -835,21 +858,11 @@ function ENT:Think()
 	end
 	
 	if CurTime() > self.flightcur and self.pilot and IsValid(self.pilot) and self.pilot:KeyDown(IN_RELOAD) and not self.pilot.tardis_viewmode then
-		local success=self:ToggleFlight()
-		if success then
-			if self.flightmode then
-				self.pilot:ChatPrint("Flight-mode activated.")
-			else
-				self.pilot:ChatPrint("Flight-mode deactivated.")
-			end
-		end
+		self:ToggleFlight()
 	end
 	
 	if CurTime() > self.phasecur and self.pilot and IsValid(self.pilot) and self.pilot:KeyDown(IN_ATTACK2) and not self.pilot.tardis_viewmode then
-		local success=self:TogglePhase()
-		if success then
-			self.pilot:ChatPrint("TARDIS phasing.")
-		end
+		self:TogglePhase()
 	end
 	
 	if not self.moving and self.pilot and IsValid(self.pilot) and self.pilot:KeyDown(IN_ATTACK) and not self.pilot.tardis_viewmode then

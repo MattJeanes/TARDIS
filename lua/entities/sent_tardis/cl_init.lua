@@ -94,6 +94,10 @@ function ENT:OnRemove()
 		self.flightloop:Stop()
 		self.flightloop=nil
 	end
+	if self.flightloop2 then
+		self.flightloop2:Stop()
+		self.flightloop2=nil
+	end
 end
 
 function ENT:Think()
@@ -239,8 +243,12 @@ hook.Add("HUDPaint", "TARDIS-DrawHUD", function()
 		if health <= 9 then
 			n=40
 		end
+		local col=Color(255,255,255)
+		if health <= 20 then
+			col=Color(255,0,0)
+		end
 		draw.RoundedBox( 0, 5, ScrH()-55, 220-n, 50, Color(0, 0, 0, 180) )
-		draw.DrawText("Health: "..health.."%","HUDNumber", 15, ScrH()-52)
+		draw.DrawText("Health: "..health.."%","HUDNumber", 15, ScrH()-52, col)
 	end
 end)
 
