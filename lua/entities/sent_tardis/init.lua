@@ -488,10 +488,8 @@ function ENT:PlayerEnter( ply )
 	ply:SetPos(self.interior:GetPos()+Vector(300,295,-79))
 	local ang=(ply:EyeAngles()-self:GetAngles())+self.interior:GetAngles()+Angle(0,70,0)
 	ply:SetEyeAngles(Angle(ang.p,ang.y,0))
-	ply.tardis_entermode=false
 	table.insert(self.occupants,ply)
 	if ply:KeyDown(IN_WALK) then
-		ply.tardis_entermode=true
 		self:ToggleViewmode(ply,true)
 		self.viewmodecur=CurTime()+1
 	end
@@ -524,7 +522,6 @@ function ENT:PlayerExit( ply )
 	net.Send(ply)
 	ply.tardis=nil
 	ply.tardis_viewmode=false
-	ply.tardis_entermode=nil
 	ply.tardisint_pos=nil
 	ply.tardisint_ang=nil
 	net.Start("TARDIS-SetViewmode")
@@ -845,7 +842,7 @@ function ENT:Think()
 			if CurTime()>self.viewmodecur and v:KeyDown(IN_USE) and not v.tardis_viewmode then
 				self:ToggleViewmode(v)
 				self.viewmodecur=CurTime()+1
-				if v.tardis_entermode then
+				if v:KeyDown(IN_WALK) then
 					self:PlayerExit(v)
 					self.exitcur=CurTime()+1
 				end
