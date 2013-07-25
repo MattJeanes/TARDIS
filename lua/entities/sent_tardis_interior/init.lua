@@ -5,7 +5,7 @@ include('shared.lua')
 util.AddNetworkString("TARDIS-SetViewmode")
  
 function ENT:Initialize()
-	self:SetModel( "models/The_Sniper_9/DoctorWho/Tardis/tardisinteriorsmith.mdl" )
+	self:SetModel( "models/drmatt/tardis/interior.mdl" )
 	// cheers to doctor who team for the model
 	self:PhysicsInit( SOLID_VPHYSICS )
 	self:SetMoveType( MOVETYPE_NONE )
@@ -27,12 +27,12 @@ end
 function ENT:Explode()
 	self.exploded=true
 	self.fire = ents.Create("env_fire_trail")
-	self.fire:SetPos(self:LocalToWorld(Vector(335, 310, 200)))
+	self.fire:SetPos(self:LocalToWorld(Vector(0,0,0)))
 	self.fire:Spawn()
 	self.fire:SetParent(self)
 	
 	local explode = ents.Create("env_explosion")
-	explode:SetPos(self:LocalToWorld(Vector(-25,-3,220)))
+	explode:SetPos(self:LocalToWorld(Vector(0,0,50)))
 	explode:Spawn()
 	explode:Fire("Explode",0)
 end
@@ -51,7 +51,7 @@ end
 function ENT:Use( ply )
 	if self.tardis and IsValid(self.tardis) and ply.tardis and IsValid(ply.tardis) and ply.tardis==self.tardis and ply.tardis_viewmode then
 		if CurTime()>self.tardis.exitcur then
-			local pos=Vector(335, 310, 120)
+			local pos=Vector(300,295,-79)
 			local pos2=self:WorldToLocal(ply:GetPos())
 			local distance=pos:Distance(pos2)
 			if distance < 25 then
@@ -61,10 +61,10 @@ function ENT:Use( ply )
 		end
 		
 		if CurTime()>self.tardis.viewmodecur then
-			local pos=Vector(-28,-3,210)
+			local pos=Vector(0,0,0)
 			local pos2=self:WorldToLocal(ply:GetPos())
 			local distance=pos:Distance(pos2)
-			if distance < 100 then
+			if distance < 110 then
 				self.tardis:ToggleViewmode(ply)
 				self.tardis.viewmodecur=CurTime()+1
 			end

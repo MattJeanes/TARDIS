@@ -98,12 +98,13 @@ function ENT:Initialize()
 	local trace=util.TraceLine(trdata)
 	//another trace is run here incase the mapper has placed the 3d skybox above the map
 	local trdata={}
-	trdata.start=trace.HitPos+Vector(0,0,-2000)
+	trdata.start=trace.HitPos+Vector(0,0,-1000)
 	trdata.endpos=trace.HitPos
 	trdata.filter={self}
 	local trace=util.TraceLine(trdata)
+	//this trace can sometimes fail if the map has a low skybox
 	self.interior=ents.Create("sent_tardis_interior")
-	self.interior:SetPos(trace.HitPos+Vector(0,0,-500))
+	self.interior:SetPos(trace.HitPos+Vector(0,0,-600))
 	self.interior.tardis=self
 	self.interior:Spawn()
 	self.interior:Activate()
@@ -236,6 +237,11 @@ function ENT:Teleport()
 		self:SetPos(self.vec)
 		if self.ang then
 			self:SetAngles(self.ang)
+		end
+		for k,v in pairs(player.GetAll()) do
+			if self:GetPos():Distance(v:GetPos()) < 45 then
+				self:PlayerEnter(v)
+			end
 		end
 		if self.attachedents then
 			for k,v in pairs(self.attachedents) do
@@ -456,18 +462,18 @@ end
  
 function ENT:Use( ply, caller )
 	if CurTime()>self.exitcur then
-		if self.occupants then
-			for k,v in pairs(self.occupants) do
-				if ply==v then return end
-			end
-		end
 		self.exitcur=CurTime()+1
 		self:PlayerEnter(ply)
 	end
 end
 
 function ENT:PlayerEnter( ply )
-	if ply.tardis then
+	if self.occupants then
+		for k,v in pairs(self.occupants) do
+			if ply==v then return end
+		end
+	end
+	if ply.tardis and IsValid(ply.tardis) then
 		ply.tardis:PlayerExit( ply )
 	end
 	ply.tardis=self
@@ -475,14 +481,20 @@ function ENT:PlayerEnter( ply )
 		net.WriteEntity(ply)
 		net.WriteEntity(self)
 	net.Broadcast()
+	ply.tardis_viewmode=true
 	net.Start("TARDIS-SetViewmode")
 		net.WriteBit(true)
 	net.Send(ply)
-	ply:SetPos(self.interior:GetPos()+Vector(335,305,123))
-	local ang=(ply:EyeAngles()-self:GetAngles())+self.interior:GetAngles()+Angle(0,50,0)
+	ply:SetPos(self.interior:GetPos()+Vector(300,295,-79))
+	local ang=(ply:EyeAngles()-self:GetAngles())+self.interior:GetAngles()+Angle(0,70,0)
 	ply:SetEyeAngles(Angle(ang.p,ang.y,0))
-	ply.tardis_viewmode=true
+	ply.tardis_entermode=false
 	table.insert(self.occupants,ply)
+	if ply:KeyDown(IN_WALK) then
+		ply.tardis_entermode=true
+		self:ToggleViewmode(ply,true)
+		self.viewmodecur=CurTime()+1
+	end
 end
 
 function ENT:OnRemove()
@@ -512,13 +524,14 @@ function ENT:PlayerExit( ply )
 	net.Send(ply)
 	ply.tardis=nil
 	ply.tardis_viewmode=false
+	ply.tardis_entermode=nil
 	ply.tardisint_pos=nil
 	ply.tardisint_ang=nil
 	net.Start("TARDIS-SetViewmode")
 		net.WriteBit(tobool(ply.tardis_viewmode))
 	net.Send(ply)
 	ply:SetPos(self:GetPos()+self:GetForward()*55)
-	local ang=ply:EyeAngles()+(self:GetPos()-ply:GetPos()):Angle()+Angle(0,130,0)
+	local ang=ply:EyeAngles()+(self:GetPos()-ply:GetPos()):Angle()+Angle(0,110,0)
 	ply:SetEyeAngles(Angle(ang.p,ang.y,0))
 	if self.occupants then
 		for k,v in pairs(self.occupants) do
@@ -536,8 +549,8 @@ hook.Add("PlayerSpawn", "TARDIS_PlayerSpawn", function( ply )
 	local tardis=ply.tardis
 	if tardis and IsValid(tardis) then
 		if ply.tardis_viewmode and tardis.interior and IsValid(tardis.interior) then
-			ply:SetPos(tardis.interior:GetPos()+Vector(325,295,122))
-			local ang=tardis.interior:GetAngles()+Angle(0,-140,0)
+			ply:SetPos(tardis.interior:GetPos()+Vector(300,295,-79))
+			local ang=tardis.interior:GetAngles()+Angle(0,-110,0)
 			ply:SetEyeAngles(Angle(ang.p,ang.y,0))
 		else
 			tardis:PlayerExit(ply)
@@ -734,7 +747,6 @@ function ENT:TogglePhase()
 end
 
 function ENT:ToggleViewmode(ply,deldata)
-	if not (self.interior and IsValid(self.interior)) then return end
 	ply.tardis_viewmode=(not ply.tardis_viewmode) // true = inside, false = third-person view
 	net.Start("TARDIS-SetViewmode")
 		net.WriteBit(tobool(ply.tardis_viewmode))
@@ -749,38 +761,43 @@ function ENT:ToggleViewmode(ply,deldata)
 				ply:Give(tostring(v))
 			end
 		end
-		if not deldata and ply.tardisint_pos and ply.tardisint_ang then
-			ply:SetPos(self.interior:LocalToWorld(ply.tardisint_pos))
-			ply:SetEyeAngles(ply.tardisint_ang)
-			ply.tardisint_pos=nil
-			ply.tardisint_ang=nil
-		else
-			ply:SetPos(self.interior:GetPos()+Vector(325,295,122))
-			local ang=self.interior:GetAngles()+Angle(0,-140,0)
-			ply:SetEyeAngles(Angle(ang.p,ang.y,0))
-		end
-		local waspilot=false
 		if self.pilot and IsValid(self.pilot) and self.pilot==ply then
 			self.pilot=nil
-			waspilot=true
-		end
-		local tbl={}
-		for k,v in pairs(self.occupants) do
-			if not v.tardis_viewmode then
-				table.insert(tbl,v)
+			local tbl={}
+			for k,v in pairs(self.occupants) do
+				if not v.tardis_viewmode then
+					table.insert(tbl,v)
+				end
 			end
-		end
-		if #tbl>0 then
-			local newpilot=tbl[math.random(#tbl)]
-			if newpilot and IsValid(newpilot) and newpilot:IsPlayer() then
-				self.pilot=newpilot
-				self.pilot:ChatPrint("You are now the pilot.")
+			if #tbl>0 then
+				local newpilot=tbl[math.random(#tbl)]
+				if newpilot and IsValid(newpilot) and newpilot:IsPlayer() then
+					self.pilot=newpilot
+					self.pilot:ChatPrint("You are now the pilot.")
+					for k,v in pairs(tbl) do
+						if not (v==self.pilot) then
+							v:ChatPrint(self.pilot:Nick().." is now the pilot.")
+						end
+					end
+				end
 				ply:ChatPrint(self.pilot:Nick().." is now the pilot.")
-			elseif waspilot then
+			else
 				ply:ChatPrint("You are no longer the pilot.")
 			end
-		elseif waspilot then
-			ply:ChatPrint("You are no longer the pilot.")
+		end
+		if self.interior and IsValid(self.interior) then
+			if not deldata and ply.tardisint_pos and ply.tardisint_ang then
+				ply:SetPos(self.interior:LocalToWorld(ply.tardisint_pos))
+				ply:SetEyeAngles(ply.tardisint_ang)
+				ply.tardisint_pos=nil
+				ply.tardisint_ang=nil
+			else
+				ply:SetPos(self.interior:GetPos()+Vector(300,295,-79))
+				local ang=self.interior:GetAngles()+Angle(0,-110,0)
+				ply:SetEyeAngles(Angle(ang.p,ang.y,0))
+			end
+		else
+			self:PlayerExit(ply)
 		end
 	else
 		if not deldata then
@@ -828,6 +845,10 @@ function ENT:Think()
 			if CurTime()>self.viewmodecur and v:KeyDown(IN_USE) and not v.tardis_viewmode then
 				self:ToggleViewmode(v)
 				self.viewmodecur=CurTime()+1
+				if v.tardis_entermode then
+					self:PlayerExit(v)
+					self.exitcur=CurTime()+1
+				end
 			end
 		end
 	end

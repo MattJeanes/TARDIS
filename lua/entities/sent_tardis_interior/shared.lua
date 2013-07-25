@@ -41,7 +41,20 @@ hook.Add("CanProperty", "TARDISInt-CanProperty", function(_,_,e)
 end)
 
 hook.Add("InitPostEntity", "TARDISInt-InitPostEntity", function()
-	if pewpew and pewpew.NeverEverList then
+	if pewpew and pewpew.NeverEverList then // nice and easy, blocks pewpew from damaging the interior.
 		table.insert(pewpew.NeverEverList, "sent_tardis_interior")
+	end
+	if ACF and ACF_Check then // this one is a bit hacky, but ACFs internal code is shockingly bad.
+		local original=ACF_Check
+		function ACF_Check(e)
+			if IsValid(e) then
+				local class=e:GetClass()
+				if class=="sent_tardis_interior" then
+					if not e.ACF then ACF_Activate(e) end
+					return false
+				end
+			end
+			return original(e)
+		end
 	end
 end)

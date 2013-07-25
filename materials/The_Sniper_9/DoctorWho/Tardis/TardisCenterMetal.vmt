@@ -1,7 +1,0 @@
-"VertexlitGeneric"
-{
-	"$basetexture" "The_Sniper_9/DoctorWho/Tardis/TardisCenterMetal"
-	"$bumpmap" "The_Sniper_9/DoctorWho/Tardis/TardisCenterMetal_NRM"
-	"$translucent" 1
-	"$surfaceprop" "Metal"
-}

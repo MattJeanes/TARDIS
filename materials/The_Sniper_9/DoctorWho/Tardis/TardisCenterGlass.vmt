@@ -1,7 +1,0 @@
-"VertexlitGeneric"
-{
-	"$basetexture" "The_Sniper_9/DoctorWho/Tardis/TardisCenterGlass"
-	"$translucent" 1
-	"$selfillum" 0.5
-	"$surfaceprop" "Glass"
-}

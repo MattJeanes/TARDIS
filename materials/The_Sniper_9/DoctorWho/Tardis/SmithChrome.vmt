@@ -1,8 +1,0 @@
-"VertexlitGeneric"
-{
-	"$basetexture" "The_Sniper_9/DoctorWho/Tardis/SmithChrome"
-	"$surfaceprop" "Metal"
- 	"$envmap" env_cubemap
-    	"$envmapcontrast" 0.9
-    	"$envmapsaturation" 0.2
-}

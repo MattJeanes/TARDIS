@@ -1,7 +1,0 @@
-"VertexlitGeneric"
-{
-	"$basetexture" "The_Sniper_9/DoctorWho/Tardis/TardisCenter"
-	"$bumpmap" "The_Sniper_9/DoctorWho/Tardis/TardisCenter_NRM"
-	"$selfillum" 1
-	"$surfaceprop" "Concrete"
-}
