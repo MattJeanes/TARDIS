@@ -208,7 +208,7 @@ net.Receive("TARDIS-Go", function()
 			if interior and IsValid(interior) and LocalPlayer().tardis_viewmode then
 				interior:EmitSound("tardis/full.wav", 100, pitch)
 			end
-		else
+		elseif IsValid(tardis) and tardis.visible then
 			sound.Play("tardis/demat.wav", net.ReadVector(), 75, pitch)
 			sound.Play("tardis/mat.wav", net.ReadVector(), 75, pitch)
 		end
