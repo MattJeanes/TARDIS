@@ -470,7 +470,7 @@ end
 function ENT:PlayerEnter( ply )
 	if self.occupants then
 		for k,v in pairs(self.occupants) do
-			if ply==v then return end
+			if ply==v and not ply.tardis_viewmode then return end
 		end
 	end
 	if ply.tardis and IsValid(ply.tardis) then
