@@ -2,4 +2,5 @@
 {
 	"$basetexture" "models/drmatt/tardis/Tardis_Console_I23"
 	"$translucent" 1
+	"$nodecal" "1"
 }

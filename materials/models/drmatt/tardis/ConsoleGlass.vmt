@@ -2,4 +2,5 @@
 {
 	"$basetexture" "models/drmatt/tardis/ConsoleGlass"
 	"$translucent" "1"
+	"$nodecal" "1"
 }

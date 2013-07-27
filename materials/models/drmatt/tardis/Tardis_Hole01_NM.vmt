@@ -1,4 +1,5 @@
 "VertexLitGeneric"
 {
 	"$basetexture" "models/drmatt/tardis/Tardis_Hole01_NM"
+	"$nodecal" "1"
 }

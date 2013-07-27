@@ -2,4 +2,5 @@
 {
 	"$basetexture" "models/drmatt/tardis/Glass"
 	"$translucent" "1"
+	"$nodecal" "1"
 }

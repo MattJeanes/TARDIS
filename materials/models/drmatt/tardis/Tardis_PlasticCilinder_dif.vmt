@@ -1,4 +1,5 @@
 "VertexLitGeneric"
 {
 	"$basetexture" "models/drmatt/tardis/Tardis_PlasticCilinder_dif"
+	"$nodecal" "1"
 }

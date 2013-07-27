@@ -1,4 +1,5 @@
 "VertexLitGeneric"
 {
 	"$basetexture" "models/drmatt/tardis/TardisMetal03_Dif"
+	"$nodecal" "1"
 }
