@@ -227,6 +227,10 @@ end)
 
 net.Receive("TARDIS-SetViewmode", function()
 	LocalPlayer().tardis_viewmode=tobool(net.ReadBit())
+	
+	if LocalPlayer().tardis_viewmode and GetConVarNumber("r_rootlod")>0 then
+		Derma_Query("The TARDIS Interior requires model detail on high, set now?", "TARDIS Interior", "Yes", function() RunConsoleCommand("r_rootlod", 0) end, "No", function() end)
+	end
 end)
 
 surface.CreateFont( "HUDNumber", {font="Trebuchet MS", size=40, weight=900} )
