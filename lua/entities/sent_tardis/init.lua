@@ -605,7 +605,7 @@ function ENT:PhysicsUpdate( ph )
 		local ri2=self:GetRight()
 		local fwd2=self:GetForward()
 		local ang=self:GetAngles()
-		local force=20
+		local force=15
 		local vforce=5
 		local tilt=0
 		

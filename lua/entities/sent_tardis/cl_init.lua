@@ -323,6 +323,18 @@ hook.Add("PopulateToolMenu", "TARDIS-PopulateToolMenu", function()
 		checkBox:SetValue( GetConVarNumber( "tardis_matsound" ) )
 		checkBox:SetConVar( "tardis_matsound" )
 		panel:AddItem(checkBox)
+		
+		local checkBox = vgui.Create( "DCheckBoxLabel" ) 
+		checkBox:SetText( "Cloisterbell sound" ) 
+		checkBox:SetValue( GetConVarNumber( "tardisint_cloisterbell" ) )
+		checkBox:SetConVar( "tardisint_cloisterbell" )
+		panel:AddItem(checkBox)
+		
+		local checkBox = vgui.Create( "DCheckBoxLabel" ) 
+		checkBox:SetText( "Interior idle sounds" ) 
+		checkBox:SetValue( GetConVarNumber( "tardisint_idlesound" ) )
+		checkBox:SetConVar( "tardisint_idlesound" )
+		panel:AddItem(checkBox)
 	end)
 end)
 
