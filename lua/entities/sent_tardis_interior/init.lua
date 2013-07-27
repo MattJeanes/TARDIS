@@ -35,16 +35,14 @@ function ENT:Explode()
 	explode:SetPos(self:LocalToWorld(Vector(0,0,50)))
 	explode:Spawn()
 	explode:Fire("Explode",0)
+	
+	self:SetColor(Color(255,233,200))
 end
 
 function ENT:OnRemove()
 	if self.fire then
 		self.fire:Remove()
 		self.fire=nil
-	end
-	if self.cloisterbell then
-		self.cloisterbell:Stop()
-		self.cloisterbell=nil
 	end
 end
 
@@ -69,6 +67,12 @@ function ENT:Use( ply )
 				self.tardis.viewmodecur=CurTime()+1
 			end
 		end
+	end
+end
+
+function ENT:OnTakeDamage(dmginfo)
+	if self.tardis and IsValid(self.tardis) then
+		self.tardis:OnTakeDamage(dmginfo)
 	end
 end
 

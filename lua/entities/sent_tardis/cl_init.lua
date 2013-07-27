@@ -85,7 +85,7 @@ function ENT:Initialize()
 	self.phasedraw=0
 	self.mins = self:OBBMins()
 	self.maxs = self:OBBMaxs()
-	self.wiremat = Material( "The_Sniper_9/DoctorWho/Tardis/phase" )
+	self.wiremat = Material( "models/drmatt/tardis/phase" )
 	self.height = self.maxs.z - self.mins.z
 end
 

@@ -1,0 +1,7 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/drmatt/tardis/TARDIS_DF"
+	"$normalmap" "models/drmatt/tardis/TARDIS_DF_NM"
+	"$selfillum" 1
+	"$translucent" 1
+}

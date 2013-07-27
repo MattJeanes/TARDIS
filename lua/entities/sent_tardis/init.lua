@@ -44,7 +44,7 @@ hook.Add("PewPew_ShouldDamage","TARDIS-PewPew_ShouldDamage",function(_,ent,dmg)
 end)
  
 function ENT:Initialize()
-	self:SetModel( "models/tardis.mdl" )
+	self:SetModel( "models/drmatt/tardis/exterior.mdl" )
 	// cheers to doctor who team for the model
 	self:PhysicsInit( SOLID_VPHYSICS )
 	self:SetMoveType( MOVETYPE_VPHYSICS )
@@ -77,7 +77,10 @@ function ENT:Initialize()
 		self.wirepos=Vector(0,0,0)
 		self.wireang=Angle(0,0,0)
 		Wire_CreateInputs(self, { "Demat", "Phase", "Flightmode", "X", "Y", "Z", "XYZ [VECTOR]", "Rot" })
-	end
+		Wire_CreateOutputs(self, { "Health" })
+	end	
+	
+	self:SetHP(100)
 	
 	self.dematvalues={
 		{150,200},
@@ -180,6 +183,9 @@ function ENT:SetHP(hp)
 		net.WriteFloat(hp)
 	net.Broadcast()
 	self.health=hp
+	if WireLib then
+		Wire_TriggerOutput(self, "Health", math.floor(self.health))
+	end
 	if hp==0 then
 		self:Explode()
 	end
@@ -446,7 +452,7 @@ end
 function ENT:SpawnLight()
 	// cheers to 'Doctor Who Dev Team' for this
 	local light = ents.Create("env_sprite")
-	light:SetPos(self:GetPos() + self:GetUp() * 113)
+	light:SetPos(self:GetPos() + self:GetUp() * 115)
 	light:SetAngles(self:GetAngles())
 	light:SetKeyValue("renderfx", 4)
 	light:SetKeyValue("rendermode", 3)
@@ -600,7 +606,7 @@ function ENT:PhysicsUpdate( ph )
 		local fwd2=self:GetForward()
 		local ang=self:GetAngles()
 		local force=20
-		local vforce=7.5
+		local vforce=5
 		local tilt=0
 		
 		if self.pilot and IsValid(self.pilot) and not self.pilot.tardis_viewmode and not self.exploded then
@@ -650,7 +656,7 @@ function ENT:PhysicsUpdate( ph )
 		if not self.exploded then
 			local twist=Vector(0,0,ph:GetVelocity():Length()/400)
 			ph:AddAngleVelocity(twist)
-			local angbrake=ph:GetAngleVelocity()*-0.01
+			local angbrake=ph:GetAngleVelocity()*-0.015
 			ph:AddAngleVelocity(angbrake)
 			local brake=self:GetVelocity()*-0.01
 			ph:AddVelocity(brake)
