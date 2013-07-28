@@ -8,7 +8,7 @@ function ENT:Initialize()
 	self:SetModel( "models/drmatt/tardis/interior.mdl" )
 	// cheers to doctor who team for the model
 	self:PhysicsInit( SOLID_VPHYSICS )
-	self:SetMoveType( MOVETYPE_NONE )
+	self:SetMoveType( MOVETYPE_VPHYSICS )
 	self:SetSolid( SOLID_VPHYSICS )
 	self:SetRenderMode( RENDERMODE_TRANSALPHA )
 	
@@ -22,6 +22,25 @@ function ENT:Initialize()
 	end
 	
 	self.viewcur=0
+	
+	if WireLib then
+		Wire_CreateInputs(self, { "Demat", "Phase", "Flightmode", "X", "Y", "Z", "XYZ [VECTOR]", "Rot" })
+		Wire_CreateOutputs(self, { "Health" })
+	end
+end
+
+if WireLib then
+	function ENT:TriggerInput(k,v)
+		if self.tardis and IsValid(self.tardis) then
+			self.tardis:TriggerInput(k,v)
+		end
+	end
+end
+
+function ENT:SetHP(hp)
+	if WireLib then
+		Wire_TriggerOutput(self, "Health", math.floor(hp))
+	end
 end
 
 function ENT:Explode()

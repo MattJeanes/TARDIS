@@ -78,9 +78,7 @@ function ENT:Initialize()
 		self.wireang=Angle(0,0,0)
 		Wire_CreateInputs(self, { "Demat", "Phase", "Flightmode", "X", "Y", "Z", "XYZ [VECTOR]", "Rot" })
 		Wire_CreateOutputs(self, { "Health" })
-	end	
-	
-	self:SetHP(100)
+	end
 	
 	self.dematvalues={
 		{150,200},
@@ -112,6 +110,7 @@ function ENT:Initialize()
 	self.interior:Spawn()
 	self.interior:Activate()
 	self:SetNWEntity("interior",self.interior)
+	self:SetHP(100)
 	
 	net.Start("TARDIS-SetInterior")
 		net.WriteEntity(self)
@@ -185,6 +184,9 @@ function ENT:SetHP(hp)
 	self.health=hp
 	if WireLib then
 		Wire_TriggerOutput(self, "Health", math.floor(self.health))
+		if self.interior and IsValid(self.interior) then
+			self.interior:SetHP(self.health)
+		end
 	end
 	if hp==0 then
 		self:Explode()

@@ -14,30 +14,29 @@ ENT.AdminSpawnable	= false
 ENT.RenderGroup = RENDERGROUP_TRANSLUCENT
 ENT.Category		= "Doctor Who"
 
-local function CanTouch(e)
+hook.Add("PhysgunPickup", "TARDISInt-PhysgunPickup", function(_,e)
 	if e:GetClass()=="sent_tardis_interior" then
 		return false
 	end
-end
-
-hook.Add("PhysgunPickup", "TARDISInt-PhysgunPickup", function(_,e)
-	return CanTouch(e)
 end)
 
 hook.Add("OnPhysgunReload", "TARDISInt-OnPhysgunReload", function(_,p)
 	local e = p:GetEyeTraceNoCursor().Entity
-	return CanTouch(e)
-end)
-
-hook.Add("CanTool", "TARDISInt-CanTool", function(_,tr,mode)
-	if mode=="remover" or mode=="ignite" then
-		local e=tr.Entity
-		return CanTouch(e)
+	if e:GetClass()=="sent_tardis_interior" then
+		return false
 	end
 end)
 
-hook.Add("CanProperty", "TARDISInt-CanProperty", function(_,_,e)
-	return CanTouch(e)
+hook.Add("CanTool", "TARDISInt-CanTool", function(ply,tr,mode)
+	if mode=="remover" and tr.Entity:GetClass()=="sent_tardis_interior" then
+		return false
+	end
+end)
+
+hook.Add("CanProperty", "TARDISInt-CanProperty", function(ply,property,e)
+	if e:GetClass()=="sent_tardis_interior" then
+		return false
+	end
 end)
 
 hook.Add("InitPostEntity", "TARDISInt-InitPostEntity", function()
