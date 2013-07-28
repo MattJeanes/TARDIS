@@ -17,19 +17,6 @@ function ENT:Draw()
 	end
 end
 
-function ENT:Initialize()
-	if tobool(GetConVarNumber("tardisint_cloisterbell"))==true then
-		self.cloisterbell = CreateSound(self, "tardis/cloisterbell_loop.wav")
-		self.cloisterbell:Stop()
-	end
-	if tobool(GetConVarNumber("tardisint_idlesound"))==true then
-		self.idlesound = CreateSound(self, "tardis/interior_idle_loop.wav")
-		self.idlesound:Play()
-		self.idlesound2 = CreateSound(self, "tardis/interior_idle2_loop.wav")
-		self.idlesound2:Play()
-	end
-end
-
 function ENT:OnRemove()
 	if self.cloisterbell then
 		self.cloisterbell:Stop()
@@ -47,7 +34,7 @@ end
 
 function ENT:Think()
 	local tardis=self:GetNWEntity("TARDIS",NULL)
-	if IsValid(tardis) then
+	if IsValid(tardis) and LocalPlayer().tardis_viewmode and LocalPlayer().tardis==tardis then
 		if tobool(GetConVarNumber("tardisint_cloisterbell"))==true then
 			if tardis.health and tardis.health < 21 then
 				if self.cloisterbell and !self.cloisterbell:IsPlaying() then
