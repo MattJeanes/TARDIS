@@ -2,5 +2,7 @@
 {
 	"$basetexture" "models/drmatt/tardis/TARDIS_DF"
 	"$normalmap" "models/drmatt/tardis/TARDIS_DF_NM"
-	"$surfaceprop" "Wood_Solid"
+	"$surfaceprop" "Glass"
+	"$selfillummask" "models/drmatt/tardis/white"
+	"$selfillum" 1
 }
