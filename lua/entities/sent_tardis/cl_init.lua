@@ -253,7 +253,7 @@ net.Receive("TARDIS-PlayerEnter", function()
 	if tobool(GetConVarNumber("tardis_doorsound"))==true then
 		local ent1=net.ReadEntity()
 		local ent2=net.ReadEntity()
-		if IsValid(ent1) then
+		if IsValid(ent1) and ent1.visible then
 			sound.Play("tardis/door.wav", ent1:GetPos())
 		end
 		if IsValid(ent2) then
@@ -266,7 +266,7 @@ net.Receive("TARDIS-PlayerExit", function()
 	if tobool(GetConVarNumber("tardis_doorsound"))==true then
 		local ent1=net.ReadEntity()
 		local ent2=net.ReadEntity()
-		if IsValid(ent1) then
+		if IsValid(ent1) and ent1.visible then
 			sound.Play("tardis/door2.wav", ent1:GetPos())
 		end
 		if IsValid(ent2) then
