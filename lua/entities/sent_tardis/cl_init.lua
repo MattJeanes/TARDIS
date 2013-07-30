@@ -153,7 +153,7 @@ function ENT:Think()
 		self.flightloop2=CreateSound(interior, "tardis/flight_loop.wav")
 		self.flightloop2:Stop()
 	end
-	if self.flightloop2 and self.flightmode and LocalPlayer().tardis_viewmode and interior and IsValid(interior) then
+	if self.flightloop2 and self.flightmode and LocalPlayer().tardis_viewmode and interior and IsValid(interior) and not self.moving then
 		if !self.flightloop2:IsPlaying() then
 			self.flightloop2:Play()
 		end

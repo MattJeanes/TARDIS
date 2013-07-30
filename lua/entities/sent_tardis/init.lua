@@ -160,6 +160,9 @@ end
 function ENT:UnExplode()
 	if not self:ShouldTakeDamage() then return end
 	self.exploded=false
+	if (self.moving or self.flightmode) and self.visible then
+		self:SetLight(true)
+	end
 	
 	net.Start("TARDIS-UnExplode")
 		net.WriteEntity(self)
@@ -556,10 +559,10 @@ end
 function ENT:OnRemove()
 	if self.occupants then
 		for k,v in pairs(self.occupants) do
-			if not v.tardis_viewmode then
+			if !v.tardis_viewmode then
 				self:ToggleViewmode(v,true)
 			end
-			self:PlayerExit(v)
+			self:PlayerExit(v,true)
 		end
 	end
 	self.light:Remove()
@@ -570,7 +573,7 @@ function ENT:OnRemove()
 	end
 end
 
-function ENT:PlayerExit( ply )
+function ENT:PlayerExit( ply, override )
 	if ply:InVehicle() then ply:ExitVehicle() end
 	net.Start("Player-SetTARDIS")
 		net.WriteEntity(ply)
@@ -592,7 +595,11 @@ function ENT:PlayerExit( ply )
 	if self.occupants then
 		for k,v in pairs(self.occupants) do
 			if v==ply then
-				table.remove(self.occupants,k)
+				if override then
+					self.occupants[k]=nil
+				else
+					table.remove(self.occupants,k)
+				end
 			end
 		end
 	end

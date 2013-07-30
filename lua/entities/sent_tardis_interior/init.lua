@@ -173,13 +173,5 @@ function ENT:Think()
 				end
 			end
 		end
-		if self.tardis.health <= 20 then
-			if self.cloisterbell and not self.cloisterbell:IsPlaying() then
-				self.cloisterbell:Play()
-			elseif not self.cloisterbell then
-				self.cloisterbell = CreateSound(self, "tardis/cloisterbell_loop.wav")
-				self.cloisterbell:Play()
-			end
-		end
 	end
 end
