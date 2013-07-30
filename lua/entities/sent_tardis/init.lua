@@ -5,7 +5,9 @@ include('shared.lua')
 util.AddNetworkString("Player-SetTARDIS")
 util.AddNetworkString("TARDIS-SetHealth")
 util.AddNetworkString("TARDIS-Go")
+util.AddNetworkString("TARDIS-Stop")
 util.AddNetworkString("TARDIS-Explode")
+util.AddNetworkString("TARDIS-UnExplode")
 util.AddNetworkString("TARDIS-Flightmode")
 util.AddNetworkString("TARDIS-TakeDamage")
 util.AddNetworkString("TARDIS-FlightPhase")
@@ -13,6 +15,8 @@ util.AddNetworkString("TARDIS-Phase")
 util.AddNetworkString("TARDIS-UpdateVis")
 util.AddNetworkString("TARDIS-SetInterior")
 util.AddNetworkString("TARDIS-SetViewmode")
+util.AddNetworkString("TARDIS-PlayerEnter")
+util.AddNetworkString("TARDIS-PlayerExit")
 
 net.Receive("TARDIS-TakeDamage", function(len,ply)
 	if ply:IsAdmin() or ply:IsSuperAdmin() then
@@ -146,7 +150,36 @@ function ENT:Explode()
 	explode:Fire("Explode", 0, 0 ) //Tells the explode entity to explode
 	//explode:EmitSound("weapon_AWP.Single", 400, 400 ) //Adds sound to the explosion
 	
-	self:SetColor(Color(255,190,0,255))
+	self:SetColor(Color(255,190,0))
+	
+	if self.interior and IsValid(self.interior) then
+		self.interior:Explode()
+	end
+end
+
+function ENT:UnExplode()
+	if not self:ShouldTakeDamage() then return end
+	self.exploded=false
+	
+	net.Start("TARDIS-UnExplode")
+		net.WriteEntity(self)
+	net.Broadcast()
+	
+	if self.fire and IsValid(self.fire) then
+		self.fire:Remove()
+		self.fire=nil
+	end
+	
+	if self.smoke and IsValid(self.smoke) then
+		self.smoke:Remove()
+		self.smoke=nil
+	end
+	
+	self:SetColor(Color(255,255,255))
+	
+	if self.interior and IsValid(self.interior) then
+		self.interior:UnExplode()
+	end
 end
 
 function ENT:CreateSmoke()
@@ -175,8 +208,8 @@ function ENT:CreateSmoke()
 end
 
 function ENT:SetHP(hp)
-	if not hp or self.exploded or not self:ShouldTakeDamage() then return end
-	if hp < 0 then hp=0 end
+	if not hp or not self:ShouldTakeDamage() then return end
+	hp=math.Clamp(hp,0,100)
 	net.Start("TARDIS-SetHealth")
 		net.WriteEntity(self)
 		net.WriteFloat(hp)
@@ -188,8 +221,10 @@ function ENT:SetHP(hp)
 			self.interior:SetHP(self.health)
 		end
 	end
-	if hp==0 then
+	if not self.exploded and hp==0 then
 		self:Explode()
+	elseif self.exploded and hp>0 then
+		self:UnExplode()
 	end
 end
 
@@ -199,6 +234,11 @@ function ENT:TakeHP(hp)
 	if self.interior and IsValid(self.interior) then
 		sound.Play("Default.ImpactSoft",self.interior:LocalToWorld(Vector(335, 310, 120)))
 	end
+end
+
+function ENT:AddHP(hp)
+	if not hp or not self:ShouldTakeDamage() then return end
+	self:SetHP(self.health+hp)
 end
 
 function ENT:OnTakeDamage(dmginfo)
@@ -334,6 +374,9 @@ function ENT:Stop()
 		if not self.flightmode and self.visible then
 			self:SetLight(false)
 		end
+		net.Start("TARDIS-Stop")
+			net.WriteEntity(self)
+		net.Broadcast()
 	end
 end
 
@@ -485,6 +528,7 @@ function ENT:PlayerEnter( ply )
 		ply.tardis:PlayerExit( ply )
 	end
 	ply.tardis=self
+	
 	net.Start("Player-SetTARDIS")
 		net.WriteEntity(ply)
 		net.WriteEntity(self)
@@ -493,7 +537,7 @@ function ENT:PlayerEnter( ply )
 	net.Start("TARDIS-SetViewmode")
 		net.WriteBit(true)
 	net.Send(ply)
-	ply:SetPos(self.interior:GetPos()+Vector(300,295,-79))
+	ply:SetPos(self.interior:LocalToWorld(Vector(300,295,-79)))
 	local ang=(ply:EyeAngles()-self:GetAngles())+self.interior:GetAngles()+Angle(0,70,0)
 	ply:SetEyeAngles(Angle(ang.p,ang.y,0))
 	table.insert(self.occupants,ply)
@@ -501,6 +545,12 @@ function ENT:PlayerEnter( ply )
 		self:ToggleViewmode(ply,true)
 		self.viewmodecur=CurTime()+1
 	end
+	net.Start("TARDIS-PlayerEnter") 
+		net.WriteEntity(self)
+		if self.interior and IsValid(self.interior) then
+			net.WriteEntity(self.interior)
+		end
+	net.Broadcast()
 end
 
 function ENT:OnRemove()
@@ -521,6 +571,7 @@ function ENT:OnRemove()
 end
 
 function ENT:PlayerExit( ply )
+	if ply:InVehicle() then ply:ExitVehicle() end
 	net.Start("Player-SetTARDIS")
 		net.WriteEntity(ply)
 		net.WriteEntity(NULL)
@@ -548,13 +599,19 @@ function ENT:PlayerExit( ply )
 	if ply==self.pilot then // not sure how, but failsafes
 		self.pilot=nil
 	end
+	net.Start("TARDIS-PlayerExit") 
+		net.WriteEntity(self)
+		if self.interior and IsValid(self.interior) then
+			net.WriteEntity(self.interior)
+		end
+	net.Broadcast()
 end
 
 hook.Add("PlayerSpawn", "TARDIS_PlayerSpawn", function( ply )
 	local tardis=ply.tardis
 	if tardis and IsValid(tardis) then
 		if ply.tardis_viewmode and tardis.interior and IsValid(tardis.interior) then
-			ply:SetPos(tardis.interior:GetPos()+Vector(300,295,-79))
+			ply:SetPos(tardis.interior:LocalToWorld(Vector(300,295,-79)))
 			local ang=tardis.interior:GetAngles()+Angle(0,-110,0)
 			ply:SetEyeAngles(Angle(ang.p,ang.y,0))
 		else

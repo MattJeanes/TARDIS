@@ -3,7 +3,7 @@ AddCSLuaFile( "shared.lua" )  -- and shared scripts are sent.
 include('shared.lua')
 
 util.AddNetworkString("TARDIS-SetViewmode")
- 
+
 function ENT:Initialize()
 	self:SetModel( "models/drmatt/tardis/interior.mdl" )
 	// cheers to doctor who team for the model
@@ -27,6 +27,55 @@ function ENT:Initialize()
 		Wire_CreateInputs(self, { "Demat", "Phase", "Flightmode", "X", "Y", "Z", "XYZ [VECTOR]", "Rot" })
 		Wire_CreateOutputs(self, { "Health" })
 	end
+	
+	// this is a biiiiit hacky, but it works!
+	local vname="Seat_Airboat"
+	local chair=list.Get("Vehicles")[vname]
+	self.chair1=self:MakeVehicle(self:LocalToWorld(Vector(130,-96,-30)), Angle(0,40,0), chair.Model, chair.Class, vname, chair)
+	self.chair2=self:MakeVehicle(self:LocalToWorld(Vector(125,55,-30)), Angle(0,135,0), chair.Model, chair.Class, vname, chair)
+	
+	/* -- shh, upcoming feature
+	self.timerotor=ents.Create("prop_physics")
+	self.timerotor:SetModel("models/drmatt/tardis/timerotor.mdl")
+	self.timerotor:SetPos(self:LocalToWorld(Vector(0,0,0)))
+	self.timerotor:Spawn()
+	self.timerotor:Activate()
+	*/
+end
+
+function ENT:MakeVehicle( Pos, Ang, Model, Class, VName, VTable ) // for the chairs
+	local ent = ents.Create( Class )
+	if (!ent) then return NULL end
+	
+	ent:SetModel( Model )
+	
+	-- Fill in the keyvalues if we have them
+	if ( VTable && VTable.KeyValues ) then
+		for k, v in pairs( VTable.KeyValues ) do
+			ent:SetKeyValue( k, v )
+		end
+	end
+		
+	ent:SetAngles( Ang )
+	ent:SetPos( Pos )
+		
+	ent:Spawn()
+	ent:Activate()
+	
+	ent.VehicleName 	= VName
+	ent.VehicleTable 	= VTable
+	
+	-- We need to override the class in the case of the Jeep, because it 
+	-- actually uses a different class than is reported by GetClass
+	ent.ClassOverride 	= Class
+	
+	ent.tardis_chair=true
+	ent:GetPhysicsObject():EnableMotion(false)
+	ent:SetRenderMode(RENDERMODE_TRANSALPHA)
+	ent:SetColor(Color(255,255,255,0))
+	constraint.Weld(self,ent,0,0)
+
+	return ent
 end
 
 if WireLib then
@@ -45,6 +94,7 @@ end
 
 function ENT:Explode()
 	self.exploded=true
+	
 	self.fire = ents.Create("env_fire_trail")
 	self.fire:SetPos(self:LocalToWorld(Vector(0,0,0)))
 	self.fire:Spawn()
@@ -58,10 +108,29 @@ function ENT:Explode()
 	self:SetColor(Color(255,233,200))
 end
 
+function ENT:UnExplode()
+	self.exploded=false
+	
+	if self.fire and IsValid(self.fire) then
+		self.fire:Remove()
+		self.fire=nil
+	end
+	
+	self:SetColor(Color(255,255,255))
+end
+
 function ENT:OnRemove()
 	if self.fire then
 		self.fire:Remove()
 		self.fire=nil
+	end
+	if self.chair1 then
+		self.chair1:Remove()
+		self.chair1=nil
+	end
+	if self.chair2 then
+		self.chair2:Remove()
+		self.chair2=nil
 	end
 end
 
@@ -103,9 +172,6 @@ function ENT:Think()
 					self.tardis:PlayerExit(v,true)
 				end
 			end
-		end
-		if self.tardis.exploded and not self.exploded then
-			self:Explode()
 		end
 		if self.tardis.health <= 20 then
 			if self.cloisterbell and not self.cloisterbell:IsPlaying() then

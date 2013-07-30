@@ -70,6 +70,7 @@ end
 
 CreateClientConVar("tardis_flightsound", "1", true)
 CreateClientConVar("tardis_matsound", "1", true)
+CreateClientConVar("tardis_doorsound", "1", true)
 
 function ENT:Initialize()
 	if tobool(GetConVarNumber("tardis_flightsound"))==true then
@@ -116,7 +117,7 @@ function ENT:Think()
 		self.flightloop=CreateSound(self, "tardis/flight_loop.wav")
 		self.flightloop:Stop()
 	end
-	if self.flightmode and self.visible then
+	if self.flightmode and self.visible and not self.moving then
 		if !self.flightloop:IsPlaying() then
 			self.flightloop:Play()
 		end
@@ -185,6 +186,11 @@ net.Receive("TARDIS-Explode", function()
 	ent.exploded=true
 end)
 
+net.Receive("TARDIS-UnExplode", function()
+	local ent=net.ReadEntity()
+	ent.exploded=false
+end)
+
 net.Receive("TARDIS-Flightmode", function()
 	local ent=net.ReadEntity()
 	ent.flightmode=tobool(net.ReadBit())
@@ -197,6 +203,9 @@ end)
 
 net.Receive("TARDIS-Go", function()
 	local tardis=net.ReadEntity()
+	if IsValid(tardis) then
+		tardis.moving=true
+	end
 	local interior=net.ReadEntity()
 	local exploded=tobool(net.ReadBit())
 	local pitch=(exploded and 110 or 100)
@@ -215,6 +224,13 @@ net.Receive("TARDIS-Go", function()
 	end
 end)
 
+net.Receive("TARDIS-Stop", function()
+	tardis=net.ReadEntity()
+	if IsValid(tardis) then
+		tardis.moving=nil
+	end
+end)
+
 net.Receive("Player-SetTARDIS", function()
 	local ply=net.ReadEntity()
 	ply.tardis=net.ReadEntity()
@@ -230,6 +246,32 @@ net.Receive("TARDIS-SetViewmode", function()
 	
 	if LocalPlayer().tardis_viewmode and GetConVarNumber("r_rootlod")>0 then
 		Derma_Query("The TARDIS Interior requires model detail on high, set now?", "TARDIS Interior", "Yes", function() RunConsoleCommand("r_rootlod", 0) end, "No", function() end)
+	end
+end)
+
+net.Receive("TARDIS-PlayerEnter", function()
+	if tobool(GetConVarNumber("tardis_doorsound"))==true then
+		local ent1=net.ReadEntity()
+		local ent2=net.ReadEntity()
+		if IsValid(ent1) then
+			sound.Play("tardis/door.wav", ent1:GetPos())
+		end
+		if IsValid(ent2) then
+			sound.Play("tardis/door.wav", ent2:LocalToWorld(Vector(300,295,-79)))
+		end
+	end
+end)
+
+net.Receive("TARDIS-PlayerExit", function()
+	if tobool(GetConVarNumber("tardis_doorsound"))==true then
+		local ent1=net.ReadEntity()
+		local ent2=net.ReadEntity()
+		if IsValid(ent1) then
+			sound.Play("tardis/door2.wav", ent1:GetPos())
+		end
+		if IsValid(ent2) then
+			sound.Play("tardis/door2.wav", ent2:LocalToWorld(Vector(300,295,-79)))
+		end
 	end
 end)
 
@@ -322,6 +364,12 @@ hook.Add("PopulateToolMenu", "TARDIS-PopulateToolMenu", function()
 		checkBox:SetText( "Teleport sounds" ) 
 		checkBox:SetValue( GetConVarNumber( "tardis_matsound" ) )
 		checkBox:SetConVar( "tardis_matsound" )
+		panel:AddItem(checkBox)
+		
+		local checkBox = vgui.Create( "DCheckBoxLabel" ) 
+		checkBox:SetText( "Door sounds" )
+		checkBox:SetValue( GetConVarNumber( "tardis_doorsound" ) )
+		checkBox:SetConVar( "tardis_doorsound" )
 		panel:AddItem(checkBox)
 		
 		local checkBox = vgui.Create( "DCheckBoxLabel" ) 

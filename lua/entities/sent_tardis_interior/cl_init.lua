@@ -43,6 +43,11 @@ function ENT:Think()
 					self.cloisterbell = CreateSound(self, "tardis/cloisterbell_loop.wav")
 					self.cloisterbell:Play()
 				end
+			else
+				if self.cloisterbell and self.cloisterbell:IsPlaying() then
+					self.cloisterbell:Stop()
+					self.cloisterbell=nil
+				end
 			end
 		else
 			if self.cloisterbell and self.cloisterbell:IsPlaying() then
@@ -51,7 +56,7 @@ function ENT:Think()
 			end
 		end
 		
-		if tobool(GetConVarNumber("tardisint_idlesound"))==true then
+		if tobool(GetConVarNumber("tardisint_idlesound"))==true and tardis.health and tardis.health >= 1 then
 			if self.idlesound and !self.idlesound:IsPlaying() then
 				self.idlesound:Play()
 			elseif not self.idlesound then
@@ -73,6 +78,25 @@ function ENT:Think()
 			if self.idlesound2 and self.idlesound2:IsPlaying() then
 				self.idlesound2:Stop()
 				self.idlesound2=nil
+			end
+		end
+		
+		if tardis.health and tardis.health >= 1 then
+			local dlight = DynamicLight( self:EntIndex() )
+			if ( dlight ) then
+				local size=1024
+				local c=Color(255,50,0)
+				if tardis.health < 21 then
+					c=Color(200,0,0)
+				end
+				dlight.Pos = self:LocalToWorld(Vector(0,0,120))
+				dlight.r = c.r
+				dlight.g = c.g
+				dlight.b = c.b
+				dlight.Brightness = 5
+				dlight.Decay = size * 5
+				dlight.Size = size
+				dlight.DieTime = CurTime() + 1
 			end
 		end
 	end
