@@ -28,7 +28,8 @@ hook.Add("OnPhysgunReload", "TARDISInt-OnPhysgunReload", function(_,p)
 end)
 
 hook.Add("CanTool", "TARDISInt-CanTool", function(ply,tr,mode)
-	if mode=="remover" and (tr.Entity:GetClass()=="sent_tardis_interior" or e.tardis_chair) then
+	local e=tr.Entity
+	if mode=="remover" and IsValid(e) and (e:GetClass()=="sent_tardis_interior" or e.tardis_chair) then
 		return false
 	end
 end)
