@@ -1,0 +1,111 @@
+@name TARDIS Official
+@inputs
+@outputs XYZ:vector
+@persist Target:entity TARDIS:entity Visible SavePos:vector SaveAng:angle BackPos:vector BackAng:angle
+runOnChat(1)
+if (first()|dupefinished()){
+    TARDIS=entity():isConstrainedTo()
+    TARDIS:createWire(entity(),"XYZ", "XYZ")
+    Target=owner()
+    entity():entGravity(0)
+    entity():setAlpha(0)
+    
+    function demat(V:vector){
+        Success=TARDIS:tardisDemat(V)
+        if (Success){
+            print("TARDIS moving.")
+            BackPos=TARDIS:pos()
+            BackAng=TARDIS:angles()
+        }
+    }
+    
+    function demat2(V:vector, A:angle){
+        Success=TARDIS:tardisDemat(V,A)
+        if (Success){
+            print("TARDIS moving.")
+            BackPos=TARDIS:pos()
+            BackAng=TARDIS:angles()
+        }
+    }
+    
+    function vector getEscapePos(){
+        if (map()=="gm_madgrass_v6"){
+            return vec(-11270, -6790, -955)
+        }elseif (map()=="freespace_revolution"){
+            return vec(840, -12840, -6120)
+        }elseif (map()=="gm_wot_a5"){
+            return vec(-8939, 2716, -9199)
+        }else{
+            return vec(0,0,0)
+        }
+    }
+    
+    function angle getEscapeAng(){
+        if (map()=="gm_wot_a5"){
+            return ang(0,-152,0)
+        }else{
+            return ang(0,0,0)
+        }   
+    }
+}
+
+if(chatClk(owner())){
+    LastSaid=owner():lastSaid():explode(" ")
+    Cmd=LastSaid[1,string]
+    Arg=LastSaid[2,string]
+    if (Cmd=="!target"){
+        if(LastSaid[2,string]){
+            Target=findPlayerByName(Arg)
+        }else{
+            Target=owner()
+        }
+        hideChat(1)
+        print("Target set to " + Target:name())
+    }elseif(Cmd=="!go"){
+        local NewPos=Target:pos()
+        local Yaw=Target:eyeAngles():yaw()
+        local Offset=150
+        if(Arg=="up"){
+            demat(NewPos+Target:up()*Offset)
+        }elseif(Arg=="forward"){
+            demat2(NewPos+Target:forward()*Offset, ang(0,Yaw+180,0))
+        }elseif(Arg=="back"){
+            demat2(NewPos+Target:forward()*-Offset, ang(0,Yaw,0))
+        }elseif(Arg=="down"){
+            demat(NewPos+Target:up()*-Offset)
+        }elseif(Arg=="right"){
+            demat2(NewPos+Target:right()*Offset, ang(0,Yaw+90,0))
+        }elseif(Arg=="left"){
+            demat2(NewPos+Target:right()*-Offset, ang(0,Yaw+270,0))
+        }elseif(Arg=="exact"){
+            demat2(NewPos,ang(0,Yaw,0))
+        }else{
+            demat2(NewPos+Target:forward()*Offset, ang(0,Yaw+180,0))
+        }
+        hideChat(1)
+    }elseif(Cmd=="!escape"){
+        demat2(getEscapePos(),getEscapeAng())
+        hideChat(1)
+    }elseif(Cmd=="!phase"){
+        local Success=TARDIS:tardisPhase()
+        if (Success==1){print("TARDIS Phasing.")}
+        hideChat(1)
+    }elseif(Cmd=="!flightmode"){
+        local Success=TARDIS:tardisFlightmode()
+        if (Success==1){print("TARDIS Flightmode toggled.")}
+        hideChat(1)
+    }elseif(Cmd=="!save"){
+        SavePos=TARDIS:pos()
+        SaveAng=TARDIS:angles()
+        print("Position saved.")
+        hideChat(1)
+    }elseif(Cmd=="!restore"){
+        demat2(SavePos,SaveAng)
+        hideChat(1)
+    }elseif(Cmd=="!back"){
+        demat2(BackPos,BackAng)
+        hideChat(1)
+    }
+}
+
+XYZ=getEscapePos()
