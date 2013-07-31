@@ -32,6 +32,10 @@ function ENT:OnRemove()
 	end
 end
 
+function ENT:Initialize()
+	self.timerotor_pos=0
+end
+
 function ENT:Think()
 	local tardis=self:GetNWEntity("TARDIS",NULL)
 	if IsValid(tardis) and LocalPlayer().tardis_viewmode and LocalPlayer().tardis==tardis then
@@ -98,6 +102,17 @@ function ENT:Think()
 				dlight.Size = size
 				dlight.DieTime = CurTime() + 1
 			end
+		end
+		
+		if (self.timerotor_pos>0 and not tardis.moving or tardis.flightmode) or (tardis.moving or tardis.flightmode) then
+			if self.timerotor_pos==1 then
+				self.timerotor_mode=false
+			elseif self.timerotor_pos==0 and (tardis.moving or tardis.flightmode) then
+				self.timerotor_mode=true
+			end
+			
+			self.timerotor_pos=math.Approach( self.timerotor_pos, self.timerotor_mode and 1 or 0, FrameTime()*1.1 )
+			self:SetPoseParameter( "glass", self.timerotor_pos )
 		end
 	end
 end

@@ -22,7 +22,6 @@ function ENT:Initialize()
 	end
 	
 	self.viewcur=0
-	self.timerotor_pos=0
 	
 	if WireLib then
 		Wire_CreateInputs(self, { "Demat", "Phase", "Flightmode", "X", "Y", "Z", "XYZ [VECTOR]", "Rot" })
@@ -166,19 +165,5 @@ function ENT:Think()
 				end
 			end
 		end
-		
-		if (self.timerotor_pos>0 and not self.tardis.moving or self.tardis.flightmode) or (self.tardis.moving or self.tardis.flightmode) then
-			if self.timerotor_pos==1 then
-				self.timerotor_mode=false
-			elseif self.timerotor_pos==0 and (self.tardis.moving or self.tardis.flightmode) then
-				self.timerotor_mode=true
-			end
-			
-			self.timerotor_pos=math.Approach( self.timerotor_pos, self.timerotor_mode and 1 or 0, FrameTime()*1.1 )
-			self:SetPoseParameter( "glass", self.timerotor_pos )
-		end
 	end
-	
-	self:NextThink( CurTime() )
-	return true
 end
