@@ -1,14 +1,24 @@
 /******************************************************************************\
-	Abyss custom E2 functions by Dr. Matt
+	TARDIS custom E2 functions by Dr. Matt
 \******************************************************************************/
 
 E2Lib.RegisterExtension("tardis", true)
 
-local function TARDIS_Teleport(ent,pos,ang)
+local function TARDIS_Get(ent)
 	if ent and IsValid(ent) then
 		if ent:GetClass()=="sent_tardis_interior" and IsValid(ent.tardis) then
-			ent=ent.tardis
+			return ent.tardis
+		elseif ent:GetClass()=="sent_tardis" then
+			return ent
+		else
+			return NULL
 		end
+	end
+	return NULL
+end
+
+local function TARDIS_Teleport(ent,pos,ang)
+	if ent and IsValid(ent) then
 		if not (ent:GetClass()=="sent_tardis") then return 0 end
 		if not ent.moving and pos then
 			local pos=Vector(pos[1], pos[2], pos[3])
@@ -25,9 +35,6 @@ end
 
 local function TARDIS_Phase(ent)
 	if ent and IsValid(ent) then
-		if ent:GetClass()=="sent_tardis_interior" and IsValid(ent.tardis) then
-			ent=ent.tardis
-		end
 		if not (ent:GetClass()=="sent_tardis") then return 0 end
 		local success=ent:TogglePhase()
 		if success then
@@ -41,9 +48,6 @@ end
 
 local function TARDIS_Flightmode(ent)
 	if ent and IsValid(ent) then
-		if ent:GetClass()=="sent_tardis_interior" and IsValid(ent.tardis) then
-			ent=ent.tardis
-		end
 		if not (ent:GetClass()=="sent_tardis") then return 0 end
 		local success=ent:ToggleFlight()
 		if success then
@@ -57,9 +61,6 @@ end
 
 local function TARDIS_Moving(ent)
 	if ent and IsValid(ent) then
-		if ent:GetClass()=="sent_tardis_interior" and IsValid(ent.tardis) then
-			ent=ent.tardis
-		end
 		if not (ent:GetClass()=="sent_tardis") then return 0 end
 		if ent.moving then
 			return 1
@@ -72,9 +73,6 @@ end
 
 local function TARDIS_Visible(ent)
 	if ent and IsValid(ent) then
-		if ent:GetClass()=="sent_tardis_interior" and IsValid(ent.tardis) then
-			ent=ent.tardis
-		end
 		if not (ent:GetClass()=="sent_tardis") then return 0 end
 		if ent.visible then
 			return 1
@@ -87,9 +85,6 @@ end
 
 local function TARDIS_Flying(ent)
 	if ent and IsValid(ent) then
-		if ent:GetClass()=="sent_tardis_interior" and IsValid(ent.tardis) then
-			ent=ent.tardis
-		end
 		if not (ent:GetClass()=="sent_tardis") then return 0 end
 		if ent.flightmode then
 			return 1
@@ -102,9 +97,6 @@ end
 
 local function TARDIS_Health(ent)
 	if ent and IsValid(ent) then
-		if ent:GetClass()=="sent_tardis_interior" and IsValid(ent.tardis) then
-			ent=ent.tardis
-		end
 		if not (ent:GetClass()=="sent_tardis") then return 0 end
 		if ent.health then
 			return math.floor(ent.health)
@@ -116,6 +108,10 @@ local function TARDIS_Health(ent)
 end
 
 --------------------------------------------------------------------------------
+e2function entity entity:tardisGet()
+	return TARDIS_Get(this)
+end
+
 e2function number entity:tardisDemat(vector pos)
 	return TARDIS_Teleport(this, pos)
 end

@@ -1,10 +1,10 @@
-@name TARDIS Official
+@name TARDIS
 @inputs
 @outputs XYZ:vector
 @persist Target:entity TARDIS:entity Visible SavePos:vector SaveAng:angle BackPos:vector BackAng:angle
 runOnChat(1)
 if (first()|dupefinished()){
-    TARDIS=entity():isConstrainedTo()
+    TARDIS=entity():isConstrainedTo():tardisGet()
     TARDIS:createWire(entity(),"XYZ", "XYZ")
     Target=owner()
     entity():entGravity(0)

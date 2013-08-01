@@ -122,6 +122,10 @@ function ENT:Initialize()
 	net.Broadcast()
 end
 
+function ENT:UpdateTransmitState()
+	return TRANSMIT_ALWAYS
+end
+
 function ENT:ShouldTakeDamage()
 	return tobool(GetConVarNumber("tardis_takedamage"))==true
 end

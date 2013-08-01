@@ -34,6 +34,11 @@ end
 
 function ENT:Initialize()
 	self.timerotor_pos=0
+	/*
+	self.parts={
+		["atomaccel"] = 0
+	}
+	*/
 end
 
 function ENT:Think()
@@ -114,5 +119,14 @@ function ENT:Think()
 			self.timerotor_pos=math.Approach( self.timerotor_pos, self.timerotor_mode and 1 or 0, FrameTime()*1.1 )
 			self:SetPoseParameter( "glass", self.timerotor_pos )
 		end
+		
+		/*
+		for k,v in pairs(self.parts) do
+			v=math.Approach(self.parts[k],1,FrameTime()*0.5)
+			if v==1 then v=0 end
+			self:SetPoseParameter(k,v)
+			self.parts[k]=v
+		end
+		*/		
 	end
 end
