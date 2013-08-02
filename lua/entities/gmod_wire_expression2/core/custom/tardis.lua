@@ -59,6 +59,16 @@ local function TARDIS_Flightmode(ent)
 	return 0
 end
 
+local function TARDIS_Lock(ent)
+	if ent and IsValid(ent) then
+		if not (ent:GetClass()=="sent_tardis") then return 0 end
+		ent:ToggleLocked()
+		return 1
+	end
+	return 0
+end
+
+
 local function TARDIS_Moving(ent)
 	if ent and IsValid(ent) then
 		if not (ent:GetClass()=="sent_tardis") then return 0 end
@@ -125,6 +135,10 @@ end
 
 e2function number entity:tardisFlightmode()
 	return TARDIS_Flightmode(this)
+end
+
+e2function number entity:tardisLock()
+	return TARDIS_Lock(this)
 end
 
 e2function number entity:tardisMoving()

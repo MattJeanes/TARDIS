@@ -71,6 +71,7 @@ end
 CreateClientConVar("tardis_flightsound", "1", true)
 CreateClientConVar("tardis_matsound", "1", true)
 CreateClientConVar("tardis_doorsound", "1", true)
+CreateClientConVar("tardis_locksound", "1", true)
 
 function ENT:Initialize()
 	if tobool(GetConVarNumber("tardis_flightsound"))==true then
@@ -241,6 +242,22 @@ net.Receive("TARDIS-SetHealth", function()
 	tardis.health=net.ReadFloat()
 end)
 
+net.Receive("TARDIS-SetLocked", function()
+	local tardis=net.ReadEntity()
+	local interior=net.ReadEntity()
+	if IsValid(tardis) then
+		tardis.locked=tobool(net.ReadBit())
+		if tobool(GetConVarNumber("tardis_locksound"))==true then
+			sound.Play("tardis/lock.wav", tardis:GetPos())
+		end
+	end
+	if IsValid(interior) then
+		if tobool(GetConVarNumber("tardis_locksound"))==true then
+			sound.Play("tardis/lock.wav", interior:LocalToWorld(Vector(300,295,-79)))
+		end
+	end
+end)
+
 net.Receive("TARDIS-SetViewmode", function()
 	LocalPlayer().tardis_viewmode=tobool(net.ReadBit())
 	
@@ -370,6 +387,12 @@ hook.Add("PopulateToolMenu", "TARDIS-PopulateToolMenu", function()
 		checkBox:SetText( "Door sounds" )
 		checkBox:SetValue( GetConVarNumber( "tardis_doorsound" ) )
 		checkBox:SetConVar( "tardis_doorsound" )
+		panel:AddItem(checkBox)
+		
+		local checkBox = vgui.Create( "DCheckBoxLabel" ) 
+		checkBox:SetText( "Lock sounds" )
+		checkBox:SetValue( GetConVarNumber( "tardis_locksound" ) )
+		checkBox:SetConVar( "tardis_locksound" )
 		panel:AddItem(checkBox)
 		
 		local checkBox = vgui.Create( "DCheckBoxLabel" ) 

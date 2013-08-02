@@ -17,6 +17,7 @@ util.AddNetworkString("TARDIS-SetInterior")
 util.AddNetworkString("TARDIS-SetViewmode")
 util.AddNetworkString("TARDIS-PlayerEnter")
 util.AddNetworkString("TARDIS-PlayerExit")
+util.AddNetworkString("TARDIS-SetLocked")
 
 net.Receive("TARDIS-TakeDamage", function(len,ply)
 	if ply:IsAdmin() or ply:IsSuperAdmin() then
@@ -73,6 +74,7 @@ function ENT:Initialize()
 	self.health=100
 	self.exploded=false
 	self.visible=true
+	self.locked=false
 	self.phasecur=0
 	self.interiorcur=0
 	self.viewmodecur=0
@@ -124,6 +126,36 @@ end
 
 function ENT:UpdateTransmitState()
 	return TRANSMIT_ALWAYS
+end
+
+function ENT:SetLocked(locked)
+	if locked then
+		self.locked=true
+	else
+		self.locked=false
+	end
+	if self.visible and not self.exploded then
+		net.Start("TARDIS-SetLocked")
+			net.WriteEntity(self)
+			net.WriteEntity(self.interior or NULL)
+			net.WriteBit(self:GetLocked())
+		net.Broadcast()
+		self:SetLight(true)
+		timer.Simple(0.5,function()
+			if IsValid(self) and not self.flightmode and not self.moving then
+				self:SetLight(false)
+			end
+		end)
+	end
+end
+
+function ENT:ToggleLocked()
+	self:SetLocked(not self:GetLocked())
+	return self:GetLocked()
+end
+
+function ENT:GetLocked()
+	return self.locked
 end
 
 function ENT:ShouldTakeDamage()
@@ -255,7 +287,7 @@ function ENT:OnTakeDamage(dmginfo)
 end
 
 function ENT:SetLight(on)
-	if on and not self.exploded then
+	if on and not self.exploded and self.visible then
 		self.light:Fire("showsprite","",0)
 		self.light.on=true
 	else
@@ -526,6 +558,10 @@ function ENT:Use( ply, caller )
 end
 
 function ENT:PlayerEnter( ply )
+	if self.locked then
+		ply:ChatPrint("This TARDIS is locked.")
+		return
+	end
 	if self.occupants then
 		for k,v in pairs(self.occupants) do
 			if ply==v and not ply.tardis_viewmode then return end

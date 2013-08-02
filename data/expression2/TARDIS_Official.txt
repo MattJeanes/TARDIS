@@ -88,15 +88,20 @@ if(chatClk(owner())){
         hideChat(1)
     }elseif(Cmd=="!phase"){
         local Success=TARDIS:tardisPhase()
-        if (Success==1){print("TARDIS Phasing.")}
+        if (Success==1){print("TARDIS phasing.")}
         hideChat(1)
     }elseif(Cmd=="!flightmode"){
         local Success=TARDIS:tardisFlightmode()
-        if (Success==1){print("TARDIS Flightmode toggled.")}
+        if (Success==1){print("TARDIS flightmode toggled.")}
+        hideChat(1)
+    }elseif(Cmd=="!lock"){
+        local Success=TARDIS:tardisLock()
+        if (Success==1){print("TARDIS lock toggled.")}
         hideChat(1)
     }elseif(Cmd=="!save"){
         SavePos=TARDIS:pos()
         SaveAng=TARDIS:angles()
+		XYZ=SavePos
         print("Position saved.")
         hideChat(1)
     }elseif(Cmd=="!restore"){
