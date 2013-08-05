@@ -33,13 +33,21 @@ function ENT:OnRemove()
 end
 
 function ENT:Initialize()
-	self.timerotor_pos=0
-	/*
-	self.parts={
-		["atomaccel"] = 0
-	}
-	*/
+	self.timerotor={}
+	self.timerotor.pos=0
+	self.timerotor.mode=1
+	
+	self.throttle={}
+	self.throttle.active=false
+	self.throttle.pos=0
+	self.throttle.cur=0
+	self.throttle.mode=1
 end
+
+net.Receive("TARDISInt-Throttle", function()
+	local interior=net.ReadEntity()
+	interior.throttle.active=true
+end)
 
 function ENT:Think()
 	local tardis=self:GetNWEntity("TARDIS",NULL)
@@ -90,7 +98,7 @@ function ENT:Think()
 			end
 		end
 		
-		if tardis.health and tardis.health >= 1 then
+		if tardis.health and tardis.health > 0 then
 			local dlight = DynamicLight( self:EntIndex() )
 			if ( dlight ) then
 				local size=1024
@@ -109,24 +117,29 @@ function ENT:Think()
 			end
 		end
 		
-		if (self.timerotor_pos>0 and not tardis.moving or tardis.flightmode) or (tardis.moving or tardis.flightmode) then
-			if self.timerotor_pos==1 then
-				self.timerotor_mode=false
-			elseif self.timerotor_pos==0 and (tardis.moving or tardis.flightmode) then
-				self.timerotor_mode=true
+		if (self.timerotor.pos>0 and not tardis.moving or tardis.flightmode) or (tardis.moving or tardis.flightmode) then
+			if self.timerotor.pos==1 then
+				self.timerotor.mode=0
+			elseif self.timerotor.pos==0 and (tardis.moving or tardis.flightmode) then
+				self.timerotor.mode=1
 			end
 			
-			self.timerotor_pos=math.Approach( self.timerotor_pos, self.timerotor_mode and 1 or 0, FrameTime()*1.1 )
-			self:SetPoseParameter( "glass", self.timerotor_pos )
+			self.timerotor.pos=math.Approach( self.timerotor.pos, self.timerotor.mode, FrameTime()*1.1 )
+			self:SetPoseParameter( "glass", self.timerotor.pos )
 		end
 		
-		/*
-		for k,v in pairs(self.parts) do
-			v=math.Approach(self.parts[k],1,FrameTime()*0.5)
-			if v==1 then v=0 end
-			self:SetPoseParameter(k,v)
-			self.parts[k]=v
+		if self.throttle.active and CurTime()>self.throttle.cur then
+			self.throttle.cur=CurTime()+0.03
+			if self.throttle.pos==1 and self.throttle.mode==1 then
+				self.throttle.mode=0
+				self.throttle.active=false
+			elseif self.throttle.pos==0 and self.throttle.mode==0 then
+				self.throttle.mode=1
+				self.throttle.active=false
+			end
+			
+			self.throttle.pos=math.Approach( self.throttle.pos, self.throttle.mode, 0.05 )
+			self:SetPoseParameter( "throttle", self.throttle.pos )
 		end
-		*/		
 	end
 end

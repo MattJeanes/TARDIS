@@ -3,6 +3,7 @@ AddCSLuaFile( "shared.lua" )  -- and shared scripts are sent.
 include('shared.lua')
 
 util.AddNetworkString("TARDIS-SetViewmode")
+util.AddNetworkString("TARDISInt-Throttle")
 
 function ENT:Initialize()
 	self:SetModel( "models/drmatt/tardis/interior.mdl" )
@@ -22,6 +23,7 @@ function ENT:Initialize()
 	end
 	
 	self.viewcur=0
+	self.throttlecur=0
 	
 	if WireLib then
 		Wire_CreateInputs(self, { "Demat", "Phase", "Flightmode", "X", "Y", "Z", "XYZ [VECTOR]", "Rot" })
@@ -126,6 +128,21 @@ function ENT:OnRemove()
 	end
 end
 
+function ENT:PlayerLookingAt(ply,vec,fov)	
+	local Disp = vec - self:WorldToLocal(ply:EyePos())
+	local Dist = Disp:Length()
+	local Width = 100
+	
+	local MaxCos = math.abs( math.cos( math.acos( Dist / math.sqrt( Dist * Dist + Width * Width ) ) + fov * ( math.pi / 180 ) ) )
+	Disp:Normalize()
+	
+	if Disp:Dot( ply:EyeAngles():Forward() ) > MaxCos then
+		return true
+	end
+	
+    return false
+end
+
 function ENT:Use( ply )
 	if self.tardis and IsValid(self.tardis) and ply.tardis and IsValid(ply.tardis) and ply.tardis==self.tardis and ply.tardis_viewmode then
 		if CurTime()>self.tardis.exitcur then
@@ -135,16 +152,36 @@ function ENT:Use( ply )
 			if distance < 25 then
 				self.tardis:PlayerExit(ply,true)
 				self.tardis.exitcur=CurTime()+1
+				return
 			end
+		end
+		
+		local pos=Vector(-10.78,-76.03,-47.28)
+		local pos2=self:WorldToLocal(ply:GetPos())
+		if pos:Distance(pos2) < 50 and self:PlayerLookingAt(ply, Vector(-8.87,-51.46,5.98), 10) then
+			if CurTime()>self.throttlecur then
+				net.Start("TARDISInt-Throttle")
+					net.WriteEntity(self)
+				net.Broadcast()
+				if not self.tardis.moving and ply.tardis_vec and ply.tardis_ang then
+					self.tardis:Go(ply.tardis_vec, ply.tardis_ang)
+					ply.tardis_vec=nil
+					ply.tardis_ang=nil
+					ply:ChatPrint("TARDIS moving to set destination.")
+				end
+				self.throttlecur=CurTime()+1
+			end
+			return
 		end
 		
 		if CurTime()>self.tardis.viewmodecur then
 			local pos=Vector(0,0,0)
 			local pos2=self:WorldToLocal(ply:GetPos())
 			local distance=pos:Distance(pos2)
-			if distance < 110 then
+			if distance < 110 and self:PlayerLookingAt(ply, Vector(0,0,0), 25) then
 				self.tardis:ToggleViewmode(ply)
 				self.tardis.viewmodecur=CurTime()+1
+				return
 			end
 		end
 	end
