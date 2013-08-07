@@ -56,12 +56,12 @@ function ENT:PlayerEnter(ply)
 	ply:DrawWorldModel(false)
 	ply:CrosshairDisable(true)
 	ply:StripWeapons()
+	ply.oldfov=ply:GetFOV()
+	ply:SetViewEntity(self)
 	table.insert(self.occupants,ply)
 	if self.controller then
-		ply:ChatPrint(ply:Nick().." is the camera controller.")
+		ply:ChatPrint(self.controller:Nick().." is the camera controller.")
 	else
-		ply.oldfov=ply:GetFOV()
-		ply:SetViewEntity(self)
 		self.controller=ply
 		ply:ChatPrint("You are now the camera controller.")
 	end
@@ -96,12 +96,12 @@ function ENT:PlayerExit(ply,override)
 		ply.tardisint_pos=nil
 		ply.tardisint_ang=nil
 	end
+	if ply.oldfov then
+		ply:SetFOV(ply.oldfov,0)
+		ply.oldfov=nil
+	end
+	ply:SetViewEntity(nil)
 	if self.controller and self.controller==ply then
-		if ply.oldfov then
-			ply:SetFOV(ply.oldfov,0)
-			ply.oldfov=nil
-		end
-		ply:SetViewEntity(nil)
 		self.controller=nil
 		if #self.occupants>0 then
 			local newcontroller=self.occupants[math.random(#self.occupants)]
@@ -135,13 +135,7 @@ function ENT:OnRemove()
 end
 
 function ENT:Think()
-	if self.controller and IsValid(self.controller) and self.controller:IsPlayer() then
-		if CurTime()>self.usecur and self.controller:KeyDown(IN_USE) then
-			self.usecur=CurTime()+1
-			self:PlayerExit(self.controller)
-			return
-		end
-		
+	if self.controller and IsValid(self.controller) and self.controller:IsPlayer() then		
 		local force=30
 		if self.controller:KeyDown(IN_SPEED) then
 			force=60
@@ -192,6 +186,11 @@ function ENT:Think()
 	end
 	
 	for k,v in pairs(self.occupants) do
+		if CurTime()>self.usecur and v:KeyDown(IN_USE) then
+			self.usecur=CurTime()+1
+			self:PlayerExit(v)
+			return
+		end
 		if v:KeyDown(IN_ATTACK2) then
 			v:SetFOV(30,0)
 		elseif not (v:GetFOV()==90) then
