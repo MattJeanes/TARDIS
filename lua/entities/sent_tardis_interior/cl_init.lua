@@ -2,6 +2,7 @@ include('shared.lua')
 
 CreateClientConVar("tardisint_idlesound", "1", true)
 CreateClientConVar("tardisint_cloisterbell", "1", true)
+CreateClientConVar("tardisint_dynamiclight", "1", true)
  
 --[[---------------------------------------------------------
    Name: Draw
@@ -49,10 +50,17 @@ net.Receive("TARDISInt-Throttle", function()
 	interior.throttle.active=true
 end)
 
+net.Receive("TARDISInt-SetParts", function()
+	local tbl=net.ReadTable()
+	for k,v in pairs(tbl) do
+		v.tardis_part=true
+	end
+end)
+
 function ENT:Think()
 	local tardis=self:GetNWEntity("TARDIS",NULL)
 	if IsValid(tardis) and LocalPlayer().tardis_viewmode and LocalPlayer().tardis==tardis then
-		if tobool(GetConVarNumber("tardisint_cloisterbell"))==true then
+		if tobool(GetConVarNumber("tardisint_cloisterbell"))==true and not IsValid(LocalPlayer().tardis_skycamera) then
 			if tardis.health and tardis.health < 21 then
 				if self.cloisterbell and !self.cloisterbell:IsPlaying() then
 					self.cloisterbell:Play()
@@ -73,7 +81,7 @@ function ENT:Think()
 			end
 		end
 		
-		if tobool(GetConVarNumber("tardisint_idlesound"))==true and tardis.health and tardis.health >= 1 then
+		if tobool(GetConVarNumber("tardisint_idlesound"))==true and tardis.health and tardis.health >= 1 and not IsValid(LocalPlayer().tardis_skycamera) then
 			if self.idlesound and !self.idlesound:IsPlaying() then
 				self.idlesound:Play()
 			elseif not self.idlesound then
@@ -98,48 +106,50 @@ function ENT:Think()
 			end
 		end
 		
-		if tardis.health and tardis.health > 0 then
-			local dlight = DynamicLight( self:EntIndex() )
-			if ( dlight ) then
-				local size=1024
-				local c=Color(255,50,0)
-				if tardis.health < 21 then
-					c=Color(200,0,0)
+		if not IsValid(LocalPlayer().tardis_skycamera) and tobool(GetConVarNumber("tardisint_dynamiclight"))==true then
+			if tardis.health and tardis.health > 0 then
+				local dlight = DynamicLight( self:EntIndex() )
+				if ( dlight ) then
+					local size=1024
+					local c=Color(255,50,0)
+					if tardis.health < 21 then
+						c=Color(200,0,0)
+					end
+					dlight.Pos = self:LocalToWorld(Vector(0,0,120))
+					dlight.r = c.r
+					dlight.g = c.g
+					dlight.b = c.b
+					dlight.Brightness = 5
+					dlight.Decay = size * 5
+					dlight.Size = size
+					dlight.DieTime = CurTime() + 1
 				end
-				dlight.Pos = self:LocalToWorld(Vector(0,0,120))
-				dlight.r = c.r
-				dlight.g = c.g
-				dlight.b = c.b
-				dlight.Brightness = 5
-				dlight.Decay = size * 5
-				dlight.Size = size
-				dlight.DieTime = CurTime() + 1
-			end
-		end
-		
-		if (self.timerotor.pos>0 and not tardis.moving or tardis.flightmode) or (tardis.moving or tardis.flightmode) then
-			if self.timerotor.pos==1 then
-				self.timerotor.mode=0
-			elseif self.timerotor.pos==0 and (tardis.moving or tardis.flightmode) then
-				self.timerotor.mode=1
 			end
 			
-			self.timerotor.pos=math.Approach( self.timerotor.pos, self.timerotor.mode, FrameTime()*1.1 )
-			self:SetPoseParameter( "glass", self.timerotor.pos )
-		end
-		
-		if self.throttle.active and CurTime()>self.throttle.cur then
-			self.throttle.cur=CurTime()+0.03
-			if self.throttle.pos==1 and self.throttle.mode==1 then
-				self.throttle.mode=0
-				self.throttle.active=false
-			elseif self.throttle.pos==0 and self.throttle.mode==0 then
-				self.throttle.mode=1
-				self.throttle.active=false
+			if (self.timerotor.pos>0 and not tardis.moving or tardis.flightmode) or (tardis.moving or tardis.flightmode) then
+				if self.timerotor.pos==1 then
+					self.timerotor.mode=0
+				elseif self.timerotor.pos==0 and (tardis.moving or tardis.flightmode) then
+					self.timerotor.mode=1
+				end
+				
+				self.timerotor.pos=math.Approach( self.timerotor.pos, self.timerotor.mode, FrameTime()*1.1 )
+				self:SetPoseParameter( "glass", self.timerotor.pos )
 			end
 			
-			self.throttle.pos=math.Approach( self.throttle.pos, self.throttle.mode, 0.05 )
-			self:SetPoseParameter( "throttle", self.throttle.pos )
+			if self.throttle.active and CurTime()>self.throttle.cur then
+				self.throttle.cur=CurTime()+0.03
+				if self.throttle.pos==1 and self.throttle.mode==1 then
+					self.throttle.mode=0
+					self.throttle.active=false
+				elseif self.throttle.pos==0 and self.throttle.mode==0 then
+					self.throttle.mode=1
+					self.throttle.active=false
+				end
+				
+				self.throttle.pos=math.Approach( self.throttle.pos, self.throttle.mode, 0.05 )
+				self:SetPoseParameter( "throttle", self.throttle.pos )
+			end
 		end
 	end
 end

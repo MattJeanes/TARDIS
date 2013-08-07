@@ -154,7 +154,7 @@ function ENT:Think()
 		self.flightloop2=CreateSound(interior, "tardis/flight_loop.wav")
 		self.flightloop2:Stop()
 	end
-	if self.flightloop2 and self.flightmode and LocalPlayer().tardis_viewmode and interior and IsValid(interior) and not self.moving then
+	if self.flightloop2 and self.flightmode and LocalPlayer().tardis_viewmode and not IsValid(LocalPlayer().tardis_skycamera) and interior and IsValid(interior) and not self.moving then
 		if !self.flightloop2:IsPlaying() then
 			self.flightloop2:Play()
 		end
@@ -215,7 +215,7 @@ net.Receive("TARDIS-Go", function()
 			if tardis.visible then
 				tardis:EmitSound("tardis/full.wav", 100, pitch)
 			end
-			if interior and IsValid(interior) and LocalPlayer().tardis_viewmode then
+			if interior and IsValid(interior) and LocalPlayer().tardis_viewmode and not IsValid(LocalPlayer().tardis_skycamera) then
 				interior:EmitSound("tardis/full.wav", 100, pitch)
 			end
 		elseif IsValid(tardis) and tardis.visible then
@@ -252,7 +252,7 @@ net.Receive("TARDIS-SetLocked", function()
 		end
 	end
 	if IsValid(interior) then
-		if tobool(GetConVarNumber("tardis_locksound"))==true then
+		if tobool(GetConVarNumber("tardis_locksound"))==true and not IsValid(LocalPlayer().tardis_skycamera) then
 			sound.Play("tardis/lock.wav", interior:LocalToWorld(Vector(300,295,-79)))
 		end
 	end
@@ -273,7 +273,7 @@ net.Receive("TARDIS-PlayerEnter", function()
 		if IsValid(ent1) and ent1.visible then
 			sound.Play("tardis/door.wav", ent1:GetPos())
 		end
-		if IsValid(ent2) then
+		if IsValid(ent2) and not IsValid(LocalPlayer().tardis_skycamera) then
 			sound.Play("tardis/door.wav", ent2:LocalToWorld(Vector(300,295,-79)))
 		end
 	end
@@ -286,7 +286,7 @@ net.Receive("TARDIS-PlayerExit", function()
 		if IsValid(ent1) and ent1.visible then
 			sound.Play("tardis/door2.wav", ent1:GetPos())
 		end
-		if IsValid(ent2) then
+		if IsValid(ent2) and not IsValid(LocalPlayer().tardis_skycamera) then
 			sound.Play("tardis/door2.wav", ent2:LocalToWorld(Vector(300,295,-79)))
 		end
 	end
@@ -405,6 +405,12 @@ hook.Add("PopulateToolMenu", "TARDIS-PopulateToolMenu", function()
 		checkBox:SetText( "Interior idle sounds" ) 
 		checkBox:SetValue( GetConVarNumber( "tardisint_idlesound" ) )
 		checkBox:SetConVar( "tardisint_idlesound" )
+		panel:AddItem(checkBox)
+		
+		local checkBox = vgui.Create( "DCheckBoxLabel" ) 
+		checkBox:SetText( "Dynamic lights" ) 
+		checkBox:SetValue( GetConVarNumber( "tardisint_dynamiclight" ) )
+		checkBox:SetConVar( "tardisint_dynamiclight" )
 		panel:AddItem(checkBox)
 	end)
 end)

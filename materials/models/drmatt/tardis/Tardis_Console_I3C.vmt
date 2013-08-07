@@ -1,7 +1,0 @@
-"VertexLitGeneric"
-{
-	"$basetexture" "_rt_Camera"
-	"$model" 1
-	"$nodecal" 1
-	"$selfillum" 1
-}
