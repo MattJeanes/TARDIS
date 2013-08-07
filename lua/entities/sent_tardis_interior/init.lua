@@ -187,10 +187,11 @@ function ENT:Use( ply )
 				net.Start("TARDISInt-Throttle")
 					net.WriteEntity(self)
 				net.Broadcast()
-				if not self.tardis.moving and self.skycamera and self.skycamera.hitpos then
-					self.tardis:Go(self.skycamera.hitpos, Angle(0,0,0))
+				if not self.tardis.moving and self.skycamera and self.skycamera.hitpos and self.skycamera.hitang then
+					self.tardis:Go(self.skycamera.hitpos, self.skycamera.hitang)
 					ply:ChatPrint("TARDIS moving to set destination.")
 					self.skycamera.hitpos=nil
+					self.skycamera.hitang=nil
 				end
 				self.throttlecur=CurTime()+1
 			end

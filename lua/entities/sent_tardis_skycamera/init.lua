@@ -125,6 +125,10 @@ function ENT:MoveLocal(vec,force)
 	//self.hitpos=trace.HitPos
 end
 
+function ENT:RotateLocal(rot)
+	self:SetAngles(self:GetAngles()+Angle(0,rot,0))
+end
+
 function ENT:OnRemove()
 	if self.controller and IsValid(self.controller) and self.controller:IsPlayer() then
 		self:PlayerExit(self.controller)
@@ -152,20 +156,22 @@ function ENT:Think()
 		local vec=Vector(0,0,0)
 		if self.controller:KeyDown(IN_FORWARD) then
 			vec=vec+Vector(0,0,1)
-		end
-		
-		if self.controller:KeyDown(IN_BACK) then
+		elseif self.controller:KeyDown(IN_BACK) then
 			vec=vec+Vector(0,0,-1)
 		end
 		
 		if self.controller:KeyDown(IN_MOVELEFT) then
 			vec=vec+Vector(0,1,0)
-		end
-		
-		if self.controller:KeyDown(IN_MOVERIGHT) then
+		elseif self.controller:KeyDown(IN_MOVERIGHT) then
 			vec=vec+Vector(0,-1,0)
 		end
 		self:MoveLocal(vec,force)
+		
+		if self.controller:KeyDown(IN_LEFT) then
+			self:RotateLocal(2)
+		elseif self.controller:KeyDown(IN_RIGHT) then
+			self:RotateLocal(-2)
+		end
 		
 		if self.controller:KeyDown(IN_ATTACK) then
 			if self.tardis and IsValid(self.tardis) then
@@ -173,6 +179,8 @@ function ENT:Think()
 					self.setcur=CurTime()+1
 					local trace=util.QuickTrace(self:GetPos(),self:GetForward()*9999999, self)
 					self.hitpos=trace.HitPos
+					local ang=self:GetAngles()
+					self.hitang=Angle(0,ang.y,0)
 					self.controller:ChatPrint("TARDIS destination set.")
 				end
 			end
@@ -182,6 +190,7 @@ function ENT:Think()
 			if CurTime()>self.resetcur and self.interior and IsValid(self.interior) then
 				self.resetcur=CurTime()+1
 				self:SetPos(self.interior:GetPos()+Vector(0,0,-350))
+				self:SetAngles(Angle(90,0,0))
 				self.controller:ChatPrint("TARDIS camera reset.")
 			end
 		end
