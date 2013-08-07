@@ -149,21 +149,23 @@ function ENT:Think()
 			end
 		end
 		
+		local vec=Vector(0,0,0)
 		if self.controller:KeyDown(IN_FORWARD) then
-			self:MoveLocal(Vector(0,0,1),force)
+			vec=vec+Vector(0,0,1)
 		end
 		
 		if self.controller:KeyDown(IN_BACK) then
-			self:MoveLocal(Vector(0,0,-1),force)
+			vec=vec+Vector(0,0,-1)
 		end
 		
 		if self.controller:KeyDown(IN_MOVELEFT) then
-			self:MoveLocal(Vector(0,1,0),force)
+			vec=vec+Vector(0,1,0)
 		end
 		
 		if self.controller:KeyDown(IN_MOVERIGHT) then
-			self:MoveLocal(Vector(0,-1,0),force)
+			vec=vec+Vector(0,-1,0)
 		end
+		self:MoveLocal(vec,force)
 		
 		if self.controller:KeyDown(IN_ATTACK) then
 			if self.tardis and IsValid(self.tardis) then
