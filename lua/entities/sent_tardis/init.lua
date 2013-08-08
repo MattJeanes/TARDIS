@@ -326,7 +326,7 @@ function ENT:Teleport()
 			self:SetAngles(self.ang)
 		end
 		for k,v in pairs(player.GetAll()) do
-			if self:GetPos():Distance(v:GetPos()) < 45 then
+			if (self:GetPos():Distance(v:GetPos()) < 45) and not (v.tardis and not v.tardis_viewmode) then
 				self:PlayerEnter(v)
 			end
 		end
@@ -580,11 +580,13 @@ function ENT:PlayerEnter( ply )
 	net.Start("TARDIS-SetViewmode")
 		net.WriteBit(true)
 	net.Send(ply)
-	ply:SetPos(self.interior:LocalToWorld(Vector(300,295,-79)))
-	local ang=(ply:EyeAngles()-self:GetAngles())+self.interior:GetAngles()+Angle(0,70,0)
-	ply:SetEyeAngles(Angle(ang.p,ang.y,0))
+	if self.interior and IsValid(self.interior) then
+		ply:SetPos(self.interior:LocalToWorld(Vector(300,295,-79)))
+		local ang=(ply:EyeAngles()-self:GetAngles())+self.interior:GetAngles()+Angle(0,70,0)
+		ply:SetEyeAngles(Angle(ang.p,ang.y,0))
+	end
 	table.insert(self.occupants,ply)
-	if ply:KeyDown(IN_WALK) then
+	if ply:KeyDown(IN_WALK) or (self.interior and not IsValid(self.interior)) then
 		self:ToggleViewmode(ply,true)
 		self.viewmodecur=CurTime()+1
 	end
@@ -905,8 +907,6 @@ function ENT:ToggleViewmode(ply,deldata)
 				local ang=self.interior:GetAngles()+Angle(0,-110,0)
 				ply:SetEyeAngles(Angle(ang.p,ang.y,0))
 			end
-		else
-			self:PlayerExit(ply)
 		end
 	else
 		if not deldata then
@@ -954,7 +954,7 @@ function ENT:Think()
 			if CurTime()>self.viewmodecur and v:KeyDown(IN_USE) and not v.tardis_viewmode then
 				self:ToggleViewmode(v)
 				self.viewmodecur=CurTime()+1
-				if v:KeyDown(IN_WALK) then
+				if v:KeyDown(IN_WALK) or (self.interior and not IsValid(self.interior)) then
 					self:PlayerExit(v)
 					self.exitcur=CurTime()+1
 				end

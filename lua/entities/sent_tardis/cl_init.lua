@@ -297,7 +297,7 @@ surface.CreateFont( "HUDNumber", {font="Trebuchet MS", size=40, weight=900} )
 hook.Add("HUDPaint", "TARDIS-DrawHUD", function()
 	local p = LocalPlayer()
 	local tardis = p.tardis
-	if tardis and IsValid(tardis) and (tobool(GetConVarNumber("tardis_takedamage"))==true or tardis.exploded) then
+	if tardis and IsValid(tardis) and tardis.health and (tobool(GetConVarNumber("tardis_takedamage"))==true or tardis.exploded) then
 		local health = math.floor(tardis.health)
 		local n=0
 		if health <= 99 then
@@ -411,6 +411,12 @@ hook.Add("PopulateToolMenu", "TARDIS-PopulateToolMenu", function()
 		checkBox:SetText( "Dynamic lights" ) 
 		checkBox:SetValue( GetConVarNumber( "tardisint_dynamiclight" ) )
 		checkBox:SetConVar( "tardisint_dynamiclight" )
+		panel:AddItem(checkBox)
+		
+		local checkBox = vgui.Create( "DCheckBoxLabel" ) 
+		checkBox:SetText( "Tool tips" ) 
+		checkBox:SetValue( GetConVarNumber( "tardisint_tooltip" ) )
+		checkBox:SetConVar( "tardisint_tooltip" )
 		panel:AddItem(checkBox)
 	end)
 end)

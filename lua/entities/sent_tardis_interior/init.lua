@@ -19,9 +19,7 @@ function ENT:Initialize()
 		self.phys:EnableMotion(false)
 	end
 	
-	if self.tardis then
-		self:SetNWEntity("TARDIS",self.tardis)
-	end
+	self:SetNWEntity("TARDIS",self.tardis)
 	
 	self.viewcur=0
 	self.throttlecur=0
@@ -30,6 +28,8 @@ function ENT:Initialize()
 		Wire_CreateInputs(self, { "Demat", "Phase", "Flightmode", "X", "Y", "Z", "XYZ [VECTOR]", "Rot" })
 		Wire_CreateOutputs(self, { "Health" })
 	end
+	
+	self.parts={}
 	
 	// this is a biiiiit hacky, but it works!
 	local vname="Seat_Airboat"
@@ -42,19 +42,19 @@ function ENT:Initialize()
 		net.WriteTable(parts)
 	net.Broadcast()
 	
-	self.skycamera=self:MakeSkyCamera()
+	self.skycamera=self:MakePart("sent_tardis_skycamera", Vector(0,0,-350), Angle(90,0,0))
+	self.throttle=self:MakePart("sent_tardis_throttle", Vector(-8.87,-45,6), Angle(-12,-5,20))
 end
 
-function ENT:MakeSkyCamera()
-	local ent=ents.Create("sent_tardis_skycamera")
-	ent:SetPos(self:GetPos()+Vector(0,0,-350))
-	ent:SetAngles(Angle(90,0,0))
+function ENT:MakePart(class,vec,ang)
+	local ent=ents.Create(class)
+	ent.tardis=self.tardis
+	ent.interior=self
+	ent:SetPos(self:LocalToWorld(vec))
+	ent:SetAngles(ang)
 	ent:Spawn()
 	ent:Activate()
-	ent.interior=self
-	if self.tardis then
-		ent.tardis=self.tardis
-	end
+	table.insert(self.parts,ent)
 	return ent
 end
 
@@ -89,6 +89,8 @@ function ENT:MakeVehicle( Pos, Ang, Model, Class, VName, VTable ) // for the cha
 	ent:SetRenderMode(RENDERMODE_TRANSALPHA)
 	ent:SetColor(Color(255,255,255,0))
 	constraint.Weld(self,ent,0,0)
+	
+	table.insert(self.parts,ent)
 
 	return ent
 end
@@ -139,17 +141,11 @@ function ENT:OnRemove()
 		self.fire:Remove()
 		self.fire=nil
 	end
-	if self.chair1 then
-		self.chair1:Remove()
-		self.chair1=nil
-	end
-	if self.chair2 then
-		self.chair2:Remove()
-		self.chair2=nil
-	end
-	if self.skycamera then
-		self.skycamera:Remove()
-		self.skycamera=nil
+	for k,v in pairs(self.parts) do
+		if IsValid(v) then
+			v:Remove()
+			v=nil
+		end
 	end
 end
 
@@ -180,6 +176,7 @@ function ENT:Use( ply )
 			end
 		end
 		
+		/*
 		local pos=Vector(-10.78,-76.03,-47.28)
 		local pos2=self:WorldToLocal(ply:GetPos())
 		if pos:Distance(pos2) < 50 and self:PlayerLookingAt(ply, Vector(-8.87,-51.46,5.98), 10, 5) then
@@ -197,6 +194,7 @@ function ENT:Use( ply )
 			end
 			return
 		end
+		*/
 		
 		local pos=Vector(78,-0.19,-47)
 		local pos2=self:WorldToLocal(ply:GetPos())
