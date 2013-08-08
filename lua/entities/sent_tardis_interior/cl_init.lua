@@ -48,15 +48,11 @@ function ENT:Initialize()
 	*/
 end
 
-net.Receive("TARDISInt-Throttle", function()
-	local interior=net.ReadEntity()
-	interior.throttle.active=true
-end)
-
 net.Receive("TARDISInt-SetParts", function()
-	local tbl=net.ReadTable()
-	for k,v in pairs(tbl) do
-		v.tardis_part=true
+	local count=net.ReadFloat()
+	for i=1,count do
+		local ent=net.ReadEntity()
+		ent.tardis_part=true
 	end
 end)
 
@@ -139,22 +135,6 @@ function ENT:Think()
 				self.timerotor.pos=math.Approach( self.timerotor.pos, self.timerotor.mode, FrameTime()*1.1 )
 				self:SetPoseParameter( "glass", self.timerotor.pos )
 			end
-			
-			/*
-			if self.throttle.active and CurTime()>self.throttle.cur then
-				self.throttle.cur=CurTime()+0.03
-				if self.throttle.pos==1 and self.throttle.mode==1 then
-					self.throttle.mode=0
-					self.throttle.active=false
-				elseif self.throttle.pos==0 and self.throttle.mode==0 then
-					self.throttle.mode=1
-					self.throttle.active=false
-				end
-				
-				self.throttle.pos=math.Approach( self.throttle.pos, self.throttle.mode, 0.05 )
-				self:SetPoseParameter( "throttle", self.throttle.pos )
-			end
-			*/
 		end
 	else
 		if self.cloisterbell then
