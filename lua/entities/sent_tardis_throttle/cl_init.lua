@@ -17,8 +17,10 @@ function ENT:Think()
 	self:SetPoseParameter( "switch", self.PosePosition )
 	self:InvalidateBoneCache()
 	
-	if tobool(GetConVarNumber("tardisint_tooltip"))==true and LocalPlayer():GetEyeTraceNoCursor().Entity==self and LocalPlayer():EyePos():Distance(self:GetPos())<60 then
-		AddWorldTip( self:EntIndex(), "Space-Time Throttle", 0.5, self:GetPos(), self.Entity  )
+	if LocalPlayer():GetEyeTraceNoCursor().Entity==self and LocalPlayer():EyePos():Distance(self:GetPos())<60 then
+		if tobool(GetConVarNumber("tardisint_tooltip"))==true then
+			AddWorldTip( self:EntIndex(), "Space-Time Throttle", 0.5, self:GetPos(), self.Entity  )
+		end
 		effects.halo.Add( {self}, Color( 255, 255, 255, 255 ), 1, 1, 1, true, true )
 	end
 end

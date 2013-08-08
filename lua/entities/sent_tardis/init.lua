@@ -715,6 +715,7 @@ function ENT:PhysicsUpdate( ph )
 		local ang=self:GetAngles()
 		local force=15
 		local vforce=5
+		local rforce=2
 		local tilt=0
 		
 		if self.pilot and IsValid(self.pilot) and not self.pilot.tardis_viewmode and not self.exploded then
@@ -733,14 +734,22 @@ function ENT:PhysicsUpdate( ph )
 			if p:KeyDown(IN_BACK) then
 				ph:AddVelocity(-fwd*force*phm)
 				tilt=tilt+5
-			end	
+			end
 			if p:KeyDown(IN_MOVERIGHT) then
-				ph:AddVelocity(ri*force*phm)
-				tilt=tilt+5
+				if p:KeyDown(IN_WALK) then
+					ph:AddAngleVelocity(Vector(0,0,-rforce))
+				else
+					ph:AddVelocity(ri*force*phm)
+					tilt=tilt+5
+				end
 			end
 			if p:KeyDown(IN_MOVELEFT) then
-				ph:AddVelocity(-ri*force*phm)
-				tilt=tilt+5
+				if p:KeyDown(IN_WALK) then
+					ph:AddAngleVelocity(Vector(0,0,rforce))
+				else
+					ph:AddVelocity(-ri*force*phm)
+					ilt=tilt+5
+				end
 			end
 			
 			if p:KeyDown(IN_DUCK) then

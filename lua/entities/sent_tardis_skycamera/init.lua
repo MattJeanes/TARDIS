@@ -163,16 +163,22 @@ function ENT:Think()
 		end
 		
 		if self.controller:KeyDown(IN_MOVELEFT) then
-			vec=vec+Vector(0,1,0)
+			if self.controller:KeyDown(IN_WALK) then
+				self:RotateLocal(2)
+			else
+				vec=vec+Vector(0,1,0)
+			end
 		elseif self.controller:KeyDown(IN_MOVERIGHT) then
-			vec=vec+Vector(0,-1,0)
+			if self.controller:KeyDown(IN_WALK) then
+				self:RotateLocal(-2)
+			else
+				vec=vec+Vector(0,-1,0)
+			end
 		end
-		self:MoveLocal(vec,force)
 		
-		if self.controller:KeyDown(IN_LEFT) then
-			self:RotateLocal(2)
-		elseif self.controller:KeyDown(IN_RIGHT) then
-			self:RotateLocal(-2)
+		if not (vec==Vector(0,0,0)) then
+			print("moving")
+			self:MoveLocal(vec,force)
 		end
 		
 		if self.controller:KeyDown(IN_ATTACK) then
