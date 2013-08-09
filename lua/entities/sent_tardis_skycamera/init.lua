@@ -127,8 +127,8 @@ function ENT:MoveLocal(vec,force)
 	//self.hitpos=trace.HitPos
 end
 
-function ENT:RotateLocal(rot)
-	self:SetAngles(self:GetAngles()+Angle(0,rot,0))
+function ENT:RotateLocal(rot,force)
+	self:SetAngles(self:GetAngles()+Angle(0,rot*force,0))
 end
 
 function ENT:OnRemove()
@@ -143,15 +143,17 @@ end
 function ENT:Think()
 	if self.controller and IsValid(self.controller) and self.controller:IsPlayer() then		
 		local force=30
+		local rforce=1
 		if self.controller:KeyDown(IN_SPEED) then
 			force=60
+			rforce=2
 		end
 		
 		if self.controller:KeyDown(IN_ATTACK2) then
 			if self.controller:KeyDown(IN_SPEED) then
-				force=30
-			else
 				force=15
+			else
+				force=5
 			end
 		end
 		
@@ -164,13 +166,13 @@ function ENT:Think()
 		
 		if self.controller:KeyDown(IN_MOVELEFT) then
 			if self.controller:KeyDown(IN_WALK) then
-				self:RotateLocal(2)
+				self:RotateLocal(1,rforce)
 			else
 				vec=vec+Vector(0,1,0)
 			end
 		elseif self.controller:KeyDown(IN_MOVERIGHT) then
 			if self.controller:KeyDown(IN_WALK) then
-				self:RotateLocal(-2)
+				self:RotateLocal(-1,rforce)
 			else
 				vec=vec+Vector(0,-1,0)
 			end

@@ -36,7 +36,7 @@ function ENT:Initialize()
 	self.chair1=self:MakeVehicle(self:LocalToWorld(Vector(130,-96,-30)), Angle(0,40,0), chair.Model, chair.Class, vname, chair)
 	self.chair2=self:MakeVehicle(self:LocalToWorld(Vector(125,55,-30)), Angle(0,135,0), chair.Model, chair.Class, vname, chair)
 	
-	self.skycamera=self:MakePart("sent_tardis_skycamera", Vector(0,0,-350), Angle(90,0,0),false)
+	self.skycamera=self:MakePart("sent_tardis_skycamera", Vector(0,0,-400), Angle(90,0,0),false)
 	self.throttle=self:MakePart("sent_tardis_throttle", Vector(-8.87,-45,6), Angle(-12,-5,20),true)
 	self.atomaccel=self:MakePart("sent_tardis_atomaccel", Vector(20,-37.67,1.75), Angle(0,0,0),true)
 	self.screen=self:MakePart("sent_tardis_screen", Vector(42,0.75,27.1), Angle(0,-5,0),true)

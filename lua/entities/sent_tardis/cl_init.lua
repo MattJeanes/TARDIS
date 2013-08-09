@@ -68,11 +68,6 @@ function ENT:Phase(mode)
 	self.phasemode=not mode // it likes to reverse
 end
 
-CreateClientConVar("tardis_flightsound", "1", true)
-CreateClientConVar("tardis_matsound", "1", true)
-CreateClientConVar("tardis_doorsound", "1", true)
-CreateClientConVar("tardis_locksound", "1", true)
-
 function ENT:Initialize()
 	if tobool(GetConVarNumber("tardis_flightsound"))==true then
 		self.flightloop=CreateSound(self, "tardis/flight_loop.wav")
@@ -103,7 +98,63 @@ function ENT:OnRemove()
 end
 
 function ENT:Think()
-	if tobool(GetConVarNumber("tardis_flightsound"))==false then
+	if tobool(GetConVarNumber("tardis_flightsound"))==true then
+		if not self.flightloop then
+			self.flightloop=CreateSound(self, "tardis/flight_loop.wav")
+			self.flightloop:Stop()
+		end
+		if self.flightmode and self.visible and not self.moving then
+			if !self.flightloop:IsPlaying() then
+				self.flightloop:Play()
+			end
+			local e = LocalPlayer():GetViewEntity()
+			if !IsValid(e) then e = LocalPlayer() end
+			local tardis=LocalPlayer().tardis
+			if not (tardis and IsValid(tardis) and tardis==self and e==LocalPlayer()) then
+				local pos = e:GetPos()
+				local spos = self:GetPos()
+				local doppler = (pos:Distance(spos+e:GetVelocity())-pos:Distance(spos+self:GetVelocity()))/150
+				if self.exploded then
+					local r=math.random(90,130)
+					self.flightloop:ChangePitch(math.Clamp(r+doppler,50,150),0.1)
+				else
+					self.flightloop:ChangePitch(math.Clamp(100+doppler,50,150),0.1)
+				end
+			else
+				if self.exploded then
+					local r=math.random(90,130)
+					self.flightloop:ChangePitch(r,0.1)
+				else
+					self.flightloop:ChangePitch(100,0.1)
+				end
+			end
+		else
+			if self.flightloop:IsPlaying() then
+				self.flightloop:Stop()
+			end
+		end
+		
+		local interior=self:GetNWEntity("interior",NULL)
+		if not self.flightloop2 and interior and IsValid(interior) then
+			self.flightloop2=CreateSound(interior, "tardis/flight_loop.wav")
+			self.flightloop2:Stop()
+		end
+		if self.flightloop2 and self.flightmode and LocalPlayer().tardis_viewmode and not IsValid(LocalPlayer().tardis_skycamera) and interior and IsValid(interior) and not self.moving then
+			if !self.flightloop2:IsPlaying() then
+				self.flightloop2:Play()
+			end
+			if self.exploded then
+				local r=math.random(90,130)
+				self.flightloop2:ChangePitch(r,0.1)
+			else
+				self.flightloop2:ChangePitch(100,0.1)
+			end
+		elseif self.flightloop2 then
+			if self.flightloop2:IsPlaying() then
+				self.flightloop2:Stop()
+			end
+		end
+	else
 		if self.flightloop then
 			self.flightloop:Stop()
 			self.flightloop=nil
@@ -112,61 +163,21 @@ function ENT:Think()
 			self.flightloop2:Stop()
 			self.flightloop2=nil
 		end
-		return
-	end
-	if not self.flightloop then
-		self.flightloop=CreateSound(self, "tardis/flight_loop.wav")
-		self.flightloop:Stop()
-	end
-	if self.flightmode and self.visible and not self.moving then
-		if !self.flightloop:IsPlaying() then
-			self.flightloop:Play()
-		end
-		local e = LocalPlayer():GetViewEntity()
-		if !IsValid(e) then e = LocalPlayer() end
-		local tardis=LocalPlayer().tardis
-		if not (tardis and IsValid(tardis) and tardis==self and e==LocalPlayer()) then
-			local pos = e:GetPos()
-			local spos = self:GetPos()
-			local doppler = (pos:Distance(spos+e:GetVelocity())-pos:Distance(spos+self:GetVelocity()))/150
-			if self.exploded then
-				local r=math.random(90,130)
-				self.flightloop:ChangePitch(math.Clamp(r+doppler,50,150),0.1)
-			else
-				self.flightloop:ChangePitch(math.Clamp(100+doppler,50,150),0.1)
-			end
-		else
-			if self.exploded then
-				local r=math.random(90,130)
-				self.flightloop:ChangePitch(r,0.1)
-			else
-				self.flightloop:ChangePitch(100,0.1)
-			end
-		end
-	else
-		if self.flightloop:IsPlaying() then
-			self.flightloop:Stop()
-		end
 	end
 	
-	local interior=self:GetNWEntity("interior",NULL)
-	if not self.flightloop2 and interior and IsValid(interior) then
-		self.flightloop2=CreateSound(interior, "tardis/flight_loop.wav")
-		self.flightloop2:Stop()
-	end
-	if self.flightloop2 and self.flightmode and LocalPlayer().tardis_viewmode and not IsValid(LocalPlayer().tardis_skycamera) and interior and IsValid(interior) and not self.moving then
-		if !self.flightloop2:IsPlaying() then
-			self.flightloop2:Play()
-		end
-		if self.exploded then
-			local r=math.random(90,130)
-			self.flightloop2:ChangePitch(r,0.1)
-		else
-			self.flightloop2:ChangePitch(100,0.1)
-		end
-	elseif self.flightloop2 then
-		if self.flightloop2:IsPlaying() then
-			self.flightloop2:Stop()
+	if self.light_on and tobool(GetConVarNumber("tardis_dynamiclight"))==true then
+		local dlight = DynamicLight( self:EntIndex() )
+		if ( dlight ) then
+			local size=400
+			local c=Color(255,255,255)
+			dlight.Pos = self:GetPos() + self:GetUp() * 130
+			dlight.r = c.r
+			dlight.g = c.g
+			dlight.b = c.b
+			dlight.Brightness = 5
+			dlight.Decay = size * 5
+			dlight.Size = size
+			dlight.DieTime = CurTime() + 1
 		end
 	end
 end
@@ -304,10 +315,38 @@ net.Receive("TARDIS-SetRepairing", function()
 	end
 end)
 
+net.Receive("TARDIS-BeginRepair", function()
+	local tardis=net.ReadEntity()
+	if IsValid(tardis) then
+		/*
+		local mat=Material("models/drmatt/tardis/tardis_df")
+		if not mat:IsError() then
+			mat:SetTexture("$basetexture", "models/props_combine/metal_combinebridge001")
+		end
+		*/
+	end
+end)
+
 net.Receive("TARDIS-FinishRepair", function()
 	local tardis=net.ReadEntity()
-	if tobool(GetConVarNumber("tardisint_repairsound"))==true and IsValid(tardis) then
-		sound.Play("tardis/repairfinish.wav", tardis:GetPos())
+	if IsValid(tardis) then
+		if tobool(GetConVarNumber("tardisint_repairsound"))==true then
+			sound.Play("tardis/repairfinish.wav", tardis:GetPos())
+		end
+		/*
+		local mat=Material("models/drmatt/tardis/tardis_df")
+		if not mat:IsError() then
+			mat:SetTexture("$basetexture", "models/drmatt/tardis/tardis_df")
+		end
+		*/
+	end
+end)
+
+net.Receive("TARDIS-SetLight", function()
+	local tardis=net.ReadEntity()
+	local on=tobool(net.ReadBit())
+	if IsValid(tardis) then
+		tardis.light_on=on
 	end
 end)
 
@@ -354,6 +393,23 @@ hook.Add("CalcView", "TARDIS_CLView", function( ply, origin, angles, fov )
 	end
 end)
 
+local checkbox_options={
+	{"Flight sounds", "tardis_flightsound"},
+	{"Teleport sounds", "tardis_matsound"},
+	{"Door sounds", "tardis_doorsound"},
+	{"Lock sounds", "tardis_locksound"},
+	{"Repair sounds", "tardisint_repairsound"},
+	{"Cloisterbell sound", "tardisint_cloisterbell"},
+	{"Interior idle sounds", "tardisint_idlesound"},
+	{"Interior dynamic light", "tardisint_dynamiclight"},
+	{"Exterior dynamic light", "tardis_dynamiclight"},
+	{"Tool tips", "tardisint_tooltip"},
+}
+
+for k,v in pairs(checkbox_options) do
+	CreateClientConVar(v[2], "1", true)
+end
+
 hook.Add("PopulateToolMenu", "TARDIS-PopulateToolMenu", function()
 	spawnmenu.AddToolMenuOption("Options", "Doctor Who", "TARDIS_Options", "TARDIS", "", "", function(panel)
 		panel:ClearControls()
@@ -390,59 +446,71 @@ hook.Add("PopulateToolMenu", "TARDIS-PopulateToolMenu", function()
 		end
 		panel:AddItem(checkBox)
 		
-		local checkBox = vgui.Create( "DCheckBoxLabel" ) 
-		checkBox:SetText( "Flight sounds" ) 
-		checkBox:SetValue( GetConVarNumber( "tardis_flightsound" ) )
-		checkBox:SetConVar( "tardis_flightsound" )
+		local checkBox = vgui.Create( "DCheckBoxLabel" )
+		checkBox:SetText( "Double spawn trace (Admin Only)" )
+		checkBox:SetToolTip( "This should fix some maps where the interior/skycamera doesn't spawn properly" )
+		checkBox:SetValue( GetConVarNumber( "tardis_doubletrace" ) )
+		checkBox:SetDisabled(not (LocalPlayer():IsAdmin() or LocalPlayer():IsSuperAdmin()))
+		checkBox.OnChange = function(self,val)
+			if LocalPlayer():IsAdmin() or LocalPlayer():IsSuperAdmin() then
+				net.Start("TARDIS-DoubleTrace")
+					net.WriteFloat(val==true and 1 or 0)
+				net.SendToServer()
+			else
+				chat.AddText(Color(255,62,62), "WARNING: ", Color(255,255,255), "You must be an admin to change this option.")
+				chat.PlaySound()
+			end
+		end
 		panel:AddItem(checkBox)
 		
-		local checkBox = vgui.Create( "DCheckBoxLabel" ) 
-		checkBox:SetText( "Teleport sounds" ) 
-		checkBox:SetValue( GetConVarNumber( "tardis_matsound" ) )
-		checkBox:SetConVar( "tardis_matsound" )
-		panel:AddItem(checkBox)
-		
-		local checkBox = vgui.Create( "DCheckBoxLabel" ) 
-		checkBox:SetText( "Door sounds" )
-		checkBox:SetValue( GetConVarNumber( "tardis_doorsound" ) )
-		checkBox:SetConVar( "tardis_doorsound" )
-		panel:AddItem(checkBox)
-		
-		local checkBox = vgui.Create( "DCheckBoxLabel" ) 
-		checkBox:SetText( "Lock sounds" )
-		checkBox:SetValue( GetConVarNumber( "tardis_locksound" ) )
-		checkBox:SetConVar( "tardis_locksound" )
-		panel:AddItem(checkBox)
-		
-		local checkBox = vgui.Create( "DCheckBoxLabel" ) 
-		checkBox:SetText( "Cloisterbell sound" ) 
-		checkBox:SetValue( GetConVarNumber( "tardisint_cloisterbell" ) )
-		checkBox:SetConVar( "tardisint_cloisterbell" )
-		panel:AddItem(checkBox)
-		
-		local checkBox = vgui.Create( "DCheckBoxLabel" ) 
-		checkBox:SetText( "Interior idle sounds" ) 
-		checkBox:SetValue( GetConVarNumber( "tardisint_idlesound" ) )
-		checkBox:SetConVar( "tardisint_idlesound" )
-		panel:AddItem(checkBox)
-		
-		local checkBox = vgui.Create( "DCheckBoxLabel" ) 
-		checkBox:SetText( "Dynamic lights" ) 
-		checkBox:SetValue( GetConVarNumber( "tardisint_dynamiclight" ) )
-		checkBox:SetConVar( "tardisint_dynamiclight" )
-		panel:AddItem(checkBox)
-		
-		local checkBox = vgui.Create( "DCheckBoxLabel" ) 
-		checkBox:SetText( "Tool tips" ) 
-		checkBox:SetValue( GetConVarNumber( "tardisint_tooltip" ) )
-		checkBox:SetConVar( "tardisint_tooltip" )
-		panel:AddItem(checkBox)
-		
-		local checkBox = vgui.Create( "DCheckBoxLabel" ) 
-		checkBox:SetText( "Repair sounds" ) 
-		checkBox:SetValue( GetConVarNumber( "tardisint_repairsound" ) )
-		checkBox:SetConVar( "tardisint_repairsound" )
-		panel:AddItem(checkBox)
+		/* -- i feel people arnt going to know what this does and end up breaking everything, the above checkbox should help in most cases.
+		local slider = vgui.Create( "DNumSlider" )
+			slider:SetText( "Spawn Offset (Admin Only)" )
+			slider:SetToolTip("Try the above checkbox first, this is a last resort for advanced users only.")
+			slider:SetValue(0)
+			slider:SetDecimals(0)
+			slider:SetMin(-10000)
+			slider:SetMax(5000)
+			slider.val=0
+			slider.OnValueChanged = function(self,val)
+				if not (slider.val==val) then
+					slider.val=val
+					if LocalPlayer():IsAdmin() or LocalPlayer():IsSuperAdmin() then
+						net.Start("TARDIS-SpawnOffset")
+							net.WriteFloat(val)
+						net.SendToServer()
+					else
+						chat.AddText(Color(255,62,62), "WARNING: ", Color(255,255,255), "You must be an admin to change this option.")
+						chat.PlaySound()
+					end
+				end
+			end
+			panel:AddItem(slider)
+			
+		local button = vgui.Create( "DButton" )
+		button:SetText( "Reset Spawn Offset" )
+		button.DoClick = function(self)
+			if LocalPlayer():IsAdmin() or LocalPlayer():IsSuperAdmin() then
+				if slider then
+					slider:SetValue(0)
+				end
+			else
+				chat.AddText(Color(255,62,62), "WARNING: ", Color(255,255,255), "You must be an admin to use this button.")
+				chat.PlaySound()
+			end
+		end
+		panel:AddItem(button)
+		*/
+		local checkboxes={}
+		for k,v in pairs(checkbox_options) do
+			CreateClientConVar(v[2], "1", true)
+			local checkBox = vgui.Create( "DCheckBoxLabel" ) 
+			checkBox:SetText( v[1] ) 
+			checkBox:SetValue( GetConVarNumber( v[2] ) )
+			checkBox:SetConVar( v[2] )
+			panel:AddItem(checkBox)
+			table.insert(checkboxes, checkBox)
+		end
 	end)
 end)
 

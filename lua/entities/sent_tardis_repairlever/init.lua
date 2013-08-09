@@ -96,7 +96,7 @@ function ENT:Toggle( bEnable, ply )
 		if not tardis.moving and not tardis.flightmode and not tardis.repairing and tardis.health <= 99 then
 			tardis:StartRepair()
 		elseif tardis.repairing and tardis.repairwait then
-			tardis:EndRepair()
+			tardis:EndRepair(false)
 		end
 	end
 end

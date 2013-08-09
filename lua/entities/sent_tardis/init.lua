@@ -11,6 +11,8 @@ util.AddNetworkString("TARDIS-UnExplode")
 util.AddNetworkString("TARDIS-Flightmode")
 util.AddNetworkString("TARDIS-TakeDamage")
 util.AddNetworkString("TARDIS-FlightPhase")
+util.AddNetworkString("TARDIS-DoubleTrace")
+util.AddNetworkString("TARDIS-SpawnOffset")
 util.AddNetworkString("TARDIS-Phase")
 util.AddNetworkString("TARDIS-UpdateVis")
 util.AddNetworkString("TARDIS-SetInterior")
@@ -19,7 +21,9 @@ util.AddNetworkString("TARDIS-PlayerEnter")
 util.AddNetworkString("TARDIS-PlayerExit")
 util.AddNetworkString("TARDIS-SetLocked")
 util.AddNetworkString("TARDIS-SetRepairing")
+util.AddNetworkString("TARDIS-BeginRepair")
 util.AddNetworkString("TARDIS-FinishRepair")
+util.AddNetworkString("TARDIS-SetLight")
 
 net.Receive("TARDIS-TakeDamage", function(len,ply)
 	if ply:IsAdmin() or ply:IsSuperAdmin() then
@@ -30,6 +34,18 @@ end)
 net.Receive("TARDIS-FlightPhase", function(len,ply)
 	if ply:IsAdmin() or ply:IsSuperAdmin() then
 		RunConsoleCommand("tardis_flightphase", net.ReadFloat())
+	end
+end)
+
+net.Receive("TARDIS-DoubleTrace", function(len,ply)
+	if ply:IsAdmin() or ply:IsSuperAdmin() then
+		RunConsoleCommand("tardis_doubletrace", net.ReadFloat())
+	end
+end)
+
+net.Receive("TARDIS-SpawnOffset", function(len,ply)
+	if ply:IsAdmin() or ply:IsSuperAdmin() then
+		RunConsoleCommand("tardis_spawnoffset", net.ReadFloat())
 	end
 end)
 
@@ -81,7 +97,7 @@ function ENT:Initialize()
 	self.interiorcur=0
 	self.viewmodecur=0
 	self.repaircur=0
-	self.repairdelay=2
+	self.repairdelay=1
 	self.occupants={}
 	if WireLib then
 		self.wirepos=Vector(0,0,0)
@@ -108,14 +124,20 @@ function ENT:Initialize()
 	trdata.filter={self}
 	local trace=util.TraceLine(trdata)
 	//another trace is run here incase the mapper has placed the 3d skybox above the map
-	local trdata={}
-	trdata.start=trace.HitPos+Vector(0,0,-1000)
-	trdata.endpos=trace.HitPos
-	trdata.filter={self}
-	local trace=util.TraceLine(trdata)
-	//this trace can sometimes fail if the map has a low skybox
+	if tobool(GetConVarNumber("tardis_doubletrace"))==true then
+		local trdata={}
+		trdata.start=trace.HitPos+Vector(0,0,-6000)
+		trdata.endpos=trace.HitPos
+		trdata.filter={self}
+		trace=util.TraceLine(trdata)
+		//this trace can sometimes fail if the map has a low skybox
+	end
+	local offset=0
+	if GetConVarNumber("tardis_spawnoffset")>0 then
+		offset=GetConVarNumber("tardis_spawnoffset")
+	end
 	self.interior=ents.Create("sent_tardis_interior")
-	self.interior:SetPos(trace.HitPos+Vector(0,0,-600))
+	self.interior:SetPos(trace.HitPos+Vector(0,0,-600+offset))
 	self.interior.tardis=self
 	self.interior:Spawn()
 	self.interior:Activate()
@@ -153,9 +175,12 @@ end
 function ENT:BeginRepair()
 	self.repairwait=nil
 	self.repairfinish=CurTime()+((100-self.health)*self.repairdelay)
+	net.Start("TARDIS-BeginRepair")
+		net.WriteEntity(self)
+	net.Broadcast()
 end
 
-function ENT:EndRepair()
+function ENT:EndRepair(completed)
 	if not self.repairing then return end
 	if self.repairoccupants then
 		for k,v in pairs(self.repairoccupants) do
@@ -167,11 +192,12 @@ function ENT:EndRepair()
 		end
 		self.repairoccupants=nil
 	end
-	if not self.repairwait and self.repairfinish then
+	if completed then
 		net.Start("TARDIS-FinishRepair")
 			net.WriteEntity(self)
 		net.Broadcast()
 		self:FlashLight(1.5)
+		self:SetHP(100)
 	end
 	self.repairing=nil
 	self.repairwait=nil
@@ -317,7 +343,7 @@ function ENT:SetHP(hp)
 end
 
 function ENT:TakeHP(hp)
-	if not hp or not self:ShouldTakeDamage() or self.repairing then return end
+	if not hp or not self:ShouldTakeDamage() or (self.repairing and not self.repairwait) then return end
 	self:SetHP(self.health-hp)
 	if self.interior and IsValid(self.interior) then
 		sound.Play("Default.ImpactSoft",self.interior:LocalToWorld(Vector(335, 310, 120)))
@@ -343,6 +369,10 @@ function ENT:SetLight(on)
 		self.light:Fire("hidesprite","",0)
 		self.light.on=false
 	end
+	net.Start("TARDIS-SetLight")
+		net.WriteEntity(self)
+		net.WriteBit(self.light.on)
+	net.Broadcast()
 end
 
 function ENT:ToggleLight()
@@ -1025,12 +1055,8 @@ function ENT:Think()
 		self.pilot=nil
 	end
 	
-	if self.repairing and not self.repairwait and CurTime()>self.repaircur then
-		self.repaircur=CurTime()+self.repairdelay
-		self:AddHP(1)
-		if self.health>=100 then
-			self:EndRepair()
-		end
+	if self.repairing and not self.repairwait and self.repairfinish and CurTime()>self.repairfinish then
+		self:EndRepair(true)
 	end
 
 	if self.occupants then
