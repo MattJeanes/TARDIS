@@ -4,6 +4,7 @@ CreateClientConVar("tardisint_idlesound", "1", true)
 CreateClientConVar("tardisint_cloisterbell", "1", true)
 CreateClientConVar("tardisint_dynamiclight", "1", true)
 CreateClientConVar("tardisint_tooltip", "1", true)
+CreateClientConVar("tardisint_repairsound", "1", true)
  
 --[[---------------------------------------------------------
    Name: Draw
@@ -80,7 +81,7 @@ function ENT:Think()
 			end
 		end
 		
-		if tobool(GetConVarNumber("tardisint_idlesound"))==true and tardis.health and tardis.health >= 1 and not IsValid(LocalPlayer().tardis_skycamera) then
+		if tobool(GetConVarNumber("tardisint_idlesound"))==true and tardis.health and tardis.health >= 1 and not IsValid(LocalPlayer().tardis_skycamera) and not tardis.repairing then
 			if self.idlesound and !self.idlesound:IsPlaying() then
 				self.idlesound:Play()
 			elseif not self.idlesound then
@@ -106,7 +107,7 @@ function ENT:Think()
 		end
 		
 		if not IsValid(LocalPlayer().tardis_skycamera) and tobool(GetConVarNumber("tardisint_dynamiclight"))==true then
-			if tardis.health and tardis.health > 0 then
+			if tardis.health and tardis.health > 0 and not tardis.repairing then
 				local dlight = DynamicLight( self:EntIndex() )
 				if ( dlight ) then
 					local size=1024

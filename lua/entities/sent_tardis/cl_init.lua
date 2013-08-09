@@ -292,6 +292,25 @@ net.Receive("TARDIS-PlayerExit", function()
 	end
 end)
 
+net.Receive("TARDIS-SetRepairing", function()
+	local tardis=net.ReadEntity()
+	local repairing=tobool(net.ReadBit())
+	local interior=net.ReadEntity()
+	if IsValid(tardis) then
+		tardis.repairing=repairing
+	end
+	if tobool(GetConVarNumber("tardisint_repairsound"))==true and IsValid(interior) and repairing then
+		sound.Play("tardis/repair.wav", interior:GetPos())
+	end
+end)
+
+net.Receive("TARDIS-FinishRepair", function()
+	local tardis=net.ReadEntity()
+	if tobool(GetConVarNumber("tardisint_repairsound"))==true and IsValid(tardis) then
+		sound.Play("tardis/repairfinish.wav", tardis:GetPos())
+	end
+end)
+
 surface.CreateFont( "HUDNumber", {font="Trebuchet MS", size=40, weight=900} )
 
 hook.Add("HUDPaint", "TARDIS-DrawHUD", function()
@@ -417,6 +436,12 @@ hook.Add("PopulateToolMenu", "TARDIS-PopulateToolMenu", function()
 		checkBox:SetText( "Tool tips" ) 
 		checkBox:SetValue( GetConVarNumber( "tardisint_tooltip" ) )
 		checkBox:SetConVar( "tardisint_tooltip" )
+		panel:AddItem(checkBox)
+		
+		local checkBox = vgui.Create( "DCheckBoxLabel" ) 
+		checkBox:SetText( "Repair sounds" ) 
+		checkBox:SetValue( GetConVarNumber( "tardisint_repairsound" ) )
+		checkBox:SetConVar( "tardisint_repairsound" )
 		panel:AddItem(checkBox)
 	end)
 end)

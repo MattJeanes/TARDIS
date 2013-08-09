@@ -18,6 +18,8 @@ util.AddNetworkString("TARDIS-SetViewmode")
 util.AddNetworkString("TARDIS-PlayerEnter")
 util.AddNetworkString("TARDIS-PlayerExit")
 util.AddNetworkString("TARDIS-SetLocked")
+util.AddNetworkString("TARDIS-SetRepairing")
+util.AddNetworkString("TARDIS-FinishRepair")
 
 net.Receive("TARDIS-TakeDamage", function(len,ply)
 	if ply:IsAdmin() or ply:IsSuperAdmin() then
@@ -78,6 +80,8 @@ function ENT:Initialize()
 	self.phasecur=0
 	self.interiorcur=0
 	self.viewmodecur=0
+	self.repaircur=0
+	self.repairdelay=2
 	self.occupants={}
 	if WireLib then
 		self.wirepos=Vector(0,0,0)
@@ -128,6 +132,56 @@ function ENT:UpdateTransmitState()
 	return TRANSMIT_ALWAYS
 end
 
+function ENT:StartRepair()
+	if self.repairing then return end
+	if self.health > 99 then return end
+	self.repairing=true
+	net.Start("TARDIS-SetRepairing")
+		net.WriteEntity(self)
+		net.WriteBit(true)
+		if IsValid(self.interior) then
+			net.WriteEntity(self.interior)
+		end
+	net.Broadcast()
+	self.repairwait=true
+	self.repairoccupants=table.Copy(self.occupants)
+	for k,v in pairs(self.occupants) do
+		v:ChatPrint("TARDIS self-repair initiated, all occupants must exit to start.")
+	end
+end
+
+function ENT:BeginRepair()
+	self.repairwait=nil
+	self.repairfinish=CurTime()+((100-self.health)*self.repairdelay)
+end
+
+function ENT:EndRepair()
+	if not self.repairing then return end
+	if self.repairoccupants then
+		for k,v in pairs(self.repairoccupants) do
+			if self.repairwait then
+				v:ChatPrint("TARDIS self-repair cancelled.")
+			else
+				v:ChatPrint("TARDIS self-repair completed.")
+			end
+		end
+		self.repairoccupants=nil
+	end
+	if not self.repairwait and self.repairfinish then
+		net.Start("TARDIS-FinishRepair")
+			net.WriteEntity(self)
+		net.Broadcast()
+		self:FlashLight(1.5)
+	end
+	self.repairing=nil
+	self.repairwait=nil
+	self.repairfinish=nil
+	net.Start("TARDIS-SetRepairing")
+		net.WriteEntity(self)
+		net.WriteBit(false)
+	net.Broadcast()
+end
+
 function ENT:SetLocked(locked)
 	if locked then
 		self.locked=true
@@ -140,12 +194,7 @@ function ENT:SetLocked(locked)
 			net.WriteEntity(self.interior or NULL)
 			net.WriteBit(self:GetLocked())
 		net.Broadcast()
-		self:SetLight(true)
-		timer.Simple(0.5,function()
-			if IsValid(self) and not self.flightmode and not self.moving then
-				self:SetLight(false)
-			end
-		end)
+		self:FlashLight(0.5)
 	end
 end
 
@@ -268,7 +317,7 @@ function ENT:SetHP(hp)
 end
 
 function ENT:TakeHP(hp)
-	if not hp or not self:ShouldTakeDamage() then return end
+	if not hp or not self:ShouldTakeDamage() or self.repairing then return end
 	self:SetHP(self.health-hp)
 	if self.interior and IsValid(self.interior) then
 		sound.Play("Default.ImpactSoft",self.interior:LocalToWorld(Vector(335, 310, 120)))
@@ -302,6 +351,16 @@ function ENT:ToggleLight()
 	else
 		self:SetLight(true)
 	end
+end
+
+function ENT:FlashLight(time)
+	if not self.visible then return end
+	self:SetLight(true)
+	timer.Simple(time,function()
+		if IsValid(self) and not self.flightmode and not self.moving then
+			self:SetLight(false)
+		end
+	end)
 end
 
 function ENT:Teleport()
@@ -356,7 +415,7 @@ function ENT:GetNumber()
 end
 
 function ENT:Go(vec,ang)
-	if not self.moving and vec then
+	if not self.moving and vec and not self.repairing then
 		self.demat=true
 		self.moving=true
 		self.vec=vec
@@ -558,14 +617,22 @@ function ENT:Use( ply, caller )
 end
 
 function ENT:PlayerEnter( ply )
-	if self.locked then
-		ply:ChatPrint("This TARDIS is locked.")
-		return
-	end
 	if self.occupants then
 		for k,v in pairs(self.occupants) do
 			if ply==v and (not ply.tardis_viewmode or ply.tardis_skycamera) then return end
 		end
+	end
+	if self.locked then
+		ply:ChatPrint("This TARDIS is locked.")
+		return
+	end
+	if self.repairing then
+		if self.repairfinish then
+			ply:ChatPrint("This TARDIS is self-repairing, completion in "..math.floor(self.repairfinish-CurTime()).." seconds.")
+		else
+			ply:ChatPrint("This TARDIS is self-repairing.")
+		end
+		return
 	end
 	if ply.tardis and IsValid(ply.tardis) then
 		ply.tardis:PlayerExit( ply )
@@ -796,14 +863,18 @@ function ENT:PhysicsUpdate( ph )
 end
 
 function ENT:PhysicsCollide( data, physobj )
-	if self.interior and IsValid(self.interior) and data.Speed and data.Speed>200 then
+	if data.Speed and data.Speed>200 then
 		local n=math.Clamp(data.Speed*0.01,0,16)
-		util.ScreenShake(self.interior:GetPos(),n,5,0.5,700)
+		self:TakeHP(n*0.1) // approximately 1hp for a moderate hit
+		if self.interior and IsValid(self.interior) then
+			util.ScreenShake(self.interior:GetPos(),n,5,0.5,700)
+		end
 	end
 end
 
 function ENT:ToggleFlight()
 	if not (CurTime()>self.flightcur) then return false end
+	if self.repairing then return false end
 	local flightphase=tobool(GetConVarNumber("tardis_flightphase"))==true
 	if not flightphase and not self.visible then return false end
 	self.flightcur=CurTime()+1
@@ -841,7 +912,7 @@ end
 
 function ENT:TogglePhase()
 	local flightphase=tobool(GetConVarNumber("tardis_flightphase"))==true
-	if CurTime()>self.phasecur and not self.exploded then
+	if CurTime()>self.phasecur and not self.exploded and not self.repairing then
 		if self.flightmode and not flightphase then return false end
 		self.phasecur=CurTime()+2
 		self.visible=(not self.visible)
@@ -953,8 +1024,19 @@ function ENT:Think()
 	if self.pilot and not IsValid(self.pilot) then
 		self.pilot=nil
 	end
+	
+	if self.repairing and not self.repairwait and CurTime()>self.repaircur then
+		self.repaircur=CurTime()+self.repairdelay
+		self:AddHP(1)
+		if self.health>=100 then
+			self:EndRepair()
+		end
+	end
 
 	if self.occupants then
+		if self.repairwait and #self.occupants==0 then
+			self:BeginRepair()
+		end
 		for k,v in pairs(self.occupants) do
 			if not IsValid(v) then
 				self.occupants[k]=nil
@@ -1004,7 +1086,7 @@ function ENT:Think()
 		self:TogglePhase()
 	end
 	
-	if not self.moving and self.pilot and IsValid(self.pilot) and self.pilot:KeyDown(IN_ATTACK) and not self.pilot.tardis_viewmode then
+	if not self.moving and not self.repairing and self.pilot and IsValid(self.pilot) and self.pilot:KeyDown(IN_ATTACK) and not self.pilot.tardis_viewmode then
 		if self.pilot.linked_tardis and self.pilot.linked_tardis==self and self.pilot.tardis_vec and self.pilot.tardis_ang then
 			self:Go(self.pilot.tardis_vec, self.pilot.tardis_ang)
 			self.pilot.tardis_vec=nil

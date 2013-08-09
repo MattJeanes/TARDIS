@@ -95,7 +95,7 @@ function ENT:Toggle( bEnable, ply )
 	local interior=self.interior
 	if IsValid(self.tardis) and IsValid(self.interior) and IsValid(self.interior.skycamera) then
 		local skycamera=self.interior.skycamera
-		if not self.tardis.moving and skycamera.hitpos and skycamera.hitang then
+		if not self.tardis.moving and not self.tardis.repairing and skycamera.hitpos and skycamera.hitang then
 			self.tardis:Go(skycamera.hitpos, skycamera.hitang)
 			ply:ChatPrint("TARDIS moving to set destination.")
 			skycamera.hitpos=nil

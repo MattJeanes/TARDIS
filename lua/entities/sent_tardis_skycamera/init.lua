@@ -177,7 +177,6 @@ function ENT:Think()
 		end
 		
 		if not (vec==Vector(0,0,0)) then
-			print("moving")
 			self:MoveLocal(vec,force)
 		end
 		

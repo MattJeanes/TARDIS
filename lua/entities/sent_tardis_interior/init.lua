@@ -36,8 +36,11 @@ function ENT:Initialize()
 	self.chair1=self:MakeVehicle(self:LocalToWorld(Vector(130,-96,-30)), Angle(0,40,0), chair.Model, chair.Class, vname, chair)
 	self.chair2=self:MakeVehicle(self:LocalToWorld(Vector(125,55,-30)), Angle(0,135,0), chair.Model, chair.Class, vname, chair)
 	
-	self.skycamera=self:MakePart("sent_tardis_skycamera", Vector(0,0,-350), Angle(90,0,0))
-	self.throttle=self:MakePart("sent_tardis_throttle", Vector(-8.87,-45,6), Angle(-12,-5,20))
+	self.skycamera=self:MakePart("sent_tardis_skycamera", Vector(0,0,-350), Angle(90,0,0),false)
+	self.throttle=self:MakePart("sent_tardis_throttle", Vector(-8.87,-45,6), Angle(-12,-5,20),true)
+	self.atomaccel=self:MakePart("sent_tardis_atomaccel", Vector(20,-37.67,1.75), Angle(0,0,0),true)
+	self.screen=self:MakePart("sent_tardis_screen", Vector(42,0.75,27.1), Angle(0,-5,0),true)
+	self.repairlever=self:MakePart("sent_tardis_repairlever", Vector(44,-18,5.5), Angle(22,-32,-12.5),true)
 	
 	net.Start("TARDISInt-SetParts")
 		net.WriteFloat(#self.parts)
@@ -51,7 +54,7 @@ function ENT:UpdateTransmitState()
 	return TRANSMIT_ALWAYS
 end
 
-function ENT:MakePart(class,vec,ang)
+function ENT:MakePart(class,vec,ang,weld)
 	local ent=ents.Create(class)
 	ent.tardis=self.tardis
 	ent.interior=self
@@ -59,6 +62,9 @@ function ENT:MakePart(class,vec,ang)
 	ent:SetAngles(ang)
 	ent:Spawn()
 	ent:Activate()
+	if weld then
+		constraint.Weld(self,ent,0,0)
+	end
 	table.insert(self.parts,ent)
 	return ent
 end
@@ -180,17 +186,7 @@ function ENT:Use( ply )
 				return
 			end
 		end
-		
-		local pos=Vector(78,-0.19,-47)
-		local pos2=self:WorldToLocal(ply:GetPos())
-		if pos:Distance(pos2) < 50 and self:PlayerLookingAt(ply, Vector(40.68,2.34,33.77), 10, 10) then
-			if IsValid(self.skycamera) and CurTime()>self.skycamera.usecur then
-				self.skycamera.usecur=CurTime()+1
-				self.skycamera:PlayerEnter(ply)
-			end
-			return
-		end
-		
+
 		//this must go last, or bad things will happen
 		if CurTime()>self.tardis.viewmodecur then
 			local pos=Vector(0,0,0)
