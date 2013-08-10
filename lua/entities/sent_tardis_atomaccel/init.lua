@@ -92,4 +92,8 @@ function ENT:Toggle( bEnable, ply )
 	else
 		self:SetDir( false )
 	end
+	
+	if IsValid(self.interior) then
+		self.interior.usecur=CurTime()+1
+	end
 end

@@ -239,8 +239,13 @@ end
 
 function ENT:Explode()
 	if not self:ShouldTakeDamage() then return end
+	
+	if not self.visible then
+		self:TogglePhase()
+	end
+	
 	self.exploded=true
-	self:SetLight(false)
+	self:SetLight(false)	
 	
 	net.Start("TARDIS-Explode")
 		net.WriteEntity(self)
@@ -652,6 +657,9 @@ function ENT:PlayerEnter( ply )
 			if ply==v and (not ply.tardis_viewmode or ply.tardis_skycamera) then return end
 		end
 	end
+	if self.moving then
+		return
+	end
 	if self.locked then
 		ply:ChatPrint("This TARDIS is locked.")
 		return
@@ -713,6 +721,9 @@ function ENT:OnRemove()
 end
 
 function ENT:PlayerExit( ply, override )
+	if self.moving and not override then
+		return
+	end
 	if ply:InVehicle() then ply:ExitVehicle() end
 	net.Start("Player-SetTARDIS")
 		net.WriteEntity(ply)

@@ -14,11 +14,9 @@ function ENT:Think()
 	if LocalPlayer().tardis==self:GetNWEntity("TARDIS", NULL) and LocalPlayer().tardis_viewmode then
 		local TargetPos = 0.0;
 		if ( self:GetOn() ) then TargetPos = 1.0; end
-		if not (TargetPos==self.PosePosition) then
-			self.PosePosition = math.Approach( self.PosePosition, TargetPos, FrameTime() * 1.5 )
-			self:SetPoseParameter( "switch", self.PosePosition )
-			self:InvalidateBoneCache()
-		end
+		self.PosePosition = math.Approach( self.PosePosition, TargetPos, FrameTime() * 1.5 )
+		self:SetPoseParameter( "switch", self.PosePosition )
+		self:InvalidateBoneCache()
 		
 		if LocalPlayer():GetEyeTraceNoCursor().Entity==self and LocalPlayer():EyePos():Distance(self:GetPos())<60 then
 			if tobool(GetConVarNumber("tardisint_tooltip"))==true then

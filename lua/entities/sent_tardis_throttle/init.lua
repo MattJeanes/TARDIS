@@ -91,6 +91,10 @@ function ENT:Toggle( bEnable, ply )
 		self:SetOn( false )
 	end
 	
+	if IsValid(self.interior) then
+		self.interior.usecur=CurTime()+1
+	end
+	
 	local tardis=self.tardis
 	local interior=self.interior
 	if IsValid(self.tardis) and IsValid(self.interior) and IsValid(self.interior.skycamera) then

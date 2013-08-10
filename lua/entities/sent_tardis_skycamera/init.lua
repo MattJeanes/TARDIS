@@ -207,6 +207,9 @@ function ENT:Think()
 		if CurTime()>self.usecur and v:KeyDown(IN_USE) then
 			self.usecur=CurTime()+1
 			self:PlayerExit(v)
+			if IsValid(self.interior) then
+				self.interior.usecur=CurTime()+1
+			end
 			return
 		end
 		if v:KeyDown(IN_ATTACK2) then

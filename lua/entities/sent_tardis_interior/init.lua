@@ -22,6 +22,7 @@ function ENT:Initialize()
 	
 	self.viewcur=0
 	self.throttlecur=0
+	self.usecur=0
 	
 	if WireLib then
 		Wire_CreateInputs(self, { "Demat", "Phase", "Flightmode", "X", "Y", "Z", "XYZ [VECTOR]", "Rot" })
@@ -36,7 +37,7 @@ function ENT:Initialize()
 	self.chair1=self:MakeVehicle(self:LocalToWorld(Vector(130,-96,-30)), Angle(0,40,0), chair.Model, chair.Class, vname, chair)
 	self.chair2=self:MakeVehicle(self:LocalToWorld(Vector(125,55,-30)), Angle(0,135,0), chair.Model, chair.Class, vname, chair)
 	
-	self.skycamera=self:MakePart("sent_tardis_skycamera", Vector(0,0,-400), Angle(90,0,0),false)
+	self.skycamera=self:MakePart("sent_tardis_skycamera", Vector(0,0,-350+GetConVarNumber("tardis_spawnoffset")), Angle(90,0,0),false)
 	self.throttle=self:MakePart("sent_tardis_throttle", Vector(-8.87,-45,6), Angle(-12,-5,20),true)
 	self.atomaccel=self:MakePart("sent_tardis_atomaccel", Vector(20,-37.67,1.75), Angle(0,0,0),true)
 	self.screen=self:MakePart("sent_tardis_screen", Vector(42,0.75,27.1), Angle(0,-5,0),true)
@@ -175,13 +176,15 @@ function ENT:PlayerLookingAt(ply,vec,fov,Width)
 end
 
 function ENT:Use( ply )
-	if self.tardis and IsValid(self.tardis) and ply.tardis and IsValid(ply.tardis) and ply.tardis==self.tardis and ply.tardis_viewmode and not ply.tardis_skycamera then
+	if CurTime()>self.usecur and self.tardis and IsValid(self.tardis) and ply.tardis and IsValid(ply.tardis) and ply.tardis==self.tardis and ply.tardis_viewmode and not ply.tardis_skycamera then
+		self.usecur=CurTime()+1
+		
 		if CurTime()>self.tardis.exitcur then
 			local pos=Vector(300,295,-79)
 			local pos2=self:WorldToLocal(ply:GetPos())
 			local distance=pos:Distance(pos2)
 			if distance < 25 then
-				self.tardis:PlayerExit(ply,true)
+				self.tardis:PlayerExit(ply)
 				self.tardis.exitcur=CurTime()+1
 				return
 			end
