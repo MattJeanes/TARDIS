@@ -38,10 +38,11 @@ function ENT:Initialize()
 	self.chair2=self:MakeVehicle(self:LocalToWorld(Vector(125,55,-30)), Angle(0,135,0), chair.Model, chair.Class, vname, chair)
 	
 	self.skycamera=self:MakePart("sent_tardis_skycamera", Vector(0,0,-350+GetConVarNumber("tardis_spawnoffset")), Angle(90,0,0),false)
-	self.throttle=self:MakePart("sent_tardis_throttle", Vector(-8.87,-45,6), Angle(-12,-5,20),true)
+	self.throttle=self:MakePart("sent_tardis_throttle", Vector(-8.87,-50,5.5), Angle(-12,-5,24),true)
 	self.atomaccel=self:MakePart("sent_tardis_atomaccel", Vector(20,-37.67,1.75), Angle(0,0,0),true)
 	self.screen=self:MakePart("sent_tardis_screen", Vector(42,0.75,27.1), Angle(0,-5,0),true)
 	self.repairlever=self:MakePart("sent_tardis_repairlever", Vector(44,-18,5.5), Angle(22,-32,-12.5),true)
+	self.wibblylever=self:MakePart("sent_tardis_wibblylever", Vector(-48,18,5.4), Angle(-25,-13,6),true)
 	
 	net.Start("TARDISInt-SetParts")
 		net.WriteFloat(#self.parts)
