@@ -4,6 +4,7 @@ include('shared.lua')
 
 util.AddNetworkString("TARDIS-SetViewmode")
 util.AddNetworkString("TARDISInt-SetParts")
+util.AddNetworkString("TARDISInt-UpdateAdv")
 
 function ENT:Initialize()
 	self:SetModel( "models/drmatt/tardis/interior.mdl" )
@@ -24,6 +25,9 @@ function ENT:Initialize()
 	self.viewcur=0
 	self.throttlecur=0
 	self.usecur=0
+	self.flightmode=0 //0 is none, 1 is skycamera selection, 2 is idk yet or whatever and so on
+	self.step=0
+	
 	
 	if WireLib then
 		Wire_CreateInputs(self, { "Demat", "Phase", "Flightmode", "X", "Y", "Z", "XYZ [VECTOR]", "Rot" })
@@ -38,12 +42,16 @@ function ENT:Initialize()
 	self.chair1=self:MakeVehicle(self:LocalToWorld(Vector(130,-96,-30)), Angle(0,40,0), chair.Model, chair.Class, vname, chair)
 	self.chair2=self:MakeVehicle(self:LocalToWorld(Vector(125,55,-30)), Angle(0,135,0), chair.Model, chair.Class, vname, chair)
 	
-	self.skycamera=self:MakePart("sent_tardis_skycamera", Vector(0,0,-350+GetConVarNumber("tardis_spawnoffset")), Angle(90,0,0),false)
+	self.skycamera=self:MakePart("sent_tardis_skycamera", Vector(0,0,-350), Angle(90,0,0),false)
 	self.throttle=self:MakePart("sent_tardis_throttle", Vector(-8.87,-50,5.5), Angle(-12,-5,24),true)
 	self.atomaccel=self:MakePart("sent_tardis_atomaccel", Vector(20,-37.67,1.75), Angle(0,0,0),true)
 	self.screen=self:MakePart("sent_tardis_screen", Vector(42,0.75,27.1), Angle(0,-5,0),true)
 	self.repairlever=self:MakePart("sent_tardis_repairlever", Vector(44,-18,5.5), Angle(22,-32,-12.5),true)
 	self.wibblylever=self:MakePart("sent_tardis_wibblylever", Vector(-48,18,5.4), Angle(-25,-13,6),true)
+	self.directionalpointer=self:MakePart("sent_tardis_directionalpointer", Vector(12.5,-24.5,23), Angle(0,30,0),true)
+	self.keyboard=self:MakePart("sent_tardis_keyboard", Vector(29,-53,-8), Angle(0,30,50),true)
+	self.helmicregulator=self:MakePart("sent_tardis_helmicregulator", Vector(-26,-41,4), Angle(0,-30,24.5),true)
+	self.handbrake=self:MakePart("sent_tardis_handbrake", Vector(-40.088379, -21.466797, 7.924805), Angle(-69.506, -151.679, -177.843),true)
 	
 	net.Start("TARDISInt-SetParts")
 		net.WriteFloat(#self.parts)
@@ -51,6 +59,34 @@ function ENT:Initialize()
 			net.WriteEntity(v)
 		end
 	net.Broadcast()
+end
+
+function ENT:UpdateAdv(ply,success)
+	if not (self.flightmode==0) then
+		if success then
+			self.step=self.step+1
+			if self.flightmode==1 and self.step==5 then
+				local skycamera=self.skycamera
+				if IsValid(self.tardis) and not self.tardis.moving and IsValid(skycamera) and skycamera.hitpos and skycamera.hitang then
+					self.tardis:Go(skycamera.hitpos, skycamera.hitang)
+					//ply:ChatPrint("Success.")
+					skycamera.hitpos=nil
+					skycamera.hitang=nil
+				else
+					ply:ChatPrint("Error, already teleporting or no coordinates set.")
+				end
+				self.flightmode=0
+				self.step=0
+			end
+		else
+			//ply:ChatPrint("Failed.")
+			self.flightmode=0
+			self.step=0
+		end
+		net.Start("TARDISInt-UpdateAdv")
+			net.WriteBit(success)
+		net.Send(ply)
+	end
 end
 
 function ENT:UpdateTransmitState()
@@ -61,6 +97,7 @@ function ENT:MakePart(class,vec,ang,weld)
 	local ent=ents.Create(class)
 	ent.tardis=self.tardis
 	ent.interior=self
+	ent.advanced=self.advanced
 	ent:SetPos(self:LocalToWorld(vec))
 	ent:SetAngles(ang)
 	ent:Spawn()

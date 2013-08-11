@@ -13,6 +13,7 @@ util.AddNetworkString("TARDIS-TakeDamage")
 util.AddNetworkString("TARDIS-FlightPhase")
 util.AddNetworkString("TARDIS-DoubleTrace")
 util.AddNetworkString("TARDIS-SpawnOffset")
+util.AddNetworkString("TARDIS-AdvancedMode")
 util.AddNetworkString("TARDIS-Phase")
 util.AddNetworkString("TARDIS-UpdateVis")
 util.AddNetworkString("TARDIS-SetInterior")
@@ -46,6 +47,12 @@ end)
 net.Receive("TARDIS-SpawnOffset", function(len,ply)
 	if ply:IsAdmin() or ply:IsSuperAdmin() then
 		RunConsoleCommand("tardis_spawnoffset", net.ReadFloat())
+	end
+end)
+
+net.Receive("TARDIS-AdvancedMode", function(len,ply)
+	if ply:IsAdmin() or ply:IsSuperAdmin() then
+		RunConsoleCommand("tardis_advancedmode", net.ReadFloat())
 	end
 end)
 
@@ -98,6 +105,7 @@ function ENT:Initialize()
 	self.viewmodecur=0
 	self.repaircur=0
 	self.repairdelay=1
+	self.advanced=tobool(GetConVarNumber("tardis_advancedmode"))
 	self.occupants={}
 	if WireLib then
 		self.wirepos=Vector(0,0,0)
@@ -139,6 +147,7 @@ function ENT:Initialize()
 	self.interior=ents.Create("sent_tardis_interior")
 	self.interior:SetPos(trace.HitPos+Vector(0,0,-600+offset))
 	self.interior.tardis=self
+	self.interior.advanced=self.advanced
 	self.interior:Spawn()
 	self.interior:Activate()
 	self:SetNWEntity("interior",self.interior)

@@ -97,13 +97,21 @@ function ENT:Toggle( bEnable, ply )
 	
 	local tardis=self.tardis
 	local interior=self.interior
-	if IsValid(self.tardis) and IsValid(self.interior) and IsValid(self.interior.skycamera) then
-		local skycamera=self.interior.skycamera
-		if not self.tardis.moving and not self.tardis.repairing and skycamera.hitpos and skycamera.hitang then
-			self.tardis:Go(skycamera.hitpos, skycamera.hitang)
-			ply:ChatPrint("TARDIS moving to set destination.")
-			skycamera.hitpos=nil
-			skycamera.hitang=nil
+	if IsValid(tardis) and IsValid(interior) then
+		if self.advanced then
+			if interior.flightmode==1 and interior.step==3 then
+				interior:UpdateAdv(ply, true)
+			else
+				interior:UpdateAdv(ply, false)
+			end
+		else
+			local skycamera=self.interior.skycamera
+			if IsValid(skycamera) and not self.tardis.moving and not self.tardis.repairing and skycamera.hitpos and skycamera.hitang then
+				self.tardis:Go(skycamera.hitpos, skycamera.hitang)
+				ply:ChatPrint("TARDIS moving to set destination.")
+				skycamera.hitpos=nil
+				skycamera.hitang=nil
+			end
 		end
 	end
 end

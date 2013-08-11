@@ -12,6 +12,7 @@ function ENT:Initialize()
 	self:SetSolid( SOLID_VPHYSICS )
 	self:SetRenderMode( RENDERMODE_TRANSALPHA )
 	self:SetColor(Color(255,255,255,0))
+	self:SetSolid(SOLID_NONE)
 	self.phys = self:GetPhysicsObject()
 	if (self.phys:IsValid()) then
 		self.phys:EnableMotion(false)

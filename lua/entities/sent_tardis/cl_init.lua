@@ -463,6 +463,23 @@ hook.Add("PopulateToolMenu", "TARDIS-PopulateToolMenu", function()
 		end
 		panel:AddItem(checkBox)
 		
+		local checkBox = vgui.Create( "DCheckBoxLabel" )
+		checkBox:SetText( "Advanced Mode (Admin Only)" )
+		checkBox:SetToolTip( "This sets interior navigation to advanced, turn off for easy." )
+		checkBox:SetValue( GetConVarNumber( "tardis_advancedmode" ) )
+		checkBox:SetDisabled(not (LocalPlayer():IsAdmin() or LocalPlayer():IsSuperAdmin()))
+		checkBox.OnChange = function(self,val)
+			if LocalPlayer():IsAdmin() or LocalPlayer():IsSuperAdmin() then
+				net.Start("TARDIS-AdvancedMode")
+					net.WriteFloat(val==true and 1 or 0)
+				net.SendToServer()
+			else
+				chat.AddText(Color(255,62,62), "WARNING: ", Color(255,255,255), "You must be an admin to change this option.")
+				chat.PlaySound()
+			end
+		end
+		panel:AddItem(checkBox)
+		
 		/* -- i feel people arnt going to know what this does and end up breaking everything, the above checkbox should help in most cases.
 		local slider = vgui.Create( "DNumSlider" )
 			slider:SetText( "Spawn Offset (Admin Only)" )

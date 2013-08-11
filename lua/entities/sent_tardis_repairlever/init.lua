@@ -36,6 +36,13 @@ function ENT:Use( activator, caller, type, value )
 
 	if ( !activator:IsPlayer() ) then return end		-- Who the frig is pressing this shit!?
 	
+	if IsValid(self.interior) then
+		self.interior.usecur=CurTime()+1
+		if self.advanced then
+			self.interior:UpdateAdv(activator,false)
+		end
+	end
+	
 	if ( self:GetIsToggle() ) then
 
 		if ( type == USE_ON ) then

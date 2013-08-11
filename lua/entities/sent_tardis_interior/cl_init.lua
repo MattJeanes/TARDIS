@@ -33,14 +33,6 @@ function ENT:Initialize()
 	self.timerotor={}
 	self.timerotor.pos=0
 	self.timerotor.mode=1
-	
-	/*
-	self.throttle={}
-	self.throttle.active=false
-	self.throttle.pos=0
-	self.throttle.cur=0
-	self.throttle.mode=1
-	*/
 end
 
 net.Receive("TARDISInt-SetParts", function()
@@ -48,6 +40,15 @@ net.Receive("TARDISInt-SetParts", function()
 	for i=1,count do
 		local ent=net.ReadEntity()
 		ent.tardis_part=true
+	end
+end)
+
+net.Receive("TARDISInt-UpdateAdv", function()
+	local success=tobool(net.ReadBit())
+	if success then
+		surface.PlaySound("tardis/advflight_good.wav")
+	else
+		surface.PlaySound("tardis/advflight_bad.wav")
 	end
 end)
 

@@ -36,6 +36,13 @@ function ENT:Use( activator, caller, type, value )
 
 	if ( !activator:IsPlayer() ) then return end		-- Who the frig is pressing this shit!?
 	
+	if IsValid(self.interior) then
+		self.interior.usecur=CurTime()+1
+		if self.advanced then
+			self.interior:UpdateAdv(activator,false)
+		end
+	end
+	
 	if IsValid(self.tardis) and (not self.tardis.flightmode and not self.tardis.moving) then return end
 	
 	if ( self:GetIsToggle() ) then
@@ -91,9 +98,5 @@ function ENT:Toggle( bEnable, ply )
 		self:SetDir( true )
 	else
 		self:SetDir( false )
-	end
-	
-	if IsValid(self.interior) then
-		self.interior.usecur=CurTime()+1
 	end
 end

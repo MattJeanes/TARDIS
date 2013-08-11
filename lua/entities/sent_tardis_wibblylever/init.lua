@@ -93,11 +93,8 @@ function ENT:Toggle( bEnable, ply )
 	
 	if IsValid(self.interior) then
 		self.interior.usecur=CurTime()+1
-	end
-	
-	local tardis=self.tardis
-	local interior=self.interior
-	if IsValid(self.tardis) and IsValid(self.interior) then
-		
+		if self.advanced then
+			self.interior:UpdateAdv(ply,false)
+		end
 	end
 end
