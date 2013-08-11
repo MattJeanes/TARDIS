@@ -421,7 +421,7 @@ function ENT:Teleport()
 		end
 		for k,v in pairs(player.GetAll()) do
 			if (self:GetPos():Distance(v:GetPos()) < 45) and not (v.tardis and not v.tardis_viewmode) then
-				self:PlayerEnter(v)
+				self:PlayerEnter(v,true)
 			end
 		end
 		if self.attachedents then
@@ -651,16 +651,16 @@ function ENT:Use( ply, caller )
 	end
 end
 
-function ENT:PlayerEnter( ply )
+function ENT:PlayerEnter( ply, override )
 	if self.occupants then
 		for k,v in pairs(self.occupants) do
 			if ply==v and (not ply.tardis_viewmode or ply.tardis_skycamera) then return end
 		end
 	end
-	if self.moving then
+	if self.moving and not override then
 		return
 	end
-	if self.locked then
+	if self.locked and not override then
 		ply:ChatPrint("This TARDIS is locked.")
 		return
 	end
@@ -1136,6 +1136,12 @@ function ENT:Think()
 			local angle = Angle(0,self.pilot:GetAngles().y+180,0)
 			self:Go(trace.HitPos, angle)
 			self.pilot:ChatPrint("TARDIS moving to AimPos.")
+		end
+	end
+	
+	if string.lower(gmod.GetGamemode().Name)=="horizon" then
+		for k,v in pairs(self.occupants) do
+			player_manager.RunClass(v,"TransmitResources",v.SuitPower>20 and 0 or 1, v.SuitAir>20 and 0 or 1, v.SuitCoolant>20 and 0 or 1)
 		end
 	end
 	

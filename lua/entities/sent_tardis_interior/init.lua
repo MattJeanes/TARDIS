@@ -12,6 +12,7 @@ function ENT:Initialize()
 	self:SetMoveType( MOVETYPE_VPHYSICS )
 	self:SetSolid( SOLID_VPHYSICS )
 	self:SetRenderMode( RENDERMODE_TRANSALPHA )
+	self:DrawShadow(false)
 	
 	self.phys = self:GetPhysicsObject()
 	if (self.phys:IsValid()) then
