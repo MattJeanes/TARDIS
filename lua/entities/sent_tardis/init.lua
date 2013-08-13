@@ -462,6 +462,8 @@ function ENT:Go(vec,ang)
 	if not self.moving and vec and not self.repairing then
 		self.demat=true
 		self.moving=true
+		self.lastpos=self:GetPos()
+		self.lastang=self:GetAngles()
 		self.vec=vec
 		self.attachedents = constraint.GetAllConstrainedEntities(self)
 		if self.attachedents then

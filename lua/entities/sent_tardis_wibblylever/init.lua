@@ -91,6 +91,15 @@ function ENT:Toggle( bEnable, ply )
 		self:SetOn( false )
 	end
 	
+	if IsValid(self.tardis) then
+		self.tardis:ToggleLocked()
+		if self.tardis.locked then
+			ply:ChatPrint("TARDIS locked.")
+		else
+			ply:ChatPrint("TARDIS unlocked.")
+		end
+	end
+	
 	if IsValid(self.interior) then
 		self.interior.usecur=CurTime()+1
 		if self.advanced then
