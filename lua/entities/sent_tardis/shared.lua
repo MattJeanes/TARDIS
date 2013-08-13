@@ -17,5 +17,19 @@ ENT.Category		= "Doctor Who"
 CreateConVar("tardis_takedamage", "1", {FCVAR_NOTIFY, FCVAR_SERVER_CAN_EXECUTE, FCVAR_REPLICATED})
 CreateConVar("tardis_flightphase", "1", {FCVAR_NOTIFY, FCVAR_SERVER_CAN_EXECUTE, FCVAR_REPLICATED})
 CreateConVar("tardis_doubletrace", "1", {FCVAR_NOTIFY, FCVAR_SERVER_CAN_EXECUTE, FCVAR_REPLICATED})
+CreateConVar("tardis_advanced", "0", {FCVAR_NOTIFY, FCVAR_SERVER_CAN_EXECUTE, FCVAR_REPLICATED})
+CreateConVar("tardis_teleportlock", "0", {FCVAR_NOTIFY, FCVAR_SERVER_CAN_EXECUTE, FCVAR_REPLICATED})
 CreateConVar("tardis_spawnoffset", "0", {FCVAR_SERVER_CAN_EXECUTE, FCVAR_REPLICATED})
-CreateConVar("tardis_advancedmode", "1", {FCVAR_NOTIFY, FCVAR_SERVER_CAN_EXECUTE, FCVAR_REPLICATED})
+
+hook.Add("PhysgunDrop", "TARDIS-PhysgunDrop", function(ply,ent)
+	if ent.physlocked then
+		ent:GetPhysicsObject():EnableMotion(false)
+	end
+end)
+
+hook.Add("OnPhysgunReload", "TARDIS-OnPhysgunReload", function(_,ply)
+	local ent=ply:GetEyeTraceNoCursor().Entity
+	if ent and IsValid(ent) and ent.physlocked then
+		return false
+	end
+end)

@@ -14,6 +14,7 @@ util.AddNetworkString("TARDIS-FlightPhase")
 util.AddNetworkString("TARDIS-DoubleTrace")
 util.AddNetworkString("TARDIS-SpawnOffset")
 util.AddNetworkString("TARDIS-AdvancedMode")
+util.AddNetworkString("TARDIS-TeleportLock")
 util.AddNetworkString("TARDIS-Phase")
 util.AddNetworkString("TARDIS-UpdateVis")
 util.AddNetworkString("TARDIS-SetInterior")
@@ -52,7 +53,13 @@ end)
 
 net.Receive("TARDIS-AdvancedMode", function(len,ply)
 	if ply:IsAdmin() or ply:IsSuperAdmin() then
-		RunConsoleCommand("tardis_advancedmode", net.ReadFloat())
+		RunConsoleCommand("tardis_advanced", net.ReadFloat())
+	end
+end)
+
+net.Receive("TARDIS-TeleportLock", function(len,ply)
+	if ply:IsAdmin() or ply:IsSuperAdmin() then
+		RunConsoleCommand("tardis_teleportlock", net.ReadFloat())
 	end
 end)
 
@@ -100,12 +107,13 @@ function ENT:Initialize()
 	self.exploded=false
 	self.visible=true
 	self.locked=false
+	self.physlocked=false
 	self.phasecur=0
 	self.interiorcur=0
 	self.viewmodecur=0
 	self.repaircur=0
 	self.repairdelay=1
-	self.advanced=tobool(GetConVarNumber("tardis_advancedmode"))
+	self.advanced=tobool(GetConVarNumber("tardis_advanced"))
 	self.occupants={}
 	if WireLib then
 		self.wirepos=Vector(0,0,0)
@@ -251,6 +259,10 @@ function ENT:Explode()
 	
 	if not self.visible then
 		self:TogglePhase()
+	end
+	
+	if self.physlocked then
+		self:TogglePhysLock()
 	end
 	
 	self.exploded=true
@@ -439,14 +451,16 @@ function ENT:Teleport()
 					v:SetPos(self:GetPos()+v.telepos)
 					v.telepos=nil
 					local phys=v:GetPhysicsObject()
-					if phys and IsValid(phys) and not v.frozen then
+					if phys and IsValid(phys) and not v.frozen and not v.physlocked then
 						phys:EnableMotion(true)
 					end
 					v.frozen=nil
 				end
 			end
 		end
-		self:GetPhysicsObject():EnableMotion(true)
+		if not self.physlocked then
+			self:GetPhysicsObject():EnableMotion(true)
+		end
 	end
 end
 
@@ -668,7 +682,7 @@ function ENT:PlayerEnter( ply, override )
 			if ply==v and (not ply.tardis_viewmode or ply.tardis_skycamera) then return end
 		end
 	end
-	if self.moving and not override then
+	if tobool(GetConVarNumber("tardis_teleportlock"))==true and self.moving and not override then
 		return
 	end
 	if self.locked and not override then
@@ -732,7 +746,7 @@ function ENT:OnRemove()
 end
 
 function ENT:PlayerExit( ply, override )
-	if self.moving and not override then
+	if tobool(GetConVarNumber("tardis_teleportlock"))==true and self.moving and not override then
 		return
 	end
 	if ply:InVehicle() then ply:ExitVehicle() end
@@ -1063,6 +1077,21 @@ function ENT:ToggleViewmode(ply,deldata)
 	end
 end
 
+function ENT:TogglePhysLock()
+	if self.exploded then
+		return false
+	else
+		if self.physlocked then
+			self:GetPhysicsObject():EnableMotion(true)
+			self.physlocked=false
+		else
+			self:GetPhysicsObject():EnableMotion(false)
+			self.physlocked=true
+		end
+		return true
+	end
+end
+
 function ENT:Think()
 	if CurTime() > self.cur then
 		if self.demat then
@@ -1128,6 +1157,9 @@ function ENT:Think()
 	
 	if CurTime() > self.flightcur and self.pilot and IsValid(self.pilot) and self.pilot:KeyDown(IN_RELOAD) and not self.pilot.tardis_viewmode then
 		self:ToggleFlight()
+		if self.flightmode and self.physlocked then
+			self.pilot:ChatPrint("WARNING: Physical lock active.")
+		end
 	end
 	
 	if CurTime() > self.phasecur and self.pilot and IsValid(self.pilot) and self.pilot:KeyDown(IN_ATTACK2) and not self.pilot.tardis_viewmode then

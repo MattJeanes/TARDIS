@@ -28,8 +28,7 @@ function ENT:Use( activator, caller, type, value )
 			self.usecur=CurTime()+1
 			if self.advanced then
 				if interior.flightmode==0 and interior.step==0 then
-					interior.flightmode=1
-					interior.step=1
+					interior:StartAdv(1,activator)
 					activator:ChatPrint("Manual flightmode activated.")
 				else
 					interior:UpdateAdv(activator,false)

@@ -5,6 +5,7 @@ include('shared.lua')
 util.AddNetworkString("TARDIS-SetViewmode")
 util.AddNetworkString("TARDISInt-SetParts")
 util.AddNetworkString("TARDISInt-UpdateAdv")
+util.AddNetworkString("TARDISInt-SetAdv")
 
 function ENT:Initialize()
 	self:SetModel( "models/drmatt/tardis/interior.mdl" )
@@ -46,7 +47,7 @@ function ENT:Initialize()
 	self.throttle=self:MakePart("sent_tardis_throttle", Vector(-8.87,-50,5.5), Angle(-12,-5,24),true)
 	self.atomaccel=self:MakePart("sent_tardis_atomaccel", Vector(20,-37.67,1.75), Angle(0,0,0),true)
 	self.screen=self:MakePart("sent_tardis_screen", Vector(42,0.75,27.1), Angle(0,-5,0),true)
-	self.repairlever=self:MakePart("sent_tardis_repairlever", Vector(44,-18,5.5), Angle(22,-32,-12.5),true)
+	self.repairlever=self:MakePart("sent_tardis_repairlever", Vector(-6.623535, 44.351563, 7), Angle(-11, 5, -23),true)
 	self.wibblylever=self:MakePart("sent_tardis_wibblylever", Vector(-48,18,5.4), Angle(-25,-13,6),true)
 	self.directionalpointer=self:MakePart("sent_tardis_directionalpointer", Vector(12.5,-24.5,23), Angle(0,30,0),true)
 	self.keyboard=self:MakePart("sent_tardis_keyboard", Vector(29,-53,-8), Angle(0,30,50),true)
@@ -55,12 +56,13 @@ function ENT:Initialize()
 	self.biglever=self:MakePart("sent_tardis_biglever", Vector(-9.94,-65,-52), Angle(0,-90,0),true)
 	self.blacksticks=self:MakePart("sent_tardis_blacksticks", Vector(4.480469, -43.906372, 7), Angle(13, 0, 24.176),true)
 	self.typewriter=self:MakePart("sent_tardis_typewriter", Vector(19.002930, 48.807617, 2.078125), Angle(0.945, -29.872, -20.250),true)
+	self.flightlever=self:MakePart("sent_tardis_flightlever", Vector(44,-18,5.5), Angle(22,-32,-12.5),true)
+	self.physbrake=self:MakePart("sent_tardis_physbrake", Vector(39, -22.75, 6.914063), Angle(-56.714, 6.660, 148.819),true)
 	
 	self.unused1=self:MakePart("sent_tardis_unused", Vector(-39.5, 22, 6.629883), Angle(-69.238, -165, 137.777),true)
 	self.unused2=self:MakePart("sent_tardis_unused", Vector(-0.431641, 44.75, 6.4), Angle(-63.913, 137.035, 136.118),true)
 	self.unused3=self:MakePart("sent_tardis_unused", Vector(39, 22.75, 5.828125), Angle(-63.740, 78.027, 136.528),true)
-	self.unused4=self:MakePart("sent_tardis_unused", Vector(39, -22.75, 6.914063), Angle(-56.714, 6.660, 148.819),true)
-	self.unused5=self:MakePart("sent_tardis_unused", Vector(-2.5, -45.5, 7.75), Angle(-56.714, -54.280, 148.819),true)
+	self.unused4=self:MakePart("sent_tardis_unused", Vector(-2.5, -45.5, 7.75), Angle(-56.714, -54.280, 148.819),true)
 	
 	net.Start("TARDISInt-SetParts")
 		net.WriteFloat(#self.parts)
@@ -68,6 +70,22 @@ function ENT:Initialize()
 			net.WriteEntity(v)
 		end
 	net.Broadcast()
+end
+
+function ENT:StartAdv(mode,ply,pos,ang)
+	if self.flightmode==0 and self.step==0 then
+		self.flightmode=mode
+		self.step=1
+		if pos and ang then
+			self.advpos=pos
+			self.advang=ang
+		end
+		net.Start("TARDISInt-SetAdv")
+			net.WriteEntity(self)
+			net.WriteEntity(ply)
+			net.WriteFloat(mode)
+		net.Send(ply)
+	end
 end
 
 function ENT:UpdateAdv(ply,success)
@@ -78,7 +96,6 @@ function ENT:UpdateAdv(ply,success)
 				local skycamera=self.skycamera
 				if IsValid(self.tardis) and not self.tardis.moving and IsValid(skycamera) and skycamera.hitpos and skycamera.hitang then
 					self.tardis:Go(skycamera.hitpos, skycamera.hitang)
-					//ply:ChatPrint("Success.")
 					skycamera.hitpos=nil
 					skycamera.hitang=nil
 				else
@@ -86,11 +103,23 @@ function ENT:UpdateAdv(ply,success)
 				end
 				self.flightmode=0
 				self.step=0
+			elseif self.flightmode==2 and self.step==5 then
+				if IsValid(self.tardis) and not self.tardis.moving and self.advpos and self.advpos then
+					self.tardis:Go(self.advpos, self.advang)
+				else
+					ply:ChatPrint("Error, already teleporting or no coordinates set.")
+				end
+				self.advpos=nil
+				self.advang=nil
+				self.flightmode=0
+				self.step=0
 			end
 		else
 			//ply:ChatPrint("Failed.")
 			self.flightmode=0
 			self.step=0
+			self.advpos=nil
+			self.advang=nil
 		end
 		net.Start("TARDISInt-UpdateAdv")
 			net.WriteBit(success)

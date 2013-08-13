@@ -50,8 +50,17 @@ net.Receive("TARDISInt-Locations-Send", function(l,ply)
 	if IsValid(interior) and IsValid(tardis) then
 		local pos=Vector(net.ReadFloat(), net.ReadFloat(), net.ReadFloat())
 		local ang=Angle(net.ReadFloat(), net.ReadFloat(), net.ReadFloat())
-		if not tardis.moving then
-			tardis:Go(pos,ang)
+		if interior.advanced then
+			if interior.flightmode==0 and interior.step==0 then
+				interior:StartAdv(2,ply,pos,ang)
+				ply:ChatPrint("Programmable flightmode activated.")
+			else
+				interior:UpdateAdv(ply,false)
+			end
+		else
+			if not tardis.moving then
+				tardis:Go(pos,ang)
+			end
 		end
 	end
 end)

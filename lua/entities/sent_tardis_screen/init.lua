@@ -24,16 +24,6 @@ function ENT:Use( activator, caller, type, value )
 		local skycamera=self.interior.skycamera
 		skycamera.usecur=CurTime()+1
 		skycamera:PlayerEnter(activator)
-		local interior=self.interior
-		if IsValid(interior) then
-			if self.advanced then
-				if interior.flightmode==1 and interior.step==1 then
-					interior:UpdateAdv(activator,true)
-				else
-					interior:UpdateAdv(activator,false)
-				end
-			end
-		end
 	end
 	
 	self:NextThink( CurTime() )

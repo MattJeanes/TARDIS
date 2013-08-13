@@ -97,4 +97,15 @@ function ENT:Toggle( bEnable, ply )
 			self.interior:UpdateAdv(ply, false)
 		end
 	end
+	
+	if IsValid(self.tardis) then
+		local success=self.tardis:TogglePhase()
+		if success then
+			if self.tardis.visible then
+				ply:ChatPrint("TARDIS now visible.")
+			elseif not self.tardis.visible then
+				ply:ChatPrint("TARDIS no longer visible.")
+			end
+		end
+	end
 end

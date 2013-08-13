@@ -68,6 +68,19 @@ local function TARDIS_Lock(ent)
 	return 0
 end
 
+local function TARDIS_Physlock(ent)
+	if ent and IsValid(ent) then
+		if not (ent:GetClass()=="sent_tardis") then return 0 end
+		local success=ent:TogglePhysLock()
+		if success then
+			return 1
+		else
+			return 0
+		end
+	end
+	return 0
+end
+
 
 local function TARDIS_Moving(ent)
 	if ent and IsValid(ent) then
@@ -97,6 +110,30 @@ local function TARDIS_Flying(ent)
 	if ent and IsValid(ent) then
 		if not (ent:GetClass()=="sent_tardis") then return 0 end
 		if ent.flightmode then
+			return 1
+		else
+			return 0
+		end
+	end
+	return 0
+end
+
+local function TARDIS_Locked(ent)
+	if ent and IsValid(ent) then
+		if not (ent:GetClass()=="sent_tardis") then return 0 end
+		if ent.locked then
+			return 1
+		else
+			return 0
+		end
+	end
+	return 0
+end
+
+local function TARDIS_Physlocked(ent)
+	if ent and IsValid(ent) then
+		if not (ent:GetClass()=="sent_tardis") then return 0 end
+		if ent.physlocked then
 			return 1
 		else
 			return 0
@@ -141,6 +178,10 @@ e2function number entity:tardisLock()
 	return TARDIS_Lock(this)
 end
 
+e2function number entity:tardisPhyslock()
+	return TARDIS_Physlock(this)
+end
+
 e2function number entity:tardisMoving()
 	return TARDIS_Moving(this)
 end
@@ -155,4 +196,12 @@ end
 
 e2function number entity:tardisHealth()
 	return TARDIS_Health(this)
+end
+
+e2function number entity:tardisLocked()
+	return TARDIS_Locked(this)
+end
+
+e2function number entity:tardisPhyslocked()
+	return TARDIS_Physlocked(this)
 end

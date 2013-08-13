@@ -20,7 +20,7 @@ function ENT:Think()
 		
 		if LocalPlayer():GetEyeTraceNoCursor().Entity==self and LocalPlayer():EyePos():Distance(self:GetPos())<60 then
 			if tobool(GetConVarNumber("tardisint_tooltip"))==true then
-				AddWorldTip( self:EntIndex(), "Black Sticks", 0.5, self:GetPos(), self.Entity  )
+				AddWorldTip( self:EntIndex(), "Phase Controller", 0.5, self:GetPos(), self.Entity  )
 			end
 			effects.halo.Add( {self}, Color( 255, 255, 255, 255 ), 1, 1, 1, true, true )
 		end

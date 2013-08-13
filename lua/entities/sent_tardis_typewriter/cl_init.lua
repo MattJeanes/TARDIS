@@ -252,16 +252,14 @@ net.Receive("TARDISInt-Locations-GUI", function()
 	
 	local function Load(msg)
 		locations={}
+		locations[map]={}
 		if file.Exists("tardis_locations.txt", "DATA") then
 			locations=von.deserialize(file.Read("tardis_locations.txt"))
-			if not locations[map] then
-				locations[map]={}
-			end
-			Reload()
 			if msg then
 				LocalPlayer():ChatPrint("Locations loaded.")
 			end
 		end
+		Reload()
 	end
 	Load(false)
 	
@@ -421,7 +419,9 @@ net.Receive("TARDISInt-Locations-GUI", function()
 	button.DoClick = function( button )
 		if selected then
 			local success=TransmitCoordinates()
-			if not success then
+			if success then
+				window:Close()
+			else
 				LocalPlayer():ChatPrint("Error, TARDIS may already be teleporting.")
 			end
 		else

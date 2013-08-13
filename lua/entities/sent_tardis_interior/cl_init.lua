@@ -52,6 +52,18 @@ net.Receive("TARDISInt-UpdateAdv", function()
 	end
 end)
 
+net.Receive("TARDISInt-SetAdv", function()
+	local interior=net.ReadEntity()
+	local ply=net.ReadEntity()
+	local mode=net.ReadFloat()
+	if IsValid(interior) and IsValid(ply) and mode then
+		if ply==LocalPlayer() then
+			surface.PlaySound("tardis/advflight_good.wav")
+		end
+		interior.flightmode=mode
+	end
+end)
+
 function ENT:Think()
 	local tardis=self:GetNWEntity("TARDIS",NULL)
 	if IsValid(tardis) and LocalPlayer().tardis_viewmode and LocalPlayer().tardis==tardis then

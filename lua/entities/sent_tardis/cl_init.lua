@@ -414,6 +414,40 @@ hook.Add("PopulateToolMenu", "TARDIS-PopulateToolMenu", function()
 	spawnmenu.AddToolMenuOption("Options", "Doctor Who", "TARDIS_Options", "TARDIS", "", "", function(panel)
 		panel:ClearControls()
 		//Do menu things here
+		
+		local button = vgui.Create("DButton")
+		button:SetText("Advanced Mode Help")
+		button.DoClick = function(self)
+			local window = vgui.Create( "DFrame" )
+			window:SetSize( 415,220 )
+			window:Center()
+			window:SetTitle( "TARDIS Advanced Mode Help" )
+			window:MakePopup()
+
+			local DLabel = vgui.Create( "DLabel", window )
+			DLabel:SetPos(7.5,30)
+			DLabel:SetText(
+				[[
+				The TARDIS advanced flight mode requires the player to press a series of controls
+				around the console area in order to successfully dematerialise.
+				
+				This build of the mod requires the following combination of controls (in order):
+				
+				1. Activate the flightmode (either Navigations Mode or Programmable Flight Mode)
+				2. Dial the Helmic Regulator
+				3. Alternate the Space-Time Throttle
+				4. Apply the Locking Down Mechanism
+				5. Release the Time-Rotor Handbrake
+				
+				Sounds will indicate if you have pressed the correct control or the wrong control.
+				
+				Happy flying!
+				]]
+			)
+			DLabel:SizeToContents()
+		end
+		panel:AddItem(button)
+		
 		local checkBox = vgui.Create( "DCheckBoxLabel" )
 		checkBox:SetText( "Take damage (Admin Only)" )
 		checkBox:SetValue( GetConVarNumber( "tardis_takedamage" ) )
@@ -466,11 +500,28 @@ hook.Add("PopulateToolMenu", "TARDIS-PopulateToolMenu", function()
 		local checkBox = vgui.Create( "DCheckBoxLabel" )
 		checkBox:SetText( "Advanced Mode (Admin Only)" )
 		checkBox:SetToolTip( "This sets interior navigation to advanced, turn off for easy." )
-		checkBox:SetValue( GetConVarNumber( "tardis_advancedmode" ) )
+		checkBox:SetValue( GetConVarNumber( "tardis_advanced" ) )
 		checkBox:SetDisabled(not (LocalPlayer():IsAdmin() or LocalPlayer():IsSuperAdmin()))
 		checkBox.OnChange = function(self,val)
 			if LocalPlayer():IsAdmin() or LocalPlayer():IsSuperAdmin() then
 				net.Start("TARDIS-AdvancedMode")
+					net.WriteFloat(val==true and 1 or 0)
+				net.SendToServer()
+			else
+				chat.AddText(Color(255,62,62), "WARNING: ", Color(255,255,255), "You must be an admin to change this option.")
+				chat.PlaySound()
+			end
+		end
+		panel:AddItem(checkBox)
+		
+		local checkBox = vgui.Create( "DCheckBoxLabel" )
+		checkBox:SetText( "Lock doors during teleport (Admin Only)" )
+		checkBox:SetToolTip( "This stops players from entering/leaving while it is teleporting." )
+		checkBox:SetValue( GetConVarNumber( "tardis_teleportlock" ) )
+		checkBox:SetDisabled(not (LocalPlayer():IsAdmin() or LocalPlayer():IsSuperAdmin()))
+		checkBox.OnChange = function(self,val)
+			if LocalPlayer():IsAdmin() or LocalPlayer():IsSuperAdmin() then
+				net.Start("TARDIS-TeleportLock")
 					net.WriteFloat(val==true and 1 or 0)
 				net.SendToServer()
 			else
