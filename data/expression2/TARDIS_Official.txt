@@ -7,7 +7,7 @@ if (first()|dupefinished()){
     TARDIS=entity():isConstrainedTo():tardisGet()
     TARDIS:createWire(entity(),"XYZ", "XYZ")
     Target=owner()
-    entity():entGravity(0)
+    #entity():entGravity(0)
     entity():setAlpha(0)
     
     function demat(V:vector){
@@ -88,20 +88,48 @@ if(chatClk(owner())){
         hideChat(1)
     }elseif(Cmd=="!phase"){
         local Success=TARDIS:tardisPhase()
-        if (Success==1){print("TARDIS phasing.")}
+        if (Success==1){
+            if(TARDIS:tardisVisible()){
+                print("TARDIS now visible.")
+            }else{
+                print("TARDIS no longer visible.")
+            }
+        }
         hideChat(1)
     }elseif(Cmd=="!flightmode"){
         local Success=TARDIS:tardisFlightmode()
-        if (Success==1){print("TARDIS flightmode toggled.")}
+        if (Success==1){
+            if(TARDIS:tardisFlying()){
+                print("TARDIS now flying.")
+            }else{
+                print("TARDIS no longer flying.")
+            }
+        }
         hideChat(1)
     }elseif(Cmd=="!lock"){
         local Success=TARDIS:tardisLock()
-        if (Success==1){print("TARDIS lock toggled.")}
+        if (Success==1){
+            if(TARDIS:tardisLocked()){
+                print("TARDIS now locked.")
+            }else{
+                print("TARDIS no longer locked.")
+            }
+        }
+        hideChat(1)
+    }elseif(Cmd=="!physlock"){
+        local Success=TARDIS:tardisPhyslock()
+        if (Success==1){
+            if(TARDIS:tardisPhyslocked()){
+                print("TARDIS now phys-locked.")
+            }else{
+                print("TARDIS no longer phys-locked.")
+            }
+        }
         hideChat(1)
     }elseif(Cmd=="!save"){
         SavePos=TARDIS:pos()
         SaveAng=TARDIS:angles()
-		XYZ=SavePos
+        XYZ=SavePos
         print("Position saved.")
         hideChat(1)
     }elseif(Cmd=="!restore"){

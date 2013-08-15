@@ -79,6 +79,19 @@ hook.Add("PewPew_ShouldDamage","TARDIS-PewPew_ShouldDamage",function(_,ent,dmg)
 		return false
 	end
 end)
+
+function ENT:SpawnFunction( ply, tr, ClassName )
+	if (  !tr.Hit ) then return end
+
+	local SpawnPos = tr.HitPos + tr.HitNormal
+	local ent = ents.Create( ClassName )
+	ent:SetPos( SpawnPos )
+	ent.owner=ply
+	ent:Spawn()
+	ent:Activate()
+
+	return ent
+end
  
 function ENT:Initialize()
 	self:SetModel( "models/drmatt/tardis/exterior.mdl" )
@@ -108,6 +121,7 @@ function ENT:Initialize()
 	self.visible=true
 	self.locked=false
 	self.physlocked=false
+	self.isomorphic=false
 	self.phasecur=0
 	self.interiorcur=0
 	self.viewmodecur=0
@@ -156,6 +170,7 @@ function ENT:Initialize()
 	self.interior:SetPos(trace.HitPos+Vector(0,0,-600+offset))
 	self.interior.tardis=self
 	self.interior.advanced=self.advanced
+	self.interior.owner=self.owner
 	self.interior:Spawn()
 	self.interior:Activate()
 	self:SetNWEntity("interior",self.interior)
@@ -169,6 +184,19 @@ end
 
 function ENT:UpdateTransmitState()
 	return TRANSMIT_ALWAYS
+end
+
+function ENT:IsomorphicToggle(ply)
+	if ply==self.owner then
+		if self.isomorphic then
+			self.isomorphic=false
+		else
+			self.isomorphic=true
+		end
+		return true
+	else
+		return false
+	end
 end
 
 function ENT:StartRepair()
@@ -385,6 +413,9 @@ function ENT:OnTakeDamage(dmginfo)
 	if not self:ShouldTakeDamage() then return end
 	local hp=dmginfo:GetDamage()
 	self:TakeHP(hp/32) //takes 32th of normal damage a player would take
+	if IsValid(self.interior) then
+		util.ScreenShake(self.interior:GetPos(),math.Clamp(hp/32,0,16),5,0.5,700)
+	end
 end
 
 function ENT:SetLight(on)
@@ -482,10 +513,16 @@ function ENT:Go(vec,ang)
 		self.attachedents = constraint.GetAllConstrainedEntities(self)
 		if self.attachedents then
 			for k,v in pairs(self.attachedents) do
+				if v.tardis_part then
+					self.attachedents[k]=nil
+				end
+			end
+			for k,v in pairs(self.attachedents) do
 				local a=v:GetColor().a
 				if not (a==255) then
 					v.tempa=a
 				end
+
 			end
 		end
 		if ang then
@@ -499,6 +536,9 @@ function ENT:Go(vec,ang)
 		end
 		if self.visible and not self.exploded then
 			self:SetLight(true)
+		end
+		if IsValid(self.interior) then
+			util.ScreenShake(self.interior:GetPos(),1,5,1,700)
 		end
 		net.Start("TARDIS-Go")
 			net.WriteEntity(self)
@@ -531,6 +571,9 @@ function ENT:Stop()
 		self.attachedents=nil
 		if not self.flightmode and self.visible then
 			self:SetLight(false)
+		end
+		if IsValid(self.interior) then
+			util.ScreenShake(self.interior:GetPos(),1,5,1,700)
 		end
 		net.Start("TARDIS-Stop")
 			net.WriteEntity(self)
@@ -1028,6 +1071,9 @@ function ENT:ToggleViewmode(ply,deldata)
 			end
 			if #tbl>0 then
 				local newpilot=tbl[math.random(#tbl)]
+				if self.isomorphic and self.owner.tardis==self and not self.owner.tardis_viewmode then
+					newpilot=self.owner
+				end
 				if newpilot and IsValid(newpilot) and newpilot:IsPlayer() then
 					self.pilot=newpilot
 					self.pilot:ChatPrint("You are now the pilot.")
@@ -1070,7 +1116,7 @@ function ENT:ToggleViewmode(ply,deldata)
 		ply:StripWeapons()
 		if self.pilot then
 			ply:ChatPrint(self.pilot:Nick().." is the pilot.")
-		else
+		elseif not self.pilot and ((self.isomorphic and self.owner==ply) or not self.isomorphic) then
 			self.pilot=ply
 			self.pilot:ChatPrint("You are now the pilot.")
 		end
@@ -1184,7 +1230,9 @@ function ENT:Think()
 	
 	if string.lower(gmod.GetGamemode().Name)=="horizon" then
 		for k,v in pairs(self.occupants) do
-			player_manager.RunClass(v,"TransmitResources",v.SuitPower>20 and 0 or 1, v.SuitAir>20 and 0 or 1, v.SuitCoolant>20 and 0 or 1)
+			if v.SuitPower and v.SuitAir and v.SuitCoolant then
+				player_manager.RunClass(v,"TransmitResources",v.SuitPower>20 and 0 or 1, v.SuitAir>20 and 0 or 1, v.SuitCoolant>20 and 0 or 1)
+			end
 		end
 	end
 	

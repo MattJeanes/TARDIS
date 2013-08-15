@@ -35,6 +35,9 @@ end
 function ENT:Use( activator, caller, type, value )
 
 	if ( !activator:IsPlayer() ) then return end		-- Who the frig is pressing this shit!?
+	if IsValid(self.tardis) and self.tardis.isomorphic and not (activator==self.owner) then
+		return
+	end
 	
 	if ( self:GetIsToggle() ) then
 
@@ -93,9 +96,9 @@ function ENT:Toggle( bEnable, ply )
 	
 	local interior=self.interior
 	local tardis=self.tardis
-	if self.advanced and IsValid(interior) and IsValid(tardis) then
+	if IsValid(interior) and IsValid(tardis) then
 		interior.usecur=CurTime()+1
-		if (interior.flightmode==1 or interior.flightmode==2) and interior.step==3 then
+		if self.advanced and (interior.flightmode==1 or interior.flightmode==2) and interior.step==3 then
 			interior:UpdateAdv(ply, true)
 		else
 			interior:UpdateAdv(ply, false)

@@ -58,8 +58,8 @@ function ENT:Initialize()
 	self.typewriter=self:MakePart("sent_tardis_typewriter", Vector(19.002930, 48.807617, 2.078125), Angle(0.945, -29.872, -20.250),true)
 	self.flightlever=self:MakePart("sent_tardis_flightlever", Vector(44,-18,5.5), Angle(22,-32,-12.5),true)
 	self.physbrake=self:MakePart("sent_tardis_physbrake", Vector(39, -22.75, 6.914063), Angle(-56.714, 6.660, 148.819),true)
+	self.isomorphic=self:MakePart("sent_tardis_isomorphic", Vector(-39.5, 22, 6.629883), Angle(-69.238, -165, 137.777),true)
 	
-	self.unused1=self:MakePart("sent_tardis_unused", Vector(-39.5, 22, 6.629883), Angle(-69.238, -165, 137.777),true)
 	self.unused2=self:MakePart("sent_tardis_unused", Vector(-0.431641, 44.75, 6.4), Angle(-63.913, 137.035, 136.118),true)
 	self.unused3=self:MakePart("sent_tardis_unused", Vector(39, 22.75, 5.828125), Angle(-63.740, 78.027, 136.528),true)
 	self.unused4=self:MakePart("sent_tardis_unused", Vector(-2.5, -45.5, 7.75), Angle(-56.714, -54.280, 148.819),true)
@@ -89,7 +89,7 @@ function ENT:StartAdv(mode,ply,pos,ang)
 end
 
 function ENT:UpdateAdv(ply,success)
-	if not (self.flightmode==0) then
+	if not (self.flightmode==0) and self.advanced then
 		if success then
 			self.step=self.step+1
 			if self.flightmode==1 and self.step==5 then
@@ -136,6 +136,7 @@ function ENT:MakePart(class,vec,ang,weld)
 	ent.tardis=self.tardis
 	ent.interior=self
 	ent.advanced=self.advanced
+	ent.owner=self.owner
 	ent:SetPos(self:LocalToWorld(vec))
 	ent:SetAngles(ang)
 	ent:Spawn()
@@ -254,7 +255,6 @@ end
 
 function ENT:Use( ply )
 	if CurTime()>self.usecur and self.tardis and IsValid(self.tardis) and ply.tardis and IsValid(ply.tardis) and ply.tardis==self.tardis and ply.tardis_viewmode and not ply.tardis_skycamera then
-		self.usecur=CurTime()+1
 		
 		if CurTime()>self.tardis.exitcur then
 			local pos=Vector(300,295,-79)
@@ -262,18 +262,20 @@ function ENT:Use( ply )
 			local distance=pos:Distance(pos2)
 			if distance < 25 then
 				self.tardis:PlayerExit(ply)
+				self.usecur=CurTime()+1
 				self.tardis.exitcur=CurTime()+1
 				return
 			end
 		end
 
-		//this must go last, or bad things will happen
+		//this must go last, or bad things may happen
 		if CurTime()>self.tardis.viewmodecur then
 			local pos=Vector(0,0,0)
 			local pos2=self:WorldToLocal(ply:GetPos())
 			local distance=pos:Distance(pos2)
 			if distance < 110 and self:PlayerLookingAt(ply, Vector(0,0,0), 25, 25) then
 				self.tardis:ToggleViewmode(ply)
+				self.usecur=CurTime()+1
 				self.tardis.viewmodecur=CurTime()+1
 				return
 			end

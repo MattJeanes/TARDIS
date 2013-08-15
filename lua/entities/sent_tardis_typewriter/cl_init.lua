@@ -255,6 +255,9 @@ net.Receive("TARDISInt-Locations-GUI", function()
 		locations[map]={}
 		if file.Exists("tardis_locations.txt", "DATA") then
 			locations=von.deserialize(file.Read("tardis_locations.txt"))
+			if not locations[map] then
+				locations[map]={}
+			end
 			if msg then
 				LocalPlayer():ChatPrint("Locations loaded.")
 			end

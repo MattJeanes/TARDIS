@@ -13,29 +13,33 @@ ENT.Spawnable		= false
 ENT.AdminSpawnable	= false
 ENT.RenderGroup = RENDERGROUP_TRANSLUCENT
 ENT.Category		= "Doctor Who"
+ENT.tardis_part		= true
 
 hook.Add("PhysgunPickup", "TARDISInt-PhysgunPickup", function(_,e)
-	if e:GetClass()=="sent_tardis_interior" or e.tardis_part then
+	if e.tardis_part then
 		return false
 	end
 end)
 
 hook.Add("OnPhysgunReload", "TARDISInt-OnPhysgunReload", function(_,p)
 	local e = p:GetEyeTraceNoCursor().Entity
-	if e:GetClass()=="sent_tardis_interior" or e.tardis_part then
+	if e.tardis_part then
 		return false
 	end
 end)
 
+local modes={
+	"remover"
+}
 hook.Add("CanTool", "TARDISInt-CanTool", function(ply,tr,mode)
 	local e=tr.Entity
-	if mode=="remover" and IsValid(e) and (e:GetClass()=="sent_tardis_interior" or e.tardis_part) then
+	if table.HasValue(modes,mode) and IsValid(e) and e.tardis_part then
 		return false
 	end
 end)
 
 hook.Add("CanProperty", "TARDISInt-CanProperty", function(ply,property,e)
-	if e:GetClass()=="sent_tardis_interior" or e.tardis_part then
+	if e.tardis_part then
 		return false
 	end
 end)

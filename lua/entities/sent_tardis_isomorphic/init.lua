@@ -3,7 +3,7 @@ AddCSLuaFile( "shared.lua" )  -- and shared scripts are sent.
 include('shared.lua')
 
 function ENT:Initialize()
-	self:SetModel( "models/drmatt/tardis/helmicregulator.mdl" )
+	self:SetModel( "models/drmatt/tardis/handbrake.mdl" )
 	self:PhysicsInit( SOLID_VPHYSICS )
 	self:SetMoveType( MOVETYPE_VPHYSICS )
 	self:SetSolid( SOLID_VPHYSICS )
@@ -39,14 +39,10 @@ function ENT:Use( activator, caller, type, value )
 		return
 	end
 	
-	if IsValid(self.interior) then
-		self.interior.usecur=CurTime()+1
-	end
-	
 	if ( self:GetIsToggle() ) then
 
 		if ( type == USE_ON ) then
-			self:Toggle( !self:GetDir(), activator )
+			self:Toggle( !self:GetOn(), activator )
 		end
 		return;
 
@@ -57,7 +53,7 @@ function ENT:Use( activator, caller, type, value )
 	--
 	-- Switch off
 	--
-	if ( self:GetDir() ) then 
+	if ( self:GetOn() ) then 
 	
 		self:Toggle( false, activator )
 		
@@ -73,7 +69,7 @@ function ENT:Use( activator, caller, type, value )
 end
 
 function ENT:Think()
-	if ( self:GetDir() && !self:GetIsToggle() ) then 
+	if ( self:GetOn() && !self:GetIsToggle() ) then 
 	
 		if ( !IsValid( self.LastUser ) || !self.LastUser:KeyDown( IN_USE ) ) then
 			
@@ -93,17 +89,27 @@ end
 --
 function ENT:Toggle( bEnable, ply )
 	if ( bEnable ) then
-		self:SetDir( true )
+		self:SetOn( true )
 	else
-		self:SetDir( false )
+		self:SetOn( false )
 	end
 	
 	local interior=self.interior
-	if self.advanced and IsValid(interior) then
-		if (interior.flightmode==1 or interior.flightmode==2) and interior.step==1 then
-			interior:UpdateAdv(ply, true)
-		else
-			interior:UpdateAdv(ply, false)
+	local tardis=self.tardis
+	if IsValid(interior) and IsValid(tardis) then
+		interior.usecur=CurTime()+1
+		interior:UpdateAdv(ply, false)
+		if not (ply==self.owner) then
+			ply:ChatPrint("WARNING: Only the TARDIS owner can use this control.")
+			return
+		end
+		local success=tardis:IsomorphicToggle(ply)
+		if success then
+			if tardis.isomorphic then
+				ply:ChatPrint("Isomorphic security systems engaged.")
+			else
+				ply:ChatPrint("Isomorphic security systems disengaged.")
+			end
 		end
 	end
 end
