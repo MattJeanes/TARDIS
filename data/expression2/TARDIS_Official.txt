@@ -126,6 +126,26 @@ if(chatClk(owner())){
             }
         }
         hideChat(1)
+    }elseif(Cmd=="!power"){
+        local Success=TARDIS:tardisPower()
+        if (Success==1){
+            if(TARDIS:tardisPowered()){
+                print("TARDIS now powered up.")
+            }else{
+                print("TARDIS no longer powered up.")
+            }
+        }
+        hideChat(1)
+    }elseif(Cmd=="!isomorph"){
+        local Success=TARDIS:tardisIsomorph()
+        if (Success==1){
+            if(TARDIS:tardisIsomorphic()){
+                print("TARDIS isomorphic security systems enabled.")
+            }else{
+                print("TARDIS isomorphic security systems disabled.")
+            }
+        }
+        hideChat(1)
     }elseif(Cmd=="!save"){
         SavePos=TARDIS:pos()
         SaveAng=TARDIS:angles()
@@ -137,6 +157,9 @@ if(chatClk(owner())){
         hideChat(1)
     }elseif(Cmd=="!back"){
         demat2(BackPos,BackAng)
+        hideChat(1)
+    }elseif(Cmd=="!health"){
+        print("TARDIS Health: " + TARDIS:tardisHealth() + "%")
         hideChat(1)
     }
 }
