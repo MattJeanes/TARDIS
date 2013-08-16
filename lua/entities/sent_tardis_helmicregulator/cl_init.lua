@@ -12,7 +12,7 @@ end
 
 function ENT:Think()
 	local tardis=self:GetNWEntity("TARDIS", NULL)
-	if IsValid(tardis) and LocalPlayer().tardis==tardis and LocalPlayer().tardis_viewmode then
+	if IsValid(tardis) and LocalPlayer().tardis==tardis and LocalPlayer().tardis_viewmode and tardis.power then
 		local TargetPos
 		if ( self:GetDir() ) then
 			TargetPos = 1.0

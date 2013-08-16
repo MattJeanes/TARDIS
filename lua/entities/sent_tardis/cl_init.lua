@@ -350,6 +350,18 @@ net.Receive("TARDIS-SetLight", function()
 	end
 end)
 
+net.Receive("TARDIS-SetPower", function()
+	local tardis=net.ReadEntity()
+	local on=tobool(net.ReadBit())
+	local interior=net.ReadEntity()
+	if IsValid(tardis) then
+		tardis.power=on
+	end
+	if IsValid(interior) and on and LocalPlayer().tardis==tardis and LocalPlayer().tardis_viewmode and tobool(GetConVarNumber("tardisint_powerupsound"))==true then
+		sound.Play("tardis/powerup.wav", interior:GetPos())
+	end
+end)
+
 surface.CreateFont( "HUDNumber", {font="Trebuchet MS", size=40, weight=900} )
 
 hook.Add("HUDPaint", "TARDIS-DrawHUD", function()
@@ -399,8 +411,10 @@ local checkbox_options={
 	{"Door sounds", "tardis_doorsound"},
 	{"Lock sounds", "tardis_locksound"},
 	{"Repair sounds", "tardisint_repairsound"},
+	{"Powerup sounds", "tardisint_powerupsound"},
 	{"Cloisterbell sound", "tardisint_cloisterbell"},
 	{"Interior idle sounds", "tardisint_idlesound"},
+	{"Interior control sounds", "tardisint_controlsound"},
 	{"Interior dynamic light", "tardisint_dynamiclight"},
 	{"Exterior dynamic light", "tardis_dynamiclight"},
 	{"Tool tips", "tardisint_tooltip"},

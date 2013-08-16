@@ -23,7 +23,7 @@ end
 function ENT:Use( activator, caller, type, value )
 
 	if ( !activator:IsPlayer() ) then return end		-- Who the frig is pressing this shit!?
-	if IsValid(self.tardis) and self.tardis.isomorphic and not (activator==self.owner) then
+	if IsValid(self.tardis) and ((self.tardis.isomorphic and not (activator==self.owner)) or not self.tardis.power) then
 		return
 	end
 	
@@ -55,8 +55,10 @@ net.Receive("TARDISInt-Locations-Send", function(l,ply)
 		local ang=Angle(net.ReadFloat(), net.ReadFloat(), net.ReadFloat())
 		if interior.advanced then
 			if interior.flightmode==0 and interior.step==0 then
-				interior:StartAdv(2,ply,pos,ang)
-				ply:ChatPrint("Programmable flightmode activated.")
+				local success=interior:StartAdv(2,ply,pos,ang)
+				if success then
+					ply:ChatPrint("Programmable flightmode activated.")
+				end
 			else
 				interior:UpdateAdv(ply,false)
 			end

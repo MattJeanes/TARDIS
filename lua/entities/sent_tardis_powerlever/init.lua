@@ -3,7 +3,7 @@ AddCSLuaFile( "shared.lua" )  -- and shared scripts are sent.
 include('shared.lua')
 
 function ENT:Initialize()
-	self:SetModel( "models/drmatt/tardis/handbrake.mdl" )
+	self:SetModel( "models/drmatt/tardis/flightlever.mdl" )
 	self:PhysicsInit( SOLID_VPHYSICS )
 	self:SetMoveType( MOVETYPE_VPHYSICS )
 	self:SetSolid( SOLID_VPHYSICS )
@@ -37,6 +37,13 @@ function ENT:Use( activator, caller, type, value )
 	if ( !activator:IsPlayer() ) then return end		-- Who the frig is pressing this shit!?
 	if IsValid(self.tardis) and self.tardis.isomorphic and not (activator==self.owner) then
 		return
+	end
+	
+	if IsValid(self.interior) then
+		self.interior.usecur=CurTime()+1
+		if self.advanced then
+			self.interior:UpdateAdv(activator,false)
+		end
 	end
 	
 	if ( self:GetIsToggle() ) then
@@ -94,17 +101,7 @@ function ENT:Toggle( bEnable, ply )
 		self:SetOn( false )
 	end
 	
-	local interior=self.interior
-	if self.advanced and IsValid(interior) then
-		interior.usecur=CurTime()+1
-		interior:UpdateAdv(ply, false)
-	end
-	
 	if IsValid(self.tardis) then
-		net.Start("TARDISInt-ControlSound")
-			net.WriteEntity(self.tardis)
-			net.WriteEntity(self)
-			net.WriteString("tardis/control_handbrake.wav")
-		net.Broadcast()
+		self.tardis:TogglePower()
 	end
 end

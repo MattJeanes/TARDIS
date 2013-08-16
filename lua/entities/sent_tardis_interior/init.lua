@@ -6,6 +6,7 @@ util.AddNetworkString("TARDIS-SetViewmode")
 util.AddNetworkString("TARDISInt-SetParts")
 util.AddNetworkString("TARDISInt-UpdateAdv")
 util.AddNetworkString("TARDISInt-SetAdv")
+util.AddNetworkString("TARDISInt-ControlSound")
 
 function ENT:Initialize()
 	self:SetModel( "models/drmatt/tardis/interior.mdl" )
@@ -56,13 +57,13 @@ function ENT:Initialize()
 	self.biglever=self:MakePart("sent_tardis_biglever", Vector(-9.94,-65,-52), Angle(0,-90,0),true)
 	self.blacksticks=self:MakePart("sent_tardis_blacksticks", Vector(4.480469, -43.906372, 7), Angle(13, 0, 24.176),true)
 	self.typewriter=self:MakePart("sent_tardis_typewriter", Vector(19.002930, 48.807617, 2.078125), Angle(0.945, -29.872, -20.250),true)
-	self.flightlever=self:MakePart("sent_tardis_flightlever", Vector(44,-18,5.5), Angle(22,-32,-12.5),true)
+	self.powerlever=self:MakePart("sent_tardis_powerlever", Vector(44,-18,5.5), Angle(22,-32,-12.5),true)
+	self.flightlever=self:MakePart("sent_tardis_flightlever", Vector(-0.431641, 44.75, 6.4), Angle(-63.913, 137.035, 136.118),true)
 	self.physbrake=self:MakePart("sent_tardis_physbrake", Vector(39, -22.75, 6.914063), Angle(-56.714, 6.660, 148.819),true)
 	self.isomorphic=self:MakePart("sent_tardis_isomorphic", Vector(-39.5, 22, 6.629883), Angle(-69.238, -165, 137.777),true)
 	
-	self.unused2=self:MakePart("sent_tardis_unused", Vector(-0.431641, 44.75, 6.4), Angle(-63.913, 137.035, 136.118),true)
-	self.unused3=self:MakePart("sent_tardis_unused", Vector(39, 22.75, 5.828125), Angle(-63.740, 78.027, 136.528),true)
-	self.unused4=self:MakePart("sent_tardis_unused", Vector(-2.5, -45.5, 7.75), Angle(-56.714, -54.280, 148.819),true)
+	self.unused1=self:MakePart("sent_tardis_unused", Vector(39, 22.75, 5.828125), Angle(-63.740, 78.027, 136.528),true)
+	self.unused2=self:MakePart("sent_tardis_unused", Vector(-2.5, -45.5, 7.75), Angle(-56.714, -54.280, 148.819),true)
 	
 	net.Start("TARDISInt-SetParts")
 		net.WriteFloat(#self.parts)
@@ -73,7 +74,7 @@ function ENT:Initialize()
 end
 
 function ENT:StartAdv(mode,ply,pos,ang)
-	if self.flightmode==0 and self.step==0 then
+	if self.flightmode==0 and self.step==0 and IsValid(self.tardis) and self.tardis.power then
 		self.flightmode=mode
 		self.step=1
 		if pos and ang then
@@ -85,11 +86,14 @@ function ENT:StartAdv(mode,ply,pos,ang)
 			net.WriteEntity(ply)
 			net.WriteFloat(mode)
 		net.Send(ply)
+		return true
+	else
+		return false
 	end
 end
 
 function ENT:UpdateAdv(ply,success)
-	if not (self.flightmode==0) and self.advanced then
+	if not (self.flightmode==0) and self.advanced and IsValid(self.tardis) and self.tardis.power then
 		if success then
 			self.step=self.step+1
 			if self.flightmode==1 and self.step==5 then

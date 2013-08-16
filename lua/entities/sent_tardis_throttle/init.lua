@@ -110,11 +110,21 @@ function ENT:Toggle( bEnable, ply )
 		else
 			local skycamera=self.interior.skycamera
 			if IsValid(skycamera) and not self.tardis.moving and not self.tardis.repairing and skycamera.hitpos and skycamera.hitang then
-				self.tardis:Go(skycamera.hitpos, skycamera.hitang)
-				ply:ChatPrint("TARDIS moving to set destination.")
-				skycamera.hitpos=nil
-				skycamera.hitang=nil
+				local success=self.tardis:Go(skycamera.hitpos, skycamera.hitang)
+				if success then
+					ply:ChatPrint("TARDIS moving to set destination.")
+					skycamera.hitpos=nil
+					skycamera.hitang=nil
+				end
 			end
 		end
+	end
+	
+	if IsValid(self.tardis) then
+		net.Start("TARDISInt-ControlSound")
+			net.WriteEntity(self.tardis)
+			net.WriteEntity(self)
+			net.WriteString("tardis/control_throttle.wav")
+		net.Broadcast()
 	end
 end

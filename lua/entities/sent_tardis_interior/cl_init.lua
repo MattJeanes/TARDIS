@@ -64,6 +64,15 @@ net.Receive("TARDISInt-SetAdv", function()
 	end
 end)
 
+net.Receive("TARDISInt-ControlSound", function()
+	local tardis=net.ReadEntity()
+	local control=net.ReadEntity()
+	local snd=net.ReadString()
+	if IsValid(tardis) and IsValid(control) and snd and tobool(GetConVarNumber("tardisint_controlsound"))==true and LocalPlayer().tardis==tardis and LocalPlayer().tardis_viewmode then
+		sound.Play(snd,control:GetPos())
+	end
+end)
+
 function ENT:Think()
 	local tardis=self:GetNWEntity("TARDIS",NULL)
 	if IsValid(tardis) and LocalPlayer().tardis_viewmode and LocalPlayer().tardis==tardis then
@@ -88,7 +97,7 @@ function ENT:Think()
 			end
 		end
 		
-		if tobool(GetConVarNumber("tardisint_idlesound"))==true and tardis.health and tardis.health >= 1 and not IsValid(LocalPlayer().tardis_skycamera) and not tardis.repairing then
+		if tobool(GetConVarNumber("tardisint_idlesound"))==true and tardis.health and tardis.health >= 1 and not IsValid(LocalPlayer().tardis_skycamera) and not tardis.repairing and tardis.power then
 			if self.idlesound and !self.idlesound:IsPlaying() then
 				self.idlesound:Play()
 			elseif not self.idlesound then
@@ -114,7 +123,7 @@ function ENT:Think()
 		end
 		
 		if not IsValid(LocalPlayer().tardis_skycamera) and tobool(GetConVarNumber("tardisint_dynamiclight"))==true then
-			if tardis.health and tardis.health > 0 and not tardis.repairing then
+			if tardis.health and tardis.health > 0 and not tardis.repairing and tardis.power then
 				local dlight = DynamicLight( self:EntIndex() )
 				if ( dlight ) then
 					local size=1024

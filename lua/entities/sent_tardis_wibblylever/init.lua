@@ -95,11 +95,13 @@ function ENT:Toggle( bEnable, ply )
 	end
 	
 	if IsValid(self.tardis) then
-		self.tardis:ToggleLocked()
-		if self.tardis.locked then
-			ply:ChatPrint("TARDIS locked.")
-		else
-			ply:ChatPrint("TARDIS unlocked.")
+		local success=self.tardis:ToggleLocked()
+		if success then
+			if self.tardis.locked then
+				ply:ChatPrint("TARDIS locked.")
+			else
+				ply:ChatPrint("TARDIS unlocked.")
+			end
 		end
 	end
 	

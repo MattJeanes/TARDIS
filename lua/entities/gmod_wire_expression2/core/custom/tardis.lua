@@ -20,10 +20,10 @@ end
 local function TARDIS_Teleport(ent,pos,ang)
 	if ent and IsValid(ent) then
 		if not (ent:GetClass()=="sent_tardis") then return 0 end
-		if not ent.moving and pos then
-			local pos=Vector(pos[1], pos[2], pos[3])
-			if ang then ang=Angle(ang[1], ang[2], ang[3]) end
-			ent:Go(pos,ang)
+		local pos=Vector(pos[1], pos[2], pos[3])
+		if ang then ang=Angle(ang[1], ang[2], ang[3]) end
+		local success=ent:Go(pos,ang)
+		if success then
 			return 1
 		else
 			return 0
@@ -62,8 +62,12 @@ end
 local function TARDIS_Lock(ent)
 	if ent and IsValid(ent) then
 		if not (ent:GetClass()=="sent_tardis") then return 0 end
-		ent:ToggleLocked()
-		return 1
+		local success=ent:ToggleLocked()
+		if success then
+			return 1
+		else
+			return 0
+		end
 	end
 	return 0
 end
@@ -81,6 +85,31 @@ local function TARDIS_Physlock(ent)
 	return 0
 end
 
+local function TARDIS_Power(ent)
+	if ent and IsValid(ent) then
+		if not (ent:GetClass()=="sent_tardis") then return 0 end
+		local success=ent:TogglePower()
+		if success then
+			return 1
+		else
+			return 0
+		end
+	end
+	return 0
+end
+
+local function TARDIS_Isomorph(data,ent)
+	if ent and IsValid(ent) then
+		if not (ent:GetClass()=="sent_tardis") or not IsValid(data.player) then return 0 end
+		local success=ent:IsomorphicToggle(data.player)
+		if success then
+			return 1
+		else
+			return 0
+		end
+	end
+	return 0
+end
 
 local function TARDIS_Moving(ent)
 	if ent and IsValid(ent) then
@@ -142,6 +171,30 @@ local function TARDIS_Physlocked(ent)
 	return 0
 end
 
+local function TARDIS_Powered(ent)
+	if ent and IsValid(ent) then
+		if not (ent:GetClass()=="sent_tardis") then return 0 end
+		if ent.power then
+			return 1
+		else
+			return 0
+		end
+	end
+	return 0
+end
+
+local function TARDIS_Isomorphic(ent)
+	if ent and IsValid(ent) then
+		if not (ent:GetClass()=="sent_tardis") then return 0 end
+		if ent.isomorphic then
+			return 1
+		else
+			return 0
+		end
+	end
+	return 0
+end
+
 local function TARDIS_Health(ent)
 	if ent and IsValid(ent) then
 		if not (ent:GetClass()=="sent_tardis") then return 0 end
@@ -155,6 +208,8 @@ local function TARDIS_Health(ent)
 end
 
 --------------------------------------------------------------------------------
+
+//set details
 e2function entity entity:tardisGet()
 	return TARDIS_Get(this)
 end
@@ -182,6 +237,15 @@ e2function number entity:tardisPhyslock()
 	return TARDIS_Physlock(this)
 end
 
+e2function number entity:tardisPower()
+	return TARDIS_Power(this)
+end
+
+e2function number entity:tardisIsomorph()
+	return TARDIS_Isomorph(self,this)
+end
+
+// get details
 e2function number entity:tardisMoving()
 	return TARDIS_Moving(this)
 end
@@ -204,4 +268,12 @@ end
 
 e2function number entity:tardisPhyslocked()
 	return TARDIS_Physlocked(this)
+end
+
+e2function number entity:tardisPowered()
+	return TARDIS_Powered(this)
+end
+
+e2function number entity:tardisIsomorphic()
+	return TARDIS_Isomorphic(this)
 end

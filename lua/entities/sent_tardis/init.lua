@@ -26,6 +26,7 @@ util.AddNetworkString("TARDIS-SetRepairing")
 util.AddNetworkString("TARDIS-BeginRepair")
 util.AddNetworkString("TARDIS-FinishRepair")
 util.AddNetworkString("TARDIS-SetLight")
+util.AddNetworkString("TARDIS-SetPower")
 
 net.Receive("TARDIS-TakeDamage", function(len,ply)
 	if ply:IsAdmin() or ply:IsSuperAdmin() then
@@ -122,6 +123,7 @@ function ENT:Initialize()
 	self.locked=false
 	self.physlocked=false
 	self.isomorphic=false
+	self.power=false
 	self.phasecur=0
 	self.interiorcur=0
 	self.viewmodecur=0
@@ -187,7 +189,7 @@ function ENT:UpdateTransmitState()
 end
 
 function ENT:IsomorphicToggle(ply)
-	if ply==self.owner then
+	if ply==self.owner and self.power then
 		if self.isomorphic then
 			self.isomorphic=false
 		else
@@ -254,24 +256,33 @@ function ENT:EndRepair(completed)
 end
 
 function ENT:SetLocked(locked)
-	if locked then
-		self.locked=true
+	if self.power then
+		if locked then
+			self.locked=true
+		else
+			self.locked=false
+		end
+		if self.visible and not self.exploded then
+			net.Start("TARDIS-SetLocked")
+				net.WriteEntity(self)
+				net.WriteEntity(self.interior or NULL)
+				net.WriteBit(self:GetLocked())
+			net.Broadcast()
+			self:FlashLight(0.5)
+		end
+		return true
 	else
-		self.locked=false
-	end
-	if self.visible and not self.exploded then
-		net.Start("TARDIS-SetLocked")
-			net.WriteEntity(self)
-			net.WriteEntity(self.interior or NULL)
-			net.WriteBit(self:GetLocked())
-		net.Broadcast()
-		self:FlashLight(0.5)
+		return false
 	end
 end
 
 function ENT:ToggleLocked()
-	self:SetLocked(not self:GetLocked())
-	return self:GetLocked()
+	if self.power then
+		self:SetLocked(not self:GetLocked())
+		return true
+	else
+		return false
+	end
 end
 
 function ENT:GetLocked()
@@ -504,7 +515,7 @@ function ENT:GetNumber()
 end
 
 function ENT:Go(vec,ang)
-	if not self.moving and vec and not self.repairing then
+	if not self.moving and vec and not self.repairing and self.power then
 		self.demat=true
 		self.moving=true
 		self.lastpos=self:GetPos()
@@ -547,6 +558,9 @@ function ENT:Go(vec,ang)
 			net.WriteVector(self:GetPos())
 			net.WriteVector(self.vec)
 		net.Broadcast()
+		return true
+	else
+		return false
 	end
 end
 
@@ -882,7 +896,7 @@ end
 
 function ENT:PhysicsUpdate( ph )
 	local pos=self:GetPos()
-	if self.flightmode then		
+	if self.flightmode and self.power then		
 		local phm=FrameTime()*66
 		
 		local up=self:GetUp()
@@ -983,7 +997,7 @@ end
 
 function ENT:ToggleFlight()
 	if not (CurTime()>self.flightcur) then return false end
-	if self.repairing then return false end
+	if self.repairing or not self.power then return false end
 	local flightphase=tobool(GetConVarNumber("tardis_flightphase"))==true
 	if not flightphase and not self.visible then return false end
 	self.flightcur=CurTime()+1
@@ -1021,7 +1035,7 @@ end
 
 function ENT:TogglePhase()
 	local flightphase=tobool(GetConVarNumber("tardis_flightphase"))==true
-	if CurTime()>self.phasecur and not self.exploded and not self.repairing then
+	if CurTime()>self.phasecur and not self.exploded and not self.repairing and self.power then
 		if self.flightmode and not flightphase then return false end
 		self.phasecur=CurTime()+2
 		self.visible=(not self.visible)
@@ -1124,7 +1138,7 @@ function ENT:ToggleViewmode(ply,deldata)
 end
 
 function ENT:TogglePhysLock()
-	if self.exploded then
+	if self.exploded or not self.power then
 		return false
 	else
 		if self.physlocked then
@@ -1136,6 +1150,21 @@ function ENT:TogglePhysLock()
 		end
 		return true
 	end
+end
+
+function ENT:TogglePower()
+	if not self.moving and not self.flightmode and not self.repairing then
+		self.power=(not self.power)
+		net.Start("TARDIS-SetPower")
+			net.WriteEntity(self)
+			net.WriteBit(self.power)
+			if IsValid(self.interior) then
+				net.WriteEntity(self.interior)
+			end
+		net.Broadcast()
+		return true
+	end
+	return false
 end
 
 function ENT:Think()
@@ -1201,18 +1230,18 @@ function ENT:Think()
 		self.phys:Wake()
 	end
 	
-	if CurTime() > self.flightcur and self.pilot and IsValid(self.pilot) and self.pilot:KeyDown(IN_RELOAD) and not self.pilot.tardis_viewmode then
+	if CurTime() > self.flightcur and self.pilot and IsValid(self.pilot) and self.pilot:KeyDown(IN_RELOAD) and not self.pilot.tardis_viewmode and self.power then
 		self:ToggleFlight()
 		if self.flightmode and self.physlocked then
 			self.pilot:ChatPrint("WARNING: Physical lock active.")
 		end
 	end
 	
-	if CurTime() > self.phasecur and self.pilot and IsValid(self.pilot) and self.pilot:KeyDown(IN_ATTACK2) and not self.pilot.tardis_viewmode then
+	if CurTime() > self.phasecur and self.pilot and IsValid(self.pilot) and self.pilot:KeyDown(IN_ATTACK2) and not self.pilot.tardis_viewmode and self.power then
 		self:TogglePhase()
 	end
 	
-	if not self.moving and not self.repairing and self.pilot and IsValid(self.pilot) and self.pilot:KeyDown(IN_ATTACK) and not self.pilot.tardis_viewmode then
+	if not self.moving and not self.repairing and self.pilot and IsValid(self.pilot) and self.pilot:KeyDown(IN_ATTACK) and not self.pilot.tardis_viewmode and self.power then
 		if self.pilot.linked_tardis and self.pilot.linked_tardis==self and self.pilot.tardis_vec and self.pilot.tardis_ang then
 			self:Go(self.pilot.tardis_vec, self.pilot.tardis_ang)
 			self.pilot.tardis_vec=nil

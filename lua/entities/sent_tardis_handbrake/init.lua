@@ -102,4 +102,12 @@ function ENT:Toggle( bEnable, ply )
 			interior:UpdateAdv(ply, false)
 		end
 	end
+	
+	if IsValid(self.tardis) then
+		net.Start("TARDISInt-ControlSound")
+			net.WriteEntity(self.tardis)
+			net.WriteEntity(self)
+			net.WriteString("tardis/control_handbrake.wav")
+		net.Broadcast()
+	end
 end

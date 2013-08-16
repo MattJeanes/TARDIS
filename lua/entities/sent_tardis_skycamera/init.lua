@@ -64,7 +64,7 @@ function ENT:PlayerEnter(ply)
 	table.insert(self.occupants,ply)
 	if self.controller then
 		ply:ChatPrint(self.controller:Nick().." is the camera controller.")		
-	elseif not self.controller and IsValid(self.tardis) and ((self.tardis.isomorphic and ply==self.owner) or not self.tardis.isomorphic) then
+	elseif not self.controller and IsValid(self.tardis) and ((self.tardis.isomorphic and ply==self.owner) or not self.tardis.isomorphic) and self.tardis.power then
 		self.controller=ply
 		ply:ChatPrint("You are now the camera controller.")
 	end
@@ -106,7 +106,7 @@ function ENT:PlayerExit(ply,override)
 	ply:SetViewEntity(nil)
 	if self.controller and self.controller==ply then
 		self.controller=nil
-		if #self.occupants>0 and IsValid(self.tardis) and not self.tardis.isomorphic then
+		if #self.occupants>0 and IsValid(self.tardis) and not self.tardis.isomorphic and self.tardis.power then
 			local newcontroller=self.occupants[math.random(#self.occupants)]
 			if newcontroller and IsValid(newcontroller) and newcontroller:IsPlayer() then
 				self.controller=newcontroller
@@ -220,10 +220,8 @@ function ENT:Think()
 		end
 	end
 	
-	if self.tardis and IsValid(self.tardis) then
-		for k,v in pairs(self.occupants) do
-			v:SetPos(self.tardis:GetPos())
-		end
+	for k,v in pairs(self.occupants) do
+		v:SetPos(self:GetPos())
 	end
 	
 	self:NextThink(CurTime())
