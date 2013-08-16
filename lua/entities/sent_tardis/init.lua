@@ -15,6 +15,7 @@ util.AddNetworkString("TARDIS-DoubleTrace")
 util.AddNetworkString("TARDIS-SpawnOffset")
 util.AddNetworkString("TARDIS-AdvancedMode")
 util.AddNetworkString("TARDIS-TeleportLock")
+util.AddNetworkString("TARDIS-PhysDamage")
 util.AddNetworkString("TARDIS-Phase")
 util.AddNetworkString("TARDIS-UpdateVis")
 util.AddNetworkString("TARDIS-SetInterior")
@@ -61,6 +62,12 @@ end)
 net.Receive("TARDIS-TeleportLock", function(len,ply)
 	if ply:IsAdmin() or ply:IsSuperAdmin() then
 		RunConsoleCommand("tardis_teleportlock", net.ReadFloat())
+	end
+end)
+
+net.Receive("TARDIS-PhysDamage", function(len,ply)
+	if ply:IsAdmin() or ply:IsSuperAdmin() then
+		RunConsoleCommand("tardis_physdamage", net.ReadFloat())
 	end
 end)
 
@@ -252,6 +259,9 @@ function ENT:EndRepair(completed)
 	net.Start("TARDIS-SetRepairing")
 		net.WriteEntity(self)
 		net.WriteBit(false)
+		if IsValid(self.interior) then
+			net.WriteEntity(self.interior)
+		end
 	net.Broadcast()
 end
 
@@ -988,7 +998,9 @@ end
 function ENT:PhysicsCollide( data, physobj )
 	if data.Speed and data.Speed>200 then
 		local n=math.Clamp(data.Speed*0.01,0,16)
-		self:TakeHP(n*0.1) // approximately 1hp for a moderate hit
+		if tobool(GetConVarNumber("tardis_physdamage"))==true then
+			self:TakeHP(n*0.1) // approximately 1hp for a moderate hit
+		end
 		if self.interior and IsValid(self.interior) then
 			util.ScreenShake(self.interior:GetPos(),n,5,0.5,700)
 		end
@@ -1154,6 +1166,9 @@ end
 
 function ENT:TogglePower()
 	if not self.moving and not self.flightmode and not self.repairing then
+		if self:GetLocked() then
+			self:SetLocked(false)
+		end
 		self.power=(not self.power)
 		net.Start("TARDIS-SetPower")
 			net.WriteEntity(self)

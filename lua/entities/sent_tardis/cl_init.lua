@@ -310,8 +310,12 @@ net.Receive("TARDIS-SetRepairing", function()
 	if IsValid(tardis) then
 		tardis.repairing=repairing
 	end
-	if tobool(GetConVarNumber("tardisint_repairsound"))==true and IsValid(interior) and repairing then
-		sound.Play("tardis/repair.wav", interior:GetPos())
+	if IsValid(interior) and LocalPlayer().tardis==tardis and LocalPlayer().tardis_viewmode and tobool(GetConVarNumber("tardisint_powersound"))==true then
+		if repairing then
+			sound.Play("tardis/powerdown.wav", interior:GetPos())
+		else
+			sound.Play("tardis/powerup.wav", interior:GetPos())
+		end
 	end
 end)
 
@@ -357,8 +361,12 @@ net.Receive("TARDIS-SetPower", function()
 	if IsValid(tardis) then
 		tardis.power=on
 	end
-	if IsValid(interior) and on and LocalPlayer().tardis==tardis and LocalPlayer().tardis_viewmode and tobool(GetConVarNumber("tardisint_powerupsound"))==true then
-		sound.Play("tardis/powerup.wav", interior:GetPos())
+	if IsValid(interior) and LocalPlayer().tardis==tardis and LocalPlayer().tardis_viewmode and tobool(GetConVarNumber("tardisint_powersound"))==true then
+		if on then
+			sound.Play("tardis/powerup.wav", interior:GetPos())
+		else
+			sound.Play("tardis/powerdown.wav", interior:GetPos())
+		end
 	end
 end)
 
@@ -411,7 +419,7 @@ local checkbox_options={
 	{"Door sounds", "tardis_doorsound"},
 	{"Lock sounds", "tardis_locksound"},
 	{"Repair sounds", "tardisint_repairsound"},
-	{"Powerup sounds", "tardisint_powerupsound"},
+	{"Power sounds", "tardisint_powersound"},
 	{"Cloisterbell sound", "tardisint_cloisterbell"},
 	{"Interior idle sounds", "tardisint_idlesound"},
 	{"Interior control sounds", "tardisint_controlsound"},
@@ -449,18 +457,35 @@ hook.Add("PopulateToolMenu", "TARDIS-PopulateToolMenu", function()
 				
 				1. Activate the flightmode (either Navigations Mode or Programmable Flight Mode)
 				2. Dial the Helmic Regulator
-				3. Alternate the Space-Time Throttle
-				4. Apply the Locking Down Mechanism
-				5. Release the Time-Rotor Handbrake
+				3. Apply the Locking Down Mechanism
+				4. Release the Time-Rotor Handbrake
+				5. Alternate the Space-Time Throttle
 				
 				Sounds will indicate if you have pressed the correct control or the wrong control.
 				
-				Happy flying!
+				Happy dematerialising!
 				]]
 			)
 			DLabel:SizeToContents()
 		end
 		panel:AddItem(button)
+		
+		local checkBox = vgui.Create( "DCheckBoxLabel" )
+		checkBox:SetText( "Double spawn trace (Admin Only)" )
+		checkBox:SetToolTip( "This should fix some maps where the interior/skycamera doesn't spawn properly" )
+		checkBox:SetValue( GetConVarNumber( "tardis_doubletrace" ) )
+		checkBox:SetDisabled(not (LocalPlayer():IsAdmin() or LocalPlayer():IsSuperAdmin()))
+		checkBox.OnChange = function(self,val)
+			if LocalPlayer():IsAdmin() or LocalPlayer():IsSuperAdmin() then
+				net.Start("TARDIS-DoubleTrace")
+					net.WriteFloat(val==true and 1 or 0)
+				net.SendToServer()
+			else
+				chat.AddText(Color(255,62,62), "WARNING: ", Color(255,255,255), "You must be an admin to change this option.")
+				chat.PlaySound()
+			end
+		end
+		panel:AddItem(checkBox)
 		
 		local checkBox = vgui.Create( "DCheckBoxLabel" )
 		checkBox:SetText( "Take damage (Admin Only)" )
@@ -495,13 +520,13 @@ hook.Add("PopulateToolMenu", "TARDIS-PopulateToolMenu", function()
 		panel:AddItem(checkBox)
 		
 		local checkBox = vgui.Create( "DCheckBoxLabel" )
-		checkBox:SetText( "Double spawn trace (Admin Only)" )
-		checkBox:SetToolTip( "This should fix some maps where the interior/skycamera doesn't spawn properly" )
-		checkBox:SetValue( GetConVarNumber( "tardis_doubletrace" ) )
+		checkBox:SetText( "Physical Damage (Admin Only)" )
+		checkBox:SetToolTip( "This enables/disables physical damage from hitting stuff at high speeds." )
+		checkBox:SetValue( GetConVarNumber( "tardis_physdamage" ) )
 		checkBox:SetDisabled(not (LocalPlayer():IsAdmin() or LocalPlayer():IsSuperAdmin()))
 		checkBox.OnChange = function(self,val)
 			if LocalPlayer():IsAdmin() or LocalPlayer():IsSuperAdmin() then
-				net.Start("TARDIS-DoubleTrace")
+				net.Start("TARDIS-PhysDamage")
 					net.WriteFloat(val==true and 1 or 0)
 				net.SendToServer()
 			else
