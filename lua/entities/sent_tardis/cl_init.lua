@@ -78,6 +78,7 @@ function ENT:Initialize()
 	self.visible=true
 	self.flightmode=false
 	self.visible=true
+	self.power=true
 	self.z=0
 	self.phasedraw=0
 	self.mins = self:OBBMins()
@@ -256,14 +257,16 @@ end)
 net.Receive("TARDIS-SetLocked", function()
 	local tardis=net.ReadEntity()
 	local interior=net.ReadEntity()
+	local locked=tobool(net.ReadBit())
+	local makesound=tobool(net.ReadBit())
 	if IsValid(tardis) then
-		tardis.locked=tobool(net.ReadBit())
-		if tobool(GetConVarNumber("tardis_locksound"))==true then
+		tardis.locked=locked
+		if tobool(GetConVarNumber("tardis_locksound"))==true and makesound then
 			sound.Play("tardis/lock.wav", tardis:GetPos())
 		end
 	end
 	if IsValid(interior) then
-		if tobool(GetConVarNumber("tardis_locksound"))==true and not IsValid(LocalPlayer().tardis_skycamera) then
+		if tobool(GetConVarNumber("tardis_locksound"))==true and not IsValid(LocalPlayer().tardis_skycamera) and makesound then
 			sound.Play("tardis/lock.wav", interior:LocalToWorld(Vector(300,295,-79)))
 		end
 	end

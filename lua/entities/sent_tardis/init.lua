@@ -130,7 +130,7 @@ function ENT:Initialize()
 	self.locked=false
 	self.physlocked=false
 	self.isomorphic=false
-	self.power=false
+	self.power=true
 	self.phasecur=0
 	self.interiorcur=0
 	self.viewmodecur=0
@@ -265,7 +265,7 @@ function ENT:EndRepair(completed)
 	net.Broadcast()
 end
 
-function ENT:SetLocked(locked)
+function ENT:SetLocked(locked,silent)
 	if self.power then
 		if locked then
 			self.locked=true
@@ -277,8 +277,15 @@ function ENT:SetLocked(locked)
 				net.WriteEntity(self)
 				net.WriteEntity(self.interior or NULL)
 				net.WriteBit(self:GetLocked())
+				if silent then
+					net.WriteBit(false)
+				else
+					net.WriteBit(true)
+				end
 			net.Broadcast()
-			self:FlashLight(0.5)
+			if not silent then
+				self:FlashLight(0.5)
+			end
 		end
 		return true
 	else
@@ -1165,9 +1172,20 @@ function ENT:TogglePhysLock()
 end
 
 function ENT:TogglePower()
-	if not self.moving and not self.flightmode and not self.repairing then
-		if self:GetLocked() then
-			self:SetLocked(false)
+	if not self.moving and not self.repairing then
+		if self.power then
+			if self:GetLocked() then
+				self:SetLocked(false,true)
+				self.waslocked=true
+			end
+			if self.physlocked then
+				self:TogglePhysLock()
+				self.wasphyslocked=true
+			end
+			if self.flightmode then
+				self:ToggleFlight()
+				self.wasflying=true
+			end
 		end
 		self.power=(not self.power)
 		net.Start("TARDIS-SetPower")
@@ -1177,6 +1195,20 @@ function ENT:TogglePower()
 				net.WriteEntity(self.interior)
 			end
 		net.Broadcast()
+		if self.power then
+			if self.waslocked then
+				self:SetLocked(true,true)
+				self.waslocked=nil
+			end
+			if self.wasphyslocked then
+				self:TogglePhysLock()
+				self.wasphyslocked=nil
+			end
+			if self.wasflying then
+				self:ToggleFlight()
+				self.wasflying=nil
+			end
+		end
 		return true
 	end
 	return false
@@ -1266,7 +1298,8 @@ function ENT:Think()
 			local filter=table.Copy(self.occupants)
 			table.insert(filter,self)
 			local trace = util.QuickTrace( self.pilot:EyePos(), self.pilot:GetAimVector() * 9999999, filter)
-			local angle = Angle(0,self.pilot:GetAngles().y+180,0)
+			local angle=trace.HitNormal:Angle()
+			angle:RotateAroundAxis( angle:Right( ), -90 )
 			self:Go(trace.HitPos, angle)
 			self.pilot:ChatPrint("TARDIS moving to AimPos.")
 		end
