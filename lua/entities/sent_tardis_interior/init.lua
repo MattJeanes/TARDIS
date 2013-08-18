@@ -93,7 +93,7 @@ function ENT:StartAdv(mode,ply,pos,ang)
 end
 
 function ENT:UpdateAdv(ply,success)
-	if not (self.flightmode==0) and self.advanced and IsValid(self.tardis) and self.tardis.power then
+	if not (self.flightmode==0) and tobool(GetConVarNumber("tardis_advanced"))==true and IsValid(self.tardis) and self.tardis.power then
 		if success then
 			self.step=self.step+1
 			if self.flightmode==1 and self.step==5 then
@@ -139,7 +139,6 @@ function ENT:MakePart(class,vec,ang,weld)
 	local ent=ents.Create(class)
 	ent.tardis=self.tardis
 	ent.interior=self
-	ent.advanced=self.advanced
 	ent.owner=self.owner
 	ent:SetPos(self:LocalToWorld(vec))
 	ent:SetAngles(ang)

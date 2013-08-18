@@ -29,16 +29,17 @@ function ENT:Use( activator, caller, type, value )
 	
 	local interior=self.interior
 	local tardis=self.tardis
-	if IsValid(interior) and IsValid(self.tardis) then
+	if IsValid(interior) and IsValid(self.tardis) and IsValid(self) then
 		interior.usecur=CurTime()+1
 		if CurTime()>self.usecur then
 			self.usecur=CurTime()+1
-			if self.advanced then
+			if tobool(GetConVarNumber("tardis_advanced"))==true then
 				interior:UpdateAdv(activator,false)
 			end
 			net.Start("TARDISInt-Locations-GUI")
 				net.WriteEntity(self.interior)
 				net.WriteEntity(self.tardis)
+				net.WriteEntity(self)
 			net.Send(activator)
 		end
 	end
@@ -50,10 +51,11 @@ end
 net.Receive("TARDISInt-Locations-Send", function(l,ply)
 	local interior=net.ReadEntity()
 	local tardis=net.ReadEntity()
-	if IsValid(interior) and IsValid(tardis) then
+	local typewriter=net.ReadEntity()
+	if IsValid(interior) and IsValid(tardis) and IsValid(typewriter) then
 		local pos=Vector(net.ReadFloat(), net.ReadFloat(), net.ReadFloat())
 		local ang=Angle(net.ReadFloat(), net.ReadFloat(), net.ReadFloat())
-		if interior.advanced then
+		if tobool(GetConVarNumber("tardis_advanced"))==true then
 			if interior.flightmode==0 and interior.step==0 then
 				local success=interior:StartAdv(2,ply,pos,ang)
 				if success then
@@ -63,9 +65,8 @@ net.Receive("TARDISInt-Locations-Send", function(l,ply)
 				interior:UpdateAdv(ply,false)
 			end
 		else
-			if not tardis.moving then
-				tardis:Go(pos,ang)
-			end
+			typewriter.pos=pos
+			typewriter.ang=ang
 		end
 	end
 end)

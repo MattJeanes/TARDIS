@@ -20,6 +20,7 @@ CreateConVar("tardis_doubletrace", "1", {FCVAR_NOTIFY, FCVAR_SERVER_CAN_EXECUTE,
 CreateConVar("tardis_physdamage", "1", {FCVAR_NOTIFY, FCVAR_SERVER_CAN_EXECUTE, FCVAR_REPLICATED})
 CreateConVar("tardis_advanced", "0", {FCVAR_NOTIFY, FCVAR_SERVER_CAN_EXECUTE, FCVAR_REPLICATED})
 CreateConVar("tardis_teleportlock", "0", {FCVAR_NOTIFY, FCVAR_SERVER_CAN_EXECUTE, FCVAR_REPLICATED})
+CreateConVar("tardis_longflight", "0", {FCVAR_NOTIFY, FCVAR_SERVER_CAN_EXECUTE, FCVAR_REPLICATED})
 CreateConVar("tardis_spawnoffset", "0", {FCVAR_SERVER_CAN_EXECUTE, FCVAR_REPLICATED})
 
 hook.Add("PhysgunDrop", "TARDIS-PhysgunDrop", function(ply,ent)

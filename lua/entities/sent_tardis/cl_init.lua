@@ -244,6 +244,47 @@ net.Receive("TARDIS-Stop", function()
 	end
 end)
 
+net.Receive("TARDIS-GoLong", function()
+	local tardis=net.ReadEntity()
+	if IsValid(tardis) then
+		tardis.moving=true
+	end
+	local interior=net.ReadEntity()
+	local exploded=tobool(net.ReadBit())
+	local pitch=(exploded and 110 or 100)
+	if tobool(GetConVarNumber("tardis_matsound"))==true then
+		if IsValid(tardis) and LocalPlayer().tardis==tardis then
+			if tardis.visible then
+				tardis:EmitSound("tardis/demat.wav", 100, pitch)
+			end
+			if interior and IsValid(interior) and LocalPlayer().tardis_viewmode and not IsValid(LocalPlayer().tardis_skycamera) then
+				interior:EmitSound("tardis/demat.wav", 100, pitch)
+			end
+		elseif IsValid(tardis) and tardis.visible then
+			sound.Play("tardis/demat.wav", net.ReadVector(), 75, pitch)
+		end
+	end
+end)
+
+net.Receive("TARDIS-Reappear", function()
+	local tardis=net.ReadEntity()
+	local interior=net.ReadEntity()
+	local exploded=tobool(net.ReadBit())
+	local pitch=(exploded and 110 or 100)
+	if tobool(GetConVarNumber("tardis_matsound"))==true then
+		if IsValid(tardis) and LocalPlayer().tardis==tardis then
+			if tardis.visible then
+				tardis:EmitSound("tardis/mat.wav", 100, pitch)
+			end
+			if interior and IsValid(interior) and LocalPlayer().tardis_viewmode and not IsValid(LocalPlayer().tardis_skycamera) then
+				interior:EmitSound("tardis/mat.wav", 100, pitch)
+			end
+		elseif IsValid(tardis) and tardis.visible then
+			sound.Play("tardis/mat.wav", net.ReadVector(), 75, pitch)
+		end
+	end
+end)
+
 net.Receive("Player-SetTARDIS", function()
 	local ply=net.ReadEntity()
 	ply.tardis=net.ReadEntity()
@@ -547,6 +588,23 @@ hook.Add("PopulateToolMenu", "TARDIS-PopulateToolMenu", function()
 		checkBox.OnChange = function(self,val)
 			if LocalPlayer():IsAdmin() or LocalPlayer():IsSuperAdmin() then
 				net.Start("TARDIS-AdvancedMode")
+					net.WriteFloat(val==true and 1 or 0)
+				net.SendToServer()
+			else
+				chat.AddText(Color(255,62,62), "WARNING: ", Color(255,255,255), "You must be an admin to change this option.")
+				chat.PlaySound()
+			end
+		end
+		panel:AddItem(checkBox)
+		
+		local checkBox = vgui.Create( "DCheckBoxLabel" )
+		checkBox:SetText( "Long Flight (BETA | Admin Only)" )
+		checkBox:SetToolTip( "This sets flight mode to be longer, mostly for roleplay purposes." )
+		checkBox:SetValue( GetConVarNumber( "tardis_longflight" ) )
+		checkBox:SetDisabled(not (LocalPlayer():IsAdmin() or LocalPlayer():IsSuperAdmin()))
+		checkBox.OnChange = function(self,val)
+			if LocalPlayer():IsAdmin() or LocalPlayer():IsSuperAdmin() then
+				net.Start("TARDIS-LongFlight")
 					net.WriteFloat(val==true and 1 or 0)
 				net.SendToServer()
 			else

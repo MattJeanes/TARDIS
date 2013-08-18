@@ -98,7 +98,7 @@ function ENT:Toggle( bEnable, ply )
 	local tardis=self.tardis
 	if IsValid(interior) and IsValid(tardis) then
 		interior.usecur=CurTime()+1
-		if self.advanced and (interior.flightmode==1 or interior.flightmode==2) and interior.step==2 then
+		if tobool(GetConVarNumber("tardis_advanced"))==true and (interior.flightmode==1 or interior.flightmode==2) and interior.step==2 then
 			interior:UpdateAdv(ply, true)
 		else
 			interior:UpdateAdv(ply, false)

@@ -41,7 +41,7 @@ function ENT:Use( activator, caller, type, value )
 	
 	if IsValid(self.interior) then
 		self.interior.usecur=CurTime()+1
-		if self.advanced then
+		if tobool(GetConVarNumber("tardis_advanced"))==true then
 			self.interior:UpdateAdv(activator,false)
 		end
 	end

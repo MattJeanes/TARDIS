@@ -15,6 +15,7 @@ util.AddNetworkString("TARDIS-DoubleTrace")
 util.AddNetworkString("TARDIS-SpawnOffset")
 util.AddNetworkString("TARDIS-AdvancedMode")
 util.AddNetworkString("TARDIS-TeleportLock")
+util.AddNetworkString("TARDIS-LongFlight")
 util.AddNetworkString("TARDIS-PhysDamage")
 util.AddNetworkString("TARDIS-Phase")
 util.AddNetworkString("TARDIS-UpdateVis")
@@ -28,6 +29,9 @@ util.AddNetworkString("TARDIS-BeginRepair")
 util.AddNetworkString("TARDIS-FinishRepair")
 util.AddNetworkString("TARDIS-SetLight")
 util.AddNetworkString("TARDIS-SetPower")
+util.AddNetworkString("TARDIS-GoLong")
+util.AddNetworkString("TARDIS-StopLong")
+util.AddNetworkString("TARDIS-Reappear")
 
 net.Receive("TARDIS-TakeDamage", function(len,ply)
 	if ply:IsAdmin() or ply:IsSuperAdmin() then
@@ -68,6 +72,12 @@ end)
 net.Receive("TARDIS-PhysDamage", function(len,ply)
 	if ply:IsAdmin() or ply:IsSuperAdmin() then
 		RunConsoleCommand("tardis_physdamage", net.ReadFloat())
+	end
+end)
+
+net.Receive("TARDIS-LongFlight", function(len,ply)
+	if ply:IsAdmin() or ply:IsSuperAdmin() then
+		RunConsoleCommand("tardis_longflight", net.ReadFloat())
 	end
 end)
 
@@ -136,7 +146,6 @@ function ENT:Initialize()
 	self.viewmodecur=0
 	self.repaircur=0
 	self.repairdelay=1
-	self.advanced=tobool(GetConVarNumber("tardis_advanced"))
 	self.occupants={}
 	if WireLib then
 		self.wirepos=Vector(0,0,0)
@@ -178,7 +187,6 @@ function ENT:Initialize()
 	self.interior=ents.Create("sent_tardis_interior")
 	self.interior:SetPos(trace.HitPos+Vector(0,0,-600+offset))
 	self.interior.tardis=self
-	self.interior.advanced=self.advanced
 	self.interior.owner=self.owner
 	self.interior:Spawn()
 	self.interior:Activate()
@@ -478,19 +486,57 @@ function ENT:FlashLight(time)
 	end)
 end
 
-function ENT:Teleport()
+function ENT:Disappear()
+	self:RemoveRotorWash()
+	self.invortex=true
+	self:SetLight(false)
+	self:SetSolid(SOLID_NONE)
+	self:GetPhysicsObject():EnableMotion(false)
+	if self.attachedents then
+		for k,v in pairs(self.attachedents) do
+			if IsValid(v) and not IsValid(v:GetParent()) then
+				local phys=v:GetPhysicsObject()
+				if phys and IsValid(phys) then
+					if not phys:IsMotionEnabled() then
+						v.frozen=true
+					end
+					phys:EnableMotion(false)
+					v:SetSolid(SOLID_NONE)
+				end
+			end
+		end
+	end
+	if self.longflight then
+		for k,v in pairs(self.occupants) do
+			if not v.tardis_viewmode then
+				self:ToggleViewmode(v)
+			end
+		end
+		timer.Simple(30,function()
+			if IsValid(self) then
+				net.Start("TARDIS-Reappear")
+					net.WriteEntity(self)
+					net.WriteEntity(self.interior)
+					net.WriteBit(self.exploded)
+					net.WriteVector(self.vec)
+				net.Broadcast()
+				timer.Simple(8.5,function() // a good enough approximation
+					if IsValid(self) then
+						self:Reappear()
+					end
+				end)
+			end
+		end)
+	else
+		self:Reappear()
+	end
+end
+
+function ENT:Reappear()
 	if self.vec then
-		self:GetPhysicsObject():EnableMotion(false)
 		if self.attachedents then
 			for k,v in pairs(self.attachedents) do
 				if IsValid(v) and not IsValid(v:GetParent()) then
-					local phys=v:GetPhysicsObject()
-					if phys and IsValid(phys) then
-						if not phys:IsMotionEnabled() then
-							v.frozen=true
-						end
-						phys:EnableMotion(false)
-					end
 					v.telepos=v:GetPos()-self:GetPos()
 				end
 			end
@@ -510,16 +556,27 @@ function ENT:Teleport()
 					v:SetPos(self:GetPos()+v.telepos)
 					v.telepos=nil
 					local phys=v:GetPhysicsObject()
-					if phys and IsValid(phys) and not v.frozen and not v.physlocked then
-						phys:EnableMotion(true)
+					if phys and IsValid(phys) then
+						if not v.frozen and not v.physlocked then
+							phys:EnableMotion(true)
+						end
+						v:SetSolid(SOLID_VPHYSICS)
 					end
 					v.frozen=nil
+					v.nocollide=nil
 				end
 			end
 		end
 		if not self.physlocked then
 			self:GetPhysicsObject():EnableMotion(true)
 		end
+		self:SetSolid(SOLID_VPHYSICS)
+		self:SetLight(true)
+		self:CreateRotorWash()
+		self.invortex=false
+		self.mat=true
+	else
+		print("CRITICAL ERROR: Vector not found.")
 	end
 end
 
@@ -539,6 +596,7 @@ function ENT:Go(vec,ang)
 		self.lastang=self:GetAngles()
 		self.vec=vec
 		self.attachedents = constraint.GetAllConstrainedEntities(self)
+		self.longflight=tobool(GetConVarNumber("tardis_longflight"))
 		if self.attachedents then
 			for k,v in pairs(self.attachedents) do
 				if v.tardis_part then
@@ -550,7 +608,6 @@ function ENT:Go(vec,ang)
 				if not (a==255) then
 					v.tempa=a
 				end
-
 			end
 		end
 		if ang then
@@ -568,13 +625,23 @@ function ENT:Go(vec,ang)
 		if IsValid(self.interior) then
 			util.ScreenShake(self.interior:GetPos(),1,5,1,700)
 		end
-		net.Start("TARDIS-Go")
-			net.WriteEntity(self)
-			net.WriteEntity(self.interior)
-			net.WriteBit(tobool(self.exploded))
-			net.WriteVector(self:GetPos())
-			net.WriteVector(self.vec)
-		net.Broadcast()
+		if self.longflight then
+			net.Start("TARDIS-GoLong")
+				net.WriteEntity(self)
+				net.WriteEntity(self.interior)
+				net.WriteBit(tobool(self.exploded))
+				net.WriteVector(self:GetPos())
+				net.WriteVector(self.vec)
+			net.Broadcast()
+		else
+			net.Start("TARDIS-Go")
+				net.WriteEntity(self)
+				net.WriteEntity(self.interior)
+				net.WriteBit(tobool(self.exploded))
+				net.WriteVector(self:GetPos())
+				net.WriteVector(self.vec)
+			net.Broadcast()
+		end
 		return true
 	else
 		return false
@@ -589,6 +656,7 @@ function ENT:Stop()
 		self.moving=false
 		self.vec=nil
 		self.ang=nil
+		self.longflight=nil
 		if self.attachedents then
 			for k,v in pairs(self.attachedents) do
 				if v.tempa then
@@ -675,8 +743,7 @@ function ENT:Dematerialize()
 			self.cycle=1
 			self.step=1
 			self.demat=false
-			self.mat=true
-			self:Teleport()
+			self:Disappear()
 		end
 	end
 	self:UpdateAlpha()
@@ -823,6 +890,7 @@ function ENT:PlayerExit( ply, override )
 	if tobool(GetConVarNumber("tardis_teleportlock"))==true and self.moving and not override then
 		return
 	end
+	if self.invortex and not override then return end
 	if ply:InVehicle() then ply:ExitVehicle() end
 	net.Start("Player-SetTARDIS")
 		net.WriteEntity(ply)
@@ -991,6 +1059,10 @@ function ENT:PhysicsUpdate( ph )
 			local angle=AngleRand():Forward()*75
 			ph:AddAngleVelocity(angle)
 		end
+		
+		if ph:IsGravityEnabled() then // this is for when certain things force gravity on, e.g. horizon/spacebuild
+			ph:AddVelocity(Vector(0,0,9.015))
+		end
 	end
 	
 	if self.occupants then
@@ -1026,9 +1098,8 @@ function ENT:ToggleFlight()
 			self:CreateRotorWash()
 		end		
 	else
-		if self.RotorWash and not self.moving and self.visible then
-			self.RotorWash:Remove()
-			self.RotorWash = nil
+		if not self.moving and self.visible then
+			self:RemoveRotorWash()
 		end
 	end
 	if self.phys and IsValid(self.phys) then
@@ -1052,6 +1123,13 @@ function ENT:CreateRotorWash()
 	self.RotorWash:Activate()
 end
 
+function ENT:RemoveRotorWash()
+	if IsValid(self.RotorWash) then
+		self.RotorWash:Remove()
+		self.RotorWash=nil
+	end
+end
+
 function ENT:TogglePhase()
 	local flightphase=tobool(GetConVarNumber("tardis_flightphase"))==true
 	if CurTime()>self.phasecur and not self.exploded and not self.repairing and self.power then
@@ -1068,10 +1146,9 @@ function ENT:TogglePhase()
 		else
 			self:SetLight(false)
 		end
-		if self.RotorWash and not self.visible then
-			self.RotorWash:Remove()
-			self.RotorWash = nil
-		elseif !self.RotorWash and self.visible then
+		if not self.visible then
+			self:RemoveRotorWash()
+		elseif self.visible then
 			self:CreateRotorWash()
 		end
 		return true
@@ -1080,6 +1157,7 @@ function ENT:TogglePhase()
 end
 
 function ENT:ToggleViewmode(ply,deldata)
+	if self.invortex and ply.tardis_viewmode then return end
 	ply.tardis_viewmode=(not ply.tardis_viewmode) // true = inside, false = third-person view
 	net.Start("TARDIS-SetViewmode")
 		net.WriteBit(tobool(ply.tardis_viewmode))
@@ -1263,14 +1341,11 @@ function ENT:Think()
 				v:GetPhysicsObject():AddVelocity(vec*force)
 			end
 		end
-		if !self.RotorWash and self.visible then
+		if not self.invortex and self.visible then
 			self:CreateRotorWash()
 		end
-	else
-		if self.RotorWash and not self.flightmode and self.visible then
-			self.RotorWash:Remove()
-			self.RotorWash = nil
-		end
+	elseif not self.flightmode and self.visible then
+		self:RemoveRotorWash()
 	end
 	
 	if self.phys and IsValid(self.phys) then

@@ -101,7 +101,7 @@ function ENT:Toggle( bEnable, ply )
 	local tardis=self.tardis
 	local interior=self.interior
 	if IsValid(tardis) and IsValid(interior) then
-		if self.advanced then
+		if tobool(GetConVarNumber("tardis_advanced"))==true then
 			if (interior.flightmode==1 or interior.flightmode==2) and interior.step==4 then
 				interior:UpdateAdv(ply, true)
 			else
@@ -109,12 +109,29 @@ function ENT:Toggle( bEnable, ply )
 			end
 		else
 			local skycamera=self.interior.skycamera
-			if IsValid(skycamera) and not self.tardis.moving and not self.tardis.repairing and skycamera.hitpos and skycamera.hitang then
-				local success=self.tardis:Go(skycamera.hitpos, skycamera.hitang)
+			local typewriter=self.interior.typewriter
+			local pos
+			local ang
+			if IsValid(skycamera) and skycamera.hitpos and skycamera.hitang then
+				pos=skycamera.hitpos
+				ang=skycamera.hitang
+			end
+			if IsValid(typewriter) and typewriter.pos and typewriter.ang then
+				pos=typewriter.pos
+				ang=typewriter.ang
+			end
+			if not self.tardis.moving and not self.tardis.repairing and pos and ang then
+				local success=self.tardis:Go(pos, ang)
 				if success then
 					ply:ChatPrint("TARDIS moving to set destination.")
-					skycamera.hitpos=nil
-					skycamera.hitang=nil
+					if IsValid(skycamera) and skycamera.hitpos==pos and skycamera.hitang==ang then
+						skycamera.hitpos=nil
+						skycamera.hitang=nil
+					end
+					if IsValid(typewriter) and typewriter.pos==pos and typewriter.ang==ang then
+						typewriter.pos=nil
+						typewriter.ang=nil
+					end
 				end
 			end
 		end

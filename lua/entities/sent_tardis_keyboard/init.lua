@@ -29,7 +29,7 @@ function ENT:Use( activator, caller, type, value )
 		interior.usecur=CurTime()+1
 		if CurTime()>self.usecur then
 			self.usecur=CurTime()+1
-			if self.advanced then
+			if tobool(GetConVarNumber("tardis_advanced"))==true then
 				if interior.flightmode==0 and interior.step==0 then
 					local success=interior:StartAdv(1,activator)
 					if success then

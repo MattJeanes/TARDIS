@@ -95,7 +95,7 @@ function ENT:Toggle( bEnable, ply )
 	end
 	
 	local interior=self.interior
-	if self.advanced and IsValid(interior) then
+	if tobool(GetConVarNumber("tardis_advanced"))==true and IsValid(interior) then
 		if (interior.flightmode==1 or interior.flightmode==2) and interior.step==3 then
 			interior:UpdateAdv(ply, true)
 		else
