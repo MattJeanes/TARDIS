@@ -135,6 +135,13 @@ function ENT:Toggle( bEnable, ply )
 				end
 			end
 		end
+		
+		if self.tardis.moving and self.tardis.invortex and self.tardis.longflight then
+			local success=self.tardis:LongReappear()
+			if success then
+				ply:ChatPrint("TARDIS materialising.")
+			end
+		end
 	end
 	
 	if IsValid(self.tardis) then

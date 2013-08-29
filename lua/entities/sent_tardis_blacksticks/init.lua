@@ -96,9 +96,6 @@ function ENT:Toggle( bEnable, ply )
 	
 	if IsValid(self.interior) then
 		self.interior.usecur=CurTime()+1
-		if tobool(GetConVarNumber("tardis_advanced"))==true then
-			self.interior:UpdateAdv(ply, false)
-		end
 	end
 	
 	if IsValid(self.tardis) then

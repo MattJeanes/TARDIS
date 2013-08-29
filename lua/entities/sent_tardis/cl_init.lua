@@ -69,10 +69,6 @@ function ENT:Phase(mode)
 end
 
 function ENT:Initialize()
-	if tobool(GetConVarNumber("tardis_flightsound"))==true then
-		self.flightloop=CreateSound(self, "tardis/flight_loop.wav")
-		self.flightloop:Stop()
-	end
 	self.health=100
 	self.phasemode=false
 	self.visible=true
@@ -104,7 +100,7 @@ function ENT:Think()
 			self.flightloop=CreateSound(self, "tardis/flight_loop.wav")
 			self.flightloop:Stop()
 		end
-		if self.flightmode and self.visible and not self.moving then
+		if (self.flightmode or self.invortex) and self.visible and ((self.invortex and self.moving) or not self.moving) then
 			if !self.flightloop:IsPlaying() then
 				self.flightloop:Play()
 			end
@@ -138,9 +134,10 @@ function ENT:Think()
 		local interior=self:GetNWEntity("interior",NULL)
 		if not self.flightloop2 and interior and IsValid(interior) then
 			self.flightloop2=CreateSound(interior, "tardis/flight_loop.wav")
+			self.flightloop2:ChangeVolume(0.5,0)
 			self.flightloop2:Stop()
 		end
-		if self.flightloop2 and self.flightmode and LocalPlayer().tardis_viewmode and not IsValid(LocalPlayer().tardis_skycamera) and interior and IsValid(interior) and not self.moving then
+		if self.flightloop2 and (self.flightmode or self.invortex) and LocalPlayer().tardis_viewmode and not IsValid(LocalPlayer().tardis_skycamera) and interior and IsValid(interior) and ((self.invortex and self.moving) or not self.moving) then
 			if !self.flightloop2:IsPlaying() then
 				self.flightloop2:Play()
 			end
@@ -411,6 +408,14 @@ net.Receive("TARDIS-SetPower", function()
 		else
 			sound.Play("tardis/powerdown.wav", interior:GetPos())
 		end
+	end
+end)
+
+net.Receive("TARDIS-SetVortex", function()
+	local tardis=net.ReadEntity()
+	local on=tobool(net.ReadBit())
+	if IsValid(tardis) then
+		tardis.invortex=on
 	end
 end)
 

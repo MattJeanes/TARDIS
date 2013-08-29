@@ -32,6 +32,7 @@ util.AddNetworkString("TARDIS-SetPower")
 util.AddNetworkString("TARDIS-GoLong")
 util.AddNetworkString("TARDIS-StopLong")
 util.AddNetworkString("TARDIS-Reappear")
+util.AddNetworkString("TARDIS-SetVortex")
 
 net.Receive("TARDIS-TakeDamage", function(len,ply)
 	if ply:IsAdmin() or ply:IsSuperAdmin() then
@@ -140,6 +141,7 @@ function ENT:Initialize()
 	self.locked=false
 	self.physlocked=false
 	self.isomorphic=false
+	self.reappearing=false
 	self.power=true
 	self.phasecur=0
 	self.interiorcur=0
@@ -489,6 +491,10 @@ end
 function ENT:Disappear()
 	self:RemoveRotorWash()
 	self.invortex=true
+	net.Start("TARDIS-SetVortex")
+		net.WriteEntity(self)
+		net.WriteBit(true)
+	net.Broadcast()
 	self:SetLight(false)
 	self:SetSolid(SOLID_NONE)
 	self:GetPhysicsObject():EnableMotion(false)
@@ -506,29 +512,30 @@ function ENT:Disappear()
 			end
 		end
 	end
-	if self.longflight then
-		for k,v in pairs(self.occupants) do
-			if not v.tardis_viewmode then
-				self:ToggleViewmode(v)
-			end
-		end
-		timer.Simple(30,function()
+	if not self.longflight then
+		self:Reappear()
+	end
+end
+
+function ENT:LongReappear()
+	if self.moving and self.invortex and self.longflight then
+		self.reappearing=true
+		net.Start("TARDIS-Reappear")
+			net.WriteEntity(self)
+			net.WriteEntity(self.interior)
+			net.WriteBit(self.exploded)
+			net.WriteVector(self.vec)
+		net.Broadcast()
+		timer.Simple(8.5,function() // a good enough approximation
 			if IsValid(self) then
-				net.Start("TARDIS-Reappear")
-					net.WriteEntity(self)
-					net.WriteEntity(self.interior)
-					net.WriteBit(self.exploded)
-					net.WriteVector(self.vec)
-				net.Broadcast()
-				timer.Simple(8.5,function() // a good enough approximation
-					if IsValid(self) then
-						self:Reappear()
-					end
-				end)
+				self.reappearing=false
+				self:Reappear()
 			end
 		end)
+		return true
 	else
-		self:Reappear()
+		print("CRITICAL ERROR: TARDIS not moving or long flight disabled.")
+		return false
 	end
 end
 
@@ -574,6 +581,10 @@ function ENT:Reappear()
 		self:SetLight(true)
 		self:CreateRotorWash()
 		self.invortex=false
+		net.Start("TARDIS-SetVortex")
+			net.WriteEntity(self)
+			net.WriteBit(false)
+		net.Broadcast()
 		self.mat=true
 	else
 		print("CRITICAL ERROR: Vector not found.")
@@ -1157,7 +1168,6 @@ function ENT:TogglePhase()
 end
 
 function ENT:ToggleViewmode(ply,deldata)
-	if self.invortex and ply.tardis_viewmode then return end
 	ply.tardis_viewmode=(not ply.tardis_viewmode) // true = inside, false = third-person view
 	net.Start("TARDIS-SetViewmode")
 		net.WriteBit(tobool(ply.tardis_viewmode))
@@ -1180,9 +1190,9 @@ function ENT:ToggleViewmode(ply,deldata)
 					table.insert(tbl,v)
 				end
 			end
-			if #tbl>0 then
+			if not self.isomorphic and #tbl>0 then
 				local newpilot=tbl[math.random(#tbl)]
-				if self.isomorphic and self.owner.tardis==self and not self.owner.tardis_viewmode then
+				if self.owner.tardis==self and not self.owner.tardis_viewmode then
 					newpilot=self.owner
 				end
 				if newpilot and IsValid(newpilot) and newpilot:IsPlayer() then
@@ -1361,6 +1371,10 @@ function ENT:Think()
 	
 	if CurTime() > self.phasecur and self.pilot and IsValid(self.pilot) and self.pilot:KeyDown(IN_ATTACK2) and not self.pilot.tardis_viewmode and self.power then
 		self:TogglePhase()
+	end
+	
+	if self.moving and self.invortex and not self.reappearing and self.pilot and IsValid(self.pilot) and self.pilot:KeyDown(IN_ATTACK) then
+		self:LongReappear()
 	end
 	
 	if not self.moving and not self.repairing and self.pilot and IsValid(self.pilot) and self.pilot:KeyDown(IN_ATTACK) and not self.pilot.tardis_viewmode and self.power then

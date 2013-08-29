@@ -94,11 +94,14 @@ function ENT:Toggle( bEnable, ply )
 		self:SetOn( false )
 	end
 	
+	if game.SinglePlayer() then
+		ply:ChatPrint("WARNING: The isomorphic security system has no use in singleplayer.")
+	end
+	
 	local interior=self.interior
 	local tardis=self.tardis
 	if IsValid(interior) and IsValid(tardis) then
 		interior.usecur=CurTime()+1
-		interior:UpdateAdv(ply, false)
 		if not (ply==self.owner) then
 			ply:ChatPrint("WARNING: Only the TARDIS owner can use this control.")
 			return

@@ -140,20 +140,20 @@ function ENT:Think()
 					dlight.Size = size
 					dlight.DieTime = CurTime() + 1
 				end
-				
-				local dlight2 = DynamicLight( self:EntIndex()+10000 )
-				if ( dlight2 ) then
-					local size=1024
-					local c=Color(0,255,0)
-					dlight2.Pos = self:LocalToWorld(Vector(0,0,-50))
-					dlight2.r = c.r
-					dlight2.g = c.g
-					dlight2.b = c.b
-					dlight2.Brightness = 2
-					dlight2.Decay = size * 5
-					dlight2.Size = size
-					dlight2.DieTime = CurTime() + 1
-				end
+			end
+			
+			local dlight2 = DynamicLight( self:EntIndex()+10000 )
+			if ( dlight2 ) then
+				local size=512
+				local c=Color(0,255,0)
+				dlight2.Pos = self:LocalToWorld(Vector(0,0,-50))
+				dlight2.r = c.r
+				dlight2.g = c.g
+				dlight2.b = c.b
+				dlight2.Brightness = 4
+				dlight2.Decay = size * 5
+				dlight2.Size = size
+				dlight2.DieTime = CurTime() + 1
 			end
 			
 			if (self.timerotor.pos>0 and not tardis.moving or tardis.flightmode) or (tardis.moving or tardis.flightmode) then
