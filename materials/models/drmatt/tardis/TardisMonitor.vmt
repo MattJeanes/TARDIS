@@ -3,4 +3,5 @@
 	"$basetexture" "models/drmatt/tardis/TardisMonitor"
 	"$translucent" 1
 	"$nodecal" "1"
+	"$selfillum" 1
 }
