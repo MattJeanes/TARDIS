@@ -65,8 +65,14 @@ net.Receive("TARDISInt-Locations-Send", function(l,ply)
 				interior:UpdateAdv(ply,false)
 			end
 		else
-			typewriter.pos=pos
-			typewriter.ang=ang
+			if tardis.invortex then
+				tardis.vec=pos
+				tardis.ang=ang
+			else
+				typewriter.pos=pos
+				typewriter.ang=ang
+			end
+			ply:ChatPrint("TARDIS destination set.")
 		end
 	end
 end)

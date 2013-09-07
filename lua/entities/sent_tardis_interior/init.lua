@@ -36,14 +36,28 @@ function ENT:Initialize()
 		Wire_CreateOutputs(self, { "Health" })
 	end
 	
+	self:SpawnParts()
+end
+
+function ENT:SpawnParts()
+	if self.parts then
+		for k,v in pairs(self.parts) do
+			if IsValid(v) then
+				v:Remove()
+				v=nil
+			end
+		end
+	end
+	
 	self.parts={}
 	
-	// this is a biiiiit hacky, but it works!
+	//chairs
 	local vname="Seat_Airboat"
 	local chair=list.Get("Vehicles")[vname]
 	self.chair1=self:MakeVehicle(self:LocalToWorld(Vector(130,-96,-30)), Angle(0,40,0), chair.Model, chair.Class, vname, chair)
 	self.chair2=self:MakeVehicle(self:LocalToWorld(Vector(125,55,-30)), Angle(0,135,0), chair.Model, chair.Class, vname, chair)
 	
+	//components
 	self.skycamera=self:MakePart("sent_tardis_skycamera", Vector(0,0,-350), Angle(90,0,0),false)
 	self.throttle=self:MakePart("sent_tardis_throttle", Vector(-8.87,-50,5.5), Angle(-12,-5,24),true)
 	self.atomaccel=self:MakePart("sent_tardis_atomaccel", Vector(20,-37.67,1.75), Angle(0,0,0),true)
@@ -61,6 +75,8 @@ function ENT:Initialize()
 	self.flightlever=self:MakePart("sent_tardis_flightlever", Vector(-0.431641, 44.75, 6.4), Angle(-63.913, 137.035, 136.118),true)
 	self.physbrake=self:MakePart("sent_tardis_physbrake", Vector(39, -22.75, 6.914063), Angle(-56.714, 6.660, 148.819),true)
 	self.isomorphic=self:MakePart("sent_tardis_isomorphic", Vector(-39.5, 22, 6.629883), Angle(-69.238, -165, 137.777),true)
+	self.longflighttoggle=self:MakePart("sent_tardis_longflighttoggle", Vector(-37.242310, -27.915344, 7.428223), Angle(-22, 28.721, 15),true)
+	self.longflightdemat=self:MakePart("sent_tardis_longflightdemat", Vector(-43.168457, -31.015625, 4.7), Angle(22, -150.776, -12),true)
 	
 	self.unused1=self:MakePart("sent_tardis_unused", Vector(39, 22.75, 5.828125), Angle(-63.740, 78.027, 136.528),true)
 	self.unused2=self:MakePart("sent_tardis_unused", Vector(-2.5, -45.5, 7.75), Angle(-56.714, -54.280, 148.819),true)
@@ -117,6 +133,14 @@ function ENT:UpdateAdv(ply,success)
 				self.advang=nil
 				self.flightmode=0
 				self.step=0
+			elseif self.flightmode==3 and self.step==5 then
+				if IsValid(self.tardis) and not self.tardis.moving and self.tardis.longflight then
+					self.tardis:Go()
+				else
+					ply:ChatPrint("Error, already teleporting or long-flight disabled.")
+				end
+				self.flightmode=0
+				self.step=0
 			end
 		else
 			//ply:ChatPrint("Failed.")
@@ -146,6 +170,11 @@ function ENT:MakePart(class,vec,ang,weld)
 	ent:Activate()
 	if weld then
 		constraint.Weld(self,ent,0,0)
+	end
+	if IsValid(self.owner) then
+		ent:SetNetworkedString("Owner", self.owner:Nick())
+		ent:SetNetworkedEntity("OwnerObj", self.owner)
+		gamemode.Call("CPPIAssignOwnership", self.owner, ent)
 	end
 	table.insert(self.parts,ent)
 	return ent
@@ -182,6 +211,11 @@ function ENT:MakeVehicle( Pos, Ang, Model, Class, VName, VTable ) // for the cha
 	ent:SetRenderMode(RENDERMODE_TRANSALPHA)
 	ent:SetColor(Color(255,255,255,0))
 	constraint.Weld(self,ent,0,0)
+	if IsValid(self.owner) then
+		ent:SetNetworkedString("Owner", self.owner:Nick())
+		ent:SetNetworkedEntity("OwnerObj", self.owner)
+		gamemode.Call("CPPIAssignOwnership", self.owner, ent)
+	end
 	
 	table.insert(self.parts,ent)
 

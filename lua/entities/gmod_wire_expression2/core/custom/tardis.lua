@@ -111,6 +111,32 @@ local function TARDIS_Isomorph(data,ent)
 	return 0
 end
 
+local function TARDIS_Longflight(ent)
+	if ent and IsValid(ent) then
+		if not (ent:GetClass()=="sent_tardis") then return 0 end
+		local success=ent:ToggleLongFlight()
+		if success then
+			return 1
+		else
+			return 0
+		end
+	end
+	return 0
+end
+
+local function TARDIS_Materialise(ent)
+	if ent and IsValid(ent) then
+		if not (ent:GetClass()=="sent_tardis") then return 0 end
+		local success=ent:LongReappear()
+		if success then
+			return 1
+		else
+			return 0
+		end
+	end
+	return 0
+end
+
 local function TARDIS_Moving(ent)
 	if ent and IsValid(ent) then
 		if not (ent:GetClass()=="sent_tardis") then return 0 end
@@ -195,6 +221,18 @@ local function TARDIS_Isomorphic(ent)
 	return 0
 end
 
+local function TARDIS_Longflighted(ent)
+	if ent and IsValid(ent) then
+		if not (ent:GetClass()=="sent_tardis") then return 0 end
+		if ent.longflight then
+			return 1
+		else
+			return 0
+		end
+	end
+	return 0
+end
+
 local function TARDIS_Health(ent)
 	if ent and IsValid(ent) then
 		if not (ent:GetClass()=="sent_tardis") then return 0 end
@@ -245,6 +283,14 @@ e2function number entity:tardisIsomorph()
 	return TARDIS_Isomorph(self,this)
 end
 
+e2function number entity:tardisLongflight()
+	return TARDIS_Longflight(this)
+end
+
+e2function number entity:tardisMaterialise()
+	return TARDIS_Materialise(this)
+end
+
 // get details
 e2function number entity:tardisMoving()
 	return TARDIS_Moving(this)
@@ -276,4 +322,8 @@ end
 
 e2function number entity:tardisIsomorphic()
 	return TARDIS_Isomorphic(this)
+end
+
+e2function number entity:tardisLongflighted()
+	return TARDIS_Longflighted(this)
 end

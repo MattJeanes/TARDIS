@@ -228,8 +228,14 @@ net.Receive("TARDIS-Go", function()
 				interior:EmitSound("tardis/full.wav", 100, pitch)
 			end
 		elseif IsValid(tardis) and tardis.visible then
-			sound.Play("tardis/demat.wav", net.ReadVector(), 75, pitch)
-			sound.Play("tardis/mat.wav", net.ReadVector(), 75, pitch)
+			local pos=net.ReadVector()
+			local pos2=net.ReadVector()
+			if pos then
+				sound.Play("tardis/demat.wav", pos, 75, pitch)
+			end
+			if pos2 then
+				sound.Play("tardis/mat.wav", pos2, 75, pitch)
+			end
 		end
 	end
 end)
@@ -258,7 +264,10 @@ net.Receive("TARDIS-GoLong", function()
 				interior:EmitSound("tardis/demat.wav", 100, pitch)
 			end
 		elseif IsValid(tardis) and tardis.visible then
-			sound.Play("tardis/demat.wav", net.ReadVector(), 75, pitch)
+			local pos=net.ReadVector()
+			if pos then
+				sound.Play("tardis/demat.wav", pos, 75, pitch)
+			end
 		end
 	end
 end)
@@ -504,7 +513,7 @@ hook.Add("PopulateToolMenu", "TARDIS-PopulateToolMenu", function()
 				
 				This build of the mod requires the following combination of controls (in order):
 				
-				1. Activate the flightmode (either Navigations Mode or Programmable Flight Mode)
+				1. Activate the flightmode (Navigations/Programmable/Vortex)
 				2. Dial the Helmic Regulator
 				3. Apply the Locking Down Mechanism
 				4. Release the Time-Rotor Handbrake
@@ -593,23 +602,6 @@ hook.Add("PopulateToolMenu", "TARDIS-PopulateToolMenu", function()
 		checkBox.OnChange = function(self,val)
 			if LocalPlayer():IsAdmin() or LocalPlayer():IsSuperAdmin() then
 				net.Start("TARDIS-AdvancedMode")
-					net.WriteFloat(val==true and 1 or 0)
-				net.SendToServer()
-			else
-				chat.AddText(Color(255,62,62), "WARNING: ", Color(255,255,255), "You must be an admin to change this option.")
-				chat.PlaySound()
-			end
-		end
-		panel:AddItem(checkBox)
-		
-		local checkBox = vgui.Create( "DCheckBoxLabel" )
-		checkBox:SetText( "Long Flight (BETA | Admin Only)" )
-		checkBox:SetToolTip( "This sets flight mode to be longer, mostly for roleplay purposes." )
-		checkBox:SetValue( GetConVarNumber( "tardis_longflight" ) )
-		checkBox:SetDisabled(not (LocalPlayer():IsAdmin() or LocalPlayer():IsSuperAdmin()))
-		checkBox.OnChange = function(self,val)
-			if LocalPlayer():IsAdmin() or LocalPlayer():IsSuperAdmin() then
-				net.Start("TARDIS-LongFlight")
 					net.WriteFloat(val==true and 1 or 0)
 				net.SendToServer()
 			else

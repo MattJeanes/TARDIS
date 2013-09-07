@@ -100,6 +100,6 @@ function ENT:Toggle( bEnable, ply )
 	
 	local tardis=self.tardis
 	if IsValid(tardis) and not tardis.moving and tardis.lastpos and tardis.lastang then
-		tardis:Go(tardis.lastpos, tardis.lastang)
+		tardis:Go(tardis.lastpos, tardis.lastang, true)
 	end
 end

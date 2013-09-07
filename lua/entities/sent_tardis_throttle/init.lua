@@ -102,7 +102,7 @@ function ENT:Toggle( bEnable, ply )
 	local interior=self.interior
 	if IsValid(tardis) and IsValid(interior) then
 		if tobool(GetConVarNumber("tardis_advanced"))==true then
-			if (interior.flightmode==1 or interior.flightmode==2) and interior.step==4 then
+			if (interior.flightmode==1 or interior.flightmode==2 or interior.flightmode==3) and interior.step==4 then
 				interior:UpdateAdv(ply, true)
 			else
 				interior:UpdateAdv(ply, false)
@@ -120,7 +120,7 @@ function ENT:Toggle( bEnable, ply )
 				pos=typewriter.pos
 				ang=typewriter.ang
 			end
-			if not self.tardis.moving and not self.tardis.repairing and pos and ang then
+			if pos and ang then
 				local success=self.tardis:Go(pos, ang)
 				if success then
 					ply:ChatPrint("TARDIS moving to set destination.")
@@ -131,6 +131,15 @@ function ENT:Toggle( bEnable, ply )
 					if IsValid(typewriter) and typewriter.pos==pos and typewriter.ang==ang then
 						typewriter.pos=nil
 						typewriter.ang=nil
+					end
+				end
+			end
+			if IsValid(interior.longflightdemat) then
+				if interior.longflightdemat.ready and tardis.longflight then
+					local success=self.tardis:Go()
+					if success then
+						ply:ChatPrint("TARDIS dematerialising.")
+						interior.longflightdemat.ready=false
 					end
 				end
 			end

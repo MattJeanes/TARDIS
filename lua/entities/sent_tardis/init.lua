@@ -76,12 +76,6 @@ net.Receive("TARDIS-PhysDamage", function(len,ply)
 	end
 end)
 
-net.Receive("TARDIS-LongFlight", function(len,ply)
-	if ply:IsAdmin() or ply:IsSuperAdmin() then
-		RunConsoleCommand("tardis_longflight", net.ReadFloat())
-	end
-end)
-
 //make the player name invisible while tardis is invisible
 hook.Add("EV_ShowPlayerName", "TARDIS-EV_ShowPlayerName", function(ply)
 	if ply.tardis and IsValid(ply.tardis) and not ply.tardis.visible then
@@ -105,9 +99,11 @@ function ENT:SpawnFunction( ply, tr, ClassName )
 	local SpawnPos = tr.HitPos + tr.HitNormal
 	local ent = ents.Create( ClassName )
 	ent:SetPos( SpawnPos )
+	local ang=Angle(0,(ply:GetPos()-SpawnPos):Angle().y,0)
+	ent:SetAngles( ang )
 	ent.owner=ply
 	ent:Spawn()
-	ent:Activate()
+	ent:Activate()	
 
 	return ent
 end
@@ -142,6 +138,7 @@ function ENT:Initialize()
 	self.physlocked=false
 	self.isomorphic=false
 	self.reappearing=false
+	self.longflight=false
 	self.power=true
 	self.phasecur=0
 	self.interiorcur=0
@@ -192,6 +189,11 @@ function ENT:Initialize()
 	self.interior.owner=self.owner
 	self.interior:Spawn()
 	self.interior:Activate()
+	if IsValid(self.owner) then
+		self.interior:SetNetworkedString("Owner", self.owner:Nick())
+		self.interior:SetNetworkedEntity("OwnerObj", self.owner)
+		gamemode.Call("CPPIAssignOwnership", self.owner, self.interior)
+	end
 	self:SetNWEntity("interior",self.interior)
 	self:SetHP(100)
 	
@@ -203,6 +205,15 @@ end
 
 function ENT:UpdateTransmitState()
 	return TRANSMIT_ALWAYS
+end
+
+function ENT:ToggleLongFlight()
+	if self.moving then
+		return false
+	else
+		self.longflight=(not self.longflight)
+		return true
+	end
 end
 
 function ENT:IsomorphicToggle(ply)
@@ -512,13 +523,13 @@ function ENT:Disappear()
 			end
 		end
 	end
-	if not self.longflight then
+	if not self.longflight or self.nolongflight then
 		self:Reappear()
 	end
 end
 
 function ENT:LongReappear()
-	if self.moving and self.invortex and self.longflight then
+	if self.moving and self.invortex and self.longflight and self.vec then
 		self.reappearing=true
 		net.Start("TARDIS-Reappear")
 			net.WriteEntity(self)
@@ -534,7 +545,6 @@ function ENT:LongReappear()
 		end)
 		return true
 	else
-		print("CRITICAL ERROR: TARDIS not moving or long flight disabled.")
 		return false
 	end
 end
@@ -579,7 +589,9 @@ function ENT:Reappear()
 		end
 		self:SetSolid(SOLID_VPHYSICS)
 		self:SetLight(true)
-		self:CreateRotorWash()
+		if self.visible then
+			self:CreateRotorWash()
+		end
 		self.invortex=false
 		net.Start("TARDIS-SetVortex")
 			net.WriteEntity(self)
@@ -599,15 +611,26 @@ function ENT:GetNumber()
 	end
 end
 
-function ENT:Go(vec,ang)
-	if not self.moving and vec and not self.repairing and self.power then
+function ENT:Go(vec,ang,nolongflight)
+	if not self.moving and not self.repairing and self.power then
+		if nolongflight then
+			self.nolongflight=true
+		end
 		self.demat=true
 		self.moving=true
 		self.lastpos=self:GetPos()
 		self.lastang=self:GetAngles()
-		self.vec=vec
+		if vec then
+			self.vec=vec
+		else
+			self.vec=self:GetPos()
+		end
+		if ang then
+			self.ang=ang
+		else
+			self.ang=self:GetAngles()
+		end
 		self.attachedents = constraint.GetAllConstrainedEntities(self)
-		self.longflight=tobool(GetConVarNumber("tardis_longflight"))
 		if self.attachedents then
 			for k,v in pairs(self.attachedents) do
 				if v.tardis_part then
@@ -621,9 +644,6 @@ function ENT:Go(vec,ang)
 				end
 			end
 		end
-		if ang then
-			self.ang=ang
-		end
 		if self.exploded then
 			local randvec=VectorRand()*1000
 			randvec.z=0
@@ -636,13 +656,12 @@ function ENT:Go(vec,ang)
 		if IsValid(self.interior) then
 			util.ScreenShake(self.interior:GetPos(),1,5,1,700)
 		end
-		if self.longflight then
+		if self.longflight and not self.nolongflight then
 			net.Start("TARDIS-GoLong")
 				net.WriteEntity(self)
 				net.WriteEntity(self.interior)
 				net.WriteBit(tobool(self.exploded))
 				net.WriteVector(self:GetPos())
-				net.WriteVector(self.vec)
 			net.Broadcast()
 		else
 			net.Start("TARDIS-Go")
@@ -650,7 +669,9 @@ function ENT:Go(vec,ang)
 				net.WriteEntity(self.interior)
 				net.WriteBit(tobool(self.exploded))
 				net.WriteVector(self:GetPos())
-				net.WriteVector(self.vec)
+				if self.vec then
+					net.WriteVector(self.vec)
+				end
 			net.Broadcast()
 		end
 		return true
@@ -667,7 +688,7 @@ function ENT:Stop()
 		self.moving=false
 		self.vec=nil
 		self.ang=nil
-		self.longflight=nil
+		self.nolongflight=nil
 		if self.attachedents then
 			for k,v in pairs(self.attachedents) do
 				if v.tempa then
@@ -999,6 +1020,8 @@ function ENT:PhysicsUpdate( ph )
 		local ri2=self:GetRight()
 		local fwd2=self:GetForward()
 		local ang=self:GetAngles()
+		local cen=ph:GetMassCenter()
+		local lev=ph:GetInertia():Length()
 		local force=15
 		local vforce=5
 		local rforce=2
@@ -1046,8 +1069,6 @@ function ENT:PhysicsUpdate( ph )
 		end
 		
 		if not self.exploded then
-			local cen=ph:GetMassCenter()
-			local lev=ph:GetInertia():Length()
 			ph:ApplyForceOffset( up*-ang.p,cen-fwd2*lev)
 			ph:ApplyForceOffset(-up*-ang.p,cen+fwd2*lev)
 			//ph:ApplyForceOffset( ri2*-ang2.y,cen-fwd2*lev)
@@ -1066,7 +1087,6 @@ function ENT:PhysicsUpdate( ph )
 		elseif self.exploded and ph:GetVelocity():Length()<1500 then
 			local speed=ph:GetVelocity()*0.01
 			ph:AddVelocity(speed)
-			
 			local angle=AngleRand():Forward()*75
 			ph:AddAngleVelocity(angle)
 		end

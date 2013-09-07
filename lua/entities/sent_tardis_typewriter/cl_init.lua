@@ -19,7 +19,7 @@ net.Receive("TARDISInt-Locations-GUI", function()
 	local function TransmitCoordinates()
 		local pos=selected.pos
 		local ang=selected.ang
-		if IsValid(interior) and IsValid(tardis) and not tardis.moving and pos and ang then
+		if IsValid(interior) and IsValid(tardis) and (not tardis.moving or tardis.invortex) and pos and ang then
 			net.Start("TARDISInt-Locations-Send")
 				net.WriteEntity(interior)
 				net.WriteEntity(tardis)

@@ -1,4 +1,4 @@
-@name TARDIS
+@name TARDIS Official
 @inputs
 @outputs XYZ:vector
 @persist Target:entity TARDIS:entity Visible SavePos:vector SaveAng:angle BackPos:vector BackAng:angle
@@ -7,7 +7,6 @@ if (first()|dupefinished()){
     TARDIS=entity():isConstrainedTo():tardisGet()
     TARDIS:createWire(entity(),"XYZ", "XYZ")
     Target=owner()
-    #entity():entGravity(0)
     entity():setAlpha(0)
     
     function demat(V:vector){
@@ -144,6 +143,22 @@ if(chatClk(owner())){
             }else{
                 print("TARDIS isomorphic security systems disabled.")
             }
+        }
+        hideChat(1)
+    }elseif(Cmd=="!longflight"){
+        local Success=TARDIS:tardisLongflight()
+        if (Success==1){
+            if(TARDIS:tardisLongflighted()){
+                print("TARDIS long-flight enabled.")
+            }else{
+                print("TARDIS long-flight disabled.")
+            }
+        }
+        hideChat(1)
+    }elseif(Cmd=="!materialise"){
+        local Success=TARDIS:tardisMaterialise()
+        if (Success==1){
+            print("TARDIS materialising.")
         }
         hideChat(1)
     }elseif(Cmd=="!save"){

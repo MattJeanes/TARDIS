@@ -187,9 +187,16 @@ function ENT:Think()
 			if CurTime()>self.setcur then
 				self.setcur=CurTime()+1
 				local trace=util.QuickTrace(self:GetPos(),self:GetForward()*9999999, self)
-				self.hitpos=trace.HitPos
+				local pos=trace.HitPos
 				local ang=self:GetAngles()
-				self.hitang=Angle(0,ang.y,0)
+				ang=Angle(0,ang.y,0)
+				if IsValid(self.tardis) and self.tardis.invortex then
+					self.tardis.vec=pos
+					self.tardis.ang=ang
+				else
+					self.hitpos=pos
+					self.hitang=ang
+				end
 				self.controller:ChatPrint("TARDIS destination set.")
 			end
 		end
