@@ -172,9 +172,11 @@ function ENT:MakePart(class,vec,ang,weld)
 		constraint.Weld(self,ent,0,0)
 	end
 	if IsValid(self.owner) then
-		ent:SetNetworkedString("Owner", self.owner:Nick())
-		ent:SetNetworkedEntity("OwnerObj", self.owner)
-		gamemode.Call("CPPIAssignOwnership", self.owner, ent)
+		if SPropProtection then
+			SPropProtection.PlayerMakePropOwner(self.owner, ent)
+		else
+			gamemode.Call("CPPIAssignOwnership", self.owner, ent)
+		end
 	end
 	table.insert(self.parts,ent)
 	return ent
@@ -212,9 +214,11 @@ function ENT:MakeVehicle( Pos, Ang, Model, Class, VName, VTable ) // for the cha
 	ent:SetColor(Color(255,255,255,0))
 	constraint.Weld(self,ent,0,0)
 	if IsValid(self.owner) then
-		ent:SetNetworkedString("Owner", self.owner:Nick())
-		ent:SetNetworkedEntity("OwnerObj", self.owner)
-		gamemode.Call("CPPIAssignOwnership", self.owner, ent)
+		if SPropProtection then
+			SPropProtection.PlayerMakePropOwner(self.owner, ent)
+		else
+			gamemode.Call("CPPIAssignOwnership", self.owner, ent)
+		end
 	end
 	
 	table.insert(self.parts,ent)

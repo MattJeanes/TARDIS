@@ -190,9 +190,11 @@ function ENT:Initialize()
 	self.interior:Spawn()
 	self.interior:Activate()
 	if IsValid(self.owner) then
-		self.interior:SetNetworkedString("Owner", self.owner:Nick())
-		self.interior:SetNetworkedEntity("OwnerObj", self.owner)
-		gamemode.Call("CPPIAssignOwnership", self.owner, self.interior)
+		if SPropProtection then
+			SPropProtection.PlayerMakePropOwner(self.owner, self.interior)
+		else
+			gamemode.Call("CPPIAssignOwnership", self.owner, self.interior)
+		end
 	end
 	self:SetNWEntity("interior",self.interior)
 	self:SetHP(100)
@@ -468,7 +470,10 @@ function ENT:OnTakeDamage(dmginfo)
 end
 
 function ENT:SetLight(on)
-	if on and not self.exploded and self.visible then
+	if on and (not self.visible or self.exploded or self.invortex) then
+		return
+	end
+	if on then
 		self.light:Fire("showsprite","",0)
 		self.light.on=true
 	else
@@ -588,7 +593,6 @@ function ENT:Reappear()
 			self:GetPhysicsObject():EnableMotion(true)
 		end
 		self:SetSolid(SOLID_VPHYSICS)
-		self:SetLight(true)
 		if self.visible then
 			self:CreateRotorWash()
 		end
@@ -598,6 +602,7 @@ function ENT:Reappear()
 			net.WriteBit(false)
 		net.Broadcast()
 		self.mat=true
+		self:SetLight(true)
 	else
 		print("CRITICAL ERROR: Vector not found.")
 	end
@@ -1118,10 +1123,8 @@ function ENT:PhysicsCollide( data, physobj )
 end
 
 function ENT:ToggleFlight()
-	if not (CurTime()>self.flightcur) then return false end
-	if self.repairing or not self.power then return false end
 	local flightphase=tobool(GetConVarNumber("tardis_flightphase"))==true
-	if not flightphase and not self.visible then return false end
+	if not (CurTime()>self.flightcur) or self.repairing or not self.power or (not flightphase and not self.visible) then return false end
 	self.flightcur=CurTime()+1
 	self.flightmode=(not self.flightmode)
 	if self.flightmode then
@@ -1147,6 +1150,7 @@ function ENT:ToggleFlight()
 end
 
 function ENT:CreateRotorWash()
+	if not self.visible or self.invortex then return end
 	if IsValid(self.RotorWash) then return end
 	self.RotorWash = ents.Create("env_rotorwash_emitter")
 	self.RotorWash:SetPos(self:GetPos())
