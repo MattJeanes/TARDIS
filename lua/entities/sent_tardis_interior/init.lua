@@ -90,7 +90,7 @@ function ENT:SpawnParts()
 end
 
 function ENT:StartAdv(mode,ply,pos,ang)
-	if self.flightmode==0 and self.step==0 and IsValid(self.tardis) and self.tardis.power then
+	if self.flightmode==0 and self.step==0 and IsValid(self.tardis) and self.tardis.power and not self.tardis.moving then
 		self.flightmode=mode
 		self.step=1
 		if pos and ang then
