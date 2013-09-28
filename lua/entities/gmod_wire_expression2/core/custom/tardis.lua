@@ -10,6 +10,12 @@ local function TARDIS_Get(ent)
 			return ent.tardis
 		elseif ent:GetClass()=="sent_tardis" then
 			return ent
+		elseif ent:IsPlayer() then
+			if IsValid(ent.tardis) then
+				return ent.tardis
+			else
+				return NULL
+			end
 		else
 			return NULL
 		end

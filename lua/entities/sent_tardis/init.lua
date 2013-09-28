@@ -929,6 +929,10 @@ function ENT:PlayerExit( ply, override )
 	end
 	if self.invortex and not override then return end
 	if ply:InVehicle() then ply:ExitVehicle() end
+	if self.locked and not override then
+		ply:ChatPrint("This TARDIS is locked.")
+		return
+	end
 	net.Start("Player-SetTARDIS")
 		net.WriteEntity(ply)
 		net.WriteEntity(NULL)
@@ -1420,8 +1424,24 @@ function ENT:Think()
 	
 	if string.lower(gmod.GetGamemode().Name)=="horizon" then
 		for k,v in pairs(self.occupants) do
-			if v.SuitPower and v.SuitAir and v.SuitCoolant then
-				player_manager.RunClass(v,"TransmitResources",v.SuitPower>20 and 0 or 1, v.SuitAir>20 and 0 or 1, v.SuitCoolant>20 and 0 or 1)
+			if v.suitAir and v.suitCoolant and v.suitPower then
+				if v.suitAir<5 then
+					v.suitAir=5
+				end
+				if v.suitCoolant<5 then
+					v.suitCoolant=5
+				end
+				if v.suitPower<5 then
+					v.suitPower=5
+				end
+			end
+		end
+	end
+	
+	if CAF and CAF.GetAddon("Spacebuild") then
+		for k,v in pairs(self.occupants) do
+			if v.LsResetSuit then
+				v:LsResetSuit()
 			end
 		end
 	end
