@@ -328,7 +328,7 @@ net.Receive("TARDISInt-Locations-GUI", function()
 		Derma_StringRequest(
 			"New Location",
 			"Please enter a new name for the location",
-			"",
+			location.name,
 			function(name)
 				local exists=false
 				for k,v in pairs(locations[map]) do

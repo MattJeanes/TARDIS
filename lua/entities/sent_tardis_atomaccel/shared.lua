@@ -16,9 +16,9 @@ ENT.Category		= "Doctor Who"
 ENT.tardis_part		= true
 
 function ENT:SetupDataTables()
-	self:NetworkVar( "Bool",	0,	"Dir" );
+	self:NetworkVar( "Int",	0,	"Mode" );
 	self:NetworkVar( "Bool",	1,	"IsToggle" );
 
-	self:SetDir( false )
+	self:SetMode( 1 )
 	self:SetIsToggle( true );
 end

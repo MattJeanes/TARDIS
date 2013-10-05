@@ -13,14 +13,15 @@ end
 function ENT:Think()
 	local tardis=self:GetNWEntity("TARDIS", NULL)
 	if IsValid(tardis) and LocalPlayer().tardis==tardis and LocalPlayer().tardis_viewmode then
-		if tardis.flightmode or tardis.moving then
+		local mode=self:GetMode()
+		if (tardis.flightmode or tardis.moving) and not (mode==0) then
 			local TargetPos
-			if ( self:GetDir() ) then
+			if ( mode==1 ) then
 				TargetPos = 1.0
 				if self.PosePosition==1 then
 					self.PosePosition=0
 				end
-			else
+			elseif ( mode==2 ) then
 				TargetPos = 0.0
 				if self.PosePosition==0 then
 					self.PosePosition=1

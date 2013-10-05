@@ -48,7 +48,7 @@ function ENT:Use( activator, caller, type, value )
 	if ( self:GetIsToggle() ) then
 
 		if ( type == USE_ON ) then
-			self:Toggle( !self:GetDir(), activator )
+			self:Toggle( activator )
 		end
 		return;
 
@@ -59,7 +59,7 @@ function ENT:Use( activator, caller, type, value )
 	--
 	-- Switch off
 	--
-	if ( self:GetDir() ) then 
+	if ( self:GetMode()==0 ) then 
 	
 		self:Toggle( false, activator )
 		
@@ -75,7 +75,7 @@ function ENT:Use( activator, caller, type, value )
 end
 
 function ENT:Think()
-	if ( self:GetDir() && !self:GetIsToggle() ) then 
+	if ( self:GetMode()==0 && !self:GetIsToggle() ) then 
 	
 		if ( !IsValid( self.LastUser ) || !self.LastUser:KeyDown( IN_USE ) ) then
 			
@@ -93,10 +93,11 @@ end
 --
 -- Makes the button trigger the keys
 --
-function ENT:Toggle( bEnable, ply )
-	if ( bEnable ) then
-		self:SetDir( true )
-	else
-		self:SetDir( false )
+function ENT:Toggle( ply )
+	local cur=self:GetMode()
+	local new=(cur==2 and 0 or cur+1)
+	self:SetMode(new)
+	if IsValid(self.tardis) then
+		self.tardis:SetSpinMode(new)
 	end
 end

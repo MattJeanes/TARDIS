@@ -145,6 +145,7 @@ function ENT:Initialize()
 	self.viewmodecur=0
 	self.repaircur=0
 	self.repairdelay=1
+	self.spinmode=1
 	self.occupants={}
 	if WireLib then
 		self.wirepos=Vector(0,0,0)
@@ -207,6 +208,10 @@ end
 
 function ENT:UpdateTransmitState()
 	return TRANSMIT_ALWAYS
+end
+
+function ENT:SetSpinMode(n)
+	self.spinmode=n
 end
 
 function ENT:ToggleLongFlight()
@@ -1034,6 +1039,7 @@ function ENT:PhysicsUpdate( ph )
 		local force=15
 		local vforce=5
 		local rforce=2
+		local tforce=400
 		local tilt=0
 		
 		if self.pilot and IsValid(self.pilot) and not self.pilot.tardis_viewmode and not self.exploded then
@@ -1066,7 +1072,7 @@ function ENT:PhysicsUpdate( ph )
 					ph:AddAngleVelocity(Vector(0,0,rforce))
 				else
 					ph:AddVelocity(-ri*force*phm)
-					ilt=tilt+5
+					tilt=tilt+5
 				end
 			end
 			
@@ -1076,6 +1082,13 @@ function ENT:PhysicsUpdate( ph )
 				ph:AddVelocity(up*vforce*phm)
 			end
 		end
+		
+		if self.spinmode==0 then
+			tilt=0
+		elseif self.spinmode==2 then // spinmode 1 needs no adjustments
+			tforce=-tforce
+		end
+		
 		
 		if not self.exploded then
 			ph:ApplyForceOffset( up*-ang.p,cen-fwd2*lev)
@@ -1087,8 +1100,10 @@ function ENT:PhysicsUpdate( ph )
 		end
 		
 		if not self.exploded then
-			local twist=Vector(0,0,ph:GetVelocity():Length()/400)
-			ph:AddAngleVelocity(twist)
+			if not (self.spinmode==0) then
+				local twist=Vector(0,0,ph:GetVelocity():Length()/tforce)
+				ph:AddAngleVelocity(twist)
+			end
 			local angbrake=ph:GetAngleVelocity()*-0.015
 			ph:AddAngleVelocity(angbrake)
 			local brake=self:GetVelocity()*-0.01
