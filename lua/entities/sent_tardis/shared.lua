@@ -34,3 +34,14 @@ hook.Add("OnPhysgunReload", "TARDIS-OnPhysgunReload", function(_,ply)
 		return false
 	end
 end)
+
+local meta=FindMetaTable("Entity")
+if !meta.GetRealPos then
+	meta.GetRealPos=meta.GetPos
+end
+function meta:GetPos(...)
+	if IsValid(self) and self:IsPlayer() and IsValid(self.tardis) then
+		return self.tardis:GetPos()
+	end
+	return self:GetRealPos(...)
+end

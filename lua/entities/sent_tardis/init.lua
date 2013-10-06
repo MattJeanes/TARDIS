@@ -1266,7 +1266,7 @@ function ENT:ToggleViewmode(ply,deldata)
 		end
 	else
 		if not deldata then
-			ply.tardisint_pos=self.interior:WorldToLocal(ply:GetPos())
+			ply.tardisint_pos=self.interior:WorldToLocal(ply:GetRealPos())
 			ply.tardisint_ang=ply:EyeAngles()
 		end
 		ply.weps={}
@@ -1441,13 +1441,13 @@ function ENT:Think()
 		for k,v in pairs(self.occupants) do
 			if v.suitAir and v.suitCoolant and v.suitPower then
 				if v.suitAir<5 then
-					v.suitAir=5
+					v.suitAir=v.suitAir+1
 				end
 				if v.suitCoolant<5 then
-					v.suitCoolant=5
+					v.suitCoolant=v.suitCoolant+1
 				end
 				if v.suitPower<5 then
-					v.suitPower=5
+					v.suitPower=v.suitPower+1
 				end
 			end
 		end

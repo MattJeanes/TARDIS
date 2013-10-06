@@ -46,7 +46,7 @@ function ENT:PlayerEnter(ply)
 		net.WriteEntity(self)
 	net.Send(ply)
 	if self.interior and IsValid(self.interior) then
-		ply.tardisint_pos=self.interior:WorldToLocal(ply:GetPos())
+		ply.tardisint_pos=self.interior:WorldToLocal(ply:GetRealPos())
 		ply.tardisint_ang=ply:EyeAngles()
 	end
 	ply.weps={}
@@ -212,6 +212,10 @@ function ENT:Think()
 	end
 	
 	for k,v in pairs(self.occupants) do
+		if not IsValid(v) then
+			self.occupants[k]=nil
+			continue
+		end
 		if CurTime()>self.usecur and v:KeyDown(IN_USE) then
 			self.usecur=CurTime()+1
 			self:PlayerExit(v)

@@ -281,7 +281,7 @@ function ENT:OnRemove()
 end
 
 function ENT:PlayerLookingAt(ply,vec,fov,Width)	
-	local Disp = vec - self:WorldToLocal(ply:GetPos()+Vector(0,0,64))
+	local Disp = vec - self:WorldToLocal(ply:GetRealPos()+Vector(0,0,64))
 	local Dist = Disp:Length()
 	
 	local MaxCos = math.abs( math.cos( math.acos( Dist / math.sqrt( Dist * Dist + Width * Width ) ) + fov * ( math.pi / 180 ) ) )
@@ -299,7 +299,7 @@ function ENT:Use( ply )
 		
 		if CurTime()>self.tardis.exitcur then
 			local pos=Vector(300,295,-79)
-			local pos2=self:WorldToLocal(ply:GetPos())
+			local pos2=self:WorldToLocal(ply:GetRealPos())
 			local distance=pos:Distance(pos2)
 			if distance < 25 then
 				self.tardis:PlayerExit(ply)
@@ -312,7 +312,7 @@ function ENT:Use( ply )
 		//this must go last, or bad things may happen
 		if CurTime()>self.tardis.viewmodecur then
 			local pos=Vector(0,0,0)
-			local pos2=self:WorldToLocal(ply:GetPos())
+			local pos2=self:WorldToLocal(ply:GetRealPos())
 			local distance=pos:Distance(pos2)
 			if distance < 110 and self:PlayerLookingAt(ply, Vector(0,0,0), 25, 25) then
 				self.tardis:ToggleViewmode(ply)
@@ -334,7 +334,7 @@ function ENT:Think()
 	if self.tardis and IsValid(self.tardis) then
 		if self.tardis.occupants then
 			for k,v in pairs(self.tardis.occupants) do
-				if self:GetPos():Distance(v:GetPos()) > 700 and v.tardis_viewmode and not v.tardis_skycamera then
+				if self:GetPos():Distance(v:GetRealPos()) > 700 and v.tardis_viewmode and not v.tardis_skycamera then
 					self.tardis:PlayerExit(v,true)
 				end
 			end
