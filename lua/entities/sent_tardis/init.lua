@@ -573,7 +573,7 @@ function ENT:Reappear()
 			self:SetAngles(self.ang)
 		end
 		for k,v in pairs(player.GetAll()) do
-			if (self:GetPos():Distance(v:GetPos()) < 45) and not (v.tardis and not v.tardis_viewmode) then
+			if (self:GetPos():Distance(v:GetRealPos()) < 45) and not (v.tardis and not v.tardis_viewmode) then
 				self:PlayerEnter(v,true)
 			end
 		end
