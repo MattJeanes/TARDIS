@@ -73,6 +73,16 @@ net.Receive("TARDISInt-ControlSound", function()
 	end
 end)
 
+net.Receive("TARDISInt-SpawnRails", function()
+	local interior=net.ReadEntity()
+	if IsValid(interior) then
+		net.Start("TARDISInt-SpawnRails")
+			net.WriteEntity(interior)
+			net.WriteBit(tobool(GetConVarNumber("tardisint_rails")))
+		net.SendToServer()
+	end
+end)
+
 function ENT:Think()
 	local tardis=self:GetNWEntity("TARDIS",NULL)
 	if IsValid(tardis) and LocalPlayer().tardis_viewmode and LocalPlayer().tardis==tardis then
@@ -127,9 +137,9 @@ function ENT:Think()
 				local dlight = DynamicLight( self:EntIndex() )
 				if ( dlight ) then
 					local size=1024
-					local c=Color(255,50,0)
+					local c=Color(GetConVarNumber("tardisint_mainlight_r"), GetConVarNumber("tardisint_mainlight_g"), GetConVarNumber("tardisint_mainlight_b"))
 					if tardis.health < 21 then
-						c=Color(200,0,0)
+						c=Color(GetConVarNumber("tardisint_warnlight_r"), GetConVarNumber("tardisint_warnlight_g"), GetConVarNumber("tardisint_warnlight_b"))
 					end
 					dlight.Pos = self:LocalToWorld(Vector(0,0,120))
 					dlight.r = c.r
@@ -145,7 +155,7 @@ function ENT:Think()
 			local dlight2 = DynamicLight( self:EntIndex()+10000 )
 			if ( dlight2 ) then
 				local size=512
-				local c=Color(0,255,0)
+				local c=Color(GetConVarNumber("tardisint_seclight_r"), GetConVarNumber("tardisint_seclight_g"), GetConVarNumber("tardisint_seclight_b"))
 				dlight2.Pos = self:LocalToWorld(Vector(0,0,-50))
 				dlight2.r = c.r
 				dlight2.g = c.g

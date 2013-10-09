@@ -490,6 +490,7 @@ local checkbox_options={
 	{"Interior idle sounds", "tardisint_idlesound"},
 	{"Interior control sounds", "tardisint_controlsound"},
 	{"Interior dynamic light", "tardisint_dynamiclight"},
+	{"Interior rails", "tardisint_rails"},
 	{"Exterior dynamic light", "tardis_dynamiclight"},
 	{"Tool tips", "tardisint_tooltip"},
 }
@@ -497,6 +498,18 @@ local checkbox_options={
 for k,v in pairs(checkbox_options) do
 	CreateClientConVar(v[2], "1", true)
 end
+
+CreateClientConVar("tardisint_mainlight_r", "255", true)
+CreateClientConVar("tardisint_mainlight_g", "50", true)
+CreateClientConVar("tardisint_mainlight_b", "0", true)
+
+CreateClientConVar("tardisint_seclight_r", "0", true)
+CreateClientConVar("tardisint_seclight_g", "255", true)
+CreateClientConVar("tardisint_seclight_b", "0", true)
+
+CreateClientConVar("tardisint_warnlight_r", "200", true)
+CreateClientConVar("tardisint_warnlight_g", "0", true)
+CreateClientConVar("tardisint_warnlight_b", "0", true)
 
 hook.Add("PopulateToolMenu", "TARDIS-PopulateToolMenu", function()
 	spawnmenu.AddToolMenuOption("Options", "Doctor Who", "TARDIS_Options", "TARDIS", "", "", function(panel)
@@ -674,6 +687,77 @@ hook.Add("PopulateToolMenu", "TARDIS-PopulateToolMenu", function()
 		end
 		panel:AddItem(button)
 		*/
+		
+		local DLabel = vgui.Create( "DLabel" )
+		DLabel:SetText("Interior Lighting:")
+		panel:AddItem(DLabel)
+		
+		local CategoryList = vgui.Create( "DPanelList" )
+		//CategoryList:SetAutoSize( true )
+		CategoryList:SetTall( 260 )
+		CategoryList:SetSpacing( 10 )
+		CategoryList:EnableHorizontal( false )
+		CategoryList:EnableVerticalScrollbar( true )
+		
+		local DLabel = vgui.Create( "DLabel" )
+		DLabel:SetText("Main Color:")
+		CategoryList:AddItem(DLabel)
+		
+		local Mixer1 = vgui.Create( "DColorMixer" )
+		Mixer1:SetPalette( true )  		--Show/hide the palette			DEF:true
+		Mixer1:SetAlphaBar( false ) 		--Show/hide the alpha bar		DEF:true
+		Mixer1:SetWangs( true )	 		--Show/hide the R G B A indicators 	DEF:true
+		Mixer1:SetColor( Color(GetConVarNumber("tardisint_mainlight_r"), GetConVarNumber("tardisint_mainlight_g"), GetConVarNumber("tardisint_mainlight_b")) )	--Set the default color
+		Mixer1.ValueChanged = function(self,col)
+			RunConsoleCommand("tardisint_mainlight_r", col.r)
+			RunConsoleCommand("tardisint_mainlight_g", col.g)
+			RunConsoleCommand("tardisint_mainlight_b", col.b)
+		end
+		CategoryList:AddItem(Mixer1)
+		
+		local DLabel = vgui.Create( "DLabel" )
+		DLabel:SetText("Secondary Color:")
+		CategoryList:AddItem(DLabel)
+		
+		local Mixer2 = vgui.Create( "DColorMixer" )
+		Mixer2:SetPalette( true )  		--Show/hide the palette			DEF:true
+		Mixer2:SetAlphaBar( false ) 		--Show/hide the alpha bar		DEF:true
+		Mixer2:SetWangs( true )	 		--Show/hide the R G B A indicators 	DEF:true
+		Mixer2:SetColor( Color(GetConVarNumber("tardisint_seclight_r"), GetConVarNumber("tardisint_seclight_g"), GetConVarNumber("tardisint_seclight_b")) )	--Set the default color
+		Mixer2.ValueChanged = function(self,col)
+			RunConsoleCommand("tardisint_seclight_r", col.r)
+			RunConsoleCommand("tardisint_seclight_g", col.g)
+			RunConsoleCommand("tardisint_seclight_b", col.b)
+		end
+		CategoryList:AddItem(Mixer2)
+		
+		local DLabel = vgui.Create( "DLabel" )
+		DLabel:SetText("Warning Color:")
+		CategoryList:AddItem(DLabel)
+		
+		local Mixer3 = vgui.Create( "DColorMixer" )
+		Mixer3:SetPalette( true )  		--Show/hide the palette			DEF:true
+		Mixer3:SetAlphaBar( false ) 		--Show/hide the alpha bar		DEF:true
+		Mixer3:SetWangs( true )	 		--Show/hide the R G B A indicators 	DEF:true
+		Mixer3:SetColor( Color(GetConVarNumber("tardisint_warnlight_r"), GetConVarNumber("tardisint_warnlight_g"), GetConVarNumber("tardisint_warnlight_b")) )	--Set the default color
+		Mixer3.ValueChanged = function(self,col)
+			RunConsoleCommand("tardisint_warnlight_r", col.r)
+			RunConsoleCommand("tardisint_warnlight_g", col.g)
+			RunConsoleCommand("tardisint_warnlight_b", col.b)
+		end
+		CategoryList:AddItem(Mixer3)
+		
+		panel:AddItem(CategoryList)
+		
+		local button = vgui.Create("DButton")
+		button:SetText("Reset Colors")
+		button.DoClick = function(self)
+			Mixer1:SetColor(Color(255,50,0))
+			Mixer2:SetColor(Color(0,255,0))
+			Mixer3:SetColor(Color(200,0,0))
+		end
+		panel:AddItem(button)
+		
 		local checkboxes={}
 		for k,v in pairs(checkbox_options) do
 			CreateClientConVar(v[2], "1", true)
