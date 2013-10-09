@@ -1,4 +1,4 @@
-@name TARDIS Official
+@name TARDIS
 @inputs
 @outputs XYZ:vector
 @persist Target:entity TARDIS:entity Visible SavePos:vector SaveAng:angle
@@ -58,6 +58,9 @@ if(chatClk(owner())){
         print("Target set to " + Target:name())
     }elseif(Cmd=="!go"){
         local NewPos=Target:pos()
+        if (Target:tardisGet():isValid()){
+            NewPos=Target:tardisGet():pos()
+        }
         local Yaw=Target:eyeAngles():yaw()
         local Offset=150
         if(Arg=="up"){
