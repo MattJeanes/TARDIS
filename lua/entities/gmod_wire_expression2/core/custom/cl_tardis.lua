@@ -17,3 +17,5 @@ E2Helper.Descriptions["tardisPowered"] = "Returns 1 if powered or 0 if not power
 E2Helper.Descriptions["tardisIsomorphic"] = "Returns 1 if isomorphic security systems are enabled or 0 if isomorphic security systems are disabled."
 E2Helper.Descriptions["tardisLongflighted"] = "Returns 1 if long-flight is enabled or 0 if long-flight is disabled."
 E2Helper.Descriptions["tardisHealth"] = "Returns tardis health."
+E2Helper.Descriptions["tardisLastPos"] = "Returns the vector of where the TARDIS last dematerialised from."
+E2Helper.Descriptions["tardisLastAng"] = "Returns the angle of where the TARDIS last dematerialised from."

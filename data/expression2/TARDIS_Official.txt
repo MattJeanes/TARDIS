@@ -1,7 +1,7 @@
 @name TARDIS Official
 @inputs
 @outputs XYZ:vector
-@persist Target:entity TARDIS:entity Visible SavePos:vector SaveAng:angle BackPos:vector BackAng:angle
+@persist Target:entity TARDIS:entity Visible SavePos:vector SaveAng:angle
 runOnChat(1)
 if (first()|dupefinished()){
     TARDIS=entity():isConstrainedTo():tardisGet()
@@ -13,8 +13,6 @@ if (first()|dupefinished()){
         Success=TARDIS:tardisDemat(V)
         if (Success){
             print("TARDIS moving.")
-            BackPos=TARDIS:pos()
-            BackAng=TARDIS:angles()
         }
     }
     
@@ -22,8 +20,6 @@ if (first()|dupefinished()){
         Success=TARDIS:tardisDemat(V,A)
         if (Success){
             print("TARDIS moving.")
-            BackPos=TARDIS:pos()
-            BackAng=TARDIS:angles()
         }
     }
     
@@ -171,7 +167,7 @@ if(chatClk(owner())){
         demat2(SavePos,SaveAng)
         hideChat(1)
     }elseif(Cmd=="!back"){
-        demat2(BackPos,BackAng)
+        demat2(TARDIS:tardisLastPos(), TARDIS:tardisLastAng())
         hideChat(1)
     }elseif(Cmd=="!health"){
         print("TARDIS Health: " + TARDIS:tardisHealth() + "%")

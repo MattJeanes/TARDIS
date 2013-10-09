@@ -46,7 +46,7 @@ function ENT:PlayerEnter(ply)
 		net.WriteEntity(self)
 	net.Send(ply)
 	if self.interior and IsValid(self.interior) then
-		ply.tardisint_pos=self.interior:WorldToLocal(ply:GetRealPos())
+		ply.tardisint_pos=self.interior:WorldToLocal(ply:GetPos())
 		ply.tardisint_ang=ply:EyeAngles()
 	end
 	ply.weps={}

@@ -33,6 +33,7 @@ util.AddNetworkString("TARDIS-GoLong")
 util.AddNetworkString("TARDIS-StopLong")
 util.AddNetworkString("TARDIS-Reappear")
 util.AddNetworkString("TARDIS-SetVortex")
+util.AddNetworkString("TARDIS-NoCollideTeleport")
 
 net.Receive("TARDIS-TakeDamage", function(len,ply)
 	if ply:IsAdmin() or ply:IsSuperAdmin() then
@@ -67,6 +68,12 @@ end)
 net.Receive("TARDIS-TeleportLock", function(len,ply)
 	if ply:IsAdmin() or ply:IsSuperAdmin() then
 		RunConsoleCommand("tardis_teleportlock", net.ReadFloat())
+	end
+end)
+
+net.Receive("TARDIS-NoCollideTeleport", function(len,ply)
+	if ply:IsAdmin() or ply:IsSuperAdmin() then
+		RunConsoleCommand("tardis_nocollideteleport", net.ReadFloat())
 	end
 end)
 
@@ -573,7 +580,7 @@ function ENT:Reappear()
 			self:SetAngles(self.ang)
 		end
 		for k,v in pairs(player.GetAll()) do
-			if (self:GetPos():Distance(v:GetRealPos()) < 45) and not (v.tardis and not v.tardis_viewmode) then
+			if (self:GetPos():Distance(v:GetPos()) < 45) and not (v.tardis and not v.tardis_viewmode) then
 				self:PlayerEnter(v,true)
 			end
 		end
@@ -626,7 +633,9 @@ function ENT:Go(vec,ang,nolongflight)
 		if nolongflight then
 			self.nolongflight=true
 		end
-		self:SetCollisionGroup( COLLISION_GROUP_WORLD )
+		if tobool(GetConVarNumber("tardis_nocollideteleport"))==true then
+			self:SetCollisionGroup( COLLISION_GROUP_WORLD )
+		end
 		self.demat=true
 		self.moving=true
 		self.lastpos=self:GetPos()
@@ -693,7 +702,9 @@ end
 
 function ENT:Stop()
 	if self.moving then
-		self:SetCollisionGroup( COLLISION_GROUP_NONE )
+		if tobool(GetConVarNumber("tardis_nocollideteleport"))==true then
+			self:SetCollisionGroup( COLLISION_GROUP_NONE )
+		end
 		self.cycle=1
 		self.step=1
 		self.mat=false
@@ -1268,7 +1279,7 @@ function ENT:ToggleViewmode(ply,deldata)
 		end
 	else
 		if not deldata then
-			ply.tardisint_pos=self.interior:WorldToLocal(ply:GetRealPos())
+			ply.tardisint_pos=self.interior:WorldToLocal(ply:GetPos())
 			ply.tardisint_ang=ply:EyeAngles()
 		end
 		ply.weps={}

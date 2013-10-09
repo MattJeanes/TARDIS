@@ -616,6 +616,23 @@ hook.Add("PopulateToolMenu", "TARDIS-PopulateToolMenu", function()
 		panel:AddItem(checkBox)
 		
 		local checkBox = vgui.Create( "DCheckBoxLabel" )
+		checkBox:SetText( "No-collide during teleport (Admin Only)" )
+		checkBox:SetToolTip( "This enables no-collide on the TARDIS when it is teleporting and disables it after again." )
+		checkBox:SetValue( GetConVarNumber( "tardis_nocollideteleport" ) )
+		checkBox:SetDisabled(not (LocalPlayer():IsAdmin() or LocalPlayer():IsSuperAdmin()))
+		checkBox.OnChange = function(self,val)
+			if LocalPlayer():IsAdmin() or LocalPlayer():IsSuperAdmin() then
+				net.Start("TARDIS-NoCollideTeleport")
+					net.WriteFloat(val==true and 1 or 0)
+				net.SendToServer()
+			else
+				chat.AddText(Color(255,62,62), "WARNING: ", Color(255,255,255), "You must be an admin to change this option.")
+				chat.PlaySound()
+			end
+		end
+		panel:AddItem(checkBox)
+		
+		local checkBox = vgui.Create( "DCheckBoxLabel" )
 		checkBox:SetText( "Advanced Mode (Admin Only)" )
 		checkBox:SetToolTip( "This sets interior navigation to advanced, turn off for easy." )
 		checkBox:SetValue( GetConVarNumber( "tardis_advanced" ) )

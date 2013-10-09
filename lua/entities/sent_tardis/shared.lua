@@ -18,6 +18,7 @@ CreateConVar("tardis_takedamage", "1", {FCVAR_NOTIFY, FCVAR_SERVER_CAN_EXECUTE, 
 CreateConVar("tardis_flightphase", "1", {FCVAR_NOTIFY, FCVAR_SERVER_CAN_EXECUTE, FCVAR_REPLICATED})
 CreateConVar("tardis_doubletrace", "1", {FCVAR_NOTIFY, FCVAR_SERVER_CAN_EXECUTE, FCVAR_REPLICATED})
 CreateConVar("tardis_physdamage", "1", {FCVAR_NOTIFY, FCVAR_SERVER_CAN_EXECUTE, FCVAR_REPLICATED})
+CreateConVar("tardis_nocollideteleport", "1", {FCVAR_NOTIFY, FCVAR_SERVER_CAN_EXECUTE, FCVAR_REPLICATED})
 CreateConVar("tardis_advanced", "0", {FCVAR_NOTIFY, FCVAR_SERVER_CAN_EXECUTE, FCVAR_REPLICATED})
 CreateConVar("tardis_teleportlock", "0", {FCVAR_NOTIFY, FCVAR_SERVER_CAN_EXECUTE, FCVAR_REPLICATED})
 CreateConVar("tardis_spawnoffset", "0", {FCVAR_SERVER_CAN_EXECUTE, FCVAR_REPLICATED})
@@ -34,14 +35,3 @@ hook.Add("OnPhysgunReload", "TARDIS-OnPhysgunReload", function(_,ply)
 		return false
 	end
 end)
-
-local meta=FindMetaTable("Entity")
-if !meta.GetRealPos then
-	meta.GetRealPos=meta.GetPos
-end
-function meta:GetPos(...)
-	if IsValid(self) and self:IsPlayer() and IsValid(self.tardis) then
-		return self.tardis:GetPos()
-	end
-	return self:GetRealPos(...)
-end

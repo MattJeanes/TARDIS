@@ -239,6 +239,30 @@ local function TARDIS_Longflighted(ent)
 	return 0
 end
 
+local function TARDIS_LastPos(ent)
+	if ent and IsValid(ent) then
+		if not (ent:GetClass()=="sent_tardis") then return 0 end
+		if ent.lastpos then
+			return ent.lastpos
+		else
+			return Vector()
+		end
+	end
+	return Vector()
+end
+
+local function TARDIS_LastAng(ent)
+	if ent and IsValid(ent) then
+		if not (ent:GetClass()=="sent_tardis") then return 0 end
+		if ent.lastang then
+			return ent.lastang
+		else
+			return Angle()
+		end
+	end
+	return Angle()
+end
+
 local function TARDIS_Health(ent)
 	if ent and IsValid(ent) then
 		if not (ent:GetClass()=="sent_tardis") then return 0 end
@@ -332,4 +356,12 @@ end
 
 e2function number entity:tardisLongflighted()
 	return TARDIS_Longflighted(this)
+end
+
+e2function vector entity:tardisLastPos()
+	return TARDIS_LastPos(this)
+end
+
+e2function angle entity:tardisLastAng()
+	return TARDIS_LastAng(this)
 end
