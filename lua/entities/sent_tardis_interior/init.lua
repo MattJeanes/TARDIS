@@ -7,7 +7,6 @@ util.AddNetworkString("TARDISInt-SetParts")
 util.AddNetworkString("TARDISInt-UpdateAdv")
 util.AddNetworkString("TARDISInt-SetAdv")
 util.AddNetworkString("TARDISInt-ControlSound")
-util.AddNetworkString("TARDISInt-SpawnRails")
 
 function ENT:Initialize()
 	self:SetModel( "models/drmatt/tardis/interior.mdl" )
@@ -40,19 +39,12 @@ function ENT:Initialize()
 	self:SpawnParts()
 	
 	if IsValid(self.owner) then
-		net.Start("TARDISInt-SpawnRails")
-			net.WriteEntity(self)
-		net.Send(self.owner)
+		local rails=tobool(self.owner:GetInfoNum("tardisint_rails",1))
+		if rails then
+			self.rails=self:MakePart("sent_tardis_rails", Vector(0,0,0), Angle(0,0,0),true)
+		end
 	end
 end
-
-net.Receive("TARDISInt-SpawnRails", function(len,ply)
-	local interior=net.ReadEntity()
-	local rails=tobool(net.ReadBit())
-	if IsValid(interior) and interior.owner==ply and not interior.rails and rails then
-		interior.rails=interior:MakePart("sent_tardis_rails", Vector(0,0,0), Angle(0,0,0),true)
-	end
-end)
 
 function ENT:SpawnParts()
 	if self.parts then

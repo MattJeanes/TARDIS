@@ -73,16 +73,6 @@ net.Receive("TARDISInt-ControlSound", function()
 	end
 end)
 
-net.Receive("TARDISInt-SpawnRails", function()
-	local interior=net.ReadEntity()
-	if IsValid(interior) then
-		net.Start("TARDISInt-SpawnRails")
-			net.WriteEntity(interior)
-			net.WriteBit(tobool(GetConVarNumber("tardisint_rails")))
-		net.SendToServer()
-	end
-end)
-
 function ENT:Think()
 	local tardis=self:GetNWEntity("TARDIS",NULL)
 	if IsValid(tardis) and LocalPlayer().tardis_viewmode and LocalPlayer().tardis==tardis then

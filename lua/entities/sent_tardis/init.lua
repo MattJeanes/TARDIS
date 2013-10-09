@@ -626,6 +626,7 @@ function ENT:Go(vec,ang,nolongflight)
 		if nolongflight then
 			self.nolongflight=true
 		end
+		self:SetCollisionGroup( COLLISION_GROUP_WORLD )
 		self.demat=true
 		self.moving=true
 		self.lastpos=self:GetPos()
@@ -692,6 +693,7 @@ end
 
 function ENT:Stop()
 	if self.moving then
+		self:SetCollisionGroup( COLLISION_GROUP_NONE )
 		self.cycle=1
 		self.step=1
 		self.mat=false

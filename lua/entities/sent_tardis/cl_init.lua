@@ -480,23 +480,23 @@ hook.Add("CalcView", "TARDIS_CLView", function( ply, origin, angles, fov )
 end)
 
 local checkbox_options={
-	{"Flight sounds", "tardis_flightsound"},
-	{"Teleport sounds", "tardis_matsound"},
-	{"Door sounds", "tardis_doorsound"},
-	{"Lock sounds", "tardis_locksound"},
-	{"Repair sounds", "tardisint_repairsound"},
-	{"Power sounds", "tardisint_powersound"},
-	{"Cloisterbell sound", "tardisint_cloisterbell"},
-	{"Interior idle sounds", "tardisint_idlesound"},
-	{"Interior control sounds", "tardisint_controlsound"},
-	{"Interior dynamic light", "tardisint_dynamiclight"},
-	{"Interior rails", "tardisint_rails"},
-	{"Exterior dynamic light", "tardis_dynamiclight"},
-	{"Tool tips", "tardisint_tooltip"},
+	{"Flight sounds", "tardis_flightsound", false},
+	{"Teleport sounds", "tardis_matsound", false},
+	{"Door sounds", "tardis_doorsound", false},
+	{"Lock sounds", "tardis_locksound", false},
+	{"Repair sounds", "tardisint_repairsound", false},
+	{"Power sounds", "tardisint_powersound", false},
+	{"Cloisterbell sound", "tardisint_cloisterbell", false},
+	{"Interior rails", "tardisint_rails", true},
+	{"Interior idle sounds", "tardisint_idlesound", false},
+	{"Interior control sounds", "tardisint_controlsound", false},
+	{"Interior dynamic light", "tardisint_dynamiclight", false},
+	{"Exterior dynamic light", "tardis_dynamiclight", false},
+	{"Tool tips", "tardisint_tooltip", false},
 }
 
 for k,v in pairs(checkbox_options) do
-	CreateClientConVar(v[2], "1", true)
+	CreateClientConVar(v[2], "1", true, v[3])
 end
 
 CreateClientConVar("tardisint_mainlight_r", "255", true)
@@ -757,10 +757,9 @@ hook.Add("PopulateToolMenu", "TARDIS-PopulateToolMenu", function()
 			Mixer3:SetColor(Color(200,0,0))
 		end
 		panel:AddItem(button)
-		
+
 		local checkboxes={}
 		for k,v in pairs(checkbox_options) do
-			CreateClientConVar(v[2], "1", true)
 			local checkBox = vgui.Create( "DCheckBoxLabel" ) 
 			checkBox:SetText( v[1] ) 
 			checkBox:SetValue( GetConVarNumber( v[2] ) )
