@@ -100,10 +100,6 @@ function ENT:Toggle( bEnable, ply )
 	
 	local tardis=self.tardis
 	if IsValid(tardis) then
-		if not tardis.moving and not tardis.flightmode and not tardis.repairing and tardis.health <= 99 then
-			tardis:StartRepair()
-		elseif tardis.repairing and tardis.repairwait then
-			tardis:EndRepair(false)
-		end
+		tardis:ToggleRepair()
 	end
 end

@@ -32,6 +32,7 @@ util.AddNetworkString("TARDIS-SetPower")
 util.AddNetworkString("TARDIS-GoLong")
 util.AddNetworkString("TARDIS-StopLong")
 util.AddNetworkString("TARDIS-Reappear")
+util.AddNetworkString("TARDIS-Materialize")
 util.AddNetworkString("TARDIS-SetVortex")
 util.AddNetworkString("TARDIS-NoCollideTeleport")
 
@@ -133,8 +134,6 @@ function ENT:Initialize()
 	self.a=255 // alpha
 	self.cur=0
 	self.curdelay=0.01
-	self.cycle=1
-	self.step=1
 	self.exitcur=0
 	self.flightcur=0
 	self.flightmode=false
@@ -153,6 +152,7 @@ function ENT:Initialize()
 	self.repaircur=0
 	self.repairdelay=1
 	self.spinmode=1
+	self.explodedshift=0
 	self.occupants={}
 	if WireLib then
 		self.wirepos=Vector(0,0,0)
@@ -160,17 +160,6 @@ function ENT:Initialize()
 		Wire_CreateInputs(self, { "Demat", "Phase", "Flightmode", "X", "Y", "Z", "XYZ [VECTOR]", "Rot" })
 		Wire_CreateOutputs(self, { "Health" })
 	end
-	
-	self.dematvalues={
-		{150,200},
-		{100,150},
-		{50,100}
-	}
-	self.matvalues={
-		{100,50},
-		{150,100},
-		{200,150},
-	}
 	
 	// this is a bit hacky but from testing it seems to work well
 	local trdata={}
@@ -243,9 +232,19 @@ function ENT:IsomorphicToggle(ply)
 	end
 end
 
+function ENT:ToggleRepair()
+	if not self.repairing then
+		return self:StartRepair()
+	elseif self.repairing and self.repairwait then
+		return self:EndRepair()
+	end
+	return false
+end
+
 function ENT:StartRepair()
-	if self.repairing then return end
-	if self.health > 99 then return end
+	if self.repairing or self.health > 99 or self.moving or self.flightmode then
+		return false
+	end
 	self.repairing=true
 	net.Start("TARDIS-SetRepairing")
 		net.WriteEntity(self)
@@ -259,6 +258,7 @@ function ENT:StartRepair()
 	for k,v in pairs(self.occupants) do
 		v:ChatPrint("TARDIS self-repair initiated, all occupants must exit to start.")
 	end
+	return true
 end
 
 function ENT:BeginRepair()
@@ -269,19 +269,21 @@ function ENT:BeginRepair()
 	net.Broadcast()
 end
 
-function ENT:EndRepair(completed)
-	if not self.repairing then return end
+function ENT:EndRepair()
+	if not self.repairing then return false end
 	if self.repairoccupants then
 		for k,v in pairs(self.repairoccupants) do
-			if self.repairwait then
-				v:ChatPrint("TARDIS self-repair cancelled.")
-			else
-				v:ChatPrint("TARDIS self-repair completed.")
+			if IsValid(v) then
+				if self.repairwait then
+					v:ChatPrint("TARDIS self-repair cancelled.")
+				else
+					v:ChatPrint("TARDIS self-repair completed.")
+				end
 			end
 		end
 		self.repairoccupants=nil
 	end
-	if completed then
+	if not self.repairwait then
 		net.Start("TARDIS-FinishRepair")
 			net.WriteEntity(self)
 		net.Broadcast()
@@ -298,6 +300,7 @@ function ENT:EndRepair(completed)
 			net.WriteEntity(self.interior)
 		end
 	net.Broadcast()
+	return true
 end
 
 function ENT:SetLocked(locked,silent)
@@ -516,6 +519,121 @@ function ENT:FlashLight(time)
 	end)
 end
 
+function ENT:Go(vec,ang,nolongflight)
+	if not self.moving and not self.repairing and self.power then
+		if nolongflight then
+			self.nolongflight=true
+		end
+		if tobool(GetConVarNumber("tardis_nocollideteleport"))==true then
+			self:SetCollisionGroup( COLLISION_GROUP_WORLD )
+		end
+		self.moving=true
+		self.lastpos=self:GetPos()
+		self.lastang=self:GetAngles()
+		if vec then
+			self.vec=vec
+		else
+			self.vec=self:GetPos()
+		end
+		if ang then
+			self.ang=ang
+		else
+			self.ang=self:GetAngles()
+		end
+		self.attachedents = constraint.GetAllConstrainedEntities(self)
+		if self.attachedents then
+			for k,v in pairs(self.attachedents) do
+				if v.tardis_part or v==self then
+					self.attachedents[k]=nil
+				end
+			end
+			for k,v in pairs(self.attachedents) do
+				local a=v:GetColor().a
+				if not (a==255) then
+					v.tempa=a
+				end
+			end
+		end
+		if self.exploded then
+			local randvec=VectorRand()*1000
+			randvec.z=0
+			self.vec=self:GetPos()+randvec
+			self.ang=self:GetAngles()+AngleRand()
+		end
+		if self.visible and not self.exploded then
+			self:SetLight(true)
+		end
+		if IsValid(self.interior) then
+			util.ScreenShake(self.interior:GetPos(),1,5,1,700)
+		end
+		if self.longflight and not self.nolongflight then
+			net.Start("TARDIS-GoLong")
+				net.WriteEntity(self)
+				net.WriteEntity(self.interior)
+				net.WriteBit(tobool(self.exploded))
+				net.WriteVector(self:GetPos())
+				if self.attachedents then
+					net.WriteBit(true)
+					net.WriteFloat(table.Count(self.attachedents))
+					for k,v in pairs(self.attachedents) do
+						net.WriteEntity(v)
+					end
+				else
+					net.WriteBit(false)
+				end
+			net.Broadcast()
+		else
+			net.Start("TARDIS-Go")
+				net.WriteEntity(self)
+				net.WriteEntity(self.interior)
+				net.WriteBit(tobool(self.exploded))
+				net.WriteVector(self:GetPos())
+				if self.vec then
+					net.WriteVector(self.vec)
+				end
+				if self.attachedents then
+					net.WriteBit(true)
+					net.WriteFloat(table.Count(self.attachedents))
+					for k,v in pairs(self.attachedents) do
+						net.WriteEntity(v)
+					end
+				else
+					net.WriteBit(false)
+				end
+			net.Broadcast()
+		end
+		timer.Simple(8.5,function()
+			if IsValid(self) then
+				self:Disappear()
+			end
+		end)
+		return true
+	else
+		return false
+	end
+end
+
+function ENT:Stop()
+	if self.moving then
+		if tobool(GetConVarNumber("tardis_nocollideteleport"))==true then
+			self:SetCollisionGroup( COLLISION_GROUP_NONE )
+		end
+		self.moving=false
+		self.vec=nil
+		self.ang=nil
+		self.nolongflight=nil
+		if not self.flightmode and self.visible then
+			self:SetLight(false)
+		end
+		if IsValid(self.interior) then
+			util.ScreenShake(self.interior:GetPos(),1,5,1,700)
+		end
+		net.Start("TARDIS-Stop")
+			net.WriteEntity(self)
+		net.Broadcast()
+	end
+end
+
 function ENT:Disappear()
 	self:RemoveRotorWash()
 	self.invortex=true
@@ -584,6 +702,11 @@ function ENT:Reappear()
 				self:PlayerEnter(v,true)
 			end
 		end
+		for k,v in pairs(ents.GetAll()) do
+			if v:IsNPC() and IsValid(self.interior) and (self:GetPos():Distance(v:GetPos()) < 45) then
+				v:SetPos(self.interior:LocalToWorld(Vector(300,295,-79)))
+			end
+		end
 		if self.attachedents then
 			for k,v in pairs(self.attachedents) do
 				if IsValid(v) and not IsValid(v:GetParent()) then
@@ -613,125 +736,17 @@ function ENT:Reappear()
 			net.WriteEntity(self)
 			net.WriteBit(false)
 		net.Broadcast()
-		self.mat=true
-		self:SetLight(true)
-	else
-		print("CRITICAL ERROR: Vector not found.")
-	end
-end
-
-function ENT:GetNumber()
-	if self.demat and not self.mat then
-		return self.dematvalues[self.cycle][self.step]
-	elseif self.mat and not self.demat then
-		return self.matvalues[self.cycle][self.step]
-	end
-end
-
-function ENT:Go(vec,ang,nolongflight)
-	if not self.moving and not self.repairing and self.power then
-		if nolongflight then
-			self.nolongflight=true
-		end
-		if tobool(GetConVarNumber("tardis_nocollideteleport"))==true then
-			self:SetCollisionGroup( COLLISION_GROUP_WORLD )
-		end
-		self.demat=true
-		self.moving=true
-		self.lastpos=self:GetPos()
-		self.lastang=self:GetAngles()
-		if vec then
-			self.vec=vec
-		else
-			self.vec=self:GetPos()
-		end
-		if ang then
-			self.ang=ang
-		else
-			self.ang=self:GetAngles()
-		end
-		self.attachedents = constraint.GetAllConstrainedEntities(self)
-		if self.attachedents then
-			for k,v in pairs(self.attachedents) do
-				if v.tardis_part then
-					self.attachedents[k]=nil
-				end
-			end
-			for k,v in pairs(self.attachedents) do
-				local a=v:GetColor().a
-				if not (a==255) then
-					v.tempa=a
-				end
-			end
-		end
-		if self.exploded then
-			local randvec=VectorRand()*1000
-			randvec.z=0
-			self.vec=self:GetPos()+randvec
-			self.ang=self:GetAngles()+AngleRand()
-		end
-		if self.visible and not self.exploded then
-			self:SetLight(true)
-		end
-		if IsValid(self.interior) then
-			util.ScreenShake(self.interior:GetPos(),1,5,1,700)
-		end
-		if self.longflight and not self.nolongflight then
-			net.Start("TARDIS-GoLong")
-				net.WriteEntity(self)
-				net.WriteEntity(self.interior)
-				net.WriteBit(tobool(self.exploded))
-				net.WriteVector(self:GetPos())
-			net.Broadcast()
-		else
-			net.Start("TARDIS-Go")
-				net.WriteEntity(self)
-				net.WriteEntity(self.interior)
-				net.WriteBit(tobool(self.exploded))
-				net.WriteVector(self:GetPos())
-				if self.vec then
-					net.WriteVector(self.vec)
-				end
-			net.Broadcast()
-		end
-		return true
-	else
-		return false
-	end
-end
-
-function ENT:Stop()
-	if self.moving then
-		if tobool(GetConVarNumber("tardis_nocollideteleport"))==true then
-			self:SetCollisionGroup( COLLISION_GROUP_NONE )
-		end
-		self.cycle=1
-		self.step=1
-		self.mat=false
-		self.moving=false
-		self.vec=nil
-		self.ang=nil
-		self.nolongflight=nil
-		if self.attachedents then
-			for k,v in pairs(self.attachedents) do
-				if v.tempa then
-					local col=v:GetColor()
-					col=Color(col.r,col.g,col.b,v.tempa)
-					v:SetColor(col)
-					v.tempa=nil
-				end
-			end
-		end
-		self.attachedents=nil
-		if not self.flightmode and self.visible then
-			self:SetLight(false)
-		end
-		if IsValid(self.interior) then
-			util.ScreenShake(self.interior:GetPos(),1,5,1,700)
-		end
-		net.Start("TARDIS-Stop")
+		net.Start("TARDIS-Materialize")
 			net.WriteEntity(self)
 		net.Broadcast()
+		self:SetLight(true)
+		timer.Simple(8.5,function()
+			if IsValid(self) then
+				self:Stop()
+			end
+		end)
+	else
+		print("CRITICAL ERROR: Vector not found.")
 	end
 end
 
@@ -755,97 +770,6 @@ if WireLib then
 			self.wireang.y=v
 		end
 	end
-end
-
-function ENT:Dematerialize()
-	if self.cycle==1 then
-		if self.step==1 and self.a > self:GetNumber() then
-			self.a=self.a-1
-		elseif self.step==1 and self.a == self:GetNumber() then
-			self.step=2
-		elseif self.step==2 and self.a < self:GetNumber() then
-			self.a=self.a+1
-		elseif self.step==2 and self.a == self:GetNumber() then
-			self.cycle=2
-			self.step=1
-		end
-	elseif self.cycle==2 then
-		if self.step==1 and self.a > self:GetNumber() then
-			self.a=self.a-1
-		elseif self.step==1 and self.a == self:GetNumber() then
-			self.step=2
-		elseif self.step==2 and self.a < self:GetNumber() then
-			self.a=self.a+1
-		elseif self.step==2 and self.a == self:GetNumber() then
-			self.cycle=3
-			self.step=1
-		end
-	elseif self.cycle==3 then
-		if self.step==1 and self.a > self:GetNumber() then
-			self.a=self.a-1
-		elseif self.step==1 and self.a == self:GetNumber() then
-			self.step=2
-		elseif self.step==2 and self.a < self:GetNumber() then
-			self.a=self.a+1
-		elseif self.step==2 and self.a == self:GetNumber() then
-			self.cycle=4
-			self.step=1
-		end	
-	elseif self.cycle==4 then
-		if self.step==1 and self.a > 0 then
-			self.a=self.a-1
-		elseif self.step==1 and self.a==0 then
-			self.cycle=1
-			self.step=1
-			self.demat=false
-			self:Disappear()
-		end
-	end
-	self:UpdateAlpha()
-end
-
-function ENT:Materialize()
-	if self.cycle==1 then
-		if self.step==1 and self.a < self:GetNumber() then
-			self.a=self.a+1
-		elseif self.step==1 and self.a == self:GetNumber() then
-			self.step=2
-		elseif self.step==2 and self.a > self:GetNumber() then
-			self.a=self.a-1
-		elseif self.step==2 and self.a == self:GetNumber() then
-			self.cycle=2
-			self.step=1
-		end
-	elseif self.cycle==2 then
-		if self.step==1 and self.a < self:GetNumber() then
-			self.a=self.a+1
-		elseif self.step==1 and self.a == self:GetNumber() then
-			self.step=2
-		elseif self.step==2 and self.a > self:GetNumber() then
-			self.a=self.a-1
-		elseif self.step==2 and self.a == self:GetNumber() then
-			self.cycle=3
-			self.step=1
-		end
-	elseif self.cycle==3 then
-		if self.step==1 and self.a < self:GetNumber() then
-			self.a=self.a+1
-		elseif self.step==1 and self.a == self:GetNumber() then
-			self.step=2
-		elseif self.step==2 and self.a > self:GetNumber() then
-			self.a=self.a-1
-		elseif self.step==2 and self.a == self:GetNumber() then
-			self.cycle=4
-			self.step=1
-		end	
-	elseif self.cycle==4 then
-		if self.step==1 and self.a < 255 then
-			self.a=self.a+1
-		elseif self.step==1 and self.a==255 then
-			self:Stop()
-		end
-	end
-	self:UpdateAlpha()
 end
 
 function ENT:SpawnLight()
@@ -1017,27 +941,6 @@ hook.Add("PlayerInitialSpawn", "TARDIS_PlayerInitialSpawn", function( ply )
 	end)
 end)
 
-function ENT:UpdateAlpha()
-	// utility functions!
-	local maincol=self:GetColor()
-	maincol=Color(maincol.r,maincol.g,maincol.b,self.a)
-	self:SetColor(maincol)
-	if self.attachedents then
-		for k,v in pairs(self.attachedents) do
-			if IsValid(v) then
-				local col=v:GetColor()
-				col=Color(col.r,col.g,col.b,self.a)
-				if not (v.tempa==0) then
-					if not (v:GetRenderMode()==RENDERMODE_TRANSALPHA) then
-						v:SetRenderMode(RENDERMODE_TRANSALPHA)
-					end
-					v:SetColor(col)
-				end
-			end
-		end
-	end
-end
-
 function ENT:PhysicsUpdate( ph )
 	local pos=self:GetPos()
 	if self.flightmode and self.power then		
@@ -1055,44 +958,53 @@ function ENT:PhysicsUpdate( ph )
 		local tforce=400
 		local tilt=0
 		
-		if self.pilot and IsValid(self.pilot) and not self.pilot.tardis_viewmode and not self.exploded then
+		if self.pilot and IsValid(self.pilot) and not self.pilot.tardis_viewmode then
 			local p=self.pilot
 			local eye=p:EyeAngles()
 			local fwd=eye:Forward()
 			local ri=eye:Right()
-			if p:KeyDown(IN_SPEED) then
-				force=force*2.5
-				tilt=5
-			end
-			if p:KeyDown(IN_FORWARD) then
-				ph:AddVelocity(fwd*force*phm)
-				tilt=tilt+5
-			end
-			if p:KeyDown(IN_BACK) then
-				ph:AddVelocity(-fwd*force*phm)
-				tilt=tilt+5
-			end
-			if p:KeyDown(IN_MOVERIGHT) then
-				if p:KeyDown(IN_WALK) then
-					ph:AddAngleVelocity(Vector(0,0,-rforce))
-				else
-					ph:AddVelocity(ri*force*phm)
-					tilt=tilt+5
-				end
-			end
-			if p:KeyDown(IN_MOVELEFT) then
-				if p:KeyDown(IN_WALK) then
-					ph:AddAngleVelocity(Vector(0,0,rforce))
-				else
-					ph:AddVelocity(-ri*force*phm)
-					tilt=tilt+5
-				end
-			end
 			
-			if p:KeyDown(IN_DUCK) then
-				ph:AddVelocity(-up*vforce*phm)
-			elseif p:KeyDown(IN_JUMP) then
-				ph:AddVelocity(up*vforce*phm)
+			if self.exploded then
+				if p:KeyDown(IN_ATTACK2) and CurTime()>self.explodedshift then
+					print(AngleRand():Forward()*ph:GetVelocity()*0.5)
+					ph:AddVelocity(AngleRand():Forward()*(ph:GetVelocity():Length()))
+					self.explodedshift=CurTime()+1
+				end
+			elseif not self.exploded then
+				if p:KeyDown(IN_SPEED) then
+					force=force*2.5
+					tilt=5
+				end
+				if p:KeyDown(IN_FORWARD) then
+					ph:AddVelocity(fwd*force*phm)
+					tilt=tilt+5
+				end
+				if p:KeyDown(IN_BACK) then
+					ph:AddVelocity(-fwd*force*phm)
+					tilt=tilt+5
+				end
+				if p:KeyDown(IN_MOVERIGHT) then
+					if p:KeyDown(IN_WALK) then
+						ph:AddAngleVelocity(Vector(0,0,-rforce))
+					else
+						ph:AddVelocity(ri*force*phm)
+						tilt=tilt+5
+					end
+				end
+				if p:KeyDown(IN_MOVELEFT) then
+					if p:KeyDown(IN_WALK) then
+						ph:AddAngleVelocity(Vector(0,0,rforce))
+					else
+						ph:AddVelocity(-ri*force*phm)
+						tilt=tilt+5
+					end
+				end
+				
+				if p:KeyDown(IN_DUCK) then
+					ph:AddVelocity(-up*vforce*phm)
+				elseif p:KeyDown(IN_JUMP) then
+					ph:AddVelocity(up*vforce*phm)
+				end
 			end
 		end
 		
@@ -1358,22 +1270,13 @@ function ENT:TogglePower()
 	return false
 end
 
-function ENT:Think()
-	if CurTime() > self.cur then
-		if self.demat then
-			self:Dematerialize()
-		elseif self.mat then
-			self:Materialize()
-		end
-		self.cur=CurTime()+self.curdelay
-	end
-	
+function ENT:Think()	
 	if self.pilot and not IsValid(self.pilot) then
 		self.pilot=nil
 	end
 	
 	if self.repairing and not self.repairwait and self.repairfinish and CurTime()>self.repairfinish then
-		self:EndRepair(true)
+		self:EndRepair()
 	end
 
 	if self.occupants then
@@ -1473,7 +1376,7 @@ function ENT:Think()
 			end
 		end
 	end
-	
+
 	// this bit makes it all run faster and smoother
     self:NextThink( CurTime() )
 	return true

@@ -143,6 +143,19 @@ local function TARDIS_Materialise(ent)
 	return 0
 end
 
+local function TARDIS_Selfrepair(ent)
+	if ent and IsValid(ent) then
+		if not (ent:GetClass()=="sent_tardis") then return 0 end
+		local success=ent:ToggleRepair()
+		if success then
+			return 1
+		else
+			return 0
+		end
+	end
+	return 0
+end
+
 local function TARDIS_Moving(ent)
 	if ent and IsValid(ent) then
 		if not (ent:GetClass()=="sent_tardis") then return 0 end
@@ -239,6 +252,18 @@ local function TARDIS_Longflighted(ent)
 	return 0
 end
 
+local function TARDIS_Selfrepairing(ent)
+	if ent and IsValid(ent) then
+		if not (ent:GetClass()=="sent_tardis") then return 0 end
+		if ent.repairing then
+			return 1
+		else
+			return 0
+		end
+	end
+	return 0
+end
+
 local function TARDIS_LastPos(ent)
 	if ent and IsValid(ent) then
 		if not (ent:GetClass()=="sent_tardis") then return 0 end
@@ -255,12 +280,12 @@ local function TARDIS_LastAng(ent)
 	if ent and IsValid(ent) then
 		if not (ent:GetClass()=="sent_tardis") then return 0 end
 		if ent.lastang then
-			return ent.lastang
+			return {ent.lastang.p, ent.lastang.y, ent.lastang.r}
 		else
-			return Angle()
+			return {0,0,0}
 		end
 	end
-	return Angle()
+	return {0,0,0}
 end
 
 local function TARDIS_Health(ent)
@@ -321,6 +346,10 @@ e2function number entity:tardisMaterialise()
 	return TARDIS_Materialise(this)
 end
 
+e2function number entity:tardisSelfrepair()
+	return TARDIS_Selfrepair(this)
+end
+
 // get details
 e2function number entity:tardisMoving()
 	return TARDIS_Moving(this)
@@ -356,6 +385,10 @@ end
 
 e2function number entity:tardisLongflighted()
 	return TARDIS_Longflighted(this)
+end
+
+e2function number entity:tardisSelfrepairing()
+	return TARDIS_Selfrepairing(this)
 end
 
 e2function vector entity:tardisLastPos()

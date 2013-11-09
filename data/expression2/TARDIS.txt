@@ -160,6 +160,20 @@ if(chatClk(owner())){
             print("TARDIS materialising.")
         }
         hideChat(1)
+    }elseif(Cmd=="!selfrepair"){
+        local Success=TARDIS:tardisSelfrepair()
+        if (Success==1){
+            if(owner():tardisGet()!=TARDIS){
+                if(TARDIS:tardisSelfrepairing()){
+                    print("TARDIS self-repair initiated.")
+                }else{
+                    print("TARDIS self-repair cancelled.")
+                }
+            }
+        }else{
+            print("ERROR: TARDIS may be at full health or already repairing.")
+        }
+        hideChat(1)
     }elseif(Cmd=="!save"){
         SavePos=TARDIS:pos()
         SaveAng=TARDIS:angles()

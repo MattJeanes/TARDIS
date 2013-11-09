@@ -6,7 +6,6 @@ util.AddNetworkString("TARDISInt-SetSkyCamera")
 
 function ENT:Initialize()
 	self:SetModel( "models/props_junk/PopCan01a.mdl" )
-	// cheers to doctor who team for the model
 	self:PhysicsInit( SOLID_VPHYSICS )
 	self:SetMoveType( MOVETYPE_VPHYSICS )
 	self:SetSolid( SOLID_VPHYSICS )
