@@ -75,36 +75,12 @@ function ENT:Initialize()
 	self.flightmode=false
 	self.visible=true
 	self.power=true
-	self.demat=false
-	self.mat=false
 	self.z=0
-	self.a=255
-	self.ta=255
-	self.step=1
 	self.phasedraw=0
 	self.mins = self:OBBMins()
 	self.maxs = self:OBBMaxs()
 	self.wiremat = Material( "models/drmatt/tardis/phase" )
 	self.height = self.maxs.z - self.mins.z
-	
-	self.dematvalues={
-		150,
-		200,
-		100,
-		150,
-		50,
-		100,
-		0
-	}
-	self.matvalues={
-		100,
-		50,
-		150,
-		100,
-		200,
-		150,
-		255
-	}
 end
 
 function ENT:OnRemove()
@@ -202,93 +178,6 @@ function ENT:Think()
 			dlight.DieTime = CurTime() + 1
 		end
 	end
-	
-	if self.demat or self.mat then
-		self:UpdateAlpha()
-	end
-end
-
-function ENT:Dematerialize()
-	self.step=1
-	self.moving=true
-	self.demat=true
-	self.mat=false
-	self.ta=self:GetTargetAlpha()
-end
-
-function ENT:Materialize()
-	self.step=1
-	self.moving=true
-	self.demat=false
-	self.mat=true
-	self.ta=self:GetTargetAlpha()
-end
-
-function ENT:Stop()
-	self.step=1
-	self.demat=false
-	self.mat=false
-	self.ta=255
-	if self.attachedents then
-		for k,v in pairs(self.attachedents) do
-			if v.tempa then
-				local col=v:GetColor()
-				col=Color(col.r,col.g,col.b,v.tempa)
-				v:SetColor(col)
-				v.tempa=nil
-			end
-		end
-	end
-	self.attachedents=nil
-end
-
-function ENT:GetTargetAlpha()
-	if self.demat and not self.mat then
-		return self.dematvalues[self.step]
-	elseif self.mat and not self.demat then
-		return self.matvalues[self.step]
-	else
-		return 255
-	end
-end
-
-function ENT:UpdateAlpha()
-	if self.a==self.ta then
-		if self.demat then
-			if self.step+1==8 then
-				self.demat=false
-				return
-			else
-				self.step=self.step+1
-			end
-		elseif self.mat then
-			if self.step+1==8 then
-				self:Stop()
-				return
-			else
-				self.step=self.step+1
-			end
-		end
-		self.ta=self:GetTargetAlpha()
-	end
-	self.a=math.Approach(self.a,self.ta,FrameTime()*66)
-	local maincol=self:GetColor()
-	maincol=Color(maincol.r,maincol.g,maincol.b,self.a)
-	self:SetColor(maincol)
-	if self.attachedents then
-		for k,v in pairs(self.attachedents) do
-			if IsValid(v) then
-				local col=v:GetColor()
-				col=Color(col.r,col.g,col.b,self.a)
-				if not (v.tempa==0) then
-					if not (v:GetRenderMode()==RENDERMODE_TRANSALPHA) then
-						v:SetRenderMode(RENDERMODE_TRANSALPHA)
-					end
-					v:SetColor(col)
-				end
-			end
-		end
-	end
 end
 
 net.Receive("TARDIS-UpdateVis", function()
@@ -324,9 +213,6 @@ end)
 
 net.Receive("TARDIS-Go", function()
 	local tardis=net.ReadEntity()
-	if IsValid(tardis) then
-		tardis:Dematerialize()
-	end
 	local interior=net.ReadEntity()
 	local exploded=tobool(net.ReadBit())
 	local pitch=(exploded and 110 or 100)
@@ -349,24 +235,6 @@ net.Receive("TARDIS-Go", function()
 			end
 		end
 	end
-	if tobool(net.ReadBit())==true then
-		local entities={}
-		local count=net.ReadFloat()
-		for i=1,count do
-			entities[#entities+1]=net.ReadEntity()
-		end
-		for k,v in pairs(entities) do
-			if IsValid(v) then
-				local a=v:GetColor().a
-				if not (a==255) then
-					v.tempa=a
-				end
-			end
-		end
-		if IsValid(tardis) then
-			tardis.attachedents=entities
-		end
-	end
 end)
 
 net.Receive("TARDIS-Stop", function()
@@ -378,9 +246,6 @@ end)
 
 net.Receive("TARDIS-GoLong", function()
 	local tardis=net.ReadEntity()
-	if IsValid(tardis) then
-		tardis:Dematerialize()
-	end
 	local interior=net.ReadEntity()
 	local exploded=tobool(net.ReadBit())
 	local pitch=(exploded and 110 or 100)
@@ -397,22 +262,6 @@ net.Receive("TARDIS-GoLong", function()
 			if pos then
 				sound.Play("tardis/demat.wav", pos, 75, pitch)
 			end
-		end
-	end
-	if tobool(net.ReadBit())==true then
-		local entities={}
-		local count=net.ReadFloat()
-		for i=1,count do
-			entities[#entities+1]=net.ReadEntity()
-		end
-		for k,v in pairs(entities) do
-			local a=v:GetColor().a
-			if not (a==255) then
-				v.tempa=a
-			end
-		end
-		if IsValid(tardis) then
-			tardis.attachedents=entities
 		end
 	end
 end)
@@ -433,13 +282,6 @@ net.Receive("TARDIS-Reappear", function()
 		elseif IsValid(tardis) and tardis.visible then
 			sound.Play("tardis/mat.wav", net.ReadVector(), 75, pitch)
 		end
-	end
-end)
-
-net.Receive("TARDIS-Materialize", function()
-	local tardis=net.ReadEntity()
-	if IsValid(tardis) then
-		tardis:Materialize()
 	end
 end)
 

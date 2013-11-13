@@ -153,6 +153,12 @@ function ENT:Initialize()
 	self.repairdelay=1
 	self.spinmode=1
 	self.explodedshift=0
+	self.tracknotifycur=0
+	self.a=255
+	self.ta=255
+	self.step=1
+	self.demat=false
+	self.mat=false
 	self.occupants={}
 	if WireLib then
 		self.wirepos=Vector(0,0,0)
@@ -200,10 +206,46 @@ function ENT:Initialize()
 		net.WriteEntity(self)
 		net.WriteEntity(self.interior)
 	net.Broadcast()
+	
+	self.dematvalues={
+		150,
+		200,
+		100,
+		150,
+		50,
+		100,
+		0
+	}
+	self.matvalues={
+		100,
+		50,
+		150,
+		100,
+		200,
+		150,
+		255
+	}
 end
 
 function ENT:UpdateTransmitState()
 	return TRANSMIT_ALWAYS
+end
+
+function ENT:SetTrackingEnt(ent)
+	if IsValid(ent) and not (ent==self) and not (ent==game.GetWorld()) then
+		self.tracking=true
+		self.trackingent=ent
+		self.trackingoffset=ent:WorldToLocal(self:GetPos())
+		self.trackingyawoffset=0
+		return true
+	else
+		self.tracking=false
+		self.trackingent=nil
+		self.trackingoffset=nil
+		self.trackingyawoffset=0
+		return true
+	end
+	return false
 end
 
 function ENT:SetSpinMode(n)
@@ -528,6 +570,7 @@ function ENT:Go(vec,ang,nolongflight)
 			self:SetCollisionGroup( COLLISION_GROUP_WORLD )
 		end
 		self.moving=true
+		self:Dematerialize()
 		self.lastpos=self:GetPos()
 		self.lastang=self:GetAngles()
 		if vec then
@@ -572,15 +615,6 @@ function ENT:Go(vec,ang,nolongflight)
 				net.WriteEntity(self.interior)
 				net.WriteBit(tobool(self.exploded))
 				net.WriteVector(self:GetPos())
-				if self.attachedents then
-					net.WriteBit(true)
-					net.WriteFloat(table.Count(self.attachedents))
-					for k,v in pairs(self.attachedents) do
-						net.WriteEntity(v)
-					end
-				else
-					net.WriteBit(false)
-				end
 			net.Broadcast()
 		else
 			net.Start("TARDIS-Go")
@@ -590,15 +624,6 @@ function ENT:Go(vec,ang,nolongflight)
 				net.WriteVector(self:GetPos())
 				if self.vec then
 					net.WriteVector(self.vec)
-				end
-				if self.attachedents then
-					net.WriteBit(true)
-					net.WriteFloat(table.Count(self.attachedents))
-					for k,v in pairs(self.attachedents) do
-						net.WriteEntity(v)
-					end
-				else
-					net.WriteBit(false)
 				end
 			net.Broadcast()
 		end
@@ -631,6 +656,21 @@ function ENT:Stop()
 		net.Start("TARDIS-Stop")
 			net.WriteEntity(self)
 		net.Broadcast()
+		self.step=1
+		self.demat=false
+		self.mat=false
+		self.ta=255
+		if self.attachedents then
+			for k,v in pairs(self.attachedents) do
+				if IsValid(v) and v.tempa then
+					local col=v:GetColor()
+					col=Color(col.r,col.g,col.b,v.tempa)
+					v:SetColor(col)
+					v.tempa=nil
+				end
+			end
+		end
+		self.attachedents=nil
 	end
 end
 
@@ -732,12 +772,10 @@ function ENT:Reappear()
 			self:CreateRotorWash()
 		end
 		self.invortex=false
+		self:Materialize()
 		net.Start("TARDIS-SetVortex")
 			net.WriteEntity(self)
 			net.WriteBit(false)
-		net.Broadcast()
-		net.Start("TARDIS-Materialize")
-			net.WriteEntity(self)
 		net.Broadcast()
 		self:SetLight(true)
 		timer.Simple(8.5,function()
@@ -747,6 +785,71 @@ function ENT:Reappear()
 		end)
 	else
 		print("CRITICAL ERROR: Vector not found.")
+	end
+end
+
+function ENT:Dematerialize()
+	self.step=1
+	self.moving=true
+	self.demat=true
+	self.mat=false
+	self.ta=self:GetTargetAlpha()
+end
+
+function ENT:Materialize()
+	self.step=1
+	self.moving=true
+	self.demat=false
+	self.mat=true
+	self.ta=self:GetTargetAlpha()
+end
+
+function ENT:GetTargetAlpha()
+	if self.demat and not self.mat then
+		return self.dematvalues[self.step]
+	elseif self.mat and not self.demat then
+		return self.matvalues[self.step]
+	else
+		return 255
+	end
+end
+
+function ENT:UpdateAlpha()
+	if self.a==self.ta then
+		if self.demat then
+			if self.step+1==8 then
+				self.demat=false
+				return
+			else
+				self.step=self.step+1
+			end
+		elseif self.mat then
+			if self.step+1==8 then
+				self:Stop()
+				return
+			else
+				self.step=self.step+1
+			end
+		end
+		self.ta=self:GetTargetAlpha()
+	end
+	self.a=math.Approach(self.a,self.ta,FrameTime()*66)
+	local maincol=self:GetColor()
+	maincol=Color(maincol.r,maincol.g,maincol.b,self.a)
+	self:SetColor(maincol)
+	if self.attachedents then
+		for k,v in pairs(self.attachedents) do
+			if IsValid(v) then
+				local col=v:GetColor()
+				col=Color(col.r,col.g,col.b,self.a)
+				if not (v.tempa==0) then
+					if not (v:GetRenderMode()==RENDERMODE_TRANSALPHA) then
+						v:SetRenderMode(RENDERMODE_TRANSALPHA)
+					end
+					v:SetColor(col)
+				end
+			end
+		end
 	end
 end
 
@@ -948,9 +1051,14 @@ function ENT:PhysicsUpdate( ph )
 		
 		local up=self:GetUp()
 		local ri2=self:GetRight()
+		local left=ri2*-1
 		local fwd2=self:GetForward()
 		local ang=self:GetAngles()
+		local angvel=ph:GetAngleVelocity()
+		local vel=ph:GetVelocity()
+		local vell=ph:GetVelocity():Length()
 		local cen=ph:GetMassCenter()
+		local mass=ph:GetMass()
 		local lev=ph:GetInertia():Length()
 		local force=15
 		local vforce=5
@@ -958,52 +1066,84 @@ function ENT:PhysicsUpdate( ph )
 		local tforce=400
 		local tilt=0
 		
-		if self.pilot and IsValid(self.pilot) and not self.pilot.tardis_viewmode then
-			local p=self.pilot
-			local eye=p:EyeAngles()
-			local fwd=eye:Forward()
-			local ri=eye:Right()
-			
-			if self.exploded then
-				if p:KeyDown(IN_ATTACK2) and CurTime()>self.explodedshift then
-					print(AngleRand():Forward()*ph:GetVelocity()*0.5)
-					ph:AddVelocity(AngleRand():Forward()*(ph:GetVelocity():Length()))
-					self.explodedshift=CurTime()+1
-				end
-			elseif not self.exploded then
-				if p:KeyDown(IN_SPEED) then
-					force=force*2.5
-					tilt=5
-				end
-				if p:KeyDown(IN_FORWARD) then
-					ph:AddVelocity(fwd*force*phm)
-					tilt=tilt+5
-				end
-				if p:KeyDown(IN_BACK) then
-					ph:AddVelocity(-fwd*force*phm)
-					tilt=tilt+5
-				end
-				if p:KeyDown(IN_MOVERIGHT) then
+		if self.tracking and not self.exploded then
+			if IsValid(self.trackingent) then
+				local e=self.trackingent
+				local tvel=e:GetVelocity()
+				local tfwd=tvel:Angle():Forward()
+				local target=e:LocalToWorld(self.trackingoffset)+(tfwd*tvel:Length()*0.75)
+				ph:ApplyForceCenter((target-pos)*mass)
+				ph:ApplyForceCenter(-vel*mass*0.75)
+				if self.pilot and IsValid(self.pilot) and not self.pilot.tardis_viewmode then
+					local p=self.pilot
 					if p:KeyDown(IN_WALK) then
-						ph:AddAngleVelocity(Vector(0,0,-rforce))
+						if p:KeyDown(IN_MOVELEFT) then
+							self.trackingyawoffset=self.trackingyawoffset-rforce
+						elseif p:KeyDown(IN_MOVERIGHT) then
+							self.trackingyawoffset=self.trackingyawoffset+rforce
+						end
 					else
-						ph:AddVelocity(ri*force*phm)
-						tilt=tilt+5
+						if CurTime()>self.tracknotifycur and (p:KeyDown(IN_FORWARD) or p:KeyDown(IN_BACK) or p:KeyDown(IN_MOVELEFT) or p:KeyDown(IN_MOVERIGHT)) then
+							self.tracknotifycur=CurTime()+2
+							p:ChatPrint("Tracking currently enabled, press jump key to disable.")
+						end
 					end
-				end
-				if p:KeyDown(IN_MOVELEFT) then
-					if p:KeyDown(IN_WALK) then
-						ph:AddAngleVelocity(Vector(0,0,rforce))
-					else
-						ph:AddVelocity(-ri*force*phm)
-						tilt=tilt+5
+					if p:KeyDown(IN_JUMP) then
+						self:SetTrackingEnt()
+						p:ChatPrint("Tracking disabled.")
 					end
+					
 				end
+			else
+				self:SetTrackingEnt(nil)
+			end
+		else
+			if self.pilot and IsValid(self.pilot) and not self.pilot.tardis_viewmode then
+				local p=self.pilot
+				local eye=p:EyeAngles()
+				local fwd=eye:Forward()
+				local ri=eye:Right()
 				
-				if p:KeyDown(IN_DUCK) then
-					ph:AddVelocity(-up*vforce*phm)
-				elseif p:KeyDown(IN_JUMP) then
-					ph:AddVelocity(up*vforce*phm)
+				if self.exploded then
+					if p:KeyDown(IN_ATTACK2) and CurTime()>self.explodedshift then
+						ph:AddVelocity(AngleRand():Forward()*(vell))
+						self.explodedshift=CurTime()+1
+					end
+				elseif not self.exploded then
+					if p:KeyDown(IN_SPEED) then
+						force=force*2.5
+						tilt=5
+					end
+					if p:KeyDown(IN_FORWARD) then
+						ph:AddVelocity(fwd*force*phm)
+						tilt=tilt+5
+					end
+					if p:KeyDown(IN_BACK) then
+						ph:AddVelocity(-fwd*force*phm)
+						tilt=tilt+5
+					end
+					if p:KeyDown(IN_MOVERIGHT) then
+						if p:KeyDown(IN_WALK) then
+							ph:AddAngleVelocity(Vector(0,0,-rforce))
+						else
+							ph:AddVelocity(ri*force*phm)
+							tilt=tilt+5
+						end
+					end
+					if p:KeyDown(IN_MOVELEFT) then
+						if p:KeyDown(IN_WALK) then
+							ph:AddAngleVelocity(Vector(0,0,rforce))
+						else
+							ph:AddVelocity(-ri*force*phm)
+							tilt=tilt+5
+						end
+					end
+					
+					if p:KeyDown(IN_DUCK) then
+						ph:AddVelocity(-up*vforce*phm)
+					elseif p:KeyDown(IN_JUMP) then
+						ph:AddVelocity(up*vforce*phm)
+					end
 				end
 			end
 		end
@@ -1018,23 +1158,27 @@ function ENT:PhysicsUpdate( ph )
 		if not self.exploded then
 			ph:ApplyForceOffset( up*-ang.p,cen-fwd2*lev)
 			ph:ApplyForceOffset(-up*-ang.p,cen+fwd2*lev)
-			//ph:ApplyForceOffset( ri2*-ang2.y,cen-fwd2*lev)
-			//ph:ApplyForceOffset(-ri2*-ang2.y,cen+fwd2*lev)
+			if self.tracking and IsValid(self.trackingent) and self.spinmode==0 then
+				local e=self.trackingent
+				local a=e:WorldToLocalAngles(ang)
+				ph:ApplyForceOffset( ri2*-a.y,cen-fwd2*lev)
+				ph:ApplyForceOffset(-ri2*-a.y,cen+fwd2*lev)
+			end
 			ph:ApplyForceOffset( up*-(ang.r-tilt),cen-ri2*lev)
 			ph:ApplyForceOffset(-up*-(ang.r-tilt),cen+ri2*lev)
 		end
 		
 		if not self.exploded then
 			if not (self.spinmode==0) then
-				local twist=Vector(0,0,ph:GetVelocity():Length()/tforce)
+				local twist=Vector(0,0,vell/tforce)
 				ph:AddAngleVelocity(twist)
 			end
-			local angbrake=ph:GetAngleVelocity()*-0.015
+			local angbrake=angvel*-0.015
 			ph:AddAngleVelocity(angbrake)
-			local brake=self:GetVelocity()*-0.01
+			local brake=vel*-0.01
 			ph:AddVelocity(brake)
-		elseif self.exploded and ph:GetVelocity():Length()<1500 then
-			local speed=ph:GetVelocity()*0.01
+		elseif self.exploded and vell<1500 then
+			local speed=vel*0.01
 			ph:AddVelocity(speed)
 			local angle=AngleRand():Forward()*75
 			ph:AddAngleVelocity(angle)
@@ -1270,7 +1414,11 @@ function ENT:TogglePower()
 	return false
 end
 
-function ENT:Think()	
+function ENT:Think()
+	if self.demat or self.mat then
+		self:UpdateAlpha()
+	end
+
 	if self.pilot and not IsValid(self.pilot) then
 		self.pilot=nil
 	end

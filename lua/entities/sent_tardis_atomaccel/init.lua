@@ -43,8 +43,6 @@ function ENT:Use( activator, caller, type, value )
 		self.interior.usecur=CurTime()+1
 	end
 	
-	if IsValid(self.tardis) and (not self.tardis.flightmode and not self.tardis.moving) then return end
-	
 	if ( self:GetIsToggle() ) then
 
 		if ( type == USE_ON ) then
@@ -99,5 +97,6 @@ function ENT:Toggle( ply )
 	self:SetMode(new)
 	if IsValid(self.tardis) then
 		self.tardis:SetSpinMode(new)
+		ply:ChatPrint("Spinmode set to: "..(new==1 and "anti-clockwise" or new==2 and "clockwise" or "none"))
 	end
 end

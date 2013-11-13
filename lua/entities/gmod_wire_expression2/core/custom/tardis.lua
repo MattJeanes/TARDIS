@@ -156,6 +156,19 @@ local function TARDIS_Selfrepair(ent)
 	return 0
 end
 
+local function TARDIS_Track(ent,trackent)
+	if ent and IsValid(ent) then
+		if not (ent:GetClass()=="sent_tardis") then return 0 end
+		local success=ent:SetTrackingEnt(trackent)
+		if success then
+			return 1
+		else
+			return 0
+		end
+	end
+	return 0
+end
+
 local function TARDIS_Moving(ent)
 	if ent and IsValid(ent) then
 		if not (ent:GetClass()=="sent_tardis") then return 0 end
@@ -300,6 +313,18 @@ local function TARDIS_Health(ent)
 	return 0
 end
 
+local function TARDIS_Tracking(ent)
+	if ent and IsValid(ent) then
+		if not (ent:GetClass()=="sent_tardis") then return 0 end
+		if IsValid(ent.trackingent) then
+			return ent.trackingent
+		else
+			return NULL
+		end
+	end
+	return NULL
+end
+
 --------------------------------------------------------------------------------
 
 //set details
@@ -350,6 +375,10 @@ e2function number entity:tardisSelfrepair()
 	return TARDIS_Selfrepair(this)
 end
 
+e2function number entity:tardisTrack(entity ent)
+	return TARDIS_Track(this, ent)
+end
+
 // get details
 e2function number entity:tardisMoving()
 	return TARDIS_Moving(this)
@@ -397,4 +426,8 @@ end
 
 e2function angle entity:tardisLastAng()
 	return TARDIS_LastAng(this)
+end
+
+e2function entity entity:tardisTracking()
+	return TARDIS_Tracking(this)
 end

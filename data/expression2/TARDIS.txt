@@ -77,6 +77,10 @@ if(chatClk(owner())){
             demat2(NewPos+Target:right()*-Offset, ang(0,Yaw+270,0))
         }elseif(Arg=="exact"){
             demat2(NewPos,ang(0,Yaw,0))
+        }elseif(Arg=="playx"){
+            findByClass("gmod_playx")
+            PlayX=find()
+            demat2(PlayX:toWorld(vec(-290,-38,-230)), ang(0,0,0))
         }else{
             demat2(NewPos+Target:forward()*Offset, ang(0,Yaw+180,0))
         }
@@ -170,8 +174,16 @@ if(chatClk(owner())){
                     print("TARDIS self-repair cancelled.")
                 }
             }
-        }else{
-            print("ERROR: TARDIS may be at full health or already repairing.")
+        }
+    }elseif(Cmd=="!track"){
+        local TrackEnt=owner():aimEntity()
+        local Success=TARDIS:tardisTrack(TrackEnt)
+        if (Success==1){
+            if (TARDIS:tardisTracking():isValid()){
+                print("TARDIS tracking entity set.")
+            }else{
+                print("TARDIS tracking disabled.")
+            }
         }
         hideChat(1)
     }elseif(Cmd=="!save"){
