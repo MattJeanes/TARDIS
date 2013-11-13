@@ -175,6 +175,7 @@ if(chatClk(owner())){
                 }
             }
         }
+        hideChat(1)
     }elseif(Cmd=="!track"){
         local TrackEnt=owner():aimEntity()
         local Success=TARDIS:tardisTrack(TrackEnt)
