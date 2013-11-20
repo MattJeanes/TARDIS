@@ -213,16 +213,28 @@ end)
 
 net.Receive("TARDIS-Go", function()
 	local tardis=net.ReadEntity()
+	if IsValid(tardis) then
+		tardis.moving=true
+	end
 	local interior=net.ReadEntity()
 	local exploded=tobool(net.ReadBit())
 	local pitch=(exploded and 110 or 100)
+	local long=tobool(net.ReadBit())
 	if tobool(GetConVarNumber("tardis_matsound"))==true then
 		if IsValid(tardis) and LocalPlayer().tardis==tardis then
 			if tardis.visible then
-				tardis:EmitSound("tardis/full.wav", 100, pitch)
+				if long then
+					tardis:EmitSound("tardis/demat.wav", 100, pitch)
+				else
+					tardis:EmitSound("tardis/full.wav", 100, pitch)
+				end
 			end
 			if interior and IsValid(interior) and LocalPlayer().tardis_viewmode and not IsValid(LocalPlayer().tardis_skycamera) then
-				interior:EmitSound("tardis/full.wav", 100, pitch)
+				if long then
+					interior:EmitSound("tardis/demat.wav", 100, pitch)
+				else
+					interior:EmitSound("tardis/full.wav", 100, pitch)
+				end
 			end
 		elseif IsValid(tardis) and tardis.visible then
 			local pos=net.ReadVector()
@@ -230,7 +242,7 @@ net.Receive("TARDIS-Go", function()
 			if pos then
 				sound.Play("tardis/demat.wav", pos, 75, pitch)
 			end
-			if pos2 then
+			if pos2 and not long then
 				sound.Play("tardis/mat.wav", pos2, 75, pitch)
 			end
 		end
@@ -241,28 +253,6 @@ net.Receive("TARDIS-Stop", function()
 	tardis=net.ReadEntity()
 	if IsValid(tardis) then
 		tardis.moving=nil
-	end
-end)
-
-net.Receive("TARDIS-GoLong", function()
-	local tardis=net.ReadEntity()
-	local interior=net.ReadEntity()
-	local exploded=tobool(net.ReadBit())
-	local pitch=(exploded and 110 or 100)
-	if tobool(GetConVarNumber("tardis_matsound"))==true then
-		if IsValid(tardis) and LocalPlayer().tardis==tardis then
-			if tardis.visible then
-				tardis:EmitSound("tardis/demat.wav", 100, pitch)
-			end
-			if interior and IsValid(interior) and LocalPlayer().tardis_viewmode and not IsValid(LocalPlayer().tardis_skycamera) then
-				interior:EmitSound("tardis/demat.wav", 100, pitch)
-			end
-		elseif IsValid(tardis) and tardis.visible then
-			local pos=net.ReadVector()
-			if pos then
-				sound.Play("tardis/demat.wav", pos, 75, pitch)
-			end
-		end
 	end
 end)
 

@@ -47,7 +47,7 @@ end)
 hook.Add("InitPostEntity", "TARDISInt-InitPostEntity", function()
 	if pewpew and pewpew.NeverEverList then // nice and easy, blocks pewpew from damaging the interior.
 		table.insert(pewpew.NeverEverList, "sent_tardis_interior")
-		hook.Add("PewPew_ShouldDamage","TARDIS-BlockDamage",function(pewpew,e,dmg,dmgdlr)
+		hook.Add("PewPew_ShouldDamage","TARDISInt-BlockDamage",function(pewpew,e,dmg,dmgdlr)
 			if e.tardis_part then
 				return false
 			end
@@ -64,6 +64,19 @@ hook.Add("InitPostEntity", "TARDISInt-InitPostEntity", function()
 				end
 			end
 			return original(e)
+		end
+	end
+	if XCF and XCF_Check then // this one is also a bit hacky, but XCFs internal code is shockingly bad.
+		local original=XCF_Check
+		function XCF_Check(e,i)
+			if IsValid(e) then
+				local class=e:GetClass()
+				if class=="sent_tardis_interior" or e.tardis_part then
+					if not e.ACF then ACF_Activate(e) end
+					return false
+				end
+			end
+			return original(e,i)
 		end
 	end
 end)

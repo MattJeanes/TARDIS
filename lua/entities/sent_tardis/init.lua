@@ -29,7 +29,6 @@ util.AddNetworkString("TARDIS-BeginRepair")
 util.AddNetworkString("TARDIS-FinishRepair")
 util.AddNetworkString("TARDIS-SetLight")
 util.AddNetworkString("TARDIS-SetPower")
-util.AddNetworkString("TARDIS-GoLong")
 util.AddNetworkString("TARDIS-StopLong")
 util.AddNetworkString("TARDIS-Reappear")
 util.AddNetworkString("TARDIS-Materialize")
@@ -154,6 +153,7 @@ function ENT:Initialize()
 	self.spinmode=1
 	self.explodedshift=0
 	self.tracknotifycur=0
+	self.physlocknotifycur=0
 	self.a=255
 	self.ta=255
 	self.step=1
@@ -232,11 +232,13 @@ function ENT:UpdateTransmitState()
 end
 
 function ENT:SetTrackingEnt(ent)
-	if IsValid(ent) and not (ent==self) and not (ent==game.GetWorld()) then
+	if IsValid(ent) and not (ent==self) and not (ent==game.GetWorld()) and not (ent.tardis_part) then
 		self.tracking=true
 		self.trackingent=ent
 		self.trackingoffset=ent:WorldToLocal(self:GetPos())
-		self.trackingyawoffset=0
+		self.trackingyawoffset=(ent:GetAngles()-self:GetAngles()).y
+		print(self.trackingyawoffset)
+		//self.trackingyawoffset=0
 		return true
 	else
 		self.tracking=false
@@ -609,24 +611,16 @@ function ENT:Go(vec,ang,nolongflight)
 		if IsValid(self.interior) then
 			util.ScreenShake(self.interior:GetPos(),1,5,1,700)
 		end
-		if self.longflight and not self.nolongflight then
-			net.Start("TARDIS-GoLong")
-				net.WriteEntity(self)
-				net.WriteEntity(self.interior)
-				net.WriteBit(tobool(self.exploded))
-				net.WriteVector(self:GetPos())
-			net.Broadcast()
-		else
-			net.Start("TARDIS-Go")
-				net.WriteEntity(self)
-				net.WriteEntity(self.interior)
-				net.WriteBit(tobool(self.exploded))
-				net.WriteVector(self:GetPos())
-				if self.vec then
-					net.WriteVector(self.vec)
-				end
-			net.Broadcast()
-		end
+		net.Start("TARDIS-Go")
+			net.WriteEntity(self)
+			net.WriteEntity(self.interior)
+			net.WriteBit(tobool(self.exploded))
+			net.WriteBit(self.longflight and not self.nolongflight)
+			net.WriteVector(self:GetPos())
+			if self.vec then
+				net.WriteVector(self.vec)
+			end
+		net.Broadcast()
 		timer.Simple(8.5,function()
 			if IsValid(self) then
 				self:Disappear()
@@ -730,6 +724,9 @@ function ENT:Reappear()
 			for k,v in pairs(self.attachedents) do
 				if IsValid(v) and not IsValid(v:GetParent()) then
 					v.telepos=v:GetPos()-self:GetPos()
+					if v:GetClass()=="gmod_hoverball" then // fixes hoverballs spazzing out
+						v:SetTargetZ( (self.vec-self:GetPos()).z+v:GetTargetZ() )
+					end
 				end
 			end
 		end
@@ -1076,23 +1073,14 @@ function ENT:PhysicsUpdate( ph )
 				ph:ApplyForceCenter(-vel*mass*0.75)
 				if self.pilot and IsValid(self.pilot) and not self.pilot.tardis_viewmode then
 					local p=self.pilot
-					if p:KeyDown(IN_WALK) then
-						if p:KeyDown(IN_MOVELEFT) then
-							self.trackingyawoffset=self.trackingyawoffset-rforce
-						elseif p:KeyDown(IN_MOVERIGHT) then
-							self.trackingyawoffset=self.trackingyawoffset+rforce
-						end
-					else
-						if CurTime()>self.tracknotifycur and (p:KeyDown(IN_FORWARD) or p:KeyDown(IN_BACK) or p:KeyDown(IN_MOVELEFT) or p:KeyDown(IN_MOVERIGHT)) then
-							self.tracknotifycur=CurTime()+2
-							p:ChatPrint("Tracking currently enabled, press jump key to disable.")
-						end
+					if CurTime()>self.tracknotifycur and (p:KeyDown(IN_FORWARD) or p:KeyDown(IN_BACK) or p:KeyDown(IN_MOVELEFT) or p:KeyDown(IN_MOVERIGHT)) then
+						self.tracknotifycur=CurTime()+2
+						p:ChatPrint("Tracking currently active, press jump key to disable.")
 					end
 					if p:KeyDown(IN_JUMP) then
 						self:SetTrackingEnt()
 						p:ChatPrint("Tracking disabled.")
-					end
-					
+					end					
 				end
 			else
 				self:SetTrackingEnt(nil)
@@ -1103,6 +1091,11 @@ function ENT:PhysicsUpdate( ph )
 				local eye=p:EyeAngles()
 				local fwd=eye:Forward()
 				local ri=eye:Right()
+				
+				if CurTime()>self.physlocknotifycur and self.physlocked and (p:KeyDown(IN_FORWARD) or p:KeyDown(IN_BACK) or p:KeyDown(IN_MOVELEFT) or p:KeyDown(IN_MOVERIGHT)) then
+					self.physlocknotifycur=CurTime()+2
+					p:ChatPrint("WARNING: Physical lock active.")
+				end
 				
 				if self.exploded then
 					if p:KeyDown(IN_ATTACK2) and CurTime()>self.explodedshift then
@@ -1160,7 +1153,7 @@ function ENT:PhysicsUpdate( ph )
 			ph:ApplyForceOffset(-up*-ang.p,cen+fwd2*lev)
 			if self.tracking and IsValid(self.trackingent) and self.spinmode==0 then
 				local e=self.trackingent
-				local a=e:WorldToLocalAngles(ang)
+				local a=e:WorldToLocalAngles(ang+Angle(0,self.trackingyawoffset,0))
 				ph:ApplyForceOffset( ri2*-a.y,cen-fwd2*lev)
 				ph:ApplyForceOffset(-ri2*-a.y,cen+fwd2*lev)
 			end
@@ -1473,6 +1466,9 @@ function ENT:Think()
 		self:ToggleFlight()
 		if self.flightmode and self.physlocked then
 			self.pilot:ChatPrint("WARNING: Physical lock active.")
+		end
+		if self.flightmode and self.tracking then
+			self.pilot:ChatPrint("WARNING: Tracking active.")
 		end
 	end
 	

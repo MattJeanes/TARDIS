@@ -178,6 +178,8 @@ if(chatClk(owner())){
         hideChat(1)
     }elseif(Cmd=="!track"){
         local TrackEnt=owner():aimEntity()
+        if (Arg=="me"){TrackEnt=owner()}
+        if (Arg=="off"){TrackEnt=noentity()}
         local Success=TARDIS:tardisTrack(TrackEnt)
         if (Success==1){
             if (TARDIS:tardisTracking():isValid()){
