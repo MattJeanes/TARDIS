@@ -149,8 +149,8 @@ function ENT:Initialize()
 	self.interiorcur=0
 	self.viewmodecur=0
 	self.repaircur=0
-	self.repairdelay=1
-	self.spinmode=1
+	self.repairdelay=0.5
+	self.spinmode=-1
 	self.explodedshift=0
 	self.tracknotifycur=0
 	self.physlocknotifycur=0
@@ -237,8 +237,6 @@ function ENT:SetTrackingEnt(ent)
 		self.trackingent=ent
 		self.trackingoffset=ent:WorldToLocal(self:GetPos())
 		self.trackingyawoffset=(ent:GetAngles()-self:GetAngles()).y
-		print(self.trackingyawoffset)
-		//self.trackingyawoffset=0
 		return true
 	else
 		self.tracking=false
@@ -251,7 +249,7 @@ function ENT:SetTrackingEnt(ent)
 end
 
 function ENT:SetSpinMode(n)
-	self.spinmode=n
+	self.spinmode=(math.Clamp(n,-1,1))
 end
 
 function ENT:ToggleLongFlight()
@@ -328,11 +326,11 @@ function ENT:EndRepair()
 		self.repairoccupants=nil
 	end
 	if not self.repairwait then
+		self:SetHP(100)
 		net.Start("TARDIS-FinishRepair")
 			net.WriteEntity(self)
 		net.Broadcast()
 		self:FlashLight(1.5)
-		self:SetHP(100)
 	end
 	self.repairing=nil
 	self.repairwait=nil
@@ -415,8 +413,6 @@ function ENT:Explode()
 	self.fire:Spawn()
 	self.fire:SetParent(self)
 	
-	self.smoke=self:CreateSmoke()
-	
 	local explode = ents.Create("env_explosion")
 	explode:SetPos( self:LocalToWorld(Vector(0,0,50)) ) //Puts the explosion where you are aiming
 	explode:SetOwner( self ) //Sets the owner of the explosion
@@ -446,12 +442,7 @@ function ENT:UnExplode()
 	if self.fire and IsValid(self.fire) then
 		self.fire:Remove()
 		self.fire=nil
-	end
-	
-	if self.smoke and IsValid(self.smoke) then
-		self.smoke:Remove()
-		self.smoke=nil
-	end
+	end	
 	
 	self:SetColor(Color(255,255,255))
 	
@@ -482,7 +473,14 @@ function ENT:CreateSmoke()
 	smoke:Spawn()
 	smoke:SetParent(self)
 	smoke:Activate()
-	return smoke
+	self.smoke=smoke
+end
+
+function ENT:RemoveSmoke()
+	if self.smoke and IsValid(self.smoke) then
+		self.smoke:Remove()
+		self.smoke=nil
+	end
 end
 
 function ENT:SetHP(hp)
@@ -503,6 +501,11 @@ function ENT:SetHP(hp)
 		self:Explode()
 	elseif self.exploded and hp>0 then
 		self:UnExplode()
+	end
+	if IsValid(self.smoke) and hp>=21 then
+		self:RemoveSmoke()
+	elseif not IsValid(self.smoke) and hp<=20 then
+		self:CreateSmoke()
 	end
 end
 
@@ -1068,9 +1071,9 @@ function ENT:PhysicsUpdate( ph )
 				local e=self.trackingent
 				local tvel=e:GetVelocity()
 				local tfwd=tvel:Angle():Forward()
-				local target=e:LocalToWorld(self.trackingoffset)+(tfwd*tvel:Length()*0.75)
+				local target=e:LocalToWorld(self.trackingoffset)+(tfwd*tvel:Length())
 				ph:ApplyForceCenter((target-pos)*mass)
-				ph:ApplyForceCenter(-vel*mass*0.75)
+				ph:ApplyForceCenter(-vel*mass)
 				if self.pilot and IsValid(self.pilot) and not self.pilot.tardis_viewmode then
 					local p=self.pilot
 					if CurTime()>self.tracknotifycur and (p:KeyDown(IN_FORWARD) or p:KeyDown(IN_BACK) or p:KeyDown(IN_MOVELEFT) or p:KeyDown(IN_MOVERIGHT)) then
@@ -1143,7 +1146,7 @@ function ENT:PhysicsUpdate( ph )
 		
 		if self.spinmode==0 then
 			tilt=0
-		elseif self.spinmode==2 then // spinmode 1 needs no adjustments
+		elseif self.spinmode==1 then // spinmode 1 needs no adjustments
 			tforce=-tforce
 		end
 		

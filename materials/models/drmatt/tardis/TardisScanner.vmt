@@ -1,6 +1,6 @@
 "VertexLitGeneric"
 {
-	"$basetexture" "_rt_Camera"
+	"$basetexture" "models/drmatt/tardis/TardisScanner"
 	"$model" 1
 	"$nodecal" 1
 	"$selfillum" 1

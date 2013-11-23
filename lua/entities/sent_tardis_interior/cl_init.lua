@@ -6,7 +6,7 @@ include('shared.lua')
    Remember, the things you render first will be underneath!
 ---------------------------------------------------------]]
 function ENT:Draw()
-	if LocalPlayer().tardis_viewmode and self:GetNWEntity("TARDIS",NULL)==LocalPlayer().tardis then
+	if LocalPlayer().tardis_viewmode and self:GetNWEntity("TARDIS",NULL)==LocalPlayer().tardis and not LocalPlayer().tardis_render then
 		self:DrawModel()
 		if WireLib then
 			Wire_Render(self)
@@ -103,6 +103,7 @@ function ENT:Think()
 			elseif not self.idlesound then
 				self.idlesound = CreateSound(self, "tardis/interior_idle_loop.wav")
 				self.idlesound:Play()
+				self.idlesound:ChangeVolume(0.5,0)
 			end
 			
 			if self.idlesound2 and !self.idlesound2:IsPlaying() then
@@ -110,6 +111,7 @@ function ENT:Think()
 			elseif not self.idlesound2 then
 				self.idlesound2 = CreateSound(self, "tardis/interior_idle2_loop.wav")
 				self.idlesound2:Play()
+				self.idlesound2:ChangeVolume(0.5,0)
 			end
 		else
 			if self.idlesound and self.idlesound:IsPlaying() then

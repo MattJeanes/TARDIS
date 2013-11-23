@@ -93,10 +93,10 @@ end
 --
 function ENT:Toggle( ply )
 	local cur=self:GetMode()
-	local new=(cur==2 and 0 or cur+1)
+	local new=(cur==1 and -1 or cur+1)
 	self:SetMode(new)
 	if IsValid(self.tardis) then
 		self.tardis:SetSpinMode(new)
-		ply:ChatPrint("Spinmode set to: "..(new==1 and "anti-clockwise" or new==2 and "clockwise" or "none"))
+		ply:ChatPrint("Spinmode set to: "..(new==-1 and "anti-clockwise" or new==1 and "clockwise" or "none"))
 	end
 end

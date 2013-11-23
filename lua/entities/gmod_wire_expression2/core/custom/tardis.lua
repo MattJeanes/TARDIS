@@ -169,6 +169,17 @@ local function TARDIS_Track(ent,trackent)
 	return 0
 end
 
+local function TARDIS_Spinmode(ent,spinmode)
+	if ent and IsValid(ent) then
+		if not (ent:GetClass()=="sent_tardis") then return 0 end
+		ent:SetSpinMode(spinmode)
+		return ent.spinmode
+	end
+	return 0
+end
+
+// get details
+
 local function TARDIS_Moving(ent)
 	if ent and IsValid(ent) then
 		if not (ent:GetClass()=="sent_tardis") then return 0 end
@@ -377,6 +388,10 @@ end
 
 e2function number entity:tardisTrack(entity ent)
 	return TARDIS_Track(this, ent)
+end
+
+e2function number entity:tardisSpinmode(number spinmode)
+	return TARDIS_Spinmode(this,spinmode)
 end
 
 // get details

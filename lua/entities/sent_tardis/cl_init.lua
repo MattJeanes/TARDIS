@@ -98,6 +98,7 @@ function ENT:Think()
 	if tobool(GetConVarNumber("tardis_flightsound"))==true then
 		if not self.flightloop then
 			self.flightloop=CreateSound(self, "tardis/flight_loop.wav")
+			self.flightloop:SetSoundLevel(90)
 			self.flightloop:Stop()
 		end
 		if self.flightmode and self.visible and not self.moving then
@@ -110,20 +111,23 @@ function ENT:Think()
 			if not (tardis and IsValid(tardis) and tardis==self and e==LocalPlayer()) then
 				local pos = e:GetPos()
 				local spos = self:GetPos()
-				local doppler = (pos:Distance(spos+e:GetVelocity())-pos:Distance(spos+self:GetVelocity()))/150
+				local doppler = (pos:Distance(spos+e:GetVelocity())-pos:Distance(spos+self:GetVelocity()))/200
 				if self.exploded then
 					local r=math.random(90,130)
-					self.flightloop:ChangePitch(math.Clamp(r+doppler,50,150),0.1)
+					self.flightloop:ChangePitch(math.Clamp(r+doppler,80,120),0.1)
 				else
-					self.flightloop:ChangePitch(math.Clamp(100+doppler,50,150),0.1)
+					self.flightloop:ChangePitch(math.Clamp(100+doppler,80,120),0.1)
 				end
+				self.flightloop:ChangeVolume(GetConVarNumber("tardis_flightvol"),0)
 			else
 				if self.exploded then
 					local r=math.random(90,130)
 					self.flightloop:ChangePitch(r,0.1)
 				else
-					self.flightloop:ChangePitch(100,0.1)
+					local p=math.Clamp(self:GetVelocity():Length()/250,0,15)
+					self.flightloop:ChangePitch(95+p,0.1)
 				end
+				self.flightloop:ChangeVolume(0.75*GetConVarNumber("tardis_flightvol"),0)
 			end
 		else
 			if self.flightloop:IsPlaying() then
@@ -134,18 +138,19 @@ function ENT:Think()
 		local interior=self:GetNWEntity("interior",NULL)
 		if not self.flightloop2 and interior and IsValid(interior) then
 			self.flightloop2=CreateSound(interior, "tardis/flight_loop.wav")
-			self.flightloop2:ChangeVolume(0.5,0)
 			self.flightloop2:Stop()
 		end
 		if self.flightloop2 and (self.flightmode or self.invortex) and LocalPlayer().tardis_viewmode and not IsValid(LocalPlayer().tardis_skycamera) and interior and IsValid(interior) and ((self.invortex and self.moving) or not self.moving) then
 			if !self.flightloop2:IsPlaying() then
 				self.flightloop2:Play()
+				self.flightloop2:ChangeVolume(0.4,0)
 			end
 			if self.exploded then
 				local r=math.random(90,130)
 				self.flightloop2:ChangePitch(r,0.1)
 			else
-				self.flightloop2:ChangePitch(100,0.1)
+				local p=math.Clamp(self:GetVelocity():Length()/250,0,15)
+				self.flightloop2:ChangePitch(95+p,0.1)
 			end
 		elseif self.flightloop2 then
 			if self.flightloop2:IsPlaying() then
@@ -474,6 +479,7 @@ local checkbox_options={
 	{"Interior rails", "tardisint_rails", true},
 	{"Interior idle sounds", "tardisint_idlesound", false},
 	{"Interior control sounds", "tardisint_controlsound", false},
+	{"Interior music", "tardisint_music", false},
 	{"Interior dynamic light", "tardisint_dynamiclight", false},
 	{"Exterior dynamic light", "tardis_dynamiclight", false},
 	{"Tool tips", "tardisint_tooltip", false},
@@ -494,6 +500,9 @@ CreateClientConVar("tardisint_seclight_b", "0", true)
 CreateClientConVar("tardisint_warnlight_r", "200", true)
 CreateClientConVar("tardisint_warnlight_g", "0", true)
 CreateClientConVar("tardisint_warnlight_b", "0", true)
+
+CreateClientConVar("tardisint_musicvol", "1", true)
+CreateClientConVar("tardis_flightvol", "1", true)
 
 hook.Add("PopulateToolMenu", "TARDIS-PopulateToolMenu", function()
 	spawnmenu.AddToolMenuOption("Options", "Doctor Who", "TARDIS_Options", "TARDIS", "", "", function(panel)
@@ -758,7 +767,23 @@ hook.Add("PopulateToolMenu", "TARDIS-PopulateToolMenu", function()
 			Mixer3:SetColor(Color(200,0,0))
 		end
 		panel:AddItem(button)
-
+		
+		panel:AddControl("Slider", {
+			Label="Music Volume",
+			Type="float",
+			Min=0.1,
+			Max=1,
+			Command="tardisint_musicvol",
+		})
+		
+		panel:AddControl("Slider", {
+			Label="Exterior Flight Volume",
+			Type="float",
+			Min=0.1,
+			Max=1,
+			Command="tardis_flightvol",
+		})
+		
 		local checkboxes={}
 		for k,v in pairs(checkbox_options) do
 			local checkBox = vgui.Create( "DCheckBoxLabel" ) 

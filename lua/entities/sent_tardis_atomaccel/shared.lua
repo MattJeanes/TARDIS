@@ -19,6 +19,6 @@ function ENT:SetupDataTables()
 	self:NetworkVar( "Int",	0,	"Mode" );
 	self:NetworkVar( "Bool",	1,	"IsToggle" );
 
-	self:SetMode( 1 )
+	self:SetMode( -1 )
 	self:SetIsToggle( true );
 end
