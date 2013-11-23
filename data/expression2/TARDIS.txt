@@ -189,6 +189,15 @@ if(chatClk(owner())){
             }
         }
         hideChat(1)
+    }elseif(Cmd=="!spinmode"){
+        if(Arg==""){Arg="-1"}
+        local Spinmode=TARDIS:tardisSpinmode(Arg:toNumber())
+        local SpinmodeS=""
+        if (Spinmode==-1){SpinmodeS="anti-clockwise"}
+        if (Spinmode==0){SpinmodeS="none"}
+        if (Spinmode==1){SpinmodeS="clockwise"}
+        print("TARDIS Spinmode set to: " + SpinmodeS + ".")
+        hideChat(1)
     }elseif(Cmd=="!save"){
         SavePos=TARDIS:pos()
         SaveAng=TARDIS:angles()
