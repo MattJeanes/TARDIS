@@ -190,8 +190,7 @@ function ENT:Think()
 				local ang=self:GetAngles()
 				ang=Angle(0,ang.y,0)
 				if IsValid(self.tardis) and self.tardis.invortex then
-					self.tardis.vec=pos
-					self.tardis.ang=ang
+					self.tardis:SetDestination(pos,ang)
 				else
 					self.hitpos=pos
 					self.hitang=ang

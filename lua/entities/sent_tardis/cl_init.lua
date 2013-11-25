@@ -476,13 +476,16 @@ local checkbox_options={
 	{"Repair sounds", "tardisint_repairsound", false},
 	{"Power sounds", "tardisint_powersound", false},
 	{"Cloisterbell sound", "tardisint_cloisterbell", false},
+	{"Flightmode music", "tardisint_musicext", false},
 	{"Interior rails", "tardisint_rails", true},
 	{"Interior idle sounds", "tardisint_idlesound", false},
 	{"Interior control sounds", "tardisint_controlsound", false},
 	{"Interior music", "tardisint_music", false},
+	{"Interior scanner", "tardisint_scanner", false},
 	{"Interior dynamic light", "tardisint_dynamiclight", false},
 	{"Exterior dynamic light", "tardis_dynamiclight", false},
-	{"Tool tips", "tardisint_tooltip", false},
+	{"Control tool tips", "tardisint_tooltip", false},
+	{"Control halos", "tardisint_halos", false},
 }
 
 for k,v in pairs(checkbox_options) do

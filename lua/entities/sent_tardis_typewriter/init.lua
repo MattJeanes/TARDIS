@@ -73,8 +73,7 @@ net.Receive("TARDISInt-Locations-Send", function(l,ply)
 		end
 		
 		if tardis.invortex then
-			tardis.vec=pos
-			tardis.ang=ang
+			tardis:SetDestination(pos,ang)
 			ply:ChatPrint("TARDIS destination set.")
 		end
 	end

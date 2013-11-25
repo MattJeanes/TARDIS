@@ -89,12 +89,17 @@ function ENT:SpawnParts()
 	self.unused1=self:MakePart("sent_tardis_unused", Vector(39, 22.75, 5.828125), Angle(-63.740, 78.027, 136.528),true)
 	self.unused2=self:MakePart("sent_tardis_unused", Vector(-2.5, -45.5, 7.75), Angle(-56.714, -54.280, 148.819),true)
 	
-	net.Start("TARDISInt-SetParts")
-		net.WriteFloat(#self.parts)
-		for k,v in pairs(self.parts) do
-			net.WriteEntity(v)
+	timer.Simple(2,function() // delay exists so the entity can register on the client, allows for a ping of just under 2000 (should be fine lol)
+		if IsValid(self) and self.parts then
+			net.Start("TARDISInt-SetParts")
+				net.WriteEntity(self)
+				net.WriteFloat(#self.parts)
+				for k,v in pairs(self.parts) do
+					net.WriteEntity(v)
+				end
+			net.Broadcast()
 		end
-	net.Broadcast()
+	end)
 end
 
 function ENT:StartAdv(mode,ply,pos,ang)

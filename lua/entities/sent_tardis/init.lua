@@ -408,10 +408,7 @@ function ENT:Explode()
 		net.WriteEntity(self)
 	net.Broadcast()
 	
-	self.fire = ents.Create("env_fire_trail")
-	self.fire:SetPos(self:LocalToWorld(Vector(0,0,50)))
-	self.fire:Spawn()
-	self.fire:SetParent(self)
+	self:CreateFire()
 	
 	local explode = ents.Create("env_explosion")
 	explode:SetPos( self:LocalToWorld(Vector(0,0,50)) ) //Puts the explosion where you are aiming
@@ -439,15 +436,26 @@ function ENT:UnExplode()
 		net.WriteEntity(self)
 	net.Broadcast()
 	
-	if self.fire and IsValid(self.fire) then
-		self.fire:Remove()
-		self.fire=nil
-	end	
+	self:RemoveFire()
 	
 	self:SetColor(Color(255,255,255))
 	
 	if self.interior and IsValid(self.interior) then
 		self.interior:UnExplode()
+	end
+end
+
+function ENT:CreateFire()
+	self.fire = ents.Create("env_fire_trail")
+	self.fire:SetPos(self:LocalToWorld(Vector(0,0,50)))
+	self.fire:Spawn()
+	self.fire:SetParent(self)
+end
+
+function ENT:RemoveFire()
+	if self.fire and IsValid(self.fire) then
+		self.fire:Remove()
+		self.fire=nil
 	end
 end
 
@@ -566,6 +574,27 @@ function ENT:FlashLight(time)
 	end)
 end
 
+function ENT:SetDestination(vec,ang)
+	if self.exploded then
+		local randvec=VectorRand()*1000
+		randvec.z=0
+		self.vec=self:GetPos()+randvec
+		self.ang=self:GetAngles()+AngleRand()
+	else
+		if vec then
+			self.vec=vec
+		else
+			self.vec=self:GetPos()
+		end
+		
+		if ang then
+			self.ang=ang
+		else
+			self.ang=self:GetAngles()
+		end
+	end
+end
+
 function ENT:Go(vec,ang,nolongflight)
 	if not self.moving and not self.repairing and self.power then
 		if nolongflight then
@@ -603,10 +632,7 @@ function ENT:Go(vec,ang,nolongflight)
 			end
 		end
 		if self.exploded then
-			local randvec=VectorRand()*1000
-			randvec.z=0
-			self.vec=self:GetPos()+randvec
-			self.ang=self:GetAngles()+AngleRand()
+			self:SetDestination()
 		end
 		if self.visible and not self.exploded then
 			self:SetLight(true)
@@ -679,6 +705,8 @@ function ENT:Disappear()
 		net.WriteBit(true)
 	net.Broadcast()
 	self:SetLight(false)
+	self:RemoveFire()
+	self:RemoveSmoke()
 	self:SetSolid(SOLID_NONE)
 	self:GetPhysicsObject():EnableMotion(false)
 	if self.attachedents then
@@ -778,6 +806,12 @@ function ENT:Reappear()
 			net.WriteBit(false)
 		net.Broadcast()
 		self:SetLight(true)
+		if self.exploded then
+			self:CreateFire()
+		end
+		if self.health<=20 then
+			self:CreateSmoke()
+		end
 		timer.Simple(8.5,function()
 			if IsValid(self) then
 				self:Stop()

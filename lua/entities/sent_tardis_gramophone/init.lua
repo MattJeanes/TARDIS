@@ -52,6 +52,11 @@ net.Receive("TARDISInt-Gramophone-Bounce", function(l,ply)
 	local interior=net.ReadEntity()
 	local play=tobool(net.ReadBit())
 	local choice=net.ReadFloat()
+	local custom=tobool(net.ReadBit())
+	local customstr
+	if custom then
+		customstr=net.ReadString()
+	end
 	if IsValid(gramophone) and IsValid(tardis) and IsValid(interior) then
 		net.Start("TARDISInt-Gramophone-Send")
 			net.WriteEntity(gramophone)
@@ -60,6 +65,12 @@ net.Receive("TARDISInt-Gramophone-Bounce", function(l,ply)
 			net.WriteBit(play)
 			if play then
 				net.WriteFloat(choice)
+			end
+			if custom then
+				net.WriteBit(true)
+				net.WriteString(customstr)
+			else
+				net.WriteBit(false)
 			end
 		net.Send(tardis.occupants)
 	end

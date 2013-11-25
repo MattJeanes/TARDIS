@@ -526,6 +526,8 @@ function ENT:Think()
 		if tobool(GetConVarNumber("tardisint_tooltip"))==true then
 			AddWorldTip( self:EntIndex(), "Programmable Flight Mode", 0.5, self:GetPos(), self.Entity  )
 		end
-		effects.halo.Add( {self}, Color( 255, 255, 255, 255 ), 1, 1, 1, true, true )
+		self.shouldglow=true
+	else
+		self.shouldglow=false
 	end
 end

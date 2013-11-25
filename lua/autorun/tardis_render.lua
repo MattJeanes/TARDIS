@@ -22,6 +22,7 @@ elseif CLIENT then
 	end)
 	
 	hook.Add("RenderScene", "TARDIS-Render", function()
+		if tobool(GetConVarNumber("tardisint_scanner"))==false then return end
 		local tardis=LocalPlayer().tardis
 		if IsValid(tardis) and LocalPlayer().tardis_viewmode then
 			CamData.origin = tardis:LocalToWorld(Vector(23, 0, 60))
@@ -38,4 +39,19 @@ elseif CLIENT then
 			LocalPlayer().tardis_render=false
 		end
 	end)
+	
+	hook.Add( "PreDrawHalos", "TARDIS-Render", function() // not ideal, but the new scanner sorta forced me to do this
+		if tobool(GetConVarNumber("tardisint_halos"))==false then return end
+		local tardis=LocalPlayer().tardis
+		if IsValid(tardis) and not LocalPlayer().tardis_render then
+			local interior=tardis:GetNWEntity("interior",NULL)
+			if IsValid(interior) and interior.parts then
+				for k,v in pairs(interior.parts) do
+					if v.shouldglow then
+						halo.Add( {v}, Color( 255, 255, 255, 255 ), 1, 1, 1, true, true )
+					end
+				end
+			end
+		end
+	end )
 end

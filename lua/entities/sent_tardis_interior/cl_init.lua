@@ -33,13 +33,19 @@ function ENT:Initialize()
 	self.timerotor={}
 	self.timerotor.pos=0
 	self.timerotor.mode=1
+	self.parts={}
 end
 
 net.Receive("TARDISInt-SetParts", function()
+	local t={}
+	local interior=net.ReadEntity()
 	local count=net.ReadFloat()
 	for i=1,count do
 		local ent=net.ReadEntity()
 		ent.tardis_part=true
+		if IsValid(interior) then
+			table.insert(interior.parts,ent)
+		end
 	end
 end)
 

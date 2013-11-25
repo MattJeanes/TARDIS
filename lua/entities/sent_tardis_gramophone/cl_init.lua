@@ -31,6 +31,7 @@ local sounds={
 	{"Amy Pond", "amy"},
 	{"River Song", "river"},
 	{"Clara Oswald", "clara"},
+	{"Abigail's Song", "abigail"},
 }
 
 net.Receive("TARDISInt-Gramophone-Send", function(l,ply)
@@ -39,17 +40,30 @@ net.Receive("TARDISInt-Gramophone-Send", function(l,ply)
 	local interior=net.ReadEntity()
 	local play=tobool(net.ReadBit())
 	local choice=net.ReadFloat()
+	local custom=tobool(net.ReadBit())
+	local customstr
+	if custom then
+		customstr=net.ReadString()
+	end
 	if IsValid(gramophone) and IsValid(tardis) and IsValid(interior) then
 		gramophone:StopTheme()
-		if play and choice and sounds[choice] and tobool(GetConVarNumber("tardisint_music"))==true then
-			sound.PlayURL("http://mattjeanes.com/data/tardis/"..sounds[choice][2]..".mp3", "", function(station)
+		if play and tobool(GetConVarNumber("tardisint_music"))==true then
+			local addr
+			if custom and not (customstr=="") then
+				addr=customstr
+			elseif choice and sounds[choice] then
+				addr="http://mattjeanes.com/data/tardis/"..sounds[choice][2]..".mp3"
+			else
+				return
+			end
+			sound.PlayURL(addr, "", function(station)
 				if station then
 					station:SetPos(gramophone:GetPos())
 					station:SetVolume(1)
 					station:Play()
 					gramophone.sound=station
 				else
-					LocalPlayer():ChatPrint("ERROR: Failed to load theme, tell matt!")
+					LocalPlayer():ChatPrint("ERROR: Failed to load theme (check console for BASS error!)")
 				end
 			end)
 		end
@@ -62,17 +76,17 @@ net.Receive("TARDISInt-Gramophone-GUI", function()
 	local interior=net.ReadEntity()
 	local choice=0
 	
-	local function SendSelection(play)
+	local function SendSelection(play,customstr)
 		if IsValid(gramophone) and IsValid(tardis) and IsValid(interior) then
 			net.Start("TARDISInt-Gramophone-Bounce")
 				net.WriteEntity(gramophone)
 				net.WriteEntity(tardis)
 				net.WriteEntity(interior)
-				if not (choice==0) then
-					net.WriteBit(play)
-					if play then
-						net.WriteFloat(choice)
-					end
+				net.WriteBit(play)
+				net.WriteFloat(choice)
+				if customstr then
+					net.WriteBit(true)
+					net.WriteString(customstr)
 				else
 					net.WriteBit(false)
 				end
@@ -84,7 +98,7 @@ net.Receive("TARDISInt-Gramophone-GUI", function()
 	end
 	
 	local window = vgui.Create( "DFrame" )
-	window:SetSize( 200, 120+(#sounds*17) )
+	window:SetSize( 200, 155+221 )
 	window:Center()
 	window:SetTitle( "Gramophone" )
 	window:MakePopup()
@@ -98,7 +112,7 @@ net.Receive("TARDISInt-Gramophone-GUI", function()
 	
 	local listview = vgui.Create( "DListView", window )
 	listview:SetPos(10,60)
-	listview:SetSize(180,16+(#sounds*17))
+	listview:SetSize(180,16+221)
 	listview:SetMultiSelect( false )
 	listview:AddColumn( "Themes" )
 	listview.OnClickLine = function(self,line)
@@ -117,8 +131,22 @@ net.Receive("TARDISInt-Gramophone-GUI", function()
 	end
 	
 	local button = vgui.Create( "DButton", window )
+	button:SetSize( 180, 30 )
+	button:SetPos( 10, window:GetTall()-74 )
+	button:SetText( "Enter Custom Theme" )
+	button.DoClick = function( button )
+		Derma_StringRequest(
+			"Enter Custom Theme",
+			"Input a web link of a sound (MP3, MP2, MP1, OGG, WAV, AIFF)",
+			"",
+			function(text) SendSelection(true,text) end,
+			function(text) end
+		)
+	end
+	
+	local button = vgui.Create( "DButton", window )
 	button:SetSize( 87.5, 30 )
-	button:SetPos( 10, window:GetTall()-37.5 )
+	button:SetPos( 10, window:GetTall()-38 )
 	button:SetText( "Play" )
 	button.DoClick = function( button )
 		local success=SendSelection(true)
@@ -129,7 +157,7 @@ net.Receive("TARDISInt-Gramophone-GUI", function()
 	
 	local button = vgui.Create( "DButton", window )
 	button:SetSize( 87.5, 30 )
-	button:SetPos( 102.5, window:GetTall()-37.5 )
+	button:SetPos( 102.5, window:GetTall()-38 )
 	button:SetText( "Stop" )
 	button.DoClick = function( button )
 		local success=SendSelection(false)
@@ -146,9 +174,16 @@ function ENT:Think()
 			if IsValid(tardis) then
 				local interior=tardis:GetNWEntity("interior",NULL)
 				if LocalPlayer().tardis==tardis and IsValid(interior) then
-					local distance=LocalPlayer():GetPos():Distance(interior:GetPos())
-					volume=math.Clamp(((distance*-1)/800+1.1)*GetConVarNumber("tardisint_musicvol"),0,1)
-					self.sound:SetVolume(volume)
+					if LocalPlayer().tardis_viewmode then
+						local distance=LocalPlayer():GetPos():Distance(interior:GetPos())
+						local volume=math.Clamp(((distance*-1)/800+1.1)*GetConVarNumber("tardisint_musicvol"),0,1)
+						self.sound:SetVolume(volume)
+					elseif not LocalPlayer().tardis_viewmode and tobool(GetConVarNumber("tardisint_musicext"))==true then
+						local volume=math.Clamp(GetConVarNumber("tardisint_musicvol"),0,1)
+						self.sound:SetVolume(volume)
+					else
+						self.sound:SetVolume(0)
+					end
 				else
 					self:StopTheme()
 				end
@@ -162,6 +197,8 @@ function ENT:Think()
 		if tobool(GetConVarNumber("tardisint_tooltip"))==true then
 			AddWorldTip( self:EntIndex(), "Gramophone", 0.5, self:GetPos(), self )
 		end
-		effects.halo.Add( {self}, Color( 255, 255, 255, 255 ), 1, 1, 1, true, true )
+		self.shouldglow=true
+	else
+		self.shouldglow=false
 	end
 end
