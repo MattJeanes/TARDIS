@@ -145,6 +145,9 @@ function ENT:Initialize()
 	self.reappearing=false
 	self.longflight=false
 	self.power=true
+	self.hads=false
+	self.autolongflight=false
+	self.quickdemat=false
 	self.phasecur=0
 	self.interiorcur=0
 	self.viewmodecur=0
@@ -229,6 +232,28 @@ end
 
 function ENT:UpdateTransmitState()
 	return TRANSMIT_ALWAYS
+end
+
+function ENT:DematHADS()
+	if not self.hads then return false end
+	if not self.longflight then
+		local success=self:ToggleLongFlight()
+		if not success then
+			return false
+		end
+		self.autolongflight=true
+	end
+	local success=self:Go(nil,nil,nil,true)
+	if success then
+		return true
+	else
+		return false
+	end
+end
+
+function ENT:ToggleHADS()
+	self.hads=(not self.hads)
+	return true
 end
 
 function ENT:SetTrackingEnt(ent)
@@ -537,6 +562,9 @@ function ENT:OnTakeDamage(dmginfo)
 	if IsValid(self.interior) then
 		util.ScreenShake(self.interior:GetPos(),math.Clamp(hp/32,0,16),5,0.5,700)
 	end
+	if self.hads and (hp/32)>=0.5 then
+		self:DematHADS()
+	end
 end
 
 function ENT:SetLight(on)
@@ -595,10 +623,13 @@ function ENT:SetDestination(vec,ang)
 	end
 end
 
-function ENT:Go(vec,ang,nolongflight)
+function ENT:Go(vec,ang,nolongflight,quickdemat)
 	if not self.moving and not self.repairing and self.power then
 		if nolongflight then
 			self.nolongflight=true
+		end
+		if quickdemat then
+			self.quickdemat=true
 		end
 		if tobool(GetConVarNumber("tardis_nocollideteleport"))==true then
 			self:SetCollisionGroup( COLLISION_GROUP_WORLD )
@@ -645,16 +676,12 @@ function ENT:Go(vec,ang,nolongflight)
 			net.WriteEntity(self.interior)
 			net.WriteBit(tobool(self.exploded))
 			net.WriteBit(self.longflight and not self.nolongflight)
+			net.WriteBit(self.quickdemat)
 			net.WriteVector(self:GetPos())
 			if self.vec then
 				net.WriteVector(self.vec)
 			end
 		net.Broadcast()
-		timer.Simple(8.5,function()
-			if IsValid(self) then
-				self:Disappear()
-			end
-		end)
 		return true
 	else
 		return false
@@ -694,12 +721,17 @@ function ENT:Stop()
 			end
 		end
 		self.attachedents=nil
+		if self.autolongflight and self.longflight then
+			self.autolongflight=false
+			self:ToggleLongFlight()
+		end
 	end
 end
 
 function ENT:Disappear()
 	self:RemoveRotorWash()
 	self.invortex=true
+	self.quickdemat=false
 	net.Start("TARDIS-SetVortex")
 		net.WriteEntity(self)
 		net.WriteBit(true)
@@ -853,6 +885,7 @@ function ENT:UpdateAlpha()
 		if self.demat then
 			if self.step+1==8 then
 				self.demat=false
+				self:Disappear()
 				return
 			else
 				self.step=self.step+1
@@ -867,7 +900,7 @@ function ENT:UpdateAlpha()
 		end
 		self.ta=self:GetTargetAlpha()
 	end
-	self.a=math.Approach(self.a,self.ta,FrameTime()*66)
+	self.a=math.Approach(self.a,self.ta,FrameTime()*66*(self.quickdemat and 1.75 or 1))
 	local maincol=self:GetColor()
 	maincol=Color(maincol.r,maincol.g,maincol.b,self.a)
 	self:SetColor(maincol)
@@ -1219,6 +1252,12 @@ function ENT:PhysicsUpdate( ph )
 		end
 	end
 	
+	if self.hads then
+		if self:WaterLevel() >= 2 then
+			self:DematHADS()
+		end
+	end
+	
 	if self.occupants then
 		for k,v in pairs(self.occupants) do
 			if not v.tardis_viewmode then
@@ -1233,6 +1272,9 @@ function ENT:PhysicsCollide( data, physobj )
 		local n=math.Clamp(data.Speed*0.01,0,16)
 		if tobool(GetConVarNumber("tardis_physdamage"))==true then
 			self:TakeHP(n*0.1) // approximately 1hp for a moderate hit
+		end
+		if self.hads and (n*0.1)>=1 then
+			self:DematHADS()
 		end
 		if self.interior and IsValid(self.interior) then
 			util.ScreenShake(self.interior:GetPos(),n,5,0.5,700)

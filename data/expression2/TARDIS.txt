@@ -13,6 +13,11 @@ if (first()|dupefinished()){
         Success=TARDIS:tardisDemat(V)
         if (Success){
             print("TARDIS moving.")
+        }elseif(TARDIS:tardisInVortex()){
+            Success=TARDIS:tardisSetDestination(V)
+            if(Success){
+                print("TARDIS destination set.")
+            }
         }
     }
     
@@ -20,6 +25,11 @@ if (first()|dupefinished()){
         Success=TARDIS:tardisDemat(V,A)
         if (Success){
             print("TARDIS moving.")
+        }elseif(TARDIS:tardisInVortex()){
+            Success=TARDIS:tardisSetDestination(V,A)
+            if(Success){
+                print("TARDIS destination set.")
+            }
         }
     }
     
@@ -158,7 +168,7 @@ if(chatClk(owner())){
             }
         }
         hideChat(1)
-    }elseif(Cmd=="!materialise"){
+    }elseif(Cmd=="!mat"){
         local Success=TARDIS:tardisMaterialise()
         if (Success==1){
             print("TARDIS materialising.")
@@ -189,6 +199,16 @@ if(chatClk(owner())){
             }
         }
         hideChat(1)
+    }elseif(Cmd=="!hads"){
+        local Success=TARDIS:tardisHADS()
+        if (Success){
+            if (TARDIS:tardisIsHADS()){
+                print("TARDIS HADS enabled.")
+            }else{
+                print("TARDIS HADS disabled.")
+            }
+        }
+        hideChat(1)
     }elseif(Cmd=="!spinmode"){
         if(Arg==""){Arg="-1"}
         local Spinmode=TARDIS:tardisSpinmode(Arg:toNumber())
@@ -206,6 +226,9 @@ if(chatClk(owner())){
         hideChat(1)
     }elseif(Cmd=="!restore"){
         demat2(SavePos,SaveAng)
+        hideChat(1)
+    }elseif(Cmd=="!demat"){
+        demat2(TARDIS:pos(), TARDIS:angles())
         hideChat(1)
     }elseif(Cmd=="!back"){
         demat2(TARDIS:tardisLastPos(), TARDIS:tardisLastAng())

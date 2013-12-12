@@ -178,6 +178,35 @@ local function TARDIS_Spinmode(ent,spinmode)
 	return 0
 end
 
+local function TARDIS_SetDestination(ent,pos,ang)
+	if ent and IsValid(ent) then
+		if not (ent:GetClass()=="sent_tardis") then return 0 end
+		local pos=Vector(pos[1], pos[2], pos[3])
+		if ang then ang=Angle(ang[1], ang[2], ang[3]) end
+		if ent.invortex then
+			ent:SetDestination(pos,ang)
+			return 1
+		else
+			return 0
+		end
+	else
+		return 0
+	end
+end
+
+local function TARDIS_HADS(ent)
+	if ent and IsValid(ent) then
+		if not (ent:GetClass()=="sent_tardis") then return 0 end
+		local success=ent:ToggleHADS()
+		if success then
+			return 1
+		else
+			return 0
+		end
+	end
+	return 0
+end
+
 // get details
 
 local function TARDIS_Moving(ent)
@@ -336,6 +365,30 @@ local function TARDIS_Tracking(ent)
 	return NULL
 end
 
+local function TARDIS_InVortex(ent)
+	if ent and IsValid(ent) then
+		if not (ent:GetClass()=="sent_tardis") then return 0 end
+		if ent.invortex then
+			return 1
+		else
+			return 0
+		end
+	end
+	return 0
+end
+
+local function TARDIS_IsHADS(ent)
+	if ent and IsValid(ent) then
+		if not (ent:GetClass()=="sent_tardis") then return 0 end
+		if ent.hads then
+			return 1
+		else
+			return 0
+		end
+	end
+	return 0
+end
+
 --------------------------------------------------------------------------------
 
 //set details
@@ -394,6 +447,18 @@ e2function number entity:tardisSpinmode(number spinmode)
 	return TARDIS_Spinmode(this,spinmode)
 end
 
+e2function number entity:tardisSetDestination(vector pos)
+	return TARDIS_SetDestination(this, pos)
+end
+
+e2function number entity:tardisSetDestination(vector pos, angle rot)
+	return TARDIS_SetDestination(this, pos, rot)
+end
+
+e2function number entity:tardisHADS()
+	return TARDIS_HADS(this)
+end
+
 // get details
 e2function number entity:tardisMoving()
 	return TARDIS_Moving(this)
@@ -445,4 +510,12 @@ end
 
 e2function entity entity:tardisTracking()
 	return TARDIS_Tracking(this)
+end
+
+e2function number entity:tardisInVortex()
+	return TARDIS_InVortex(this)
+end
+
+e2function number entity:tardisIsHADS()
+	return TARDIS_IsHADS(this)
 end

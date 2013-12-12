@@ -85,9 +85,10 @@ function ENT:SpawnParts()
 	self.longflighttoggle=self:MakePart("sent_tardis_longflighttoggle", Vector(-37.242310, -27.915344, 7.428223), Angle(-22, 28.721, 15),true)
 	self.longflightdemat=self:MakePart("sent_tardis_longflightdemat", Vector(-43.168457, -31.015625, 4.7), Angle(22, -150.776, -12),true)
 	self.gramophone=self:MakePart("sent_tardis_gramophone", Vector(-26,-1.5,30), Angle(0,30,0),true)
+	self.door=self:MakePart("sent_tardis_door", Vector(317,334,-89), Angle(0,-20,0),true)
+	self.hads=self:MakePart("sent_tardis_hads", Vector(39, 22.75, 5.828125), Angle(-63.740, 78.027, 136.528),true)
 	
-	self.unused1=self:MakePart("sent_tardis_unused", Vector(39, 22.75, 5.828125), Angle(-63.740, 78.027, 136.528),true)
-	self.unused2=self:MakePart("sent_tardis_unused", Vector(-2.5, -45.5, 7.75), Angle(-56.714, -54.280, 148.819),true)
+	self.unused1=self:MakePart("sent_tardis_unused", Vector(-2.5, -45.5, 7.75), Angle(-56.714, -54.280, 148.819),true)
 	
 	timer.Simple(2,function() // delay exists so the entity can register on the client, allows for a ping of just under 2000 (should be fine lol)
 		if IsValid(self) and self.parts then
@@ -309,18 +310,6 @@ end
 
 function ENT:Use( ply )
 	if CurTime()>self.usecur and self.tardis and IsValid(self.tardis) and ply.tardis and IsValid(ply.tardis) and ply.tardis==self.tardis and ply.tardis_viewmode and not ply.tardis_skycamera then
-		
-		if CurTime()>self.tardis.exitcur then
-			local pos=Vector(300,295,-79)
-			local pos2=self:WorldToLocal(ply:GetPos())
-			local distance=pos:Distance(pos2)
-			if distance < 25 then
-				self.tardis:PlayerExit(ply)
-				self.usecur=CurTime()+1
-				self.tardis.exitcur=CurTime()+1
-				return
-			end
-		end
 
 		//this must go last, or bad things may happen
 		if CurTime()>self.tardis.viewmodecur then

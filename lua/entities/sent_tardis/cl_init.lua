@@ -116,7 +116,7 @@ function ENT:Think()
 					local r=math.random(90,130)
 					self.flightloop:ChangePitch(math.Clamp(r+doppler,80,120),0.1)
 				else
-					self.flightloop:ChangePitch(math.Clamp(100+doppler,80,120),0.1)
+					self.flightloop:ChangePitch(math.Clamp((self:GetVelocity():Length()/250)+95+doppler,80,120),0.1)
 				end
 				self.flightloop:ChangeVolume(GetConVarNumber("tardis_flightvol"),0)
 			else
@@ -225,18 +225,27 @@ net.Receive("TARDIS-Go", function()
 	local exploded=tobool(net.ReadBit())
 	local pitch=(exploded and 110 or 100)
 	local long=tobool(net.ReadBit())
+	local quickdemat=tobool(net.ReadBit())
 	if tobool(GetConVarNumber("tardis_matsound"))==true then
 		if IsValid(tardis) and LocalPlayer().tardis==tardis then
 			if tardis.visible then
 				if long then
-					tardis:EmitSound("tardis/demat.wav", 100, pitch)
+					if quickdemat then
+						tardis:EmitSound("tardis/quickdemat.wav", 100, pitch)
+					else
+						tardis:EmitSound("tardis/demat.wav", 100, pitch)
+					end
 				else
 					tardis:EmitSound("tardis/full.wav", 100, pitch)
 				end
 			end
 			if interior and IsValid(interior) and LocalPlayer().tardis_viewmode and not IsValid(LocalPlayer().tardis_skycamera) then
 				if long then
-					interior:EmitSound("tardis/demat.wav", 100, pitch)
+					if quickdemat then
+						interior:EmitSound("tardis/quickdemat.wav", 100, pitch)
+					else
+						interior:EmitSound("tardis/demat.wav", 100, pitch)
+					end
 				else
 					interior:EmitSound("tardis/full.wav", 100, pitch)
 				end
@@ -245,7 +254,11 @@ net.Receive("TARDIS-Go", function()
 			local pos=net.ReadVector()
 			local pos2=net.ReadVector()
 			if pos then
-				sound.Play("tardis/demat.wav", pos, 75, pitch)
+				if quickdemat then
+					sound.Play("tardis/quickdemat.wav", pos, 75, pitch)
+				else
+					sound.Play("tardis/demat.wav", pos, 75, pitch)
+				end
 			end
 			if pos2 and not long then
 				sound.Play("tardis/mat.wav", pos2, 75, pitch)

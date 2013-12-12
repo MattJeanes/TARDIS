@@ -32,6 +32,10 @@ local sounds={
 	{"River Song", "river"},
 	{"Clara Oswald", "clara"},
 	{"Abigail's Song", "abigail"},
+	{"This is Gallifrey", "thisisgallifrey"},
+	{"Gallifrey", "gallifrey"},
+	{"Vale Decem", "valedecem"},
+	{"The Majestic Tale", "majestictale"},
 }
 
 net.Receive("TARDISInt-Gramophone-Send", function(l,ply)
@@ -174,11 +178,11 @@ function ENT:Think()
 			if IsValid(tardis) then
 				local interior=tardis:GetNWEntity("interior",NULL)
 				if LocalPlayer().tardis==tardis and IsValid(interior) then
-					if LocalPlayer().tardis_viewmode then
+					if LocalPlayer().tardis_viewmode and not (LocalPlayer().tardis_skycamera and IsValid(LocalPlayer().tardis_skycamera)) then
 						local distance=LocalPlayer():GetPos():Distance(interior:GetPos())
 						local volume=math.Clamp(((distance*-1)/800+1.1)*GetConVarNumber("tardisint_musicvol"),0,1)
 						self.sound:SetVolume(volume)
-					elseif not LocalPlayer().tardis_viewmode and tobool(GetConVarNumber("tardisint_musicext"))==true then
+					elseif (not LocalPlayer().tardis_viewmode or (LocalPlayer().tardis_skycamera and IsValid(LocalPlayer().tardis_skycamera))) and tobool(GetConVarNumber("tardisint_musicext"))==true then
 						local volume=math.Clamp(GetConVarNumber("tardisint_musicvol"),0,1)
 						self.sound:SetVolume(volume)
 					else
