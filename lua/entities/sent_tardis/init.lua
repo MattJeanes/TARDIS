@@ -160,6 +160,7 @@ function ENT:Initialize()
 	self.a=255
 	self.ta=255
 	self.step=1
+	self.skin=0
 	self.demat=false
 	self.mat=false
 	self.occupants={}
@@ -201,6 +202,8 @@ function ENT:Initialize()
 		else
 			gamemode.Call("CPPIAssignOwnership", self.owner, self.interior)
 		end
+		local globalskin=self.owner:GetInfoNum("tardis_globalskin",0)
+		self:SetGlobalSkin(globalskin)
 	end
 	self:SetNWEntity("interior",self.interior)
 	self:SetHP(100)
@@ -232,6 +235,21 @@ end
 
 function ENT:UpdateTransmitState()
 	return TRANSMIT_ALWAYS
+end
+
+function ENT:SetGlobalSkin(skin)
+	self.skin=skin
+	if self.interior and IsValid(self.interior) then
+		if self.interior.parts then
+			for k,v in pairs(self.interior.parts) do
+				if IsValid(v) then
+					v:SetSkin(self.skin)
+				end
+			end
+		end
+		self.interior:SetSkin(self.skin)
+	end
+	self:SetSkin(self.skin)
 end
 
 function ENT:DematHADS()
@@ -1598,6 +1616,10 @@ function ENT:Think()
 				v:LsResetSuit()
 			end
 		end
+	end
+	
+	if self.skin != self:GetSkin() then
+		self:SetGlobalSkin(self:GetSkin())
 	end
 
 	// this bit makes it all run faster and smoother

@@ -520,6 +520,8 @@ CreateClientConVar("tardisint_warnlight_b", "0", true)
 CreateClientConVar("tardisint_musicvol", "1", true)
 CreateClientConVar("tardis_flightvol", "1", true)
 
+CreateClientConVar("tardis_globalskin", "0", true, true)
+
 hook.Add("PopulateToolMenu", "TARDIS-PopulateToolMenu", function()
 	spawnmenu.AddToolMenuOption("Options", "Doctor Who", "TARDIS_Options", "TARDIS", "", "", function(panel)
 		panel:ClearControls()
@@ -799,6 +801,33 @@ hook.Add("PopulateToolMenu", "TARDIS-PopulateToolMenu", function()
 			Max=1,
 			Command="tardis_flightvol",
 		})
+		
+		
+		local skins={
+			{"2005 Skin", 1},
+			{"Old 2010 Skin", 2},
+			{"2010 Skin", 0},
+		}
+		local comboBox = vgui.Create("DComboBox")
+		comboBox:SetText("Global Skin")
+		for k,v in ipairs(skins) do
+			comboBox:AddChoice(v[1])
+		end
+		for k,v in pairs(skins) do
+			if GetConVarNumber("tardis_globalskin")==v[2] then
+				comboBox:ChooseOption(v[1])
+			end
+		end
+		comboBox.OnSelect = function(panel,index,value,data)
+			local n=0
+			for k,v in pairs(skins) do
+				if value==v[1] then
+					n=v[2]
+				end
+			end
+			RunConsoleCommand("tardis_globalskin", n)
+		end
+		panel:AddItem(comboBox)
 		
 		local checkboxes={}
 		for k,v in pairs(checkbox_options) do
