@@ -98,8 +98,7 @@ function ENT:Toggle( bEnable, ply )
 		self.interior.usecur=CurTime()+1
 	end
 	
-	local tardis=self.tardis
-	if IsValid(tardis) and not tardis.moving and tardis.lastpos and tardis.lastang then
-		tardis:Go(tardis.lastpos, tardis.lastang, true)
+	if IsValid(self.tardis) then
+		self.tardis:FastReturn()
 	end
 end

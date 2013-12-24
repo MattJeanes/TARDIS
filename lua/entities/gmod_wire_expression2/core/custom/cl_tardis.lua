@@ -12,6 +12,7 @@ E2Helper.Descriptions["tardisSelfrepair"] = "Toggles self-repair, returns 1 if s
 E2Helper.Descriptions["tardisTrack"] = "Sets tracking entity, takes entity ent, returns 1 if success or 0 if failure."
 E2Helper.Descriptions["tardisSpinmode"] = "Sets spinmode, takes number spinmode (-1=anti-clockwise|0=none|1=clockwise), returns spinmode as number."
 E2Helper.Descriptions["tardisSetDestination"] = "Sets destination if in vortex, takes vector pos and optional angle rot, returns 1 if success or 0 if failure."
+E2Helper.Descriptions["tardisFastReturn"] = "Returns TARDIS to its previous takeoff position, returns 1 if success or 0 if failure."
 E2Helper.Descriptions["tardisHADS"] = "Toggles HADS, returns 1 if success or 0 if failure."
 E2Helper.Descriptions["tardisMoving"] = "Returns 1 if teleporting or 0 if not teleporting."
 E2Helper.Descriptions["tardisVisible"] = "Returns 1 if visible or 0 if invisible."

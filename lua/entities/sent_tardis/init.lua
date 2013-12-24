@@ -147,7 +147,7 @@ function ENT:Initialize()
 	self.power=true
 	self.hads=false
 	self.autolongflight=false
-	self.quickdemat=false
+	self.invortex=false
 	self.phasecur=0
 	self.interiorcur=0
 	self.viewmodecur=0
@@ -157,12 +157,18 @@ function ENT:Initialize()
 	self.explodedshift=0
 	self.tracknotifycur=0
 	self.physlocknotifycur=0
+	self.tpspeed=1
+	self.tpspeed_mode=0
+	self.tpsound=0
+	self.tpsound_mode=0
 	self.a=255
 	self.ta=255
 	self.step=1
 	self.skin=0
 	self.demat=false
 	self.mat=false
+	self.lastpos=self:GetPos()
+	self.lastang=self:GetAngles()
 	self.occupants={}
 	if WireLib then
 		self.wirepos=Vector(0,0,0)
@@ -184,12 +190,10 @@ function ENT:Initialize()
 		trdata.endpos=trace.HitPos
 		trdata.filter={self}
 		trace=util.TraceLine(trdata)
-		//this trace can sometimes fail if the map has a low skybox
+		//this trace can sometimes fail if the map has a low skybox, hence why its an admin option
 	end
 	local offset=0
-	if GetConVarNumber("tardis_spawnoffset")>0 then
-		offset=GetConVarNumber("tardis_spawnoffset")
-	end
+	offset=GetConVarNumber("tardis_spawnoffset")
 	self.interior=ents.Create("sent_tardis_interior")
 	self.interior:SetPos(trace.HitPos+Vector(0,0,-600+offset))
 	self.interior.tardis=self
@@ -204,6 +208,14 @@ function ENT:Initialize()
 		end
 		local globalskin=self.owner:GetInfoNum("tardis_globalskin",0)
 		self:SetGlobalSkin(globalskin)
+		local specialtex=tobool(self.owner:GetInfoNum("tardis_specialtex",0))
+		if specialtex then
+			self:SetBodygroup(3,1)
+		else
+			self:SetBodygroup(3,0)
+		end
+	else
+		self:SetGlobalSkin(0)
 	end
 	self:SetNWEntity("interior",self.interior)
 	self:SetHP(100)
@@ -233,11 +245,54 @@ function ENT:Initialize()
 	}
 end
 
+function ENT:FastReturn()
+	if self.lastpos and self.lastang then
+		//if (self.tpspeed != 1) or (self.tpspeed_mode != 0) or (self.tpsound != 0) then return false end
+		//self:SetTPSpeed(1.5,2)
+		//self:SetTPSound(2,2)
+		local success=self:Go(self.lastpos,self.lastang,true)
+		if success then
+			return true
+		else
+			//self:ResetTPSpeed()
+			//self:ResetTPSound()
+			return false
+		end
+	end
+	return false
+end
+
+function ENT:ResetTPSound()
+	self:SetTPSound(0,0)
+end
+
+function ENT:SetTPSound(n,mode)
+	self.tpsound=n // 0=normal, 1=hads, 2=fast return
+	self.tpsound_mode=mode // 0=dont change, 1=on demat completion, 2=on remat completion
+end
+
+function ENT:ResetTPSpeed()
+	self:SetTPSpeed(1,0)
+end
+
+function ENT:SetTPSpeed(n,mode)
+	self.tpspeed=n
+	self.tpspeed_mode=mode // 0=dont change, 1=on demat completion, 2=on remat completion
+end
+
 function ENT:UpdateTransmitState()
 	return TRANSMIT_ALWAYS
 end
 
 function ENT:SetGlobalSkin(skin)
+	local nosticker={
+		3, // Hurt
+		1, // Tennant
+	}
+	local nolitsign={
+		3, // Hurt
+		1, // Tennant
+	}
 	self.skin=skin
 	if self.interior and IsValid(self.interior) then
 		if self.interior.parts then
@@ -250,6 +305,16 @@ function ENT:SetGlobalSkin(skin)
 		self.interior:SetSkin(self.skin)
 	end
 	self:SetSkin(self.skin)
+	if table.HasValue(nosticker,self.skin) then
+		self:SetBodygroup(1,0)
+	else
+		self:SetBodygroup(1,1)
+	end
+	if table.HasValue(nolitsign,self.skin) then
+		self:SetBodygroup(2,0)
+	else
+		self:SetBodygroup(2,1)
+	end
 end
 
 function ENT:DematHADS()
@@ -261,10 +326,15 @@ function ENT:DematHADS()
 		end
 		self.autolongflight=true
 	end
-	local success=self:Go(nil,nil,nil,true)
+	if (self.tpspeed != 1) or (self.tpspeed_mode != 0) or (self.tpsound != 0) then return false end
+	self:SetTPSpeed(1.75,1)
+	self:SetTPSound(1,1)
+	local success=self:Go()
 	if success then
 		return true
 	else
+		self:ResetTPSpeed()
+		self:ResetTPSound()
 		return false
 	end
 end
@@ -565,6 +635,10 @@ function ENT:TakeHP(hp)
 	self:SetHP(self.health-hp)
 	if self.interior and IsValid(self.interior) then
 		sound.Play("Default.ImpactSoft",self.interior:LocalToWorld(Vector(335, 310, 120)))
+		util.ScreenShake(self.interior:GetPos(),math.Clamp(hp,0,16),5,0.5,700)
+	end
+	if self.hads and (hp>=0.5) then
+		self:DematHADS()
 	end
 end
 
@@ -575,14 +649,9 @@ end
 
 function ENT:OnTakeDamage(dmginfo)
 	if not self:ShouldTakeDamage() then return end
+	if self.invortex then return end
 	local hp=dmginfo:GetDamage()
 	self:TakeHP(hp/32) //takes 32th of normal damage a player would take
-	if IsValid(self.interior) then
-		util.ScreenShake(self.interior:GetPos(),math.Clamp(hp/32,0,16),5,0.5,700)
-	end
-	if self.hads and (hp/32)>=0.5 then
-		self:DematHADS()
-	end
 end
 
 function ENT:SetLight(on)
@@ -641,13 +710,15 @@ function ENT:SetDestination(vec,ang)
 	end
 end
 
-function ENT:Go(vec,ang,nolongflight,quickdemat)
+function ENT:Go(vec,ang,nolongflight)
 	if not self.moving and not self.repairing and self.power then
+		if not ((self.tpspeed != 1) or (self.tpspeed_mode != 0) or (self.tpsound != 0)) then
+			if self.exploded then
+				self:SetTPSpeed(1.1,2)
+			end
+		end
 		if nolongflight then
 			self.nolongflight=true
-		end
-		if quickdemat then
-			self.quickdemat=true
 		end
 		if tobool(GetConVarNumber("tardis_nocollideteleport"))==true then
 			self:SetCollisionGroup( COLLISION_GROUP_WORLD )
@@ -694,7 +765,7 @@ function ENT:Go(vec,ang,nolongflight,quickdemat)
 			net.WriteEntity(self.interior)
 			net.WriteBit(tobool(self.exploded))
 			net.WriteBit(self.longflight and not self.nolongflight)
-			net.WriteBit(self.quickdemat)
+			net.WriteFloat(self.tpsound)
 			net.WriteVector(self:GetPos())
 			if self.vec then
 				net.WriteVector(self.vec)
@@ -715,6 +786,12 @@ function ENT:Stop()
 		self.vec=nil
 		self.ang=nil
 		self.nolongflight=nil
+		if self.tpspeed_mode==2 then
+			self:ResetTPSpeed()
+		end
+		if self.tpsound_mode==2 then
+			self:ResetTPSound()
+		end
 		if not self.flightmode and self.visible then
 			self:SetLight(false)
 		end
@@ -749,7 +826,6 @@ end
 function ENT:Disappear()
 	self:RemoveRotorWash()
 	self.invortex=true
-	self.quickdemat=false
 	net.Start("TARDIS-SetVortex")
 		net.WriteEntity(self)
 		net.WriteBit(true)
@@ -759,6 +835,12 @@ function ENT:Disappear()
 	self:RemoveSmoke()
 	self:SetSolid(SOLID_NONE)
 	self:GetPhysicsObject():EnableMotion(false)
+	if self.tpspeed_mode==1 then
+		self:ResetTPSpeed()
+	end
+	if self.tpsound_mode==1 then
+		self:ResetTPSound()
+	end
 	if self.attachedents then
 		for k,v in pairs(self.attachedents) do
 			if IsValid(v) and not IsValid(v:GetParent()) then
@@ -785,6 +867,7 @@ function ENT:LongReappear()
 			net.WriteEntity(self)
 			net.WriteEntity(self.interior)
 			net.WriteBit(self.exploded)
+			net.WriteFloat(self.tpsound)
 			net.WriteVector(self.vec)
 		net.Broadcast()
 		timer.Simple(8.5,function() // a good enough approximation
@@ -828,6 +911,14 @@ function ENT:Reappear()
 		if self.attachedents then
 			for k,v in pairs(self.attachedents) do
 				if IsValid(v) and not IsValid(v:GetParent()) then
+					if v:IsRagdoll() then
+						for i=0,v:GetPhysicsObjectCount() do
+							local bone=v:GetPhysicsObjectNum(i)
+							if IsValid(bone) then
+								bone:SetPos(self:GetPos()+v.telepos)
+							end
+						end
+					end
 					v:SetPos(self:GetPos()+v.telepos)
 					v.telepos=nil
 					local phys=v:GetPhysicsObject()
@@ -918,7 +1009,7 @@ function ENT:UpdateAlpha()
 		end
 		self.ta=self:GetTargetAlpha()
 	end
-	self.a=math.Approach(self.a,self.ta,FrameTime()*66*(self.quickdemat and 1.75 or 1))
+	self.a=math.Approach(self.a,self.ta,FrameTime()*66*self.tpspeed)
 	local maincol=self:GetColor()
 	maincol=Color(maincol.r,maincol.g,maincol.b,self.a)
 	self:SetColor(maincol)
@@ -1291,12 +1382,6 @@ function ENT:PhysicsCollide( data, physobj )
 		if tobool(GetConVarNumber("tardis_physdamage"))==true then
 			self:TakeHP(n*0.1) // approximately 1hp for a moderate hit
 		end
-		if self.hads and (n*0.1)>=1 then
-			self:DematHADS()
-		end
-		if self.interior and IsValid(self.interior) then
-			util.ScreenShake(self.interior:GetPos(),n,5,0.5,700)
-		end
 	end
 end
 
@@ -1351,6 +1436,7 @@ function ENT:TogglePhase()
 		self.visible=(not self.visible)
 		net.Start("TARDIS-Phase")
 			net.WriteEntity(self)
+			net.WriteEntity(self.interior)
 			net.WriteBit(tobool(self.visible))
 		net.Broadcast()
 		self:DrawShadow(self.visible)

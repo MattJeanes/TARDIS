@@ -20,9 +20,6 @@ end
 function ENT:Use( activator, caller, type, value )
 
 	if ( !activator:IsPlayer() ) then return end		-- Who the frig is pressing this shit!?
-	if IsValid(self.tardis) and self.tardis.isomorphic and not (activator==self.owner) then
-		return
-	end
 	
 	local tardis=self.tardis
 	local interior=self.interior

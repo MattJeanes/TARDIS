@@ -231,7 +231,7 @@ if(chatClk(owner())){
         demat2(TARDIS:pos(), TARDIS:angles())
         hideChat(1)
     }elseif(Cmd=="!back"){
-        demat2(TARDIS:tardisLastPos(), TARDIS:tardisLastAng())
+        TARDIS:tardisFastReturn()
         hideChat(1)
     }elseif(Cmd=="!health"){
         print("TARDIS Health: " + TARDIS:tardisHealth() + "%")

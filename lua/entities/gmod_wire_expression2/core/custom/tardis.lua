@@ -4,6 +4,10 @@
 
 E2Lib.RegisterExtension("tardis", true)
 
+local function CheckPP(ply, ent) // Prop Protection
+	return gamemode.Call("PhysgunPickup", ply, ent)
+end
+
 local function TARDIS_Get(ent)
 	if ent and IsValid(ent) then
 		if ent:GetClass()=="sent_tardis_interior" and IsValid(ent.tardis) then
@@ -23,8 +27,8 @@ local function TARDIS_Get(ent)
 	return NULL
 end
 
-local function TARDIS_Teleport(ent,pos,ang)
-	if ent and IsValid(ent) then
+local function TARDIS_Teleport(data,ent,pos,ang)
+	if ent and IsValid(ent) and CheckPP(data.player,ent) then
 		if not (ent:GetClass()=="sent_tardis") then return 0 end
 		local pos=Vector(pos[1], pos[2], pos[3])
 		if ang then ang=Angle(ang[1], ang[2], ang[3]) end
@@ -39,8 +43,8 @@ local function TARDIS_Teleport(ent,pos,ang)
 	end
 end
 
-local function TARDIS_Phase(ent)
-	if ent and IsValid(ent) then
+local function TARDIS_Phase(data,ent)
+	if ent and IsValid(ent) and CheckPP(data.player,ent) then
 		if not (ent:GetClass()=="sent_tardis") then return 0 end
 		local success=ent:TogglePhase()
 		if success then
@@ -52,8 +56,8 @@ local function TARDIS_Phase(ent)
 	return 0
 end
 
-local function TARDIS_Flightmode(ent)
-	if ent and IsValid(ent) then
+local function TARDIS_Flightmode(data,ent)
+	if ent and IsValid(ent) and CheckPP(data.player,ent) then
 		if not (ent:GetClass()=="sent_tardis") then return 0 end
 		local success=ent:ToggleFlight()
 		if success then
@@ -65,8 +69,8 @@ local function TARDIS_Flightmode(ent)
 	return 0
 end
 
-local function TARDIS_Lock(ent)
-	if ent and IsValid(ent) then
+local function TARDIS_Lock(data,ent)
+	if ent and IsValid(ent) and CheckPP(data.player,ent) then
 		if not (ent:GetClass()=="sent_tardis") then return 0 end
 		local success=ent:ToggleLocked()
 		if success then
@@ -78,8 +82,8 @@ local function TARDIS_Lock(ent)
 	return 0
 end
 
-local function TARDIS_Physlock(ent)
-	if ent and IsValid(ent) then
+local function TARDIS_Physlock(data,ent)
+	if ent and IsValid(ent) and CheckPP(data.player,ent) then
 		if not (ent:GetClass()=="sent_tardis") then return 0 end
 		local success=ent:TogglePhysLock()
 		if success then
@@ -91,8 +95,8 @@ local function TARDIS_Physlock(ent)
 	return 0
 end
 
-local function TARDIS_Power(ent)
-	if ent and IsValid(ent) then
+local function TARDIS_Power(data,ent)
+	if ent and IsValid(ent) and CheckPP(data.player,ent) then
 		if not (ent:GetClass()=="sent_tardis") then return 0 end
 		local success=ent:TogglePower()
 		if success then
@@ -105,7 +109,7 @@ local function TARDIS_Power(ent)
 end
 
 local function TARDIS_Isomorph(data,ent)
-	if ent and IsValid(ent) then
+	if ent and IsValid(ent) and CheckPP(data.player,ent) then
 		if not (ent:GetClass()=="sent_tardis") or not IsValid(data.player) then return 0 end
 		local success=ent:IsomorphicToggle(data.player)
 		if success then
@@ -117,8 +121,8 @@ local function TARDIS_Isomorph(data,ent)
 	return 0
 end
 
-local function TARDIS_Longflight(ent)
-	if ent and IsValid(ent) then
+local function TARDIS_Longflight(data,ent)
+	if ent and IsValid(ent) and CheckPP(data.player,ent) then
 		if not (ent:GetClass()=="sent_tardis") then return 0 end
 		local success=ent:ToggleLongFlight()
 		if success then
@@ -130,8 +134,8 @@ local function TARDIS_Longflight(ent)
 	return 0
 end
 
-local function TARDIS_Materialise(ent)
-	if ent and IsValid(ent) then
+local function TARDIS_Materialise(data,ent)
+	if ent and IsValid(ent) and CheckPP(data.player,ent) then
 		if not (ent:GetClass()=="sent_tardis") then return 0 end
 		local success=ent:LongReappear()
 		if success then
@@ -143,8 +147,8 @@ local function TARDIS_Materialise(ent)
 	return 0
 end
 
-local function TARDIS_Selfrepair(ent)
-	if ent and IsValid(ent) then
+local function TARDIS_Selfrepair(data,ent)
+	if ent and IsValid(ent) and CheckPP(data.player,ent) then
 		if not (ent:GetClass()=="sent_tardis") then return 0 end
 		local success=ent:ToggleRepair()
 		if success then
@@ -156,8 +160,8 @@ local function TARDIS_Selfrepair(ent)
 	return 0
 end
 
-local function TARDIS_Track(ent,trackent)
-	if ent and IsValid(ent) then
+local function TARDIS_Track(data,ent,trackent)
+	if ent and IsValid(ent) and CheckPP(data.player,ent) then
 		if not (ent:GetClass()=="sent_tardis") then return 0 end
 		local success=ent:SetTrackingEnt(trackent)
 		if success then
@@ -169,8 +173,8 @@ local function TARDIS_Track(ent,trackent)
 	return 0
 end
 
-local function TARDIS_Spinmode(ent,spinmode)
-	if ent and IsValid(ent) then
+local function TARDIS_Spinmode(data,ent,spinmode)
+	if ent and IsValid(ent) and CheckPP(data.player,ent) then
 		if not (ent:GetClass()=="sent_tardis") then return 0 end
 		ent:SetSpinMode(spinmode)
 		return ent.spinmode
@@ -178,8 +182,8 @@ local function TARDIS_Spinmode(ent,spinmode)
 	return 0
 end
 
-local function TARDIS_SetDestination(ent,pos,ang)
-	if ent and IsValid(ent) then
+local function TARDIS_SetDestination(data,ent,pos,ang)
+	if ent and IsValid(ent) and CheckPP(data.player,ent) then
 		if not (ent:GetClass()=="sent_tardis") then return 0 end
 		local pos=Vector(pos[1], pos[2], pos[3])
 		if ang then ang=Angle(ang[1], ang[2], ang[3]) end
@@ -194,8 +198,22 @@ local function TARDIS_SetDestination(ent,pos,ang)
 	end
 end
 
-local function TARDIS_HADS(ent)
-	if ent and IsValid(ent) then
+local function TARDIS_FastReturn(data,ent)
+	if ent and IsValid(ent) and CheckPP(data.player,ent) then
+		if not (ent:GetClass()=="sent_tardis") then return 0 end
+		local success=ent:FastReturn()
+		if success then
+			return 1
+		else
+			return 0
+		end
+	else
+		return 0
+	end
+end
+
+local function TARDIS_HADS(data,ent)
+	if ent and IsValid(ent) and CheckPP(data.player,ent) then
 		if not (ent:GetClass()=="sent_tardis") then return 0 end
 		local success=ent:ToggleHADS()
 		if success then
@@ -397,30 +415,31 @@ e2function entity entity:tardisGet()
 end
 
 e2function number entity:tardisDemat(vector pos)
-	return TARDIS_Teleport(this, pos)
+	return TARDIS_Teleport(self, this, pos)
 end
+
 e2function number entity:tardisDemat(vector pos, angle rot)
-	return TARDIS_Teleport(this, pos, rot)
+	return TARDIS_Teleport(self, this, pos, rot)
 end
 
 e2function number entity:tardisPhase()
-	return TARDIS_Phase(this)
+	return TARDIS_Phase(self, this)
 end
 
 e2function number entity:tardisFlightmode()
-	return TARDIS_Flightmode(this)
+	return TARDIS_Flightmode(self, this)
 end
 
 e2function number entity:tardisLock()
-	return TARDIS_Lock(this)
+	return TARDIS_Lock(self, this)
 end
 
 e2function number entity:tardisPhyslock()
-	return TARDIS_Physlock(this)
+	return TARDIS_Physlock(self, this)
 end
 
 e2function number entity:tardisPower()
-	return TARDIS_Power(this)
+	return TARDIS_Power(self, this)
 end
 
 e2function number entity:tardisIsomorph()
@@ -428,35 +447,39 @@ e2function number entity:tardisIsomorph()
 end
 
 e2function number entity:tardisLongflight()
-	return TARDIS_Longflight(this)
+	return TARDIS_Longflight(self, this)
 end
 
 e2function number entity:tardisMaterialise()
-	return TARDIS_Materialise(this)
+	return TARDIS_Materialise(self, this)
 end
 
 e2function number entity:tardisSelfrepair()
-	return TARDIS_Selfrepair(this)
+	return TARDIS_Selfrepair(self, this)
 end
 
 e2function number entity:tardisTrack(entity ent)
-	return TARDIS_Track(this, ent)
+	return TARDIS_Track(self, this, ent)
 end
 
 e2function number entity:tardisSpinmode(number spinmode)
-	return TARDIS_Spinmode(this,spinmode)
+	return TARDIS_Spinmode(self, this, spinmode)
 end
 
 e2function number entity:tardisSetDestination(vector pos)
-	return TARDIS_SetDestination(this, pos)
+	return TARDIS_SetDestination(self, this, pos)
 end
 
 e2function number entity:tardisSetDestination(vector pos, angle rot)
-	return TARDIS_SetDestination(this, pos, rot)
+	return TARDIS_SetDestination(self, this, pos, rot)
+end
+
+e2function number entity:tardisFastReturn()
+	return TARDIS_FastReturn(self, this)
 end
 
 e2function number entity:tardisHADS()
-	return TARDIS_HADS(this)
+	return TARDIS_HADS(self, this)
 end
 
 // get details

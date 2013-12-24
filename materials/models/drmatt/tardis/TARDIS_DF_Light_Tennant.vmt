@@ -3,6 +3,6 @@
 	"$basetexture" "models/drmatt/tardis/TARDIS_DF_Tennant"
 	"$normalmap" "models/drmatt/tardis/TARDIS_DF_NM"
 	"$surfaceprop" "Glass"
-	"$selfillummask" "models/drmatt/tardis/white_tennant"
+	"$selfillummask" "models/drmatt/tardis/white"
 	"$selfillum" 1
 }
