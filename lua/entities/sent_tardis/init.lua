@@ -317,8 +317,7 @@ function ENT:SetGlobalSkin(skin)
 	end
 end
 
-function ENT:DematHADS()
-	if not self.hads then return false end
+function ENT:DematFast()
 	if not self.longflight then
 		local success=self:ToggleLongFlight()
 		if not success then
@@ -531,7 +530,7 @@ function ENT:Explode()
 	explode:Fire("Explode", 0, 0 ) //Tells the explode entity to explode
 	//explode:EmitSound("weapon_AWP.Single", 400, 400 ) //Adds sound to the explosion
 	
-	self:SetColor(Color(255,190,0))
+	self:SetColor(Color(255,190,100))
 	
 	if self.interior and IsValid(self.interior) then
 		self.interior:Explode()
@@ -638,7 +637,7 @@ function ENT:TakeHP(hp)
 		util.ScreenShake(self.interior:GetPos(),math.Clamp(hp,0,16),5,0.5,700)
 	end
 	if self.hads and (hp>=0.5) then
-		self:DematHADS()
+		self:DematFast()
 	end
 end
 
@@ -1363,7 +1362,7 @@ function ENT:PhysicsUpdate( ph )
 	
 	if self.hads then
 		if self:WaterLevel() >= 2 then
-			self:DematHADS()
+			self:DematFast()
 		end
 	end
 	
@@ -1533,7 +1532,7 @@ function ENT:ToggleViewmode(ply,deldata)
 end
 
 function ENT:TogglePhysLock()
-	if self.exploded or not self.power then
+	if self.exploded or not self.power or self.invortex then
 		return false
 	else
 		if self.physlocked then

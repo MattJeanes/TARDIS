@@ -148,10 +148,9 @@ function ENT:UpdateAdv(ply,success)
 				self.flightmode=0
 				self.step=0
 			elseif self.flightmode==3 and self.step==5 then
-				if IsValid(self.tardis) and not self.tardis.moving and self.tardis.longflight then
-					self.tardis:Go()
-				else
-					ply:ChatPrint("Error, already teleporting or long-flight disabled.")
+				local success=self.tardis:DematFast()
+				if not success then
+					ply:ChatPrint("Error, may be already teleporting.")
 				end
 				self.flightmode=0
 				self.step=0

@@ -102,26 +102,22 @@ function ENT:Toggle( bEnable, ply )
 	local tardis=self.tardis
 	local interior=self.interior
 	if IsValid(tardis) and IsValid(interior) and not tardis.moving then
-		if tardis.longflight then
-			if tobool(GetConVarNumber("tardis_advanced"))==true then
-				if interior.flightmode==0 and interior.step==0 then
-					local success=interior:StartAdv(3,ply)
-					if success then
-						ply:ChatPrint("Vortex flightmode activated.")
-					end
-				else
-					interior:UpdateAdv(ply,false)
+		if tobool(GetConVarNumber("tardis_advanced"))==true then
+			if interior.flightmode==0 and interior.step==0 then
+				local success=interior:StartAdv(3,ply)
+				if success then
+					ply:ChatPrint("Vortex flightmode activated.")
 				end
 			else
-				self.ready=(not self.ready)
-				if self.ready then
-					ply:ChatPrint("Vortex flightmode activated.")
-				else
-					ply:ChatPrint("Vortex flightmode deactivated.")
-				end
+				interior:UpdateAdv(ply,false)
 			end
 		else
-			ply:ChatPrint("WARNING: Long Flight must be enabled.")
+			self.ready=(not self.ready)
+			if self.ready then
+				ply:ChatPrint("Vortex flightmode activated.")
+			else
+				ply:ChatPrint("Vortex flightmode deactivated.")
+			end
 		end
 	end
 end

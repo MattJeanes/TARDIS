@@ -36,6 +36,14 @@ local sounds={
 	{"Gallifrey", "gallifrey"},
 	{"Vale Decem", "valedecem"},
 	{"The Majestic Tale", "majestictale"},
+	{"Forgiven", "forgiven"},
+	{"The Wedding of River Song", "weddingofriversong"},
+	{"All the Strange Creatures", "allthestrangecreatures"},
+	{"You're Fired", "yourefired"},
+	{"Whose Enigma", "whoseenigma"},
+	{"The Long Song", "thelongsong"},
+	{"Infinite Potential", "infinitepotential"},
+	{"The New Doctor", "thenewdoctor"},
 }
 
 net.Receive("TARDISInt-Gramophone-Send", function(l,ply)

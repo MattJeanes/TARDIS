@@ -231,8 +231,8 @@ tpsounds[0]={ // normal
 	"tardis/mat.wav",
 	"tardis/full.wav"
 }
-tpsounds[1]={ // hads
-	"tardis/hads_demat.wav",
+tpsounds[1]={ // fast demat
+	"tardis/fast_demat.wav",
 	"tardis/mat.wav",
 	"tardis/full.wav"
 }

@@ -135,12 +135,12 @@ function ENT:Toggle( bEnable, ply )
 				end
 			end
 			if IsValid(interior.longflightdemat) then
-				if interior.longflightdemat.ready and tardis.longflight then
-					local success=self.tardis:Go()
-					if success then
-						ply:ChatPrint("TARDIS dematerialising.")
-						interior.longflightdemat.ready=false
+				if interior.longflightdemat.ready then
+					local success=self.tardis:DematFast()
+					if not success then
+						ply:ChatPrint("Error, may be already teleporting.")
 					end
+					interior.longflightdemat.ready=false
 				end
 			end
 		end

@@ -236,6 +236,12 @@ if(chatClk(owner())){
     }elseif(Cmd=="!health"){
         print("TARDIS Health: " + TARDIS:tardisHealth() + "%")
         hideChat(1)
+    }elseif(Cmd=="!pilot"){
+        if(TARDIS:tardisPilot():isValid()){
+            print("TARDIS pilot: " + TARDIS:tardisPilot():name())
+        }else{
+            print("TARDIS has no current pilot.")
+        }
     }
 }
 

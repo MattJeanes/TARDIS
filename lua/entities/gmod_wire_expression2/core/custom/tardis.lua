@@ -407,6 +407,15 @@ local function TARDIS_IsHADS(ent)
 	return 0
 end
 
+local function TARDIS_Pilot(ent)
+	if ent and IsValid(ent) then
+		if not (ent:GetClass()=="sent_tardis") then return NULL end
+		if not ent.pilot then return NULL end
+		return ent.pilot
+	end
+	return NULL
+end
+
 --------------------------------------------------------------------------------
 
 //set details
@@ -541,4 +550,8 @@ end
 
 e2function number entity:tardisIsHADS()
 	return TARDIS_IsHADS(this)
+end
+
+e2function entity entity:tardisPilot()
+	return TARDIS_Pilot(this)
 end

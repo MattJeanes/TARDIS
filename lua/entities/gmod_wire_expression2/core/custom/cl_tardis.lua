@@ -29,3 +29,4 @@ E2Helper.Descriptions["tardisLastAng"] = "Returns the angle of where the TARDIS 
 E2Helper.Descriptions["tardisTracking"] = "Returns the entity the TARDIS is tracking."
 E2Helper.Descriptions["tardisInVortex"] = "Returns 1 if in vortex, or 0 if not."
 E2Helper.Descriptions["tardisIsHADS"] = "Returns 1 if HADS is enabled, or 0 if not."
+E2Helper.Descriptions["tardisPilot"] = "Returns the pilot if valid."
