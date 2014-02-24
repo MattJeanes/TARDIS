@@ -135,14 +135,14 @@ function ENT:Think()
 				local dlight = DynamicLight( self:EntIndex() )
 				if ( dlight ) then
 					local size=1024
-					local c=Color(GetConVarNumber("tardisint_mainlight_r"), GetConVarNumber("tardisint_mainlight_g"), GetConVarNumber("tardisint_mainlight_b"))
+					local v=self:GetNWVector("mainlight",Vector(255,50,0))
 					if tardis.health < 21 then
-						c=Color(GetConVarNumber("tardisint_warnlight_r"), GetConVarNumber("tardisint_warnlight_g"), GetConVarNumber("tardisint_warnlight_b"))
+						v=self:GetNWVector("warnlight",Vector(200,0,0))
 					end
 					dlight.Pos = self:LocalToWorld(Vector(0,0,120))
-					dlight.r = c.r
-					dlight.g = c.g
-					dlight.b = c.b
+					dlight.r = v.x
+					dlight.g = v.y
+					dlight.b = v.z
 					dlight.Brightness = 5
 					dlight.Decay = size * 5
 					dlight.Size = size
@@ -153,11 +153,11 @@ function ENT:Think()
 			local dlight2 = DynamicLight( self:EntIndex()+10000 )
 			if ( dlight2 ) then
 				local size=512
-				local c=Color(GetConVarNumber("tardisint_seclight_r"), GetConVarNumber("tardisint_seclight_g"), GetConVarNumber("tardisint_seclight_b"))
+				local v=self:GetNWVector("seclight",Vector(0,255,0))
 				dlight2.Pos = self:LocalToWorld(Vector(0,0,-50))
-				dlight2.r = c.r
-				dlight2.g = c.g
-				dlight2.b = c.b
+				dlight2.r = v.x
+				dlight2.g = v.y
+				dlight2.b = v.z
 				dlight2.Brightness = 4
 				dlight2.Decay = size * 5
 				dlight2.Size = size

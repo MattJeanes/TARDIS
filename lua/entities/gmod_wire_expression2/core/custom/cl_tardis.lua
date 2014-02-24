@@ -14,6 +14,7 @@ E2Helper.Descriptions["tardisSpinmode"] = "Sets spinmode, takes number spinmode 
 E2Helper.Descriptions["tardisSetDestination"] = "Sets destination if in vortex, takes vector pos and optional angle rot, returns 1 if success or 0 if failure."
 E2Helper.Descriptions["tardisFastReturn"] = "Returns TARDIS to its previous takeoff position, returns 1 if success or 0 if failure."
 E2Helper.Descriptions["tardisHADS"] = "Toggles HADS, returns 1 if success or 0 if failure."
+E2Helper.Descriptions["tardisFastDemat"] = "Quickly dematerialises TARDIS, returns 1 if success or 0 if failure."
 E2Helper.Descriptions["tardisMoving"] = "Returns 1 if teleporting or 0 if not teleporting."
 E2Helper.Descriptions["tardisVisible"] = "Returns 1 if visible or 0 if invisible."
 E2Helper.Descriptions["tardisFlying"] = "Returns 1 if flying or 0 if not flying."

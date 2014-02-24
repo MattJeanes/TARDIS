@@ -128,8 +128,6 @@ function ENT:Initialize()
 		self.phys:Wake()
 	end
 	
-	self.light = self:SpawnLight()
-	self:SetLight(false)
 	self.a=255 // alpha
 	self.cur=0
 	self.curdelay=0.01
@@ -165,6 +163,7 @@ function ENT:Initialize()
 	self.ta=255
 	self.step=1
 	self.skin=0
+	self.extcol=Color(255,255,255)
 	self.demat=false
 	self.mat=false
 	self.lastpos=self:GetPos()
@@ -214,11 +213,15 @@ function ENT:Initialize()
 		else
 			self:SetBodygroup(3,0)
 		end
+		self.extcol=Color(self.owner:GetInfoNum("tardis_extcol_r",255),self.owner:GetInfoNum("tardis_extcol_g",255),self.owner:GetInfoNum("tardis_extcol_b",255))
+		self:SetNWVector("extcol", Vector(self.extcol.r,self.extcol.g,self.extcol.b))
 	else
 		self:SetGlobalSkin(0)
 	end
 	self:SetNWEntity("interior",self.interior)
 	self:SetHP(100)
+	self.light = self:SpawnLight()
+	self:SetLight(false)
 	
 	net.Start("TARDIS-SetInterior")
 		net.WriteEntity(self)
@@ -243,6 +246,14 @@ function ENT:Initialize()
 		150,
 		255
 	}
+end
+
+function ENT:EmergencyLand()
+	if not self.moving or not self.invortex or not self.longflight or self.reappearing then
+		return false
+	end
+	
+	self:LongReappear()
 end
 
 function ENT:FastReturn()
@@ -317,7 +328,7 @@ function ENT:SetGlobalSkin(skin)
 	end
 end
 
-function ENT:DematFast()
+function ENT:DematFast() //TODO: why isnt this called FastDemat?
 	if not self.longflight then
 		local success=self:ToggleLongFlight()
 		if not success then
@@ -499,7 +510,7 @@ function ENT:GetLocked()
 end
 
 function ENT:ShouldTakeDamage()
-	return tobool(GetConVarNumber("tardis_takedamage"))==true
+	return tobool(GetConVarNumber("tardis_takedamage"))
 end
 
 function ENT:Explode()
@@ -520,20 +531,26 @@ function ENT:Explode()
 		net.WriteEntity(self)
 	net.Broadcast()
 	
-	self:CreateFire()
+	if not self.invortex then
+		self:CreateFire()
+		
+		local explode = ents.Create("env_explosion")
+		explode:SetPos( self:LocalToWorld(Vector(0,0,50)) ) //Puts the explosion where you are aiming
+		explode:SetOwner( self ) //Sets the owner of the explosion
+		explode:Spawn()
+		explode:SetKeyValue("iMagnitude","175") //Sets the magnitude of the explosion
+		explode:Fire("Explode", 0, 0 ) //Tells the explode entity to explode
+		//explode:EmitSound("weapon_AWP.Single", 400, 400 ) //Adds sound to the explosion
+	end
 	
-	local explode = ents.Create("env_explosion")
-	explode:SetPos( self:LocalToWorld(Vector(0,0,50)) ) //Puts the explosion where you are aiming
-	explode:SetOwner( self ) //Sets the owner of the explosion
-	explode:Spawn()
-	explode:SetKeyValue("iMagnitude","175") //Sets the magnitude of the explosion
-	explode:Fire("Explode", 0, 0 ) //Tells the explode entity to explode
-	//explode:EmitSound("weapon_AWP.Single", 400, 400 ) //Adds sound to the explosion
-	
-	self:SetColor(Color(255,190,100))
+	self:SetColor(Color(255,190,100,self:GetColor().a))
 	
 	if self.interior and IsValid(self.interior) then
 		self.interior:Explode()
+	end
+	
+	if self.invortex then
+		self:EmergencyLand()
 	end
 end
 
@@ -624,7 +641,7 @@ function ENT:SetHP(hp)
 	end
 	if IsValid(self.smoke) and hp>=21 then
 		self:RemoveSmoke()
-	elseif not IsValid(self.smoke) and hp<=20 then
+	elseif not IsValid(self.smoke) and hp<=20 and not self.invortex then
 		self:CreateSmoke()
 	end
 end
@@ -648,7 +665,6 @@ end
 
 function ENT:OnTakeDamage(dmginfo)
 	if not self:ShouldTakeDamage() then return end
-	if self.invortex then return end
 	local hp=dmginfo:GetDamage()
 	self:TakeHP(hp/32) //takes 32th of normal damage a player would take
 end
@@ -815,6 +831,9 @@ function ENT:Stop()
 			end
 		end
 		self.attachedents=nil
+		local col=self:GetColor()
+		col=Color(col.r,col.g,col.b,255)
+		self:SetColor(col)
 		if self.autolongflight and self.longflight then
 			self.autolongflight=false
 			self:ToggleLongFlight()
@@ -869,7 +888,7 @@ function ENT:LongReappear()
 			net.WriteFloat(self.tpsound)
 			net.WriteVector(self.vec)
 		net.Broadcast()
-		timer.Simple(8.5,function() // a good enough approximation
+		timer.Simple(self.exploded and 7.65 or 8.5,function() // a good enough approximation
 			if IsValid(self) then
 				self.reappearing=false
 				self:Reappear()
@@ -1052,13 +1071,14 @@ end
 
 function ENT:SpawnLight()
 	// cheers to 'Doctor Who Dev Team' for this
+	local col=tostring(self.extcol.r).." "..tostring(self.extcol.g).." "..tostring(self.extcol.b)
 	local light = ents.Create("env_sprite")
 	light:SetPos(self:GetPos() + self:GetUp() * 115)
 	light:SetAngles(self:GetAngles())
 	light:SetKeyValue("renderfx", 4)
 	light:SetKeyValue("rendermode", 3)
 	light:SetKeyValue("renderamt", "200")
-    light:SetKeyValue("rendercolor", "255 255 255")
+    light:SetKeyValue("rendercolor", col)
     light:SetKeyValue("model", "sprites/light_glow02.spr")
     light:SetKeyValue("scale", 1)
 	light:SetKeyValue("glowproxysize", 9)
@@ -1321,7 +1341,7 @@ function ENT:PhysicsUpdate( ph )
 		
 		if self.spinmode==0 then
 			tilt=0
-		elseif self.spinmode==1 then // spinmode 1 needs no adjustments
+		elseif self.spinmode==1 then
 			tforce=-tforce
 		end
 		
@@ -1469,6 +1489,13 @@ function ENT:ToggleViewmode(ply,deldata)
 				ply:Give(tostring(v))
 			end
 		end
+		if ply.ammo then
+			for k,v in pairs(ply.ammo) do
+				ply:SetAmmo(v,k)
+			end
+		end
+		ply.weps=nil
+		ply.ammo=nil
 		if self.pilot and IsValid(self.pilot) and self.pilot==ply then
 			self.pilot=nil
 			local tbl={}
@@ -1514,8 +1541,17 @@ function ENT:ToggleViewmode(ply,deldata)
 			ply.tardisint_ang=ply:EyeAngles()
 		end
 		ply.weps={}
+		ply.ammo={}
 		for k,v in pairs(ply:GetWeapons()) do
 			table.insert(ply.weps, v:GetClass())
+			local p=v:GetPrimaryAmmoType()
+			local s=v:GetSecondaryAmmoType()
+			if p != -1 then
+				ply.ammo[p]=ply:GetAmmoCount(p)
+			end
+			if s != -1 then
+				ply.ammo[s]=ply:GetAmmoCount(s)
+			end
 		end
 		ply:Spectate( OBS_MODE_ROAMING )
 		ply:DrawViewModel(false)

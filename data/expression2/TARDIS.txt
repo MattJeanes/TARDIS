@@ -228,7 +228,7 @@ if(chatClk(owner())){
         demat2(SavePos,SaveAng)
         hideChat(1)
     }elseif(Cmd=="!demat"){
-        demat2(TARDIS:pos(), TARDIS:angles())
+        TARDIS:tardisFastDemat()
         hideChat(1)
     }elseif(Cmd=="!back"){
         TARDIS:tardisFastReturn()

@@ -6,7 +6,7 @@ include('shared.lua')
    Remember, the things you render first will be underneath!
 ---------------------------------------------------------]]
 function ENT:Draw() 
-	if not self.phasing and self.visible then
+	if not self.phasing and self.visible and not self.invortex then
 		self:DrawModel()
 		if WireLib then
 			Wire_Render(self)
@@ -172,7 +172,8 @@ function ENT:Think()
 		local dlight = DynamicLight( self:EntIndex() )
 		if ( dlight ) then
 			local size=400
-			local c=Color(255,255,255)
+			local v=self:GetNWVector("extcol",Vector(255,255,255))
+			local c=Color(v.x,v.y,v.z)
 			dlight.Pos = self:GetPos() + self:GetUp() * 130
 			dlight.r = c.r
 			dlight.g = c.g

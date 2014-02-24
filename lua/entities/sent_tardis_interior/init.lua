@@ -43,6 +43,9 @@ function ENT:Initialize()
 		if rails then
 			self.rails=self:MakePart("sent_tardis_rails", Vector(0,0,0), Angle(0,0,0),true)
 		end
+		self:SetNWVector("mainlight",Vector(self.owner:GetInfoNum("tardisint_mainlight_r",255),self.owner:GetInfoNum("tardisint_mainlight_g",50),self.owner:GetInfoNum("tardisint_mainlight_b",0)))
+		self:SetNWVector("seclight",Vector(self.owner:GetInfoNum("tardisint_seclight_r",0),self.owner:GetInfoNum("tardisint_seclight_g",255),self.owner:GetInfoNum("tardisint_seclight_b",0)))
+		self:SetNWVector("warnlight",Vector(self.owner:GetInfoNum("tardisint_warnlight_r",200),self.owner:GetInfoNum("tardisint_warnlight_g",0),self.owner:GetInfoNum("tardisint_warnlight_b",0)))
 	end
 end
 

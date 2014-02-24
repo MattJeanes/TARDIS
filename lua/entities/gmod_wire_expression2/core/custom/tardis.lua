@@ -5,7 +5,7 @@
 E2Lib.RegisterExtension("tardis", true)
 
 local function CheckPP(ply, ent) // Prop Protection
-	return gamemode.Call("PhysgunPickup", ply, ent)
+	return hook.Call("PhysgunPickup", GAMEMODE, ply, ent)
 end
 
 local function TARDIS_Get(ent)
@@ -223,6 +223,20 @@ local function TARDIS_HADS(data,ent)
 		end
 	end
 	return 0
+end
+
+local function TARDIS_FastDemat(data,ent)
+	if ent and IsValid(ent) and CheckPP(data.player,ent) then
+		if not (ent:GetClass()=="sent_tardis") then return 0 end
+		local success=ent:DematFast()
+		if success then
+			return 1
+		else
+			return 0
+		end
+	else
+		return 0
+	end
 end
 
 // get details
@@ -489,6 +503,10 @@ end
 
 e2function number entity:tardisHADS()
 	return TARDIS_HADS(self, this)
+end
+
+e2function number entity:tardisFastDemat()
+	return TARDIS_FastDemat(self, this)
 end
 
 // get details

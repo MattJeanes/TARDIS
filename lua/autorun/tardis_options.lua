@@ -31,23 +31,27 @@ for k,v in pairs(special_checkbox_options) do
 	CreateClientConVar(v[2], v[3], true, v[4])
 end
 
-CreateClientConVar("tardisint_mainlight_r", "255", true)
-CreateClientConVar("tardisint_mainlight_g", "50", true)
-CreateClientConVar("tardisint_mainlight_b", "0", true)
-
-CreateClientConVar("tardisint_seclight_r", "0", true)
-CreateClientConVar("tardisint_seclight_g", "255", true)
-CreateClientConVar("tardisint_seclight_b", "0", true)
-
-CreateClientConVar("tardisint_warnlight_r", "200", true)
-CreateClientConVar("tardisint_warnlight_g", "0", true)
-CreateClientConVar("tardisint_warnlight_b", "0", true)
-
 CreateClientConVar("tardisint_musicvol", "1", true)
 CreateClientConVar("tardis_flightvol", "1", true)
 
+CreateClientConVar("tardisint_mainlight_r", "255", true, true)
+CreateClientConVar("tardisint_mainlight_g", "50", true, true)
+CreateClientConVar("tardisint_mainlight_b", "0", true, true)
+
+CreateClientConVar("tardisint_seclight_r", "0", true, true)
+CreateClientConVar("tardisint_seclight_g", "255", true, true)
+CreateClientConVar("tardisint_seclight_b", "0", true, true)
+
+CreateClientConVar("tardisint_warnlight_r", "200", true, true)
+CreateClientConVar("tardisint_warnlight_g", "0", true, true)
+CreateClientConVar("tardisint_warnlight_b", "0", true, true)
+
 CreateClientConVar("tardis_globalskin", "0", true, true)
 CreateClientConVar("tardis_specialtex", "0", true, true)
+
+CreateClientConVar("tardis_extcol_r", "255", true, true)
+CreateClientConVar("tardis_extcol_g", "255", true, true)
+CreateClientConVar("tardis_extcol_b", "255", true, true)
 
 hook.Add("PopulateToolMenu", "TARDIS-PopulateToolMenu", function()
 	spawnmenu.AddToolMenuOption("Options", "Doctor Who", "TARDIS_Options", "TARDIS", "", "", function(panel)
@@ -244,7 +248,7 @@ hook.Add("PopulateToolMenu", "TARDIS-PopulateToolMenu", function()
 		*/
 		
 		local DLabel = vgui.Create( "DLabel" )
-		DLabel:SetText("Interior Lighting:")
+		DLabel:SetText("Colors:")
 		panel:AddItem(DLabel)
 		
 		local CategoryList = vgui.Create( "DPanelList" )
@@ -255,7 +259,23 @@ hook.Add("PopulateToolMenu", "TARDIS-PopulateToolMenu", function()
 		CategoryList:EnableVerticalScrollbar( true )
 		
 		local DLabel = vgui.Create( "DLabel" )
-		DLabel:SetText("Main Color:")
+		DLabel:SetText("Exterior Lamp:")
+		CategoryList:AddItem(DLabel)
+		
+		local Mixer = vgui.Create( "DColorMixer" )
+		Mixer:SetPalette( true )  		--Show/hide the palette			DEF:true
+		Mixer:SetAlphaBar( false ) 		--Show/hide the alpha bar		DEF:true
+		Mixer:SetWangs( true )	 		--Show/hide the R G B A indicators 	DEF:true
+		Mixer:SetColor( Color(GetConVarNumber("tardis_extcol_r"), GetConVarNumber("tardis_extcol_g"), GetConVarNumber("tardis_extcol_b")) )	--Set the default color
+		Mixer.ValueChanged = function(self,col)
+			RunConsoleCommand("tardis_extcol_r", col.r)
+			RunConsoleCommand("tardis_extcol_g", col.g)
+			RunConsoleCommand("tardis_extcol_b", col.b)
+		end
+		CategoryList:AddItem(Mixer)
+		
+		local DLabel = vgui.Create( "DLabel" )
+		DLabel:SetText("Interior Main:")
 		CategoryList:AddItem(DLabel)
 		
 		local Mixer1 = vgui.Create( "DColorMixer" )
@@ -271,7 +291,7 @@ hook.Add("PopulateToolMenu", "TARDIS-PopulateToolMenu", function()
 		CategoryList:AddItem(Mixer1)
 		
 		local DLabel = vgui.Create( "DLabel" )
-		DLabel:SetText("Secondary Color:")
+		DLabel:SetText("Interior Secondary:")
 		CategoryList:AddItem(DLabel)
 		
 		local Mixer2 = vgui.Create( "DColorMixer" )
@@ -287,7 +307,7 @@ hook.Add("PopulateToolMenu", "TARDIS-PopulateToolMenu", function()
 		CategoryList:AddItem(Mixer2)
 		
 		local DLabel = vgui.Create( "DLabel" )
-		DLabel:SetText("Warning Color:")
+		DLabel:SetText("Interior Warning:")
 		CategoryList:AddItem(DLabel)
 		
 		local Mixer3 = vgui.Create( "DColorMixer" )
@@ -307,6 +327,7 @@ hook.Add("PopulateToolMenu", "TARDIS-PopulateToolMenu", function()
 		local button = vgui.Create("DButton")
 		button:SetText("Reset Colors")
 		button.DoClick = function(self)
+			Mixer:SetColor(Color(255,255,255))
 			Mixer1:SetColor(Color(255,50,0))
 			Mixer2:SetColor(Color(0,255,0))
 			Mixer3:SetColor(Color(200,0,0))

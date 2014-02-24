@@ -49,8 +49,17 @@ function ENT:PlayerEnter(ply)
 		ply.tardisint_ang=ply:EyeAngles()
 	end
 	ply.weps={}
+	ply.ammo={}
 	for k,v in pairs(ply:GetWeapons()) do
 		table.insert(ply.weps, v:GetClass())
+		local p=v:GetPrimaryAmmoType()
+		local s=v:GetSecondaryAmmoType()
+		if p != -1 then
+			ply.ammo[p]=ply:GetAmmoCount(p)
+		end
+		if s != -1 then
+			ply.ammo[s]=ply:GetAmmoCount(s)
+		end
 	end
 	ply.tardis_skycamera=self
 	ply:Spectate( OBS_MODE_ROAMING )
@@ -90,6 +99,11 @@ function ENT:PlayerExit(ply,override)
 	if ply.weps then
 		for k,v in pairs(ply.weps) do
 			ply:Give(tostring(v))
+		end
+	end
+	if ply.ammo then
+		for k,v in pairs(ply.ammo) do
+			ply:SetAmmo(v,k)
 		end
 	end
 	if ply.tardisint_pos and ply.tardisint_ang then
