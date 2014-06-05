@@ -52,3 +52,7 @@ for _, plugin in ipairs( modules ) do
 		end
 	end
 end
+
+function ENT:Use(a,c)
+	self:CallHook("Use",a,c)
+end

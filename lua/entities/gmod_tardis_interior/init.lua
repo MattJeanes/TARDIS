@@ -17,11 +17,12 @@ end
  
 function ENT:Initialize()
 	self:SetModel( "models/drmatt/tardis/newinterior.mdl" )
-	self:SetMaterial("models/debug/debugwhite")
+	self:SetMaterial("models/combine_advisor/mask")
 	self:PhysicsInit( SOLID_VPHYSICS )
 	self:SetMoveType( MOVETYPE_VPHYSICS )
 	self:SetSolid( SOLID_VPHYSICS )
 	self:SetRenderMode( RENDERMODE_TRANSALPHA )
+	self:SetUseType( SIMPLE_USE )
 	
 	self.phys = self:GetPhysicsObject()
 	if (self.phys:IsValid()) then
@@ -33,9 +34,20 @@ function ENT:Initialize()
 		self:Remove()
 	end
 	
+	self.occupants = {}
+	
 	self:CallHook("Initialize")
 end
 
 function ENT:OnRemove()
 	self:CallHook("OnRemove")
+end
+
+function ENT:Think()
+	for k,v in pairs(self.occupants) do
+		if not v or not IsValid(v) then
+			self.occupants[k]=nil
+		end
+	end
+	self:CallHook("Think")
 end

@@ -21,15 +21,23 @@ function ENT:Initialize()
 	self:SetMoveType( MOVETYPE_VPHYSICS )
 	self:SetSolid( SOLID_VPHYSICS )
 	self:SetRenderMode( RENDERMODE_TRANSALPHA )
+	self:SetUseType( SIMPLE_USE )
 	
 	self.phys = self:GetPhysicsObject()
 	if (self.phys:IsValid()) then
 		self.phys:Wake()
 	end
 	
+	self.occupants={}
+	
 	self:CallHook("Initialize")
 end
 
-function ENT:OnRemove()
-	self:CallHook("OnRemove")
+function ENT:Think()
+	for k,v in pairs(self.occupants) do
+		if not v or not IsValid(v) then
+			self.occupants[k]=nil
+		end
+	end
+	self:CallHook("Think")
 end

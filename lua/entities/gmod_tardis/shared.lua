@@ -52,3 +52,11 @@ for _, plugin in ipairs( modules ) do
 		end
 	end
 end
+
+function ENT:OnRemove()
+	self:CallHook("OnRemove")
+end
+
+function ENT:Use(a,c)
+	self:CallHook("Use",a,c)
+end

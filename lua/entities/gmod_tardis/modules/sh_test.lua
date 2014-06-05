@@ -1,5 +1,5 @@
 // hooks test
 
 ENT:AddHook("Initialize", "test", function()
-	print("hello world!")
+	//print("hello world!")
 end)
