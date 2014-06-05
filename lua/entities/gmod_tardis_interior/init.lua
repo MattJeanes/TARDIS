@@ -17,7 +17,6 @@ end
  
 function ENT:Initialize()
 	self:SetModel( "models/drmatt/tardis/newinterior.mdl" )
-	self:SetMaterial("models/combine_advisor/mask")
 	self:PhysicsInit( SOLID_VPHYSICS )
 	self:SetMoveType( MOVETYPE_VPHYSICS )
 	self:SetSolid( SOLID_VPHYSICS )
