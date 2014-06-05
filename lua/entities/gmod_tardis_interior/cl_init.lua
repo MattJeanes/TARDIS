@@ -5,7 +5,6 @@ function ENT:Draw()
 	if WireLib then
 		Wire_Render(self)
 	end
-	
 end
 
 function ENT:Initialize()
