@@ -25,4 +25,6 @@ function ENT:Think()
 		dlight.Size = size
 		dlight.DieTime = CurTime() + 1
 	end
+	
+	self:CallHook("Think")
 end

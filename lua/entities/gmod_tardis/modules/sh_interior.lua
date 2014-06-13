@@ -62,6 +62,8 @@ if SERVER then
 	ENT:AddHook("Initialize", "interior", function(self)
 		local e=ents.Create("gmod_tardis_interior")
 		e.exterior=self
+		self:SetNWEntity("interior",e)
+		e:SetNWEntity("exterior",self)
 		e:Spawn()
 		e:Activate()
 		e:SetPos(FindPosition(self,e))
