@@ -1,10 +1,12 @@
 include('shared.lua')
 
 function ENT:Draw()
-	self:DrawModel()	
-	if WireLib then
-		Wire_Render(self)
-	end
+	if self.shoulddraw or LocalPlayer():GetNWEntity("tardis")==self:GetNWEntity("exterior") then
+		self:DrawModel()	
+		if WireLib then
+			Wire_Render(self)
+		end
+	end	
 end
 
 function ENT:Initialize()
