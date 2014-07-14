@@ -21,13 +21,4 @@ if SERVER then
 			self.portals[i]:Activate()
 		end
 	end)
-	ENT:AddHook("OnRemove", "portals", function(self)
-		if self.portals then
-			for k,v in pairs(self.portals) do
-				if IsValid(self.portals) then
-					self.portals:Remove()
-				end
-			end
-		end
-	end)
 end
