@@ -9,7 +9,7 @@ if SERVER then
 			self.portals[i]:SetDisappearDist(500)
 		end
 		self.portals[1]:SetPos(self.exterior:LocalToWorld(Vector(20,0,50)))
-		self.portals[2]:SetPos(self:LocalToWorld(Vector(0,-300,143)))
+		self.portals[2]:SetPos(self:LocalToWorld(Vector(0,-330,143)))
 		self.portals[1]:SetAngles(self.exterior:GetAngles())
 		self.portals[2]:SetAngles(self:LocalToWorldAngles(Angle(0,90,0)))
 		self.portals[1]:SetExit(self.portals[2])

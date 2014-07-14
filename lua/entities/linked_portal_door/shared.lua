@@ -22,20 +22,27 @@ function ENT:Initialize()
 
 		self:SetRenderBounds( mins, maxs )
 
+	else
+
+		self:SetTrigger(true)
+
 	end
 
-	--[[self:SetModel(self.Model)
+	--self:SetModel(self.Model)
 
-	self:PhysicsInit(SOLID_VPHYSICS)
-	self:SetMoveType(MOVETYPE_VPHYSICS)
-	self:SetSolid(SOLID_BBOX)
+	--self:PhysicsInit(SOLID_VPHYSICS)
+	--self:SetMoveType(MOVETYPE_VPHYSICS)
+	self:SetMoveType(MOVETYPE_NONE)
+	self:SetSolid(SOLID_OBB)
+	self:SetNotSolid(true)
+	self:SetCollisionBounds(mins, maxs)
 
-	local b = 32
-	self:SetCollisionBounds(Vector(-b, -b, -b), Vector(b,b,b))
+	self:EnableCustomCollisions(true)
+	self:DrawShadow( false )
 
-	local phys = self:GetPhysicsObject()
+	--local phys = self:GetPhysicsObject()
 	--phys:EnableMotion( true )
-	--phys:Wake()]]--
+	--phys:Wake()
 
 end
 
