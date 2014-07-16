@@ -13,4 +13,10 @@ if SERVER then
 	ENT:AddHook("Use", "handleplayers", function(self,a,c)
 		self.exterior:PlayerExit(a)
 	end)
+else
+	ENT:AddHook("ShouldDraw", "players", function(self)
+		if LocalPlayer():GetNetVar("tardis_i")==self then
+			return true
+		end
+	end)
 end

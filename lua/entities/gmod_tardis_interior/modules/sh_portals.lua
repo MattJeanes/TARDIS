@@ -21,4 +21,10 @@ if SERVER then
 			self.portals[i]:Activate()
 		end
 	end)
+else
+	ENT:AddHook("ShouldDraw", "portals", function(self)
+		if worldportals.drawing then
+			return true
+		end
+	end)
 end
