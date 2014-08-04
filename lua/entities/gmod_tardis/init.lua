@@ -16,7 +16,7 @@ function ENT:SpawnFunction( ply, tr, ClassName )
 end
  
 function ENT:Initialize()
-	self:SetModel( "models/drmatt/tardis/exterior.mdl" )
+	self:SetModel( "models/drmatt/tardis/newexterior.mdl" )
 	self:PhysicsInit( SOLID_VPHYSICS )
 	self:SetMoveType( MOVETYPE_VPHYSICS )
 	self:SetSolid( SOLID_VPHYSICS )
@@ -39,5 +39,6 @@ function ENT:Think()
 			self.occupants[k]=nil
 		end
 	end
+	
 	self:CallHook("Think")
 end

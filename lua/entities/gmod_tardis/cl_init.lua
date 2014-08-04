@@ -10,3 +10,7 @@ end
 function ENT:Initialize()
 	self:CallHook("Initialize")
 end
+
+function ENT:Think()
+	self:CallHook("Think")
+end
