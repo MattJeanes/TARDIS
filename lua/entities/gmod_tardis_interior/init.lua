@@ -18,7 +18,7 @@ end
 function ENT:Initialize()
 	self:SetModel( "models/drmatt/tardis/newinterior.mdl" )
 	self:PhysicsInit( SOLID_VPHYSICS )
-	self:SetMoveType( MOVETYPE_VPHYSICS )
+	self:SetMoveType( MOVETYPE_NONE )
 	self:SetSolid( SOLID_VPHYSICS )
 	self:SetRenderMode( RENDERMODE_TRANSALPHA )
 	self:SetUseType( SIMPLE_USE )

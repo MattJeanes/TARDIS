@@ -12,9 +12,9 @@ if SERVER then
 	
 	ENT:AddHook("Use", "handleplayers", function(self,a,c)
 		if a:KeyDown(IN_WALK) then
-			self.exterior:ToggleDoor()
-		else
 			self.exterior:PlayerExit(a)
+		else
+			self.exterior:ToggleDoor()
 		end
 	end)
 else
