@@ -1,5 +1,6 @@
 "VertexLitGeneric"
 {
 	"$basetexture" "models/combine_advisor/mask"
-	"$translucent" 1
+	"$translucent" "1"
+	"$nodecal" "1"
 }
