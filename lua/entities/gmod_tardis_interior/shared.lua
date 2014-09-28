@@ -56,3 +56,7 @@ end
 function ENT:Use(a,c)
 	self:CallHook("Use",a,c)
 end
+
+function ENT:OnRemove()
+	self:CallHook("OnRemove")
+end

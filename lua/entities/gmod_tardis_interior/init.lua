@@ -39,10 +39,6 @@ function ENT:Initialize()
 	self:CallHook("Initialize")
 end
 
-function ENT:OnRemove()
-	self:CallHook("OnRemove")
-end
-
 function ENT:Think()
 	for k,v in pairs(self.occupants) do
 		if not v or not IsValid(v) then

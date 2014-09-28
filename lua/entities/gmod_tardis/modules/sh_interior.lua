@@ -24,6 +24,7 @@ if SERVER then
 	ENT:AddHook("Initialize", "interior", function(self)
 		local e=ents.Create("gmod_tardis_interior")
 		e.exterior=self
+		self:SetNetVar("interior",e)
 		e:SetNetVar("exterior",self)
 		e:Spawn()
 		e:Activate()
