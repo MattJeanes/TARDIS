@@ -29,10 +29,13 @@ else
 	end)
 
 	ENT:AddHook("Think", "doors", function(self)
-		local ext=Entity(self:GetNetVar("exterior"))
-		if IsValid(ext) and (ext.DoorPos ~= ext.DoorTarget) and IsValid(self.door) then
-			self.door:SetPoseParameter("switch", ext.DoorPos)
-			self.door:InvalidateBoneCache()
+		local n=self:GetNetVar("exterior",false)
+		if n then
+			local ext=Entity(n)
+			if IsValid(ext) and (ext.DoorPos ~= ext.DoorTarget) and IsValid(self.door) then
+				self.door:SetPoseParameter("switch", ext.DoorPos)
+				self.door:InvalidateBoneCache()
+			end
 		end
 	end)
 end
