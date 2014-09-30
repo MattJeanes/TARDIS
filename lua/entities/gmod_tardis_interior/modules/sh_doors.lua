@@ -14,7 +14,13 @@ else
 		e:Activate()
 		self.door=e
 	end)
+	
+	function ENT:DoorOpen()
+		local ext=Entity(self:GetNetVar("exterior"))
+		return ext:DoorOpen()
+	end
 
+	-- self:DeleteOnRemove(Entity) doesn't work clientside
 	ENT:AddHook("OnRemove", "doors", function(self)
 		if IsValid(self.door) then
 			self.door:Remove()
@@ -23,8 +29,8 @@ else
 	end)
 
 	ENT:AddHook("Think", "doors", function(self)
-		local ext=self:GetNetVar("exterior")
-		if (ext.DoorPos ~= ext.DoorTarget) and IsValid(self.door) then
+		local ext=Entity(self:GetNetVar("exterior"))
+		if IsValid(ext) and (ext.DoorPos ~= ext.DoorTarget) and IsValid(self.door) then
 			self.door:SetPoseParameter("switch", ext.DoorPos)
 			self.door:InvalidateBoneCache()
 		end

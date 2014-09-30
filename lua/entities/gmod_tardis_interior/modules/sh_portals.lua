@@ -62,8 +62,10 @@ else
 	
 	hook.Add("wp-shouldrender", "tardisint-portals", function(portal,exit,origin)
 		local p=portal:GetParent()
-		if IsValid(p) and p:GetClass()=="gmod_tardis" then
-			if not p:DoorOpen() then return false end
+		if IsValid(p) and (p:GetClass()=="gmod_tardis" or p:GetClass()=="gmod_tardis_interior") then
+			if not p:DoorOpen() then
+				return false
+			end
 		end
 	end)
 end

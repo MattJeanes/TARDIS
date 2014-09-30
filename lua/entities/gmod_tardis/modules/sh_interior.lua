@@ -24,8 +24,7 @@ if SERVER then
 	ENT:AddHook("Initialize", "interior", function(self)
 		local e=ents.Create("gmod_tardis_interior")
 		e.exterior=self
-		self:SetNetVar("interior",e)
-		e:SetNetVar("exterior",self)
+		
 		e:Spawn()
 		e:Activate()
 		e:SetPos(FindPosition(self,e))
@@ -35,7 +34,8 @@ if SERVER then
 		if CPPI then
 			e:CPPISetOwner(self.owner)
 		end
-		
+		e:SetNetVar("exterior",self:EntIndex())
+		self:SetNetVar("interior",e:EntIndex())
 		self.interior=e
 	end)
 	

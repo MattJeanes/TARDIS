@@ -20,7 +20,7 @@ if SERVER then
 	end)
 else
 	function ENT:DoorOpen()
-		return self.DoorPos ~= 0 and true or false
+		return self.DoorPos ~= 0
 	end
 
 	ENT:AddHook("Initialize", "interior", function(self)
