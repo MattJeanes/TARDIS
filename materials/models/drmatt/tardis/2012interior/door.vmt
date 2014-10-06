@@ -1,0 +1,6 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/drmatt/tardis/2012interior/door"
+	"$translucent" "1"
+	"$nodecal" "1"
+}

@@ -1,0 +1,8 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/drmatt/tardis/exterior/TARDIS_DF_Tennant"
+	"$normalmap" "models/drmatt/tardis/exterior/TARDIS_DF_NM"
+	"$surfaceprop" "Glass"
+	"$selfillummask" "models/drmatt/tardis/exterior/white"
+	"$selfillum" 1
+}

@@ -116,8 +116,12 @@ elseif ( CLIENT ) then
 		local entid  = net.ReadUInt( 16 )
 		local key    = net.ReadString()
 		local typeid = net.ReadUInt( 8 )
-		local value  = net.ReadType( typeid )
-
+		local value
+		if typeid==TYPE_ENTITY then
+			value = net.ReadUInt( 16 )
+		else
+			value = net.ReadType( typeid )
+		end
 		netwrapper.StoreNetVar( entid, key, value )
 	end )
 	--\\----------------------------------------------------------------------\\--
@@ -155,6 +159,11 @@ end
 function ENTITY:GetNetVar( key, default )
 	local values = netwrapper.GetNetVars( self:EntIndex() )
 	if ( values[ key ] ~= nil ) then return values[ key ] else return default end
+end
+--\\----------------------------------------------------------------------\\--
+function ENTITY:GetNetEnt( key, default )
+	local values = netwrapper.GetNetVars( self:EntIndex() )
+	if ( values[ key ] ~= nil ) then return SERVER and values[ key ] or Entity(values[ key ]) else return (default or NULL) end
 end
 --\\----------------------------------------------------------------------\\--
 function netwrapper.StoreNetVar( id, key, value )

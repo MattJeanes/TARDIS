@@ -55,7 +55,7 @@ if SERVER then
 	end)
 else
 	ENT:AddHook("ShouldDraw", "portals", function(self)
-		if wp.drawing then
+		if wp.drawing and wp.drawingent:GetParent()==self:GetNetEnt("exterior") then
 			return true
 		end
 	end)

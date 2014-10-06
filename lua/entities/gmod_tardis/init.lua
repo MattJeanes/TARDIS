@@ -16,7 +16,7 @@ function ENT:SpawnFunction( ply, tr, ClassName )
 end
  
 function ENT:Initialize()
-	self:SetModel( "models/drmatt/tardis/newexterior.mdl" )
+	self:SetModel( "models/drmatt/tardis/exterior/exterior.mdl" )
 	self:PhysicsInit( SOLID_VPHYSICS )
 	self:SetMoveType( MOVETYPE_VPHYSICS )
 	self:SetSolid( SOLID_VPHYSICS )

@@ -34,8 +34,8 @@ if SERVER then
 		if CPPI then
 			e:CPPISetOwner(self.owner)
 		end
-		e:SetNetVar("exterior",self:EntIndex())
-		self:SetNetVar("interior",e:EntIndex())
+		e:SetNetVar("exterior",self)
+		self:SetNetVar("interior",e)
 		self.interior=e
 	end)
 	

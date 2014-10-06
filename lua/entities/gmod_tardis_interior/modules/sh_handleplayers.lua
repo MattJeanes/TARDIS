@@ -19,7 +19,7 @@ if SERVER then
 	end)
 else
 	ENT:AddHook("ShouldDraw", "players", function(self)
-		if LocalPlayer():GetNetVar("tardis_i")==self then
+		if LocalPlayer():GetNetEnt("tardis_i")==self and not wp.drawing then
 			return true
 		end
 	end)
