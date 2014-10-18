@@ -13,13 +13,16 @@ if SERVER then
 	ENT:AddHook("Use", "handleplayers", function(self,a,c)
 		if a:KeyDown(IN_WALK) then
 			self.exterior:PlayerExit(a)
-		else
-			self.exterior:ToggleDoor()
 		end
 	end)
 else
 	ENT:AddHook("ShouldDraw", "players", function(self)
 		if LocalPlayer():GetNetEnt("tardis_i")==self and not wp.drawing then
+			return true
+		end
+	end)
+	ENT:AddHook("ShouldThink", "players", function(self)
+		if LocalPlayer():GetNetEnt("tardis_i")==self then
 			return true
 		end
 	end)

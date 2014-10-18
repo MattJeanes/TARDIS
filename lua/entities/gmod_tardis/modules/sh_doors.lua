@@ -18,6 +18,16 @@ if SERVER then
 			self:SetCollisionGroup( COLLISION_GROUP_NONE )
 		end
 	end)
+	ENT:AddHook("ToggleDoor", "intdoors", function(self,open)
+		local intdoor=self.interior:GetPart("door")
+		if IsValid(intdoor) then
+			if open then
+				intdoor:SetCollisionGroup( COLLISION_GROUP_WORLD )
+			else
+				intdoor:SetCollisionGroup( COLLISION_GROUP_NONE )
+			end
+		end
+	end)
 else
 	function ENT:DoorOpen()
 		return self.DoorPos ~= 0

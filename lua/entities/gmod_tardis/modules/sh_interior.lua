@@ -10,7 +10,7 @@ if SERVER then
 		tracedata.filter={self,e}
 		tracedata.mask = MASK_NPCWORLDSTATIC
 		local traceres=util.TraceHull(tracedata)
-		if double then --TODO: Implement double
+		if true then --TODO: Implement double
 			tracedata.start=traceres.HitPos
 			tracedata.endpos=tracedata.start+(self:GetUp()*-6000)
 			traceres=util.TraceHull(tracedata)
@@ -24,16 +24,16 @@ if SERVER then
 	ENT:AddHook("Initialize", "interior", function(self)
 		local e=ents.Create("gmod_tardis_interior")
 		e.exterior=self
-		
+		e.owner=self.owner
+		if CPPI then
+			e:CPPISetOwner(self.owner)
+		end
 		e:Spawn()
 		e:Activate()
 		e:SetPos(FindPosition(self,e))
 		self:DeleteOnRemove(e)
 		e.occupants=self.occupants -- Hooray for referenced tables
-		e.owner=self.owner
-		if CPPI then
-			e:CPPISetOwner(self.owner)
-		end
+		
 		e:SetNetVar("exterior",self)
 		self:SetNetVar("interior",e)
 		self.interior=e

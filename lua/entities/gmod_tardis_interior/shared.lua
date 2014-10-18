@@ -42,10 +42,10 @@ local modules = file.Find( folder.."*.lua", "LUA" )
 for _, plugin in ipairs( modules ) do
 	local prefix = string.Left( plugin, string.find( plugin, "_" ) - 1 )
 	if ( CLIENT and ( prefix == "sh" or prefix == "cl" ) ) then
-		include( "modules/" .. plugin )
+		include( folder..plugin )
 	elseif ( SERVER ) then
 		if prefix=="sv" or prefix=="sh" then
-			include( "modules/" .. plugin )
+			include( folder..plugin )
 		end
 		if ( prefix == "sh" or prefix == "cl" ) then
 			AddCSLuaFile( folder..plugin )
