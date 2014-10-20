@@ -4,7 +4,7 @@
 @persist Target:entity TARDIS:entity Visible SavePos:vector SaveAng:angle
 runOnChat(1)
 if (first()|dupefinished()){
-    TARDIS=entity():isConstrainedTo():tardisGet()
+    TARDIS=entity():isWeldedTo():tardisGet()
     TARDIS:createWire(entity(),"XYZ", "XYZ")
     Target=owner()
     entity():setAlpha(0)
