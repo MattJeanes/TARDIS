@@ -8,6 +8,9 @@ if SERVER then
 					return --TODO: Handle properly
 				end
 			end
+			if IsValid(ply:GetNetEnt("tardis")) then
+				ply:GetNetEnt("tardis"):PlayerExit(ply,true,true)
+			end
 			table.insert(self.occupants,ply)
 			ply:SetNetVar("tardis",self)
 			ply:SetNetVar("tardis_i",self.interior)

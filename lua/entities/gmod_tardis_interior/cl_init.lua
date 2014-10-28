@@ -7,7 +7,7 @@ function ENT:Draw()
 			Wire_Render(self)
 		end
 		self:CallHook("Draw")
-	end	
+	end
 end
 
 function ENT:Initialize()
@@ -17,3 +17,9 @@ end
 function ENT:Think()	
 	self:CallHook("Think")
 end
+
+hook.Add("PostDrawTranslucentRenderables", "TARDIS", function(...)
+	for k,v in pairs(ents.FindByClass("gmod_tardis_interior")) do
+		v:CallHook("PostDrawTranslucentRenderables",...)
+	end
+end)

@@ -9,12 +9,6 @@ if SERVER then
 			end
 		end
 	end)
-	
-	ENT:AddHook("Use", "handleplayers", function(self,a,c)
-		if a:KeyDown(IN_WALK) then
-			self.exterior:PlayerExit(a)
-		end
-	end)
 else
 	ENT:AddHook("ShouldDraw", "players", function(self)
 		if LocalPlayer():GetNetEnt("tardis_i")==self and not wp.drawing then

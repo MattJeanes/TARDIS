@@ -2,23 +2,20 @@
 
 if SERVER then
 	local function FindPosition(self,e)
-		local tracedata = {}
-		tracedata.start=self:GetPos()
-		tracedata.endpos=tracedata.start+(self:GetUp()*9999999)
-		tracedata.mins=e:OBBMins()
-		tracedata.maxs=e:OBBMaxs()
-		tracedata.filter={self,e}
-		tracedata.mask = MASK_NPCWORLDSTATIC
-		local traceres=util.TraceHull(tracedata)
-		if true then --TODO: Implement double
-			tracedata.start=traceres.HitPos
-			tracedata.endpos=tracedata.start+(self:GetUp()*-6000)
-			traceres=util.TraceHull(tracedata)
-			tracedata.start=self:GetPos()
-			tracedata.endpos=tracedata.start+(self:GetUp()*9999999)
-			traceres=util.TraceHull(tracedata)
-		end
-		return traceres.HitPos
+		local td={}
+		td.start=self:GetPos()+Vector(0,0,99999999)
+		td.endpos=self:GetPos()
+		td.mins=e:OBBMins()
+		td.maxs=e:OBBMaxs()
+		td.filter={self,e}
+		td.mask = MASK_NPCWORLDSTATIC
+		
+		local tr=util.TraceHull(td)
+		td.start=tr.HitPos+Vector(0,0,-6000)
+		td.endpos=tr.HitPos
+		td.mask = nil
+		tr=util.TraceHull(td)
+		return tr.HitPos
 	end
 	
 	ENT:AddHook("Initialize", "interior", function(self)

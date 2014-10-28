@@ -1,4 +1,4 @@
--- Opens door with Alt-E, go in with E
+-- Open door with E, go in with Alt-E
 
 
 if SERVER then

@@ -8,24 +8,30 @@ PART.AutoSetup = true
 PART.ClientThinkOverride = true
 
 if SERVER then
-	function PART:Initialize()		
-		local int=self.interior		
+	function PART:Initialize()	
+		self:SetBodygroup(1,1) -- Sticker
+		self:SetBodygroup(2,1) -- Lit sign
+		
+		local int=self.interior
 		self:SetPos(int:LocalToWorld(Vector(-1.5,-309.5,82.7)))
 		self:SetAngles(int:LocalToWorldAngles(Angle(0,-90,0)))
 		self:SetParent(int)
 	end
 	
-	function PART:Use()
-		self.exterior:ToggleDoor()
+	function PART:Use(a)
+		if a:KeyDown(IN_WALK) then
+			self.exterior:PlayerExit(a)
+		else
+			self.exterior:ToggleDoor()
+		end
 	end
-end
-if CLIENT then
+else
 	function ENT:DoorOpen()
 		local ext=self:GetNetEnt("exterior")
 		return ext:DoorOpen()
 	end
 	
-	function PART:Think()
+	function PART:DoThink()
 		local ext=self:GetNetEnt("exterior")
 		if IsValid(ext) then
 			self:SetPoseParameter("switch", ext.DoorPos)

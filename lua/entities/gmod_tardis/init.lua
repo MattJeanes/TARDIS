@@ -28,7 +28,7 @@ function ENT:Initialize()
 		self.phys:Wake()
 	end
 	
-	--self:SetBodygroup(1,1) -- TODO: Fix bodygroups on interior door so I can re-add sticker
+	self:SetBodygroup(1,1) -- Sticker
 	self:SetBodygroup(2,1) -- Lit sign
 	
 	self.occupants={}
