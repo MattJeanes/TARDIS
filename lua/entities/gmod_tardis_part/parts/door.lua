@@ -6,11 +6,13 @@ PART.Name = "Door"
 PART.Model = "models/drmatt/tardis/exterior/door.mdl"
 PART.AutoSetup = true
 PART.ClientThinkOverride = true
+PART.ClientDrawOverride = true
 
 if SERVER then
 	function PART:Initialize()	
 		self:SetBodygroup(1,1) -- Sticker
 		self:SetBodygroup(2,1) -- Lit sign
+		self:SetBodygroup(3,1) -- 3D sign
 		
 		local int=self.interior
 		self:SetPos(int:LocalToWorld(Vector(-1.5,-309.5,82.7)))

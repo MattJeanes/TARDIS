@@ -52,10 +52,11 @@ if SERVER then
 				end
 			end
 		end
+		if ent.TardisPart then return false end
 	end)
 else
 	ENT:AddHook("ShouldDraw", "portals", function(self)
-		if wp.drawing and wp.drawingent:GetParent()==self:GetNetEnt("exterior") then
+		if wp.drawing and wp.drawingent and wp.drawingent:GetParent()==self:GetNetEnt("exterior") then
 			return true
 		end
 	end)

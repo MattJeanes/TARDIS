@@ -18,7 +18,7 @@ function ENT:AddPart(e)
 end
 
 local function AutoSetup(e)
-	e:SetModel(e.Model)		
+	e:SetModel(e.Model)
 	e:PhysicsInit( SOLID_VPHYSICS )
 	e:SetMoveType( MOVETYPE_VPHYSICS )
 	e:SetSolid( SOLID_VPHYSICS )

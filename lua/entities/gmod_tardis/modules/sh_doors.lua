@@ -11,13 +11,6 @@ if SERVER then
 		return self:GetNetVar("doorstate",false)
 	end
 	
-	ENT:AddHook("ToggleDoor", "doors", function(self,open)
-		if open then
-			self:SetCollisionGroup( COLLISION_GROUP_WORLD )
-		else
-			self:SetCollisionGroup( COLLISION_GROUP_NONE )
-		end
-	end)
 	ENT:AddHook("ToggleDoor", "intdoors", function(self,open)
 		local intdoor=self.interior:GetPart("door")
 		if IsValid(intdoor) then
@@ -33,17 +26,35 @@ else
 		return self.DoorPos ~= 0
 	end
 
-	ENT:AddHook("Initialize", "interior", function(self)
+	ENT:AddHook("Initialize", "doors", function(self)
 		self.DoorPos=0
 		self.DoorTarget=0
+		
+		self.Door=ents.CreateClientProp("models/drmatt/tardis/exterior/door.mdl")
+		self.Door:SetPos(self:LocalToWorld(Vector(0,0,0)))
+		self.Door:SetAngles(self:LocalToWorldAngles(Angle(0,0,0)))
+		self.Door:SetParent(self)
+		
+		self.Door:SetBodygroup(1,1) -- Sticker
+		self.Door:SetBodygroup(2,1) -- Lit sign
 	end)
 	
-	ENT:AddHook("Think", "interior", function(self)
+	ENT:AddHook("OnRemove", "doors", function(self)
+		if IsValid(self.Door) then
+			self.Door:Remove()
+			self.Door=nil
+		end
+	end)
+	
+	ENT:AddHook("Think", "doors", function(self)
 		self.DoorTarget=self:GetNetVar("doorstate") and 1 or 0
 		
 		-- Have to spam it otherwise it glitches out (http://facepunch.com/showthread.php?t=1414695)
 		self.DoorPos=math.Approach(self.DoorPos,self.DoorTarget,FrameTime()*2)
-		self:SetPoseParameter("switch", self.DoorPos)
-		self:InvalidateBoneCache()
+		
+		if IsValid(self.Door) then
+			self.Door:SetPoseParameter("switch", self.DoorPos)
+			self.Door:InvalidateBoneCache()
+		end
 	end)
 end

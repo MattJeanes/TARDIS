@@ -16,14 +16,12 @@ if SERVER then
 			ply:SetNetVar("tardis_i",self.interior)
 			if not notp then
 				local pos=self:WorldToLocal(ply:GetPos())
-				ply:SetPos(self.interior:LocalToWorld(Vector(0,-300,90))+Vector(0,pos.y,pos.z))
+				ply:SetPos(self.interior:LocalToWorld(Vector(0,-300,95))+Vector(0,pos.y,pos.z))
 				local ang=(ply:EyeAngles()-self:GetAngles())+self.interior:GetAngles()+Angle(0,-90,0)
 				local fwd=(ply:GetVelocity():Angle()+(self.interior:GetAngles()-self:GetAngles())+Angle(0,-90,0)):Forward()
 				ply:SetEyeAngles(Angle(ang.p,ang.y,0))
 				ply:SetLocalVelocity(fwd*ply:GetVelocity():Length())
 			end
-		else
-			--TODO: Go straight to 3rd person view bypassing interior if it doesnt exist for some reason
 		end
 	end
 
