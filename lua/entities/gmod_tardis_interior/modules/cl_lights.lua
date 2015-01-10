@@ -2,7 +2,7 @@ ENT:AddHook("Draw", "lights", function(self)
 	local dlight = DynamicLight( self:EntIndex() )
 	if ( dlight ) then
 		local size=1024
-		local c=Color(255,50,0)
+		local c=Color(0,100,255)
 		dlight.Pos = self:LocalToWorld(Vector(0,0,0))
 		dlight.r = c.r
 		dlight.g = c.g
@@ -20,14 +20,14 @@ end)
 
 ENT:AddHook("PostDrawTranslucentRenderables", "spritetest", function(self)
 	if self:CallHook("ShouldDraw") then
-		local SPos = Vector(11,425,205)
+		local SPos = Vector(51.75,460,222.5)
 		Pos = self:LocalToWorld(SPos)
 		local Vis = util.PixelVisible(Pos, 3, self.pixvis)*255
 		if Vis > 0 then
 			local Mat = Material("sprites/light_ignorez")
 			render.SetMaterial(Mat)
 
-			local Size = 10
+			local Size = 32
 			render.DrawSprite(Pos, Size, Size, Color(255,153,0, Vis))
 		end
 	end

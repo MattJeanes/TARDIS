@@ -8,7 +8,7 @@ if SERVER then
 		self.portals[1]:SetDisappearDist(1000)
 		self.portals[1]:SetWidth(44)
 		self.portals[1]:SetHeight(91)
-		self.portals[1]:SetPos(self.exterior:LocalToWorld(Vector(26,0,48)))
+		self.portals[1]:SetPos(self.exterior:LocalToWorld(Vector(26,0,51.65)))
 		self.portals[1]:SetAngles(self.exterior:GetAngles())
 		self.portals[1]:SetExit(self.portals[2])
 		self.portals[1]:SetParent(self.exterior)
@@ -16,9 +16,9 @@ if SERVER then
 		self.portals[1]:Activate()
 		
 		self.portals[2]:SetDisappearDist(1000)
-		self.portals[2]:SetWidth(44)
+		self.portals[2]:SetWidth(50)
 		self.portals[2]:SetHeight(91)
-		self.portals[2]:SetPos(self:LocalToWorld(Vector(-1.5,-335.5,130.7)))
+		self.portals[2]:SetPos(self:LocalToWorld(Vector(-1,-353.5,136)))
 		self.portals[2]:SetAngles(self:LocalToWorldAngles(Angle(0,90,0)))
 		self.portals[2]:SetExit(self.portals[1])
 		self.portals[2]:SetParent(self)
@@ -60,6 +60,14 @@ else
 			return true
 		end
 	end)
+	
+	--[[ Causes player to be drawn in first person for some reason
+	hook.Add("ShouldDrawLocalPlayer", "tardisint-portals", function()
+		if wp.drawing and wp.drawingent and wp.drawingent:GetParent()==LocalPlayer():GetNetEnt("tardis") then
+			return true
+		end
+	end)
+	--]]
 	
 	hook.Add("wp-shouldrender", "tardisint-portals", function(portal,exit,origin)
 		local p=portal:GetParent()

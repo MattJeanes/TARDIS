@@ -15,7 +15,7 @@ if SERVER then
 		self:SetBodygroup(3,1) -- 3D sign
 		
 		local int=self.interior
-		self:SetPos(int:LocalToWorld(Vector(-1.5,-309.5,82.7)))
+		self:SetPos(int:LocalToWorld(Vector(-1,-327.5,84.3)))
 		self:SetAngles(int:LocalToWorldAngles(Angle(0,-90,0)))
 		self:SetParent(int)
 	end

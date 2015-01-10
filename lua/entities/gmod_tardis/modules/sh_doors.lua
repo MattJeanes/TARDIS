@@ -21,22 +21,17 @@ if SERVER then
 			end
 		end
 	end)
-else
-	function ENT:DoorOpen()
-		return self.DoorPos ~= 0
-	end
-
+	
 	ENT:AddHook("Initialize", "doors", function(self)
-		self.DoorPos=0
-		self.DoorTarget=0
-		
-		self.Door=ents.CreateClientProp("models/drmatt/tardis/exterior/door.mdl")
+		self.Door=ents.Create("prop_physics")
+		self.Door:SetModel("models/drmatt/tardis/exterior/door.mdl")
 		self.Door:SetPos(self:LocalToWorld(Vector(0,0,0)))
 		self.Door:SetAngles(self:LocalToWorldAngles(Angle(0,0,0)))
 		self.Door:SetParent(self)
 		
 		self.Door:SetBodygroup(1,1) -- Sticker
 		self.Door:SetBodygroup(2,1) -- Lit sign
+		self:SetNetVar("door", self.Door)
 	end)
 	
 	ENT:AddHook("OnRemove", "doors", function(self)
@@ -45,6 +40,15 @@ else
 			self.Door=nil
 		end
 	end)
+else
+	function ENT:DoorOpen()
+		return self.DoorPos ~= 0
+	end
+
+	ENT:AddHook("Initialize", "doors", function(self)
+		self.DoorPos=0
+		self.DoorTarget=0
+	end)
 	
 	ENT:AddHook("Think", "doors", function(self)
 		self.DoorTarget=self:GetNetVar("doorstate") and 1 or 0
@@ -52,9 +56,10 @@ else
 		-- Have to spam it otherwise it glitches out (http://facepunch.com/showthread.php?t=1414695)
 		self.DoorPos=math.Approach(self.DoorPos,self.DoorTarget,FrameTime()*2)
 		
-		if IsValid(self.Door) then
-			self.Door:SetPoseParameter("switch", self.DoorPos)
-			self.Door:InvalidateBoneCache()
+		local door=self:GetNetEnt("door")
+		if IsValid(door) then
+			door:SetPoseParameter("switch", self.DoorPos)
+			door:InvalidateBoneCache()
 		end
 	end)
 end
