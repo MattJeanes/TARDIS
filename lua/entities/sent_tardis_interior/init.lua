@@ -182,6 +182,7 @@ function ENT:MakePart(class,vec,ang,weld)
 	ent.owner=self.owner
 	ent:SetPos(self:LocalToWorld(vec))
 	ent:SetAngles(ang)
+	//ent:SetCollisionGroup(COLLISION_GROUP_WORLD)
 	ent:Spawn()
 	ent:Activate()
 	if weld then

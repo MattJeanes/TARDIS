@@ -1,4 +1,6 @@
 include('shared.lua')
+include('von.lua')
+local von=ENT.von
 
 function ENT:Draw()
 	if LocalPlayer().tardis==self:GetNWEntity("TARDIS", NULL) and LocalPlayer().tardis_viewmode and not LocalPlayer().tardis_render then
@@ -54,12 +56,12 @@ net.Receive("TARDISInt-Locations-GUI", function()
 	vec1:SetPos( 140, 55 )
 	vec1:SetSize( 85, 20 )
 	vec1:SetText( "X" )
-	vec1.OnGetFocus = function( self)
+	vec1.OnGetFocus = function( self )
 		if self:GetValue()=="X" then
 			self:SetText("")
 		end
 	end
-	vec1.OnLoseFocus = function( self)
+	vec1.OnLoseFocus = function( self )
 		if self:GetValue()=="" then
 			self:SetText("X")
 		else
@@ -78,12 +80,12 @@ net.Receive("TARDISInt-Locations-GUI", function()
 	vec2:SetPos( 230, 55 )
 	vec2:SetSize( 85, 20 )
 	vec2:SetText( "Y" )
-	vec2.OnGetFocus = function( self)
+	vec2.OnGetFocus = function( self )
 		if self:GetValue()=="Y" then
 			self:SetText("")
 		end
 	end
-	vec2.OnLoseFocus = function( self)
+	vec2.OnLoseFocus = function( self )
 		if self:GetValue()=="" then
 			self:SetText("Y")
 		else
@@ -102,12 +104,12 @@ net.Receive("TARDISInt-Locations-GUI", function()
 	vec3:SetPos( 320, 55 )
 	vec3:SetSize( 85, 20 )
 	vec3:SetText( "Z" )
-	vec3.OnGetFocus = function( self)
+	vec3.OnGetFocus = function( self )
 		if self:GetValue()=="Z" then
 			self:SetText("")
 		end
 	end
-	vec3.OnLoseFocus = function( self)
+	vec3.OnLoseFocus = function( self )
 		if self:GetValue()=="" then
 			self:SetText("Z")
 		else
@@ -133,12 +135,12 @@ net.Receive("TARDISInt-Locations-GUI", function()
 	ang1:SetPos( 140, 105 )
 	ang1:SetSize( 85, 20 )
 	ang1:SetText( "Pitch" )
-	ang1.OnGetFocus = function( self)
+	ang1.OnGetFocus = function( self )
 		if self:GetValue()=="Pitch" then
 			self:SetText("")
 		end
 	end
-	ang1.OnLoseFocus = function( self)
+	ang1.OnLoseFocus = function( self )
 		if self:GetValue()=="" then
 			self:SetText("Pitch")
 		else
@@ -157,12 +159,12 @@ net.Receive("TARDISInt-Locations-GUI", function()
 	ang2:SetPos( 230, 105 )
 	ang2:SetSize( 85, 20 )
 	ang2:SetText( "Yaw" )
-	ang2.OnGetFocus = function( self)
+	ang2.OnGetFocus = function( self )
 		if self:GetValue()=="Yaw" then
 			self:SetText("")
 		end
 	end
-	ang2.OnLoseFocus = function( self)
+	ang2.OnLoseFocus = function( self )
 		if self:GetValue()=="" then
 			self:SetText("Yaw")
 		else
@@ -181,12 +183,12 @@ net.Receive("TARDISInt-Locations-GUI", function()
 	ang3:SetPos( 320, 105 )
 	ang3:SetSize( 85, 20 )
 	ang3:SetText( "Roll" )
-	ang3.OnGetFocus = function( self)
+	ang3.OnGetFocus = function( self )
 		if self:GetValue()=="Roll" then
 			self:SetText("")
 		end
 	end
-	ang3.OnLoseFocus = function( self)
+	ang3.OnLoseFocus = function( self )
 		if self:GetValue()=="" then
 			self:SetText("Roll")
 		else
