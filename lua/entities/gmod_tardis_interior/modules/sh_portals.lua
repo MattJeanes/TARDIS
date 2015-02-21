@@ -99,7 +99,8 @@ hook.Add("wp-bullet", "tardisint-portals", function(ent)
 				return false
 			end
 		elseif class=="gmod_tardis_interior" then
-			if not e.exterior:DoorOpen() then
+			local ext=(SERVER and e.exterior or e:GetNetEnt("exterior"))
+			if IsValid(ext) and (not ext:DoorOpen()) then
 				return false
 			end
 		end
