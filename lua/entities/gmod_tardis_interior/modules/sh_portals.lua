@@ -61,14 +61,6 @@ else
 		end
 	end)
 	
-	--[[ Causes player to be drawn in first person for some reason
-	hook.Add("ShouldDrawLocalPlayer", "tardisint-portals", function()
-		if wp.drawing and wp.drawingent and wp.drawingent:GetParent()==LocalPlayer():GetNetEnt("tardis") then
-			return true
-		end
-	end)
-	--]]
-	
 	hook.Add("wp-shouldrender", "tardisint-portals", function(portal,exit,origin)
 		local p=portal:GetParent()
 		if IsValid(p) and (p:GetClass()=="gmod_tardis" or p:GetClass()=="gmod_tardis_interior") then
@@ -77,4 +69,39 @@ else
 			end
 		end
 	end)
+	
+	-- Smoothly closes door (if open) as player reaches render limit TODO: make option (on default?)
+	ENT:AddHook("Think", "portals", function(self)
+		local ext=self:GetNetEnt("exterior")
+		if IsValid(ext) then
+			if ext:GetNetVar("doorstate") then
+				local dist=GetViewEntity():GetPos():Distance(ext:GetPos())
+				if dist>=750 and dist<=1000 then
+					ext.DoorOverride=1-(dist-750)/250
+				elseif dist>1000 and ext.DoorOverride and ext.DoorOverride ~= 0 then
+					ext.DoorOverride=0
+				elseif dist<800 and ext.DoorOverride then
+					ext.DoorOverride=nil
+				end
+			elseif ext.DoorOverride then
+				ext.DoorOverride = nil
+			end
+		end
+	end)
 end
+
+hook.Add("wp-bullet", "tardisint-portals", function(ent)
+	local e=ent:GetParent()
+	if IsValid(e) then
+		local class=e:GetClass()
+		if class=="gmod_tardis" then
+			if not e:DoorOpen() then
+				return false
+			end
+		elseif class=="gmod_tardis_interior" then
+			if not e.exterior:DoorOpen() then
+				return false
+			end
+		end
+	end
+end)

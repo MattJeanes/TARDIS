@@ -5,7 +5,7 @@ function ENT:Draw()
 		local int=self:GetNetEnt("interior")
 		local ext=self:GetNetEnt("exterior")
 		if IsValid(int) and IsValid(ext) then
-			if int:CallHook("ShouldDraw") or (ext:DoorOpen() and self.ClientDrawOverride and LocalPlayer():GetPos():Distance(ext:GetPos())<500) or self.ExteriorPart then -- TODO: Improve
+			if int:CallHook("ShouldDraw") or (ext:DoorOpen() and self.ClientDrawOverride and LocalPlayer():GetPos():Distance(ext:GetPos())<1000) or self.ExteriorPart then -- TODO: Improve
 				self:DoDraw()
 			end
 		end
@@ -30,7 +30,7 @@ function ENT:Think()
 		local int=self:GetNetEnt("interior")
 		local ext=self:GetNetEnt("exterior")
 		if IsValid(int) and IsValid(ext) then
-			if int:CallHook("ShouldThink") or (ext:DoorOpen() and self.ClientThinkOverride and LocalPlayer():GetPos():Distance(ext:GetPos())<500) or self.ExteriorPart then -- TODO: Improve
+			if int:CallHook("ShouldThink") or (ext:DoorOpen() and self.ClientThinkOverride and LocalPlayer():GetPos():Distance(ext:GetPos())<1000) or self.ExteriorPart then -- TODO: Improve
 				self:DoThink()
 			end
 		end

@@ -20,7 +20,7 @@ function ENT:Initialize()
 	self:PhysicsInit( SOLID_VPHYSICS )
 	self:SetMoveType( MOVETYPE_VPHYSICS )
 	self:SetSolid( SOLID_VPHYSICS )
-	self:SetRenderMode( RENDERMODE_TRANSALPHA )
+	self:SetRenderMode( RENDERMODE_NORMAL )
 	self:SetUseType( SIMPLE_USE )
 	
 	self.phys = self:GetPhysicsObject()

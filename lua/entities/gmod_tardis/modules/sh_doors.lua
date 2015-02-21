@@ -51,10 +51,10 @@ else
 	end)
 	
 	ENT:AddHook("Think", "doors", function(self)
-		self.DoorTarget=self:GetNetVar("doorstate") and 1 or 0
+		self.DoorTarget=self.DoorOverride or (self:GetNetVar("doorstate") and 1 or 0)
 		
 		-- Have to spam it otherwise it glitches out (http://facepunch.com/showthread.php?t=1414695)
-		self.DoorPos=math.Approach(self.DoorPos,self.DoorTarget,FrameTime()*2)
+		self.DoorPos=self.DoorOverride or math.Approach(self.DoorPos,self.DoorTarget,FrameTime()*2)
 		
 		local door=self:GetNetEnt("door")
 		if IsValid(door) then
