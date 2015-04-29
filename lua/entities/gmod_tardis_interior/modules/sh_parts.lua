@@ -30,7 +30,7 @@ local function AutoSetup(e)
 		e.phys:EnableMotion(e.Motion or false)
 	end
 	
-	if e.Collision==false then
+	if not e.Collision then
 		e:SetCollisionGroup( COLLISION_GROUP_WORLD ) -- Still works with USE, TODO: Find better way if possible (for performance reasons)
 	end
 end
@@ -40,9 +40,9 @@ if SERVER then
 		self.parts={}
 		for k,v in pairs(parts) do
 			local e=ents.Create(v)
-			e.owner=self.owner
+			e:SetCreator(self:GetCreator())
 			if CPPI then
-				e:CPPISetOwner(self.owner)
+				e:CPPISetOwner(self:GetCreator())
 			end
 			e.interior=self
 			e.exterior=self.exterior

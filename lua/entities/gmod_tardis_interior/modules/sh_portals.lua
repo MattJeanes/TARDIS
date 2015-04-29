@@ -1,5 +1,20 @@
 -- Handles portals for rendering, thanks to bliptec (http://facepunch.com/member.php?u=238641) for being a babe
 if SERVER then
+	local function isstuck(ply)
+		print("checking stuck")
+		local pos=ply:LocalToWorld(ply:OBBCenter())
+		local td={}
+		td.start=pos
+		td.endpos=pos
+		td.mins=ply:OBBMins()
+		td.maxs=ply:OBBMaxs()
+		td.filter={ply}
+		
+		local tr=util.TraceHull(td)
+		PrintTable(tr)
+		return tr.Hit
+	end
+	
 	ENT:AddHook("Initialize", "portals", function(self)
 		self.portals={}
 		self.portals[1]=ents.Create("linked_portal_door")
@@ -16,7 +31,7 @@ if SERVER then
 		self.portals[1]:Activate()
 		
 		self.portals[2]:SetDisappearDist(1000)
-		self.portals[2]:SetWidth(50)
+		self.portals[2]:SetWidth(60)
 		self.portals[2]:SetHeight(91)
 		self.portals[2]:SetPos(self:LocalToWorld(Vector(-1,-353.5,136)))
 		self.portals[2]:SetAngles(self:LocalToWorldAngles(Angle(0,90,0)))
@@ -34,6 +49,9 @@ if SERVER then
 		self.portals[2].TPHook = function(s,ent)
 			if ent:IsPlayer() then
 				self.exterior:PlayerExit(ent,false,true)
+				--if isstuck(ent) then
+				--	ent:ChatPrint("stuck")
+				--end
 			end
 		end
 	end)

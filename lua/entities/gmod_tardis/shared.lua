@@ -4,12 +4,13 @@ if WireLib then
 else
 	ENT.Base			= "base_gmodentity"
 end 
-ENT.PrintName		= "TARDIS Remake"
+ENT.PrintName		= "TARDIS Rewrite"
 ENT.Author			= "Dr. Matt"
 ENT.Spawnable		= true
 ENT.AdminSpawnable	= true
 ENT.RenderGroup 	= RENDERGROUP_BOTH
 ENT.Category		= "Doctor Who"
+ENT.TardisExterior	= true
 
 ENT.hooks={}
 

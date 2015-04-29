@@ -9,7 +9,7 @@ function ENT:SpawnFunction( ply, tr, ClassName )
 	ent:SetPos( SpawnPos )
 	local ang=Angle(0, (ply:GetPos()-SpawnPos):Angle().y, 0)
 	ent:SetAngles( ang )
-	ent.owner=ply
+	ent:SetCreator( ply )
 	ent:Spawn()
 	ent:Activate()
 	return ent
@@ -41,7 +41,7 @@ end
 
 function ENT:Think()
 	for k,v in pairs(self.occupants) do
-		if not v or not IsValid(v) then
+		if not k or not IsValid(k) then
 			self.occupants[k]=nil
 		end
 	end

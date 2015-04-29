@@ -39,17 +39,28 @@ local function planeLineIntersect( lineStart, lineEnd, planeNormal, planePoint )
 	return lineStart + t * ( lineEnd - lineStart )
 end
 
+--[[
+local gx,gy=0,0
+local function testdraw(x,y)
+	surface.SetDrawColor(255,255,255,255)
+	surface.DrawLine( x, y-8, x, y+8 )
+	surface.DrawLine( x-8, y, x+8, y )
+end
+hook.Add("HUDPaint", "bleh", function()
+	testdraw(gx,gy)
+end)
+]]--
+
 local function getCursorPos()
 	local p = planeLineIntersect( LocalPlayer():EyePos(), LocalPlayer():EyePos() + LocalPlayer():GetAimVector() * 16000, normal, origin )
 	local offset = origin - p
 	
 	local angle2 = angle:Angle()
-	angle2:RotateAroundAxis( normal, 90 )
+	angle2:RotateAroundAxis( normal, -90 )
 	angle2 = angle2:Forward()
 	
 	local x = Vector( offset.x * angle.x, offset.y * angle.y, offset.z * angle.z ):Length()
 	local y = Vector( offset.x * angle2.x, offset.y * angle2.y, offset.z * angle2.z ):Length()
-	
 	return x, y
 end
 
@@ -72,7 +83,6 @@ local function absolutePanelPos( pnl )
 		x = x + px
 		y = y + py
 	end
-	
 	return x, y
 end
 
@@ -82,7 +92,7 @@ local function pointInsidePanel( pnl, x, y )
 
 	x = x / scale
 	y = y / scale
-
+	
 	return x >= px and y >= py and x <= px + sx and y <= py + sy
 end
 
@@ -107,11 +117,10 @@ local function isMouseOver( pnl )
 	return pointInsidePanel( pnl, getCursorPos() )
 end
 
+local curpnl={}
 local function postPanelEvent( pnl, event, ... )
-	if ( not pnl:IsValid() or not pointInsidePanel( pnl, getCursorPos() ) ) then return false end
-	
+	if ( not pnl:IsValid() or not isMouseOver( pnl ) or not pnl:IsVisible() ) then return false end	
 	local handled = false
-	
 	for i,child in ipairs( pnl.Childs or {} ) do
 		if ( postPanelEvent( child, event, ... ) ) then
 			handled = true
@@ -121,6 +130,9 @@ local function postPanelEvent( pnl, event, ... )
 	
 	if ( not handled and pnl[ event ] ) then
 		pnl[ event ]( pnl, ... )
+		if event=="OnMousePressed" and not curpnl[pnl] then
+			curpnl[pnl]=true
+		end
 		return true
 	else
 		return false
@@ -142,12 +154,20 @@ local function checkHover( pnl )
 	end
 end
 
+local function facingPanel( pnl )
+	local vec = GetViewEntity():GetPos() - pnl.Origin
+
+	if pnl.Normal:Dot( vec ) > 0 then
+		return true
+	end
+end
+
 -- Mouse input
 
 hook.Add( "KeyPress", "VGUI3D2DMousePress", function( _, key )
 	if ( key == IN_USE ) then
 		for pnl in pairs( inputWindows ) do
-			if ( pnl:IsValid() ) then
+			if ( pnl:IsValid() and facingPanel( pnl ) ) then
 				origin = pnl.Origin
 				scale = pnl.Scale
 				angle = pnl.Angle
@@ -161,14 +181,23 @@ end )
 
 hook.Add( "KeyRelease", "VGUI3D2DMouseRelease", function( _, key )
 	if ( key == IN_USE ) then
+		local fnd=false
 		for pnl in pairs( inputWindows ) do
-			if ( pnl:IsValid() ) then
+			if ( pnl:IsValid() and facingPanel( pnl ) ) then
 				origin = pnl.Origin
 				scale = pnl.Scale
 				angle = pnl.Angle
 				normal = pnl.Normal
 				
 				postPanelEvent( pnl, "OnMouseReleased", MOUSE_LEFT )
+			end
+		end
+		if not fnd then
+			for k,v in pairs(curpnl) do
+				if k:IsValid() and k.OnMouseReleased then
+					k:OnMouseReleased( MOUSE_LEFT )
+				end
+				curpnl={}
 			end
 		end
 	end
@@ -239,6 +268,7 @@ end
 if not vguiCreate then vguiCreate = vgui.Create end
 function vgui.Create( class, parent )
 	local pnl = vguiCreate( class, parent )
+	if not pnl then return end
 	
 	pnl.Parent = parent
 	pnl.Class = class

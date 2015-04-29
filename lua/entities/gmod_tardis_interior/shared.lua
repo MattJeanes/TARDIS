@@ -10,6 +10,8 @@ ENT.Spawnable		= false
 ENT.AdminSpawnable	= false
 ENT.RenderGroup 	= RENDERGROUP_BOTH
 ENT.Category		= "Doctor Who"
+ENT.TardisPart		= true
+ENT.TardisInterior	= true
 
 ENT.hooks={}
 

@@ -5,7 +5,6 @@ PART.ID = "test"
 PART.Name = "Test Button"
 PART.Model = "models/Gibs/HGIBS.mdl"
 PART.AutoSetup = true
-PART.Collision = false
 
 if SERVER then
 	function PART:Initialize()		

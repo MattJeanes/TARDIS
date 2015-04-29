@@ -3,6 +3,7 @@
 
 if SERVER then
 	function ENT:ToggleDoor()
+		if not IsValid(self.interior) then return end
 		self:SetNetVar("doorstate",not self:GetNetVar("doorstate",false))
 		self:CallHook("ToggleDoor", self:DoorOpen())
 	end
@@ -43,6 +44,10 @@ if SERVER then
 else
 	function ENT:DoorOpen()
 		return self.DoorPos ~= 0
+	end
+	
+	function ENT:DoorMoving()
+		return self.DoorPos ~= self.DoorTarget
 	end
 
 	ENT:AddHook("Initialize", "doors", function(self)

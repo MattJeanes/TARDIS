@@ -4,8 +4,8 @@ if SERVER then
 	ENT:AddHook("Think", "handleplayers", function(self)
 		local pos=self:GetPos()
 		for k,v in pairs(self.occupants) do
-			if v:GetPos():Distance(pos) > 600 then
-				self.exterior:PlayerExit(v,true)
+			if k:GetPos():Distance(pos) > 600 then
+				self.exterior:PlayerExit(k,true)
 			end
 		end
 	end)

@@ -7,6 +7,7 @@ PART.Model = "models/drmatt/tardis/exterior/door.mdl"
 PART.AutoSetup = true
 PART.ClientThinkOverride = true
 PART.ClientDrawOverride = true
+PART.Collision = true
 
 if SERVER then
 	function PART:Initialize()	
@@ -15,7 +16,7 @@ if SERVER then
 		self:SetBodygroup(3,1) -- 3D sign
 		
 		local int=self.interior
-		self:SetPos(int:LocalToWorld(Vector(-1,-327.5,84.3)))
+		self:SetPos(int:LocalToWorld(Vector(-1,-327.5,84.35)))
 		self:SetAngles(int:LocalToWorldAngles(Angle(0,-90,0)))
 		self:SetParent(int)
 	end
