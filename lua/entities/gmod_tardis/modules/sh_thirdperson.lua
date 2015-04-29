@@ -69,7 +69,7 @@ else
 	
 	oldgetviewentity=oldgetviewentity or GetViewEntity
 	function GetViewEntity(...)
-		if LocalPlayer().GetTardisData and LocalPlayer():GetTardisData("thirdperson") then
+		if LocalPlayer():GetTardisData("thirdperson") then
 			local ext=LocalPlayer():GetTardisData("exterior")
 			if IsValid(ext.thpprop) then
 				return ext.thpprop
@@ -81,13 +81,13 @@ else
 	local meta=FindMetaTable("Player")
 	oldgetviewentity2=oldgetviewentity2 or meta.GetViewEntity
 	function meta:GetViewEntity(...)
-		if self.GetTardisData and self:GetTardisData("thirdperson") then
+		if self:GetTardisData("thirdperson") then
 			local ext=self:GetTardisData("exterior")
 			if IsValid(ext.thpprop) then
 				return ext.thpprop
 			end
 		end
-		return oldgetviewentity2(...)
+		return oldgetviewentity2(self,...)
 	end
 	hook.Add("CalcView", "tardis-thirdperson", function(ply, pos, ang)
 		if ply:GetTardisData("thirdperson") then
