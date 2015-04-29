@@ -63,8 +63,10 @@ else
 	end)
 	
 	ENT:AddHook("OnRemove", "thirdperson", function(self)
-		self.thpprop:Remove()
-		self.thpprop=nil
+		if IsValid(self.thpprop) then
+			self.thpprop:Remove()
+			self.thpprop=nil
+		end
 	end)
 	
 	oldgetviewentity=oldgetviewentity or GetViewEntity

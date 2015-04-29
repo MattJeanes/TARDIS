@@ -11,7 +11,7 @@ if SERVER then
 	end)
 else
 	ENT:AddHook("ShouldDraw", "players", function(self)
-		if LocalPlayer():GetNetEnt("tardis_i")==self and not wp.drawing then
+		if LocalPlayer():GetNetEnt("tardis_i")==self and not wp.drawing and not LocalPlayer():GetTardisData("thirdperson") then
 			return true
 		end
 	end)

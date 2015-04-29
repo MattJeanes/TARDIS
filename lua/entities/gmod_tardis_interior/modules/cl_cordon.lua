@@ -29,39 +29,44 @@ ENT:AddHook("Initialize", "cordon", function(self)
 	self.propscan=0
 end)
 
+function ENT:UpdateCordon()
+	local mins,maxs=self:LocalToWorld(self:OBBMins()), self:LocalToWorld(self:OBBMaxs())
+	local intardis=LocalPlayer():GetTardisData("interior")==self
+	for k,v in pairs(ents.FindInBox(mins,maxs)) do
+		self.props[v]=1
+		if not v.tardis_cordon then
+			v.tardis_cordon=v:GetNoDraw()
+		end
+		if v:GetNoDraw()==intardis then
+			v:SetNoDraw(not intardis)
+		end
+	end
+	for k,v in pairs(self.props) do
+		if IsValid(k) then
+			if v==true then -- left
+				k:SetNoDraw(k.tardis_cordon)
+				k.tardis_cordon=nil
+				self.props[k]=nil
+			elseif v==1 then
+				self.props[k]=true
+			end
+		else
+			self.props[k]=nil
+		end
+	end
+end
+
 ENT:AddHook("Think", "cordon", function(self)
 	if CurTime()>self.propscan then
 		self.propscan=CurTime()+1
-		local mins,maxs=self:LocalToWorld(self:OBBMins()), self:LocalToWorld(self:OBBMaxs())
-		local intardis=LocalPlayer():GetTardisData("interior")==self
-		for k,v in pairs(ents.FindInBox(mins,maxs)) do
-			--if not v.TardisPart and not v:GetParent().TardisInterior then
-				self.props[v]=true
-				if not intardis and v:GetNoDraw() then
-					v:SetNoDraw(true)
-				end
-			--end
-		end
-		for k,v in pairs(self.props) do
-			if not IsValid(k) then
-				self.props[k]=nil
-			end
-		end
+		self:UpdateCordon()
 	end
 end)
 
 ENT:AddHook("PlayerEnter", "cordon", function(self)
-	for k,v in pairs(self.props) do
-		if IsValid(k) then
-			k:SetNoDraw(false)
-		end
-	end
+	self:UpdateCordon()
 end)
 
 ENT:AddHook("PlayerExit", "cordon", function(self)
-	for k,v in pairs(self.props) do
-		if IsValid(k) then
-			k:SetNoDraw(true)
-		end
-	end
+	self:UpdateCordon()
 end)
