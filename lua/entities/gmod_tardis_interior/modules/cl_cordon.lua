@@ -3,13 +3,10 @@
 hook.Add("wp-prerender", "tardisi-cordon", function(portal,exit,origin)
 	local parent=exit:GetParent()
 	if parent.TardisInterior then
-		for k,v in pairs(parent.cordon) do
+		for k,v in pairs(parent.props) do
 			if IsValid(k) then
 				k.olddraw=k:GetNoDraw()
 				k:SetNoDraw(false)
-				if k:IsPlayer() then
-					GAMEMODE:UpdateAnimation(k,k:GetVelocity(),0)
-				end
 			end
 		end
 	end
@@ -18,7 +15,7 @@ end)
 hook.Add("wp-postrender", "tardisi-cordon", function(portal,exit,origin)
 	local parent=exit:GetParent()
 	if parent.TardisInterior then
-		for k,v in pairs(parent.cordon) do
+		for k,v in pairs(parent.props) do
 			if IsValid(k) then
 				k:SetNoDraw(k.olddraw)
 				k.olddraw=nil
@@ -27,62 +24,60 @@ hook.Add("wp-postrender", "tardisi-cordon", function(portal,exit,origin)
 	end
 end)
 
---[[
-local blendtemp=1
-hook.Add("PrePlayerDraw", "tardisi-cordon", function(ply)
-	blendtemp=render.GetBlend()
-	render.SetBlend(1)
-end)
-
-hook.Add("PostPlayerDraw", "tardisi-cordon", function(ply)
-	render.SetBlend(blendtemp)
-end)
-]]--
-
 ENT:AddHook("Initialize", "cordon", function(self)
-	self.cordon={}
-	self.cordonscan=0
+	self.props={}
+	self.propscan=0
+	self.mins,self.maxs=self:LocalToWorld(self:OBBMins()*0.95), self:LocalToWorld(self:OBBMaxs()*0.95)
 end)
+
+local blacklist={
+	["gmod_tardis_interior"] = true,
+	["sent_tardis_interior"] = true
+}
 
 function ENT:UpdateCordon()
-	local mins,maxs=self:LocalToWorld(self:OBBMins()), self:LocalToWorld(self:OBBMaxs())
 	local intardis=LocalPlayer():GetTardisData("interior")==self
-	for k,v in pairs(ents.FindInBox(mins,maxs)) do
-		if IsValid(v) and not v:IsPlayer() and not v:GetParent():IsPlayer() then
-			if self.cordon[v]==nil then
+	for k,v in pairs(ents.FindInBox(self.mins,self.maxs)) do
+		if not blacklist[v:GetClass()] then
+			--if not self.props[v] then
+			--	print("enter",v)
+			--end
+			self.props[v]=1
+			if not v.tardis_cordon then
 				v.tardis_cordon=v:GetNoDraw()
 			end
-			v:SetNoDraw(not intardis)
-			self.cordon[v]=1
+			if v:GetNoDraw()==intardis then
+				v:SetNoDraw(not intardis)
+			end
 		end
 	end
-	
-	for k,v in pairs(self.cordon) do
+	for k,v in pairs(self.props) do
 		if IsValid(k) then
-			if v==true then --left
+			if v==true then -- left
 				k:SetNoDraw(k.tardis_cordon)
 				k.tardis_cordon=nil
-				self.cordon[k]=nil
+				self.props[k]=nil
+				--print("exit",k)
 			elseif v==1 then
-				self.cordon[k]=true
+				self.props[k]=true
 			end
 		else
-			self.cordon[k]=nil
+			self.props[k]=nil
 		end
 	end
 end
 
 ENT:AddHook("Think", "cordon", function(self)
-	if CurTime()>self.cordonscan then
-		self.cordonscan=CurTime()+1
+	if CurTime()>self.propscan then
+		self.propscan=CurTime()+1
 		self:UpdateCordon()
 	end
 end)
 
-ENT:AddHook("PlayerEnter", "cordon", function(self,ply)
-	if ply==LocalPlayer() then self:UpdateCordon() end
+ENT:AddHook("PlayerEnter", "cordon", function(self)
+	self:UpdateCordon()
 end)
 
-ENT:AddHook("PlayerExit", "cordon", function(self,ply)
-	if ply==LocalPlayer() then self:UpdateCordon() end
+ENT:AddHook("PlayerExit", "cordon", function(self)
+	self:UpdateCordon()
 end)

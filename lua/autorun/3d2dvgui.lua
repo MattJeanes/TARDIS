@@ -40,14 +40,18 @@ local function planeLineIntersect( lineStart, lineEnd, planeNormal, planePoint )
 end
 
 --[[
-local gx,gy=0,0
 local function testdraw(x,y)
 	surface.SetDrawColor(255,255,255,255)
-	surface.DrawLine( x, y-8, x, y+8 )
-	surface.DrawLine( x-8, y, x+8, y )
+	surface.DrawLine( x, y-16, x, y+16 )
+	surface.DrawLine( x-16, y, x+16, y )
 end
-hook.Add("HUDPaint", "bleh", function()
-	testdraw(gx,gy)
+local function testdraw2(x,y)
+	surface.SetDrawColor(255,255,255,255)
+	surface.DrawLine(x,-10000,x,10000)
+	surface.DrawLine(-10000,y,10000,y)
+end
+hook.Add("HUDPaint","testdraw", function()
+	--testdraw(ScrW()/2,ScrH()/2)
 end)
 ]]--
 
@@ -59,8 +63,12 @@ local function getCursorPos()
 	angle2:RotateAroundAxis( normal, -90 )
 	angle2 = angle2:Forward()
 	
-	local x = Vector( offset.x * angle.x, offset.y * angle.y, offset.z * angle.z ):Length()
-	local y = Vector( offset.x * angle2.x, offset.y * angle2.y, offset.z * angle2.z ):Length()
+	local offsetp = Vector(offset.x, offset.y, offset.z)
+	offsetp:Rotate(-normal:Angle())
+
+	local x = -offsetp.y
+	local y = offsetp.z
+
 	return x, y
 end
 
@@ -93,7 +101,16 @@ local function pointInsidePanel( pnl, x, y )
 	x = x / scale
 	y = y / scale
 	
-	return x >= px and y >= py and x <= px + sx and y <= py + sy
+	return (x >= px and y >= py and x <= px + sx and y <= py + sy), x, y
+end
+
+local function drawCrosshair( pnl, x, y )
+	local inside,x,y=pointInsidePanel(pnl,x,y)
+	if inside then		
+		surface.SetDrawColor(0,0,0)
+		surface.DrawLine( x, y-8, x, y+8 )
+		surface.DrawLine( x-8, y, x+8, y )
+	end
 end
 
 -- Input
@@ -256,6 +273,7 @@ function _R.Panel:Paint3D2D()
 	-- Draw it manually
 	self:SetPaintedManually( false )
 		self:PaintManual()
+		drawCrosshair(self,getCursorPos())
 	self:SetPaintedManually( true )
 end
 

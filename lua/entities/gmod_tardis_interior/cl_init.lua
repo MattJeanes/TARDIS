@@ -2,6 +2,7 @@ include('shared.lua')
 
 function ENT:Draw()
 	if self:CallHook("ShouldDraw") then
+		self:CallHook("PreDraw")
 		self:DrawModel()
 		if WireLib then
 			Wire_Render(self)

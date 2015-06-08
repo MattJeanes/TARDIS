@@ -1,17 +1,15 @@
 -- Handles portals for rendering, thanks to bliptec (http://facepunch.com/member.php?u=238641) for being a babe
+
 if SERVER then
 	local function isstuck(ply)
-		print("checking stuck")
-		local pos=ply:LocalToWorld(ply:OBBCenter())
+		local pos=ply:GetPos()
 		local td={}
 		td.start=pos
 		td.endpos=pos
 		td.mins=ply:OBBMins()
 		td.maxs=ply:OBBMaxs()
-		td.filter={ply}
-		
+		td.filter={ply}		
 		local tr=util.TraceHull(td)
-		PrintTable(tr)
 		return tr.Hit
 	end
 	
@@ -49,9 +47,9 @@ if SERVER then
 		self.portals[2].TPHook = function(s,ent)
 			if ent:IsPlayer() then
 				self.exterior:PlayerExit(ent,false,true)
-				--if isstuck(ent) then
-				--	ent:ChatPrint("stuck")
-				--end
+				if isstuck(ent) then
+					self.exterior:PlayerExit(ent,true)
+				end
 			end
 		end
 	end)

@@ -38,22 +38,27 @@ function ENT:CallHook(name,...)
 	end
 end
 
-// Loads modules
-local folder = "entities/gmod_tardis_interior/modules/"
-local modules = file.Find( folder.."*.lua", "LUA" )
-for _, plugin in ipairs( modules ) do
-	local prefix = string.Left( plugin, string.find( plugin, "_" ) - 1 )
-	if ( CLIENT and ( prefix == "sh" or prefix == "cl" ) ) then
-		include( folder..plugin )
-	elseif ( SERVER ) then
-		if prefix=="sv" or prefix=="sh" then
-			include( folder..plugin )
-		end
-		if ( prefix == "sh" or prefix == "cl" ) then
-			AddCSLuaFile( folder..plugin )
+function ENT:LoadFolder(path,addonly)
+	-- Loads modules
+	local folder = "entities/gmod_tardis_interior/"..path.."/"
+	local modules = file.Find( folder.."*.lua", "LUA" )
+	for _, plugin in ipairs( modules ) do
+		local prefix = string.Left( plugin, string.find( plugin, "_" ) - 1 )
+		if ( CLIENT and ( prefix == "sh" or prefix == "cl" ) ) then
+			if not addonly then
+				include( folder..plugin )
+			end
+		elseif ( SERVER ) then
+			if ( prefix=="sv" or prefix=="sh" ) and ( not addonly ) then
+				include( folder..plugin )
+			end
+			if ( prefix == "sh" or prefix == "cl" ) then
+				AddCSLuaFile( folder..plugin )
+			end
 		end
 	end
 end
+ENT:LoadFolder("modules")
 
 function ENT:Use(a,c)
 	self:CallHook("Use",a,c)

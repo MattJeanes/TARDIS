@@ -31,7 +31,9 @@ if SERVER then
 else
 	function ENT:DoorOpen()
 		local ext=self:GetNetEnt("exterior")
-		return ext:DoorOpen()
+		if IsValid(ext) then
+			return ext:DoorOpen()
+		end
 	end
 	
 	function PART:DoThink()

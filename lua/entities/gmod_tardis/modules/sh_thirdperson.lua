@@ -4,9 +4,9 @@ if SERVER then
 	function ENT:PlayerThirdPerson(ply, enabled)
 		if IsValid(ply) and ply:IsPlayer() and self.occupants[ply] then
 			if enabled then
-				--if IsValid(ply:GetActiveWeapon()) then
-				--	ply:SetTardisData("activewep", ply:GetActiveWeapon():GetClass())
-				--end
+				if IsValid(ply:GetActiveWeapon()) then
+					ply:SetTardisData("activewep", ply:GetActiveWeapon():GetClass())
+				end
 				ply:Give("tardis_hands")
 				ply:SetActiveWeapon(ply:GetWeapon("tardis_hands"))
 				ply:SetTardisData("thirdperson",true,true)
@@ -14,11 +14,11 @@ if SERVER then
 				ply:SetTardisData("thirdpersoncool", CurTime()+0.5)
 				ply:SetEyeAngles(self:LocalToWorldAngles(Angle(10,180,0)))
 			else
+				if ply:GetTardisData("activewep") then
+					ply:SetActiveWeapon(ply:GetWeapon(ply:GetTardisData("activewep")))
+				end
+				ply:SetTardisData("activewep")
 				ply:StripWeapon("tardis_hands")
-				--if ply:GetTardisData("activewep") then
-				--	ply:SetActiveWeapon(ply:GetWeapon(ply:GetTardisData("activewep")))
-				--end
-				--ply:SetTardisData("activewep")
 				ply:SetTardisData("thirdperson",false,true)
 				ply:SetEyeAngles(ply:GetTardisData("thirdpersonang"),true)
 				ply:SetTardisData("thirdpersonang")

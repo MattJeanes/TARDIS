@@ -20,10 +20,9 @@ if SERVER then
 			ply:SetNetVar("tardis_i",self.interior)
 			net.Start("TARDIS-EnterExit")
 				net.WriteBool(true)
-				net.WriteEntity(ply)
 				net.WriteEntity(self)
 				net.WriteEntity(self.interior)
-			net.Broadcast()
+			net.Send(ply)
 			if not notp then
 				local pos=self:WorldToLocal(ply:GetPos())
 				ply:SetPos(self.interior:LocalToWorld(Vector(0,-300,95))+Vector(0,pos.y,pos.z))
@@ -47,10 +46,9 @@ if SERVER then
 		ply:SetNetVar("tardis_i",nil)
 		net.Start("TARDIS-EnterExit")
 			net.WriteBool(false)
-			net.WriteEntity(ply)
 			net.WriteEntity(self)
 			net.WriteEntity(self.interior)
-		net.Broadcast()
+		net.Send(ply)
 		if not notp then
 			local pos=self:GetPos()+self:GetForward()*70+Vector(0,0,5)
 			ply:SetPos(pos)
@@ -121,22 +119,21 @@ else
 	
 	net.Receive("TARDIS-EnterExit", function()
 		local enter=net.ReadBool()
-		local ply=net.ReadEntity()
 		local ext=net.ReadEntity()
 		local int=net.ReadEntity()
 		
 		if not IsValid(ext) then return end
 		if enter then
-			ext:CallHook("PlayerEnter",ply)
+			ext:CallHook("PlayerEnter")
 		else
-			ext:CallHook("PlayerExit",ply)
+			ext:CallHook("PlayerExit")
 		end
 		
 		if not IsValid(int) then return end
 		if enter then
-			int:CallHook("PlayerEnter",ply)
+			int:CallHook("PlayerEnter")
 		else
-			int:CallHook("PlayerExit",ply)
+			int:CallHook("PlayerExit")
 		end
 	end)
 end
