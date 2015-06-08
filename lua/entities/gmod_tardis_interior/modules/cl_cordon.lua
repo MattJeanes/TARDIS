@@ -69,7 +69,13 @@ function ENT:UpdateCordon()
 end
 
 ENT:AddHook("OnRemove", "cordon", function(self)
-	self:UpdateCordon()
+	for k,v in pairs(self.props) do
+		if IsValid(k) then
+			k:SetNoDraw(k.tardis_cordon)
+			k.tardis_cordon=nil
+			self.props[k]=nil
+		end
+	end
 end)
 
 ENT:AddHook("Think", "cordon", function(self)
