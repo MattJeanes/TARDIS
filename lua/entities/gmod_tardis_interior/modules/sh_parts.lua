@@ -73,7 +73,10 @@ else
 	net.Receive("TARDIS-SetupPart", function(ply)
 		local e=net.ReadEntity()
 		local name=net.ReadString()
-		e:GetNetEnt("interior").parts[name]=e
+		local int=e:GetNetEnt("interior")
+		if IsValid(int) then
+			int.parts[name]=e
+		end
 	end)
 end
 

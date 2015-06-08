@@ -33,13 +33,14 @@ end)
 local blacklist={
 	["gmod_tardis_interior"] = true,
 	["sent_tardis_interior"] = true,
-	["player"] = true
+	["player"] = true,
+	["viewmodel"] = true
 }
 
 function ENT:UpdateCordon()
 	local intardis=LocalPlayer():GetTardisData("interior")==self
 	for k,v in pairs(ents.FindInBox(self.mins,self.maxs)) do
-		if not blacklist[v:GetClass()] then
+		if (not blacklist[v:GetClass()]) and (IsValid(v:GetParent()) and (not blacklist[v:GetParent():GetClass()]) or not IsValid(v:GetParent())) then
 			--if not self.props[v] then
 			--	print("enter",v)
 			--end
@@ -71,6 +72,7 @@ end
 ENT:AddHook("OnRemove", "cordon", function(self)
 	for k,v in pairs(self.props) do
 		if IsValid(k) then
+			--print("onremove",k)
 			k:SetNoDraw(k.tardis_cordon)
 			k.tardis_cordon=nil
 			self.props[k]=nil

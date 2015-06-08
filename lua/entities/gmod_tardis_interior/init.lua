@@ -33,6 +33,7 @@ function ENT:Initialize()
 		ErrorNoHalt("Exterior not set, removing!\n")
 		self:Remove()
 	end
+	self:DeleteOnRemove(self.exterior)
 	
 	self.occupants = {}
 	

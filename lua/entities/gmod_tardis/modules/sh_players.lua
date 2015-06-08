@@ -35,7 +35,9 @@ if SERVER then
 			ply:ChatPrint("WARNING: Missing interior fallback not yet implemented.")
 		end
 		self:CallHook("PlayerEnter", ply, notp)
-		self.interior:CallHook("PlayerEnter", ply, notp)
+		if IsValid(self.interior) then
+			self.interior:CallHook("PlayerEnter", ply, notp)
+		end
 	end
 
 	function ENT:PlayerExit(ply,forced,notp)
@@ -60,13 +62,8 @@ if SERVER then
 			end
 		end
 		self:CallHook("PlayerExit", ply, forced, notp)
-		self.interior:CallHook("PlayerExit", ply, forced, notp)
-		
-		if not IsValid(int) then return end
-		if enter then
-			int:CallHook("PlayerEnter")
-		else
-			int:CallHook("PlayerExit")
+		if IsValid(self.interior) then
+			self.interior:CallHook("PlayerExit", ply, forced, notp)
 		end
 	end
 	
