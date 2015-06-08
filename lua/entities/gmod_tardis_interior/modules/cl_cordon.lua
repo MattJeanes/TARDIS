@@ -32,7 +32,8 @@ end)
 
 local blacklist={
 	["gmod_tardis_interior"] = true,
-	["sent_tardis_interior"] = true
+	["sent_tardis_interior"] = true,
+	["player"] = true
 }
 
 function ENT:UpdateCordon()
@@ -66,6 +67,10 @@ function ENT:UpdateCordon()
 		end
 	end
 end
+
+ENT:AddHook("OnRemove", "cordon", function(self)
+	self:UpdateCordon()
+end)
 
 ENT:AddHook("Think", "cordon", function(self)
 	if CurTime()>self.propscan then
