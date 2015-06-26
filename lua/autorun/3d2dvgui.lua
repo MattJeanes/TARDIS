@@ -104,12 +104,13 @@ local function pointInsidePanel( pnl, x, y )
 	return (x >= px and y >= py and x <= px + sx and y <= py + sy), x, y
 end
 
-local function drawCrosshair( pnl, x, y )
+local function drawCrosshair( pnl, size )
+	local x,y=getCursorPos()
 	local inside,x,y=pointInsidePanel(pnl,x,y)
 	if inside then		
 		surface.SetDrawColor(0,0,0)
-		surface.DrawLine( x, y-8, x, y+8 )
-		surface.DrawLine( x-8, y, x+8, y )
+		surface.DrawLine( x, y-size, x, y+size )
+		surface.DrawLine( x-size, y, x+size, y )
 	end
 end
 
@@ -156,9 +157,12 @@ local function postPanelEvent( pnl, event, ... )
 	end
 end
 
-local function checkHover( pnl )
+local function checkHover( pnl, x, y )
 	pnl.WasHovered = pnl.Hovered
-	pnl.Hovered = isMouseOver( pnl )
+	if not (x and y) then
+		x,y=getCursorPos()
+	end
+	pnl.Hovered = pointInsidePanel( pnl, x, y )
 	
 	if not pnl.WasHovered and pnl.Hovered then
 		if pnl.OnCursorEntered then pnl:OnCursorEntered() end
@@ -167,7 +171,7 @@ local function checkHover( pnl )
 	end
 
 	for i, child in ipairs( pnl.Childs or {} ) do
-		if ( child:IsValid() ) then checkHover( child ) end
+		if ( child:IsValid() and child:IsVisible() ) then checkHover( child, x, y ) end
 	end
 end
 
@@ -222,7 +226,53 @@ end )
 
 -- Key input
 
--- TODO, OH DEAR.
+--[[
+local textpnl
+function vgui.TextInput( pnl )
+	textpnl=pnl
+	input.StartKeyTrapping()
+end
+
+hook.Add("StartCommand", "VGUI3D2DTextInput", function(ply,cmd)
+	if IsValid(textpnl) then
+		cmd:ClearMovement()
+	end
+end)
+
+hook.Add("SetupMove", "VGUI3D2DTextInput", function(ply,mv,cmd)
+	if IsValid(textpnl) then
+		mv:SetButtons(0)
+	end
+end)
+
+local lastkey
+hook.Add("Think", "VGUI3D2DTextInput", function()
+	if IsValid(textpnl) then
+		local key=input.CheckKeyTrapping()
+		if key then
+			local text=textpnl:GetText()
+			if key==KEY_ESCAPE or key==KEY_ENTER then
+				if key==KEY_ENTER then
+					textpnl:OnEnter()
+				end
+				textpnl=nil
+				return
+			elseif key==KEY_BACKSPACE then
+				text=text:sub(1,-2)
+			else
+				local char=""
+				if key>=1 and key<=36 then
+					char=input.GetKeyName(key)
+				end
+				text=text..char
+			end
+			textpnl:SetText(text)
+			input.StartKeyTrapping()
+		end
+	end
+end)
+]]--
+
 -- Drawing:
 
 function vgui.Start3D2D( pos, ang, res )
@@ -273,7 +323,9 @@ function _R.Panel:Paint3D2D()
 	-- Draw it manually
 	self:SetPaintedManually( false )
 		self:PaintManual()
-		drawCrosshair(self,getCursorPos())
+		if self.crosshair then 
+			drawCrosshair(self,self.crosshair)
+		end
 	self:SetPaintedManually( true )
 end
 

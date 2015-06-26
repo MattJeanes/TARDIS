@@ -45,7 +45,7 @@ function ENT:UpdateCordon()
 			--	print("enter",v)
 			--end
 			self.props[v]=1
-			if not v.tardis_cordon then
+			if v.tardis_cordon==nil then
 				v.tardis_cordon=v:GetNoDraw()
 			end
 			if v:GetNoDraw()==intardis then

@@ -4,6 +4,53 @@ if SERVER then
 	util.AddNetworkString("TARDIS-SetupPart")
 end
 
+local overrides={
+	["Draw"]={function(self)
+		local int=self:GetNetEnt("interior")
+		local ext=self:GetNetEnt("exterior")
+		if IsValid(int) and IsValid(ext) then
+			if (int:CallHook("ShouldDraw")~=false) or (ext:DoorOpen() and self.ClientDrawOverride and LocalPlayer():GetPos():Distance(ext:GetPos())<1000) or self.ExteriorPart then -- TODO: Improve
+				return self.o["Draw"](self)
+			end
+		end
+	end, CLIENT},
+	["Initialize"]={function(self)
+		net.Start("TARDIS-SetupPart")
+			net.WriteEntity(self)
+		net.SendToServer()
+		return self.o["Initialize"](self)
+	end, CLIENT},
+	["Think"]={function(self)
+		local int=self:GetNetEnt("interior")
+		local ext=self:GetNetEnt("exterior")
+		if IsValid(int) and IsValid(ext) then
+			if (int:CallHook("ShouldThink")~=false) or (ext:DoorOpen() and self.ClientThinkOverride and LocalPlayer():GetPos():Distance(ext:GetPos())<1000) or self.ExteriorPart then -- TODO: Improve
+				return self.o["Think"](self)
+			end
+		end
+	end, CLIENT},
+	["Use"]={function(self,a,...)
+		if (not self.NoStrictUse) and IsValid(a) and a:IsPlayer() then
+			if a:GetEyeTraceNoCursor().Entity==self then
+				return self.o["Use"](self,a,...)
+			end
+		else
+			return self.o["Use"](self,a,...)
+		end
+	end, SERVER or CLIENT},
+}
+
+local function SetupOverrides(e)
+	e.o={}
+	for k,v in pairs(overrides) do
+		local o=scripted_ents.GetMember(e.ClassName, k)
+		if o and v[2] then
+			e.o[k] = o
+			e[k] = v[1]
+		end
+	end
+end
+
 local parts={}
 
 function ENT:GetPart(id)
@@ -14,6 +61,7 @@ function ENT:AddPart(e)
 	e.Base = "gmod_tardis_part"	
 	local name="gmod_tardis_part_"..e.ID
 	scripted_ents.Register(e,name)
+	SetupOverrides(e)
 	parts[e.ID]=name
 end
 

@@ -45,6 +45,12 @@ if SERVER then
 		end
 	end)
 else
+	ENT:AddHook("ShouldDraw", "thirdperson", function(self)
+		if LocalPlayer():GetTardisData("thirdperson") then
+			return false
+		end
+	end)
+
 	hook.Add("StartCommand", "tardis-thirdperson", function(ply, cmd)
 		if ply:GetTardisData("thirdperson") then
 			cmd:ClearMovement()

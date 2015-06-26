@@ -8,6 +8,7 @@ PART.AutoSetup = true
 PART.ClientThinkOverride = true
 PART.ClientDrawOverride = true
 PART.Collision = true
+PART.NoStrictUse = true
 
 if SERVER then
 	function PART:Initialize()	
@@ -36,7 +37,7 @@ else
 		end
 	end
 	
-	function PART:DoThink()
+	function PART:Think()
 		local ext=self:GetNetEnt("exterior")
 		if IsValid(ext) then
 			self:SetPoseParameter("switch", ext.DoorPos)
