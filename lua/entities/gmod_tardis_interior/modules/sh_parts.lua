@@ -40,15 +40,17 @@ local overrides={
 	end, SERVER or CLIENT},
 }
 
-local function SetupOverrides(e)
+function SetupOverrides(e)
+	local name=e.ClassName
 	e.o={}
 	for k,v in pairs(overrides) do
-		local o=scripted_ents.GetMember(e.ClassName, k)
+		local o=scripted_ents.GetMember(name, k)
 		if o and v[2] then
 			e.o[k] = o
 			e[k] = v[1]
 		end
 	end
+	scripted_ents.Register(e,name)
 end
 
 local parts={}
@@ -57,13 +59,27 @@ function ENT:GetPart(id)
 	return self.parts[id] or NULL
 end
 
+local overridequeue={}
+postinit=postinit or false -- local vars cannot stay on autorefresh
 function ENT:AddPart(e)
 	e.Base = "gmod_tardis_part"	
 	local name="gmod_tardis_part_"..e.ID
 	scripted_ents.Register(e,name)
-	SetupOverrides(e)
+	if postinit then
+		SetupOverrides(e)
+	else
+		table.insert(overridequeue,e)
+	end
 	parts[e.ID]=name
 end
+
+hook.Add("InitPostEntity", "tardisi-parts", function() 
+	for k,v in pairs(overridequeue) do
+		SetupOverrides(v)
+	end
+	overridequeue={}
+	postinit=true
+end)
 
 local function AutoSetup(e)
 	e:SetModel(e.Model)
