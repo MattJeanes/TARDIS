@@ -345,10 +345,14 @@ function vgui.End3D2D()
 	cam.End3D2D()
 end
 
-function vgui.SetParent3D2D(pnl,parent) -- todo: find way to do this automatically
-	pnl:SetParent(parent)
-	if pnl.Parent then
-		table.RemoveByValue(pnl.Parent.Childs, pnl)
+-- Keep track of child controls
+
+function vgui.SetParent3D2D(pnl,parent,first) -- todo: find way to do this automatically
+	if not first then
+		pnl:SetParent(parent)
+		if pnl.Parent then
+			table.RemoveByValue(pnl.Parent.Childs, pnl)
+		end
 	end
 	pnl.Parent = parent
 	if parent then
@@ -357,14 +361,12 @@ function vgui.SetParent3D2D(pnl,parent) -- todo: find way to do this automatical
 	end
 end
 
--- Keep track of child controls
-
 if not vguiCreate then vguiCreate = vgui.Create end
 function vgui.Create( class, parent )
 	local pnl = vguiCreate( class, parent )
 	if not pnl then return end
 	pnl.Class = class
-	vgui.SetParent3D2D(pnl, parent)
+	vgui.SetParent3D2D(pnl, parent, true)
 	
 	return pnl
 end
