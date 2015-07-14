@@ -72,10 +72,10 @@ end
 ENT:LoadFolder("modules/libraries") -- loaded before main modules
 ENT:LoadFolder("modules")
 
-function ENT:OnRemove()
-	self:CallHook("OnRemove")
-end
-
 function ENT:Use(a,c)
 	self:CallHook("Use",a,c)
+end
+
+function ENT:OnRemove()
+	self:CallHook("OnRemove")
 end

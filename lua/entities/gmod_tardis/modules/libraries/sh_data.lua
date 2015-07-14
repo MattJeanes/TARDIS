@@ -34,7 +34,7 @@ else
 		else
 			local k=net.ReadType()
 			local v=net.ReadType()
-			if IsValid(ext) then
+			if IsValid(ext) and ext.SetData then
 				ext:SetData(k,v)
 			end
 		end
