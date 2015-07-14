@@ -1,6 +1,6 @@
 -- Door controller
 
-TARDIS_AddScreen("Door controller", function(self,frame)
+ENT:AddScreen("Door controller", function(self,frame)
 	local doorstatus = vgui.Create("DLabel",frame)
 	doorstatus:SetTextColor(Color(0,0,0))
 	doorstatus:SetFont("TARDIS-Large")
@@ -16,42 +16,37 @@ TARDIS_AddScreen("Door controller", function(self,frame)
 	button:SetSize(frame:GetWide()*0.3,frame:GetTall()*0.15)
 	button:SetPos((frame:GetWide()*0.5)-(button:GetWide()*0.5),(frame:GetTall()*0.6)-(button:GetTall()*0.5))
 	button.DoClick = function(button)
-		local ext=self:GetNetEnt("exterior")
-		if IsValid(ext) then
-			ext:Control("toggledoor")
-		end
+		self.exterior:Control("toggledoor")
 	end
 	button.Think = function(button)
-		local ext=self:GetNetEnt("exterior")
-		if IsValid(ext) then
-			if ext:DoorMoving() then
-				if not button:GetDisabled() then
-					if button.open then
-						doorstatus:SetText("The door is closing")
-					else
-						doorstatus:SetText("The door is opening")
-					end
-					doorstatus:DoLayout()
-					button:SetDisabled(true)
+		local ext=self.exterior
+		if ext:DoorMoving() then
+			if not button:GetDisabled() then
+				if button.open then
+					doorstatus:SetText("The door is closing")
+				else
+					doorstatus:SetText("The door is opening")
 				end
-			elseif button:GetDisabled() then
-				button:SetDisabled(false)
-			elseif ext:DoorOpen() and (not button.open) or button.first then
-				button.open=true
-				button:SetText("Close the door")
-				doorstatus:SetText("The door is open")
 				doorstatus:DoLayout()
-				if button.first then
-					button.first=nil
-				end
-			elseif not ext:DoorOpen() and button.open or button.first then
-				button.open=false
-				button:SetText("Open the door")
-				doorstatus:SetText("The door is closed")
-				doorstatus:DoLayout()
-				if button.first then
-					button.first=nil
-				end
+				button:SetDisabled(true)
+			end
+		elseif button:GetDisabled() then
+			button:SetDisabled(false)
+		elseif ext:DoorOpen() and (not button.open) or button.first then
+			button.open=true
+			button:SetText("Close the door")
+			doorstatus:SetText("The door is open")
+			doorstatus:DoLayout()
+			if button.first then
+				button.first=nil
+			end
+		elseif not ext:DoorOpen() and button.open or button.first then
+			button.open=false
+			button:SetText("Open the door")
+			doorstatus:SetText("The door is closed")
+			doorstatus:DoLayout()
+			if button.first then
+				button.first=nil
 			end
 		end
 	end

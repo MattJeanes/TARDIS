@@ -39,7 +39,7 @@ local function planeLineIntersect( lineStart, lineEnd, planeNormal, planePoint )
 	return lineStart + t * ( lineEnd - lineStart )
 end
 
---[[
+local matex,matey=0,0
 local function testdraw(x,y)
 	surface.SetDrawColor(255,255,255,255)
 	surface.DrawLine( x, y-16, x, y+16 )
@@ -50,10 +50,7 @@ local function testdraw2(x,y)
 	surface.DrawLine(x,-10000,x,10000)
 	surface.DrawLine(-10000,y,10000,y)
 end
-hook.Add("HUDPaint","testdraw", function()
-	--testdraw(ScrW()/2,ScrH()/2)
-end)
-]]--
+
 
 local function getCursorPos()
 	local p = planeLineIntersect( LocalPlayer():EyePos(), LocalPlayer():EyePos() + LocalPlayer():GetAimVector() * 16000, normal, origin )
@@ -163,7 +160,6 @@ local function checkHover( pnl, x, y )
 		x,y=getCursorPos()
 	end
 	pnl.Hovered = pointInsidePanel( pnl, x, y )
-	
 	if not pnl.WasHovered and pnl.Hovered then
 		if pnl.OnCursorEntered then pnl:OnCursorEntered() end
 	elseif pnl.WasHovered and not pnl.Hovered then
@@ -174,6 +170,21 @@ local function checkHover( pnl, x, y )
 		if ( child:IsValid() and child:IsVisible() ) then checkHover( child, x, y ) end
 	end
 end
+
+--[[
+hook.Add("Think", "3d2dasd", function()
+	for k,v in pairs(curpnl) do
+			matex,matey=absolutePanelPos(k)
+			local x,y=k:CursorPos()
+			matex=matex+x
+			matey=matey+y
+		if k.Hovered and k.OnCursorMoved then
+			local px,py=getCursorPos()
+			--k:OnCursorMoved(5,0)
+		end
+	end
+end)
+]]--
 
 local function facingPanel( pnl )
 	local vec = GetViewEntity():GetPos() - pnl.Origin
@@ -326,11 +337,24 @@ function _R.Panel:Paint3D2D()
 		if self.crosshair then 
 			drawCrosshair(self,self.crosshair)
 		end
+		--testdraw(matex,matey)
 	self:SetPaintedManually( true )
 end
 
 function vgui.End3D2D()
 	cam.End3D2D()
+end
+
+function vgui.SetParent3D2D(pnl,parent) -- todo: find way to do this automatically
+	pnl:SetParent(parent)
+	if pnl.Parent then
+		table.RemoveByValue(pnl.Parent.Childs, pnl)
+	end
+	pnl.Parent = parent
+	if parent then
+		if not parent.Childs then parent.Childs = {} end
+		table.insert(parent.Childs,1,pnl)
+	end
 end
 
 -- Keep track of child controls
@@ -339,14 +363,8 @@ if not vguiCreate then vguiCreate = vgui.Create end
 function vgui.Create( class, parent )
 	local pnl = vguiCreate( class, parent )
 	if not pnl then return end
-	
-	pnl.Parent = parent
 	pnl.Class = class
-	
-	if parent then
-		if not parent.Childs then parent.Childs = {} end
-		table.insert(parent.Childs,1,pnl)
-	end
+	vgui.SetParent3D2D(pnl, parent)
 	
 	return pnl
 end

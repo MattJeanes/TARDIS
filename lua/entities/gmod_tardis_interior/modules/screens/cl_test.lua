@@ -1,6 +1,6 @@
 -- Test screen
 
-TARDIS_AddScreen("Test", function(self,frame)
+ENT:AddScreen("Test", function(self,frame)
 	local label = vgui.Create("DLabel",frame)
 	label:SetTextColor(Color(0,0,0))
 	label:SetFont("TARDIS-Large")
@@ -27,4 +27,4 @@ TARDIS_AddScreen("Test", function(self,frame)
 	sprite:SetPos(frame:GetWide()/2,(frame:GetTall()/2)+(sprite:GetTall()*0.25))
 end)
 
---local i=0 for i=1,70 do TARDIS_AddScreen("test-"..i, function(self,frame) end) i=i+1 end
+--for i=1,70 do ENT:AddScreen("test-"..i, function(self,frame) end) end

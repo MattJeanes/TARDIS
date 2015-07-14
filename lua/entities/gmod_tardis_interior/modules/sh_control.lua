@@ -20,7 +20,7 @@ if SERVER then
 	net.Receive("TARDISInt-Control", function(len,ply)
 		if IsValid(ply) then
 			local control=net.ReadString()
-			local int=ply:GetNetEnt("tardis_i")
+			local int=ply:GetTardisData("interior")
 			if controls[control] and IsValid(int) then
 				controls[control](ply,int)
 			end

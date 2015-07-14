@@ -14,9 +14,33 @@ function ENT:SpawnFunction( ply, tr, ClassName )
 	ent:Activate()
 	return ent
 end
- 
+
+util.AddNetworkString("TARDISI-Initialize")
+net.Receive("TARDISI-Initialize", function(len,ply)
+	local int=net.ReadEntity()
+	if IsValid(int) then
+		net.Start("TARDISI-Initialize")
+			net.WriteEntity(int)
+			net.WriteEntity(int.exterior)
+			net.WriteEntity(int:GetCreator())
+			net.WriteString(int.interior.ID)
+		net.Send(ply)
+		int:SendData(ply)
+	end
+end)
 function ENT:Initialize()
-	self:SetModel( "models/drmatt/tardis/2012interior/interior.mdl" )
+	if not (self.exterior and IsValid(self.exterior)) then
+		ErrorNoHalt("Exterior not set, removing!\n")
+		self:Remove()
+	end
+	
+	self.interior=self:GetInterior(self.exterior:GetSetting("interior","default",self:GetCreator()))
+	if not self.interior then
+		self:GetCreator():ChatPrint("Invalid interior, removing!")
+		self:Remove()
+		return
+	end
+	self:SetModel(self.interior.Model)
 	self:PhysicsInit( SOLID_VPHYSICS )
 	self:SetMoveType( MOVETYPE_VPHYSICS )
 	self:SetSolid( SOLID_VPHYSICS )
@@ -28,12 +52,6 @@ function ENT:Initialize()
 	if (self.phys:IsValid()) then
 		self.phys:EnableMotion(false)
 	end	
-	
-	if not (self.exterior and IsValid(self.exterior)) then
-		ErrorNoHalt("Exterior not set, removing!\n")
-		self:Remove()
-	end
-	self:DeleteOnRemove(self.exterior)
 	
 	self.occupants = {}
 	

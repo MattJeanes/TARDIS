@@ -1,13 +1,13 @@
 -- Adds an interior
 
 if SERVER then
-	local function FindPosition(self)
+	local function FindPosition(self,e)
 		local td={}
 		td.start=self:GetPos()+Vector(0,0,99999999)
 		td.endpos=self:GetPos()
-		td.mins=Vector(-1000,-1000,-1000)
-		td.maxs=Vector(1000,1000,1000)
-		td.filter={self}
+		td.mins=e:OBBMins()
+		td.maxs=e:OBBMaxs()
+		td.filter={self,e}
 		td.mask = MASK_NPCWORLDSTATIC
 		
 		local tr=util.TraceHull(td)
@@ -22,13 +22,7 @@ if SERVER then
 		end
 	end
 	
-	ENT:AddHook("Initialize", "interior", function(self)
-		local pos=FindPosition(self,e)
-		if not util.IsInWorld(pos) then
-			self:GetCreator():ChatPrint("WARNING: TARDIS unable to locate space for interior, move to open space or use a different map.")
-			return
-		end
-		
+	ENT:AddHook("Initialize", "interior", function(self)		
 		local e=ents.Create("gmod_tardis_interior")
 		e.exterior=self
 		e:SetCreator(self:GetCreator())
@@ -37,12 +31,16 @@ if SERVER then
 		end
 		e:Spawn()
 		e:Activate()
+		local pos=FindPosition(self,e)
+		if not util.IsInWorld(pos,e) then
+			self:GetCreator():ChatPrint("WARNING: TARDIS unable to locate space for interior, respawn in open space or use a different map.")
+			e:Remove()
+			return
+		end
 		e:SetPos(pos)
 		self:DeleteOnRemove(e)
+		e:DeleteOnRemove(self)
 		e.occupants=self.occupants -- Hooray for referenced tables
-		
-		e:SetNetVar("exterior",self)
-		self:SetNetVar("interior",e)
 		self.interior=e
 	end)
 	

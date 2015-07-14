@@ -1,4 +1,4 @@
-// Handles players inside the tardis interior
+-- Handles players inside the tardis interior
 
 if SERVER then
 	ENT:AddHook("Think", "handleplayers", function(self)
@@ -11,12 +11,12 @@ if SERVER then
 	end)
 else
 	ENT:AddHook("ShouldDraw", "players", function(self)
-		if not (LocalPlayer():GetNetEnt("tardis_i")==self) and not wp.drawing then
+		if ((not (LocalPlayer():GetTardisData("interior")==self)) or LocalPlayer():GetTardisData("thirdperson")) and not wp.drawing then
 			return false
 		end
 	end)
 	ENT:AddHook("ShouldThink", "players", function(self)
-		if not (LocalPlayer():GetNetEnt("tardis_i")==self) then
+		if not (LocalPlayer():GetTardisData("interior")==self) then
 			return false
 		end
 	end)

@@ -1,4 +1,4 @@
-// Handles players
+-- Handles players
 
 if SERVER then
 	util.AddNetworkString("TARDIS-PlayerData")
@@ -6,33 +6,34 @@ if SERVER then
 	util.AddNetworkString("TARDIS-EnterExit")
 	
 	function ENT:PlayerEnter(ply,notp)
-		if self.interior and IsValid(self.interior) then
-			if self.occupants[ply] then
-				return --TODO: Handle properly
-			end
-			if IsValid(ply:GetNetEnt("tardis")) then
-				ply:GetNetEnt("tardis"):PlayerExit(ply,true,true)
-			end
-			self.occupants[ply]=true
-			ply:SetTardisData("exterior", self, true)
-			ply:SetTardisData("interior", self.interior, true)
-			ply:SetNetVar("tardis",self)
-			ply:SetNetVar("tardis_i",self.interior)
-			net.Start("TARDIS-EnterExit")
-				net.WriteBool(true)
-				net.WriteEntity(self)
-				net.WriteEntity(self.interior)
-			net.Send(ply)
-			if not notp then
+		if ply.tardis_cooldowncur and ply.tardis_cooldowncur>CurTime() then return end
+		if self.occupants[ply] then
+			return --TODO: Handle properly
+		end
+		if IsValid(ply:GetTardisData("exterior")) and ply:GetTardisData("exterior")~=self then
+			ply:GetTardisData("exterior"):PlayerExit(ply,true,true)
+		end
+		self.occupants[ply]=true
+		ply:SetTardisData("exterior", self, true)
+		ply:SetTardisData("interior", self.interior, true)
+		net.Start("TARDIS-EnterExit")
+			net.WriteBool(true)
+			net.WriteEntity(self)
+			net.WriteEntity(self.interior)
+		net.Send(ply)
+		if IsValid(self.interior) then
+			local fallback=self.interior.interior.Fallback
+			if (not notp) and fallback then
 				local pos=self:WorldToLocal(ply:GetPos())
-				ply:SetPos(self.interior:LocalToWorld(Vector(0,-300,95))+Vector(0,pos.y,pos.z))
-				local ang=(ply:EyeAngles()-self:GetAngles())+self.interior:GetAngles()+Angle(0,-90,0)
-				local fwd=(ply:GetVelocity():Angle()+(self.interior:GetAngles()-self:GetAngles())+Angle(0,-90,0)):Forward()
+				ply:SetPos(self.interior:LocalToWorld(fallback.pos))
+				local ang=self.interior:LocalToWorldAngles(self:WorldToLocalAngles(ply:EyeAngles())+fallback.ang)
+				local fwd=(self.interior:LocalToWorldAngles(self:WorldToLocalAngles(ply:GetVelocity():Angle())+fallback.ang)):Forward()
 				ply:SetEyeAngles(Angle(ang.p,ang.y,0))
 				ply:SetLocalVelocity(fwd*ply:GetVelocity():Length())
 			end
 		else
-			ply:ChatPrint("WARNING: Missing interior fallback not yet implemented.")
+			ply:Spectate(OBS_MODE_ROAMING)
+			self:PlayerThirdPerson(ply,true)
 		end
 		self:CallHook("PlayerEnter", ply, notp)
 		if IsValid(self.interior) then
@@ -41,24 +42,63 @@ if SERVER then
 	end
 
 	function ENT:PlayerExit(ply,forced,notp)
+		if not IsValid(self.interior) then
+			-- spectator mode doesn't exit properly without respawning
+			local pos,ang=ply:GetPos(),ply:EyeAngles()
+			local hp,armor=ply:Health(),ply:Armor()
+			local weps={}
+			local ammo={}
+			for k,v in pairs(ply:GetWeapons()) do
+				table.insert(weps, v:GetClass())
+				local p=v:GetPrimaryAmmoType()
+				local s=v:GetSecondaryAmmoType()
+				if p != -1 then
+					ammo[p]=ply:GetAmmoCount(p)
+				end
+				if s != -1 then
+					ammo[s]=ply:GetAmmoCount(s)
+				end
+			end
+			--[[ restoring active wep doesn't work clientside properly
+			local activewep
+			if IsValid(ply:GetActiveWeapon()) then
+				activewep=ply:GetActiveWeapon():GetClass()
+			end
+			]]--
+			
+			ply:Spawn()
+			
+			ply:SetPos(pos)
+			ply:SetEyeAngles(ang)
+			ply:SetHealth(hp)
+			ply:SetArmor(armor)
+			for k,v in pairs(weps) do
+				ply:Give(tostring(v))
+			end
+			for k,v in pairs(ammo) do
+				ply:SetAmmo(v,k)
+			end
+			ply.tardis_cooldowncur=CurTime()+1
+		end
 		if ply:InVehicle() then ply:ExitVehicle() end
 		self.occupants[ply]=nil
 		ply:ClearTardisData()
-		ply:SetNetVar("tardis",nil)
-		ply:SetNetVar("tardis_i",nil)
 		net.Start("TARDIS-EnterExit")
 			net.WriteBool(false)
 			net.WriteEntity(self)
 			net.WriteEntity(self.interior)
 		net.Send(ply)
 		if not notp then
-			local pos=self:GetPos()+self:GetForward()*70+Vector(0,0,5)
+			local pos=self:LocalToWorld(Vector(60,0,5))
 			ply:SetPos(pos)
-			if not forced then
-				local ang=(ply:EyeAngles()-self.interior:GetAngles())+self:GetAngles()+Angle(0,90,0)
-				local fwd=(ply:GetVelocity():Angle()+(self:GetAngles()-self.interior:GetAngles())+Angle(0,90,0)):Forward()
-				ply:SetEyeAngles(Angle(ang.p,ang.y,0))
-				ply:SetLocalVelocity(fwd*ply:GetVelocity():Length())
+			if IsValid(self.interior) then
+				local fallback=self.interior.interior.Fallback
+				if (not forced) and fallback then
+					local ang=self:LocalToWorldAngles(self.interior:WorldToLocalAngles(ply:EyeAngles())-fallback.ang)
+					local fwd=(self:LocalToWorldAngles(self.interior:WorldToLocalAngles(ply:GetVelocity():Angle())-fallback.ang)):Forward()
+					ply:SetEyeAngles(Angle(ang.p,ang.y,0))
+					ply:SetLocalVelocity(fwd*ply:GetVelocity():Length())
+				end
 			end
 		end
 		self:CallHook("PlayerExit", ply, forced, notp)

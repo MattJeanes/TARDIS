@@ -1,5 +1,11 @@
 -- Third person
 
+hook.Add("PlayerSwitchFlashlight", "tardis-thirdperson", function(ply,enabled)
+	if ply:GetTardisData("thirdperson") then
+		return false
+	end
+end)
+
 if SERVER then
 	function ENT:PlayerThirdPerson(ply, enabled)
 		if IsValid(ply) and ply:IsPlayer() and self.occupants[ply] then
@@ -23,6 +29,9 @@ if SERVER then
 				ply:SetEyeAngles(ply:GetTardisData("thirdpersonang"),true)
 				ply:SetTardisData("thirdpersonang")
 				ply:SetTardisData("thirdpersoncool", CurTime()+0.5)
+				if not IsValid(self.interior) then
+					self:PlayerExit(ply,true)
+				end
 			end
 		end
 	end
@@ -101,8 +110,7 @@ else
 	hook.Add("CalcView", "tardis-thirdperson", function(ply, pos, ang)
 		if ply:GetTardisData("thirdperson") then
 			local ext=ply:GetTardisData("exterior")
-			local int=ply:GetTardisData("interior")
-			if IsValid(ext) and IsValid(int) then
+			if IsValid(ext) then
 				local pos=ext:LocalToWorld(Vector(0,0,60))
 				local tr = util.TraceLine({
 					start=pos,
@@ -111,7 +119,7 @@ else
 				})
 				local view = {}
 				view.origin = tr.HitPos + (ang:Forward()*10)
-				view.angles = ang
+				view.angles = Angle(ang.p,ang.y,0)
 				view.fov = fov
 				
 				if IsValid(ext.thpprop) then

@@ -14,7 +14,19 @@ function ENT:SpawnFunction( ply, tr, ClassName )
 	ent:Activate()
 	return ent
 end
- 
+
+util.AddNetworkString("TARDIS-Initialize")
+net.Receive("TARDIS-Initialize", function(len,ply)
+	local ext=net.ReadEntity()
+	if IsValid(ext) then
+		net.Start("TARDIS-Initialize")
+			net.WriteEntity(ext)
+			net.WriteEntity(ext.interior)
+			net.WriteEntity(ext:GetCreator())
+		net.Send(ply)
+		ext:SendData(ply)
+	end
+end)
 function ENT:Initialize()
 	self:SetModel( "models/drmatt/tardis/exterior/exterior.mdl" )
 	self:PhysicsInit( SOLID_VPHYSICS )

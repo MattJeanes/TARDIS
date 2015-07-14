@@ -4,12 +4,12 @@
 if SERVER then
 	function ENT:ToggleDoor()
 		if not IsValid(self.interior) then return end
-		self:SetNetVar("doorstate",not self:GetNetVar("doorstate",false))
+		self:SetData("doorstate",not self:GetData("doorstate",false),true)
 		self:CallHook("ToggleDoor", self:DoorOpen())
 	end
 	
 	function ENT:DoorOpen()
-		return self:GetNetVar("doorstate",false)
+		return self:GetData("doorstate",false)
 	end
 	
 	ENT:AddHook("ToggleDoor", "intdoors", function(self,open)
@@ -32,7 +32,7 @@ if SERVER then
 		
 		self.Door:SetBodygroup(1,1) -- Sticker
 		self.Door:SetBodygroup(2,1) -- Lit sign
-		self:SetNetVar("door", self.Door)
+		self:SetData("door", self.Door, true)
 	end)
 	
 	ENT:AddHook("OnRemove", "doors", function(self)
@@ -56,12 +56,12 @@ else
 	end)
 	
 	ENT:AddHook("Think", "doors", function(self)
-		self.DoorTarget=self.DoorOverride or (self:GetNetVar("doorstate") and 1 or 0)
+		self.DoorTarget=self.DoorOverride or (self:GetData("doorstate",false) and 1 or 0)
 		
 		-- Have to spam it otherwise it glitches out (http://facepunch.com/showthread.php?t=1414695)
 		self.DoorPos=self.DoorOverride or math.Approach(self.DoorPos,self.DoorTarget,FrameTime()*2)
 		
-		local door=self:GetNetEnt("door")
+		local door=self:GetData("door")
 		if IsValid(door) then
 			door:SetPoseParameter("switch", self.DoorPos)
 			door:InvalidateBoneCache()

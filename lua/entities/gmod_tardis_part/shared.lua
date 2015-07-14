@@ -11,3 +11,5 @@ ENT.AdminSpawnable	= false
 ENT.RenderGroup 	= RENDERGROUP_BOTH
 ENT.Category		= "Doctor Who"
 ENT.TardisPart		= true
+
+ENT.von=TARDIS_VON

@@ -2,7 +2,7 @@
 
 hook.Add("wp-prerender", "tardisi-cordon", function(portal,exit,origin)
 	local parent=exit:GetParent()
-	if parent.TardisInterior then
+	if parent.TardisInterior and parent._init then
 		for k,v in pairs(parent.props) do
 			if IsValid(k) then
 				k.olddraw=k:GetNoDraw()
@@ -14,7 +14,7 @@ end)
 
 hook.Add("wp-postrender", "tardisi-cordon", function(portal,exit,origin)
 	local parent=exit:GetParent()
-	if parent.TardisInterior then
+	if parent.TardisInterior and parent._init then
 		for k,v in pairs(parent.props) do
 			if IsValid(k) then
 				k:SetNoDraw(k.olddraw)
@@ -70,12 +70,14 @@ function ENT:UpdateCordon()
 end
 
 ENT:AddHook("OnRemove", "cordon", function(self)
-	for k,v in pairs(self.props) do
-		if IsValid(k) then
-			--print("onremove",k)
-			k:SetNoDraw(k.tardis_cordon)
-			k.tardis_cordon=nil
-			self.props[k]=nil
+	if self.props then
+		for k,v in pairs(self.props) do
+			if IsValid(k) then
+				--print("onremove",k)
+				k:SetNoDraw(k.tardis_cordon)
+				k.tardis_cordon=nil
+				self.props[k]=nil
+			end
 		end
 	end
 end)

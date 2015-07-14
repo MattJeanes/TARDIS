@@ -4,14 +4,16 @@ if WireLib then
 else
 	ENT.Base			= "base_gmodentity"
 end 
-ENT.PrintName		= "TARDIS Remake Interior"
+ENT.PrintName		= "TARDIS Rewrite"
 ENT.Author			= "Dr. Matt"
-ENT.Spawnable		= false
-ENT.AdminSpawnable	= false
+ENT.Spawnable		= true
+ENT.AdminSpawnable	= true
 ENT.RenderGroup 	= RENDERGROUP_BOTH
 ENT.Category		= "Doctor Who"
-ENT.TardisPart		= true
-ENT.TardisInterior	= true
+ENT.TardisExterior	= true
+
+TARDIS=ENT
+ENT.von=TARDIS_VON
 
 ENT.hooks={}
 
@@ -38,32 +40,42 @@ function ENT:CallHook(name,...)
 	end
 end
 
-function ENT:LoadFolder(path,addonly)
+function ENT:LoadFolder(path,addonly,noprefix)
 	-- Loads modules
 	local folder = "entities/gmod_tardis_interior/"..path.."/"
-	local modules = file.Find( folder.."*.lua", "LUA" )
-	for _, plugin in ipairs( modules ) do
-		local prefix = string.Left( plugin, string.find( plugin, "_" ) - 1 )
-		if ( CLIENT and ( prefix == "sh" or prefix == "cl" ) ) then
+	local modules = file.Find(folder.."*.lua","LUA")
+	for _, plugin in ipairs(modules) do
+		if noprefix then
+			if SERVER then
+				AddCSLuaFile(folder..plugin)
+			end
 			if not addonly then
-				include( folder..plugin )
+				include(folder..plugin)
 			end
-		elseif ( SERVER ) then
-			if ( prefix=="sv" or prefix=="sh" ) and ( not addonly ) then
-				include( folder..plugin )
-			end
-			if ( prefix == "sh" or prefix == "cl" ) then
-				AddCSLuaFile( folder..plugin )
+		else
+			local prefix = string.Left( plugin, string.find( plugin, "_" ) - 1 )
+			if (CLIENT and (prefix=="sh" or prefix=="cl")) then
+				if not addonly then
+					include(folder..plugin)
+				end
+			elseif (SERVER) then
+				if (prefix=="sv" or prefix=="sh") and (not addonly) then
+					include(folder..plugin)
+				end
+				if (prefix=="sh" or prefix=="cl") then
+					AddCSLuaFile(folder..plugin)
+				end
 			end
 		end
 	end
 end
+ENT:LoadFolder("modules/libraries") -- loaded before main modules
 ENT:LoadFolder("modules")
-
-function ENT:Use(a,c)
-	self:CallHook("Use",a,c)
-end
 
 function ENT:OnRemove()
 	self:CallHook("OnRemove")
+end
+
+function ENT:Use(a,c)
+	self:CallHook("Use",a,c)
 end

@@ -6,11 +6,15 @@ end
 
 local overrides={
 	["Draw"]={function(self)
-		local int=self:GetNetEnt("interior")
-		local ext=self:GetNetEnt("exterior")
+		local int=self.interior
+		local ext=self.exterior
 		if IsValid(int) and IsValid(ext) then
-			if (int:CallHook("ShouldDraw")~=false) or (ext:DoorOpen() and self.ClientDrawOverride and LocalPlayer():GetPos():Distance(ext:GetPos())<1000) or self.ExteriorPart then -- TODO: Improve
-				return self.o["Draw"](self)
+			if (int:CallHook("ShouldDraw")~=false)
+			or (ext:DoorOpen()
+				and (self.ClientDrawOverride and LocalPlayer():GetPos():Distance(ext:GetPos())<1000)
+				or (self.DrawThroughPortal and (int.scannerrender or (IsValid(wp.drawingent) and wp.drawingent:GetParent()==int)))
+			) or self.ExteriorPart then
+				return self.o.Draw(self)
 			end
 		end
 	end, CLIENT},
@@ -18,24 +22,23 @@ local overrides={
 		net.Start("TARDIS-SetupPart")
 			net.WriteEntity(self)
 		net.SendToServer()
-		return self.o["Initialize"](self)
 	end, CLIENT},
 	["Think"]={function(self)
-		local int=self:GetNetEnt("interior")
-		local ext=self:GetNetEnt("exterior")
-		if IsValid(int) and IsValid(ext) then
+		local int=self.interior
+		local ext=self.exterior
+		if self._init and IsValid(int) and IsValid(ext) then
 			if (int:CallHook("ShouldThink")~=false) or (ext:DoorOpen() and self.ClientThinkOverride and LocalPlayer():GetPos():Distance(ext:GetPos())<1000) or self.ExteriorPart then -- TODO: Improve
-				return self.o["Think"](self)
+				return self.o.Think(self)
 			end
 		end
 	end, CLIENT},
 	["Use"]={function(self,a,...)
 		if (not self.NoStrictUse) and IsValid(a) and a:IsPlayer() then
 			if a:GetEyeTraceNoCursor().Entity==self then
-				return self.o["Use"](self,a,...)
+				return self.o.Use(self,a,...)
 			end
 		else
-			return self.o["Use"](self,a,...)
+			return self.o.Use(self,a,...)
 		end
 	end, SERVER or CLIENT},
 }
@@ -62,6 +65,7 @@ end
 local overridequeue={}
 postinit=postinit or false -- local vars cannot stay on autorefresh
 function ENT:AddPart(e)
+	e=table.Copy(e)
 	e.Base = "gmod_tardis_part"	
 	local name="gmod_tardis_part_"..e.ID
 	scripted_ents.Register(e,name)
@@ -81,8 +85,15 @@ hook.Add("InitPostEntity", "tardisi-parts", function()
 	postinit=true
 end)
 
-local function AutoSetup(e)
-	e:SetModel(e.Model)
+local function AutoSetup(self,e,id)
+	local data={}
+	if e.Interiors and e.Interiors[self.interior.ID] then
+		data=e.Interiors[self.interior.ID]
+	elseif self.interior.Parts and self.interior.Parts[id] then
+		data=self.interior.Parts[id]
+	end
+	
+	e:SetModel(data.model or e.Model)
 	e:PhysicsInit( SOLID_VPHYSICS )
 	e:SetMoveType( MOVETYPE_VPHYSICS )
 	e:SetSolid( SOLID_VPHYSICS )
@@ -97,12 +108,34 @@ local function AutoSetup(e)
 	if not e.Collision then
 		e:SetCollisionGroup( COLLISION_GROUP_WORLD ) -- Still works with USE, TODO: Find better way if possible (for performance reasons)
 	end
+	
+	e:SetPos(self:LocalToWorld(data.pos or Vector(0,0,0)))
+	e:SetAngles(self:LocalToWorldAngles(data.ang or Angle(0,0,0)))
+	
+	e:SetParent(self)
 end
 
 if SERVER then
 	ENT:AddHook("Initialize", "parts", function(self)
 		self.parts={}
+		local tempparts={}
+		if self.interior.Parts then
+			for k,v in pairs(self.interior.Parts) do
+				local class=parts[k]
+				if class then
+					tempparts[k]=class
+				end
+			end
+		end
 		for k,v in pairs(parts) do
+			if not tempparts[k] then
+				local t=scripted_ents.GetStored(v).t
+				if t.Interiors and t.Interiors[self.interior.ID] then
+					tempparts[k]=v
+				end
+			end
+		end
+		for k,v in pairs(tempparts) do
 			local e=ents.Create(v)
 			e:SetCreator(self:GetCreator())
 			if CPPI then
@@ -110,10 +143,8 @@ if SERVER then
 			end
 			e.interior=self
 			e.exterior=self.exterior
-			e:SetNetVar("interior",self)
-			e:SetNetVar("exterior",self.exterior)
 			if e.AutoSetup then
-				AutoSetup(e)
+				AutoSetup(self,e,k)
 			end
 			e:Spawn()
 			e:Activate()
@@ -126,6 +157,8 @@ if SERVER then
 		if e.ID then
 			net.Start("TARDIS-SetupPart")
 				net.WriteEntity(e)
+				net.WriteEntity(e.exterior)
+				net.WriteEntity(e.interior)
 				net.WriteString(e.ID)
 			net.Send(ply)
 		end
@@ -136,10 +169,17 @@ else
 	end)
 	net.Receive("TARDIS-SetupPart", function(ply)
 		local e=net.ReadEntity()
-		local name=net.ReadString()
-		local int=e:GetNetEnt("interior")
-		if IsValid(int) then
+		local ext=net.ReadEntity()
+		local int=net.ReadEntity()
+		if IsValid(e) and IsValid(ext) and IsValid(int) then
+			e.exterior=ext
+			e.interior=int
+			local name=net.ReadString()
 			int.parts[name]=e
+			if e.o.Initialize then
+				e.o.Initialize(e)
+			end
+			e._init=true
 		end
 	end)
 end

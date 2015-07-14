@@ -1,13 +1,32 @@
 -- Settings
 
-TARDIS_AddScreen("Settings", function(self,frame)
-	local label = vgui.Create("DLabel",frame)
-	label:SetTextColor(Color(0,0,0))
-	label:SetFont("TARDIS-Large")
-	label.DoLayout = function(self)
-		label:SizeToContents()
-		label:SetPos((frame:GetWide()*0.5)-(label:GetWide()*0.5),(frame:GetTall()*0.5)-(label:GetTall()*0.5))
+ENT:AddScreen("Settings", function(self,frame,screen)	
+	local settings={}
+	for k,v in pairs(self.GUISettings) do
+		local f=vgui.Create("DPanel",frame)
+		f:SetVisible(false)
+		f:SetSize(frame:GetSize())
+		v(self,f,screen)
+		table.insert(settings,{k,f})
 	end
-	label:SetText("Coming soon")
-	label:DoLayout()
+	table.SortByMember(settings,1,true)
+	
+	local mainf=vgui.Create("DPanel",frame)
+	mainf:SetSize(frame:GetSize())
+	
+	self:LoadButtons(mainf,function(frame)
+		local buttons={}
+		for k,v in ipairs(settings) do
+			local button = vgui.Create("DButton",frame)
+			button:SetText(v[1])
+			button:SetFont("TARDIS-Default")
+			button.DoClick = function()
+				frame:SetVisible(false)
+				v[2]:SetVisible(true)
+				self:PushScreen(v[1],screen,frame,v[2])
+			end
+			table.insert(buttons,button)
+		end
+		return buttons
+	end)
 end)

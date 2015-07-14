@@ -10,14 +10,23 @@ local mat = CreateMaterial(
 	}
 )
 
-ENT.scannerres=2
+ENT.scannerres=1
 
-TARDIS_AddScreen("Scanner", function(self,frame,screen)
-	screen.scanner=GetRenderTarget("tardisi_scanner-"..self:EntIndex().."-"..screen.id,
+local uid=0
+ENT:AddScreen("Scanner", function(self,frame,screen)
+	for i=0.1,2,0.1 do -- autodetects maximum resolution
+		if (self.screenx*i<=ScrW()) or (self.screeny*i<=ScrH()) then
+			self.scannerres=i
+		else
+			break
+		end
+	end
+	screen.scanner=GetRenderTarget("tardisi_scanner-"..uid.."-"..screen.id,
 		self.screenx*self.scannerres,
 		self.screeny*self.scannerres,
 		false
 	)
+	uid=uid+1
 	screen.scannerang=Angle()
 	
 	local scanner=vgui.Create("DImage",frame)
