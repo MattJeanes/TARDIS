@@ -42,7 +42,7 @@ end
 
 function ENT:LoadFolder(path,addonly,noprefix)
 	-- Loads modules
-	local folder = "entities/gmod_tardis_interior/"..path.."/"
+	local folder = "entities/gmod_tardis/"..path.."/"
 	local modules = file.Find(folder.."*.lua","LUA")
 	for _, plugin in ipairs(modules) do
 		if noprefix then

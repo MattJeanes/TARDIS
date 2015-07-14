@@ -4,15 +4,16 @@ if WireLib then
 else
 	ENT.Base			= "base_gmodentity"
 end 
-ENT.PrintName		= "TARDIS Rewrite"
+ENT.PrintName		= "TARDIS Rewrite Interior"
 ENT.Author			= "Dr. Matt"
-ENT.Spawnable		= true
-ENT.AdminSpawnable	= true
+ENT.Spawnable		= false
+ENT.AdminSpawnable	= false
 ENT.RenderGroup 	= RENDERGROUP_BOTH
 ENT.Category		= "Doctor Who"
-ENT.TardisExterior	= true
+ENT.TardisPart		= true
+ENT.TardisInterior	= true
 
-TARDIS=ENT
+TARDISI=ENT
 ENT.von=TARDIS_VON
 
 ENT.hooks={}
@@ -72,10 +73,10 @@ end
 ENT:LoadFolder("modules/libraries") -- loaded before main modules
 ENT:LoadFolder("modules")
 
-function ENT:OnRemove()
-	self:CallHook("OnRemove")
-end
-
 function ENT:Use(a,c)
 	self:CallHook("Use",a,c)
+end
+
+function ENT:OnRemove()
+	self:CallHook("OnRemove")
 end
