@@ -19,6 +19,7 @@ net.Receive("TARDISI-Initialize", function(len)
 	if IsValid(int) and IsValid(ext) and IsValid(ply) then
 		int.exterior=ext
 		int:SetCreator(ply)
+		int.phys=int:GetPhysicsObject()
 		int.interior=int:GetInterior(id or "default")
 		int:CallHook("Initialize")
 		int._init=true

@@ -1,10 +1,24 @@
 -- Third person
 
+ENT:AddKeyBind("tp-toggledoor",{
+	name="Toggle Door",
+	section="Third Person",
+	func=function(self,down,ply)
+		if ply==self.pilot and down then
+			self:ToggleDoor()
+		end
+	end,
+	key=KEY_F,
+	serveronly=true
+})
+
 hook.Add("PlayerSwitchFlashlight", "tardis-thirdperson", function(ply,enabled)
 	if ply:GetTardisData("thirdperson") then
 		return false
 	end
 end)
+
+local defaultdist=210
 
 if SERVER then
 	function ENT:PlayerThirdPerson(ply, enabled)
@@ -19,6 +33,7 @@ if SERVER then
 				ply:SetTardisData("thirdpersonang",ply:EyeAngles(),true)
 				ply:SetTardisData("thirdpersoncool", CurTime()+0.5)
 				ply:SetEyeAngles(self:LocalToWorldAngles(Angle(10,180,0)))
+				self:CallHook("ThirdPerson", ply, enabled)
 			else
 				if ply:GetTardisData("activewep") then
 					ply:SetActiveWeapon(ply:GetWeapon(ply:GetTardisData("activewep")))
@@ -26,15 +41,22 @@ if SERVER then
 				ply:SetTardisData("activewep")
 				ply:StripWeapon("tardis_hands")
 				ply:SetTardisData("thirdperson",false,true)
-				ply:SetEyeAngles(ply:GetTardisData("thirdpersonang"),true)
+				ply:SetEyeAngles(ply:GetTardisData("thirdpersonang"))
 				ply:SetTardisData("thirdpersonang")
 				ply:SetTardisData("thirdpersoncool", CurTime()+0.5)
+				self:CallHook("ThirdPerson", ply, enabled)
 				if not IsValid(self.interior) then
 					self:PlayerExit(ply,true)
 				end
 			end
 		end
 	end
+	
+	ENT:AddHook("PlayerExit", "thirdperson", function(self,ply)
+		if ply:GetTardisData("thirdperson") then
+			self:PlayerThirdPerson(ply,false)
+		end
+	end)
 
 	hook.Add("SetupPlayerVisibility", "tardis-thirdperson", function(ply)
 		if ply:GetTardisData("thirdperson") and IsValid(ply:GetTardisData("exterior")) then
@@ -45,6 +67,9 @@ if SERVER then
 	hook.Add("StartCommand", "tardis-thirdperson", function(ply, cmd)
 		if ply:GetTardisData("thirdperson") then
 			if not ply:Alive() then ply:GetTardisData("exterior"):PlayerThirdPerson(ply,false) return end
+			local ang=cmd:GetViewAngles()
+			ang.r=0
+			ply:SetTardisData("viewang",ang)
 			cmd:ClearMovement()
 			cmd:SetViewAngles(ply:GetTardisData("thirdpersonang"))
 			if cmd:KeyDown(IN_USE) and CurTime()>ply:GetTardisData("thirdpersoncool", 0) then -- user wants out
@@ -62,6 +87,9 @@ else
 
 	hook.Add("StartCommand", "tardis-thirdperson", function(ply, cmd)
 		if ply:GetTardisData("thirdperson") then
+			if cmd:GetMouseWheel()~=0 then
+				ply:SetTardisData("thirdpersondist",math.Clamp(ply:GetTardisData("thirdpersondist",defaultdist)-cmd:GetMouseWheel()*0.03*(1.1+ply:GetTardisData("thirdpersondist",defaultdist)),90,500))
+			end
 			cmd:ClearMovement()
 		end
 	end)
@@ -114,7 +142,7 @@ else
 				local pos=ext:LocalToWorld(Vector(0,0,60))
 				local tr = util.TraceLine({
 					start=pos,
-					endpos=pos-(ang:Forward()*210),
+					endpos=pos-(ang:Forward()*ply:GetTardisData("thirdpersondist",defaultdist)),
 					mask=MASK_NPCWORLDSTATIC
 				})
 				local view = {}
@@ -124,6 +152,7 @@ else
 				
 				if IsValid(ext.thpprop) then
 					ext.thpprop:SetPos(view.origin)
+					ext.thpprop:SetAngles(view.angles)
 				end
 				
 				return view
@@ -168,17 +197,4 @@ else
 			return true
 		end
 	end)
-	
-	--[[ bad dirty hacks do not use
-	hook.Add("wp-shouldrender", "tardisi-thirdperson", function(portal,exit,origin)
-		local ply=LocalPlayer()
-		if ply:GetTardisData("thirdperson") then
-			if portal:GetParent()==ply:GetTardisData("exterior") then
-				return true
-			elseif portal:GetParent()==ply:GetTardisData("interior") then
-				return false
-			end
-		end
-	end)
-	]]--
 end

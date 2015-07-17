@@ -1,11 +1,11 @@
 -- Key bind system (inspired by WAC)
 
 if SERVER then
-	util.AddNetworkString("TARDISI-KeyBind")
+	util.AddNetworkString("TARDIS-KeyBind")
 	
 	local binds={}
 	
-	net.Receive("TARDISI-KeyBind", function(_,ply)
+	net.Receive("TARDIS-KeyBind", function(_,ply)
 		local ext=ply:GetTardisData("exterior")
 		if IsValid(ext) then
 			local id=net.ReadString()
@@ -153,23 +153,23 @@ else
 	end
 	
 	local chatopen=false
-	hook.Add("StartChat", "TARDISI-KeyBind", function()
+	hook.Add("StartChat", "TARDIS-KeyBind", function()
 		chatopen=true
 	end)
 
-	hook.Add("FinishChat", "TARDISI-KeyBind", function()
+	hook.Add("FinishChat", "TARDIS-KeyBind", function()
 		chatopen=false
 	end)
 	
-	hook.Add("Think", "TARDISI-KeyBind", function()
+	hook.Add("Think", "TARDIS-KeyBind", function()
 		if chatopen or gui.IsConsoleVisible() or gui.IsGameUIVisible() then return end -- thanks Exho
-		local int=LocalPlayer():GetTardisData("interior")
-		if IsValid(int) then
+		local ext=LocalPlayer():GetTardisData("exterior")
+		if IsValid(ext) then
 			for key, info in pairs(keys) do
 				local b = info.b
 				info.b = key >= MOUSE_LEFT and input.IsMouseDown(key) or input.IsKeyDown(key)
 				if info.b ~= b then
-					int:HandleKey(key,info.b)
+					ext:HandleKey(key,info.b)
 				end
 			end
 		end
@@ -177,6 +177,12 @@ else
 	
 	local bindkeys={}
 	local binds={}
+	
+	function ENT:GetBindKey(id)
+		if bindkeys[id] then
+			return bindkeys[id]
+		end
+	end
 	
 	function ENT:AddKeyBind(id,data)
 		if bindkeys[id]==nil then
@@ -214,11 +220,11 @@ else
 				keys[k]=bindkeys[k]
 			end
 		end
-		file.Write("tardisi_binds.txt", self.von.serialize(keys))
+		file.Write("tardis_binds.txt", self.von.serialize(keys))
 	end
 	
 	function ENT:LoadKeyBinds()
-		local keys=file.Read("tardisi_binds.txt","DATA")
+		local keys=file.Read("tardis_binds.txt","DATA")
 		if keys then
 			bindkeys=self.von.deserialize(keys)
 		end
@@ -241,7 +247,7 @@ else
 						res=bind.func(self,down,LocalPlayer())
 					end
 					if (res~=false) and (not bind.clientonly) then
-						net.Start("TARDISI-KeyBind")
+						net.Start("TARDIS-KeyBind")
 							net.WriteString(k)
 							net.WriteBool(down)
 						net.SendToServer()

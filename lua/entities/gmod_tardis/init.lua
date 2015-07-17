@@ -48,6 +48,10 @@ function ENT:Initialize()
 	self:CallHook("Initialize")
 end
 
+function ENT:PhysicsUpdate(ph)
+	self:CallHook("PhysicsUpdate", ph)
+end
+
 function ENT:Think()
 	for k,v in pairs(self.occupants) do
 		if not k or not IsValid(k) then

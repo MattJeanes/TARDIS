@@ -67,10 +67,7 @@ INT.Parts={
 	console={
 		model="models/drmatt/tardis/2012interior/console.mdl"
 	},
-	door={
-		pos=Vector(-1,-327.5,84.35),
-		ang=Angle(0,-90,0)
-	},
+	door={},
 	test={
 		pos=Vector(-1.5,-50,130),
 		ang=Angle(0,-90,0)

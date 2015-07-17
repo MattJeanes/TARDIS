@@ -109,10 +109,16 @@ local function AutoSetup(self,e,id)
 		e:SetCollisionGroup( COLLISION_GROUP_WORLD ) -- Still works with USE, TODO: Find better way if possible (for performance reasons)
 	end
 	
-	e:SetPos(self:LocalToWorld(data.pos or Vector(0,0,0)))
-	e:SetAngles(self:LocalToWorldAngles(data.ang or Angle(0,0,0)))
+	if e.AutoPosition ~= false then
+		e:SetPos(self:LocalToWorld(data.pos or Vector(0,0,0)))
+		e:SetAngles(self:LocalToWorldAngles(data.ang or Angle(0,0,0)))
+	end
 	
-	e:SetParent(self)
+	if e.Weld then
+		constraint.Weld(self,e,0,0,0,true,false)
+	else
+		e:SetParent(self)
+	end
 end
 
 if SERVER then

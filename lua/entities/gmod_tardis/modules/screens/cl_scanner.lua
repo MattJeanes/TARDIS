@@ -99,8 +99,8 @@ end)
 hook.Add("RenderScene", "TARDISI_Scanner", function(pos,ang)
 	local int=LocalPlayer():GetTardisData("interior")
 	local ext=LocalPlayer():GetTardisData("exterior")
-	if IsValid(int) and IsValid(ext) then
-		local screens=int:ScreenActive("Scanner")
+	if IsValid(ext) then
+		local screens=ext:ScreenActive("Scanner")
 		if screens then
 			for k,v in pairs(screens) do
 				local oldRT = render.GetRenderTarget()
@@ -113,12 +113,14 @@ hook.Add("RenderScene", "TARDISI_Scanner", function(pos,ang)
 					vec:Rotate(v.scannerang)
 					local camOrigin = ext:LocalToWorld(vec)
 					local camAngle = ext:LocalToWorldAngles(v.scannerang)
-					int.scannerrender=true
+					if IsValid(int) then
+						int.scannerrender=true
+					end
 					render.RenderView({
 						x = 0,
 						y = 0,
-						w = int.screenx*int.scannerres,
-						h = int.screeny*int.scannerres,
+						w = ext.screenx*ext.scannerres,
+						h = ext.screeny*ext.scannerres,
 						fov = 120,
 						origin = camOrigin,
 						angles = camAngle,
@@ -128,7 +130,9 @@ hook.Add("RenderScene", "TARDISI_Scanner", function(pos,ang)
 						drawviewmodel = false,
 						--zfar = 1500
 					})
-					int.scannerrender=false
+					if IsValid(int) then
+						int.scannerrender=false
+					end
 				render.SetRenderTarget( oldRT )
 			end
 		end

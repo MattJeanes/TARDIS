@@ -18,7 +18,7 @@ if SERVER then
 		end
 	end
 	
-	hook.Add("PlayerInitialSpawn", "tardisi-data", function(ply)
+	hook.Add("PlayerInitialSpawn", "TARDISI-Data", function(ply)
 		for k,v in pairs(ents.FindByClass("gmod_tardis_interior")) do
 			v:SendData(ply)
 		end
@@ -49,6 +49,7 @@ end
 function ENT:SetData(k,v,network)
 	if not self.data then self.data = {} end
 	self.data[k]=v
+	self:CallHook("DataChanged",k,v)
 	
 	if SERVER and network then
 		net.Start("TARDISI-Data")
@@ -58,6 +59,7 @@ function ENT:SetData(k,v,network)
 			net.WriteType(v)
 		net.Broadcast()
 	end
+	return v
 end
 
 function ENT:GetData(k,default)

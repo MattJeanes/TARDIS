@@ -9,7 +9,6 @@ if SERVER then
 		td.maxs=e:OBBMaxs()
 		td.filter={self,e}
 		td.mask = MASK_NPCWORLDSTATIC
-		
 		local tr=util.TraceHull(td)
 		if util.IsInWorld(tr.HitPos) then -- single trace worked
 			return tr.HitPos

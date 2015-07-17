@@ -5,6 +5,7 @@ PART.ID = "door"
 PART.Name = "Door"
 PART.Model = "models/drmatt/tardis/exterior/door.mdl"
 PART.AutoSetup = true
+PART.AutoPosition = false
 PART.ClientThinkOverride = true
 PART.ClientDrawOverride = true
 PART.Collision = true
@@ -15,6 +16,13 @@ if SERVER then
 		self:SetBodygroup(1,1) -- Sticker
 		self:SetBodygroup(2,1) -- Lit sign
 		self:SetBodygroup(3,1) -- 3D sign
+		
+		if self.interior.portals and self.interior.portals[2] then
+			local portal=self.interior.portals[2]
+			self:SetAngles(portal:LocalToWorldAngles(Angle(0,180,0)))	
+			self:SetPos(portal:LocalToWorld(Vector(26,0,-51.65)))
+			self:SetParent(self.interior)
+		end
 	end
 	
 	function PART:Use(a)

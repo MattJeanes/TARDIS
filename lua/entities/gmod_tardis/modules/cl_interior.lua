@@ -4,7 +4,7 @@ TARDIS:AddSetting("interior", "default", true)
 
 ENT:AddGUISetting("Interior", function(self,frame)
 	local interiors={}
-	for k,v in pairs(self:GetInteriors()) do
+	for k,v in pairs(TARDISI:GetInteriors()) do
 		table.insert(interiors,{v.Name,v.ID})
 	end
 	table.SortByMember(interiors,1,true)

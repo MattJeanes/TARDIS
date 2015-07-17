@@ -42,6 +42,10 @@ if SERVER then
 	end
 
 	function ENT:PlayerExit(ply,forced,notp)
+		self:CallHook("PlayerExit", ply, forced, notp)
+		if IsValid(self.interior) then
+			self.interior:CallHook("PlayerExit", ply, forced, notp)
+		end
 		if not IsValid(self.interior) then
 			-- spectator mode doesn't exit properly without respawning
 			local pos,ang=ply:GetPos(),ply:EyeAngles()
@@ -100,10 +104,6 @@ if SERVER then
 					ply:SetLocalVelocity(fwd*ply:GetVelocity():Length())
 				end
 			end
-		end
-		self:CallHook("PlayerExit", ply, forced, notp)
-		if IsValid(self.interior) then
-			self.interior:CallHook("PlayerExit", ply, forced, notp)
 		end
 	end
 	

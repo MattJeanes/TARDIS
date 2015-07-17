@@ -16,11 +16,10 @@ ENT:AddScreen("Door controller", function(self,frame)
 	button:SetSize(frame:GetWide()*0.3,frame:GetTall()*0.15)
 	button:SetPos((frame:GetWide()*0.5)-(button:GetWide()*0.5),(frame:GetTall()*0.6)-(button:GetTall()*0.5))
 	button.DoClick = function(button)
-		self.exterior:Control("toggledoor")
+		self:Control("toggledoor")
 	end
 	button.Think = function(button)
-		local ext=self.exterior
-		if ext:DoorMoving() then
+		if self:DoorMoving() then
 			if not button:GetDisabled() then
 				if button.open then
 					doorstatus:SetText("The door is closing")
@@ -32,7 +31,7 @@ ENT:AddScreen("Door controller", function(self,frame)
 			end
 		elseif button:GetDisabled() then
 			button:SetDisabled(false)
-		elseif ext:DoorOpen() and (not button.open) or button.first then
+		elseif self:DoorOpen() and (not button.open) or button.first then
 			button.open=true
 			button:SetText("Close the door")
 			doorstatus:SetText("The door is open")
@@ -40,7 +39,7 @@ ENT:AddScreen("Door controller", function(self,frame)
 			if button.first then
 				button.first=nil
 			end
-		elseif not ext:DoorOpen() and button.open or button.first then
+		elseif not self:DoorOpen() and button.open or button.first then
 			button.open=false
 			button:SetText("Open the door")
 			doorstatus:SetText("The door is closed")

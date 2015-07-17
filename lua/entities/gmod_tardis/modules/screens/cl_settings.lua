@@ -21,8 +21,6 @@ ENT:AddScreen("Settings", function(self,frame,screen)
 			button:SetText(v[1])
 			button:SetFont("TARDIS-Default")
 			button.DoClick = function()
-				frame:SetVisible(false)
-				v[2]:SetVisible(true)
 				self:PushScreen(v[1],screen,frame,v[2])
 			end
 			table.insert(buttons,button)

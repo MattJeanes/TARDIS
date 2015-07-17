@@ -16,15 +16,19 @@ function ENT:Draw()
 	if WireLib then
 		Wire_Render(self)
 	end
+	if self._init then
+		self:CallHook("Draw")
+	end
 end
 
 net.Receive("TARDIS-Initialize", function(len)
 	local ext=net.ReadEntity()
 	local int=net.ReadEntity()
 	local ply=net.ReadEntity()
-	if IsValid(ext) and IsValid(int) and IsValid(ply) then
+	if IsValid(ext) and IsValid(ply) then
 		ext.interior=int
 		ext:SetCreator(ply)
+		ext.phys=ext:GetPhysicsObject()
 		ext:CallHook("Initialize")
 		ext._init=true
 	end
