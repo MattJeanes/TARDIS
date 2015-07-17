@@ -170,9 +170,6 @@ if SERVER then
 		end
 	end)
 else
-	ENT:AddHook("Initialize", "parts", function(self)
-		self.parts={}
-	end)
 	net.Receive("TARDIS-SetupPart", function(ply)
 		local e=net.ReadEntity()
 		local ext=net.ReadEntity()
@@ -181,6 +178,7 @@ else
 			e.exterior=ext
 			e.interior=int
 			local name=net.ReadString()
+			if not int.parts then int.parts={} end
 			int.parts[name]=e
 			if e.o.Initialize then
 				e.o.Initialize(e)
