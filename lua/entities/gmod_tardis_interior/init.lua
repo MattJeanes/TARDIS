@@ -29,33 +29,34 @@ net.Receive("TARDISI-Initialize", function(len,ply)
 	end
 end)
 function ENT:Initialize()
-	if not (self.exterior and IsValid(self.exterior)) then
-		ErrorNoHalt("Exterior not set, removing!\n")
-		self:Remove()
+	if self.spacecheck then
+		if not (self.exterior and IsValid(self.exterior)) then
+			ErrorNoHalt("Exterior not set, removing!\n")
+			self:Remove()
+		end
+		self.interior=self:GetInterior(TARDIS:GetSetting("interior","default",self:GetCreator()))
+		if not self.interior then
+			self:GetCreator():ChatPrint("Invalid interior, removing!")
+			self:Remove()
+			return
+		end
+		self:SetModel(self.interior.Model)
+		self:PhysicsInit(SOLID_VPHYSICS)
+		self:SetMoveType(MOVETYPE_VPHYSICS)
+		self:SetSolid(SOLID_VPHYSICS)
+		self:SetRenderMode(RENDERMODE_TRANSALPHA)
+		self:SetUseType(SIMPLE_USE)
+		self:DrawShadow(false)
+		
+		self.phys = self:GetPhysicsObject()
+		if (self.phys:IsValid()) then
+			self.phys:EnableMotion(false)
+		end
+		
+		self.occupants = {}
+	else
+		self:CallHook("Initialize")
 	end
-	
-	self.interior=self:GetInterior(self.exterior:GetSetting("interior","default",self:GetCreator()))
-	if not self.interior then
-		self:GetCreator():ChatPrint("Invalid interior, removing!")
-		self:Remove()
-		return
-	end
-	self:SetModel(self.interior.Model)
-	self:PhysicsInit( SOLID_VPHYSICS )
-	self:SetMoveType( MOVETYPE_VPHYSICS )
-	self:SetSolid( SOLID_VPHYSICS )
-	self:SetRenderMode( RENDERMODE_TRANSALPHA )
-	self:SetUseType( SIMPLE_USE )
-	self:DrawShadow(false)
-	
-	self.phys = self:GetPhysicsObject()
-	if (self.phys:IsValid()) then
-		self.phys:EnableMotion(false)
-	end	
-	
-	self.occupants = {}
-	
-	self:CallHook("Initialize")
 end
 
 function ENT:Think()

@@ -11,7 +11,7 @@ local overrides={
 		if IsValid(int) and IsValid(ext) then
 			if (int:CallHook("ShouldDraw")~=false)
 			or (ext:DoorOpen()
-				and (self.ClientDrawOverride and LocalPlayer():GetPos():Distance(ext:GetPos())<1000)
+				and (self.ClientDrawOverride and LocalPlayer():GetPos():Distance(ext:GetPos())<TARDIS:GetSetting("portals-closedist"))
 				or (self.DrawThroughPortal and (int.scannerrender or (IsValid(wp.drawingent) and wp.drawingent:GetParent()==int)))
 			) or self.ExteriorPart then
 				return self.o.Draw(self)
@@ -19,6 +19,9 @@ local overrides={
 		end
 	end, CLIENT},
 	["Initialize"]={function(self)
+		if self.Animate then
+			self.posepos=0
+		end
 		net.Start("TARDIS-SetupPart")
 			net.WriteEntity(self)
 		net.SendToServer()
@@ -27,12 +30,21 @@ local overrides={
 		local int=self.interior
 		local ext=self.exterior
 		if self._init and IsValid(int) and IsValid(ext) then
-			if (int:CallHook("ShouldThink")~=false) or (ext:DoorOpen() and self.ClientThinkOverride and LocalPlayer():GetPos():Distance(ext:GetPos())<1000) or self.ExteriorPart then -- TODO: Improve
+			if (int:CallHook("ShouldThink")~=false) or (ext:DoorOpen() and self.ClientThinkOverride and LocalPlayer():GetPos():Distance(ext:GetPos())<TARDIS:GetSetting("portals-closedist")) or self.ExteriorPart then -- TODO: Improve
+				if self.Animate then
+					local target=self:GetOn() and 1 or 0
+					self.posepos=math.Approach(self.posepos,target,FrameTime()*1.5)
+					self:SetPoseParameter("switch",self.posepos)
+					self:InvalidateBoneCache()
+				end
 				return self.o.Think(self)
 			end
 		end
 	end, CLIENT},
 	["Use"]={function(self,a,...)
+		if SERVER then
+			self:SetOn(not self:GetOn())
+		end
 		if (not self.NoStrictUse) and IsValid(a) and a:IsPlayer() then
 			if a:GetEyeTraceNoCursor().Entity==self then
 				return self.o.Use(self,a,...)
@@ -114,8 +126,8 @@ local function AutoSetup(self,e,id)
 		e:SetAngles(self:LocalToWorldAngles(data.ang or Angle(0,0,0)))
 	end
 	
-	if e.Weld then
-		constraint.Weld(self,e,0,0,0,true,false)
+	if e.Collision then
+		constraint.Weld(e,self,0,0,0,true,false)
 	else
 		e:SetParent(self)
 	end

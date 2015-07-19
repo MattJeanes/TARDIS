@@ -1,7 +1,7 @@
 -- Float
 
 -- Binds
-ENT:AddKeyBind("float-toggle",{
+TARDIS:AddKeyBind("float-toggle",{
 	name="Float Toggle",
 	section="Third Person",
 	desc="Lets the TARDIS fly as if there is no gravity",
@@ -12,7 +12,8 @@ ENT:AddKeyBind("float-toggle",{
 		end
 	end,
 	key=KEY_T,
-	serveronly=true
+	serveronly=true,
+	exterior=true
 })
 
 if SERVER then

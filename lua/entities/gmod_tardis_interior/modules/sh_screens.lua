@@ -1,7 +1,7 @@
 -- Adds screens
 
-if SERVER then -- Send screen files to client then exit
-	ENT:LoadFolder("modules/screens", true)
+if SERVER then
+	ENT:LoadFolder("modules/screens")
 	return
 end
 

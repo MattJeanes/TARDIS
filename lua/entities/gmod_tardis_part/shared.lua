@@ -12,4 +12,11 @@ ENT.RenderGroup 	= RENDERGROUP_BOTH
 ENT.Category		= "Doctor Who"
 ENT.TardisPart		= true
 
-ENT.von=TARDIS_VON
+function ENT:Initialize()
+
+end
+
+function ENT:SetupDataTables()
+	self:NetworkVar("Bool",0,"On")
+	self:SetOn(false)
+end

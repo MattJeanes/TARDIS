@@ -9,7 +9,7 @@ if SERVER then
 			net.Start("TARDISI-Data")
 				net.WriteEntity(self)
 				net.WriteBool(true)
-				net.WriteString(TARDISI.von.serialize(self.data))
+				net.WriteString(TARDIS.von.serialize(self.data))
 			if IsValid(ply) then
 				net.Send(ply)
 			else
@@ -29,7 +29,7 @@ else
 		local mode=net.ReadBool()
 		if mode then
 			if IsValid(ext) then
-				ext.data=TARDISI.von.deserialize(net.ReadString())
+				ext.data=TARDIS.von.deserialize(net.ReadString())
 			end
 		else
 			local k=net.ReadType()

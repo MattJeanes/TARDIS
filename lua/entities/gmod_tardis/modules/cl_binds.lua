@@ -23,9 +23,9 @@ function ENT:ChangeKeyBind(id,data)
 	local keybutton = vgui.Create("DButton", frame)
 	keybutton:SetSize(frame:GetWide()*0.6-30, 40)
 	keybutton:SetPos((frame:GetWide()*0.5)-(keybutton:GetWide()*0.5),frame:GetTall()-keybutton:GetTall()-10)
-	keybutton.key=self:GetBindKey(id)
+	keybutton.key=TARDIS:GetBindKey(id)
 	keybutton.Update = function(s)
-		s:SetText("Key: "..(self:GetKeyName(s.key) or "Invalid"))
+		s:SetText("Key: "..(TARDIS:GetKeyName(s.key) or "Invalid"))
 	end
 	keybutton.DoClick = function(s)
 		s.keytrap=true
@@ -47,30 +47,22 @@ function ENT:ChangeKeyBind(id,data)
 	button:SetText("Save")
 	button:SetSize(frame:GetWide()*0.2, 40)
 	button:SetPos(10,frame:GetTall()-button:GetTall()-10)
-	button.DoClick = function() self:SetKeyBind(id,keybutton.key) frame:Close() end
+	button.DoClick = function() TARDIS:SetKeyBind(id,keybutton.key) frame:Close() end
 	
 	local reset = vgui.Create("DButton",frame)
 	reset:SetText("Reset")
 	reset:SetSize(frame:GetWide()*0.2, 40)
 	reset:SetPos(frame:GetWide()-reset:GetWide()-10,frame:GetTall()-reset:GetTall()-10)
-	reset.DoClick = function() keybutton.key=self:GetBind(id).key keybutton:Update() end
+	reset.DoClick = function() keybutton.key=TARDIS:GetBind(id).key keybutton:Update() end
 end
 
 ENT:AddGUISetting("Binds", function(self,frame,screen)
 	local keybinds={}
 	local sections={}
-	for k,v in pairs(self:GetBinds()) do
+	for k,v in pairs(TARDIS:GetBinds()) do
 		table.insert(keybinds,{k,v})
 		if v.section and not table.HasValue(sections,v.section) then
 			table.insert(sections,v.section)
-		end
-	end
-	if IsValid(self.interior) then
-		for k,v in pairs(self.interior:GetBinds()) do
-			table.insert(keybinds,{k,v})
-			if v.section and not table.HasValue(sections,v.section) then
-				table.insert(settings,{k,f})
-			end
 		end
 	end
 	table.SortByMember(keybinds,1,true)

@@ -4,6 +4,12 @@ local INT={}
 INT.Name="Default"
 INT.ID="default"
 INT.Model="models/drmatt/tardis/2012interior/interior.mdl"
+INT.IdleSound={
+	{
+		path="drmatt/tardis/interior_idle_loop.wav",
+		volume=1	
+	},
+}
 INT.Light={
 	color=Color(0,100,255),
 	pos=Vector(0,0,0),

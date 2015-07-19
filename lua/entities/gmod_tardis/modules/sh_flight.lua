@@ -1,7 +1,7 @@
 -- Flight
 
 -- Binds
-ENT:AddKeyBind("flight-toggle",{
+TARDIS:AddKeyBind("flight-toggle",{
 	name="Toggle",
 	section="Flight",
 	func=function(self,down,ply)
@@ -10,59 +10,68 @@ ENT:AddKeyBind("flight-toggle",{
 		end
 	end,
 	key=KEY_R,
-	serveronly=true
+	serveronly=true,
+	exterior=true
 })
-ENT:AddKeyBind("flight-forward",{
+TARDIS:AddKeyBind("flight-forward",{
 	name="Forward",
 	section="Flight",
 	key=KEY_W,
-	serveronly=true
+	serveronly=true,
+	exterior=true
 })
-ENT:AddKeyBind("flight-backward",{
+TARDIS:AddKeyBind("flight-backward",{
 	name="Backward",
 	section="Flight",
 	key=KEY_S,
-	serveronly=true
+	serveronly=true,
+	exterior=true
 })
-ENT:AddKeyBind("flight-left",{
+TARDIS:AddKeyBind("flight-left",{
 	name="Left",
 	section="Flight",
 	key=KEY_A,
-	serveronly=true
+	serveronly=true,
+	exterior=true
 })
-ENT:AddKeyBind("flight-right",{
+TARDIS:AddKeyBind("flight-right",{
 	name="Right",
 	section="Flight",
 	key=KEY_D,
-	serveronly=true
+	serveronly=true,
+	exterior=true
 })
-ENT:AddKeyBind("flight-up",{
+TARDIS:AddKeyBind("flight-up",{
 	name="Up",
 	section="Flight",
 	key=KEY_SPACE,
-	serveronly=true
+	serveronly=true,
+	exterior=true
 })
-ENT:AddKeyBind("flight-down",{
+TARDIS:AddKeyBind("flight-down",{
 	name="Down",
 	section="Flight",
 	key=KEY_LCONTROL,
-	serveronly=true
+	serveronly=true,
+	exterior=true
 })
-ENT:AddKeyBind("flight-boost",{
+TARDIS:AddKeyBind("flight-boost",{
 	name="Boost",
 	section="Flight",
 	desc="Hold this key while flying to speed up",
 	key=KEY_LSHIFT,
-	serveronly=true
+	serveronly=true,
+	exterior=true
 })
-ENT:AddKeyBind("flight-rotate",{
+TARDIS:AddKeyBind("flight-rotate",{
 	name="Rotate",
 	section="Flight",
 	desc="Hold this key while using left and right to rotate",
 	key=KEY_LALT,
-	serveronly=true
+	serveronly=true,
+	exterior=true
 })
-ENT:AddKeyBind("flight-spindir",{
+TARDIS:AddKeyBind("flight-spindir",{
 	name="Spin Direction",
 	section="Flight",
 	desc="Changes which way the TARDIS rotates while flying",
@@ -83,7 +92,8 @@ ENT:AddKeyBind("flight-spindir",{
 		end
 	end,
 	key=MOUSE_RIGHT,
-	serveronly=true
+	serveronly=true,
+	exterior=true
 })
 
 if SERVER then
@@ -194,30 +204,30 @@ if SERVER then
 				local fwd=eye:Forward()
 				local ri=eye:Right()
 				
-				if self:IsBindDown(self.pilot,"flight-boost") then
+				if TARDIS:IsBindDown(self.pilot,"flight-boost") then
 					force=force*2.5
 					vforce=vforce*2.5
 					rforce=rforce*2.5
 					tilt=5
 				end
-				if self:IsBindDown(self.pilot,"flight-forward") then
+				if TARDIS:IsBindDown(self.pilot,"flight-forward") then
 					ph:AddVelocity(fwd*force*phm)
 					tilt=tilt+5
 				end
-				if self:IsBindDown(self.pilot,"flight-backward") then
+				if TARDIS:IsBindDown(self.pilot,"flight-backward") then
 					ph:AddVelocity(-fwd*force*phm)
 					tilt=tilt+5
 				end
-				if self:IsBindDown(self.pilot,"flight-right") then
-					if self:IsBindDown(self.pilot,"flight-rotate") then
+				if TARDIS:IsBindDown(self.pilot,"flight-right") then
+					if TARDIS:IsBindDown(self.pilot,"flight-rotate") then
 						ph:AddAngleVelocity(Vector(0,0,-rforce))
 					else
 						ph:AddVelocity(ri*force*phm)
 						tilt=tilt+5
 					end
 				end
-				if self:IsBindDown(self.pilot,"flight-left") then
-					if self:IsBindDown(self.pilot,"flight-rotate") then
+				if TARDIS:IsBindDown(self.pilot,"flight-left") then
+					if TARDIS:IsBindDown(self.pilot,"flight-rotate") then
 						ph:AddAngleVelocity(Vector(0,0,rforce))
 					else
 						ph:AddVelocity(-ri*force*phm)
@@ -225,9 +235,9 @@ if SERVER then
 					end
 				end
 				
-				if self:IsBindDown(self.pilot,"flight-down") then
+				if TARDIS:IsBindDown(self.pilot,"flight-down") then
 					ph:AddVelocity(-up*vforce*phm)
-				elseif self:IsBindDown(self.pilot,"flight-up") then
+				elseif TARDIS:IsBindDown(self.pilot,"flight-up") then
 					ph:AddVelocity(up*vforce*phm)
 				end
 			end
@@ -254,43 +264,47 @@ if SERVER then
 		end
 	end)
 else
+	TARDIS:AddSetting({
+		id="flight-externalsound",
+		name="External Sound",
+		section="Flight",
+		desc="Whether the flight sound can be heard on the outside or not",
+		value=true,
+		type="bool",
+		option=true
+	})
+	
 	ENT:AddHook("OnRemove", "flight", function(self)
 		if self.flightsound then
 			self.flightsound:Stop()
 			self.flightsound=nil
 		end
 	end)
+	
 	ENT:AddHook("Think", "flight", function(self)
-		if self.flightsound and self.flightsound:IsPlaying() then
-			local p=math.Clamp(self:GetVelocity():Length()/250,0,15)
-			local ply=LocalPlayer()
-			local e=ply:GetViewEntity()
-			if not IsValid(e) then e=ply end
-			if ply:GetTardisData("exterior")==self and e==self.thpprop and ply:GetTardisData("thirdperson") then
-				self.flightsound:ChangePitch(95+p,0.1)
-				self.flightsound:ChangeVolume(0.75,0)
-			else
-				local pos = e:GetPos()
-				local spos = self:GetPos()
-				local doppler = (pos:Distance(spos+e:GetVelocity())-pos:Distance(spos+self:GetVelocity()))/200
-				self.flightsound:ChangePitch(math.Clamp(95+p+doppler,80,120),0.1)
-			end
-		end
-	end)
-	ENT:AddHook("DataChanged", "flight", function(self,k,v)
-		if k=="flight" then
-			if v then
-				if not self.flightsound then
-					self.flightsound=CreateSound(self, "drmatt/tardis/flight_loop.wav")
-					self.flightsound:SetSoundLevel(90)
-					self.flightsound:Play()
+		if self:GetData("flight") and TARDIS:GetSetting("flight-externalsound") then
+			if self.flightsound and self.flightsound:IsPlaying() then
+				local p=math.Clamp(self:GetVelocity():Length()/250,0,15)
+				local ply=LocalPlayer()
+				local e=ply:GetViewEntity()
+				if not IsValid(e) then e=ply end
+				if ply:GetTardisData("exterior")==self and e==self.thpprop and ply:GetTardisData("thirdperson") then
+					self.flightsound:ChangePitch(95+p,0.1)
+				else
+					local pos = e:GetPos()
+					local spos = self:GetPos()
+					local doppler = (pos:Distance(spos+e:GetVelocity())-pos:Distance(spos+self:GetVelocity()))/200
+					self.flightsound:ChangePitch(math.Clamp(95+p+doppler,80,120),0.1)
 				end
+				self.flightsound:ChangeVolume(0.75)
 			else
-				if self.flightsound then
-					self.flightsound:Stop()
-					self.flightsound=nil
-				end
+				self.flightsound=CreateSound(self, "drmatt/tardis/flight_loop.wav")
+				self.flightsound:SetSoundLevel(90)
+				self.flightsound:Play()
 			end
+		elseif self.flightsound then
+			self.flightsound:Stop()
+			self.flightsound=nil
 		end
 	end)
 end

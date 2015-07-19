@@ -1,6 +1,6 @@
 -- Third person
 
-ENT:AddKeyBind("tp-toggledoor",{
+TARDIS:AddKeyBind("tp-toggledoor",{
 	name="Toggle Door",
 	section="Third Person",
 	func=function(self,down,ply)
@@ -9,7 +9,8 @@ ENT:AddKeyBind("tp-toggledoor",{
 		end
 	end,
 	key=KEY_F,
-	serveronly=true
+	serveronly=true,
+	exterior=true
 })
 
 hook.Add("PlayerSwitchFlashlight", "tardis-thirdperson", function(ply,enabled)

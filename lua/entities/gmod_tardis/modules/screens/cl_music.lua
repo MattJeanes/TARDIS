@@ -1,5 +1,26 @@
 -- Music
 
+TARDIS:AddSetting({
+	id="music-enabled",
+	name="Enabled",
+	desc="Whether music is played through the screens or not",
+	section="Music",
+	value=true,
+	type="bool",
+	option=true
+})
+TARDIS:AddSetting({
+	id="music-volume",
+	name="Volume",
+	desc="The volume of the music played through the screens",
+	section="Music",
+	value=100,
+	type="number",
+	min=0,
+	max=100,
+	option=true
+})
+
 function ENT:StopMusic()
 	if IsValid(self.music) then
 		self.music:Stop()
@@ -39,7 +60,7 @@ function ENT:PlayMusic(url,resolved)
 	if not resolved then
 		url=self:ResolveMusicURL(url)
 	end
-	if url then
+	if url and TARDIS:GetSetting("music-enabled") then
 		self:StopMusic()
 		sound.PlayURL(url, "", function(station,errorid,errorname)
 			if station then
@@ -53,7 +74,16 @@ function ENT:PlayMusic(url,resolved)
 	end
 end
 
-ENT:AddHook("OnRemove", "Music", function(self)
+ENT:AddHook("Think", "music", function(self)
+	if IsValid(self.music) then
+		self.music:SetVolume(TARDIS:GetSetting("music-volume")/100)
+		if not TARDIS:GetSetting("music-enabled") then
+			self:StopMusic()
+		end
+	end
+end)
+
+ENT:AddHook("OnRemove", "music", function(self)
 	self:StopMusic()
 end)
 

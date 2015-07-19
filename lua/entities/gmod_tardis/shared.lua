@@ -12,12 +12,9 @@ ENT.RenderGroup 	= RENDERGROUP_BOTH
 ENT.Category		= "Doctor Who"
 ENT.TardisExterior	= true
 
-TARDIS=ENT
-ENT.von=TARDIS_VON
-
 ENT.hooks={}
 
-// Hook system for modules
+-- Hook system for modules
 function ENT:AddHook(name,id,func)
 	if not (self.hooks[name]) then self.hooks[name]={} end
 	self.hooks[name][id]=func
@@ -40,9 +37,8 @@ function ENT:CallHook(name,...)
 	end
 end
 
-function ENT:LoadFolder(path,addonly,noprefix)
-	-- Loads modules
-	local folder = "entities/gmod_tardis/"..path.."/"
+function ENT:LoadFolder(folder,addonly,noprefix)
+	folder="entities/gmod_tardis/"..folder.."/"
 	local modules = file.Find(folder.."*.lua","LUA")
 	for _, plugin in ipairs(modules) do
 		if noprefix then

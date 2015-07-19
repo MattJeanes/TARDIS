@@ -1,0 +1,34 @@
+-- Flight
+
+TARDIS:AddSetting({
+	id="flight-internalsound",
+	name="Internal Sound",
+	section="Flight",
+	desc="Whether the flight sound can be heard on the inside or not",
+	value=true,
+	type="bool",
+	option=true
+})
+
+ENT:AddHook("OnRemove", "flight", function(self)
+	if self.flightsound then
+		self.flightsound:Stop()
+		self.flightsound=nil
+	end
+end)
+
+ENT:AddHook("Think", "flight", function(self)
+	if self.exterior:GetData("flight") and TARDIS:GetSetting("flight-internalsound") then
+		if self.flightsound and self.flightsound:IsPlaying() then
+			local p=math.Clamp(self.exterior:GetVelocity():Length()/250,0,15)
+			self.flightsound:ChangePitch(95+p,0.1)
+			self.flightsound:ChangeVolume(0.4)
+		else
+			self.flightsound=CreateSound(self, "drmatt/tardis/flight_loop.wav")	
+			self.flightsound:Play()
+		end
+	elseif self.flightsound then
+		self.flightsound:Stop()
+		self.flightsound=nil
+	end
+end)

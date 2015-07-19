@@ -1,7 +1,7 @@
 -- Adds screens
 
-if SERVER then -- Send screen files to client then exit
-	ENT:LoadFolder("modules/screens", true)
+if SERVER then
+	ENT:LoadFolder("modules/screens")
 	return
 end
 
@@ -18,18 +18,21 @@ function ENT:UpdateScreenInfo()
 	else
 		id="default"
 	end
-	local int=TARDISI:GetInterior(id)
-	if int then
-		self.screenx=(int.ScreenX or 485)*self.screenres
-		self.screeny=(int.ScreenY or 250)*self.screenres
-		self.screengap=5*self.screenres
-		self.screengap2=self.screengap*2
-		if IsValid(self.interior) then
-			self.interior.screenres=self.screenres
-			self.interior.screenx=self.screenx
-			self.interior.screeny=self.screeny
-			self.interior.screengap=self.screengap
-			self.interior.screengap2=self.screengap2
+	if IsValid(self.interior) then
+		local int=self.interior:GetInterior(id)
+		if int then
+			self.screenx=(int.ScreenX or 485)*self.screenres
+			self.screeny=(int.ScreenY or 250)*self.screenres
+			self.screengap=5*self.screenres
+			self.screengap2=self.screengap*2
+			
+			if IsValid(self.interior) then
+				self.interior.screenres=self.screenres
+				self.interior.screenx=self.screenx
+				self.interior.screeny=self.screeny
+				self.interior.screengap=self.screengap
+				self.interior.screengap2=self.screengap2
+			end
 		end
 	end
 end
@@ -62,7 +65,7 @@ surface.CreateFont("TARDIS-PageName", {
 	size=20*ENT.screenres
 })
 
-ENT:AddKeyBind("tp-openscreen",{
+TARDIS:AddKeyBind("tp-openscreen",{
 	name="Open Screen",
 	section="Third Person",
 	desc="Toggles the HUD screen",
@@ -77,7 +80,8 @@ ENT:AddKeyBind("tp-openscreen",{
 		end
 	end,
 	key=MOUSE_MIDDLE,
-	clientonly=true
+	clientonly=true,
+	exterior=true
 })
 
 local screens={}

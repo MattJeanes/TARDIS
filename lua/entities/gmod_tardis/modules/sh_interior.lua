@@ -23,6 +23,7 @@ if SERVER then
 	
 	ENT:AddHook("Initialize", "interior", function(self)		
 		local e=ents.Create("gmod_tardis_interior")
+		e.spacecheck=true
 		e.exterior=self
 		e:SetCreator(self:GetCreator())
 		if CPPI then
@@ -41,6 +42,8 @@ if SERVER then
 		e:DeleteOnRemove(self)
 		e.occupants=self.occupants -- Hooray for referenced tables
 		self.interior=e
+		e.spacecheck=nil
+		e:Initialize()
 	end)
 	
 	ENT:AddHook("Use", "interior", function(self,a,c)
