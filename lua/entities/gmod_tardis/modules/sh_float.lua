@@ -51,7 +51,7 @@ if SERVER then
 	ENT:AddHook("PhysicsUpdate", "float", function(self,ph)
 		if self:GetData("float") then
 			if ph:IsGravityEnabled() then
-				ph:AddVelocity(Vector(0,0,9.015))
+				ph:AddVelocity(Vector(0,0,9.0135))
 			end
 		end
 	end)

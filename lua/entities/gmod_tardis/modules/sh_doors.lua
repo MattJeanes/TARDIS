@@ -41,6 +41,22 @@ if SERVER then
 			self.Door=nil
 		end
 	end)
+	
+	local meta=FindMetaTable("Entity")
+	meta.OldSetSkin=meta.OldSetSkin or meta.SetSkin
+	function meta.SetSkin(...)
+		meta.OldSetSkin(...)
+		hook.Call("SkinChanged", self, ...)
+	end
+	
+	hook.Add("SkinChanged", "tardis-door", function(ent,i)
+		if ent.TardisExterior then
+			local door=ent.Door
+			if IsValid(door) then
+				door:SetSkin(i)
+			end
+		end
+	end)
 else
 	function ENT:DoorOpen()
 		return self.DoorPos ~= 0

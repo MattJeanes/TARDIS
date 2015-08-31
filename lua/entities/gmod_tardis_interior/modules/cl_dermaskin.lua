@@ -1,10 +1,5 @@
 -- Derma skin
 
-if SERVER then
-	resource.AddFile("materials/gwenskin/tardis.png")
-	return
-end
-
 local surface = surface
 local draw = draw
 local Color = Color

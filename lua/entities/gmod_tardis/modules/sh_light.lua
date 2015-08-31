@@ -16,7 +16,7 @@ else
 			local pos=self:LocalToWorld(Vector(0,0,122))
 			local pulse=(math.sin(CurTime()*8)+1)*(255/4)+(255/2)-50
 			render.SetMaterial(mat)
-			if IsValid(self.interior) and wp.shouldrender(self.interior:GetData("e_portal")) then
+			if IsValid(self.interior) and self.interior.portals and wp.shouldrender(self.interior.portals[1]) then
 				render.DrawSprite(pos, size, size, Color(255,255,255,pulse))
 			else
 				local vis=util.PixelVisible(pos, 3, self.lightpixvis)*255

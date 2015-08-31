@@ -1,44 +1,48 @@
-ENT.Type = "anim"
-if WireLib then
-	ENT.Base 			= "base_wire_entity"
-else
-	ENT.Base			= "base_gmodentity"
-end 
-ENT.PrintName		= "TARDIS Rewrite"
-ENT.Author			= "Dr. Matt"
-ENT.Spawnable		= true
-ENT.AdminSpawnable	= true
-ENT.RenderGroup 	= RENDERGROUP_BOTH
-ENT.Category		= "Doctor Who"
-ENT.TardisExterior	= true
+-- TARDIS
 
-ENT.hooks={}
+ENT.Base="gmod_door_exterior"
+ENT.Spawnable=true
+ENT.PrintName="TARDIS Rewrite"
+ENT.Category="Doctor Who"
+ENT.Author="Dr. Matt"
+ENT.TardisExterior=true
+ENT.Interior="gmod_tardis_interior"
+ENT.Model="models/drmatt/tardis/exterior/exterior.mdl"
+ENT.Fallback=Vector(60,0,5)
+
+local class=string.sub(ENT.Folder,string.find(ENT.Folder, "/[^/]*$")+1) -- only works if in a folder
+	
+local hooks={}
 
 -- Hook system for modules
 function ENT:AddHook(name,id,func)
-	if not (self.hooks[name]) then self.hooks[name]={} end
-	self.hooks[name][id]=func
+	if not (hooks[name]) then hooks[name]={} end
+	hooks[name][id]=func
 end
 
 function ENT:RemoveHook(name,id)
-	if self.hooks[name] and self.hooks[name][id] then
-		self.hooks[name][id]=nil
+	if hooks[name] and hooks[name][id] then
+		hooks[name][id]=nil
 	end
 end
 
 function ENT:CallHook(name,...)
-	if not self.hooks[name] then return end
 	local a,b,c,d,e,f
-	for k,v in pairs(self.hooks[name]) do
+	a,b,c,d,e,f=self.BaseClass.CallHook(self,name,...)
+	if a~=nil then
+		return a,b,c,d,e,f
+	end
+	if not hooks[name] then return end
+	for k,v in pairs(hooks[name]) do
 		a,b,c,d,e,f = v(self,...)
-		if ( a != nil ) then
+		if a~=nil then
 			return a,b,c,d,e,f
 		end
 	end
 end
 
 function ENT:LoadFolder(folder,addonly,noprefix)
-	folder="entities/gmod_tardis/"..folder.."/"
+	folder="entities/"..class.."/"..folder.."/"
 	local modules = file.Find(folder.."*.lua","LUA")
 	for _, plugin in ipairs(modules) do
 		if noprefix then
@@ -65,13 +69,6 @@ function ENT:LoadFolder(folder,addonly,noprefix)
 		end
 	end
 end
-ENT:LoadFolder("modules/libraries") -- loaded before main modules
+
+ENT:LoadFolder("modules/libraries")
 ENT:LoadFolder("modules")
-
-function ENT:Use(a,c)
-	self:CallHook("Use",a,c)
-end
-
-function ENT:OnRemove()
-	self:CallHook("OnRemove")
-end

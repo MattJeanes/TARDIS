@@ -55,10 +55,7 @@ INT.Portal={
 	width=60,
 	height=91
 }
-INT.Fallback={
-	pos=Vector(0,-330,95),
-	ang=Angle(0,-90,0)
-}
+INT.Fallback=Vector(0,-330,95)
 INT.Screens={
 	{
 		pos=Vector(57.15,-11.38,159.58),

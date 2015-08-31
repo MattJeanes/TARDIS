@@ -90,12 +90,6 @@ ENT:AddScreen("Scanner", function(self,frame,screen)
 	end
 end)
 
-ENT:AddHook("ShouldDraw", "scanner", function(self)
-	if self.scannerrender then
-		return false
-	end
-end)
-
 hook.Add("RenderScene", "TARDISI_Scanner", function(pos,ang)
 	local int=LocalPlayer():GetTardisData("interior")
 	local ext=LocalPlayer():GetTardisData("exterior")
