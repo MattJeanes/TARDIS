@@ -126,9 +126,7 @@ local function AutoSetup(self,e,id)
 		e:SetAngles(self:LocalToWorldAngles(data.ang or Angle(0,0,0)))
 	end
 	
-	if e.Collision then
-		constraint.Weld(e,self,0,0,0,true,false)
-	else
+	if not e.Collision then
 		e:SetParent(self)
 	end
 end
