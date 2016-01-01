@@ -4,16 +4,6 @@ ENT.Base="gmod_door_interior"
 ENT.Author="Dr. Matt"
 ENT.TardisInterior=true
 ENT.Exterior="gmod_tardis"
-ENT.Model="models/drmatt/tardis/2012interior/interior.mdl"
-ENT.Portals={
-	{
-		pos=Vector(26,0,51.65),
-		ang=Angle(0,0,0),
-		width=44,
-		height=91
-	}
-	-- interior portal set at runtime
-}
 
 local class=string.sub(ENT.Folder,string.find(ENT.Folder, "/[^/]*$")+1) -- only works if in a folder
 

@@ -7,8 +7,6 @@ ENT.Category="Doctor Who"
 ENT.Author="Dr. Matt"
 ENT.TardisExterior=true
 ENT.Interior="gmod_tardis_interior"
-ENT.Model="models/drmatt/tardis/exterior/exterior.mdl"
-ENT.Fallback=Vector(60,0,5)
 
 local class=string.sub(ENT.Folder,string.find(ENT.Folder, "/[^/]*$")+1) -- only works if in a folder
 	

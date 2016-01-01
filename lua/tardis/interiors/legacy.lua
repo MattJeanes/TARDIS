@@ -1,0 +1,57 @@
+-- Legacy
+
+local T={}
+T.Base="base"
+T.Name="Legacy"
+T.ID="legacy"
+T.Interior={
+	Model="models/drmatt/tardis/interior.mdl",
+	IdleSound={
+		{
+			path="tardis/interior_idle_loop.wav",
+			volume=0.5	
+		},
+		{
+			path="tardis/interior_idle2_loop.wav",
+			volume=0.5	
+		}
+	},
+	Light={
+		color=Color(255,50,0),
+		pos=Vector(0,0,120),
+		brightness=5
+	},
+	Portal={
+		pos=Vector(316.7,334.9,-36.5),
+		ang=Angle(0,230,0),
+		width=45,
+		height=91
+	},
+	Fallback={
+		pos=Vector(291,305,-75),
+		ang=Angle(0,230,0)
+	},
+	Screens={
+		{
+			pos=Vector(41.1,-13,47),
+			ang=Angle(0,84.5,90),
+			width=443,
+			height=335
+		}
+	},
+	Parts={
+		door={
+			pos=Vector(300,315,-88.1),
+			ang=Angle(0,50,0),
+			width=443,
+			height=335
+		},
+		rails=true
+	}
+}
+T.Exterior={
+	Parts={
+		door=true
+	}
+}
+TARDIS:AddInterior(T)

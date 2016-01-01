@@ -76,6 +76,7 @@ TARDIS:AddKeyBind("flight-spindir",{
 	section="Flight",
 	desc="Changes which way the TARDIS rotates while flying",
 	func=function(self,down,ply)
+		if TARDIS:HUDScreenOpen(ply) then return end
 		if down and ply==self.pilot then
 			local dir
 			if self.spindir==-1 then
@@ -96,34 +97,16 @@ TARDIS:AddKeyBind("flight-spindir",{
 	exterior=true
 })
 
-if SERVER then
-	function ENT:CreateRotorWash()
-		if IsValid(self.rotorwash) then return end
-		self.rotorwash = ents.Create("env_rotorwash_emitter")
-		self.rotorwash:SetPos(self:GetPos())
-		self.rotorwash:SetParent(self)
-		self.rotorwash:Activate()
-	end
-
-	function ENT:RemoveRotorWash()
-		if IsValid(self.rotorwash) then
-			self.rotorwash:Remove()
-			self.rotorwash=nil
-		end
-	end
-	
+if SERVER then	
 	function ENT:ToggleFlight()
 		local on=self:SetData("flight",not self:GetData("flight",false),true)
 		self:SetFloat(on)
-		if on then
-			self:CreateRotorWash()
-		else
-			self:RemoveRotorWash()
-		end
 	end
 	
-	ENT:AddHook("CanTurnOffLight", "flight", function(self)
-		if self:GetData("flight") then return false end
+	ENT:AddHook("ShouldTurnOnRotorwash", "flight", function(self)
+		if self:GetData("flight") then
+			return true
+		end
 	end)
 	
 	ENT:AddHook("CanTurnOffFloat", "flight", function(self)
@@ -282,12 +265,20 @@ else
 	end)
 	
 	ENT:AddHook("Think", "flight", function(self)
-		if self:GetData("flight") and TARDIS:GetSetting("flight-externalsound") then
+		if self:GetData("flight") and TARDIS:GetSetting("flight-externalsound") and TARDIS:GetSetting("sound") and (not self:CallHook("ShouldTurnOffFlightSound")) then
 			if self.flightsound and self.flightsound:IsPlaying() then
 				local p=math.Clamp(self:GetVelocity():Length()/250,0,15)
 				local ply=LocalPlayer()
 				local e=ply:GetViewEntity()
 				if not IsValid(e) then e=ply end
+				if e:EntIndex()==-1 then -- clientside prop
+					local ext=ply:GetTardisData("exterior")
+					if ext then
+						e=ext
+					else
+						e=ply
+					end
+				end
 				if ply:GetTardisData("exterior")==self and e==self.thpprop and ply:GetTardisData("thirdperson") then
 					self.flightsound:ChangePitch(95+p,0.1)
 				else

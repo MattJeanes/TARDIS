@@ -3,7 +3,7 @@ AddCSLuaFile('shared.lua')
 include('shared.lua')
 
 ENT:AddHook("PlayerInitialize", "interior", function(self)
-	net.WriteString(self.interior.ID)
+	net.WriteString(self.metadata.ID)
 end)
 
 ENT:AddHook("PostPlayerInitialize", "senddata", function(self,ply)
@@ -12,14 +12,15 @@ end)
 
 function ENT:Initialize()
 	if self.spacecheck then
-		self.interior=self:GetInterior(TARDIS:GetSetting("interior","default",self:GetCreator()))
-		if not self.interior then
-			self.interior=self:GetInterior("default")
+		self.metadata=TARDIS:GetInterior(TARDIS:GetSetting("interior","default",self:GetCreator()))
+		if not self.metadata then
+			self.metadata=TARDIS:GetInterior("default")
 		end
 		
-		self.Model=self.interior.Model
-		self.Fallback=self.interior.Fallback
-		self.Portals[2]=self.interior.Portal
+		self.Model=self.metadata.Interior.Model
+		self.Fallback=self.metadata.Interior.Fallback
+		self.Portal=self.metadata.Interior.Portal
+		self.ExitDistance=self.metadata.Interior.ExitDistance
 	end
 	self.BaseClass.Initialize(self)
 end

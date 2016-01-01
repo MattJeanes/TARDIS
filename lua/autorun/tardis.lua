@@ -2,7 +2,11 @@
 
 TARDIS=TARDIS or {}
 function TARDIS:LoadFolder(folder,addonly,noprefix)
-	folder=folder.."/"
+	if folder then
+		folder="tardis/"..folder.."/"
+	else
+		folder="tardis/"
+	end
 	local modules = file.Find(folder.."*.lua","LUA")
 	for _, plugin in ipairs(modules) do
 		if noprefix then
@@ -29,5 +33,6 @@ function TARDIS:LoadFolder(folder,addonly,noprefix)
 		end
 	end
 end
-TARDIS:LoadFolder("tardis/libraries")
-TARDIS:LoadFolder("tardis")
+TARDIS:LoadFolder("libraries/libraries")
+TARDIS:LoadFolder("libraries")
+TARDIS:LoadFolder()

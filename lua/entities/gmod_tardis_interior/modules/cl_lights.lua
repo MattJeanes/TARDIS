@@ -18,7 +18,7 @@ end)
 
 ENT:AddHook("Draw", "lights", function(self)
 	--render.SuppressEngineLighting(false)
-	local data=self.interior.Light
+	local data=self.metadata.Interior.Light
 	if data then
 		local dlight = DynamicLight( self:EntIndex() )
 		if ( dlight ) then
@@ -42,10 +42,10 @@ end
 
 
 ENT:AddHook("Initialize", "spritetest", function(self)
-	if self.interior.RoundThings then
+	if self.metadata.Interior.RoundThings then
 		self.roundthingmat=Material("sprites/light_ignorez")
 		self.roundthings={}
-		for k,v in pairs(self.interior.RoundThings) do
+		for k,v in pairs(self.metadata.Interior.RoundThings) do
 			self:AddRoundThing(v)
 		end
 	end

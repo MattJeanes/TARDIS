@@ -63,4 +63,10 @@ else
 	net.Receive("TARDIS-PlayerDataClear", function()
 		LocalPlayer():ClearTardisData()
 	end)
+	
+	ENT:AddHook("PlayerExit", "players", function(self)
+		if IsValid(TARDIS.screenpopframe) then
+			TARDIS:HUDScreen() -- force close hud screen if exit tardis
+		end
+	end)
 end

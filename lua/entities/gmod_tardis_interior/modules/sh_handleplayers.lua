@@ -9,6 +9,16 @@ if SERVER then
 			end
 		end
 	end)
+	hook.Add("PlayerSpawn", "tardis-handleplayers", function(ply)
+		local int=ply:GetTardisData("interior")
+		if IsValid(int) then
+			local fallback=int.metadata.Interior.Fallback
+			if fallback then
+				ply:SetPos(int:LocalToWorld(fallback.pos))
+				ply:SetEyeAngles(int:LocalToWorldAngles(fallback.ang))
+			end
+		end
+	end)
 else
 	ENT:AddHook("ShouldDraw", "players", function(self)
 		if ((not (LocalPlayer():GetTardisData("interior")==self)) or LocalPlayer():GetTardisData("thirdperson")) and not wp.drawing then

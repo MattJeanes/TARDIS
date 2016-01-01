@@ -1,11 +1,20 @@
 -- Helper functions
 
-function TARDIS:GetExterior(ply)
+function TARDIS:GetExteriorEnt(ply)
 	return (CLIENT and LocalPlayer() or ply):GetTardisData("exterior")
 end
 
-function TARDIS:GetInterior(ply)
+function TARDIS:GetInteriorEnt(ply)
 	return (CLIENT and LocalPlayer() or ply):GetTardisData("interior")
+end
+
+function TARDIS:Benchmark(name,func)
+	local time=SysTime()
+	func()
+	time=(SysTime()-time)*1000
+	cam.Start2D()
+		draw.DrawText(name.." took "..time .."ms","DermaLarge",50,1000*math.random(),Color(255,255,255,255),TEXT_ALIGN_LEFT)
+	cam.End2D()
 end
 
 --[[

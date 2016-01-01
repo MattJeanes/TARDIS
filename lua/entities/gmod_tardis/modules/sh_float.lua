@@ -15,13 +15,64 @@ TARDIS:AddKeyBind("float-toggle",{
 	serveronly=true,
 	exterior=true
 })
+TARDIS:AddKeyBind("float-forward",{
+	name="Forward",
+	section="Float",
+	key=KEY_W,
+	serveronly=true,
+	exterior=true
+})
+TARDIS:AddKeyBind("float-backward",{
+	name="Backward",
+	section="Float",
+	key=KEY_S,
+	serveronly=true,
+	exterior=true
+})
+TARDIS:AddKeyBind("float-left",{
+	name="Left",
+	section="Float",
+	key=KEY_A,
+	serveronly=true,
+	exterior=true
+})
+TARDIS:AddKeyBind("float-right",{
+	name="Right",
+	section="Float",
+	key=KEY_D,
+	serveronly=true,
+	exterior=true
+})
+TARDIS:AddKeyBind("float-boost",{
+	name="Boost",
+	section="Float",
+	desc="Hold this key while floating to speed up rotation",
+	key=KEY_LSHIFT,
+	serveronly=true,
+	exterior=true
+})
+TARDIS:AddKeyBind("float-rotate",{
+	name="Rotate",
+	section="Float",
+	desc="Hold this key while using left and right to rotate on yaw axis",
+	key=KEY_LALT,
+	serveronly=true,
+	exterior=true
+})
+TARDIS:AddKeyBind("float-brake",{
+	name="Brake",
+	section="Float",
+	desc="Hold this key to slow rotation in float mode",
+	key=KEY_SPACE,
+	serveronly=true,
+	exterior=true
+})
 
 if SERVER then
 	function ENT:SetFloat(on)
 		if (not on) and self:CallHook("CanTurnOffFloat")==false then return end
 		self:SetData("float",on,true)
 		self.phys:EnableGravity(not on)
-		self:SetLight(on)
 	end
 	
 	function ENT:ToggleFloat()
@@ -33,10 +84,6 @@ if SERVER then
 		end
 		self:SetFloat(on)
 	end
-	
-	ENT:AddHook("CanTurnOffLight", "float", function(self)
-		if self:GetData("float") then return false end
-	end)
 	
 	ENT:AddHook("CanTurnOffFloat", "float", function(self)
 		if self:GetData("floatfirst") then return false	end
@@ -53,6 +100,64 @@ if SERVER then
 			if ph:IsGravityEnabled() then
 				ph:AddVelocity(Vector(0,0,9.0135))
 			end
+			if (not self:GetData("flight")) and self.pilot and IsValid(self.pilot) then
+				local p=self.pilot
+				local eye=p:GetTardisData("viewang")
+				if not eye then
+					eye=angle_zero
+				end
+				local fwd=eye:Forward()
+				local ri=eye:Right()
+				local ang=self:WorldToLocalAngles(eye)
+				
+				local force=1
+				local rforce=2
+				local offset=-1*eye
+				if TARDIS:IsBindDown(self.pilot,"float-boost") then
+					force=force*2.5
+					rforce=rforce*2.5
+				end
+				if TARDIS:IsBindDown(self.pilot,"float-forward") then
+					local vec=Vector(0,force,0)
+					vec:Rotate(ang)
+					ph:AddAngleVelocity(vec)
+				end
+				if TARDIS:IsBindDown(self.pilot,"float-backward") then
+					local vec=Vector(0,-force,0)
+					vec:Rotate(ang)
+					ph:AddAngleVelocity(vec)
+				end
+				if TARDIS:IsBindDown(self.pilot,"float-right") then
+					if TARDIS:IsBindDown(self.pilot,"float-rotate") then
+						local vec=Vector(0,0,-rforce)
+						vec:Rotate(ang)
+						ph:AddAngleVelocity(vec)
+					else
+						local vec=Vector(force,0,0)
+						vec:Rotate(ang)
+						ph:AddAngleVelocity(vec)
+					end
+				end
+				if TARDIS:IsBindDown(self.pilot,"float-left") then
+					if TARDIS:IsBindDown(self.pilot,"float-rotate") then
+						local vec=Vector(0,0,rforce)
+						vec:Rotate(ang)
+						ph:AddAngleVelocity(vec)
+					else
+						local vec=Vector(-force,0,0)
+						vec:Rotate(ang)
+						ph:AddAngleVelocity(vec)
+					end
+				end
+				
+				if TARDIS:IsBindDown(self.pilot,"float-brake") then
+					ph:AddAngleVelocity(ph:GetAngleVelocity()*-0.05)
+				end
+			end
 		end
+	end)
+else
+	ENT:AddHook("ShouldTurnOnLight", "float", function(self)
+		if self:GetData("float") then return true end
 	end)
 end

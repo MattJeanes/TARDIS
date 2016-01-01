@@ -22,15 +22,14 @@ function ENT:GetScreens()
 end
 
 ENT:AddHook("Initialize", "screens", function(self)
-	self.exterior:UpdateScreenInfo(self.exterior,self.interior.ID)
-	local screens=self.interior.Screens
+	local screens=self.metadata.Interior.Screens
 	if screens then
 		self.screens3D={}
 		for k,v in pairs(screens) do
-			self.screens3D[k]=self.exterior:LoadScreen(k)
-			self.screens3D[k].Pos3D=v.pos
-			self.screens3D[k].Ang3D=v.ang
-		end
+			self.screens3D[k]=TARDIS:LoadScreen(k,{width=v.width,height=v.height,ext=self.exterior,int=self})
+			self.screens3D[k].pos3D=v.pos
+			self.screens3D[k].ang3D=v.ang
+		end	
 	end
 end)
 
@@ -43,13 +42,13 @@ ENT:AddHook("OnRemove", "screens", function(self)
 		end
 	end
 end)
-	
-ENT:AddHook("Draw", "screens", function(self)
+
+ENT:AddHook("PostDrawTranslucentRenderables", "screens", function(self)
 	if self.screens3D then
 		for k,v in pairs(self.screens3D) do
 			local col=HSVToColor(180+math.sin(CurTime()*0.1)*180,0.5,1)
-			vgui.Start3D2D(self:LocalToWorld(v.Pos3D),self:LocalToWorldAngles(v.Ang3D),0.0624*(1/self.screenres))
-				draw.RoundedBox(0,0,0,self.screenx,self.screeny,col)
+			vgui.Start3D2D(self:LocalToWorld(v.pos3D),self:LocalToWorldAngles(v.ang3D),0.0624*(1/TARDIS.screenres))
+				draw.RoundedBox(0,0,0,v.width,v.height,col)
 				v:Paint3D2D()
 			vgui.End3D2D()
 		end

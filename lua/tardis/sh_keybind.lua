@@ -160,11 +160,16 @@ else
 	
 	local chatopen=false
 	hook.Add("StartChat", "TARDIS-KeyBind", function()
+		if timer.Exists("TARDIS-CloseChat") then
+			timer.Remove("TARDIS-CloseChat")
+		end
 		chatopen=true
 	end)
 
 	hook.Add("FinishChat", "TARDIS-KeyBind", function()
-		chatopen=false
+		timer.Create("TARDIS-CloseChat", 0.5, 1, function() -- prevents input just after closing chat
+			chatopen=false
+		end)
 	end)
 	
 	hook.Add("Think", "TARDIS-KeyBind", function()

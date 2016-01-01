@@ -21,6 +21,24 @@ end)
 
 local defaultdist=210
 
+function ENT:GetThirdPersonPos(ply,ang)
+	local pos=self:LocalToWorld(Vector(0,0,60))
+	local tr = util.TraceLine({
+		start=pos,
+		endpos=pos-(ang:Forward()*ply:GetTardisData("thirdpersondist",defaultdist)),
+		mask=MASK_NPCWORLDSTATIC
+	})
+	return tr.HitPos+(ang:Forward()*10), Angle(ang.p,ang.y,0)
+end
+
+function ENT:GetThirdPersonTrace(ply,ang)
+	local pos,ang=self:GetThirdPersonPos(ply,ang)
+	local trace=util.QuickTrace(pos,ang:Forward()*9999999999,self)
+	local angle=trace.HitNormal:Angle()
+	angle:RotateAroundAxis(angle:Right(),-90)
+	return trace.HitPos,angle
+end
+
 if SERVER then
 	function ENT:PlayerThirdPerson(ply, enabled)
 		if IsValid(ply) and ply:IsPlayer() and self.occupants[ply] then
@@ -80,12 +98,6 @@ if SERVER then
 		end
 	end)
 else
-	ENT:AddHook("ShouldDraw", "thirdperson", function(self)
-		if LocalPlayer():GetTardisData("thirdperson") then
-			return false
-		end
-	end)
-
 	hook.Add("StartCommand", "tardis-thirdperson", function(ply, cmd)
 		if ply:GetTardisData("thirdperson") then
 			if cmd:GetMouseWheel()~=0 then
@@ -140,15 +152,10 @@ else
 		if ply:GetTardisData("thirdperson") then
 			local ext=ply:GetTardisData("exterior")
 			if IsValid(ext) then
-				local pos=ext:LocalToWorld(Vector(0,0,60))
-				local tr = util.TraceLine({
-					start=pos,
-					endpos=pos-(ang:Forward()*ply:GetTardisData("thirdpersondist",defaultdist)),
-					mask=MASK_NPCWORLDSTATIC
-				})
+				local pos,ang=ext:GetThirdPersonPos(ply,ang)
 				local view = {}
-				view.origin = tr.HitPos + (ang:Forward()*10)
-				view.angles = Angle(ang.p,ang.y,0)
+				view.origin = pos
+				view.angles = ang
 				view.fov = fov
 				
 				if IsValid(ext.thpprop) then
@@ -173,8 +180,6 @@ else
 		local ply=LocalPlayer()
 		if ply.GetTardisData and ply:GetTardisData("thirdperson") and hudblock[name] then
 			return false
-		else
-			--print(name)
 		end
 	end)
 	

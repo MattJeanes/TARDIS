@@ -2,18 +2,87 @@
 
 
 if SERVER then
-	function ENT:ToggleDoor()
-		if not IsValid(self.interior) then return end
-		self:SetData("doorstate",not self:GetData("doorstate",false),true)
-		self:CallHook("ToggleDoor", self:DoorOpen())
+	local function runcallbacks(callbacks,state)
+		for k,v in pairs(callbacks) do
+			k(state)
+			callbacks[k]=nil
+		end
+	end
+
+	local function delay(callback,state) -- Ensures callback is always called async
+		timer.Simple(0,function()
+			callback(state)
+		end)
 	end
 	
-	function ENT:DoorOpen()
-		return self:GetData("doorstate",false)
+	function ENT:ToggleDoor(callback)
+		if not IsValid(self.interior) then return end
+		if not self:GetData("doorchangecallback",false) then
+			self:SetData("doorchangecallback",{})
+		end
+		local callbacks=self:GetData("doorchangecallback")
+		local doorstate=self:GetData("doorstatereal",false)
+		if self:CallHook("CanToggleDoor", doorstate)==false then
+			if callback then
+				callback(doorstate)
+			end
+			runcallbacks(callbacks,doorstate)
+			return
+		end
+		doorstate=not doorstate
+		
+		self:SetData("doorstatereal",doorstate,true)
+		self:SetData("doorchangewait",not doorstate)
+		
+		if doorstate then
+			self:SetData("doorstate",true,true)
+			self:SetData("doorchange",CurTime())
+			self:CallHook("ToggleDoor",true)
+			if callback then
+				delay(callback,true)
+			end
+			runcallbacks(callbacks,true)
+		else
+			if callback then
+				callbacks[callback]=true
+			end
+			self:SetData("doorchange",CurTime()+0.5)
+		end
 	end
+	
+	function ENT:OpenDoor(callback)
+		if self:GetData("doorstate",false) then
+			delay(callback,true)
+		else
+			self:ToggleDoor(callback)
+		end
+	end
+	
+	function ENT:CloseDoor(callback)
+		if self:GetData("doorstate",false) ~= self:GetData("doorstatereal",false) then
+			local callbacks=self:GetData("doorchangecallback")
+			callbacks[callback]=true
+		elseif not self:GetData("doorstate",false) then
+			delay(callback,false)
+		else
+			self:ToggleDoor(callback)
+		end
+	end
+	
+	function ENT:DoorOpen(real)
+		if real then
+			return self:GetData("doorstatereal",false)
+		else
+			return self:GetData("doorstate",false)
+		end
+	end
+	
+	ENT:AddHook("Initialize", "doors", function(self)
+		self:SetBodygroup(1,1)
+	end)
 	
 	ENT:AddHook("ToggleDoor", "intdoors", function(self,open)
-		local intdoor=self.interior:GetPart("door")
+		local intdoor=TARDIS:GetPart(self.interior,"door")
 		if IsValid(intdoor) then
 			if open then
 				intdoor:SetCollisionGroup( COLLISION_GROUP_WORLD )
@@ -23,22 +92,14 @@ if SERVER then
 		end
 	end)
 	
-	ENT:AddHook("Initialize", "doors", function(self)
-		self.Door=ents.Create("prop_physics")
-		self.Door:SetModel("models/drmatt/tardis/exterior/door.mdl")
-		self.Door:SetPos(self:LocalToWorld(Vector(0,0,0)))
-		self.Door:SetAngles(self:LocalToWorldAngles(Angle(0,0,0)))
-		self.Door:SetParent(self)
-		
-		self.Door:SetBodygroup(1,1) -- Sticker
-		self.Door:SetBodygroup(2,1) -- Lit sign
-		self:SetData("door", self.Door, true)
-	end)
-	
-	ENT:AddHook("OnRemove", "doors", function(self)
-		if IsValid(self.Door) then
-			self.Door:Remove()
-			self.Door=nil
+	ENT:AddHook("Think", "doors", function(self)
+		if self:GetData("doorchangewait",false) and CurTime()>self:GetData("doorchange",0) then
+			self:SetData("doorchangewait",nil)
+			self:SetData("doorstate",false,true)
+			self:CallHook("ToggleDoor",false)
+			local callbacks=self:GetData("doorchangecallback")
+			runcallbacks(callbacks,false)
+			self:SetData("doorchangecallback",nil)
 		end
 	end)
 	
@@ -58,29 +119,21 @@ if SERVER then
 		end
 	end)
 else
-	function ENT:DoorOpen()
-		return self.DoorPos ~= 0
+	function ENT:DoorOpen(real)
+		local door=self:GetPart("door")
+		if real and IsValid(door) then
+			return door.DoorPos ~= 0
+		else
+			return self:GetData("doorstate",false)
+		end
 	end
 	
 	function ENT:DoorMoving()
-		return self.DoorPos ~= self.DoorTarget
-	end
-
-	ENT:AddHook("Initialize", "doors", function(self)
-		self.DoorPos=0
-		self.DoorTarget=0
-	end)
-	
-	ENT:AddHook("Think", "doors", function(self)
-		self.DoorTarget=self.DoorOverride or (self:GetData("doorstate",false) and 1 or 0)
-		
-		-- Have to spam it otherwise it glitches out (http://facepunch.com/showthread.php?t=1414695)
-		self.DoorPos=self.DoorOverride or math.Approach(self.DoorPos,self.DoorTarget,FrameTime()*2)
-		
-		local door=self:GetData("door")
+		local door=self:GetPart("door")
 		if IsValid(door) then
-			door:SetPoseParameter("switch", self.DoorPos)
-			door:InvalidateBoneCache()
+			return door.DoorPos ~= door.DoorTarget
+		else
+			return false
 		end
-	end)
+	end
 end

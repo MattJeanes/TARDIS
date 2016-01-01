@@ -10,7 +10,7 @@ TARDIS:AddSetting({
 })
 
 ENT:AddHook("Initialize", "idlesound", function(self)
-	if self.interior.IdleSound then
+	if self.metadata.Interior.IdleSound then
 		self.idlesounds={}
 	end
 end)
@@ -25,9 +25,9 @@ ENT:AddHook("OnRemove", "idlesound", function(self)
 end)
 
 ENT:AddHook("Think", "idlesound", function(self)
-	if self.interior.IdleSound and self.idlesounds then
-		for k,v in pairs(self.interior.IdleSound) do
-			if TARDIS:GetSetting("idlesounds") then -- TODO: add setting here
+	if self.metadata.Interior.IdleSound and self.idlesounds then
+		for k,v in pairs(self.metadata.Interior.IdleSound) do
+			if TARDIS:GetSetting("idlesounds") and TARDIS:GetSetting("sound") then
 				if not self.idlesounds[k] then
 					self.idlesounds[k]=CreateSound(self, v.path)	
 					self.idlesounds[k]:Play()

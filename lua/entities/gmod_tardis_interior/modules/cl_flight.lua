@@ -18,7 +18,7 @@ ENT:AddHook("OnRemove", "flight", function(self)
 end)
 
 ENT:AddHook("Think", "flight", function(self)
-	if self.exterior:GetData("flight") and TARDIS:GetSetting("flight-internalsound") then
+	if self.exterior:GetData("flight") and TARDIS:GetSetting("flight-internalsound") and TARDIS:GetSetting("sound") then
 		if self.flightsound and self.flightsound:IsPlaying() then
 			local p=math.Clamp(self.exterior:GetVelocity():Length()/250,0,15)
 			self.flightsound:ChangePitch(95+p,0.1)
