@@ -172,8 +172,17 @@ else
 		end)
 	end)
 	
+	local spawnmenuopen=false
+	hook.Add("OnSpawnMenuOpen", "TARDIS-KeyBind", function()
+		spawnmenuopen=true
+	end)
+
+	hook.Add("OnSpawnMenuClose", "TARDIS-KeyBind", function()
+		spawnmenuopen=false
+	end)
+	
 	hook.Add("Think", "TARDIS-KeyBind", function()
-		if chatopen or gui.IsConsoleVisible() or gui.IsGameUIVisible() then return end -- thanks Exho
+		if chatopen or spawnmenuopen or gui.IsConsoleVisible() or gui.IsGameUIVisible() then return end -- thanks Exho
 		local ext=LocalPlayer():GetTardisData("exterior")
 		local int=LocalPlayer():GetTardisData("interior")
 		if IsValid(ext) then

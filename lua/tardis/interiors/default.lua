@@ -67,15 +67,29 @@ T.Interior={
 			height=250
 		}
 	},
+	Seats={
+		{
+			pos=Vector(-183.78,67.3,104.64),
+			ang=Angle(0.02,-110.46,-1.23)
+		},
+		{
+			pos=Vector(-31.12,192.06,104.15),
+			ang=Angle(0.14,-171.02,0.5)
+		},
+		{
+			pos=Vector(188.54,44.54,103.64),
+			ang=Angle(0.08,99.92,-0.2)
+		},
+		{
+			pos=Vector(106.05,-162.4,103.1),
+			ang=Angle(0.05,39.18,3)
+		}
+	},
 	Parts={
 		console={
 			model="models/drmatt/tardis/2012interior/console.mdl"
 		},
-		door=true,
-		test={
-			pos=Vector(-1.5,-50,130),
-			ang=Angle(0,-90,0)
-		},
+		door=true
 	}
 }
 T.Exterior={

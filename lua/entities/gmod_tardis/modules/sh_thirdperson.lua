@@ -85,14 +85,16 @@ if SERVER then
 	
 	hook.Add("StartCommand", "tardis-thirdperson", function(ply, cmd)
 		if ply:GetTardisData("thirdperson") then
-			if not ply:Alive() then ply:GetTardisData("exterior"):PlayerThirdPerson(ply,false) return end
+			local ext=ply:GetTardisData("exterior")
+			if not IsValid(ext) then return end
+			if not ply:Alive() then ext:PlayerThirdPerson(ply,false) return end
 			local ang=cmd:GetViewAngles()
 			ang.r=0
 			ply:SetTardisData("viewang",ang)
 			cmd:ClearMovement()
 			cmd:SetViewAngles(ply:GetTardisData("thirdpersonang"))
 			if cmd:KeyDown(IN_USE) and CurTime()>ply:GetTardisData("thirdpersoncool", 0) then -- user wants out
-				ply:GetTardisData("exterior"):PlayerThirdPerson(ply,false)
+				ext:PlayerThirdPerson(ply,false)
 			end
 			cmd:ClearButtons()
 		end

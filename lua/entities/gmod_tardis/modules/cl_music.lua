@@ -28,29 +28,36 @@ function ENT:StopMusic()
 	end
 end
 
+local patterns={
+	"youtu.be/([_A-Za-z0-9-]+)",
+	"youtube.com/watch%?v=([_A-Za-z0-9-]+)",
+}
+local api="https://abyss.mattjeanes.com:8090/"
 function ENT:ResolveMusicURL(url)
 	if url:find("youtu.be") or url:find("youtube.com") then
-		if url:find("youtu.be") then
-			local explode=string.Explode("/",url)
-			url="https://www.youtube.com/watch?v="..explode[#explode]
-		end
-		http.Fetch("http://youtubeinmp3.com/fetch/?api=advanced&format=JSON&video="..url,
-			function(body,len,headers,code)
-				if code==200 then
+		local id=string.match(url,patterns[1]) or string.match(url,patterns[2])
+		if id then
+			http.Fetch(api.."get?id="..id,
+				function(body,len,headers,code)
 					local tbl=util.JSONToTable(body)
 					if tbl then
-						self:PlayMusic(tbl.link,true)
+						if tbl.success then
+							LocalPlayer():ChatPrint("Playing: "..tbl.title)
+							self:PlayMusic(api.."play?id="..id,true)
+						else
+							LocalPlayer():ChatPrint("ERROR: Failed to load ("..(tbl.err and tbl.err or "Unknown reason")..")")
+						end
 					else
-						LocalPlayer():ChatPrint("ERROR: Failed to resolve url (API failed, try again)")
+						LocalPlayer():ChatPrint("ERROR: Failed to load API response")
 					end
-				else
-					LocalPlayer():ChatPrint("ERROR: Failed to resolve url (HTTP "..code..")")
+				end,
+				function(err)
+					LocalPlayer():ChatPrint("ERROR: Failed to resolve url ("..err..")")
 				end
-			end,
-			function(err)
-				LocalPlayer():ChatPrint("ERROR: Failed to resolve url ("..err..")")
-			end
-		)
+			)
+		else
+			LocalPlayer():ChatPrint("ERROR: Couldn't find video ID inside url")
+		end
 	else
 		return url
 	end

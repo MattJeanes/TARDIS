@@ -17,6 +17,22 @@ function TARDIS:Benchmark(name,func)
 	cam.End2D()
 end
 
+function TARDIS:GetLocalPos(ent,ply)
+	local int=self:GetInteriorEnt(ply)
+	if IsValid(int) and IsValid(ent) then
+		return int:WorldToLocal(ent:GetPos()),int:WorldToLocalAngles(ent:GetAngles())
+	else
+		return false
+	end
+end
+concommand.Add("tardis_getlocal",function(ply,cmd,args)
+	local decimals=tonumber(args[1])
+	local ent=ply:GetEyeTraceNoCursor().Entity
+	local pos,ang=TARDIS:GetLocalPos(ent,ply)
+	print("Vector("..math.Round(pos.x,decimals)..","..math.Round(pos.y,decimals)..","..math.Round(pos.z,decimals)..")")
+	print("Angle("..math.Round(ang.p,decimals)..","..math.Round(ang.y,decimals)..","..math.Round(ang.r,decimals)..")")
+end)
+
 --[[
 local meta=FindMetaTable("Player")
 meta.OldSetEyeAngles=meta.OldSetEyeAngles or meta.SetEyeAngles

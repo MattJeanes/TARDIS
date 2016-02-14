@@ -4,22 +4,30 @@ if SERVER then
 	util.AddNetworkString("TARDIS-SetupPart")
 end
 
-local overrides={
-	["Draw"]={function(self)
-		local int=self.interior
-		local ext=self.exterior
-		if IsValid(ext) then
-			if (self.InteriorPart and IsValid(int) and ((int:CallHook("ShouldDraw")~=false)
-			or (ext:DoorOpen()
-				and (self.ClientDrawOverride and LocalPlayer():GetPos():Distance(ext:GetPos())<TARDIS:GetSetting("portals-closedist"))
-				or (self.DrawThroughPortal and (int.scannerrender or (IsValid(wp.drawingent) and wp.drawingent:GetParent()==int)))
-			))) or (self.ExteriorPart and ext:CallHook("ShouldDraw")~=false) then
-				self.parent:CallHook("PreDrawPart",self)
+function TARDIS.DrawOverride(self,override)
+	local int=self.interior
+	local ext=self.exterior
+	if IsValid(ext) then
+		if (self.InteriorPart and IsValid(int) and ((int:CallHook("ShouldDraw")~=false)
+		or (ext:DoorOpen()
+			and (self.ClientDrawOverride and LocalPlayer():GetPos():Distance(ext:GetPos())<TARDIS:GetSetting("portals-closedist"))
+			or (self.DrawThroughPortal and (int.scannerrender or (IsValid(wp.drawingent) and wp.drawingent:GetParent()==int)))
+		))) or (self.ExteriorPart and ext:CallHook("ShouldDraw")~=false) then
+			self.parent:CallHook("PreDrawPart",self)
+			if self.UseTransparencyFix and (not override) then
+				render.SetBlend(0)
 				self.o.Draw(self)
-				self.parent:CallHook("DrawPart",self)
+				render.SetBlend(1)
+			else
+				self.o.Draw(self)
 			end
+			self.parent:CallHook("DrawPart",self)
 		end
-	end, CLIENT},
+	end
+end
+
+local overrides={
+	["Draw"]={TARDIS.DrawOverride, CLIENT},
 	["Initialize"]={function(self)
 		if self.Animate then
 			self.posepos=0
@@ -45,17 +53,22 @@ local overrides={
 	end, CLIENT},
 	["Use"]={function(self,a,...)
 		local res
+		local called=false
 		if (not self.NoStrictUse) and IsValid(a) and a:IsPlayer() then
 			if a:GetEyeTraceNoCursor().Entity==self then
 				res=self.o.Use(self,a,...)
+				called=true
 			end
 		else
 			res=self.o.Use(self,a,...)
+			called=true
 		end
-		if SERVER and res~=false then
-			self:SetOn(not self:GetOn())
+		if called then
+			if SERVER and (res~=false) then
+				self:SetOn(not self:GetOn())
+			end
+			return res
 		end
-		return res
 	end, SERVER or CLIENT},
 }
 
@@ -101,7 +114,7 @@ hook.Add("InitPostEntity", "tardis-parts", function()
 	postinit=true
 end)
 
-local function AutoSetup(self,e,id)
+local function GetData(self,e,id)
 	local data={}
 	if self.TardisExterior then
 		if e.Exteriors and e.Exteriors[self.metadata.ID] then
@@ -120,10 +133,12 @@ local function AutoSetup(self,e,id)
 			data=self.metadata.Interior.Parts[id]
 		end
 	end
+	return data
+end
+
+local function AutoSetup(self,e,id)
+	local data=GetData(self,e,id)
 	if not data then return end
-	if type(data)=="table" then
-		table.Merge(e,data)
-	end
 	
 	e:SetModel(e.model or e.Model)
 	e:PhysicsInit( SOLID_VPHYSICS )
@@ -194,6 +209,10 @@ if SERVER then
 			e.parent=ent
 			e.ExteriorPart=(e.parent==e.exterior)
 			e.InteriorPart=(e.parent==e.interior)
+			local data=GetData(ent,e,k)
+			if type(data)=="table" then
+				table.Merge(e,data)
+			end
 			if e.AutoSetup then
 				AutoSetup(ent,e,k)
 			end
@@ -236,6 +255,10 @@ else
 			e.ExteriorPart=extpart
 			e.InteriorPart=intpart
 			local name=net.ReadString()
+			local data=GetData(parent,e,name)
+			if type(data)=="table" then
+				table.Merge(e,data)
+			end
 			if not parent.parts then parent.parts={} end
 			parent.parts[name]=e
 			if e.o.Initialize then
