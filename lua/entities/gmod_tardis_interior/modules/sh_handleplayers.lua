@@ -13,7 +13,7 @@ if SERVER then
 	end)
 else
 	ENT:AddHook("ShouldDraw", "players", function(self)
-		if ((not (LocalPlayer():GetTardisData("interior")==self)) or LocalPlayer():GetTardisData("thirdperson")) and not wp.drawing then
+		if ((not (LocalPlayer():GetTardisData("interior")==self)) or (LocalPlayer():GetTardisData("thirdperson") and (self.props[self.exterior]==nil))) and not wp.drawing and not self.contains[LocalPlayer().door] then
 			return false
 		end
 	end)

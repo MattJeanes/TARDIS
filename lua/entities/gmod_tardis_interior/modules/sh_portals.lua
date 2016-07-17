@@ -39,12 +39,6 @@ else
 		option=true
 	})
 	
-	ENT:AddHook("ShouldDraw", "portals", function(self)
-		if wp.drawing and wp.drawingent and wp.drawingent:GetParent()~=self.exterior then
-			return false
-		end
-	end)
-	
 	hook.Add("wp-shouldrender", "tardisint-portals", function(portal,exit,origin)
 		local p=portal:GetParent()
 		if IsValid(p) and (p.TardisExterior or p.TardisInterior) and p._init then
