@@ -236,6 +236,25 @@ if SERVER then
 		end
 	end)
 else
+	function TARDIS:SetupPart(e,name,ext,int,parent)
+		if IsValid(e) and IsValid(parent) then
+			e.exterior=ext
+			e.interior=int
+			e.parent=parent
+			e.ExteriorPart=(parent==ext)
+			e.InteriorPart=(parent==int)
+			local data=GetData(parent,e,name)
+			if type(data)=="table" then
+				table.Merge(e,data)
+			end
+			if not parent.parts then parent.parts={} end
+			parent.parts[name]=e
+			if e.o.Initialize then
+				e.o.Initialize(e)
+			end
+			e._init=true
+		end
+	end
 	net.Receive("TARDIS-SetupPart", function(ply)
 		local e=net.ReadEntity()
 		local ext=net.ReadEntity()
@@ -248,23 +267,12 @@ else
 		else
 			parent=int
 		end
-		if IsValid(e) and IsValid(parent) then
-			e.exterior=ext
-			e.interior=int
-			e.parent=parent
-			e.ExteriorPart=extpart
-			e.InteriorPart=intpart
-			local name=net.ReadString()
-			local data=GetData(parent,e,name)
-			if type(data)=="table" then
-				table.Merge(e,data)
-			end
-			if not parent.parts then parent.parts={} end
-			parent.parts[name]=e
-			if e.o.Initialize then
-				e.o.Initialize(e)
-			end
-			e._init=true
+		local name = net.ReadString()
+		if parent._init then
+			TARDIS:SetupPart(e,name,ext,int,parent)
+		else
+			if not parent.partqueue then parent.partqueue = {} end
+			parent.partqueue[e] = name
 		end
 	end)
 end

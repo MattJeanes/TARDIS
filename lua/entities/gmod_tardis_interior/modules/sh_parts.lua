@@ -1,10 +1,14 @@
 -- Parts
 
-if SERVER then
-	ENT:AddHook("Initialize","parts",function(self)
+ENT:AddHook("Initialize","parts",function(self)
+	if SERVER then
 		TARDIS:SetupParts(self)
-	end)
-end
+	elseif self.partqueue then
+		for k,v in pairs(self.partqueue) do
+			TARDIS:SetupPart(k,v,self.exterior,self,self)
+		end
+	end
+end)
 
 function ENT:GetPart(id)
 	return self.parts and self.parts[id] or NULL
