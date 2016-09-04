@@ -94,7 +94,13 @@ T.Interior={
 }
 T.Exterior={
 	Parts={
-		door=true
+		door=true,
+		vortex={
+			model="models/doctorwho1200/toyota/2013timevortex.mdl",
+			pos=Vector(0,0,50),
+			ang=Angle(0,0,0),
+			scale=10
+		}
 	}
 }
 

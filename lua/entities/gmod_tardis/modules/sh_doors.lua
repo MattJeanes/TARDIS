@@ -84,9 +84,10 @@ if SERVER then
 	ENT:AddHook("ToggleDoor", "intdoors", function(self,open)
 		local intdoor=TARDIS:GetPart(self.interior,"door")
 		if IsValid(intdoor) then
-			if open then
+			local override = self:CallHook("DoorCollisionOverride")
+			if (override == nil and open) or override==false then
 				intdoor:SetCollisionGroup( COLLISION_GROUP_WORLD )
-			else
+			elseif override or override==nil then
 				intdoor:SetCollisionGroup( COLLISION_GROUP_NONE )
 			end
 		end

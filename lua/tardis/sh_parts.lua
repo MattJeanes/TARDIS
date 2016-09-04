@@ -5,6 +5,7 @@ if SERVER then
 end
 
 function TARDIS.DrawOverride(self,override)
+	if self.NoDraw then return end
 	local int=self.interior
 	local ext=self.exterior
 	if IsValid(ext) then
@@ -12,8 +13,12 @@ function TARDIS.DrawOverride(self,override)
 		or (ext:DoorOpen()
 			and (self.ClientDrawOverride and LocalPlayer():GetPos():Distance(ext:GetPos())<TARDIS:GetSetting("portals-closedist"))
 			or (self.DrawThroughPortal and (int.scannerrender or (IsValid(wp.drawingent) and wp.drawingent:GetParent()==int)))
-		))) or (self.ExteriorPart and ext:CallHook("ShouldDraw")~=false) then
+		))) or (self.ExteriorPart
+			and (ext:CallHook("ShouldDraw")~=false)
+			or self.ShouldDrawOverride
+		) then
 			self.parent:CallHook("PreDrawPart",self)
+			if self.PreDraw then self:PreDraw() end
 			if self.UseTransparencyFix and (not override) then
 				render.SetBlend(0)
 				self.o.Draw(self)
@@ -21,6 +26,7 @@ function TARDIS.DrawOverride(self,override)
 			else
 				self.o.Draw(self)
 			end
+			if self.PostDraw then self:PostDraw() end
 			self.parent:CallHook("DrawPart",self)
 		end
 	end
@@ -164,6 +170,10 @@ local function AutoSetup(self,e,id)
 	if not e.Collision then
 		e:SetParent(self)
 	end
+	
+	if e.scale then
+		e:SetModelScale(e.scale,0)
+	end
 end
 
 if SERVER then
@@ -200,10 +210,7 @@ if SERVER then
 		end
 		for k,v in pairs(tempparts) do
 			local e=ents.Create(v)
-			e:SetCreator(ent:GetCreator())
-			if CPPI then
-				e:CPPISetOwner(ent:GetCreator())
-			end
+			Doors:SetupOwner(e,ent:GetCreator())
 			e.exterior=(ent.TardisExterior and ent or ent.exterior)
 			e.interior=(ent.TardisInterior and ent or ent.interior)
 			e.parent=ent

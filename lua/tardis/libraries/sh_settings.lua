@@ -95,7 +95,7 @@ function TARDIS:GetSetting(id,default,ply)
 		return self.Settings[id]
 	elseif CLIENT and (self.LocalSettings[id] ~= nil) then
 		return self.LocalSettings[id]
-	elseif CLIENT and ply and (self.NetworkedSettings[id]~=nil) then
+	elseif CLIENT and (self.NetworkedSettings[id]~=nil) then
 		return self.NetworkedSettings[id]
 	else
 		return default

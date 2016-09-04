@@ -1,5 +1,5 @@
 -- Door
 
-function ENT:DoorOpen(real)
-	return self.exterior:DoorOpen(real)
+function ENT:DoorOpen(...)
+	return self.exterior:DoorOpen(...)
 end

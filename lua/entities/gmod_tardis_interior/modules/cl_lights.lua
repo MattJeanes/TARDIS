@@ -16,22 +16,35 @@ ENT:AddHook("PreDraw", "lights", function(self)
 end)
 ]]--
 
+function ENT:DrawLight(id,light)
+	local dlight = DynamicLight(id)
+	if ( dlight ) then
+		local size=1024
+		local c=light.color
+		dlight.Pos = self:LocalToWorld(light.pos)
+		dlight.r = c.r
+		dlight.g = c.g
+		dlight.b = c.b
+		dlight.Brightness = light.brightness
+		dlight.Decay = size * 5
+		dlight.Size = size
+		dlight.DieTime = CurTime() + 1
+	end
+end
+
 ENT:AddHook("Draw", "lights", function(self)
 	--render.SuppressEngineLighting(false)
-	local data=self.metadata.Interior.Light
-	if data then
-		local dlight = DynamicLight( self:EntIndex() )
-		if ( dlight ) then
-			local size=1024
-			local c=data.color
-			dlight.Pos = self:LocalToWorld(data.pos)
-			dlight.r = c.r
-			dlight.g = c.g
-			dlight.b = c.b
-			dlight.Brightness = data.brightness
-			dlight.Decay = size * 5
-			dlight.Size = size
-			dlight.DieTime = CurTime() + 1
+	local light=self.metadata.Interior.Light
+	local lights=self.metadata.Interior.Lights
+	local index=self:EntIndex()
+	if light then
+		self:DrawLight(index,light)
+	end
+	if lights then
+		local i=0
+		for _,light in pairs(lights) do
+			i=i+1
+			self:DrawLight(index*i*1000,light)
 		end
 	end
 end)
@@ -41,7 +54,7 @@ function ENT:AddRoundThing(pos)
 end
 
 
-ENT:AddHook("Initialize", "spritetest", function(self)
+ENT:AddHook("Initialize", "lights-roundthings", function(self)
 	if self.metadata.Interior.RoundThings then
 		self.roundthingmat=Material("sprites/light_ignorez")
 		self.roundthings={}
@@ -52,7 +65,7 @@ ENT:AddHook("Initialize", "spritetest", function(self)
 end)
 
 local size=32
-ENT:AddHook("Draw", "spritetest", function(self)
+ENT:AddHook("Draw", "lights-roundthings", function(self)
 	if self.roundthings then
 		for k,v in pairs(self.roundthings) do
 			local pos = self:LocalToWorld(k)

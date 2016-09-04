@@ -99,8 +99,17 @@ TARDIS:AddKeyBind("flight-spindir",{
 
 if SERVER then	
 	function ENT:ToggleFlight()
-		local on=self:SetData("flight",not self:GetData("flight",false),true)
+		local on = not self:GetData("flight",false)
+		return self:SetFlight(on)
+	end
+	
+	function ENT:SetFlight(on)
+		if not on and self:CallHook("CanTurnOffFlight")==false then
+			return false
+		end
+		self:SetData("flight",on,true)
 		self:SetFloat(on)
+		return true
 	end
 	
 	ENT:AddHook("ShouldTurnOnRotorwash", "flight", function(self)
@@ -120,6 +129,7 @@ if SERVER then
 			else
 				self.pilot=ply
 				ply:ChatPrint("You are now the pilot.")
+				self:CallHook("PilotChanged",nil,ply)
 			end
 		else
 			local waspilot=self.pilot==ply
@@ -142,8 +152,17 @@ if SERVER then
 				else
 					ply:ChatPrint("You are no longer the pilot.")
 				end
+				self:CallHook("PilotChanged",ply,self.pilot)
 			end
 		end
+	end)
+	
+	ENT:AddHook("PilotChanged","flight",function(self,old,new)
+		self:SetData("pilot",new,true)
+		self:SendMessage("PilotChanged",function()
+			net.WriteEntity(old)
+			net.WriteEntity(new)
+		end)
 	end)
 	
 	ENT:AddHook("Initialize", "flight", function(self)
@@ -177,8 +196,9 @@ if SERVER then
 			local rforce=2
 			local tforce=400
 			local tilt=0
+			local control=self:CallHook("FlightControl")~=false
 			
-			if self.pilot and IsValid(self.pilot) then
+			if self.pilot and IsValid(self.pilot) and control then
 				local p=self.pilot
 				local eye=p:GetTardisData("viewang")
 				if not eye then
@@ -297,5 +317,11 @@ else
 			self.flightsound:Stop()
 			self.flightsound=nil
 		end
+	end)
+	
+	ENT:OnMessage("PilotChanged",function(self)
+		local old=net.ReadEntity()
+		local new=net.ReadEntity()
+		self:CallHook("PilotChanged",old,new)
 	end)
 end

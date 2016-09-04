@@ -6,15 +6,16 @@ TARDIS:AddKeyBind("teleport-demat",{
 	section="Teleport",
 	func=function(self,down,ply)
 		if TARDIS:HUDScreenOpen(ply) then return end
+		local pilot = self:GetData("pilot")
 		if SERVER then
-			if ply==self.pilot and (not down) then
+			if ply==pilot and (not down) then
 				if not self:GetData("vortex") then
 					local pos,ang=self:GetThirdPersonTrace(ply,ply:GetTardisData("viewang"))
 					self:Demat(pos,ang)
 				end
 			end
 		else
-			if down and (not (self:GetData("vortex") or self:GetData("teleport"))) then
+			if ply==pilot and down and (not (self:GetData("vortex") or self:GetData("teleport"))) then
 				self:SetData("teleport-trace",true)
 			else
 				self:SetData("teleport-trace",false)
@@ -87,64 +88,73 @@ if SERVER then
 	end
 	function ENT:Mat(callback)
 		if self:CallHook("CanMat")~=false then
-			self:SendMessage("premat",function() net.WriteVector(self:GetData("demat-pos",Vector())) end)
-			self:SetData("teleport",true)
-			timer.Simple(8.5,function()
-				if not IsValid(self) then return end
-				self:SendMessage("mat")
-				self:SetData("mat",true)
-				self:SetData("step",1)
-				self:SetData("vortex",false)
-				self:SetSolid(SOLID_VPHYSICS)
-				self.phys:EnableMotion(true)
-				self.phys:Wake()
-				
-				local pos=self:GetData("demat-pos",Vector())
-				local ang=self:GetData("demat-ang",Angle())
-				local attached=self:GetData("demat-attached")
-				if attached then
-					for k,v in pairs(attached) do
-						if IsValid(v) and not IsValid(v:GetParent()) then
-							v.telepos=v:GetPos()-self:GetPos()
-							if v:GetClass()=="gmod_hoverball" then // fixes hoverballs spazzing out
-								v:SetTargetZ( (pos-self:GetPos()).z+v:GetTargetZ() )
-							end
+			self:CloseDoor(function(state)
+				if state then
+					if callback then callback(false) end
+				else
+					self:SendMessage("premat",function() net.WriteVector(self:GetData("demat-pos",Vector())) end)
+					self:SetData("teleport",true)
+					timer.Simple(8.5,function()
+						if not IsValid(self) then return end
+						self:SendMessage("mat")
+						self:SetData("mat",true)
+						self:SetData("step",1)
+						self:SetData("vortex",false)
+						local flight=self:GetData("prevortex-flight")
+						if self:GetData("flight")~=flight then
+							self:SetFlight(flight)
 						end
-					end
-				end
-				self:SetPos(pos)
-				self:SetAngles(ang)
-				if attached then
-					for k,v in pairs(attached) do
-						if IsValid(v) and not IsValid(v:GetParent()) then
-							if v:IsRagdoll() then
-								for i=0,v:GetPhysicsObjectCount() do
-									local bone=v:GetPhysicsObjectNum(i)
-									if IsValid(bone) then
-										bone:SetPos(self:GetPos()+v.telepos)
+						self:SetData("prevortex-flight",nil)
+						self:SetSolid(SOLID_VPHYSICS)
+						self.phys:EnableMotion(true)
+						self.phys:Wake()
+						
+						local pos=self:GetData("demat-pos",Vector())
+						local ang=self:GetData("demat-ang",Angle())
+						local attached=self:GetData("demat-attached")
+						if attached then
+							for k,v in pairs(attached) do
+								if IsValid(v) and not IsValid(v:GetParent()) then
+									v.telepos=v:GetPos()-self:GetPos()
+									if v:GetClass()=="gmod_hoverball" then // fixes hoverballs spazzing out
+										v:SetTargetZ( (pos-self:GetPos()).z+v:GetTargetZ() )
 									end
 								end
 							end
-							v:SetPos(self:GetPos()+v.telepos)
-							v.telepos=nil
-							local phys=v:GetPhysicsObject()
-							if phys and IsValid(phys) then
-								if not v.frozen and not v.physlocked then
-									phys:EnableMotion(true)
-								end
-								v:SetSolid(SOLID_VPHYSICS)
-							end
-							v.frozen=nil
-							v.nocollide=nil
 						end
-					end
+						self:SetPos(pos)
+						self:SetAngles(ang)
+						if attached then
+							for k,v in pairs(attached) do
+								if IsValid(v) and not IsValid(v:GetParent()) then
+									if v:IsRagdoll() then
+										for i=0,v:GetPhysicsObjectCount() do
+											local bone=v:GetPhysicsObjectNum(i)
+											if IsValid(bone) then
+												bone:SetPos(self:GetPos()+v.telepos)
+											end
+										end
+									end
+									v:SetPos(self:GetPos()+v.telepos)
+									v.telepos=nil
+									local phys=v:GetPhysicsObject()
+									if phys and IsValid(phys) then
+										if not v.frozen and not v.physlocked then
+											phys:EnableMotion(true)
+										end
+										v:SetSolid(SOLID_VPHYSICS)
+									end
+									v.frozen=nil
+									v.nocollide=nil
+								end
+							end
+						end
+						self:SetData("demat-pos",nil)
+						self:SetData("demat-ang",nil)
+					end)
+					if callback then callback(true) end
 				end
-				self:SetData("demat-pos",nil)
-				self:SetData("demat-ang",nil)
 			end)
-			if callback then callback(true) end
-		else
-			if callback then callback(false) end
 		end
 	end
 	function ENT:StopDemat()
@@ -153,7 +163,12 @@ if SERVER then
 		self:SetData("vortex",true)
 		self:SetData("teleport",false)
 		self:SetSolid(SOLID_NONE)
-		self.phys:EnableMotion(false)
+		
+		local flight = self:GetData("flight")
+		self:SetData("prevortex-flight",flight)
+		if not flight then
+			self:SetFlight(true)
+		end
 		local attached=self:GetData("demat-attached")
 		if attached then
 			for k,v in pairs(attached) do
@@ -207,7 +222,7 @@ if SERVER then
 	end)
 	
 	ENT:AddHook("CanToggleDoor","teleport",function(self,state)
-		if self:GetData("teleport") or self:GetData("vortex") then
+		if self:GetData("teleport") then
 			return false
 		end
 	end)
@@ -219,13 +234,13 @@ if SERVER then
 	end)
 	
 	ENT:AddHook("CanPlayerEnter","teleport",function(self)
-		if self:GetData("teleport") then
+		if self:GetData("teleport") or self:GetData("vortex") then
 			return false
 		end
 	end)
 	
 	ENT:AddHook("CanPlayerExit","teleport",function(self)
-		if self:GetData("teleport") then
+		if self:GetData("teleport") or self:GetData("vortex") then
 			return false
 		end
 	end)
@@ -252,13 +267,13 @@ else
 	})
 
 	local function dopredraw(self,part)
-		if self:GetData("teleport") or self:GetData("teleport-trace") then
+		if (self:GetData("teleport") or self:GetData("teleport-trace")) and ((not part) or (part and (not part.CustomAlpha))) then
 			render.SetBlend((self:GetData("teleport-trace") and 20 or self:GetData("alpha",255))/255)
 		end
 	end
 	
 	local function dodraw(self,part)
-		if self:GetData("teleport") or self:GetData("teleport-trace") then
+		if (self:GetData("teleport") or self:GetData("teleport-trace")) and ((not part) or (part and (not part.CustomAlpha))) then
 			render.SetBlend(1)
 		end
 	end
@@ -267,20 +282,8 @@ else
 	ENT:AddHook("Draw","teleport",dodraw)
 	ENT:AddHook("DrawPart","teleport",dodraw)
 	
-	ENT:AddHook("ShouldDraw","teleport",function(self)
-		if self:GetData("vortex") and (not (self:GetData("mat") or self:GetData("demat"))) and (self:GetData("alpha",255)==self:GetData("alphatarget",255)) then
-			return false
-		end
-	end)
-	
 	ENT:AddHook("ShouldTurnOnLight","teleport",function(self)
 		if self:GetData("teleport") then
-			return true
-		end
-	end)
-	
-	ENT:AddHook("ShouldTurnOffLight","teleport",function(self)
-		if self:GetData("vortex") then
 			return true
 		end
 	end)
@@ -296,11 +299,13 @@ else
 		self:SetData("step",1)
 		self:SetData("teleport",true)
 		if TARDIS:GetSetting("teleport-sound") and TARDIS:GetSetting("sound") then
+			local ext = self.metadata.Exterior.Teleport
+			local int = self.metadata.Interior.Teleport
 			if LocalPlayer():GetTardisData("exterior")==self then
-				self:EmitSound("tardis/demat.wav")
-				self.interior:EmitSound("tardis/demat.wav")
+				self:EmitSound(ext.dematSound)
+				self.interior:EmitSound(int.dematSound or ext.dematSound)
 			else
-				sound.Play("tardis/demat.wav",self:GetPos())
+				sound.Play(ext.dematSound,self:GetPos())
 			end
 		end
 	end)
@@ -308,12 +313,14 @@ else
 	ENT:OnMessage("premat", function(self)
 		self:SetData("teleport",true)
 		if TARDIS:GetSetting("teleport-sound") and TARDIS:GetSetting("sound") then
+			local ext = self.metadata.Exterior.Teleport
+			local int = self.metadata.Interior.Teleport
 			local pos=net.ReadVector()
 			if LocalPlayer():GetTardisData("exterior")==self then
-				self:EmitSound("tardis/mat.wav")
-				self.interior:EmitSound("tardis/mat.wav")
+				self:EmitSound(ext.matSound)
+				self.interior:EmitSound(int.matSound or ext.matSound)
 			else
-				sound.Play("tardis/mat.wav",pos)
+				sound.Play(ext.matSound,pos)
 			end
 		end
 	end)
@@ -329,6 +336,7 @@ else
 		self:SetData("step",1)
 		self:SetData("vortex",true)
 		self:SetData("teleport",false)
+		self:CallHook("StopDemat")
 	end
 	
 	function ENT:StopMat()
@@ -352,6 +360,12 @@ else
 			render.DrawLine(pos,pos+(bk*size),col)
 			render.DrawLine(pos,pos+(ri*size),col)
 			render.DrawLine(pos,pos+(le*size),col)
+		end
+	end)
+	
+	ENT:AddHook("PilotChanged","teleport",function(self,old,new)
+		if self:GetData("teleport-trace") then
+			self:SetData("teleport-trace",false)
 		end
 	end)
 end
