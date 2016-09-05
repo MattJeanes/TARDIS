@@ -299,8 +299,8 @@ else
 		self:SetData("step",1)
 		self:SetData("teleport",true)
 		if TARDIS:GetSetting("teleport-sound") and TARDIS:GetSetting("sound") then
-			local ext = self.metadata.Exterior.Teleport
-			local int = self.metadata.Interior.Teleport
+			local ext = self.metadata.Exterior.Sounds.Teleport
+			local int = self.metadata.Interior.Sounds.Teleport
 			if LocalPlayer():GetTardisData("exterior")==self then
 				self:EmitSound(ext.dematSound)
 				self.interior:EmitSound(int.dematSound or ext.dematSound)
@@ -313,8 +313,8 @@ else
 	ENT:OnMessage("premat", function(self)
 		self:SetData("teleport",true)
 		if TARDIS:GetSetting("teleport-sound") and TARDIS:GetSetting("sound") then
-			local ext = self.metadata.Exterior.Teleport
-			local int = self.metadata.Interior.Teleport
+			local ext = self.metadata.Exterior.Sounds.Teleport
+			local int = self.metadata.Interior.Sounds.Teleport
 			local pos=net.ReadVector()
 			if LocalPlayer():GetTardisData("exterior")==self then
 				self:EmitSound(ext.matSound)

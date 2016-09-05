@@ -43,13 +43,13 @@ if SERVER then
 					ph:AddAngleVelocity(ph:GetAngleVelocity()*-0.05)
 				end
 				if not (self.spindir==0) then
-					local twist=Vector(0,0,vel*mul)
+					local twist=Vector(0,0,vel*mul*-self.spindir)
 					ph:AddAngleVelocity(twist)
+					ph:ApplyForceOffset( up*-ang.p,cen-fwd2*lev)
+					ph:ApplyForceOffset(-up*-ang.p,cen+fwd2*lev)
+					ph:ApplyForceOffset( up*-(ang.r-(tilt*tiltmul)),cen-ri2*lev)
+					ph:ApplyForceOffset(-up*-(ang.r-(tilt*tiltmul)),cen+ri2*lev)
 				end
-				ph:ApplyForceOffset( up*-ang.p,cen-fwd2*lev)
-				ph:ApplyForceOffset(-up*-ang.p,cen+fwd2*lev)
-				ph:ApplyForceOffset( up*-(ang.r-(tilt*tiltmul)),cen-ri2*lev)
-				ph:ApplyForceOffset(-up*-(ang.r-(tilt*tiltmul)),cen+ri2*lev)
 			end
 		end
 	end)

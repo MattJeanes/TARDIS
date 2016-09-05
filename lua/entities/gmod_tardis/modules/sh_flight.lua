@@ -309,7 +309,7 @@ else
 				end
 				self.flightsound:ChangeVolume(0.75)
 			else
-				self.flightsound=CreateSound(self, "drmatt/tardis/flight_loop.wav")
+				self.flightsound=CreateSound(self, self.metadata.Exterior.Sounds.FlightLoop)
 				self.flightsound:SetSoundLevel(90)
 				self.flightsound:Play()
 			end

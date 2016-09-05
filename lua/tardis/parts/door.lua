@@ -36,10 +36,16 @@ if SERVER then
 	end
 	
 	function PART:Use(a)
-		if a:KeyDown(IN_WALK) then
-			self.exterior:PlayerExit(a)
+		if self.exterior:GetData("locked") then
+			if IsValid(a) and a:IsPlayer() then
+				a:ChatPrint("The doors are locked.")
+			end
 		else
-			self.exterior:ToggleDoor()
+			if a:KeyDown(IN_WALK) then
+				self.exterior:PlayerExit(a)
+			else
+				self.exterior:ToggleDoor()
+			end
 		end
 	end
 	

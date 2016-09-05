@@ -34,6 +34,8 @@ if SERVER then
 		self:SetData("doorstatereal",doorstate,true)
 		self:SetData("doorchangewait",not doorstate)
 		
+		self:CallHook("ToggleDoorReal",doorstate)
+		
 		if doorstate then
 			self:SetData("doorstate",true,true)
 			self:SetData("doorchange",CurTime())
@@ -93,6 +95,12 @@ if SERVER then
 		end
 	end)
 	
+	ENT:AddHook("ToggleDoorReal", "doors", function(self,open)
+		self:SendMessage("ToggleDoorReal",function()
+			net.WriteBool(open)
+		end)
+	end)
+	
 	ENT:AddHook("Think", "doors", function(self)
 		if self:GetData("doorchangewait",false) and CurTime()>self:GetData("doorchange",0) then
 			self:SetData("doorchangewait",nil)
@@ -101,6 +109,12 @@ if SERVER then
 			local callbacks=self:GetData("doorchangecallback")
 			runcallbacks(callbacks,false)
 			self:SetData("doorchangecallback",nil)
+		end
+	end)
+	
+	ENT:AddHook("ShouldThinkFast","doors",function(self)
+		if self:GetData("doorchangewait") then
+			return true
 		end
 	end)
 	
@@ -120,6 +134,16 @@ if SERVER then
 		end
 	end)
 else
+	TARDIS:AddSetting({
+		id="doorsounds-enabled",
+		name="Door Sound",
+		desc="Whether a sound is made when toggling the door or not",
+		section="Misc",
+		value=true,
+		type="bool",
+		option=true
+	})
+	
 	function ENT:DoorOpen(real)
 		local door=self:GetPart("door")
 		if real and IsValid(door) then
@@ -137,4 +161,25 @@ else
 			return false
 		end
 	end
+	
+	ENT:OnMessage("ToggleDoorReal",function(self)
+		self:CallHook("ToggleDoorReal",net.ReadBool())
+	end)
+	
+	ENT:AddHook("ToggleDoorReal","doorsounds",function(self,open)
+		local snds = self.metadata.Exterior.Sounds.Door
+		if snds.enabled and TARDIS:GetSetting("doorsounds-enabled") and TARDIS:GetSetting("sound") then
+			local extpart = self:GetPart("door")
+			local snd = open and snds.open or snds.close
+			if IsValid(extpart) then
+				extpart:EmitSound(snd)
+			end
+			if IsValid(self.interior) then
+				local intpart = self.interior:GetPart("door")
+				if IsValid(intpart) then
+					intpart:EmitSound(snd)
+				end
+			end
+		end
+	end)
 end

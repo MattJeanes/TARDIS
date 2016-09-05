@@ -17,7 +17,9 @@ T.Interior={
 		pos=Vector(0,-330,95),
 		ang=Angle(0,90,0)
 	},
-	Teleport={} -- uses exterior sounds if not specified
+	Sounds={
+		Teleport={} -- uses exterior sounds if not specified
+	}
 }
 T.Exterior={
 	Model="models/drmatt/tardis/exterior/exterior.mdl",
@@ -37,9 +39,18 @@ T.Exterior={
 		pos=Vector(0,0,122),
 		color=Color(255,255,255)
 	},
-	Teleport={
-		dematSound = "tardis/demat.wav",
-		matSound = "tardis/mat.wav"
+	Sounds={
+		Teleport={
+			demat="drmatt/tardis/demat.wav",
+			mat="drmatt/tardis/mat.wav"
+		},
+		Lock="drmatt/tardis/lock.wav",
+		Door={
+			enabled=true,
+			open="drmatt/tardis/door_open.wav",
+			close="drmatt/tardis/door_close.wav"
+		},
+		FlightLoop="drmatt/tardis/flight_loop.wav"
 	}
 }
 
