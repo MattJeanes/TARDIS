@@ -44,7 +44,6 @@ else
 		local ply=net.ReadInt(8)
 		if not TARDIS.ClientSettings[ply] then TARDIS.ClientSettings[ply]={} end
 		local mode=net.ReadBool()
-		print(ply,Player(ply))
 		if mode then
 			TARDIS.ClientSettings[ply][net.ReadType()]=net.ReadType()
 		else
