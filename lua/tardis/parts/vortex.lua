@@ -12,6 +12,7 @@ PART.ShouldDrawOverride = true
 PART.Collision = false
 PART.NoStrictUse = true
 PART.CustomAlpha = true
+PART.NoShadow = true
 if SERVER then
 	function PART:Initialize()	
 		self:SetSolid(SOLID_NONE)

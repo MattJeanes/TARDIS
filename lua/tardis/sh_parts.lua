@@ -152,27 +152,25 @@ local function AutoSetup(self,e,id)
 	e:SetSolid( SOLID_VPHYSICS )
 	e:SetRenderMode( RENDERMODE_TRANSALPHA )
 	e:SetUseType( SIMPLE_USE )
-	
 	e.phys = e:GetPhysicsObject()
 	if (e.phys:IsValid()) then
 		e.phys:EnableMotion(e.Motion or false)
 	end
-	
 	if not e.Collision then
 		e:SetCollisionGroup( COLLISION_GROUP_WORLD ) -- Still works with USE, TODO: Find better way if possible (for performance reasons)
 	end
-	
 	if e.AutoPosition ~= false then
 		e:SetPos(self:LocalToWorld(e.pos or e.Pos or Vector(0,0,0)))
 		e:SetAngles(self:LocalToWorldAngles(e.ang or e.Ang or Angle(0,0,0)))
 	end
-	
 	if not e.Collision then
 		e:SetParent(self)
 	end
-	
 	if e.scale then
 		e:SetModelScale(e.scale,0)
+	end
+	if e.NoShadow then
+		e:DrawShadow(false)
 	end
 end
 
