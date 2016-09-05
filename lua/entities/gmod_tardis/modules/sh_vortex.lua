@@ -1,12 +1,8 @@
 -- Vortex
 
 function ENT:IsVortexEnabled(pilot)
-	return ((not pilot and SERVER) or TARDIS:GetSetting("vortex-enabled",false,pilot)) and self:GetData("hasvortex") and (SERVER or self:GetData("vortexmodelvalid"))
+	return ((not pilot and SERVER) or TARDIS:GetSetting("vortex-enabled",false,pilot)) and IsValid(self:GetPart("vortex")) and (SERVER or self:GetData("vortexmodelvalid"))
 end
-
-ENT:AddHook("Initialize","vortex",function(self)
-	self:SetData("hasvortex",IsValid(self:GetPart("vortex")))
-end)
 
 if SERVER then
 	ENT:AddHook("PhysicsUpdate","vortex",function(self,ph)

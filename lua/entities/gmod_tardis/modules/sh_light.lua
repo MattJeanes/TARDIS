@@ -12,14 +12,13 @@ else
 		name="External Light Color",
 		section="Misc",
 		desc="The color of the exterior light, uses interior default if unchanged",
-		value=nil,
+		value=false,
 		type="color",
 		option=true,
 		networked=true
 	})
 	
 	function ENT:FlashLight(time)
-		print("flashing for "..time)
 		self:SetData("flashuntil",CurTime()+time)
 	end
 	
@@ -64,7 +63,10 @@ else
 						break
 					end
 				end
-				local col = TARDIS:GetSetting("extlight-color",light.color,self:GetCreator())
+				local col = TARDIS:GetSetting("extlight-color",nil,self:GetCreator())
+				if not col then
+					col = light.color
+				end
 				if fallback then
 					render.DrawSprite(pos, size, size, Color(col.r,col.g,col.b,pulse))
 				else

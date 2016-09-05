@@ -9,23 +9,24 @@ if SERVER then
 	util.AddNetworkString("TARDIS-ClientSettings")
 	
 	net.Receive("TARDIS-ClientSettings",function(len,ply)
-		if not TARDIS.ClientSettings[ply] then TARDIS.ClientSettings[ply]={} end
+		local userID = ply:UserID()
+		if not TARDIS.ClientSettings[userID] then TARDIS.ClientSettings[userID]={} end
 		local mode=net.ReadBool()
 		if mode then
 			local key=net.ReadType()
 			local value=net.ReadType()
-			TARDIS.ClientSettings[ply][key]=value
+			TARDIS.ClientSettings[userID][key]=value
 			net.Start("TARDIS-ClientSettings")
-				net.WriteEntity(ply)
+				net.WriteInt(userID,8)
 				net.WriteBool(mode)
 				net.WriteType(key)
 				net.WriteType(value)
 			net.Broadcast()
 		else
 			local str=net.ReadString()
-			TARDIS.ClientSettings[ply]=TARDIS.von.deserialize(str)
+			TARDIS.ClientSettings[userID]=TARDIS.von.deserialize(str)
 			net.Start("TARDIS-ClientSettings")
-				net.WriteEntity(ply)
+				net.WriteInt(userID,8)
 				net.WriteBool(mode)
 				net.WriteString(str)
 			net.Broadcast()
@@ -40,9 +41,10 @@ else
 	end)
 	
 	net.Receive("TARDIS-ClientSettings",function(len)
-		local ply=net.ReadEntity()
+		local ply=net.ReadInt(8)
 		if not TARDIS.ClientSettings[ply] then TARDIS.ClientSettings[ply]={} end
 		local mode=net.ReadBool()
+		print(ply,Player(ply))
 		if mode then
 			TARDIS.ClientSettings[ply][net.ReadType()]=net.ReadType()
 		else
@@ -89,8 +91,8 @@ function TARDIS:SetSetting(id,value,networked,broadcast)
 end
 
 function TARDIS:GetSetting(id,default,ply)
-	if ply and self.ClientSettings[ply] and (self.ClientSettings[ply][id]~=nil) then
-		return self.ClientSettings[ply][id]
+	if ply and IsValid(ply) and self.ClientSettings[ply:UserID()] and (self.ClientSettings[ply:UserID()][id]~=nil) then
+		return self.ClientSettings[ply:UserID()][id]
 	elseif self.Settings[id] ~= nil then
 		return self.Settings[id]
 	elseif CLIENT and (self.LocalSettings[id] ~= nil) then
@@ -146,7 +148,7 @@ if SERVER then
 	function TARDIS:SendPlayerSettings(ply)
 		for k,v in pairs(self.ClientSettings) do
 			net.Start("TARDIS-ClientSettings")
-				net.WriteEntity(k)
+				net.WriteInt(k,8)
 				net.WriteBool(false)
 				net.WriteString(self.von.serialize(v))
 			if IsValid(ply) then
