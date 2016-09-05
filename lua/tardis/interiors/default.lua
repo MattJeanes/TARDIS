@@ -6,11 +6,13 @@ T.Name="Default"
 T.ID="default"
 T.Interior={
 	Model="models/drmatt/tardis/2012interior/interior.mdl",
-	IdleSound={
-		{
-			path="drmatt/tardis/interior_idle_loop.wav",
-			volume=1	
-		},
+	Sounds={
+		Idle={
+			{
+				path="drmatt/tardis/interior_idle_loop.wav",
+				volume=1
+			}
+		}
 	},
 	Light={
 		color=Color(0,100,255),

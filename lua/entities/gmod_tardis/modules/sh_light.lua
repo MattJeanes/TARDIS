@@ -1,18 +1,59 @@
 -- Exterior light
 
-if CLIENT then
+if SERVER then
+	function ENT:FlashLight(time)
+		self:SendMessage("flash-light",function()
+			net.WriteFloat(time)
+		end)
+	end
+else
+	TARDIS:AddSetting({
+		id="extlight-color",
+		name="External Light Color",
+		section="Misc",
+		desc="The color of the exterior light, uses interior default if unchanged",
+		value=false,
+		type="color",
+		option=true,
+		networked=true
+	})
+	
+	function ENT:FlashLight(time)
+		self:SetData("flashuntil",CurTime()+time)
+	end
+	
+	ENT:AddHook("ShouldTurnOnLight","light",function(self)
+		local flashuntil=self:GetData("flashuntil")
+		if flashuntil then
+			if CurTime()<flashuntil then
+				return true
+			else
+				self:SetData("flashuntil",nil)
+			end
+		end
+	end)
+	
+	ENT:OnMessage("flash-light",function(self)
+		self:FlashLight(net.ReadFloat())
+	end)
+
 	ENT:AddHook("Initialize", "light", function(self)
 		self.lightpixvis=util.GetPixelVisibleHandle()
 	end)
+
 	local mat=Material("models/drmatt/tardis/exterior/light")
 	local size=64
+
 	ENT:AddHook("Draw", "light", function(self)
+		local light = self.metadata.Exterior.Light
+		if not light.enabled then return end
+		
 		local shouldon=self:CallHook("ShouldTurnOnLight")
 		local shouldoff=self:CallHook("ShouldTurnOffLight")
 		
 		if shouldon and (not shouldoff) then
 			if self.lightpixvis and (not wp.drawing) and (halo.RenderedEntity()~=self) then
-				local pos=self:LocalToWorld(Vector(0,0,122))
+				local pos=self:LocalToWorld(light.pos)
 				local pulse=(math.sin(CurTime()*8)+1)*(255/4)+(255/2)-50
 				render.SetMaterial(mat)
 				local fallback=false
@@ -22,12 +63,16 @@ if CLIENT then
 						break
 					end
 				end
+				local col = TARDIS:GetSetting("extlight-color",nil,self:GetCreator())
+				if not col then
+					col = light.color
+				end
 				if fallback then
-					render.DrawSprite(pos, size, size, Color(255,255,255,pulse))
+					render.DrawSprite(pos, size, size, Color(col.r,col.g,col.b,pulse))
 				else
 					local vis=util.PixelVisible(pos, 3, self.lightpixvis)*255
 					if vis>0 then
-						render.DrawSprite(pos, size, size, Color(255,255,255,math.min(vis,pulse)))
+						render.DrawSprite(pos, size, size, Color(col.r,col.g,col.b,math.min(vis,pulse)))
 					end
 				end
 			end

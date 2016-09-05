@@ -64,6 +64,10 @@ if SERVER then
 				ply:SetTardisData("thirdpersonang")
 				ply:SetTardisData("thirdpersoncool", CurTime()+0.5)
 				self:CallHook("ThirdPerson", ply, enabled)
+				self:SendMessage("ThirdPerson",function()
+					net.WriteEntity(ply)
+					net.WriteBool(enabled)
+				end)
 				if not IsValid(self.interior) then
 					self:PlayerExit(ply,true)
 				end
@@ -126,6 +130,12 @@ else
 			self.thpprop:Remove()
 			self.thpprop=nil
 		end
+	end)
+	
+	ENT:OnMessage("ThirdPerson",function(self)
+		local ply = net.ReadEntity()
+		local enabled = net.ReadBool()
+		self:CallHook("ThirdPerson",ply,enabled)
 	end)
 	
 	oldgetviewentity=oldgetviewentity or GetViewEntity

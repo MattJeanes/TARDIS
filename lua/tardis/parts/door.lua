@@ -36,10 +36,16 @@ if SERVER then
 	end
 	
 	function PART:Use(a)
-		if a:KeyDown(IN_WALK) then
-			self.exterior:PlayerExit(a)
+		if self.exterior:GetData("locked") then
+			if IsValid(a) and a:IsPlayer() then
+				a:ChatPrint("The doors are locked.")
+			end
 		else
-			self.exterior:ToggleDoor()
+			if a:KeyDown(IN_WALK) then
+				self.exterior:PlayerExit(a)
+			else
+				self.exterior:ToggleDoor()
+			end
 		end
 	end
 	
@@ -65,10 +71,10 @@ else
 	
 	function PART:Think()
 		if self.ExteriorPart then
-			self.DoorTarget=self.DoorOverride or (self.exterior:GetData("doorstatereal",false) and 1 or 0)
+			self.DoorTarget=self.exterior.DoorOverride or (self.exterior:GetData("doorstatereal",false) and 1 or 0)
 			
 			-- Have to spam it otherwise it glitches out (http://facepunch.com/showthread.php?t=1414695)
-			self.DoorPos=self.DoorOverride or math.Approach(self.DoorPos,self.DoorTarget,FrameTime()*2)
+			self.DoorPos=self.exterior.DoorOverride or math.Approach(self.DoorPos,self.DoorTarget,FrameTime()*2)
 			
 			self:SetPoseParameter("switch", self.DoorPos)
 			self:InvalidateBoneCache()

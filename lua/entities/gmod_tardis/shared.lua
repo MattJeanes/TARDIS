@@ -15,6 +15,8 @@ local hooks={}
 -- Hook system for modules
 function ENT:AddHook(name,id,func)
 	if not (hooks[name]) then hooks[name]={} end
+	if hooks[name][id] then error("Duplicate hook ID '"..id.."' for '"..name.."' hook",2) end
+	if type(id)==func or not func then error("Invalid parameters - need name, id and func",2) end
 	hooks[name][id]=func
 end
 

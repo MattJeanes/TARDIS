@@ -7,8 +7,6 @@ function TARDIS:ChangeOption(id,data)
 	frame:SetSize(250,125)
 	frame:SetDraggable(false)
 	frame:SetBackgroundBlur(true)
-	frame:Center()
-	frame:MakePopup()
 	
 	local text = vgui.Create("DLabel",frame)
 	text:SetAutoStretchVertical(true)
@@ -59,6 +57,22 @@ function TARDIS:ChangeOption(id,data)
 		function update(v)
 			checkbox:SetChecked(v)
 		end
+	elseif data.type=="color" then
+		frame:SetTall(frame:GetTall()+100)
+		local mixer = vgui.Create("DColorMixer",frame)
+		mixer:SetSize(frame:GetWide()-20,100)
+		mixer:SetPos((frame:GetWide()*0.5)-(mixer:GetWide()*0.5),frame:GetTall()-mixer:GetTall()-60)
+		mixer:SetPalette(false)
+		mixer:SetAlphaBar(false)
+		mixer:SetWangs(true)
+		mixer.ValueChanged = function(s,v) value=v end
+		function update(v)
+			if v then
+				mixer:SetColor(v)
+			else
+				mixer:SetColor(Color(0,0,0))
+			end
+		end
 	end
 	
 	update(value)
@@ -73,7 +87,10 @@ function TARDIS:ChangeOption(id,data)
 	reset:SetText("Reset")
 	reset:SetSize(frame:GetWide()*0.2, 40)
 	reset:SetPos(frame:GetWide()-reset:GetWide()-10,frame:GetTall()-reset:GetTall()-10)
-	reset.DoClick = function() value=data.value update(value) end
+	reset.DoClick = function() update(data.value) value=data.value end
+	
+	frame:Center()
+	frame:MakePopup()
 end
 
 TARDIS:AddGUISetting("Options", function(self,frame,screen)

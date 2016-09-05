@@ -42,7 +42,16 @@ else
 	hook.Add("wp-shouldrender", "tardisint-portals", function(portal,exit,origin)
 		local p=portal:GetParent()
 		if IsValid(p) and (p.TardisExterior or p.TardisInterior) and p._init then
-			if not (p.DoorOpen and p:DoorOpen(true)) then
+			local dont,black = p:CallHook("ShouldNotRenderPortal",p,portal,exit,origin)
+			if dont==nil then
+				local other = p.TardisExterior and p.interior or p.exterior
+				if IsValid(other) then
+					dont,black = other:CallHook("ShouldNotRenderPortal",p,portal,exit,origin)
+				end
+			end
+			if dont then
+				return false, black
+			elseif (not (p.DoorOpen and p:DoorOpen(true))) then
 				return false
 			elseif (not TARDIS:GetSetting("portals-enabled")) then
 				return false, p.TardisInterior
@@ -70,30 +79,6 @@ else
 				ext.DoorOverride = nil
 			end
 		end
-	end)
-	
-	ENT:AddHook("Initialize", "portals", function(self)
-		self:AddHook("Think", "portals-temp", function(self)
-			local portal=self:GetData("i_portal")
-			if IsValid(portal) then
-				portal.OldDraw=portal.OldDraw or portal.Draw
-				portal.Draw = function(s)
-					if self:CallHook("ShouldDraw")~=false then
-						s:OldDraw()
-					end
-				end
-				self:RemoveHook("Think", "portals-temp")
-			end
-		end)
-		self:AddHook("Think", "portals-temp2", function(self)
-			local portal=self:GetData("e_portal")
-			if IsValid(portal) then
-				portal.GetDisappearDist = function(s)
-					return TARDIS:GetSetting("portals-closedist")
-				end
-				self:RemoveHook("Think", "portals-temp2")
-			end
-		end)
 	end)
 end
 
