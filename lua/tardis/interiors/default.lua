@@ -6,11 +6,13 @@ T.Name="Default"
 T.ID="default"
 T.Interior={
 	Model="models/drmatt/tardis/2012interior/interior.mdl",
-	IdleSound={
-		{
-			path="drmatt/tardis/interior_idle_loop.wav",
-			volume=1	
-		},
+	Sounds={
+		Idle={
+			{
+				path="drmatt/tardis/interior_idle_loop.wav",
+				volume=1
+			}
+		}
 	},
 	Light={
 		color=Color(0,100,255),
@@ -94,13 +96,7 @@ T.Interior={
 }
 T.Exterior={
 	Parts={
-		door=true,
-		vortex={
-			model="models/doctorwho1200/toyota/2013timevortex.mdl",
-			pos=Vector(0,0,50),
-			ang=Angle(0,0,0),
-			scale=10
-		}
+		door=true
 	}
 }
 

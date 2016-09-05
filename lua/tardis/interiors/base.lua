@@ -51,6 +51,14 @@ T.Exterior={
 			close="drmatt/tardis/door_close.wav"
 		},
 		FlightLoop="drmatt/tardis/flight_loop.wav"
+	},
+	Parts={
+		vortex={
+			model="models/doctorwho1200/toyota/2013timevortex.mdl",
+			pos=Vector(0,0,50),
+			ang=Angle(0,0,0),
+			scale=10
+		}
 	}
 }
 

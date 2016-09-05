@@ -209,6 +209,7 @@ if SERVER then
 			end
 		end
 		for k,v in pairs(tempparts) do
+			
 			local e=ents.Create(v)
 			Doors:SetupOwner(e,ent:GetCreator())
 			e.exterior=(ent.TardisExterior and ent or ent.exterior)
@@ -219,6 +220,10 @@ if SERVER then
 			local data=GetData(ent,e,k)
 			if type(data)=="table" then
 				table.Merge(e,data)
+			end
+			if e.enabled==false then
+				e:Remove()
+				continue
 			end
 			if e.AutoSetup then
 				AutoSetup(ent,e,k)
