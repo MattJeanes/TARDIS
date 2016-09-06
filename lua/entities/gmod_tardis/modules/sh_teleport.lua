@@ -193,7 +193,9 @@ if SERVER then
 		self:SetCollisionGroup(COLLISION_GROUP_NONE)
 		self:DrawShadow(true)
 		for k,v in pairs(self.parts) do
-			v:DrawShadow(true)
+			if not v.NoShadow then
+				v:DrawShadow(true)
+			end
 		end
 		local attached=self:GetData("demat-attached")
 		if attached then
