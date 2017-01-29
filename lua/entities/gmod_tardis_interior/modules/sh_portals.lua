@@ -54,7 +54,7 @@ else
 			elseif (not (p.DoorOpen and p:DoorOpen(true))) then
 				return false
 			elseif (not TARDIS:GetSetting("portals-enabled")) then
-				return false, p.TardisInterior
+				return false, p.TardisInterior and (p.portals.interior==portal or portal.black)
 			end
 		end
 	end)

@@ -20,6 +20,7 @@ function ENT:Initialize()
 		self.Model=self.metadata.Interior.Model
 		self.Fallback=self.metadata.Interior.Fallback
 		self.Portal=self.metadata.Interior.Portal
+		self.CustomPortals=self.metadata.Interior.CustomPortals
 		self.ExitDistance=self.metadata.Interior.ExitDistance
 	end
 	self.BaseClass.Initialize(self)

@@ -3,15 +3,15 @@
 if SERVER then
 	util.AddNetworkString("TARDIS-KeyBind")
 	
-	local binds={}
+	TARDIS.binds=TARDIS.binds or {}
 	
 	net.Receive("TARDIS-KeyBind", function(_,ply)
 		local ext=ply:GetTardisData("exterior")
 		local int=ply:GetTardisData("interior")
 		if IsValid(ext) then
 			local id=net.ReadString()
-			if binds[id] then
-				local bind=binds[id]
+			if TARDIS.binds[id] then
+				local bind=TARDIS.binds[id]
 				local b=net.ReadBool()
 				bind.b[ply]=b
 				if bind.func then
@@ -28,19 +28,19 @@ if SERVER then
 	
 	function TARDIS:AddKeyBind(id,data)
 		if not data.clientonly then
-			binds[id]=table.Copy(data)
-			binds[id].b={}
+			self.binds[id]=table.Copy(data)
+			self.binds[id].b={}
 		end
 	end
 	
 	function TARDIS:IsBindDown(ply,id)
-		if binds[id] then
-			return binds[id].b[ply]
+		if self.binds[id] then
+			return self.binds[id].b[ply]
 		end
 	end
 	
 	function TARDIS:RemoveKeyBind(id)
-		binds[id]=nil
+		self.binds[id]=nil
 	end
 else
 	local keys = {
@@ -120,6 +120,7 @@ else
 		[KEY_HOME]={n="Home"},
 		[KEY_END]={n="End"},
 		[KEY_PAGEUP]={n="Page Up"},
+		[KEY_PAGEDOWN]={n="Page Down"},
 		[KEY_BREAK]={n="Break"},
 		[KEY_LSHIFT]={n="Shift"},
 		[KEY_RSHIFT]={n="Shift Right"},
@@ -196,49 +197,49 @@ else
 		end
 	end)
 	
-	local bindkeys={}
-	local binds={}
+	TARDIS.bindkeys=TARDIS.bindkeys or {}
+	TARDIS.binds=TARDIS.binds or {}
 	
 	function TARDIS:GetBindKey(id)
-		if bindkeys[id] then
-			return bindkeys[id]
+		if self.bindkeys[id] then
+			return self.bindkeys[id]
 		end
 	end
 	
 	function TARDIS:AddKeyBind(id,data)
-		if bindkeys[id]==nil then
-			bindkeys[id]=data.key
+		if self.bindkeys[id]==nil then
+			self.bindkeys[id]=data.key
 		end
-		binds[id]=table.Copy(data)
+		self.binds[id]=table.Copy(data)
 	end
 	
 	function TARDIS:RemoveKeyBind(id)
-		bindkeys[id]=nil
-		binds[id]=nil
+		self.bindkeys[id]=nil
+		self.binds[id]=nil
 	end
 	
 	function TARDIS:SetKeyBind(id,key)
-		if bindkeys[id] then
-			bindkeys[id]=key
+		if self.bindkeys[id] then
+			self.bindkeys[id]=key
 		end
 		self:SaveKeyBinds()
 	end
 	
 	function TARDIS:GetBinds()
-		return binds
+		return self.binds
 	end
 	
 	function TARDIS:GetBind(id)
-		if binds[id] then
-			return binds[id]
+		if self.binds[id] then
+			return self.binds[id]
 		end
 	end
 	
 	function TARDIS:SaveKeyBinds()
 		local keys={}
-		for k,v in pairs(binds) do
-			if bindkeys[k] and bindkeys[k]~=v.key then
-				keys[k]=bindkeys[k]
+		for k,v in pairs(self.binds) do
+			if self.bindkeys[k] and self.bindkeys[k]~=v.key then
+				keys[k]=self.bindkeys[k]
 			end
 		end
 		file.Write("tardis_binds.txt", self.von.serialize(keys))
@@ -247,21 +248,21 @@ else
 	function TARDIS:LoadKeyBinds()
 		local keys=file.Read("tardis_binds.txt","DATA")
 		if keys then
-			bindkeys=self.von.deserialize(keys)
+			table.Merge(self.bindkeys,self.von.deserialize(keys))
 		end
 	end
 	TARDIS:LoadKeyBinds()
 	
 	function TARDIS:IsBindDown(id)
-		if bindkeys[id] then
+		if self.bindkeys[id] then
 			return keys[bindkeys[id]].b
 		end
 	end
 	
 	function TARDIS:HandleKey(ext,int,key,down)
-		for k,v in pairs(bindkeys) do
+		for k,v in pairs(self.bindkeys) do
 			if v==key then
-				local bind=binds[k]
+				local bind=self.binds[k]
 				if bind then
 					local res,res2
 					if (bind.clientonly or (not (bind.clientonly and bind.serveronly))) and (not bind.serveronly) and bind.func then

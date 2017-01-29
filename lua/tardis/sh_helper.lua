@@ -58,8 +58,8 @@ hook.Add("HUDPaint", "tardis-debug", function()
 	if IsValid(int) then
 		local portals=int.portals
 		local e=ply:EyeAngles()
-		local l=portals[2]:WorldToLocalAngles(e)
-		local n=portals[1]:LocalToWorldAngles(l)
+		local l=portals.interior:WorldToLocalAngles(e)
+		local n=portals.exterior:LocalToWorldAngles(l)
 		draw.SimpleText(tostring(e), "DermaLarge", 100, 50, Color(86, 104, 86, 255), 0, 0)
 		draw.SimpleText(tostring(l), "DermaLarge", 100, 100, Color(86, 104, 86, 255), 0, 0)
 		draw.SimpleText(tostring(n), "DermaLarge", 100, 150, Color(86, 104, 86, 255), 0, 0)
