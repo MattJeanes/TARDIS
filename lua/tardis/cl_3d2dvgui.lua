@@ -1,7 +1,7 @@
 --[[
 	
 3D2D VGUI Wrapper
-Copyright (c) 2013 Alexander Overvoorde, Matt Stevens
+Copyright (c) 2015-2017 Alexander Overvoorde, Matt Stevens
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -22,289 +22,211 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ]]--
 
-if SERVER then
-	AddCSLuaFile()
-	return
-end
-
 local origin = Vector(0, 0, 0)
-local angle = Vector(0, 0, 0)
+local angle = Angle(0, 0, 0)
 local normal = Vector(0, 0, 0)
 local scale = 0
+local maxrange = 0
 
 -- Helper functions
 
-local function planeLineIntersect( lineStart, lineEnd, planeNormal, planePoint )
-	local t = planeNormal:Dot( planePoint - lineStart ) / planeNormal:Dot( lineEnd - lineStart )
-	return lineStart + t * ( lineEnd - lineStart )
-end
-
-local matex,matey=0,0
-local function testdraw(x,y)
-	surface.SetDrawColor(255,255,255,255)
-	surface.DrawLine( x, y-16, x, y+16 )
-	surface.DrawLine( x-16, y, x+16, y )
-end
-local function testdraw2(x,y)
-	surface.SetDrawColor(255,255,255,255)
-	surface.DrawLine(x,-10000,x,10000)
-	surface.DrawLine(-10000,y,10000,y)
-end
-
-
 local function getCursorPos()
-	local p = planeLineIntersect( LocalPlayer():EyePos(), LocalPlayer():EyePos() + LocalPlayer():GetAimVector() * 16000, normal, origin )
-	local offset = origin - p
-	
-	local angle2 = angle:Angle()
-	angle2:RotateAroundAxis( normal, -90 )
-	angle2 = angle2:Forward()
-	
-	local offsetp = Vector(offset.x, offset.y, offset.z)
-	offsetp:Rotate(-normal:Angle())
+	local p = util.IntersectRayWithPlane(LocalPlayer():EyePos(), LocalPlayer():GetAimVector(), origin, normal)
 
-	local x = -offsetp.y
-	local y = offsetp.z
+	-- if there wasn't an intersection, don't calculate anything.
+	if not p then return end
+	if WorldToLocal(LocalPlayer():GetShootPos(), Angle(0,0,0), origin, angle).z < 0 then return end
 
-	return x, y
+	if maxrange > 0 then
+		if p:Distance(LocalPlayer():EyePos()) > maxrange then
+			return
+		end
+	end
+
+	local pos = WorldToLocal(p, Angle(0,0,0), origin, angle)
+
+	return pos.x, -pos.y
 end
 
-local function getParents( pnl )
+local function getParents(pnl)
 	local parents = {}
-	local parent = pnl.Parent
-	while ( parent ) do
-		table.insert( parents, parent )
-		parent = parent.Parent
+	local parent = pnl:GetParent()
+	while parent do
+		table.insert(parents, parent)
+		parent = parent:GetParent()
 	end
 	return parents
 end
 
-local function absolutePanelPos( pnl )
+local function absolutePanelPos(pnl)
 	local x, y = pnl:GetPos()
-	local parents = getParents( pnl )
+	local parents = getParents(pnl)
 	
-	for _, parent in ipairs( parents ) do
+	for _, parent in ipairs(parents) do
 		local px, py = parent:GetPos()
 		x = x + px
 		y = y + py
 	end
+	
 	return x, y
 end
 
-local function pointInsidePanel( pnl, x, y )
-	local px, py = absolutePanelPos( pnl )
+local function pointInsidePanel(pnl, x, y)
+	local px, py = absolutePanelPos(pnl)
 	local sx, sy = pnl:GetSize()
+
+	if not x or not y then return end
 
 	x = x / scale
 	y = y / scale
-	
-	return (x >= px and y >= py and x <= px + sx and y <= py + sy), x, y
-end
 
-local function drawCrosshair( pnl, size )
-	local x,y=getCursorPos()
-	local inside,x,y=pointInsidePanel(pnl,x,y)
-	if inside then		
-		surface.SetDrawColor(0,0,0)
-		surface.DrawLine( x, y-size, x, y+size )
-		surface.DrawLine( x-size, y, x+size, y )
-	end
+	return pnl:IsVisible() and x >= px and y >= py and x <= px + sx and y <= py + sy
 end
 
 -- Input
 
 local inputWindows = {}
+local usedpanel = {}
 
---[[ Breaks context menu and other stuff probably, also doesn't seem to do much
-if not guiMouseX then guiMouseX = gui.MouseX end
-if not guiMouseY then guiMouseY = gui.MouseY end
-function gui.MouseX()
-	local x, y = getCursorPos()
-	return x
-end
-function gui.MouseY()	
-	local x, y = getCursorPos()
-	return y
-end
-]]--
-
-local function isMouseOver( pnl )
-	return pointInsidePanel( pnl, getCursorPos() )
+local function isMouseOver(pnl)
+	return pointInsidePanel(pnl, getCursorPos())
 end
 
-local curpnl={}
-local function postPanelEvent( pnl, event, ... )
-	if ( not pnl:IsValid() or not isMouseOver( pnl ) or not pnl:IsVisible() ) then return false end	
+local function postPanelEvent(pnl, event, ...)
+	if not IsValid(pnl) or not pnl:IsVisible() or not pointInsidePanel(pnl, getCursorPos()) then return false end
+
 	local handled = false
-	for i,child in ipairs( pnl.Childs or {} ) do
-		if ( postPanelEvent( child, event, ... ) ) then
+	
+	for i, child in pairs(table.Reverse(pnl:GetChildren())) do
+		if postPanelEvent(child, event, ...) then
 			handled = true
 			break
 		end
 	end
 	
-	if ( not handled and pnl[ event ] ) then
-		pnl[ event ]( pnl, ... )
-		if event=="OnMousePressed" and not curpnl[pnl] then
-			curpnl[pnl]=true
-		end
+	if not handled and pnl[event] then
+		pnl[event](pnl, ...)
+		usedpanel[pnl] = {...}
 		return true
 	else
 		return false
 	end
 end
 
-local function checkHover( pnl, x, y )
-	pnl.WasHovered = pnl.Hovered
+-- Always have issue, but less
+local function checkHover(pnl, x, y, found)
 	if not (x and y) then
-		x,y=getCursorPos()
-	end
-	pnl.Hovered = pointInsidePanel( pnl, x, y )
-	if not pnl.WasHovered and pnl.Hovered then
-		if pnl.OnCursorEntered then pnl:OnCursorEntered() end
-	elseif pnl.WasHovered and not pnl.Hovered then
-		if pnl.OnCursorExited then pnl:OnCursorExited() end
+		x, y = getCursorPos()
 	end
 
-	for i, child in ipairs( pnl.Childs or {} ) do
-		if ( child:IsValid() and child:IsVisible() ) then checkHover( child, x, y ) end
-	end
-end
+	local validchild = false
+	for c, child in pairs(table.Reverse(pnl:GetChildren())) do
+		local check = checkHover(child, x, y, found or validchild)
 
---[[
-hook.Add("Think", "3d2dasd", function()
-	for k,v in pairs(curpnl) do
-			matex,matey=absolutePanelPos(k)
-			local x,y=k:CursorPos()
-			matex=matex+x
-			matey=matey+y
-		if k.Hovered and k.OnCursorMoved then
-			local px,py=getCursorPos()
-			--k:OnCursorMoved(5,0)
+		if check then
+			validchild = true
 		end
 	end
-end)
-]]--
 
-local function facingPanel( pnl )
-	local vec = GetViewEntity():GetPos() - pnl.Origin
+	if found then
+		if pnl.Hovered then
+			pnl.Hovered = false
+			if pnl.OnCursorExited then pnl:OnCursorExited() end
+		end
+	else
+		if not validchild and pointInsidePanel(pnl, x, y) then
+			pnl.Hovered = true
+			if pnl.OnCursorEntered then pnl:OnCursorEntered() end
 
-	if pnl.Normal:Dot( vec ) > 0 then
-		return true
+			return true
+		else
+			pnl.Hovered = false
+			if pnl.OnCursorExited then pnl:OnCursorExited() end
+		end
 	end
+
+	return false
 end
 
 -- Mouse input
 
-hook.Add( "KeyPress", "VGUI3D2DMousePress", function( _, key )
-	if ( key == IN_USE ) then
-		for pnl in pairs( inputWindows ) do
-			if ( pnl:IsValid() and facingPanel( pnl ) ) then
+hook.Add("KeyPress", "VGUI3D2DMousePress", function(_, key)
+	if key == IN_USE then
+		for pnl in pairs(inputWindows) do
+			if IsValid(pnl) then
 				origin = pnl.Origin
 				scale = pnl.Scale
 				angle = pnl.Angle
 				normal = pnl.Normal
+
+				local key = input.IsKeyDown(KEY_LSHIFT) and MOUSE_RIGHT or MOUSE_LEFT
 				
-				postPanelEvent( pnl, "OnMousePressed", MOUSE_LEFT )
+				postPanelEvent(pnl, "OnMousePressed", key)
 			end
 		end
 	end
-end )
+end)
 
-hook.Add( "KeyRelease", "VGUI3D2DMouseRelease", function( _, key )
-	if ( key == IN_USE ) then
-		local fnd=false
-		for pnl in pairs( inputWindows ) do
-			if ( pnl:IsValid() and facingPanel( pnl ) ) then
+hook.Add("KeyRelease", "VGUI3D2DMouseRelease", function(_, key)
+	if key == IN_USE then
+		for pnl, key in pairs(usedpanel) do
+			if IsValid(pnl) then
 				origin = pnl.Origin
 				scale = pnl.Scale
 				angle = pnl.Angle
 				normal = pnl.Normal
-				
-				postPanelEvent( pnl, "OnMouseReleased", MOUSE_LEFT )
-			end
-		end
-		if not fnd then
-			for k,v in pairs(curpnl) do
-				if k:IsValid() and k.OnMouseReleased then
-					k:OnMouseReleased( MOUSE_LEFT )
+
+				if pnl["OnMouseReleased"] then
+					pnl["OnMouseReleased"](pnl, key[1])
 				end
-				curpnl={}
+
+				usedpanel[pnl] = nil
 			end
 		end
 	end
-end )
-
--- Key input
-
---[[
-local textpnl
-function vgui.TextInput( pnl )
-	textpnl=pnl
-	input.StartKeyTrapping()
-end
-
-hook.Add("StartCommand", "VGUI3D2DTextInput", function(ply,cmd)
-	if IsValid(textpnl) then
-		cmd:ClearMovement()
-	end
 end)
 
-hook.Add("SetupMove", "VGUI3D2DTextInput", function(ply,mv,cmd)
-	if IsValid(textpnl) then
-		mv:SetButtons(0)
-	end
-end)
-
-local lastkey
-hook.Add("Think", "VGUI3D2DTextInput", function()
-	if IsValid(textpnl) then
-		local key=input.CheckKeyTrapping()
-		if key then
-			local text=textpnl:GetText()
-			if key==KEY_ESCAPE or key==KEY_ENTER then
-				if key==KEY_ENTER then
-					textpnl:OnEnter()
-				end
-				textpnl=nil
-				return
-			elseif key==KEY_BACKSPACE then
-				text=text:sub(1,-2)
-			else
-				local char=""
-				if key>=1 and key<=36 then
-					char=input.GetKeyName(key)
-				end
-				text=text..char
-			end
-			textpnl:SetText(text)
-			input.StartKeyTrapping()
-		end
-	end
-end)
-]]--
-
--- Drawing:
-
-function vgui.Start3D2D( pos, ang, res )
+function vgui.Start3D2D(pos, ang, res)
 	origin = pos
 	scale = res
-	angle = ang:Forward()
+	angle = ang
+	normal = ang:Up()
+	maxrange = 0
 	
-	normal = Angle( ang.p, ang.y, ang.r )
-	normal:RotateAroundAxis( ang:Forward(), -90 )
-	normal:RotateAroundAxis( ang:Right(), 90 )
-	normal = normal:Forward()
-	
-	cam.Start3D2D( pos, ang, res )
+	cam.Start3D2D(pos, ang, res)
 end
 
-local _R = debug.getregistry()
-function _R.Panel:Paint3D2D()
+function vgui.MaxRange3D2D(range)
+	maxrange = isnumber(range) and range or 0
+end
+
+function vgui.IsPointingPanel(pnl)
+	origin = pnl.Origin
+	scale = pnl.Scale
+	angle = pnl.Angle
+	normal = pnl.Normal
+
+	return pointInsidePanel(pnl, getCursorPos())
+end
+
+local Panel = FindMetaTable("Panel")
+function Panel:Paint3D2D()
 	if not self:IsValid() then return end
 	
 	-- Add it to the list of windows to receive input
-	inputWindows[ self ] = true
+	inputWindows[self] = true
+
+	-- Override gui.MouseX and gui.MouseY for certain stuff
+	local oldMouseX = gui.MouseX
+	local oldMouseY = gui.MouseY
+	local cx, cy = getCursorPos()
+
+	function gui.MouseX()
+		return (cx or 0) / scale
+	end
+	function gui.MouseY()
+		return (cy or 0) / scale
+	end
 	
 	-- Override think of DFrame's to correct the mouse pos by changing the active orientation
 	if self.Think then
@@ -323,7 +245,7 @@ function _R.Panel:Paint3D2D()
 	end
 	
 	-- Update the hover state of controls
-	checkHover( self )
+	local _, tab = checkHover(self)
 	
 	-- Store the orientation of the window to calculate the position outside the render loop
 	self.Origin = origin
@@ -332,41 +254,14 @@ function _R.Panel:Paint3D2D()
 	self.Normal = normal
 	
 	-- Draw it manually
-	self:SetPaintedManually( false )
+	self:SetPaintedManually(false)
 		self:PaintManual()
-		if self.crosshair then 
-			drawCrosshair(self,self.crosshair)
-		end
-		--testdraw(matex,matey)
-	self:SetPaintedManually( true )
+	self:SetPaintedManually(true)
+
+	gui.MouseX = oldMouseX
+	gui.MouseY = oldMouseY
 end
 
 function vgui.End3D2D()
 	cam.End3D2D()
-end
-
--- Keep track of child controls
-
-function vgui.SetParent3D2D(pnl,parent,first) -- todo: find way to do this automatically
-	if not first then
-		pnl:SetParent(parent)
-		if pnl.Parent then
-			table.RemoveByValue(pnl.Parent.Childs, pnl)
-		end
-	end
-	pnl.Parent = parent
-	if parent then
-		if not parent.Childs then parent.Childs = {} end
-		table.insert(parent.Childs,1,pnl)
-	end
-end
-
-if not vguiCreate then vguiCreate = vgui.Create end
-function vgui.Create( class, parent )
-	local pnl = vguiCreate( class, parent )
-	if not pnl then return end
-	pnl.Class = class
-	vgui.SetParent3D2D(pnl, parent, true)
-	
-	return pnl
 end

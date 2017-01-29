@@ -43,14 +43,34 @@ ENT:AddHook("OnRemove", "screens", function(self)
 	end
 end)
 
+-- Thanks world-portals
+function ENT:ShouldRenderScreen(screen)
+	local camOrigin = GetViewEntity():GetPos()
+	local pos = self:LocalToWorld(screen.pos3D)
+	local ang = self:LocalToWorldAngles(screen.ang3D)
+	local distance = camOrigin:Distance(pos)
+	local disappearDist = self.metadata.Interior.ScreenDistance
+	
+	if not (disappearDist <= 0) and distance > disappearDist then return false end
+	
+	--don't render if the view is behind the portal
+	local behind = TARDIS:IsBehind( camOrigin, pos, ang:Up() )
+	if behind then return false end
+	
+	return true, pos, ang
+end
+
 ENT:AddHook("PostDrawTranslucentRenderables", "screens", function(self)
 	if self.screens3D then
 		for k,v in pairs(self.screens3D) do
-			local col=HSVToColor(180+math.sin(CurTime()*0.1)*180,0.5,1)
-			vgui.Start3D2D(self:LocalToWorld(v.pos3D),self:LocalToWorldAngles(v.ang3D),0.0624*(1/TARDIS.screenres))
-				draw.RoundedBox(0,0,0,v.width,v.height,col)
-				v:Paint3D2D()
-			vgui.End3D2D()
+			local should,pos,ang = self:ShouldRenderScreen(v)
+			if should then
+				local col=HSVToColor(180+math.sin(CurTime()*0.1)*180,0.5,1)
+				vgui.Start3D2D(pos,ang,0.0624*(1/TARDIS.screenres))
+					draw.RoundedBox(0,0,0,v.width,v.height,col)
+					v:Paint3D2D()
+				vgui.End3D2D()
+			end
 		end
 	end
 end)

@@ -163,6 +163,7 @@ if SERVER then
 		self:SetData("vortex",true)
 		self:SetData("teleport",false)
 		self:SetSolid(SOLID_NONE)
+		self:RemoveAllDecals()
 		
 		local flight = self:GetData("flight")
 		self:SetData("prevortex-flight",flight)
@@ -235,7 +236,7 @@ if SERVER then
 	
 	ENT:AddHook("CanPlayerEnter","teleport",function(self)
 		if self:GetData("teleport") or self:GetData("vortex") then
-			return false
+			return false, true
 		end
 	end)
 	
@@ -370,33 +371,14 @@ else
 	end)
 end
 
-ENT.dematvalues={
-	150,
-	200,
-	100,
-	150,
-	50,
-	100,
-	0
-}
-ENT.matvalues={
-	100,
-	50,
-	150,
-	100,
-	200,
-	150,
-	255
-}
-
 function ENT:GetTargetAlpha()
 	local demat=self:GetData("demat")
 	local mat=self:GetData("mat")
 	local step=self:GetData("step",1)
 	if demat and (not mat) then
-		return self.dematvalues[step]
+		return self.metadata.Exterior.Teleport.DematSequence[step]
 	elseif mat and (not demat) then
-		return self.matvalues[step]
+		return self.metadata.Exterior.Teleport.MatSequence[step]
 	else
 		return 255
 	end
@@ -411,14 +393,14 @@ ENT:AddHook("Think","teleport",function(self,delta)
 	local step=self:GetData("step",1)
 	if alpha==target then
 		if demat then
-			if step>=#self.dematvalues then
+			if step>=#self.metadata.Exterior.Teleport.DematSequence then
 				self:StopDemat()
 				return
 			else
 				self:SetData("step",step+1)
 			end
 		elseif mat then
-			if step>=#self.matvalues then
+			if step>=#self.metadata.Exterior.Teleport.MatSequence then
 				self:StopMat()
 				return
 			else
@@ -428,7 +410,7 @@ ENT:AddHook("Think","teleport",function(self,delta)
 		target=self:GetTargetAlpha()
 		self:SetData("alphatarget",target)
 	end
-	alpha=math.Approach(alpha,target,delta*66*0.85)
+	alpha=math.Approach(alpha,target,delta*66*self.metadata.Exterior.Teleport.SequenceSpeed)
 	self:SetData("alpha",alpha)
 	local attached=self:GetData("demat-attached")
 	if attached then

@@ -85,26 +85,39 @@ else
 		networked=true
 	})
 	
-	local function dopredraw(self,part)
-		local vortexpart = (part and part.ID=="vortex")
+	ENT:AddHook("Think","vortex",function(self)
 		local alpha = self:GetData("vortexalpha",0)
-		local target = self:GetData("vortex") and 1 or 0
 		local enabled = self:IsVortexEnabled()
+		local target = self:GetData("vortex") and 1 or 0
 		if TARDIS:GetExteriorEnt()==self and enabled then
 			if alpha ~= target then
 				if alpha==0 and target==1 then
 					self:SetData("lockedang",Angle(0,self:LocalToWorldAngles(self:GetPart("vortex").ang).y,0))
 				end
-				alpha = math.Approach(alpha,self:GetData("vortex") and 1 or 0,FrameTime()*0.1)
+				alpha = math.Approach(alpha,self:GetData("vortex") and 1 or 0,FrameTime()*0.5)
 				self:SetData("vortexalpha",alpha)
-			end
-			if (not (target == 0 and alpha == 0)) or vortexpart then
-				render.SetBlend(alpha)
 			end
 		else
 			if alpha~=target then
-				self:SetData("vortexalpha",target)
+				alpha = target
+				self:SetData("vortexalpha",alpha)
 			end
+		end
+	end)
+	
+	local function dopredraw(self,part)
+		local vortexpart = (part and part.ID=="vortex")
+		local target = self:GetData("vortex") and 1 or 0
+		local alpha = self:GetData("vortexalpha",0)
+		local enabled = self:IsVortexEnabled()
+		if TARDIS:GetExteriorEnt()==self and enabled then
+			if (not (target == 0 and alpha == 0)) or vortexpart then
+				render.SetBlend(alpha)
+				if alpha>0 and (LocalPlayer():GetTardisData("thirdperson") or (self.interior and wp.drawingent==self.interior.portals[2])) then
+					cam.IgnoreZ(true)
+				end
+			end
+		else
 			if vortexpart or self:GetData("vortex") then
 				render.SetBlend(0)
 			end
@@ -113,11 +126,16 @@ else
 	
 	local function dodraw(self,part)
 		render.SetBlend(1)
+		if self:GetData("vortexalpha",0) then
+			cam.IgnoreZ(false)
+		end
 	end
 	ENT:AddHook("PreDraw","vortex",dopredraw)
 	ENT:AddHook("PreDrawPart","vortex",dopredraw)
 	ENT:AddHook("Draw","vortex",dodraw)
 	ENT:AddHook("DrawPart","vortex",dodraw)
+	ENT:AddHook("PreDrawPortal","vortex",dopredraw)
+	ENT:AddHook("PostDrawPortal","vortex",dodraw)
 	
 	ENT:AddHook("ShouldNotRenderPortal","vortex",function(self,parent)
 		if self:GetData("vortex") and (TARDIS:GetExteriorEnt()~=self or (not self:IsVortexEnabled())) then

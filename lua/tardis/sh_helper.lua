@@ -33,6 +33,16 @@ concommand.Add("tardis_getlocal",function(ply,cmd,args)
 	print("Angle("..math.Round(ang.p,decimals)..","..math.Round(ang.y,decimals)..","..math.Round(ang.r,decimals)..")")
 end)
 
+-- Thanks world-portals!
+function TARDIS:IsBehind( object_pos, plane_pos, plane_forward )
+	local vec = object_pos - plane_pos
+
+	if plane_forward:Dot( vec ) < 0 then 
+		return true
+	end
+	return false
+end
+
 --[[
 local meta=FindMetaTable("Player")
 meta.OldSetEyeAngles=meta.OldSetEyeAngles or meta.SetEyeAngles
