@@ -10,7 +10,7 @@ if SERVER then
 					return false
 				end
 			elseif class=="gmod_tardis_interior" then
-				if not e.exterior:DoorOpen() then
+				if not e.exterior:DoorOpen() and self==e.portals.interior then
 					return false
 				end
 			end
@@ -51,7 +51,7 @@ else
 			end
 			if dont then
 				return false, black
-			elseif (not (p.DoorOpen and p:DoorOpen(true))) then
+			elseif (not (p.DoorOpen and p:DoorOpen(true))) and (p.TardisExterior or (p.TardisInterior and portal==p.portals.interior)) then
 				return false
 			elseif (not TARDIS:GetSetting("portals-enabled")) then
 				return false, p.TardisInterior and (p.portals.interior==portal or portal.black)
@@ -91,7 +91,7 @@ hook.Add("wp-bullet", "tardisint-portals", function(ent)
 				return false
 			end
 		elseif class=="gmod_tardis_interior" then
-			if not e.exterior:DoorOpen() then
+			if not e.exterior:DoorOpen() and ent==e.portals.interior then
 				return false
 			end
 		end
