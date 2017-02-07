@@ -128,6 +128,17 @@ if SERVER then
 			intdoor:SetSkin(i)
 		end
 	end)
+	
+	ENT:AddHook("BodygroupChanged","doors",function(self,bodygroup,value)
+		local door=TARDIS:GetPart(self,"door")
+		local intdoor=TARDIS:GetPart(self.interior,"door")
+		if IsValid(door) then
+			door:SetBodygroup(bodygroup,value)
+		end
+		if IsValid(intdoor) then
+			intdoor:SetBodygroup(bodygroup,value)
+		end
+	end)
 else
 	TARDIS:AddSetting({
 		id="doorsounds-enabled",
