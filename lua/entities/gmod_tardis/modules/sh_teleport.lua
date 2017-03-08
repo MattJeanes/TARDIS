@@ -211,6 +211,14 @@ if SERVER then
 		end
 		self:SetData("demat-attached")
 	end
+	function ENT:SetDestination(pos, ang)
+		if self:GetData("vortex") then
+			self:SetData("demat-pos",pos)
+			self:SetData("demat-ang",ang)
+			return true
+		end
+		return false
+	end
 	
 	ENT:AddHook("CanDemat", "teleport", function(self)
 		if self:GetData("teleport") or self:GetData("vortex") then

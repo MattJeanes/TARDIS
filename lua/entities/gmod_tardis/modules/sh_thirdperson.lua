@@ -26,7 +26,8 @@ function ENT:GetThirdPersonPos(ply,ang)
 	local tr = util.TraceLine({
 		start=pos,
 		endpos=pos-(ang:Forward()*ply:GetTardisData("thirdpersondist",defaultdist)),
-		mask=MASK_NPCWORLDSTATIC
+		mask=MASK_NPCWORLDSTATIC,
+		ignoreworld=self:GetData("vortex")
 	})
 	return tr.HitPos+(ang:Forward()*10), Angle(ang.p,ang.y,0)
 end

@@ -21,24 +21,34 @@ if SERVER then
 				local lev=ph:GetInertia():Length()
 				
 				local vel=0
+				local rforce=2
 				local mul=3
 				local tilt=0
 				local tiltmul=7
-				if TARDIS:IsBindDown(self.pilot,"float-forward")
-					or TARDIS:IsBindDown(self.pilot,"float-left")
-					or TARDIS:IsBindDown(self.pilot,"float-right")
-					or TARDIS:IsBindDown(self.pilot,"float-backward") then
+				if TARDIS:IsBindDown(self.pilot,"flight-forward")
+					or TARDIS:IsBindDown(self.pilot,"flight-left")
+					or TARDIS:IsBindDown(self.pilot,"flight-right")
+					or TARDIS:IsBindDown(self.pilot,"flight-backward") then
 					vel=vel+1
 					tilt=tilt+1
 				end
-				if TARDIS:IsBindDown(self.pilot,"float-boost") then
+				if TARDIS:IsBindDown(self.pilot,"flight-boost") then
 					mul=mul*2
 					tiltmul=tiltmul*2
+				end
+				if TARDIS:IsBindDown(self.pilot,"float-boost") then
+					rforce=rforce*2.5
 				end
 				if TARDIS:IsBindDown(self.pilot,"float-brake") then
 					ph:AddAngleVelocity(ph:GetAngleVelocity()*-0.05)
 				end
-				if not (self.spindir==0) then
+				if TARDIS:IsBindDown(self.pilot,"flight-rotate") then
+					if TARDIS:IsBindDown(self.pilot,"flight-left") then
+						ph:AddAngleVelocity(Vector(0,0,rforce))
+					elseif TARDIS:IsBindDown(self.pilot,"flight-right") then
+						ph:AddAngleVelocity(Vector(0,0,-rforce))
+					end
+				elseif not (self.spindir==0) then
 					local twist=Vector(0,0,vel*mul*-self.spindir)
 					ph:AddAngleVelocity(twist)
 					ph:ApplyForceOffset( up*-ang.p,cen-fwd2*lev)

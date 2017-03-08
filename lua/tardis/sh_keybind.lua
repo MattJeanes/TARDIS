@@ -159,31 +159,8 @@ else
 		end
 	end
 	
-	local chatopen=false
-	hook.Add("StartChat", "TARDIS-KeyBind", function()
-		if timer.Exists("TARDIS-CloseChat") then
-			timer.Remove("TARDIS-CloseChat")
-		end
-		chatopen=true
-	end)
-
-	hook.Add("FinishChat", "TARDIS-KeyBind", function()
-		timer.Create("TARDIS-CloseChat", 0.5, 1, function() -- prevents input just after closing chat
-			chatopen=false
-		end)
-	end)
-	
-	local spawnmenuopen=false
-	hook.Add("OnSpawnMenuOpen", "TARDIS-KeyBind", function()
-		spawnmenuopen=true
-	end)
-
-	hook.Add("OnSpawnMenuClose", "TARDIS-KeyBind", function()
-		spawnmenuopen=false
-	end)
-	
 	hook.Add("Think", "TARDIS-KeyBind", function()
-		if chatopen or spawnmenuopen or gui.IsConsoleVisible() or gui.IsGameUIVisible() then return end -- thanks Exho
+		if gui.IsConsoleVisible() or gui.IsGameUIVisible() or vgui.GetHoveredPanel() then return end
 		local ext=LocalPlayer():GetTardisData("exterior")
 		local int=LocalPlayer():GetTardisData("interior")
 		if IsValid(ext) then
