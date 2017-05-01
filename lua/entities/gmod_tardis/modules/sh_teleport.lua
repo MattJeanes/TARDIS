@@ -116,7 +116,7 @@ if SERVER then
 							for k,v in pairs(attached) do
 								if IsValid(v) and not IsValid(v:GetParent()) then
 									v.telepos=v:GetPos()-self:GetPos()
-									if v:GetClass()=="gmod_hoverball" then // fixes hoverballs spazzing out
+									if v:GetClass()=="gmod_hoverball" then -- fixes hoverballs spazzing out
 										v:SetTargetZ( (pos-self:GetPos()).z+v:GetTargetZ() )
 									end
 								end

@@ -232,7 +232,7 @@ else
 	
 	function TARDIS:IsBindDown(id)
 		if self.bindkeys[id] then
-			return keys[bindkeys[id]].b
+			return keys[self.bindkeys[id]].b
 		end
 	end
 	

@@ -4,7 +4,7 @@ if SERVER then
 	util.AddNetworkString("TARDIS-MessageInt")
 end
 
-function ENT:SendMessage(name,func)
+function ENT:SendMessage(name,func,ply)
 	net.Start("TARDIS-MessageInt")
 	net.WriteEntity(self)
 	net.WriteString(name)
@@ -12,7 +12,11 @@ function ENT:SendMessage(name,func)
 		func()
 	end
 	if SERVER then
-		net.Broadcast()
+		if IsValid(ply) and ply:IsPlayer() then
+			net.Send(ply)
+		else
+			net.Broadcast()
+		end
 	else
 		net.SendToServer()
 	end

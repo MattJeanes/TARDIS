@@ -15,7 +15,7 @@ local function playerlookingat(self,ply,vec,fov,width)
 end
 
 ENT:AddHook("Use", "interior-legacy", function(self,a,c)
-	if self.metadata.ID=="legacy" and a:IsPlayer() and (not a:GetTardisData("thirdperson")) and CurTime()>a:GetTardisData("thirdpersoncool",0) then
+	if self.metadata.ID=="legacy" and a:IsPlayer() and (not a:GetTardisData("outside")) and CurTime()>a:GetTardisData("outsidecool",0) then
 		local pos=Vector(0,0,0)
 		local pos2=self:WorldToLocal(a:GetPos())
 		local distance=pos:Distance(pos2)

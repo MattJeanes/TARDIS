@@ -49,7 +49,7 @@ TARDIS:AddKeyBind("tp-openscreen",{
 	section="Third Person",
 	desc="Toggles the HUD screen",
 	func=function(self,down,ply)
-		if down and ply:GetTardisData("thirdperson") then
+		if down and ply:GetTardisData("outside") then
 			TARDIS:HUDScreen()
 		end
 	end,

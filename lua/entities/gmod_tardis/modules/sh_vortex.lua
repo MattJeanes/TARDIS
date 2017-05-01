@@ -123,7 +123,7 @@ else
 		if TARDIS:GetExteriorEnt()==self and enabled then
 			if (not (target == 0 and alpha == 0)) or vortexpart then
 				render.SetBlend(alpha)
-				if alpha>0 and (LocalPlayer():GetTardisData("thirdperson") or (self.interior and wp.drawingent==self.interior.portals.interior)) then
+				if alpha>0 and (LocalPlayer():GetTardisData("outside") or (self.interior and wp.drawingent==self.interior.portals.interior)) then
 					cam.IgnoreZ(true)
 				end
 			end
