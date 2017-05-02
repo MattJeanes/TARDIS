@@ -19,7 +19,6 @@ TARDIS:AddKeyBind("teleport-demat",{
 				self:SetData("teleport-trace",true)
 			else
 				self:SetData("teleport-trace",false)
-				--Derma_Query("Do you want to teleport to AimPos?", "TARDIS Interface", "OK", function() end, "Cancel", function() end)
 			end
 		end
 	end,

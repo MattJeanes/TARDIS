@@ -1,6 +1,8 @@
 -- Vortex
 
 function ENT:IsVortexEnabled(pilot)
+	local hookResult = self:CallHook("VortexEnabled", pilot)
+	if hookResult ~= nil then return hookResult end
 	return ((not pilot and SERVER) or TARDIS:GetSetting("vortex-enabled",false,pilot)) and IsValid(self:GetPart("vortex")) and (SERVER or self:GetData("vortexmodelvalid"))
 end
 

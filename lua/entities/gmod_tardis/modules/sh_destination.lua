@@ -67,6 +67,25 @@ TARDIS:AddKeyBind("destination-rotate",{
 	clientonly=true,
 	exterior=true
 })
+TARDIS:AddKeyBind("destination-demat",{
+	name="Demat",
+	section="Destination",
+	func=function(self,down,ply)
+		if TARDIS:HUDScreenOpen(ply) then return end
+		if ply:GetTardisData("destination") then
+            local prop = self:GetData("destinationprop")
+            if IsValid(prop) then
+                self:SendMessage("destination-demat", function()
+                    net.WriteVector(prop:GetPos())
+                    net.WriteAngle(prop:GetAngles())
+                end)
+            end
+        end
+	end,
+	key=MOUSE_LEFT,
+    clientonly=true,
+	exterior=true	
+})
 
 if SERVER then
     function ENT:SelectDestination(ply, enabled)
@@ -96,6 +115,26 @@ if SERVER then
             end,ply)
 		end
 	end)
+    ENT:OnMessage("destination-demat", function(self, ply)
+        local pos = net.ReadVector()
+        local ang = net.ReadAngle()
+        if self:GetData("vortex") or self:GetData("teleport") then
+            if self:SetDestination(pos,ang) then
+                ply:ChatPrint("Destination locked, ready to materialise")
+            else
+                ply:ChatPrint("Failed to set destination, may be transitioning")
+            end
+        else
+            self:Demat(pos, ang, function(success)
+                if success then
+                    ply:ChatPrint("Destination locked, dematerialising..")            
+                else
+                    ply:ChatPrint("Failed to dematerialise")
+                end
+            end)
+        end
+        self:SelectDestination(ply, false)
+    end)
 else
     local defaultdist = 210
     function ENT:GetDestinationPos(ply, pos, ang)
@@ -178,6 +217,11 @@ else
     ENT:AddHook("OnRemove", "destination", function(self)
         self:RemoveDestinationProp()
     end)
+    ENT:AddHook("VortexEnabled", "destination", function(self)
+        if LocalPlayer():GetTardisData("destination") then
+            return false
+        end
+    end)
     ENT:AddHook("Think", "destination", function(self)
 		if LocalPlayer():GetTardisData("destination") then
 			local prop=self:GetData("destinationprop")
@@ -189,7 +233,7 @@ else
                 eye=angle_zero
             end
             local force = 15
-            local angforce = 1
+            local angforce = 1.5
             local boostmul = 2
             local slowmul = 0.1
             local angslowmul = 0.5

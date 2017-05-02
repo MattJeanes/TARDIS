@@ -28,5 +28,6 @@ TARDIS:AddScreen("Destination", {menu=false}, function(self,ext,int,frame,screen
 	button:SetFont("TARDIS-Default")
 	button.DoClick = function()
 		TARDIS:Control("destination")
+		if TARDIS:HUDScreenOpen(ply) then TARDIS:RemoveHUDScreen() end
 	end
 end)
