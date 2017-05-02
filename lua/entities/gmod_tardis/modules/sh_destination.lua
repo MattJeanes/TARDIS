@@ -145,8 +145,12 @@ else
     end
     function ENT:RemoveDestinationProp()
         local prop = self:GetData("destinationprop")
-        print("removing prop", prop)
         if IsValid(prop) then
+            for k,v in pairs(prop:GetChildren()) do
+                if IsValid(v) then
+                    v:Remove()
+                end
+            end
             prop:Remove()
         end
     end
@@ -163,6 +167,8 @@ else
     ENT:AddHook("Destination", "destination", function(self, enabled)
         if enabled then
             self:CreateDestinationProp()
+        else
+            self:RemoveDestinationProp()
         end
     end)
     ENT:OnMessage("destination", function(self)
@@ -178,13 +184,15 @@ else
             if not IsValid(prop) then return end
 			local dt=FrameTime()*66
             local eye=LocalPlayer():EyeAngles()
+            eye.r = 0
             if not eye then
                 eye=angle_zero
             end
-            local force = 20
+            local force = 15
             local angforce = 1
             local boostmul = 2
-            local slowmul = 0.5
+            local slowmul = 0.1
+            local angslowmul = 0.5
             local fwd=eye:Forward()
             local ri=eye:Right()
             local up=prop:GetUp()
@@ -193,25 +201,11 @@ else
             local rt = Angle(0,0,0)
             if TARDIS:IsBindDown("destination-forward") then
                 mv:Add(force*fwd*dt)
-            end
-            if TARDIS:IsBindDown("destination-backward") then
+            elseif TARDIS:IsBindDown("destination-backward") then
                 mv:Add(force*fwd*-1*dt)
             end
-            if TARDIS:IsBindDown("destination-up") then
-                mv:Add(force*up*dt)
-            end
-            if TARDIS:IsBindDown("destination-down") then
-                mv:Add(force*up*-1*dt)
-            end
-            if TARDIS:IsBindDown("destination-boost") then
-                mv=mv*boostmul
-                rt=rt*boostmul
-            end
-            if TARDIS:IsBindDown("destination-slow") then
-                mv=mv*slowmul
-                rt=rt*slowmul
-            end
-            if TARDIS:IsBindDown("destination-rotate") then
+            
+            if TARDIS:IsBindDown("destination-rotate") and TARDIS:IsBindDown("destination-boost") then
                 if TARDIS:IsBindDown("destination-left") then
                     rt = rt + Angle(0,angforce*dt,0)
                 end
@@ -226,6 +220,21 @@ else
                     mv:Add(force*ri*dt)
                 end
             end
+
+            if TARDIS:IsBindDown("destination-up") then
+                mv:Add(force*up*dt)
+            elseif TARDIS:IsBindDown("destination-down") then
+                mv:Add(force*up*-1*dt)
+            end
+            
+            if TARDIS:IsBindDown("destination-slow") then
+                mv=mv*slowmul
+                rt=rt*angslowmul
+            elseif TARDIS:IsBindDown("destination-boost") then
+                mv=mv*boostmul
+                rt=rt*boostmul
+            end
+
             if not mv:IsZero() then
                 prop:SetPos(prop:GetPos() + mv)
             end
