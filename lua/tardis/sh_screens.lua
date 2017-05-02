@@ -49,7 +49,7 @@ TARDIS:AddKeyBind("tp-openscreen",{
 	section="Third Person",
 	desc="Toggles the HUD screen",
 	func=function(self,down,ply)
-		if down and ply:GetTardisData("thirdperson") then
+		if down and ply:GetTardisData("outside") then
 			TARDIS:HUDScreen()
 		end
 	end,
@@ -340,7 +340,7 @@ function TARDIS:LoadButtons(screen,frame,func)
 		end
 		if (spaceh-button:GetTall()-screen.gap) < 0 then
 			newpage()
-			vgui.SetParent3D2D(button,page)
+			button:SetParent(page)
 			return movebutton(button)
 		end
 		return w,h
@@ -349,7 +349,7 @@ function TARDIS:LoadButtons(screen,frame,func)
 	
 	local buttons=func(frame)
 	for k,v in ipairs(buttons) do
-		vgui.SetParent3D2D(v,page)
+		v:SetParent(page)
 		v:SetSize(page:GetWide()*0.318,page:GetTall()*0.295)
 		v:SetPos(movebutton(v))
 	end

@@ -33,6 +33,16 @@ concommand.Add("tardis_getlocal",function(ply,cmd,args)
 	print("Angle("..math.Round(ang.p,decimals)..","..math.Round(ang.y,decimals)..","..math.Round(ang.r,decimals)..")")
 end)
 
+-- Thanks world-portals!
+function TARDIS:IsBehind( object_pos, plane_pos, plane_forward )
+	local vec = object_pos - plane_pos
+
+	if plane_forward:Dot( vec ) < 0 then 
+		return true
+	end
+	return false
+end
+
 --[[
 local meta=FindMetaTable("Player")
 meta.OldSetEyeAngles=meta.OldSetEyeAngles or meta.SetEyeAngles
@@ -48,8 +58,8 @@ hook.Add("HUDPaint", "tardis-debug", function()
 	if IsValid(int) then
 		local portals=int.portals
 		local e=ply:EyeAngles()
-		local l=portals[2]:WorldToLocalAngles(e)
-		local n=portals[1]:LocalToWorldAngles(l)
+		local l=portals.interior:WorldToLocalAngles(e)
+		local n=portals.exterior:LocalToWorldAngles(l)
 		draw.SimpleText(tostring(e), "DermaLarge", 100, 50, Color(86, 104, 86, 255), 0, 0)
 		draw.SimpleText(tostring(l), "DermaLarge", 100, 100, Color(86, 104, 86, 255), 0, 0)
 		draw.SimpleText(tostring(n), "DermaLarge", 100, 150, Color(86, 104, 86, 255), 0, 0)

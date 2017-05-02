@@ -1,6 +1,8 @@
 -- Vortex
 
 function ENT:IsVortexEnabled(pilot)
+	local hookResult = self:CallHook("VortexEnabled", pilot)
+	if hookResult ~= nil then return hookResult end
 	return ((not pilot and SERVER) or TARDIS:GetSetting("vortex-enabled",false,pilot)) and IsValid(self:GetPart("vortex")) and (SERVER or self:GetData("vortexmodelvalid"))
 end
 
@@ -21,24 +23,34 @@ if SERVER then
 				local lev=ph:GetInertia():Length()
 				
 				local vel=0
+				local rforce=2
 				local mul=3
 				local tilt=0
 				local tiltmul=7
-				if TARDIS:IsBindDown(self.pilot,"float-forward")
-					or TARDIS:IsBindDown(self.pilot,"float-left")
-					or TARDIS:IsBindDown(self.pilot,"float-right")
-					or TARDIS:IsBindDown(self.pilot,"float-backward") then
+				if TARDIS:IsBindDown(self.pilot,"flight-forward")
+					or TARDIS:IsBindDown(self.pilot,"flight-left")
+					or TARDIS:IsBindDown(self.pilot,"flight-right")
+					or TARDIS:IsBindDown(self.pilot,"flight-backward") then
 					vel=vel+1
 					tilt=tilt+1
 				end
-				if TARDIS:IsBindDown(self.pilot,"float-boost") then
+				if TARDIS:IsBindDown(self.pilot,"flight-boost") then
 					mul=mul*2
 					tiltmul=tiltmul*2
+				end
+				if TARDIS:IsBindDown(self.pilot,"float-boost") then
+					rforce=rforce*2.5
 				end
 				if TARDIS:IsBindDown(self.pilot,"float-brake") then
 					ph:AddAngleVelocity(ph:GetAngleVelocity()*-0.05)
 				end
-				if not (self.spindir==0) then
+				if TARDIS:IsBindDown(self.pilot,"flight-rotate") then
+					if TARDIS:IsBindDown(self.pilot,"flight-left") then
+						ph:AddAngleVelocity(Vector(0,0,rforce))
+					elseif TARDIS:IsBindDown(self.pilot,"flight-right") then
+						ph:AddAngleVelocity(Vector(0,0,-rforce))
+					end
+				elseif not (self.spindir==0) then
 					local twist=Vector(0,0,vel*mul*-self.spindir)
 					ph:AddAngleVelocity(twist)
 					ph:ApplyForceOffset( up*-ang.p,cen-fwd2*lev)
@@ -85,26 +97,39 @@ else
 		networked=true
 	})
 	
-	local function dopredraw(self,part)
-		local vortexpart = (part and part.ID=="vortex")
+	ENT:AddHook("Think","vortex",function(self)
 		local alpha = self:GetData("vortexalpha",0)
-		local target = self:GetData("vortex") and 1 or 0
 		local enabled = self:IsVortexEnabled()
+		local target = self:GetData("vortex") and 1 or 0
 		if TARDIS:GetExteriorEnt()==self and enabled then
 			if alpha ~= target then
 				if alpha==0 and target==1 then
 					self:SetData("lockedang",Angle(0,self:LocalToWorldAngles(self:GetPart("vortex").ang).y,0))
 				end
-				alpha = math.Approach(alpha,self:GetData("vortex") and 1 or 0,FrameTime()*0.1)
+				alpha = math.Approach(alpha,self:GetData("vortex") and 1 or 0,FrameTime()*0.5)
 				self:SetData("vortexalpha",alpha)
-			end
-			if (not (target == 0 and alpha == 0)) or vortexpart then
-				render.SetBlend(alpha)
 			end
 		else
 			if alpha~=target then
-				self:SetData("vortexalpha",target)
+				alpha = target
+				self:SetData("vortexalpha",alpha)
 			end
+		end
+	end)
+	
+	local function dopredraw(self,part)
+		local vortexpart = (part and part.ID=="vortex")
+		local target = self:GetData("vortex") and 1 or 0
+		local alpha = self:GetData("vortexalpha",0)
+		local enabled = self:IsVortexEnabled()
+		if TARDIS:GetExteriorEnt()==self and enabled then
+			if (not (target == 0 and alpha == 0)) or vortexpart then
+				render.SetBlend(alpha)
+				if alpha>0 and (LocalPlayer():GetTardisData("outside") or (self.interior and wp.drawingent==self.interior.portals.interior)) then
+					cam.IgnoreZ(true)
+				end
+			end
+		else
 			if vortexpart or self:GetData("vortex") then
 				render.SetBlend(0)
 			end
@@ -113,11 +138,16 @@ else
 	
 	local function dodraw(self,part)
 		render.SetBlend(1)
+		if self:GetData("vortexalpha",0) then
+			cam.IgnoreZ(false)
+		end
 	end
 	ENT:AddHook("PreDraw","vortex",dopredraw)
 	ENT:AddHook("PreDrawPart","vortex",dopredraw)
 	ENT:AddHook("Draw","vortex",dodraw)
 	ENT:AddHook("DrawPart","vortex",dodraw)
+	ENT:AddHook("PreDrawPortal","vortex",dopredraw)
+	ENT:AddHook("PostDrawPortal","vortex",dodraw)
 	
 	ENT:AddHook("ShouldNotRenderPortal","vortex",function(self,parent)
 		if self:GetData("vortex") and (TARDIS:GetExteriorEnt()~=self or (not self:IsVortexEnabled())) then

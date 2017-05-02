@@ -118,19 +118,25 @@ if SERVER then
 		end
 	end)
 	
-	local meta=FindMetaTable("Entity")
-	meta.OldSetSkin=meta.OldSetSkin or meta.SetSkin
-	function meta.SetSkin(...)
-		meta.OldSetSkin(...)
-		hook.Call("SkinChanged", self, ...)
-	end
+	ENT:AddHook("SkinChanged","doors",function(self,i)
+		local door=TARDIS:GetPart(self,"door")
+		local intdoor=TARDIS:GetPart(self.interior,"door")
+		if IsValid(door) then
+			door:SetSkin(i)
+		end
+		if IsValid(intdoor) then
+			intdoor:SetSkin(i)
+		end
+	end)
 	
-	hook.Add("SkinChanged", "tardis-door", function(ent,i)
-		if ent.TardisExterior then
-			local door=ent.Door
-			if IsValid(door) then
-				door:SetSkin(i)
-			end
+	ENT:AddHook("BodygroupChanged","doors",function(self,bodygroup,value)
+		local door=TARDIS:GetPart(self,"door")
+		local intdoor=TARDIS:GetPart(self.interior,"door")
+		if IsValid(door) then
+			door:SetBodygroup(bodygroup,value)
+		end
+		if IsValid(intdoor) then
+			intdoor:SetBodygroup(bodygroup,value)
 		end
 	end)
 else

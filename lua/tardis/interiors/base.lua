@@ -19,7 +19,8 @@ T.Interior={
 	},
 	Sounds={
 		Teleport={} -- uses exterior sounds if not specified
-	}
+	},
+	ScreenDistance=500
 }
 T.Exterior={
 	Model="models/drmatt/tardis/exterior/exterior.mdl",
@@ -58,6 +59,27 @@ T.Exterior={
 			pos=Vector(0,0,50),
 			ang=Angle(0,0,0),
 			scale=10
+		}
+	},
+	Teleport={
+		SequenceSpeed=0.85,
+		DematSequence={
+			150,
+			200,
+			100,
+			150,
+			50,
+			100,
+			0
+		},
+		MatSequence={
+			100,
+			50,
+			150,
+			100,
+			200,
+			150,
+			255
 		}
 	}
 }

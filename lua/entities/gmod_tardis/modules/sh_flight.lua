@@ -176,7 +176,6 @@ if SERVER then
 	end)
 	
 	ENT:AddHook("PhysicsUpdate", "flight", function(self,ph)
-		local pos=self:GetPos()
 		if self:GetData("flight") then
 			local phm=FrameTime()*66
 			
@@ -299,7 +298,7 @@ else
 						e=ply
 					end
 				end
-				if ply:GetTardisData("exterior")==self and e==self.thpprop and ply:GetTardisData("thirdperson") then
+				if ply:GetTardisData("exterior")==self and e==self.thpprop and ply:GetTardisData("outside") then
 					self.flightsound:ChangePitch(95+p,0.1)
 				else
 					local pos = e:GetPos()

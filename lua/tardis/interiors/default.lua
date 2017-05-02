@@ -92,7 +92,27 @@ T.Interior={
 			model="models/drmatt/tardis/2012interior/console.mdl"
 		},
 		door=true
+	},
+	/*
+	CustomPortals={
+		test={
+			entry={
+				pos=Vector(-1,-153.5,136),
+				ang=Angle(0,90,0),
+				width=60,
+				height=91,
+				fallback=Vector(-1,-153.5,136)
+			},
+			exit={
+				pos=Vector(-1,153.5,136),
+				ang=Angle(0,0,0),
+				width=60,
+				height=91,
+				fallback=Vector(-1,153.5,136)
+			}
+		}
 	}
+	*/
 }
 T.Exterior={
 	Parts={
