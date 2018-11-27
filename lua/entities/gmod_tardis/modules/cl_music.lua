@@ -32,7 +32,7 @@ local patterns={
 	"youtu.be/([_A-Za-z0-9-]+)",
 	"youtube.com/watch%?v=([_A-Za-z0-9-]+)",
 }
-local api="https://abyss.mattjeanes.com:8090/"
+local api="https://youtubedl.mattjeanes.com/"
 function ENT:ResolveMusicURL(url)
 	if url:find("youtu.be") or url:find("youtube.com") then
 		local id=string.match(url,patterns[1]) or string.match(url,patterns[2])
