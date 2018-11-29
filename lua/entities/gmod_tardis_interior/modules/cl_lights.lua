@@ -17,6 +17,8 @@ end)
 ]]--
 
 function ENT:DrawLight(id,light)
+	if self:GetData("lights-disabled",false) then return end
+	if not self:GetData("power-state") then return end
 	local dlight = DynamicLight(id)
 	if ( dlight ) then
 		local size=1024
