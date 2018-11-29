@@ -24,7 +24,7 @@ else
             local sound_on = self.metadata.Interior.Sounds.Power.On
             local sound_off = self.metadata.Interior.Sounds.Power.Off
             if LocalPlayer():GetTardisData("exterior") == self.exterior then
-                self:EmitSound(state and sound_off or sound_on)
+                self:EmitSound(state and sound_on or sound_off)
             end
             if self.idlesounds then
                 if state == false then
