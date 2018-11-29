@@ -125,13 +125,21 @@ if SERVER then
                 ply:ChatPrint("Failed to set destination, may be transitioning")
             end
         else
-            self:Demat(pos, ang, function(success)
-                if success then
-                    ply:ChatPrint("Destination locked, dematerialising..")            
+            if TARDIS:GetSetting("dest-onsetdemat",false,ply) then
+                self:Demat(pos,ang,function(success)
+                    if success then
+                        ply:ChatPrint("Destination locked, dematerialising...")
+                    else
+                        ply:ChatPrint("Failed to dematerialise")
+                    end
+                end)
+            else
+                if self:SetDestination(pos,ang) then
+                    ply:ChatPrint("Destination locked, ready to dematerialise")
                 else
-                    ply:ChatPrint("Failed to dematerialise")
+                    ply:ChatPrint("Failed to set destination.")
                 end
-            end)
+            end
         end
         self:SelectDestination(ply, false)
     end)
@@ -193,6 +201,15 @@ else
             prop:Remove()
         end
     end
+    TARDIS:AddSetting({
+        id="dest-onsetdemat",
+        name="Demat on Set",
+        section="Destination",
+        value=false,
+        type="bool",
+        option=true,
+        networked=true
+    })
     ENT:AddHook("Outside-StartCommand", "destination", function(self, ply, cmd)
 		if LocalPlayer():GetTardisData("destination") and cmd:GetMouseWheel()~=0 then
 			ply:SetTardisData("destinationdist",math.Clamp(ply:GetTardisData("destinationdist",defaultdist)-cmd:GetMouseWheel()*0.03*(1.1+ply:GetTardisData("destinationdist",defaultdist)),90,500))

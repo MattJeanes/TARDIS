@@ -49,8 +49,8 @@ if SERVER then
 				if state then
 					if callback then callback(false) end
 				else
-					pos=pos or self:GetPos()
-					ang=ang or self:GetAngles()
+					pos=pos or self:GetData("demat-pos") or self:GetPos()
+					ang=ang or self:GetData("demat-ang") or self:GetAngles()
 					self:SetBodygroup(1,0)
 					self:SendMessage("demat")
 					self:SetData("demat",true)
@@ -211,12 +211,9 @@ if SERVER then
 		self:SetData("demat-attached")
 	end
 	function ENT:SetDestination(pos, ang)
-		if self:GetData("vortex") then
-			self:SetData("demat-pos",pos)
-			self:SetData("demat-ang",ang)
-			return true
-		end
-		return false
+		self:SetData("demat-pos",pos)
+		self:SetData("demat-ang",ang)
+		return true
 	end
 	
 	ENT:AddHook("CanDemat", "teleport", function(self)
