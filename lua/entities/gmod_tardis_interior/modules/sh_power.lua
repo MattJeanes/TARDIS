@@ -19,7 +19,6 @@ if SERVER then
 else
     ENT:OnMessage("power-toggled", function(self)
         local state = self:GetData("power-state") or false
-        print("power toggled, new state "..tostring(state))
         if TARDIS:GetSetting("sound") then
             local sound_on = self.metadata.Interior.Sounds.Power.On
             local sound_off = self.metadata.Interior.Sounds.Power.Off
@@ -28,12 +27,10 @@ else
             end
             if self.idlesounds then
                 if state == false then
-                    print("turning off sounds")
                     for k,v in pairs(self.idlesounds) do
                         v:Stop()
                     end
                 else
-                    print("turning on sounds")
                     for k,v in pairs(self.idlesounds) do
                         v:Play()
                     end
