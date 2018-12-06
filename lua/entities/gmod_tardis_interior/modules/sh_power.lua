@@ -9,17 +9,6 @@ if SERVER then
         self:SetData("power-state",on,true)
         self:SendMessage("power-toggled")
     end
-    --[[function ENT:DisablePower()
-        if self:GetData("power-state")==false then return end
-        self:SetData("power-state", false,true) 
-        self:SendMessage("power-toggled")
-    end
-
-    function ENT:EnablePower()
-        if self:GetData("power-state")==true then return end
-        self:SetData("power-state", true,true) 
-        self:SendMessage("power-toggled")
-    end]]
 else
     ENT:OnMessage("power-toggled", function(self)
         local state = self:GetData("power-state") or false
