@@ -203,8 +203,9 @@ else
     end
     TARDIS:AddSetting({
         id="dest-onsetdemat",
-        name="Demat on Set",
-        section="Destination",
+        name="Destination - Demat on Set",
+        desc="Should the TARDIS dematerialise immediately after destination is set?",
+        section="Misc",
         value=false,
         type="bool",
         option=true,
