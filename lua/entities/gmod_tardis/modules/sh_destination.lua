@@ -68,7 +68,7 @@ TARDIS:AddKeyBind("destination-rotate",{
 	exterior=true
 })
 TARDIS:AddKeyBind("destination-demat",{
-	name="Demat",
+	name="Set",
 	section="Destination",
 	func=function(self,down,ply)
 		if TARDIS:HUDScreenOpen(ply) then return end
@@ -85,6 +85,24 @@ TARDIS:AddKeyBind("destination-demat",{
 	key=MOUSE_LEFT,
     clientonly=true,
 	exterior=true	
+})
+TARDIS:AddKeyBind("destination-snaptofloor",{
+    name="Snap To Floor",
+    section="Destination",
+    desc="Press this key to snap to the nearest floor (won't work if you're inside it)",
+    func=function(self,down,ply)
+        if TARDIS:HUDScreenOpen(ply) then return end
+        if ply:GetTardisData("destination") then
+            local prop = self:GetData("destinationprop")
+            if IsValid(prop) then
+                local pos = util.QuickTrace(prop:GetPos(), Vector(0,0,-1)*99999999).HitPos
+                prop:SetPos(pos)
+            end
+        end
+    end,
+    key=KEY_R,
+    clientonly=true,
+    exterior=true
 })
 
 if SERVER then
