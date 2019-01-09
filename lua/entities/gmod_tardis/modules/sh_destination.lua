@@ -89,13 +89,13 @@ TARDIS:AddKeyBind("destination-demat",{
 TARDIS:AddKeyBind("destination-snaptofloor",{
     name="Snap To Floor",
     section="Destination",
-    desc="Press this key to snap to the nearest floor (won't work if you're inside it)",
+    desc="Press this key to snap to the nearest floor",
     func=function(self,down,ply)
         if TARDIS:HUDScreenOpen(ply) then return end
         if ply:GetTardisData("destination") then
             local prop = self:GetData("destinationprop")
             if IsValid(prop) then
-                local pos = util.QuickTrace(prop:GetPos(), Vector(0,0,-1)*99999999).HitPos
+                local pos = util.QuickTrace(prop:GetPos()+Vector(0,0,50), Vector(0,0,-1)*99999999).HitPos
                 prop:SetPos(pos)
             end
         end
