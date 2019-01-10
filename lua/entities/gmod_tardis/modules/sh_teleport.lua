@@ -54,8 +54,8 @@ if SERVER then
 					self:SetBodygroup(1,0)
 					self:SendMessage("demat")
 					self:SetData("demat",true)
-					self:SetData("demat-pos",pos)
-					self:SetData("demat-ang",ang)
+					self:SetData("demat-pos",pos,true)
+					self:SetData("demat-ang",ang,true)
 					self:SetData("step",1)
 					self:SetData("teleport",true)
 					self:SetCollisionGroup( COLLISION_GROUP_WORLD )
@@ -148,8 +148,8 @@ if SERVER then
 								end
 							end
 						end
-						self:SetData("demat-pos",nil)
-						self:SetData("demat-ang",nil)
+						self:SetData("demat-pos",nil,true)
+						self:SetData("demat-ang",nil,true)
 					end)
 					if callback then callback(true) end
 				end
@@ -211,8 +211,8 @@ if SERVER then
 		self:SetData("demat-attached")
 	end
 	function ENT:SetDestination(pos, ang)
-		self:SetData("demat-pos",pos)
-		self:SetData("demat-ang",ang)
+		self:SetData("demat-pos",pos,true)
+		self:SetData("demat-ang",ang,true)
 		return true
 	end
 	
