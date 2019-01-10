@@ -77,7 +77,7 @@ TARDIS:AddScreen("Destination", {menu=false}, function(self,ext,int,frame,screen
 	list:SetPos( frame:GetWide()*0.26 - list:GetWide()*0.35, frame:GetTall()*0.5 - list:GetTall()*0.5)
 	list:AddColumn("Name")
 	local map = game.GetMap()
-	if TARDIS.Locations then
+	if TARDIS.Locations[map] ~= nil then
 		for k,v in pairs(TARDIS.Locations[map]) do
 			list:AddLine(v.name)
 			print(v.name)
