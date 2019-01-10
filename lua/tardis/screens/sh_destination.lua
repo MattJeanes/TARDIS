@@ -20,16 +20,29 @@ end
 if SERVER then return end
 
 TARDIS:AddScreen("Destination", {menu=false}, function(self,ext,int,frame,screen)
---[[	local label = vgui.Create("DLabel",frame)
-	label:SetTextColor(Color(0,0,0))
-	label:SetFont("TARDIS-Med")
-	label.DoLayout = function(self)
-		label:SizeToContents()
-		label:SetPos((frame:GetWide()*0.5)-(label:GetWide()*0.5),(frame:GetTall()*0.3)-(label:GetTall()*0.5))
+	
+	if screen.is3D2D then
+		local label = vgui.Create("DLabel",frame)
+		label:SetTextColor(Color(0,0,0))
+		label:SetFont("TARDIS-Med")
+		label.DoLayout = function(self)
+			label:SizeToContents()
+			label:SetPos((frame:GetWide()*0.5)-(label:GetWide()*0.5),(frame:GetTall()*0.3)-(label:GetTall()*0.5))
+		end
+		label:SetText("Pop screen for full functionality")
+		label:DoLayout()
+
+		local button=vgui.Create("DButton",frame)
+		button:SetSize( frame:GetWide()*0.2, frame:GetTall()*0.1 )
+		button:SetPos(frame:GetWide()*0.5 - button:GetWide()*0.5,frame:GetTall()*0.5 - button:GetTall()*0.5)
+		button:SetText("Select Manually")
+		button:SetFont("TARDIS-Default")
+		button.DoClick = function()
+			TARDIS:Control("destination")
+			if TARDIS:HUDScreenOpen(ply) then TARDIS:RemoveHUDScreen() end
+		end
+		return
 	end
-	label:SetText("Press to select destination")
-	label:DoLayout()
-]]	
 	local button=vgui.Create("DButton",frame)
 	button:SetSize( frame:GetWide()*0.2, frame:GetTall()*0.1 )
 	button:SetPos(frame:GetWide()*0.86 - button:GetWide()*0.5,frame:GetTall()*0.08 - button:GetTall()*0.5)
@@ -94,27 +107,74 @@ TARDIS:AddScreen("Destination", {menu=false}, function(self,ext,int,frame,screen
 	if ext:GetData("demat-pos") and ext:GetData("demat-ang") then
 		updatetextinputs(ext:GetData("demat-pos"), ext:GetData("demat-ang"))
 	end
+
+
+
 	local list = vgui.Create("DListView",frame)
 	list:SetSize( frame:GetWide()*0.7, frame:GetTall()*0.95 )
 	list:SetPos( frame:GetWide()*0.26 - list:GetWide()*0.35, frame:GetTall()*0.5 - list:GetTall()*0.5)
 	list:AddColumn("Name")
 	local map = game.GetMap()
-	if TARDIS.Locations[map] ~= nil then
-		for k,v in pairs(TARDIS.Locations[map]) do
-			list:AddLine(v.name)
-			print(v.name)
+	local function updatelist()
+		list:Clear()
+		if TARDIS.Locations[map] ~= nil then
+			for k,v in pairs(TARDIS.Locations[map]) do
+				list:AddLine(v.name)
+				print(v.name)
+			end
 		end
 	end
+	updatelist()
 	function list:OnRowSelected(i,row)
 		pos = TARDIS.Locations[map][i].pos
 		ang = TARDIS.Locations[map][i].ang
 		updatetextinputs(pos,ang)
 	end
 
+	local new = vgui.Create("DButton", frame)
+	new:SetSize( frame:GetWide()*0.07, frame:GetTall()*0.1 )
+	new:SetPos(pitch:GetPos()+5,frame:GetTall()*0.35 - button:GetTall()*0.5)
+	new:SetText("New")
+	new:SetFont("TARDIS-Default")
+	function new:DoClick()
+		local name = ""
+		local pos = Vector(0,0,0)
+		local ang = Angle(0,0,0)
+		Derma_StringRequest("New Location",
+		"Enter the name for the new location",
+		"New Location", 
+		function(text)
+			 name = text
+			 Derma_Query("Use current TARDIS position and rotation?","New Location","Yes",
+				function() pos = ext:GetPos() ang = ext:GetAngles() TARDIS:AddLocation(pos,ang,name,map) updatelist() end,
+			"No", function() TARDIS:AddLocation(pos,ang,name,map) updatelist() end)
+		end)
+	end
+	local edit = vgui.Create("DButton", frame)
+	edit:SetSize( frame:GetWide()*0.07, frame:GetTall()*0.1 )
+	edit:SetPos(yaw:GetPos()+5,frame:GetTall()*0.35 - button:GetTall()*0.5)
+	edit:SetText("Edit")
+	edit:SetFont("TARDIS-Default")
+	function edit:DoClick()
+		Derma_Message("TODO", "sorry mate", "k")
+	end
+
+	local remove = vgui.Create("DButton", frame)
+	remove:SetSize( frame:GetWide()*0.07, frame:GetTall()*0.1 )
+	remove:SetPos(roll:GetPos()+5,frame:GetTall()*0.35 - button:GetTall()*0.5)
+	remove:SetText("Delete")
+	remove:SetFont("TARDIS-Default")
+	function remove:DoClick()
+		local index = list:GetSelectedLine()
+		Derma_Query("This will remove the selected location PERMANENTLY! Are you sure?","Remove Location","Yes",
+		function() TARDIS:RemoveLocation(map,index) updatelist() end,
+		"No")
+	end
+	
 	local confirm = vgui.Create("DButton",frame)
 	confirm:SetSize( frame:GetWide()*0.1, frame:GetTall()*0.1 )
 	confirm:SetPos(yaw:GetPos()-15,frame:GetTall()*0.9 - button:GetTall()*0.5)
-	confirm:SetText("Confirm")
+	confirm:SetText("Set")
 	confirm:SetFont("TARDIS-Default")
 	function confirm:DoClick()
 		local pos,ang = fetchtextinputs()
