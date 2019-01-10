@@ -94,6 +94,18 @@ if SERVER then
 			end
 		end
 	end)
+
+	ENT:AddHook("ToggleDoor", "extcollision",function(self,open)
+		local door = TARDIS:GetPart(self,"door")
+		if IsValid(door) then
+			local override = self:CallHook("DoorCollisionOverride")
+			if (override == nil and open) or override==false then
+				door:SetSolid(SOLID_NONE)
+			elseif override or override==nil then
+				door:SetSolid(SOLID_VPHYSICS)
+			end
+		end
+	end)
 	
 	ENT:AddHook("ToggleDoorReal", "doors", function(self,open)
 		self:SendMessage("ToggleDoorReal",function()

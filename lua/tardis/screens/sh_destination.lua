@@ -61,6 +61,13 @@ TARDIS:AddScreen("Destination", {menu=false}, function(self,ext,int,frame,screen
 	roll:SetPlaceholderText("Roll")
 	roll:SetPos(btnx*1.19,btny*7)
 
+	x:SetNumeric(true)
+	y:SetNumeric(true)
+	z:SetNumeric(true)
+	pitch:SetNumeric(true)
+	yaw:SetNumeric(true)
+	roll:SetNumeric(true)
+
 	local function updatetextinputs(pos,ang)
 		pitch:SetText(ang.p)
 		yaw:SetText(ang.y)
@@ -68,6 +75,21 @@ TARDIS:AddScreen("Destination", {menu=false}, function(self,ext,int,frame,screen
 		x:SetText(pos.x)
 		y:SetText(pos.y)
 		z:SetText(pos.z)
+	end
+	local function fetchtextinputs()
+		local pos = 0
+		local ang = 0
+		if x:GetText() ~= "" and y:GetText() ~= "" and z:GetText() ~= "" then
+			pos = Vector(x:GetText() or 0, y:GetText()or 0, z:GetText() or 0)
+		end
+		if pitch:GetText() ~= "" and yaw:GetText() ~= "" and roll:GetText() ~= "" then
+			ang = Angle(pitch:GetText() or 0, yaw:GetText() or 0, roll:GetText() or 0)
+		end
+		if pos ~= 0 and ang ~= 0 then
+			return pos,ang
+		else
+			return false,false
+		end
 	end
 	if ext:GetData("demat-pos") and ext:GetData("demat-ang") then
 		updatetextinputs(ext:GetData("demat-pos"), ext:GetData("demat-ang"))
@@ -95,14 +117,16 @@ TARDIS:AddScreen("Destination", {menu=false}, function(self,ext,int,frame,screen
 	confirm:SetText("Confirm")
 	confirm:SetFont("TARDIS-Default")
 	function confirm:DoClick()
-		local i = list:GetSelectedLine()
-		pos = TARDIS.Locations[map][i].pos
-		ang = TARDIS.Locations[map][i].ang
-		net.Start("TARDIS-ListDest")
-			net.WriteVector(pos)
-			net.WriteAngle(ang)
-			net.WriteEntity(ext)
-		net.SendToServer()
-		LocalPlayer():ChatPrint("Destination locked")
+		local pos,ang = fetchtextinputs()
+		if pos ~= false then
+			net.Start("TARDIS-ListDest")
+				net.WriteVector(pos)
+				net.WriteAngle(ang)
+				net.WriteEntity(ext)
+			net.SendToServer()
+			LocalPlayer():ChatPrint("Destination locked")
+		else
+			LocalPlayer():ChatPrint("No destination set")
+		end
 	end
 end)
