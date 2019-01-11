@@ -56,6 +56,8 @@ if SERVER then
 					self:SetData("demat",true)
 					self:SetData("demat-pos",pos,true)
 					self:SetData("demat-ang",ang,true)
+					self:SetData("fastreturn-pos",self:GetPos())
+					self:SetData("fastreturn-ang",self:GetAngles())
 					self:SetData("step",1)
 					self:SetData("teleport",true)
 					self:SetCollisionGroup( COLLISION_GROUP_WORLD )
@@ -156,6 +158,20 @@ if SERVER then
 			end)
 		end
 	end
+	function ENT:Fastreturn(callback)
+		if self:CallHook("CanDemat") and self:GetData("fastreturn-pos") then
+			self:SetData("demat-fast",true)
+			self:SetData("fastreturn",true)
+			self:Demat(self:GetData("fastreturn-pos"),self:GetData("fastreturn-ang"))
+			if callback then callback(true) end
+		else
+			if callback then callback(false) end
+		end
+	end
+	function ENT:ToggleFastRemat()
+		local on = not self:GetData("demat-fast",false)
+        self:SetData("demat-fast",on)
+	end
 	function ENT:StopDemat()
 		self:SetData("demat",false)
 		self:SetData("step",1)
@@ -184,6 +200,11 @@ if SERVER then
 				end
 			end
 		end
+		if self:GetData("demat-fast",false) then
+			timer.Simple(2,function()
+				self:Mat()
+			end)
+		end
 	end
 	function ENT:StopMat()
 		self:SetBodygroup(1,1)
@@ -209,6 +230,10 @@ if SERVER then
 			end
 		end
 		self:SetData("demat-attached")
+		if self:GetData("fastreturn",false) then
+			self:SetData("demat-fast",false)
+			self:SetData("fastreturn",false)
+		end
 	end
 	function ENT:SetDestination(pos, ang)
 		self:SetData("demat-pos",pos,true)
