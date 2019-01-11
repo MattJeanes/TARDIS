@@ -112,7 +112,7 @@ TARDIS:AddScreen("Destination", {menu=false}, function(self,ext,int,frame,screen
 
 	local list = vgui.Create("DListView",frame)
 	list:SetSize( frame:GetWide()*0.7, frame:GetTall()*0.95 )
-	list:SetPos( frame:GetWide()*0.26 - list:GetWide()*0.35, frame:GetTall()*0.5 - list:GetTall()*0.5)
+	list:SetPos( frame:GetWide()*0.26 - list:GetWide()*0.35, frame:GetTall()*0.5 - list:GetTall()*0.5 )
 	list:AddColumn("Name")
 	local map = game.GetMap()
 	local function updatelist()
@@ -149,6 +149,7 @@ TARDIS:AddScreen("Destination", {menu=false}, function(self,ext,int,frame,screen
 			"No", function() TARDIS:AddLocation(pos,ang,name,map) updatelist() end)
 		end)
 	end
+	local pendingchanges = false
 	local edit = vgui.Create("DButton", frame)
 	edit:SetSize( frame:GetWide()*0.07, frame:GetTall()*0.1 )
 	edit:SetPos(yaw:GetPos()+5,frame:GetTall()*0.35 - button:GetTall()*0.5)
@@ -165,11 +166,40 @@ TARDIS:AddScreen("Destination", {menu=false}, function(self,ext,int,frame,screen
 	remove:SetFont("TARDIS-Default")
 	function remove:DoClick()
 		local index = list:GetSelectedLine()
+		if not index then return end
 		Derma_Query("This will remove the selected location PERMANENTLY! Are you sure?","Remove Location","Yes",
-		function() TARDIS:RemoveLocation(map,index) updatelist() end,
+		function() TARDIS:RemoveLocation(map,index) updatelist() pendingchanges = true end,
 		"No")
 	end
-	
+	local save = vgui.Create("DButton", frame)
+	save:SetSize( frame:GetWide()*0.07, frame:GetTall()*0.1 )
+	save:SetPos(frame:GetWide()*0.82 - save:GetWide()*0.5, frame:GetTall()*0.5 - save:GetTall()*0.5)
+	save:SetText("Save")
+	save:SetFont("TARDIS-Default")
+	function save:DoClick()
+		TARDIS:SaveLocations()
+		pendingchanges = false
+		LocalPlayer():ChatPrint("Locations Saved")
+	end
+	function save:Think()
+		if pendingchanges then
+			self:SetText("Save*")
+		else
+			self:SetText("Save")
+		end
+	end
+	local load = vgui.Create("DButton", frame)
+	load:SetSize( frame:GetWide()*0.07, frame:GetTall()*0.1 )
+	load:SetPos(frame:GetWide()*0.9 - load:GetWide()*0.5, frame:GetTall()*0.5 - load:GetTall()*0.5)
+	load:SetText("Load")
+	load:SetFont("TARDIS-Default")
+	function load:DoClick()
+		TARDIS:LoadLocations()
+		updatelist()
+		pendingchanges = false
+		LocalPlayer():ChatPrint("Locations Loaded")
+	end
+
 	local confirm = vgui.Create("DButton",frame)
 	confirm:SetSize( frame:GetWide()*0.1, frame:GetTall()*0.1 )
 	confirm:SetPos(yaw:GetPos()-15,frame:GetTall()*0.9 - button:GetTall()*0.5)
