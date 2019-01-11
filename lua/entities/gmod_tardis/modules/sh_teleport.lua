@@ -10,6 +10,10 @@ TARDIS:AddKeyBind("teleport-demat",{
 		if SERVER then
 			if ply==pilot and (not down) then
 				if not self:GetData("vortex") then
+					if self:GetData("demat-pos") then
+						self:Demat()
+						return
+					end
 					local pos,ang=self:GetThirdPersonTrace(ply,ply:GetTardisData("viewang"))
 					self:Demat(pos,ang)
 				end
@@ -170,7 +174,8 @@ if SERVER then
 	end
 	function ENT:ToggleFastRemat()
 		local on = not self:GetData("demat-fast",false)
-        self:SetData("demat-fast",on)
+		self:SetData("demat-fast",on)
+		return on
 	end
 	function ENT:StopDemat()
 		self:SetData("demat",false)
