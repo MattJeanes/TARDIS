@@ -120,7 +120,6 @@ TARDIS:AddScreen("Destination", {menu=false}, function(self,ext,int,frame,screen
 		if TARDIS.Locations[map] ~= nil then
 			for k,v in pairs(TARDIS.Locations[map]) do
 				list:AddLine(v.name)
-				print(v.name)
 			end
 		end
 	end
