@@ -107,11 +107,23 @@ if SERVER then
 		if not on and self:CallHook("CanTurnOffFlight")==false then
 			return false
 		end
+		if on and self.interior:GetData("power-state",false)==false then
+			return false
+		end
 		self:SetData("flight",on,true)
 		self:SetFloat(on)
 		return true
 	end
 	
+	ENT:AddHook("PowerToggled", "flight", function(self,on)
+		if on and self:GetData("power-lastflight",false)==true then
+			self:SetFlight(true)
+		else
+			self:SetData("power-lastflight",self:GetData("flight",false))
+			self:SetFlight(false)
+		end
+	end)
+
 	ENT:AddHook("ShouldTurnOnRotorwash", "flight", function(self)
 		if self:GetData("flight") then
 			return true

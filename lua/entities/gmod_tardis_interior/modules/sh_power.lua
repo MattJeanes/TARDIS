@@ -6,8 +6,13 @@ end)
 if SERVER then
     function ENT:TogglePower()
         local on = not self:GetData("power-state",false)
+        self:SetPower(on)
+    end
+    function ENT:SetPower(on)
         self:SetData("power-state",on,true)
         self:SendMessage("power-toggled")
+        self:CallHook("PowerToggled",on)
+        self.exterior:CallHook("PowerToggled",on)
     end
 else
     ENT:OnMessage("power-toggled", function(self)
