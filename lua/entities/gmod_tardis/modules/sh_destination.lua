@@ -69,7 +69,7 @@ TARDIS:AddKeyBind("destination-rotate",{
 })
 TARDIS:AddKeyBind("destination-demat",{
 	name="Set",
-	section="Destination",
+	section="Teleport",
 	func=function(self,down,ply)
 		if TARDIS:HUDScreenOpen(ply) then return end
 		if ply:GetTardisData("destination") then
@@ -155,11 +155,13 @@ if SERVER then
                 if self:SetDestination(pos,ang) then
                     ply:ChatPrint("Destination locked, ready to dematerialise")
                 else
-                    ply:ChatPrint("Failed to set destination.")
+                    ply:ChatPrint("Failed to set destination")
                 end
             end
         end
-        self:SelectDestination(ply, false)
+        if ply:GetTardisData("destination") then
+            self:SelectDestination(ply, false)
+        end
     end)
 else
     local defaultdist = 210

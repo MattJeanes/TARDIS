@@ -7,16 +7,7 @@ TARDIS:AddControl("destination",{
 	exterior=true,
 	serveronly=true
 })
-if SERVER then
-	util.AddNetworkString("TARDIS-ListDest")
 
-	net.Receive("TARDIS-ListDest", function(len,ply)
-		local pos = net.ReadVector()
-		local ang = net.ReadAngle()
-		local ext = net.ReadEntity()
-		ext:SetDestination(pos,ang)
-	end)
-end
 if SERVER then return end
 
 TARDIS:AddScreen("Destination", {menu=false}, function(self,ext,int,frame,screen)
@@ -93,7 +84,7 @@ TARDIS:AddScreen("Destination", {menu=false}, function(self,ext,int,frame,screen
 		local pos = 0
 		local ang = 0
 		if x:GetText() ~= "" and y:GetText() ~= "" and z:GetText() ~= "" then
-			pos = Vector(x:GetText() or 0, y:GetText()or 0, z:GetText() or 0)
+			pos = Vector(x:GetText() or 0, y:GetText() or 0, z:GetText() or 0)
 		end
 		if pitch:GetText() ~= "" and yaw:GetText() ~= "" and roll:GetText() ~= "" then
 			ang = Angle(pitch:GetText() or 0, yaw:GetText() or 0, roll:GetText() or 0)
@@ -208,12 +199,15 @@ TARDIS:AddScreen("Destination", {menu=false}, function(self,ext,int,frame,screen
 	function confirm:DoClick()
 		local pos,ang = fetchtextinputs()
 		if pos ~= false then
-			net.Start("TARDIS-ListDest")
+			ext:SendMessage("destination-demat", function()
 				net.WriteVector(pos)
 				net.WriteAngle(ang)
-				net.WriteEntity(ext)
-			net.SendToServer()
-			LocalPlayer():ChatPrint("Destination locked")
+				if TARDIS:GetSetting("dest-onsetdemat") then
+					if TARDIS:HUDScreenOpen(ply) then
+						TARDIS:RemoveHUDScreen()
+					end
+				end
+			end)
 		else
 			LocalPlayer():ChatPrint("No destination set")
 		end
