@@ -1,5 +1,7 @@
 ENT:AddHook("CanDemat", "power-disable", function(self)
-    return self.interior:GetData("power-state") or false
+    if not self.interior:GetData("power-state",false) then
+        return false
+    end
 end)
 
 function ENT:TogglePower()

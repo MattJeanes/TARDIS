@@ -206,7 +206,7 @@ if SERVER then
 			end
 		end
 		if self:GetData("demat-fast",false) then
-			timer.Simple(2,function()
+			timer.Simple(1,function()
 				self:Mat()
 			end)
 		end
