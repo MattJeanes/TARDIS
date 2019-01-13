@@ -107,7 +107,7 @@ if SERVER then
 		if not on and self:CallHook("CanTurnOffFlight")==false then
 			return false
 		end
-		if on and self.interior:GetData("power-state",false)==false then
+		if on and self:CallHook("CanTurnOnFlight")==false then
 			return false
 		end
 		self:SetData("flight",on,true)
