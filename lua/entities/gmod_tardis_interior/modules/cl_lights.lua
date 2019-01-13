@@ -17,8 +17,7 @@ end)
 ]]--
 
 function ENT:DrawLight(id,light)
-	if self:GetData("lights-disabled",false) then return end
-	if not self:GetData("power-state") then return end
+	if self:CallHook("ShouldDrawLight",id,light)==false then return end
 	local dlight = DynamicLight(id)
 	if ( dlight ) then
 		local size=1024
@@ -33,6 +32,12 @@ function ENT:DrawLight(id,light)
 		dlight.DieTime = CurTime() + 1
 	end
 end
+
+ENT:AddHook("ShouldDrawLight", "power", function(self,id,light)
+	if not self:GetData("power-state",false) then
+		return false
+	end
+end)
 
 ENT:AddHook("Draw", "lights", function(self)
 	--render.SuppressEngineLighting(false)
