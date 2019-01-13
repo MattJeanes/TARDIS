@@ -132,12 +132,13 @@ if SERVER then
 			self:SetData("doorchangecallback",nil)
 		end
 		local door = TARDIS:GetPart(self,"door")
-		if self:CallHook("ShouldExteriorDoorCollide",self:GetData("doorstatereal",false)) then
-			door:SetSolid(SOLID_VPHYSICS)
-		else
-			door:SetSolid(SOLID_NONE)
+		if IsValid(door) then
+			if self:CallHook("ShouldExteriorDoorCollide",self:GetData("doorstatereal",false)) then
+				door:SetSolid(SOLID_VPHYSICS)
+			else
+				door:SetSolid(SOLID_NONE)
+			end
 		end
-			
 	end)
 	
 	ENT:AddHook("ShouldThinkFast","doors",function(self)
