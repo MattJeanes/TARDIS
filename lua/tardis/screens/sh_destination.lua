@@ -134,10 +134,22 @@ TARDIS:AddScreen("Destination", {menu=false}, function(self,ext,int,frame,screen
 		"Enter the name for the new location",
 		"New Location", 
 		function(text)
-			 name = text
-			 Derma_Query("Use current TARDIS position and rotation?","New Location","Yes",
-				function() pos = ext:GetPos() ang = ext:GetAngles() TARDIS:AddLocation(pos,ang,name,map) updatelist() end,
-			"No", function() TARDIS:AddLocation(pos,ang,name,map) updatelist() end)
+			name = text
+			Derma_Query(
+				"Use current TARDIS position and rotation?",
+				"New Location",
+				"Yes",
+				function() 
+						pos = ext:GetPos() 
+						ang = ext:GetAngles() 
+						TARDIS:AddLocation(pos,ang,name,map) 
+						updatelist() 
+				end,
+				"No", 
+				function() 
+					TARDIS:AddLocation(pos,ang,name,map)
+					updatelist() 
+				end)
 		end)
 	end
 	local pendingchanges = false
@@ -147,7 +159,7 @@ TARDIS:AddScreen("Destination", {menu=false}, function(self,ext,int,frame,screen
 	edit:SetText("Edit")
 	edit:SetFont("TARDIS-Default")
 	function edit:DoClick()
-		Derma_Message("TODO", "sorry mate", "k")
+		
 	end
 
 	local remove = vgui.Create("DButton", frame)
