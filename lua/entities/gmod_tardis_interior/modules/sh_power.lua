@@ -3,6 +3,13 @@
 ENT:AddHook("Initialize","power-init", function(self)
     self:SetData("power-state",true,true)
 end)
+
+ENT:AddHook("ShouldDrawLight", "power", function(self,id,light)
+	if not self:GetData("power-state",false) then
+		return false
+	end
+end)
+
 if SERVER then
     function ENT:TogglePower()
         local on = not self:GetData("power-state",false)

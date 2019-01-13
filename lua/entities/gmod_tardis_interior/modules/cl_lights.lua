@@ -33,12 +33,6 @@ function ENT:DrawLight(id,light)
 	end
 end
 
-ENT:AddHook("ShouldDrawLight", "power", function(self,id,light)
-	if not self:GetData("power-state",false) then
-		return false
-	end
-end)
-
 ENT:AddHook("Draw", "lights", function(self)
 	--render.SuppressEngineLighting(false)
 	local light=self.metadata.Interior.Light
