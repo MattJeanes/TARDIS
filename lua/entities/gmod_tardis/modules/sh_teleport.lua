@@ -162,7 +162,7 @@ if SERVER then
 			end)
 		end
 	end
-	function ENT:Fastreturn(callback)
+	function ENT:FastReturn(callback)
 		if self:CallHook("CanDemat") and self:GetData("fastreturn-pos") then
 			self:SetData("demat-fast",true)
 			self:SetData("fastreturn",true)
