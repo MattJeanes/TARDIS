@@ -106,7 +106,16 @@ if SERVER then
 			end
 		end
 	end)
-	
+
+	ENT:AddHook("ShouldExteriorDoorCollide", "dooropen", function(self,open)
+		local override = self:CallHook("DoorCollisionOverride")
+		if (override == nil and open) or override==false then
+			return false
+		elseif override or override==nil then
+			return true
+		end
+	end)
+
 	ENT:AddHook("ToggleDoorReal", "doors", function(self,open)
 		self:SendMessage("ToggleDoorReal",function()
 			net.WriteBool(open)
@@ -122,6 +131,13 @@ if SERVER then
 			runcallbacks(callbacks,false)
 			self:SetData("doorchangecallback",nil)
 		end
+		local door = TARDIS:GetPart(self,"door")
+		if self:CallHook("ShouldExteriorDoorCollide",self:GetData("doorstatereal",false)) then
+			door:SetSolid(SOLID_VPHYSICS)
+		else
+			door:SetSolid(SOLID_NONE)
+		end
+			
 	end)
 	
 	ENT:AddHook("ShouldThinkFast","doors",function(self)
