@@ -164,7 +164,7 @@ if SERVER then
 	end
 	function ENT:FastReturn(callback)
 		if self:CallHook("CanDemat")~=false and self:GetData("fastreturn-pos") then
-			self:SetData("demat-fast",true)
+			self:SetFastRemat(true)
 			self:SetData("fastreturn",true)
 			self:Demat(self:GetData("fastreturn-pos"),self:GetData("fastreturn-ang"))
 			if callback then callback(true) end
@@ -174,8 +174,11 @@ if SERVER then
 	end
 	function ENT:ToggleFastRemat()
 		local on = not self:GetData("demat-fast",false)
-		self:SetData("demat-fast",on)
-		return on
+		return self:SetFastRemat(on)
+	end
+	function ENT:SetFastRemat(on)
+		self:SetData("demat-fast",on,true)
+		return true
 	end
 	function ENT:StopDemat()
 		self:SetData("demat",false)
@@ -236,7 +239,7 @@ if SERVER then
 		end
 		self:SetData("demat-attached")
 		if self:GetData("fastreturn",false) then
-			self:SetData("demat-fast",false)
+			self:SetFastRemat(false)
 			self:SetData("fastreturn",false)
 		end
 	end
