@@ -36,6 +36,16 @@ function TARDIS:AddLocation(pos,ang,name,map)
     TARDIS:SaveLocations()
 end
 
+function TARDIS:UpdateLocation(pos,ang,name,map,index)
+    if TARDIS.Locations and TARDIS.Locations[map] then
+        TARDIS.Locations[map][index] = {
+            ["name"] = name,
+            ["pos"] = pos,
+            ["ang"] = ang
+        }
+    end
+end
+
 function TARDIS:RemoveLocation(map,index)
     table.remove(TARDIS.Locations[map],index)
 end
