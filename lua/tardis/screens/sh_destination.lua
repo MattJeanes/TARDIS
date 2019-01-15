@@ -261,17 +261,15 @@ TARDIS:AddScreen("Destination", {menu=false}, function(self,ext,int,frame,screen
 			TARDIS:SaveLocations() 
 			pendingchanges = false
 			TARDIS:RemoveHUDScreen()
-			return true
 		end,
 		"No",
 		function() 
 			pendingchanges = false
 			TARDIS:RemoveHUDScreen()
-			return true
 		end,
 		"Cancel",
 		function() 
-			return false
+
 		end
 		)
 	end
