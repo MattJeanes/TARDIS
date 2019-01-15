@@ -72,34 +72,45 @@ TARDIS:AddScreen("Destination", {menu=false}, function(self,ext,int,frame,screen
 	yaw:SetNumeric(true)
 	roll:SetNumeric(true)
 
-	local function updatetextinputs(pos,ang)
+	local namebox = vgui.Create("DTextEntry", frame)
+	namebox:SetPos(pitch:GetPos()+5,frame:GetTall()*0.33 - button:GetTall()*0.5)
+	namebox:SetWide(frame:GetWide()*0.237)
+	namebox:SetPlaceholderText("Name")
+
+	local function updatetextinputs(pos,ang,name)
 		pitch:SetText(ang.p)
 		yaw:SetText(ang.y)
 		roll:SetText(ang.r)
 		x:SetText(pos.x)
 		y:SetText(pos.y)
 		z:SetText(pos.z)
+		namebox:SetText(name)
 	end
 	local function fetchtextinputs()
 		local pos = 0
 		local ang = 0
+		local name = ""
 		if x:GetText() ~= "" and y:GetText() ~= "" and z:GetText() ~= "" then
 			pos = Vector(x:GetText() or 0, y:GetText() or 0, z:GetText() or 0)
 		end
 		if pitch:GetText() ~= "" and yaw:GetText() ~= "" and roll:GetText() ~= "" then
 			ang = Angle(pitch:GetText() or 0, yaw:GetText() or 0, roll:GetText() or 0)
 		end
-		if pos ~= 0 and ang ~= 0 then
-			return pos,ang
+		if namebox:GetText() ~= "" then
+			name = namebox:GetText()
+		end
+		if pos ~= 0 and ang ~= 0 and name ~= "" then
+			return pos,ang,name
 		else
-			return false,false
+			return false,false,false
 		end
 	end
 	if ext:GetData("demat-pos") and ext:GetData("demat-ang") then
-		updatetextinputs(ext:GetData("demat-pos"), ext:GetData("demat-ang"))
+		updatetextinputs(ext:GetData("demat-pos"), ext:GetData("demat-ang"),"Current Set Destination")
+		namebox:SetEnabled(false)
 	end
 
-
+	local pendingchanges = false
 
 	local list = vgui.Create("DListView",frame)
 	list:SetSize( frame:GetWide()*0.7, frame:GetTall()*0.95 )
@@ -118,12 +129,14 @@ TARDIS:AddScreen("Destination", {menu=false}, function(self,ext,int,frame,screen
 	function list:OnRowSelected(i,row)
 		pos = TARDIS.Locations[map][i].pos
 		ang = TARDIS.Locations[map][i].ang
-		updatetextinputs(pos,ang)
+		name = TARDIS.Locations[map][i].name
+		updatetextinputs(pos,ang,name)
+		namebox:SetEnabled(true)
 	end
 
 	local new = vgui.Create("DButton", frame)
-	new:SetSize( frame:GetWide()*0.07, frame:GetTall()*0.1 )
-	new:SetPos(pitch:GetPos()+5,frame:GetTall()*0.35 - button:GetTall()*0.5)
+	new:SetSize( frame:GetWide()*0.08, frame:GetTall()*0.1 )
+	new:SetPos(pitch:GetPos(),frame:GetTall()*0.4 - button:GetTall()*0.5)
 	new:SetText("New")
 	new:SetFont("TARDIS-Default")
 	function new:DoClick()
@@ -152,135 +165,32 @@ TARDIS:AddScreen("Destination", {menu=false}, function(self,ext,int,frame,screen
 				end)
 		end)
 	end
-	local pendingchanges = false
-
-	local function ShowLocationDetails(name,pos,ang,index)
-		if name == nil or pos == nil or ang == nil then return end
-		local details = vgui.Create("DFrame")
-		local width=(ScrW()/5)
-		local height=(ScrH()/4)
-		details:SetSize(width,height)
-		details:SetPos( ScrW()/2 - width/2, ScrH()/2.3 - height/2 )
-		details:Center()
-		details:SetTitle("Location Details")
-		details:SetSkin("TARDIS")
-		details:MakePopup()
-
-		local panel = vgui.Create("DPanel", details)
-		panel:Dock(FILL)
-		panel:DockMargin(0,0,0,0)
-
-		local namelabel = vgui.Create("DLabel", panel)
-		namelabel:Dock(TOP)
-		namelabel:DockMargin(5,5,0,0)
-		namelabel:SetFont("TARDIS-Default")
-		namelabel:SetTextColor(Color(21,21,21))
-		namelabel:SetText("Location Name")
-
-		local namebox = vgui.Create("DTextEntry", panel)
-		namebox:Dock(TOP)
-		namebox:DockMargin(5,5,5,0)
-
-		local coords = vgui.Create("DLabel", panel)
-		coords:Dock(TOP)
-		coords:DockMargin(5,5,0,0)
-		coords:SetFont("TARDIS-Default")
-		coords:SetTextColor(Color(21,21,21))
-		coords:SetText("Coordinates (X Y Z - Pitch Yaw Roll)")
-
-		local coordspanel = vgui.Create("DPanel", panel)
-		coordspanel:SetTall(30)
-		coordspanel:Dock(TOP)
-		coordspanel:DockMargin(5,5,5,0)
-
-		local x = vgui.Create("DTextEntry", coordspanel)
-		x:Dock(LEFT)
-		x:DockMargin(5,5,5,5)
-		x:SetWide(width/3.7)
-		local y = vgui.Create("DTextEntry", coordspanel)
-		y:Dock(LEFT)
-		y:DockMargin(5,5,5,5)
-		y:SetWide(width/3.7)
-		local z = vgui.Create("DTextEntry", coordspanel)
-		z:Dock(LEFT)
-		z:DockMargin(5,5,5,5)
-		z:SetWide(width/3.7)
-
-		local anglepanel = vgui.Create("DPanel", panel)
-		anglepanel:SetTall(30)
-		anglepanel:Dock(TOP)
-		anglepanel:DockMargin(5,5,5,0)
-
-		local pitch = vgui.Create("DTextEntry", anglepanel)
-		pitch:Dock(LEFT)
-		pitch:DockMargin(5,5,5,5)
-		pitch:SetWide(width/3.7)
-		local yaw = vgui.Create("DTextEntry", anglepanel)
-		yaw:Dock(LEFT)
-		yaw:DockMargin(5,5,5,5)
-		yaw:SetWide(width/3.7)
-		local roll = vgui.Create("DTextEntry", anglepanel)
-		roll:Dock(LEFT)
-		roll:DockMargin(5,5,5,5)
-		roll:SetWide(width/3.7)
-		pitch:SetText(ang.p)
-		yaw:SetText(ang.y)
-		roll:SetText(ang.r)
-		x:SetText(pos.x)
-		y:SetText(pos.y)
-		z:SetText(pos.z)
-		namebox:SetText(name)
-
-		local map = game.GetMap()
-		local function fetchtextinputs()
-			local pos = 0
-			local ang = 0
-			local name = namebox:GetText()
-			if x:GetText() ~= "" and y:GetText() ~= "" and z:GetText() ~= "" then
-				pos = Vector(x:GetText() or 0, y:GetText() or 0, z:GetText() or 0)
-			end
-			if pitch:GetText() ~= "" and yaw:GetText() ~= "" and roll:GetText() ~= "" then
-				ang = Angle(pitch:GetText() or 0, yaw:GetText() or 0, roll:GetText() or 0)
-			end
-			if pos ~= 0 and ang ~= 0 then
-				return pos,ang,name
-			else
-				return false,false,false
-			end
-		end
-
-		local savebtn = vgui.Create("DButton", panel)
-		savebtn:Dock(TOP)
-		savebtn:DockMargin(5,5,5,0)
-		savebtn:SetText("Save")
-		function savebtn:DoClick()
-			local pos,ang,name = fetchtextinputs()
-			if pos ~= nil then
-				pendingchanges = true
-				TARDIS:UpdateLocation(pos,ang,name,map,index)
-				updatelist()
-				details:Close()
-			end
-		end
-	end
 
 	local edit = vgui.Create("DButton", frame)
-	edit:SetSize( frame:GetWide()*0.07, frame:GetTall()*0.1 )
-	edit:SetPos(yaw:GetPos()+5,frame:GetTall()*0.35 - button:GetTall()*0.5)
-	edit:SetText("Edit")
+	edit:SetSize( frame:GetWide()*0.08, frame:GetTall()*0.1 )
+	edit:SetPos(yaw:GetPos(),frame:GetTall()*0.4 - button:GetTall()*0.5)
+	edit:SetText("Update")
 	edit:SetFont("TARDIS-Default")
+	edit:SetEnabled(false)
 	function edit:DoClick()
-		if list:GetSelectedLine() == nil then return end
+		pendingchanges = true
+		local pos,ang,name = fetchtextinputs()
 		local index = list:GetSelectedLine()
-		local name = TARDIS.Locations[map][index].name
-		print(name)
-		local pos, ang = fetchtextinputs()
-		ShowLocationDetails(name,pos,ang,index)
+		if not index then return end
+		TARDIS:UpdateLocation(pos,ang,name,map,index)
+		updatelist()
+	end
+	function edit:Think()
+		if list:GetSelectedLine() ~= nil then
+			self:SetEnabled(true)
+		else
+			self:SetEnabled(false)
+		end
 	end
 
 	local remove = vgui.Create("DButton", frame)
-	remove:SetSize( frame:GetWide()*0.07, frame:GetTall()*0.1 )
-	remove:SetPos(roll:GetPos()+5,frame:GetTall()*0.35 - button:GetTall()*0.5)
+	remove:SetSize( frame:GetWide()*0.08, frame:GetTall()*0.1 )
+	remove:SetPos(roll:GetPos(),frame:GetTall()*0.4 - button:GetTall()*0.5)
 	remove:SetText("Delete")
 	remove:SetFont("TARDIS-Default")
 	function remove:DoClick()
@@ -292,7 +202,7 @@ TARDIS:AddScreen("Destination", {menu=false}, function(self,ext,int,frame,screen
 	end
 	local save = vgui.Create("DButton", frame)
 	save:SetSize( frame:GetWide()*0.07, frame:GetTall()*0.1 )
-	save:SetPos(frame:GetWide()*0.82 - save:GetWide()*0.5, frame:GetTall()*0.5 - save:GetTall()*0.5)
+	save:SetPos(frame:GetWide()*0.82 - save:GetWide()*0.5, frame:GetTall()*0.55 - save:GetTall()*0.5)
 	save:SetText("Save")
 	save:SetFont("TARDIS-Default")
 	function save:DoClick()
@@ -309,7 +219,7 @@ TARDIS:AddScreen("Destination", {menu=false}, function(self,ext,int,frame,screen
 	end
 	local load = vgui.Create("DButton", frame)
 	load:SetSize( frame:GetWide()*0.07, frame:GetTall()*0.1 )
-	load:SetPos(frame:GetWide()*0.9 - load:GetWide()*0.5, frame:GetTall()*0.5 - load:GetTall()*0.5)
+	load:SetPos(frame:GetWide()*0.9 - load:GetWide()*0.5, frame:GetTall()*0.55 - load:GetTall()*0.5)
 	load:SetText("Load")
 	load:SetFont("TARDIS-Default")
 	function load:DoClick()
