@@ -250,4 +250,30 @@ TARDIS:AddScreen("Destination", {menu=false}, function(self,ext,int,frame,screen
 			LocalPlayer():ChatPrint("No destination set")
 		end
 	end
+
+	function frame:OnCloseScreen()
+		local result = true
+		if not pendingchanges then return true end
+		Derma_Query("You have unsaved changes, would you like to save them?",
+		"Pending changes",
+		"Yes",
+		function() 
+			TARDIS:SaveLocations() 
+			pendingchanges = false
+			TARDIS:RemoveHUDScreen()
+			return true
+		end,
+		"No",
+		function() 
+			pendingchanges = false
+			TARDIS:RemoveHUDScreen()
+			return true
+		end,
+		"Cancel",
+		function() 
+			return false
+		end
+		)
+	end
+
 end)
