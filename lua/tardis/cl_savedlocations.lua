@@ -1,6 +1,6 @@
 TARDIS.Locations = TARDIS.Locations or {}
 
-local filename = "tardis_locations_nw.txt"
+local filename = "tardis2_locations.txt"
 
 function TARDIS:LoadLocations()
     if file.Exists(filename,"DATA") then

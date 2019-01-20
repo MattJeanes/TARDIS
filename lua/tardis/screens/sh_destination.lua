@@ -253,7 +253,7 @@ TARDIS:AddScreen("Destination", {menu=false}, function(self,ext,int,frame,screen
 
 	function frame:OnCloseScreen()
 		local result = true
-		if not pendingchanges then return true end
+		if not pendingchanges then return end
 		Derma_Query("You have unsaved changes, would you like to save them?",
 		"Pending changes",
 		"Yes",
@@ -272,6 +272,7 @@ TARDIS:AddScreen("Destination", {menu=false}, function(self,ext,int,frame,screen
 
 		end
 		)
+		return false;
 	end
 
 end)

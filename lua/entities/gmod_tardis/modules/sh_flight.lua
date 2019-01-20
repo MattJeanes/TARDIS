@@ -133,6 +133,12 @@ if SERVER then
 	ENT:AddHook("CanTurnOffFloat", "flight", function(self)
 		if self:GetData("flight") then return false end
 	end)
+
+	ENT:AddHook("CanTurnOnFlight", "power-disable", function(self)
+		if not self.interior:GetData("power-state",false) then
+			return false
+		end
+	end)
 	
 	ENT:AddHook("ThirdPerson", "flight", function(self,ply,enabled)
 		if enabled then

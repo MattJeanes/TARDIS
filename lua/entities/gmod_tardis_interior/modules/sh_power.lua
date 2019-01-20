@@ -4,12 +4,6 @@ ENT:AddHook("Initialize","power-init", function(self)
     self:SetData("power-state",true,true)
 end)
 
-ENT:AddHook("ShouldDrawLight", "power", function(self,id,light)
-	if not self:GetData("power-state",false) then
-		return false
-	end
-end)
-
 if SERVER then
     function ENT:TogglePower()
         local on = not self:GetData("power-state",false)
@@ -27,7 +21,7 @@ else
         if TARDIS:GetSetting("sound") then
             local sound_on = self.metadata.Interior.Sounds.Power.On
             local sound_off = self.metadata.Interior.Sounds.Power.Off
-            if LocalPlayer():GetTardisData("exterior") == self.exterior then
+            if TARDIS:GetExteriorEnt() == self.exterior then
                 self:EmitSound(state and sound_on or sound_off)
             end
             if self.idlesounds then
