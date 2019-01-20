@@ -17,6 +17,7 @@ end)
 ]]--
 
 function ENT:DrawLight(id,light)
+	if self:CallHook("ShouldDrawLight",id,light)==false then return end
 	local dlight = DynamicLight(id)
 	if ( dlight ) then
 		local size=1024
@@ -67,6 +68,7 @@ end)
 local size=32
 ENT:AddHook("Draw", "lights-roundthings", function(self)
 	if self.roundthings then
+		if self:CallHook("ShouldDrawLight")==false then return end
 		for k,v in pairs(self.roundthings) do
 			local pos = self:LocalToWorld(k)
 			local vis = util.PixelVisible(pos, 3, v)*255
@@ -75,5 +77,11 @@ ENT:AddHook("Draw", "lights-roundthings", function(self)
 				render.DrawSprite(pos, size, size, Color(255,153,0, vis))
 			end
 		end
+	end
+end)
+
+ENT:AddHook("ShouldDrawLight", "lights", function(self,id,light)
+	if not self:GetData("power-state",false) then
+		return false
 	end
 end)

@@ -68,8 +68,8 @@ TARDIS:AddKeyBind("destination-rotate",{
 	exterior=true
 })
 TARDIS:AddKeyBind("destination-demat",{
-	name="Demat",
-	section="Destination",
+	name="Set",
+	section="Teleport",
 	func=function(self,down,ply)
 		if TARDIS:HUDScreenOpen(ply) then return end
 		if ply:GetTardisData("destination") then
@@ -85,6 +85,24 @@ TARDIS:AddKeyBind("destination-demat",{
 	key=MOUSE_LEFT,
     clientonly=true,
 	exterior=true	
+})
+TARDIS:AddKeyBind("destination-snaptofloor",{
+    name="Snap To Floor",
+    section="Destination",
+    desc="Press this key to snap to the nearest floor",
+    func=function(self,down,ply)
+        if TARDIS:HUDScreenOpen(ply) then return end
+        if ply:GetTardisData("destination") then
+            local prop = self:GetData("destinationprop")
+            if IsValid(prop) then
+                local pos = util.QuickTrace(prop:GetPos()+Vector(0,0,50), Vector(0,0,-1)*99999999).HitPos
+                prop:SetPos(pos)
+            end
+        end
+    end,
+    key=KEY_R,
+    clientonly=true,
+    exterior=true
 })
 
 if SERVER then
@@ -125,15 +143,25 @@ if SERVER then
                 ply:ChatPrint("Failed to set destination, may be transitioning")
             end
         else
-            self:Demat(pos, ang, function(success)
-                if success then
-                    ply:ChatPrint("Destination locked, dematerialising..")            
+            if TARDIS:GetSetting("dest-onsetdemat",false,ply) then
+                self:Demat(pos,ang,function(success)
+                    if success then
+                        ply:ChatPrint("Destination locked, dematerialising...")
+                    else
+                        ply:ChatPrint("Failed to dematerialise")
+                    end
+                end)
+            else
+                if self:SetDestination(pos,ang) then
+                    ply:ChatPrint("Destination locked, ready to dematerialise")
                 else
-                    ply:ChatPrint("Failed to dematerialise")
+                    ply:ChatPrint("Failed to set destination")
                 end
-            end)
+            end
         end
-        self:SelectDestination(ply, false)
+        if ply:GetTardisData("destination") then
+            self:SelectDestination(ply, false)
+        end
     end)
 else
     local defaultdist = 210
@@ -193,6 +221,16 @@ else
             prop:Remove()
         end
     end
+    TARDIS:AddSetting({
+        id="dest-onsetdemat",
+        name="Destination - Demat on Set",
+        desc="Should the TARDIS dematerialise immediately after destination is set?",
+        section="Misc",
+        value=false,
+        type="bool",
+        option=true,
+        networked=true
+    })
     ENT:AddHook("Outside-StartCommand", "destination", function(self, ply, cmd)
 		if LocalPlayer():GetTardisData("destination") and cmd:GetMouseWheel()~=0 then
 			ply:SetTardisData("destinationdist",math.Clamp(ply:GetTardisData("destinationdist",defaultdist)-cmd:GetMouseWheel()*0.03*(1.1+ply:GetTardisData("destinationdist",defaultdist)),90,500))

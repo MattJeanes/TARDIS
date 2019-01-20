@@ -10,6 +10,10 @@ TARDIS:AddKeyBind("teleport-demat",{
 		if SERVER then
 			if ply==pilot and (not down) then
 				if not self:GetData("vortex") then
+					if self:GetData("demat-pos") then
+						self:Demat()
+						return
+					end
 					local pos,ang=self:GetThirdPersonTrace(ply,ply:GetTardisData("viewang"))
 					self:Demat(pos,ang)
 				end
@@ -49,13 +53,15 @@ if SERVER then
 				if state then
 					if callback then callback(false) end
 				else
-					pos=pos or self:GetPos()
-					ang=ang or self:GetAngles()
+					pos=pos or self:GetData("demat-pos") or self:GetPos()
+					ang=ang or self:GetData("demat-ang") or self:GetAngles()
 					self:SetBodygroup(1,0)
 					self:SendMessage("demat")
 					self:SetData("demat",true)
-					self:SetData("demat-pos",pos)
-					self:SetData("demat-ang",ang)
+					self:SetData("demat-pos",pos,true)
+					self:SetData("demat-ang",ang,true)
+					self:SetData("fastreturn-pos",self:GetPos())
+					self:SetData("fastreturn-ang",self:GetAngles())
 					self:SetData("step",1)
 					self:SetData("teleport",true)
 					self:SetCollisionGroup( COLLISION_GROUP_WORLD )
@@ -148,13 +154,31 @@ if SERVER then
 								end
 							end
 						end
-						self:SetData("demat-pos",nil)
-						self:SetData("demat-ang",nil)
+						self:SetData("demat-pos",nil,true)
+						self:SetData("demat-ang",nil,true)
 					end)
 					if callback then callback(true) end
 				end
 			end)
 		end
+	end
+	function ENT:FastReturn(callback)
+		if self:CallHook("CanDemat")~=false and self:GetData("fastreturn-pos") then
+			self:SetFastRemat(true)
+			self:SetData("fastreturn",true)
+			self:Demat(self:GetData("fastreturn-pos"),self:GetData("fastreturn-ang"))
+			if callback then callback(true) end
+		else
+			if callback then callback(false) end
+		end
+	end
+	function ENT:ToggleFastRemat()
+		local on = not self:GetData("demat-fast",false)
+		return self:SetFastRemat(on)
+	end
+	function ENT:SetFastRemat(on)
+		self:SetData("demat-fast",on,true)
+		return true
 	end
 	function ENT:StopDemat()
 		self:SetData("demat",false)
@@ -184,6 +208,11 @@ if SERVER then
 				end
 			end
 		end
+		if self:GetData("demat-fast",false) then
+			timer.Simple(1,function()
+				self:Mat()
+			end)
+		end
 	end
 	function ENT:StopMat()
 		self:SetBodygroup(1,1)
@@ -209,18 +238,19 @@ if SERVER then
 			end
 		end
 		self:SetData("demat-attached")
+		if self:GetData("fastreturn",false) then
+			self:SetFastRemat(false)
+			self:SetData("fastreturn",false)
+		end
 	end
 	function ENT:SetDestination(pos, ang)
-		if self:GetData("vortex") then
-			self:SetData("demat-pos",pos)
-			self:SetData("demat-ang",ang)
-			return true
-		end
-		return false
+		self:SetData("demat-pos",pos,true)
+		self:SetData("demat-ang",ang,true)
+		return true
 	end
 	
 	ENT:AddHook("CanDemat", "teleport", function(self)
-		if self:GetData("teleport") or self:GetData("vortex") then
+		if self:GetData("teleport") or self:GetData("vortex") or (not self.interior:GetData("power-state",false)) then
 			return false
 		end
 	end)
@@ -264,6 +294,12 @@ if SERVER then
 	ENT:AddHook("ShouldTurnOffRotorwash", "teleport", function(self)
 		if self:GetData("vortex") then
 			return true
+		end
+	end)
+
+	ENT:AddHook("ShouldExteriorDoorCollide", "teleport", function(self,open)
+		if self:GetData("teleport") or self:GetData("vortex") then
+			return false
 		end
 	end)
 else

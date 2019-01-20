@@ -72,6 +72,7 @@ local overrides={
 		if called then
 			if SERVER and (res~=false) then
 				self:SetOn(not self:GetOn())
+				self.interior:CallHook("PartUsed",self,a)
 			end
 			return res
 		end

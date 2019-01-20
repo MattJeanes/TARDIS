@@ -17,7 +17,8 @@ if SERVER then
 		self:SetBodygroup(2,1) -- Lit sign
 		
 		if self.ExteriorPart then
-			self:SetSolid(SOLID_NONE)
+			self:SetSolid(SOLID_VPHYSICS)
+			--self:SetCollisionGroup(COLLISION_GROUP_WORLD)
 		elseif self.InteriorPart then
 			self:SetBodygroup(3,1) -- 3D sign
 			table.insert(self.interior.stuckfilter, self)
@@ -42,7 +43,11 @@ if SERVER then
 			end
 		else
 			if a:KeyDown(IN_WALK) then
-				self.exterior:PlayerExit(a)
+				if self.ExteriorPart then
+					self.exterior:PlayerEnter(a)
+				else
+					self.exterior:PlayerExit(a)
+				end
 			else
 				self.exterior:ToggleDoor()
 			end
