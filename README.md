@@ -11,4 +11,8 @@ Without these the addon will not function correctly and you may experience error
 
 Installation
 =
-Remove any previous versions then put this folder into Steam/Steamapps/common/garrysmod/garrysmod/addons/.
+### Steam Workshop
+https://steamcommunity.com/sharedfiles/filedetails/?id=307175678
+
+### Manual installation
+Remove any previous versions then put this folder into Steam/Steamapps/common/garrysmod/garrysmod/addons/
