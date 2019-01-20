@@ -134,7 +134,7 @@ if SERVER then
 		if self:GetData("flight") then return false end
 	end)
 
-	ENT:AddHook("CanTurnOnFlight", "power-disable", function(self)
+	ENT:AddHook("CanTurnOnFlight", "flight", function(self)
 		if not self.interior:GetData("power-state",false) then
 			return false
 		end
