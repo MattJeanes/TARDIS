@@ -22,7 +22,9 @@ T.Interior={
 		Power={
 			On="drmatt/tardis/power_on.wav",
 			Off="drmatt/tardis/power_off.wav"
-		}
+		},
+		SeqOK = "drmatt/tardis/seq_ok.wav",
+		SeqBad = "drmatt/tardis/seq_bad.wav"
 	},
 	ScreenDistance=500
 }
