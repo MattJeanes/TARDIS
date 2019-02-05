@@ -40,6 +40,7 @@ if SERVER then
 		if self.exterior:GetData("locked") then
 			if IsValid(a) and a:IsPlayer() then
 				a:ChatPrint("The doors are locked.")
+				self:EmitSound("doors/door_lock_1.wav")
 			end
 		else
 			if a:KeyDown(IN_WALK) then
