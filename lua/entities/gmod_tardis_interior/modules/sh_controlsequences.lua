@@ -72,7 +72,7 @@ if SERVER then
                     return
                 end
             else
-                if id == "console" then return end
+                if id == "console" or id == "door" then return end
                 self:EmitSound(self.metadata.Interior.Sounds.SeqBad)
                 if sequences[curseq].OnFail then
                     sequences[curseq].OnFail(self, a, step, part)
