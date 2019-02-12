@@ -34,7 +34,6 @@ function ENT:DrawLight(id,light)
 end
 
 ENT:AddHook("Draw", "lights", function(self)
-	--render.SuppressEngineLighting(false)
 	local light=self.metadata.Interior.Light
 	local lights=self.metadata.Interior.Lights
 	local index=self:EntIndex()
