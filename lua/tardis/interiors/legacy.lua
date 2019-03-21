@@ -39,6 +39,7 @@ T.Interior={
 			height=335
 		}
 	},
+	Sequences="legacy_sequences",
 	Parts={
 		door={
 			pos=Vector(300,315,-88.1),

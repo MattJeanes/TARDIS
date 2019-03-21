@@ -24,6 +24,10 @@ if SERVER then
 			end
 		end
 	end)
+
+	ENT:AddHook("CanStartCSequence","interior-legacy",function(self)
+		if not self:GetData("legacy-advanced",false) then return false end
+	end)
 end
 
 ENT:AddHook("Initialize", "interior-legacy", function(self)

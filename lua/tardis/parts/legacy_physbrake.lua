@@ -11,6 +11,7 @@ PART.Animate = true
 if SERVER then
     function PART:Use(ply)
         self:EmitSound("tardis/control_handbrake.wav")
+        if self.InSequence==true then return end
     end
 end
         

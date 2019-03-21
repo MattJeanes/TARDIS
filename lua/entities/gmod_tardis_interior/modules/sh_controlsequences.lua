@@ -43,6 +43,7 @@ if SERVER then
 
     ENT:AddHook("PartUsed","HandleControlSequence",function(self,part,a)
         --print(part:GetClass())
+        if self:CallHook("CanStartCSequence")==false then return end
         local sequences = TARDIS:GetCSequence(self.metadata.Interior.Sequences)
         if sequences == nil then return end
         local id = part.ID
