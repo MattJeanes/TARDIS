@@ -11,6 +11,7 @@ so that it can be easily accessed from code (mostly by [this] file)
 
 The proposed format is the following
 local SEQ = {
+    ID="sequences-id"
     ["starter-control-1"] = {
         Controls={
             "followup-control-1",
