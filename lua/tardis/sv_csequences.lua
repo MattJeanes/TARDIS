@@ -10,4 +10,4 @@ function TARDIS:GetCSequence(id)
     end
 end
 
-TARDIS:LoadFolder("interiors",nil,true)
+TARDIS:LoadFolder("interiors",false,true)
