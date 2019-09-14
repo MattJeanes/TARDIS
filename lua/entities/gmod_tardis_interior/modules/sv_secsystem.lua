@@ -38,7 +38,7 @@ end
 --Hooks
 
 ENT:AddHook("Initialize", "security", function(self)
-    self:GrantPermission(Entity(1), "parts")
+    self:GrantPermission(self.owner, "parts")
     self:SetData("ism-on",true)
 end)
 
