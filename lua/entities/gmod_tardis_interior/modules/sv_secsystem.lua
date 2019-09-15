@@ -38,7 +38,7 @@ end
 --Hooks
 
 ENT:AddHook("Initialize", "security", function(self)
-    self:GrantPermission(self.owner, "parts")
+    self:GrantPermission(self.m_PlayerCreator, "parts")
     self:SetData("ism-on",true)
 end)
 
