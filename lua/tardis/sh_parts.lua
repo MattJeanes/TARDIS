@@ -61,7 +61,7 @@ local overrides={
 		local res
 		local called=false
 		if (not self.NoStrictUse) and IsValid(a) and a:IsPlayer() then
-			if a:GetEyeTraceNoCursor().Entity==self and a:GetTardisData("can-use-parts",false)==true then
+			if a:GetEyeTraceNoCursor().Entity==self then
 				res=self.o.Use(self,a,...)
 				called=true
 			end

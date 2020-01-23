@@ -16,6 +16,7 @@ function ENT:GrantPermission(ply, type)
 end
 function ENT:RevokePermission(ply, type)
     --accepted types:
+    --i miss C#
     local types = {"parts", "doors", "enter", "screens"}
     if not table.HasValue(types, type) then
         error("Permission type is invalid")
@@ -38,10 +39,10 @@ end
 --Hooks
 
 ENT:AddHook("Initialize", "security", function(self)
-    self:GrantPermission(self.m_PlayerCreator, "parts")
-    self:SetData("ism-on",true)
+    --self:GrantPermission(self.m_PlayerCreator, "parts")
+    self:SetData("ism-on",false)
 end)
 
 ENT:AddHook("PlayerEnter", "isomorphic", function(self, ply)
-    self:UpdatePlayerPerms(ply)
+    --self:UpdatePlayerPerms(ply)
 end)
