@@ -13,26 +13,26 @@ if SERVER then
 		self:SetLocked(not self:Locked(),callback)
 	end
 
-	function ENT:ActualSetLocked(locked,callback)
+	function ENT:ActualSetLocked(locked,callback,silent)
 		self:SetData("locking",false,true)
 		self:SetData("locked",locked,true)
 		self:FlashLight(0.6)
-		self:SendMessage("locksound")
+		if not silent then self:SendMessage("locksound") end
 		if callback then callback(true) end
 	end
 
-	function ENT:SetLocked(locked,callback)
+	function ENT:SetLocked(locked,callback, silent)
 		if locked then
 			self:SetData("locking",true,true)
 			self:CloseDoor(function(state)
 				if state then
 					if callback then callback(false) end
 				else
-					self:ActualSetLocked(true,callback)
+					self:ActualSetLocked(true,callback,silent)
 				end
 			end)
 		else
-			self:ActualSetLocked(false,callback)
+			self:ActualSetLocked(false,callback,silent)
 		end
 	end
 	

@@ -23,6 +23,14 @@ TARDIS:AddControl("power",{
 	serveronly=true
 })
 
+TARDIS:AddControl("repair",{
+	func=function(self,ply)
+        self:ToggleRepair()
+	end,
+	exterior=true,
+	serveronly=true
+})
+
 if SERVER then return end
 
 TARDIS:AddScreen("New features fallback", {menu=false}, function(self,ext,int,frame,screen)
@@ -34,6 +42,15 @@ TARDIS:AddScreen("New features fallback", {menu=false}, function(self,ext,int,fr
     power:SetFont("TARDIS-Default")
     power.DoClick = function()
         TARDIS:Control("power")
+    end    
+    
+    local power=vgui.Create("DButton",frame)
+    power:SetSize( frame:GetWide()*0.2, frame:GetTall()*0.2 )
+    power:SetPos(frame:GetWide()*0.35 - power:GetWide()*0.5,frame:GetTall()*0.15 - power:GetTall()*0.5)
+    power:SetText("Repair TARDIS")
+    power:SetFont("TARDIS-Default")
+    power.DoClick = function()
+        TARDIS:Control("repair")
     end
 
     local fastremat=vgui.Create("DButton",frame)

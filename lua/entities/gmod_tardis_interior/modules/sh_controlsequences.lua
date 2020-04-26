@@ -42,52 +42,57 @@ Full documentation for control sequences will be available on the wiki.
 ]]
 
 
-ENT:AddHook("PartUsed","HandleControlSequence",function(self,part,a)
-    --print(part:GetClass())
-    if self:CallHook("CanStartCSequence")==false then return end
-    local sequences = TARDIS:GetCSequence(self.metadata.Interior.Sequences)
-    if sequences == nil then return end
-    local id = part.ID
-    local active = self:GetData("cseq-active",false)
-    local step = self:GetData("cseq-step")
-    if active==false and sequences[id] then
-        self:EmitSound(self.metadata.Interior.Sounds.SeqOK)
-        self:SetData("cseq-active", true)
-        self:SetData("cseq-step", 1)
-        self:SetData("cseq-curseq", id)
-        for _,v in pairs(sequences[id].Controls) do
-            local p = TARDIS:GetPart(self,v)
-            p.InSequence = true
-        end
-    elseif active==true then
-        local curseq = self:GetData("cseq-curseq","none")
-        if sequences[curseq].Controls[step] == id then
+if SERVER then
+    ENT:AddHook("PartUsed","HandleControlSequence",function(self,part,a)
+        local sequences = TARDIS:GetCSequence(self.metadata.Interior.Sequences)
+        if sequences == nil then return end
+        local id = part.ID
+        local active = self:GetData("cseq-active",false)
+        local step = self:GetData("cseq-step")
+        if active==false and sequences[id] then
+            if not self:GetData("advanced-flight", true) then return end
             self:EmitSound(self.metadata.Interior.Sounds.SeqOK)
-            self:SetData("cseq-step",step+1)
-            if step == #sequences[curseq].Controls then
-                sequences[curseq].OnFinish(self, a, step, part)
-                for _,v in pairs(sequences[curseq].Controls) do
-                    local p = TARDIS:GetPart(self,v)
-                    p.InSequence = false
+            self:SetData("cseq-active", true)
+            self:SetData("cseq-step", 1)
+            self:SetData("cseq-curseq", id)
+            for _,v in pairs(sequences[id].Controls) do
+                local p = TARDIS:GetPart(self,v)
+                p.InSequence = true
+            end
+        elseif active==true then
+            local curseq = self:GetData("cseq-curseq","none")
+            if sequences[curseq].Controls[step] == id then
+                self:EmitSound(self.metadata.Interior.Sounds.SeqOK)
+                self:SetData("cseq-step",step+1)
+                if step == #sequences[curseq].Controls then
+                    sequences[curseq].OnFinish(self, a, step, part)
+                    for _,v in pairs(sequences[curseq].Controls) do
+                        local p = TARDIS:GetPart(self,v)
+                        p.InSequence = false
+                    end
+                    self:TerminateSequence()
+                    return
+                end
+            else
+                if id == "console" or id == "door" then return end
+                self:EmitSound(self.metadata.Interior.Sounds.SeqBad)
+                if sequences[curseq].OnFail then
+                    sequences[curseq].OnFail(self, a, step, part)
                 end
                 self:TerminateSequence()
                 return
             end
-        else
-            if id == "console" or id == "door" then return end
-            self:EmitSound(self.metadata.Interior.Sounds.SeqBad)
-            if sequences[curseq].OnFail then
-                sequences[curseq].OnFail(self, a, step, part)
-            end
-            self:TerminateSequence()
-            return
         end
-    end
-end)
+    end)
+    ENT:AddHook("CanStartCSequence", "settingquery-sv", function(self)
+        return true
+    end)
 
-function ENT:TerminateSequence()
-    --print("force-quitting current tardis cseq ("..self:GetData("cseq-curseq")..")")
-    self:SetData("cseq-step",nil)
-    self:SetData("cseq-curseq",nil)
-    self:SetData("cseq-active",false)
+    function ENT:TerminateSequence()
+        --print("force-quitting current tardis cseq ("..self:GetData("cseq-curseq")..")")
+        self:SetData("cseq-step",nil)
+        self:SetData("cseq-curseq",nil)
+        self:SetData("cseq-active",false)
+    end
+
 end

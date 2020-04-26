@@ -10,6 +10,7 @@ if SERVER then
         self:SetPower(on)
     end
     function ENT:SetPower(on)
+        if not (self:CallHook("CanTogglePower")==true or self.exterior:CallHook("CanTogglePower")==true) then return end
         self:SetData("power-state",on,true)
         self:SendMessage("power-toggled")
         self:CallHook("PowerToggled",on)
@@ -27,11 +28,11 @@ else
             end
             if self.idlesounds then
                 if state == false then
-                    for k,v in pairs(self.idlesounds) do
+                    for _,v in pairs(self.idlesounds) do
                         v:Stop()
                     end
                 else
-                    for k,v in pairs(self.idlesounds) do
+                    for _,v in pairs(self.idlesounds) do
                         v:Play()
                     end
                 end
