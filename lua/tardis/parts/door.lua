@@ -40,7 +40,7 @@ if SERVER then
 		if self.exterior:GetData("locked") then
 			if IsValid(a) and a:IsPlayer() then
 				if self.exterior:GetData("repairing") then
-					a:ChatPrint("The TARDIS is repairing. It will be done in "..math.floor(self.exterior:GetRepairTime()).." seconds.")
+					a:ChatPrint("This TARDIS is repairing. It will be done in "..math.floor(self.exterior:GetRepairTime()).." seconds.")
 				else
 					a:ChatPrint("The doors are locked.")
 				end
