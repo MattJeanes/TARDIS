@@ -80,9 +80,9 @@ TARDIS:AddScreen("Functions Fallback", {menu=false}, function(self,ext,int,frame
     local physbrake = vgui.Create("DButton",frame)
     physbrake:SetSize( frame:GetWide()*0.2, frame:GetTall()*0.2)
     physbrake:SetFont("TARDIS-Default")
-    physbrake:SetPos((frame:GetWide()*0.55)-(physbrake:GetWide()*0.5),(frame:GetTall()*0.4)-(physbrake:GetTall()*0.5))
+    physbrake:SetPos((frame:GetWide()*0.35)-(physbrake:GetWide()*0.5),(frame:GetTall()*0.4)-(physbrake:GetTall()*0.5))
     physbrake:SetText("Physlock PLH")
-    fastremat.DoClick = function()
+    physbrake.DoClick = function()
         TARDIS:Control("physbrake")
     end
     function physbrake:Think()
