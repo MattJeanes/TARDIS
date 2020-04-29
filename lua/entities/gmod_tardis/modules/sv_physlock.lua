@@ -4,14 +4,14 @@ if SERVER then
         local phys = self:GetPhysicsObject()
         phys:EnableMotion(!on)
         phys:Wake()
-        self:GetCreator():ChatPrint("Physics lock set to ".. (on and "on" or "off"))
-        return self:SetData("physlock", on)
+        //self:GetCreator():ChatPrint("Physics lock set to ".. (on and "on" or "off"))
+        return self:SetData("physlock", on, true)
     end
 
     function ENT:TogglePhyslock()
         local on = !self:GetData("physlock", false)
-        self:SetPhyslock(on)
-        self:GetCreator():ChatPrint("Physics lock set to ".. (on and "on" or "off"))
+        //self:GetCreator():ChatPrint("Physics lock set to ".. (on and "on" or "off"))
+        return self:SetPhyslock(on)
     end
 
     hook.Add("PlayerUnfrozeObject", "tardis-physlock", function(ply,ent,phys)
