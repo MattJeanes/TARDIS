@@ -12,6 +12,7 @@ if SERVER then
     function PART:Use(ply)
         self:EmitSound("tardis/control_handbrake.wav")
         if self.InSequence==true then return end
+        self.exterior:TogglePhyslock()
     end
 end
         
