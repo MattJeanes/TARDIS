@@ -54,6 +54,7 @@ if SERVER then
 					self.exterior:PlayerExit(a)
 				end
 			else
+				if (self.exterior:GetData("repair-primed",false) or self.exterior:GetData("repairing",false)) and self.ExteriorPart then return end
 				self.exterior:ToggleDoor()
 			end
 		end

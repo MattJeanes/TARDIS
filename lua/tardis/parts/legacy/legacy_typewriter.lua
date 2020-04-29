@@ -10,6 +10,7 @@ PART.Animate = true
 
 if SERVER then
     function PART:Use(ply)
+        if not IsPlayer(ply) then return end
         ply:SendLua([[
             TARDIS:HUDScreen()
             TARDIS:SwitchScreen(TARDIS.screenpop, TARDIS:GetScreenByName("Destination"))
