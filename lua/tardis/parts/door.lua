@@ -39,7 +39,11 @@ if SERVER then
 	function PART:Use(a)
 		if self.exterior:GetData("locked") then
 			if IsValid(a) and a:IsPlayer() then
-				a:ChatPrint("The doors are locked.")
+				if self.exterior:GetData("repairing") then
+					a:ChatPrint("The TARDIS is repairing. It will be done in "..math.floor(self.exterior:GetRepairTime()).." seconds.")
+				else
+					a:ChatPrint("The doors are locked.")
+				end
 				self:EmitSound("doors/door_lock_1.wav")
 			end
 		else

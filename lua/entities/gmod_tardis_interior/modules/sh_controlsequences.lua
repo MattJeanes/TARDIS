@@ -3,7 +3,7 @@
 --[[
 Control Sequences - Format & Execution
 
-Sequences are defined in a file (will probably be in the interiors folder), 
+Sequences are defined in a file (will probably be in the interiors folder),
 and the file's name referenced in the metadata.
 
 When the interior is loaded, the data in the sequences file will be "moved" into a table in the metadata
@@ -26,7 +26,7 @@ This is the definition of a simple sequence.
 The table keys are control IDs, like the ones in the interior file.
 Using starter-control-1 will initiate the sequence. From there, you would use the followup-controls
 in the order they were defined on the table. OnFinish will be the end result if the sequence is done right
-Otherwise, OnFail will be called. The example above shows the order of the args on both. 
+Otherwise, OnFail will be called. The example above shows the order of the args on both.
 
 When a sequence is in progress, all the parts of that sequence will receive a variable which can be used to
 determine whether or not it is being used in a sequence. The idea is so that individual developers can
@@ -50,7 +50,7 @@ if SERVER then
         local active = self:GetData("cseq-active",false)
         local step = self:GetData("cseq-step")
         if active==false and sequences[id] then
-            if not self:GetData("advanced-flight", true) then return end
+            if not self:GetData("advanced-flight", false) then return end
             self:EmitSound(self.metadata.Interior.Sounds.SeqOK)
             self:SetData("cseq-active", true)
             self:SetData("cseq-step", 1)
@@ -66,10 +66,6 @@ if SERVER then
                 self:SetData("cseq-step",step+1)
                 if step == #sequences[curseq].Controls then
                     sequences[curseq].OnFinish(self, a, step, part)
-                    for _,v in pairs(sequences[curseq].Controls) do
-                        local p = TARDIS:GetPart(self,v)
-                        p.InSequence = false
-                    end
                     self:TerminateSequence()
                     return
                 end
@@ -90,6 +86,12 @@ if SERVER then
 
     function ENT:TerminateSequence()
         --print("force-quitting current tardis cseq ("..self:GetData("cseq-curseq")..")")
+        local sequences = TARDIS:GetCSequence(self.metadata.Interior.Sequences)
+        local curseq = self:GetData("cseq-curseq","none")
+        for _,v in pairs(sequences[curseq].Controls) do
+            local p = TARDIS:GetPart(self,v)
+            p.InSequence = false
+        end
         self:SetData("cseq-step",nil)
         self:SetData("cseq-curseq",nil)
         self:SetData("cseq-active",false)

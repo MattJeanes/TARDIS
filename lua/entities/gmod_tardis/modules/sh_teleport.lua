@@ -111,9 +111,11 @@ if SERVER then
 						end
 						self:SetData("prevortex-flight",nil)
 						self:SetSolid(SOLID_VPHYSICS)
-						self.phys:EnableMotion(true)
-						self.phys:Wake()
-						
+						if not self:GetData("physlock",false) then
+							self.phys:EnableMotion(true)
+							self.phys:Wake()
+						end
+							
 						local pos=self:GetData("demat-pos",Vector())
 						local ang=self:GetData("demat-ang",Angle())
 						local attached=self:GetData("demat-attached")

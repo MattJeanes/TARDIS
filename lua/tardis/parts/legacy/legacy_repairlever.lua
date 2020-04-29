@@ -10,7 +10,7 @@ PART.Animate = true
 
 if SERVER then
     function PART:Use(ply)
-        self.exterior:StartAutorepair()
+        self.exterior:ToggleRepair()
     end
 end
         

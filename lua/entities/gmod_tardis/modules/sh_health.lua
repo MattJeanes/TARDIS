@@ -31,9 +31,10 @@ function ENT:ChangeHealth(NewHealth)
     if self:GetData("repairing", false) then
         return
     end
-    if NewHealth < 0 then 
+    local OldHealth = self:GetHealth()
+    if NewHealth <= 0 then 
         NewHealth = 0
-        if NewHealth ~= self:GetData("health-val", 0) then
+        if NewHealth == 0 and not ( NewHealth == OldHealth) then
             self:CallHook("health-depleted")
             self.interior:CallHook("health-depleted")
         end
@@ -46,7 +47,25 @@ function ENT:GetHealth()
     return self:GetData("health-val", 0)
 end
 
+function ENT:GetRepairTime()
+    return self:GetData("repair-time")-CurTime()
+end
+
 if SERVER then
+
+    function ENT:Explode()
+        if not vFireInstalled then
+            local explode = ents.Create("env_explosion")
+            explode:SetPos( self:LocalToWorld(Vector(0,0,50)) ) //Puts the explosion where you are aiming
+            explode:SetOwner( self ) //Sets the owner of the explosion
+            explode:Spawn()
+            explode:SetKeyValue("iMagnitude","100") //Sets the magnitude of the explosion
+            explode:Fire("Explode", 0, 0 ) //Tells the explode entity to explode
+            //explode:EmitSound("weapon_AWP.Single", 400, 400 ) //Adds sound to the explosion
+        else
+            //alternate explosion
+        end
+    end
 
     function ENT:ToggleRepair()
         local on = not self:GetData("repair-primed",false)
@@ -54,11 +73,12 @@ if SERVER then
     end
     function ENT:SetRepair(on)
         //self.interior:SetData("selfrepair-primed",on,true)
+        if (self:GetHealth() > TARDIS:GetSetting("health-max",1)-1) or self:GetData("vortex",false) then return end
         if on==true then
             for k,_ in pairs(self.occupants) do
                 k:ChatPrint("This TARDIS has been set to self-repair. Please vacate the interior.")
             end
-            self.interior:SetPower(!on)
+            if self.interior:GetData("power-state") then self.interior:SetPower(!on) end
             self:SetData("repair-primed",on,true)
         else
             self:SetData("repair-primed",on,true)
@@ -70,13 +90,13 @@ if SERVER then
     end
 
     function ENT:FinishRepair()
-        self:FlashLight(1.5)
         self:EmitSound("tardis/repairfinish.wav")
         self:SetData("repairing", false, true)
         self:ChangeHealth(TARDIS:GetSetting("health-max"))
         self.interior:SetPower(true)
         self:SetLocked(false, nil, true)
         self:GetCreator():ChatPrint("Your TARDIS has finished self-repairing")
+        self:FlashLight(1.5)
     end
 
     ENT:AddHook("CanTogglePower", "health", function(self)
@@ -89,13 +109,11 @@ if SERVER then
         if (self:GetData("repair-primed",false)==true) and (#self.occupants==0) then
             timer.Simple(0.5, function()
                 if not IsValid(self) then return end
-                self:CloseDoor(function(state)
-                    self:SetLocked(true)
-                    local time = CurTime()+( TARDIS:GetSetting("health-max")-self:GetData("health-val") )*0.1
-                    self:SetData("repair-time", time, true)
-                    self:SetData("repairing", true, true)
-                    self:SetData("repair-primed", false)
-                end)
+                self:SetLocked(true)
+                local time = CurTime()+( math.Clamp((TARDIS:GetSetting("health-max")-self:GetData("health-val"))*0.1, 1, 60) )
+                self:SetData("repair-time", time, true)
+                self:SetData("repairing", true, true)
+                self:SetData("repair-primed", false)
             end)
         end
     end)
@@ -126,7 +144,11 @@ if SERVER then
     end)
 
     ENT:AddHook("health-depleted", "death", function(self)
-        self.interior:TogglePower()
+        self.interior:SetPower(false)
+        if self:GetData("vortex",false) then
+            self:Mat()
+        end
+        self:Explode()
     end)    
 else    
     ENT:OnMessage("health-networking", function(self, ply)
