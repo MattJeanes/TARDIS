@@ -3,6 +3,7 @@
 function TARDISHUD()
     if not (LocalPlayer():GetTardisData("interior") or LocalPlayer():GetTardisData("exterior")) then return end
     local tardis = LocalPlayer():GetTardisData("exterior")
+    if not IsValid(tardis) then return end
     local width = 160
     local height = 120
     local x = (ScrW()-width)*0.02
