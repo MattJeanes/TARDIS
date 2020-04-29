@@ -22,6 +22,7 @@ if SERVER then
 	end
 
 	function ENT:SetLocked(locked,callback, silent)
+		if not self:CallHook("CanLock") then return end
 		if locked then
 			self:SetData("locking",true,true)
 			self:CloseDoor(function(state)
@@ -51,7 +52,7 @@ if SERVER then
 	ENT:AddHook("Use", "lock", function(self,a,c)
 		if self:GetData("locked") and IsValid(a) and a:IsPlayer() then
 			if self:GetData("repairing") then
-				a:ChatPrint("This TARDIS is repairing. It will be done in "..math.floor(self.exterior:GetRepairTime()).." seconds.")
+				a:ChatPrint("This TARDIS is repairing. It will be done in "..math.floor(self:GetRepairTime()).." seconds.")
 			else
 				a:ChatPrint("This TARDIS is locked.")
 			end

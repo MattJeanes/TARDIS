@@ -89,6 +89,24 @@ function TARDIS:ScreenActive(name)
 	end
 end
 
+function TARDIS:GetScreenFrames()
+	if not self.HUDScreenActive or not IsValid(self.screenpop) then return end
+	local tab = {}
+
+	for k,v in pairs(self.screenpop.screens) do
+		tab[v[1]] = v[2]
+	end
+
+	return tab
+end
+
+function TARDIS:GetScreenByName(name)
+	if not self.HUDScreenActive or not IsValid(self.screenpop) then return end
+	local screen = self:GetScreenFrames()[name]
+	if not IsValid(screen) then return end
+	return screen
+end
+
 function TARDIS:SwitchScreen(screen,newscreen)
 	if IsValid(newscreen) then
 		if #screen.backstack>0 then

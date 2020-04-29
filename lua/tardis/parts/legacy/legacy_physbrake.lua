@@ -13,7 +13,7 @@ if SERVER then
         self:EmitSound("tardis/control_handbrake.wav")
         if self.InSequence==true then return end
         local result = self.exterior:TogglePhyslock() or false
-        ply:ChatPrint("Physics Lock ".. result and "engaged" or "disengaged")
+        ply:ChatPrint("Physics Lock ".. (result and "engaged" or "disengaged"))
     end
 end
         

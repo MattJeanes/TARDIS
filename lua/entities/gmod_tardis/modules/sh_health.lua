@@ -105,9 +105,13 @@ if SERVER then
         end
     end)
 
+    ENT:AddHook("CanLock", "repair", function(self)
+        if (not self:GetData("repairing",false)) then return true end
+    end)
+
     ENT:AddHook("PlayerExit", "repair", function(self,ply,forced,notp)
         if (self:GetData("repair-primed",false)==true) and (#self.occupants==0) then
-            timer.Simple(0.5, function()
+            timer.Simple(0.3, function()
                 if not IsValid(self) then return end
                 self:SetLocked(true)
                 local time = CurTime()+( math.Clamp((TARDIS:GetSetting("health-max")-self:GetData("health-val"))*0.1, 1, 60) )
@@ -121,7 +125,6 @@ if SERVER then
     ENT:AddHook("Think", "repair", function(self)
         if (self:GetData("repairing",false) and CurTime()>self:GetData("repair-time",0)) then
             self:FinishRepair()
-            self:SetData("repairing", false, true)
         end
     end)
 

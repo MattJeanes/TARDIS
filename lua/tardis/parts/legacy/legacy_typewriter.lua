@@ -10,9 +10,12 @@ PART.Animate = true
 
 if SERVER then
     function PART:Use(ply)
-
+        ply:SendLua([[
+            TARDIS:HUDScreen()
+            TARDIS:SwitchScreen(TARDIS.screenpop, TARDIS:GetScreenByName("Destination"))
+        ]])
     end
 end
-        
+
 
 TARDIS:AddPart(PART)
