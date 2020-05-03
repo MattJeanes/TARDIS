@@ -23,6 +23,20 @@ TARDIS:AddControl("power",{
 	serveronly=true
 })
 
+TARDIS:AddControl("hads",{
+	func=function(self,ply)
+		if self:GetData("hads") then
+			self:SetData("hads",false)
+			ply:ChatPrint("HADS Disabled")
+		else
+			self:SetData("hads",true)
+			ply:ChatPrint("HADS Enabled")
+		end
+	end,
+	exterior=true,
+	serveronly=true,
+	interior=true
+})
 TARDIS:AddControl("repair",{
 	func=function(self,ply)
         self:ToggleRepair()
@@ -102,5 +116,14 @@ TARDIS:AddScreen("Functions Fallback", {menu=false}, function(self,ext,int,frame
     fastreturn.DoClick = function()
         TARDIS:Control("fastreturn")
     end
+		
+	local hads=vgui.Create("DButton",frame)
+	hads:SetSize( frame:GetWide()*0.2, frame:GetTall()*0.2 )
+	hads:SetPos(frame:GetWide()*0.13 - power:GetWide()*0.5,frame:GetTall()*0.85 - power:GetTall()*0.5)
+	hads:SetText("Toggle HADS")
+	hads:SetFont("TARDIS-Default")
+	hads.DoClick = function()
+		TARDIS:Control("hads")
+	end		
     
 end)
