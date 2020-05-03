@@ -133,6 +133,7 @@ TARDIS:AddScreen("Destination", {menu=false}, function(self,ext,int,frame,screen
 		updatetextinputs(pos,ang,name)
 		namebox:SetEnabled(true)
 	end
+	list:SetMultiSelect(false)
 
 	local new = vgui.Create("DButton", frame)
 	new:SetSize( frame:GetWide()*0.08, frame:GetTall()*0.1 )
@@ -200,9 +201,17 @@ TARDIS:AddScreen("Destination", {menu=false}, function(self,ext,int,frame,screen
 		function() TARDIS:RemoveLocation(map,index) updatelist() pendingchanges = true end,
 		"No")
 	end
+	function remove:Think()
+		if list:GetSelectedLine() ~= nil then
+			self:SetEnabled(true)
+		else
+			self:SetEnabled(false)
+		end
+	end
+
 	local save = vgui.Create("DButton", frame)
 	save:SetSize( frame:GetWide()*0.07, frame:GetTall()*0.1 )
-	save:SetPos(frame:GetWide()*0.82 - save:GetWide()*0.5, frame:GetTall()*0.55 - save:GetTall()*0.5)
+	save:SetPos(frame:GetWide()*0.82 - save:GetWide()*0.5, frame:GetTall()*0.52 - save:GetTall()*0.5)
 	save:SetText("Save")
 	save:SetFont("TARDIS-Default")
 	function save:DoClick()
@@ -219,7 +228,7 @@ TARDIS:AddScreen("Destination", {menu=false}, function(self,ext,int,frame,screen
 	end
 	local load = vgui.Create("DButton", frame)
 	load:SetSize( frame:GetWide()*0.07, frame:GetTall()*0.1 )
-	load:SetPos(frame:GetWide()*0.9 - load:GetWide()*0.5, frame:GetTall()*0.55 - load:GetTall()*0.5)
+	load:SetPos(frame:GetWide()*0.9 - load:GetWide()*0.5, frame:GetTall()*0.52 - load:GetTall()*0.5)
 	load:SetText("Load")
 	load:SetFont("TARDIS-Default")
 	function load:DoClick()
