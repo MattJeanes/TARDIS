@@ -43,6 +43,7 @@ TARDIS:AddScreen("Destination", {menu=false}, function(self,ext,int,frame,screen
 		TARDIS:Control("destination")
 		if TARDIS:HUDScreenOpen(ply) then TARDIS:RemoveHUDScreen() end
 	end
+
 	local btnx,btny = button:GetPos()
 	local x = vgui.Create("DTextEntry",frame)
 	x:SetPlaceholderText("x")
@@ -84,7 +85,7 @@ TARDIS:AddScreen("Destination", {menu=false}, function(self,ext,int,frame,screen
 		x:SetText(pos.x)
 		y:SetText(pos.y)
 		z:SetText(pos.z)
-		namebox:SetText(name)
+		if name then namebox:SetText(name) end
 	end
 	local function fetchtextinputs()
 		local pos = 0
@@ -135,9 +136,19 @@ TARDIS:AddScreen("Destination", {menu=false}, function(self,ext,int,frame,screen
 	end
 	list:SetMultiSelect(false)
 
+	local gpos = vgui.Create("DButton", frame)
+	gpos:SetSize( frame:GetWide()*0.247, frame:GetTall()*0.1 )
+	gpos:SetPos(pitch:GetPos(),frame:GetTall()*0.4 - button:GetTall()*0.5)
+	gpos:SetFont("TARDIS-Default")
+	gpos:SetText("Get Current Position")
+
+	function gpos:DoClick()
+		updatetextinputs(ext:GetPos(), ext:GetAngles())
+	end
+
 	local new = vgui.Create("DButton", frame)
 	new:SetSize( frame:GetWide()*0.08, frame:GetTall()*0.1 )
-	new:SetPos(pitch:GetPos(),frame:GetTall()*0.4 - button:GetTall()*0.5)
+	new:SetPos(pitch:GetPos(),frame:GetTall()*0.52 - button:GetTall()*0.5)
 	new:SetText("New")
 	new:SetFont("TARDIS-Default")
 	function new:DoClick()
@@ -169,7 +180,7 @@ TARDIS:AddScreen("Destination", {menu=false}, function(self,ext,int,frame,screen
 
 	local edit = vgui.Create("DButton", frame)
 	edit:SetSize( frame:GetWide()*0.08, frame:GetTall()*0.1 )
-	edit:SetPos(yaw:GetPos(),frame:GetTall()*0.4 - button:GetTall()*0.5)
+	edit:SetPos(yaw:GetPos(),frame:GetTall()*0.52 - button:GetTall()*0.5)
 	edit:SetText("Update")
 	edit:SetFont("TARDIS-Default")
 	edit:SetEnabled(false)
@@ -191,7 +202,7 @@ TARDIS:AddScreen("Destination", {menu=false}, function(self,ext,int,frame,screen
 
 	local remove = vgui.Create("DButton", frame)
 	remove:SetSize( frame:GetWide()*0.08, frame:GetTall()*0.1 )
-	remove:SetPos(roll:GetPos(),frame:GetTall()*0.4 - button:GetTall()*0.5)
+	remove:SetPos(roll:GetPos(),frame:GetTall()*0.52 - button:GetTall()*0.5)
 	remove:SetText("Delete")
 	remove:SetFont("TARDIS-Default")
 	function remove:DoClick()
@@ -211,7 +222,7 @@ TARDIS:AddScreen("Destination", {menu=false}, function(self,ext,int,frame,screen
 
 	local save = vgui.Create("DButton", frame)
 	save:SetSize( frame:GetWide()*0.07, frame:GetTall()*0.1 )
-	save:SetPos(frame:GetWide()*0.82 - save:GetWide()*0.5, frame:GetTall()*0.52 - save:GetTall()*0.5)
+	save:SetPos(frame:GetWide()*0.82 - save:GetWide()*0.5, frame:GetTall()*0.64 - save:GetTall()*0.5)
 	save:SetText("Save")
 	save:SetFont("TARDIS-Default")
 	function save:DoClick()
@@ -228,7 +239,7 @@ TARDIS:AddScreen("Destination", {menu=false}, function(self,ext,int,frame,screen
 	end
 	local load = vgui.Create("DButton", frame)
 	load:SetSize( frame:GetWide()*0.07, frame:GetTall()*0.1 )
-	load:SetPos(frame:GetWide()*0.9 - load:GetWide()*0.5, frame:GetTall()*0.52 - load:GetTall()*0.5)
+	load:SetPos(frame:GetWide()*0.9 - load:GetWide()*0.5, frame:GetTall()*0.64 - load:GetTall()*0.5)
 	load:SetText("Load")
 	load:SetFont("TARDIS-Default")
 	function load:DoClick()
