@@ -6,6 +6,10 @@ function ENT:IsVortexEnabled(pilot)
 	return ((not pilot and SERVER) or TARDIS:GetSetting("vortex-enabled",false,pilot)) and IsValid(self:GetPart("vortex")) and (SERVER or self:GetData("vortexmodelvalid"))
 end
 
+ENT:AddHook("VortexEnabled", "demat-fast", function(self, pilot)
+	return !self:GetData("demat-fast",false)
+end)
+
 if SERVER then
 	ENT:AddHook("PhysicsUpdate","vortex",function(self,ph)
 		-- Simulate flight without actually moving anywhere

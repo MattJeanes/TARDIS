@@ -56,10 +56,10 @@ if SERVER then
 					pos=pos or self:GetData("demat-pos") or self:GetPos()
 					ang=ang or self:GetData("demat-ang") or self:GetAngles()
 					self:SetBodygroup(1,0)
-					self:SendMessage("demat")
-					self:SetData("demat",true)
 					self:SetData("demat-pos",pos,true)
 					self:SetData("demat-ang",ang,true)
+					self:SendMessage("demat", function() net.WriteVector(self:GetData("demat-pos",Vector())) end)
+					self:SetData("demat",true)
 					self:SetData("fastreturn-pos",self:GetPos())
 					self:SetData("fastreturn-ang",self:GetAngles())
 					self:SetData("step",1)
@@ -99,7 +99,8 @@ if SERVER then
 				else
 					self:SendMessage("premat",function() net.WriteVector(self:GetData("demat-pos",Vector())) end)
 					self:SetData("teleport",true)
-					timer.Simple(8.5,function()
+					local timerdelay = (self:GetData("demat-fast",false) and 1.8 or 8.5)
+					timer.Simple(timerdelay,function()
 						if not IsValid(self) then return end
 						self:SendMessage("mat")
 						self:SetData("mat",true)
@@ -210,13 +211,16 @@ if SERVER then
 				end
 			end
 		end
+		self:CallHook("StopDemat")
+	end
+
+	ENT:AddHook("StopDemat", "teleport-fast", function(self)
 		if self:GetData("demat-fast",false) then
-			timer.Simple(1,function()
+			timer.Simple(0.1, function()
 				self:Mat()
 			end)
 		end
-		self:CallHook("StopDemat")
-	end
+	end)
 	function ENT:StopMat()
 		self:SetBodygroup(1,1)
 		self:SetData("mat",false)
@@ -351,11 +355,21 @@ else
 		if TARDIS:GetSetting("teleport-sound") and TARDIS:GetSetting("sound") then
 			local ext = self.metadata.Exterior.Sounds.Teleport
 			local int = self.metadata.Interior.Sounds.Teleport
+			local pos = net.ReadVector()
 			if LocalPlayer():GetTardisData("exterior")==self then
-				self:EmitSound(ext.demat)
-				self.interior:EmitSound(int.demat or ext.demat)
+				if (self:GetData("demat-fast",false))==true then
+					self.interior:EmitSound(int.fullflight or ext.fullflight)
+					self:EmitSound(ext.fullflight)
+				else
+					self.interior:EmitSound(int.demat or ext.demat)
+					self:EmitSound(ext.demat)
+				end
 			else
 				sound.Play(ext.demat,self:GetPos())
+				if pos and self:GetData("demat-fast",false) then
+					if not IsValid(self) then return end
+					sound.Play(ext.mat, pos)
+				end
 			end
 		end
 	end)
@@ -367,10 +381,16 @@ else
 			local int = self.metadata.Interior.Sounds.Teleport
 			local pos=net.ReadVector()
 			if LocalPlayer():GetTardisData("exterior")==self then
-				self:EmitSound(ext.mat)
-				self.interior:EmitSound(int.mat or ext.mat)
+				if not self:GetData("demat-fast",false) then
+					self:EmitSound(ext.mat)
+					self.interior:EmitSound(int.mat or ext.mat)
+				end
 			else
-				sound.Play(ext.mat,pos)
+				if self:GetData("demat-fast",false) then
+
+				else
+					sound.Play(ext.mat,pos)
+				end
 			end
 		end
 	end)
@@ -459,7 +479,8 @@ ENT:AddHook("Think","teleport",function(self,delta)
 		target=self:GetTargetAlpha()
 		self:SetData("alphatarget",target)
 	end
-	alpha=math.Approach(alpha,target,delta*66*self.metadata.Exterior.Teleport.SequenceSpeed)
+	local sequencespeed = self.metadata.Exterior.Teleport.SequenceSpeed * (self:GetData("demat-fast",false) and 1.1 or 1)
+	alpha=math.Approach(alpha,target,delta*66*sequencespeed)
 	self:SetData("alpha",alpha)
 	local attached=self:GetData("demat-attached")
 	if attached then
