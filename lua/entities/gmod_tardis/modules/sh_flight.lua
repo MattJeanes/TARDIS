@@ -110,6 +110,12 @@ if SERVER then
 		if on and self:CallHook("CanTurnOnFlight")==false then
 			return false
 		end
+		if on and self:GetData("physlock",false)==true then
+			local pilot = self:GetData("pilot",nil)
+			if IsValid(pilot) and pilot:IsPlayer() then
+				pilot:ChatPrint("WARNING: Physical lock engaged")
+			end
+		end
 		self:SetData("flight",on,true)
 		self:SetFloat(on)
 		return true
