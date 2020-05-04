@@ -90,7 +90,7 @@ if SERVER then
     end
 
     function ENT:FinishRepair()
-        self:EmitSound("tardis/repairfinish.wav")
+        self:EmitSound(self.metadata.Exterior.Sounds.RepairFinish)
         self:SetData("repairing", false, true)
         self:ChangeHealth(TARDIS:GetSetting("health-max"))
         self.interior:SetPower(true)
