@@ -215,6 +215,7 @@ if SERVER then
 				self:Mat()
 			end)
 		end
+		self:CallHook("StopDemat")
 	end
 	function ENT:StopMat()
 		self:SetBodygroup(1,1)
@@ -244,6 +245,7 @@ if SERVER then
 			self:SetFastRemat(false)
 			self:SetData("fastreturn",false)
 		end
+		self:CallHook("StopMat")
 	end
 	function ENT:SetDestination(pos, ang)
 		self:SetData("demat-pos",pos,true)
