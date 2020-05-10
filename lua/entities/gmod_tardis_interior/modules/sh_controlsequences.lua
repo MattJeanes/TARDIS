@@ -41,6 +41,16 @@ available on the first followup control. This might change five minutes after.
 Full documentation for control sequences will be available on the wiki.
 ]]
 
+TARDIS:AddSetting({
+    id="csequences-enabled",
+    name="Enable Control Sequences",
+    desc="Should control sequences or 'advanced mode' be used?",
+    section="Misc",
+    value=false,
+    type="bool",
+    option=true,
+    networked=true
+})
 
 if SERVER then
     ENT:AddHook("PartUsed","HandleControlSequence",function(self,part,a)
@@ -50,7 +60,8 @@ if SERVER then
         local active = self:GetData("cseq-active",false)
         local step = self:GetData("cseq-step")
         if active==false and sequences[id] then
-            if not self:GetData("advanced-flight", false) then return end
+            local allowed = self:CallHook("CanStartCSequence")
+            if allowed==false then return end
             self:EmitSound(self.metadata.Interior.Sounds.SeqOK)
             self:SetData("cseq-active", true)
             self:SetData("cseq-step", 1)
@@ -80,7 +91,9 @@ if SERVER then
             end
         end
     end)
-    ENT:AddHook("CanStartCSequence", "settingquery-sv", function(self)
+    ENT:AddHook("CanStartCSequence", "settingquery", function(self)
+        local result = TARDIS:GetSetting("csequences-enabled",false,self:GetCreator())
+        print(result)
         return true
     end)
 
@@ -96,5 +109,4 @@ if SERVER then
         self:SetData("cseq-curseq",nil)
         self:SetData("cseq-active",false)
     end
-
 end

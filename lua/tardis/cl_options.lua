@@ -17,7 +17,7 @@ function TARDIS:ChangeOption(id,data)
 	text:SetPos(10,30)
 	text:SetTextColor(color_white)
 	
-	local value=TARDIS:GetSetting(id,data.value)
+	local value=TARDIS:GetSetting(id,data.value,LocalPlayer())
 	
 	local update
 	if data.type=="number" then
