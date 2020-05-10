@@ -1,5 +1,9 @@
 --Health
 
+CreateConVar("tardisrw_maxhealth", 1000, {FCVAR_ARCHIVE, FCVAR_REPLICATED}, "TARDIS Rewrite - Maximum health")
+CreateConVar("tardisrw_damage", 1, {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, "TARDIS Rewrite - Damage enabled (1 enables, 0 disables)", 0, 1)
+
+
 TARDIS:AddSetting({
     id="health-enabled",
     name="Enable Health",
@@ -28,6 +32,7 @@ ENT:AddHook("Initialize","health-init",function(self)
     self:SetData("health-val", TARDIS:GetSetting("health-max"), true)
 end)
 function ENT:ChangeHealth(NewHealth)
+    if not TARDIS:GetSetting("health-enabled") then return end
     if self:GetData("repairing", false) then
         return
     end
@@ -52,6 +57,13 @@ function ENT:GetRepairTime()
 end
 
 if SERVER then
+    cvars.AddChangeCallback("tardisrw_maxhealth", function(cvname, oldvalue, newvalue)
+       TARDIS:SetSetting("health-max", tonumber(newvalue), true)
+    end, "UpdateOnChange")  
+    
+    cvars.AddChangeCallback("tardisrw_damage", function(cvname, oldvalue, newvalue)
+       TARDIS:SetSetting("health-enabled", tobool(newvalue), true)
+    end, "UpdateOnChange")
 
     function ENT:Explode()
         if not vFireInstalled then

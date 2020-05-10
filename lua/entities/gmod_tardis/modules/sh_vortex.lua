@@ -102,6 +102,7 @@ else
 	})
 	
 	ENT:AddHook("Think","vortex",function(self)
+		if self:GetData("demat-fast",false) then return end
 		local alpha = self:GetData("vortexalpha",0)
 		local enabled = self:IsVortexEnabled()
 		local target = self:GetData("vortex") and 1 or 0
