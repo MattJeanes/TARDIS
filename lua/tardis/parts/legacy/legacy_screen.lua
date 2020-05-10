@@ -1,4 +1,4 @@
---Legacy Interior - Screen
+-- Legacy Interior - Screen
 
 local PART = {}
 PART.ID = "legacy_screen"

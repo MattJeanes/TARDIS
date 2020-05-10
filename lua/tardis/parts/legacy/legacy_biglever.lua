@@ -1,4 +1,4 @@
---Legacy Interior - Fast Return Lever
+-- Legacy Interior - Fast Return Lever
 
 local PART = {}
 PART.ID = "legacy_biglever"

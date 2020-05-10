@@ -1,4 +1,4 @@
-//TARDIS HUD
+-- HUD
 
 function TARDISHUD()
     if not TARDIS:GetSetting("health-enabled", true) then return end

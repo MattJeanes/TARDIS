@@ -1,4 +1,4 @@
---Legacy Interior - Cloaking Blacksticks
+-- Legacy Interior - Cloaking Blacksticks
 
 local PART = {}
 PART.ID = "legacy_blacksticks"

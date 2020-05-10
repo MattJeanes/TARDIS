@@ -1,4 +1,4 @@
---Legacy Interior - Wibbly Lever
+-- Legacy Interior - Wibbly Lever
 
 local PART = {}
 PART.ID = "legacy_wibblylever"

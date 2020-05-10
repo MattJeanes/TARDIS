@@ -1,4 +1,4 @@
---Health
+-- Health
 
 CreateConVar("tardisrw_maxhealth", 1000, {FCVAR_ARCHIVE, FCVAR_REPLICATED}, "TARDIS Rewrite - Maximum health")
 CreateConVar("tardisrw_damage", 1, {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, "TARDIS Rewrite - Damage enabled (1 enables, 0 disables)", 0, 1)
@@ -39,7 +39,7 @@ function ENT:ChangeHealth(NewHealth)
     local OldHealth = self:GetHealth()
     if NewHealth <= 0 then 
         NewHealth = 0
-        if NewHealth == 0 and not ( NewHealth == OldHealth) then
+        if NewHealth == 0 and not (NewHealth == OldHealth) then
             self:CallHook("health-depleted")
             self.interior:CallHook("health-depleted")
         end
@@ -90,11 +90,11 @@ if SERVER then
             for k,_ in pairs(self.occupants) do
                 k:ChatPrint("This TARDIS has been set to self-repair. Please vacate the interior.")
             end
-            if self.interior:GetData("power-state") then self.interior:SetPower(!on) end
+            if self.interior:GetData("power-state") then self.interior:SetPower(false) end
             self:SetData("repair-primed",on,true)
         else
             self:SetData("repair-primed",on,true)
-            self.interior:SetPower(!on)
+            self.interior:SetPower(true)
             for k,_ in pairs(self.occupants) do
                 k:ChatPrint("TARDIS self-repair has been cancelled.")
             end
@@ -126,7 +126,7 @@ if SERVER then
             timer.Simple(0.3, function()
                 if not IsValid(self) then return end
                 self:SetLocked(true)
-                local time = CurTime()+( math.Clamp((TARDIS:GetSetting("health-max")-self:GetData("health-val"))*0.1, 1, 60) )
+                local time = CurTime()+(math.Clamp((TARDIS:GetSetting("health-max")-self:GetData("health-val"))*0.1, 1, 60))
                 self:SetData("repair-time", time, true)
                 self:SetData("repairing", true, true)
                 self:SetData("repair-primed", false)
@@ -146,7 +146,7 @@ if SERVER then
     end)
 
     ENT:AddHook("PhysicsCollide", "Health", function(self, data, collider)
-        if ( data.Speed < 300 ) then return end
+        if (data.Speed < 300) then return end
         local newhealth = self:GetHealth() - data.Speed / 23
         self:ChangeHealth(newhealth)
     end)

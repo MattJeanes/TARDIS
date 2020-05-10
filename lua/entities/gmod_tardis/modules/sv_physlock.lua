@@ -1,4 +1,5 @@
---Physical Lock
+-- Physical Lock
+
 if SERVER then
     function ENT:SetPhyslock(on)
         local phys = self:GetPhysicsObject()

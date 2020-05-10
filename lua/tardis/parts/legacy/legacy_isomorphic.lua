@@ -1,4 +1,4 @@
---Legacy Interior - Isomorphic Security
+-- Legacy Interior - Isomorphic Security
 
 local PART = {}
 PART.ID = "legacy_isomorphic"

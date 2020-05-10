@@ -1,4 +1,4 @@
---Legacy Interior - Repair Lever
+-- Legacy Interior - Repair Lever
 
 local PART = {}
 PART.ID = "legacy_repairlever"

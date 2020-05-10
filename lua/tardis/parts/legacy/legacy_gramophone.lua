@@ -1,4 +1,4 @@
---Legacy Interior - Gramophone
+-- Legacy Interior - Gramophone
 
 local PART = {}
 PART.ID = "legacy_gramophone"

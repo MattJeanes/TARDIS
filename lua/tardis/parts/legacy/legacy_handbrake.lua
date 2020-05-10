@@ -1,4 +1,4 @@
---Legacy Interior - Handbrake
+-- Legacy Interior - Handbrake
 
 local PART = {}
 PART.ID = "legacy_handbrake"

@@ -1,4 +1,4 @@
---Legacy Interior - Long Flight Demat Switch
+-- Legacy Interior - Long Flight Demat Switch
 
 local PART = {}
 PART.ID = "legacy_longflightdemat"

@@ -1,4 +1,4 @@
---Legacy Interior - Directional Pointer
+-- Legacy Interior - Directional Pointer
 
 local PART = {}
 PART.ID = "legacy_directionalpointer"

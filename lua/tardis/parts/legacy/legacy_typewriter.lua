@@ -1,4 +1,4 @@
---Legacy Interior - Typewriter
+-- Legacy Interior - Typewriter
 
 local PART = {}
 PART.ID = "legacy_typewriter"
