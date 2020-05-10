@@ -1,4 +1,4 @@
---Legacy Interior - Helmic Regulator
+-- Legacy Interior - Helmic Regulator
 
 local PART = {}
 PART.ID = "legacy_helmic"

@@ -1,4 +1,4 @@
---Legacy Interior - Flightmode Lever
+-- Legacy Interior - Flightmode Lever
 
 local PART = {}
 PART.ID = "legacy_flightlever"

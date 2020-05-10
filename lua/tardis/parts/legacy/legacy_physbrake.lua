@@ -1,4 +1,4 @@
---Legacy Interior - Physics Lock
+-- Legacy Interior - Physics Lock
 
 local PART = {}
 PART.ID = "legacy_physbrake"

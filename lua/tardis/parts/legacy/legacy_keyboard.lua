@@ -1,4 +1,4 @@
---Legacy Interior - Keyboard
+-- Legacy Interior - Keyboard
 
 local PART = {}
 PART.ID = "legacy_keyboard"

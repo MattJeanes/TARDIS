@@ -1,4 +1,4 @@
---Legacy Interior - HADS Switch
+-- Legacy Interior - HADS Switch
 
 local PART = {}
 PART.ID = "legacy_hads"

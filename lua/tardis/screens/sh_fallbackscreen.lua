@@ -119,7 +119,7 @@ TARDIS:AddScreen("Virtual Console", {menu=false}, function(self,ext,int,frame,sc
 	hads:SetFont("TARDIS-Default")
 	hads.DoClick = function()
 		TARDIS:Control("hads")
-    end
+	end
     function hads:Think()
         local on = ext:GetData("hads", false)
         if on then

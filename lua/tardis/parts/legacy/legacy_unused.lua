@@ -1,4 +1,4 @@
---Legacy Interior - Unused Pull Handle
+-- Legacy Interior - Unused Pull Handle
 
 local PART = {}
 PART.ID = "legacy_unused"

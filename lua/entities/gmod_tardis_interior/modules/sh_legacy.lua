@@ -1,4 +1,5 @@
 -- Legacy interior support
+
 if SERVER then
 	local function playerlookingat(self,ply,vec,fov,width)	
 		local disp = vec - self:WorldToLocal(ply:GetPos()+Vector(0,0,64))

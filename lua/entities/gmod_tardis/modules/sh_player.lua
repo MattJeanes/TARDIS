@@ -1,5 +1,5 @@
 if SERVER then
-	ENT:AddHook("StopMat", "EnterOnTP", function(self)
+	ENT:AddHook("StopMat", "player-enterontp", function(self)
 		local min, max = self:GetCollisionBounds()
 		min = self:LocalToWorld(min)
 		max = self:LocalToWorld(max)

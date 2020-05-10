@@ -1,4 +1,4 @@
---Legacy Interior - Throttle
+-- Legacy Interior - Throttle
 
 local PART = {}
 PART.ID = "legacy_throttle"

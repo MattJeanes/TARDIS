@@ -1,4 +1,4 @@
---Legacy Interior - Atom Accelerator
+-- Legacy Interior - Atom Accelerator
 
 local PART = {}
 PART.ID = "legacy_atomaccel"

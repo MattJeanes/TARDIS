@@ -1,4 +1,4 @@
---Legacy Interior - Long Flight Toggle
+-- Legacy Interior - Long Flight Toggle
 
 local PART = {}
 PART.ID = "legacy_longflighttoggle"

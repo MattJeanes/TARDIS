@@ -7,7 +7,9 @@ function ENT:IsVortexEnabled(pilot)
 end
 
 ENT:AddHook("VortexEnabled", "demat-fast", function(self, pilot)
-	return !self:GetData("demat-fast",false)
+	if self:GetData("demat-fast", false) then
+		return false
+	end
 end)
 
 if SERVER then
