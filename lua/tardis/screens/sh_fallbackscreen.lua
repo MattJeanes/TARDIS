@@ -49,7 +49,7 @@ TARDIS:AddControl("physbrake",{
 
 if SERVER then return end
 
-TARDIS:AddScreen("Functions Fallback", {menu=false}, function(self,ext,int,frame,screen)
+TARDIS:AddScreen("Virtual Console", {menu=false}, function(self,ext,int,frame,screen)
 
     local power=vgui.Create("DButton",frame)
     power:SetSize( frame:GetWide()*0.2, frame:GetTall()*0.2 )
