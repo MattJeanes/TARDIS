@@ -93,7 +93,6 @@ if SERVER then
     end)
     ENT:AddHook("CanStartCSequence", "settingquery", function(self)
         local result = TARDIS:GetSetting("csequences-enabled",false,self:GetCreator())
-        print(result)
         return true
     end)
 
