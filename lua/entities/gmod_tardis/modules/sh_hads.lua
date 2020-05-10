@@ -3,6 +3,6 @@ ENT:AddHook("OnTakeDamage", "hads", function(self)
 		self:GetCreator():ChatPrint("Your TARDIS is under attack and the HADS has been triggered!")
 		self:SetData("hads-triggered",true,true)
 		self:Demat()
-		//self:DoHADSActions() 👀
+		self:CallHook("HADSTrigger")
 	end
 end)
