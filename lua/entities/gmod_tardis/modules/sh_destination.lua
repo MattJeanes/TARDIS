@@ -112,8 +112,20 @@ if SERVER then
                 -- bit hacky but allows us to take away pilot controls without taking them out third person
                 ply:SetTardisData("thirdperson", false, true)
                 self:CallHook("ThirdPerson", ply, false)
+                ply:SetTardisData("wasthirdperson", true, true)
             end
-            if self:SetOutsideView(ply, enabled) then
+            if enabled==false and ply:GetTardisData("wasthirdperson") then
+                ply:SetTardisData("thirdperson", true, true)
+                self:CallHook("ThirdPerson", ply, true)
+                ply:SetTardisData("wasthirdperson", false, true)
+
+                ply:SetTardisData("destination", enabled, true)
+			    self:CallHook("Destination", ply, enabled)
+                self:SendMessage("destination",function()
+                    net.WriteBool(enabled)
+                end,ply)
+                return true
+            elseif self:SetOutsideView(ply, enabled) then
 			    ply:SetTardisData("destination", enabled, true)
 			    self:CallHook("Destination", ply, enabled)
                 self:SendMessage("destination",function()
@@ -136,6 +148,9 @@ if SERVER then
     ENT:OnMessage("destination-demat", function(self, ply)
         local pos = net.ReadVector()
         local ang = net.ReadAngle()
+        if ply:GetTardisData("destination") then
+            self:SelectDestination(ply, false)
+        end
         if self:GetData("vortex") or self:GetData("teleport") then
             if self:SetDestination(pos,ang) then
                 ply:ChatPrint("Destination locked, ready to materialise")
@@ -158,9 +173,6 @@ if SERVER then
                     ply:ChatPrint("Failed to set destination")
                 end
             end
-        end
-        if ply:GetTardisData("destination") then
-            self:SelectDestination(ply, false)
         end
     end)
 else
