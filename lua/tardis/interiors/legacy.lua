@@ -50,7 +50,7 @@ T.Interior={
 		rails=true,
 		legacy_throttle={pos=Vector(-8.87,-50,5.5), ang=Angle(-12,-5,24)},
 		legacy_flightlever={pos=Vector(-0.431641, 44.75, 6.4), ang=Angle(-63.913, 137.035, 136.118)},
-		//legacy_screen={pos=Vector(42,0.75,27.1), ang=Angle(0,-5,0)},
+		--legacy_screen={pos=Vector(42,0.75,27.1), ang=Angle(0,-5,0)}, -- 3d2d screen replaces this
 		legacy_helmic={pos=Vector(-26.000000, -41.000000, 4.000000), ang=Angle(0.000, 330.000, 24.500)},
 		legacy_wibblylever={pos=Vector(-48.000000, 18.000000, 5.400000), ang=Angle(335.000, 347.000, 6.000)},
 		legacy_powerlever={pos=Vector(44.000000, -18.000000, 5.500000), ang=Angle(22.000, 328.000, 347.500)},
