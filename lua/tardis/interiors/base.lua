@@ -24,8 +24,9 @@ T.Interior={
 			On="drmatt/tardis/power_on.wav",
 			Off="drmatt/tardis/power_off.wav"
 		},
-		SeqOK = "drmatt/tardis/seq_ok.wav",
-		SeqBad = "drmatt/tardis/seq_bad.wav"
+		SequenceOK = "drmatt/tardis/seq_ok.wav",
+		SequenceFail = "drmatt/tardis/seq_bad.wav",
+		Cloister = "tardis/cloisterbell_loop.wav"
 	},
 	ScreenDistance=500
 }
