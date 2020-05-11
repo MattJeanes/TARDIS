@@ -24,4 +24,11 @@ if SERVER then
             ent:GetPhysicsObject():EnableMotion(false)
         end
     end)
+
+    ENT:AddHook("MatStart", "physlock", function(self)
+        if not self:GetData("physlock",false) then
+            self.phys:EnableMotion(true)
+            self.phys:Wake()
+        end
+    end)
 end

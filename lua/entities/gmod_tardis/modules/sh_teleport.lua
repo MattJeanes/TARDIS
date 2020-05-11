@@ -43,7 +43,7 @@ TARDIS:AddKeyBind("teleport-mat",{
 	end,
 	serveronly=true,
 	key=MOUSE_LEFT,
-	exterior=true	
+	exterior=true
 })
 
 if SERVER then
@@ -112,10 +112,7 @@ if SERVER then
 						end
 						self:SetData("prevortex-flight",nil)
 						self:SetSolid(SOLID_VPHYSICS)
-						if not self:GetData("physlock",false) then
-							self.phys:EnableMotion(true)
-							self.phys:Wake()
-						end
+						self:CallHook("MatStart")
 							
 						local pos=self:GetData("demat-pos",Vector())
 						local ang=self:GetData("demat-ang",Angle())
@@ -476,7 +473,7 @@ ENT:AddHook("Think","teleport",function(self,delta)
 		target=self:GetTargetAlpha()
 		self:SetData("alphatarget",target)
 	end
-	local sequencespeed = (self:GetData("demat-fast",false) and self.metadata.Exterior.Teleport.SequenceSpeed or self.metadata.Exterior.Teleport.SequenceSpeedFast)
+	local sequencespeed = (self:GetData("demat-fast",false) and self.metadata.Exterior.Teleport.SequenceSpeedFast or self.metadata.Exterior.Teleport.SequenceSpeed)
 	alpha=math.Approach(alpha,target,delta*66*sequencespeed)
 	self:SetData("alpha",alpha)
 	local attached=self:GetData("demat-attached")
