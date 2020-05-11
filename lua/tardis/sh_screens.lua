@@ -8,9 +8,24 @@ function TARDIS:HUDScreenOpen(ply)
 	end
 end
 
+function TARDIS:PopToScreen(name, ply)
+	if SERVER then
+		if IsValid(ply) and ply:IsPlayer() then
+			net.Start("TARDIS-PopToScreen")
+				net.WriteString(name)
+			net.Send(ply)
+		end
+	else
+		self:HUDScreen()
+		self:SwitchScreen(self.screenpop, self:GetScreenByName(name))
+	end
+end
+
+
 if SERVER then
 	TARDIS:LoadFolder("screens")
 	util.AddNetworkString("TARDIS-HUDScreen")
+	util.AddNetworkString("TARDIS-PopToScreen")
 	net.Receive("TARDIS-HUDScreen",function(len,ply)
 		ply.TARDISHUDScreen=net.ReadBool()
 	end)
@@ -125,10 +140,10 @@ function TARDIS:SwitchScreen(screen,newscreen)
 	end
 end
 
-function TARDIS:PopToScreen(name)
-	self:HUDScreen()
-	self:SwitchScreen(self.screenpop, self:GetScreenByName(name))
-end
+net.Receive("TARDIS-PopToScreen", function(len)
+	local name = net.ReadString()
+	TARDIS:PopToScreen(name)
+end)
 
 function TARDIS:PopScreen(screen,all)
 	if #screen.backstack>0 then
