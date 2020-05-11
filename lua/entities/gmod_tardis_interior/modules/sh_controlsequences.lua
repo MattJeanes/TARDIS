@@ -3,7 +3,7 @@
 --[[
 Control Sequences - Format & Execution
 
-Sequences are defined in a file (will probably be in the interiors folder),
+Sequences are defined in a file under interiors/sequences,
 and the file's name referenced in the metadata.
 
 When the interior is loaded, the data in the sequences file will be "moved" into a table in the metadata
