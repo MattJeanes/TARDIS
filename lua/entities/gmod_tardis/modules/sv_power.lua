@@ -10,9 +10,8 @@ if SERVER then
         self:SetPower(on)
     end
     function ENT:SetPower(on)
-        if not (self:CallHook("CanTogglePower")==true or self.exterior:CallHook("CanTogglePower")==true) then return end
+        if (self:CallHook("CanTogglePower")==false or self.interior:CallHook("CanTogglePower")==false) then return end
         self:SetData("power-state",on,true)
-        --self:SendMessage("power-toggled")
         self:CallHook("PowerToggled",on)
         if self.interior then
             self.interior:CallHook("PowerToggled",on)

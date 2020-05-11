@@ -108,8 +108,8 @@ if SERVER then
     end
 
     ENT:AddHook("CanTogglePower", "health", function(self)
-        if (self:GetData("health-val", 0) > 0) and (self:GetData("repairing",false)==false and self:GetData("repair-primed", false)==false) then
-            return true
+        if (not (self:GetData("health-val", 0) > 0)) or (self:GetData("repairing",false) or self:GetData("repair-primed", false)) then
+            return false
         end
     end)
 
