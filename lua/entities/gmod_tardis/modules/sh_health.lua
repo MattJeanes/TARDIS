@@ -87,9 +87,9 @@ if SERVER then
                 k:ChatPrint("This TARDIS has been set to self-repair. Please vacate the interior.")
             end
             if self.interior:GetData("power-state") then self.interior:SetPower(false) end
-            self:SetData("repair-primed",on,true)
+            self:SetData("repair-primed",true,true)
         else
-            self:SetData("repair-primed",on,true)
+            self:SetData("repair-primed",false,true)
             self.interior:SetPower(true)
             for k,_ in pairs(self.occupants) do
                 k:ChatPrint("TARDIS self-repair has been cancelled.")
