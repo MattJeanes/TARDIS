@@ -1,6 +1,6 @@
 -- HUD
 
-function TARDISHUD()
+hook.Add("HUDPaint", "TARDISRewrite-HUD", function()
     if not TARDIS:GetSetting("health-enabled", true) then return end
     if not (LocalPlayer():GetTardisData("interior") or LocalPlayer():GetTardisData("exterior")) then return end
     local tardis = LocalPlayer():GetTardisData("exterior")
@@ -15,6 +15,4 @@ function TARDISHUD()
     local textcolor = (health > 0) and NamedColor("FgColor") or NamedColor("Caution")
     draw.DrawText( "TARDIS", "TARDIS-PageName", x+10, y+10, textcolor, TEXT_ALIGN_LEFT )
     draw.DrawText( health, "TARDIS-Large", x+10, y+45, textcolor, TEXT_ALIGN_LEFT )
-end
-
-hook.Add("HUDPaint", "TARDISRewrite-HUD", TARDISHUD)
+end)
