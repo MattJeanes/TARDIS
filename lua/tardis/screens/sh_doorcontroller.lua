@@ -18,7 +18,7 @@ TARDIS:AddScreen("Door controller", {intonly=true,menu=false}, function(self,ext
 		doorstatus:SizeToContents()
 		doorstatus:SetPos((frame:GetWide()*0.5)-(doorstatus:GetWide()*0.5),(frame:GetTall()*0.35)-(doorstatus:GetTall()*0.5))
 	end
-	doorstatus:DoLayout()	
+	doorstatus:DoLayout()
 
 	local button = vgui.Create("DButton",frame)
 	button.first=true
