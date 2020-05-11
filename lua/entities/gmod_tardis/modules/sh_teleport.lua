@@ -11,8 +11,7 @@ TARDIS:AddKeyBind("teleport-demat",{
 			if ply==pilot and down then
 				ply:SetTardisData("teleport-demat-bind-down", true)
 			end
-			if ply==pilot and (not down) and ply:GetTardisData("teleport-demat-bind-down") then
-				ply:SetTardisData("teleport-demat-bind-down", false)
+			if ply==pilot and (not down) and ply:GetTardisData("teleport-demat-bind-down",false) then
 				if not self:GetData("vortex") then
 					if self:GetData("demat-pos") then
 						self:Demat()
@@ -21,6 +20,9 @@ TARDIS:AddKeyBind("teleport-demat",{
 					local pos,ang=self:GetThirdPersonTrace(ply,ply:GetTardisData("viewang"))
 					self:Demat(pos,ang)
 				end
+			end
+			if not down then
+				ply:SetTardisData("teleport-demat-bind-down", nil)
 			end
 		else
 			if ply==pilot and down and (not (self:GetData("vortex") or self:GetData("teleport"))) then
