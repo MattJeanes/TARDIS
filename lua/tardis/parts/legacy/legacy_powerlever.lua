@@ -13,6 +13,5 @@ if SERVER then
         self.interior:TogglePower()
     end
 end
-        
 
 TARDIS:AddPart(PART)

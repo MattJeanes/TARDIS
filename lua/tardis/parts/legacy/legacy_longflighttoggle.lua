@@ -13,6 +13,5 @@ if SERVER then
         self.exterior:ToggleFastRemat()
     end
 end
-        
 
 TARDIS:AddPart(PART)

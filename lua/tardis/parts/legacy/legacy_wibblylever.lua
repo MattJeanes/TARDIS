@@ -13,6 +13,5 @@ if SERVER then
         self.exterior:ToggleLocked()
     end
 end
-        
 
 TARDIS:AddPart(PART)

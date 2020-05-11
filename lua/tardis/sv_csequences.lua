@@ -1,10 +1,10 @@
 TARDIS.CSequences = {}
 
-function TARDIS:AddCSequence(cseq)
+function TARDIS:AddControlSequence(cseq)
     self.CSequences[cseq.ID] = cseq
 end
 
-function TARDIS:GetCSequence(id)
+function TARDIS:GetControlSequence(id)
     if self.CSequences[id] ~= nil then
         return self.CSequences[id]
     end

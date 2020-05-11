@@ -13,6 +13,5 @@ if SERVER then
         self.exterior:ToggleRepair()
     end
 end
-        
 
 TARDIS:AddPart(PART)

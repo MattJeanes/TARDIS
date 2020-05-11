@@ -387,9 +387,7 @@ else
 					self.interior:EmitSound(int.mat or ext.mat)
 				end
 			else
-				if self:GetData("demat-fast",false) then
-
-				else
+				if not self:GetData("demat-fast",false) then
 					sound.Play(ext.mat,pos)
 				end
 			end

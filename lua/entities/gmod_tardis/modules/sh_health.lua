@@ -28,23 +28,22 @@ TARDIS:AddSetting({
 })
 
 ENT:AddHook("Initialize","health-init",function(self)
-    --local max_health = self:GetSetting("health-max") or 100
     self:SetData("health-val", TARDIS:GetSetting("health-max"), true)
 end)
-function ENT:ChangeHealth(NewHealth)
+function ENT:ChangeHealth(newhealth)
     if not TARDIS:GetSetting("health-enabled") then return end
     if self:GetData("repairing", false) then
         return
     end
-    local OldHealth = self:GetHealth()
-    if NewHealth <= 0 then 
-        NewHealth = 0
-        if NewHealth == 0 and not (NewHealth == OldHealth) then
+    local oldhealth = self:GetHealth()
+    if newhealth <= 0 then 
+        newhealth = 0
+        if newhealth == 0 and not (newhealth == oldhealth) then
             self:CallHook("health-depleted")
             self.interior:CallHook("health-depleted")
         end
     end
-    self:SetData("health-val", NewHealth, true)
+    self:SetData("health-val", newhealth, true)
     self:CallHook("health-change")
 end
 
@@ -73,9 +72,7 @@ if SERVER then
             explode:Spawn()
             explode:SetKeyValue("iMagnitude","100") //Sets the magnitude of the explosion
             explode:Fire("Explode", 0, 0 ) //Tells the explode entity to explode
-            //explode:EmitSound("weapon_AWP.Single", 400, 400 ) //Adds sound to the explosion
         else
-            //alternate explosion
         end
     end
 
@@ -84,7 +81,6 @@ if SERVER then
         self:SetRepair(on)
     end
     function ENT:SetRepair(on)
-        //self.interior:SetData("selfrepair-primed",on,true)
         if (self:GetHealth() > TARDIS:GetSetting("health-max",1)-1) or self:GetData("vortex",false) then return end
         if on==true then
             for k,_ in pairs(self.occupants) do

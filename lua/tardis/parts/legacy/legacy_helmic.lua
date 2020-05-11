@@ -9,11 +9,4 @@ PART.Collision = true
 PART.Animate = true
 PART.AutomaticFrameAdvance = true
 
-if SERVER then
-    function PART:Use(ply)
-
-    end
-end
-        
-
 TARDIS:AddPart(PART)

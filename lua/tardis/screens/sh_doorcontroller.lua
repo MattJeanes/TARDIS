@@ -67,16 +67,4 @@ TARDIS:AddScreen("Door controller", {intonly=true,menu=false}, function(self,ext
 			end
 		end
 	end
-
-	local debuglabel = vgui.Create("DLabel",frame)
-	debuglabel:SetTextColor(Color(0,0,0))
-	debuglabel:SetFont("TARDIS-Default")
-	debuglabel.DoLayout = function(self)
-		debuglabel:SizeToContents()
-		debuglabel:SetPos((frame:GetWide()*0.5)-(debuglabel:GetWide()*0.5),(frame:GetTall()*0.5)-(debuglabel:GetTall()*0.5))
-	end
-	debuglabel.Think = function(debuglabel)
-		debuglabel:SetText( "open: "..tostring(ext:DoorOpen()).." button.open: "..tostring(button.open).." moving: "..tostring(ext:DoorMoving()) )
-		debuglabel:DoLayout()
-	end
 end)

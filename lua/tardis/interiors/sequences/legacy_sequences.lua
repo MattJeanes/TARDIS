@@ -18,4 +18,4 @@ local Seq = {
     }
 }
 
-TARDIS:AddCSequence(Seq)
+TARDIS:AddControlSequence(Seq)

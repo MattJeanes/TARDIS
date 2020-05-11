@@ -54,15 +54,15 @@ TARDIS:AddSetting({
 
 if SERVER then
     ENT:AddHook("PartUsed","HandleControlSequence",function(self,part,a)
-        local sequences = TARDIS:GetCSequence(self.metadata.Interior.Sequences)
+        local sequences = TARDIS:GetControlSequence(self.metadata.Interior.Sequences)
         if sequences == nil then return end
         local id = part.ID
         local active = self:GetData("cseq-active",false)
         local step = self:GetData("cseq-step")
         if active==false and sequences[id] then
-            local allowed = self:CallHook("CanStartCSequence")
+            local allowed = self:CallHook("controlsequence-canstart")
             if allowed==false then return end
-            self:EmitSound(self.metadata.Interior.Sounds.SeqOK)
+            self:EmitSound(self.metadata.Interior.Sounds.SequenceOK)
             self:SetData("cseq-active", true)
             self:SetData("cseq-step", 1)
             self:SetData("cseq-curseq", id)
@@ -73,7 +73,7 @@ if SERVER then
         elseif active==true then
             local curseq = self:GetData("cseq-curseq","none")
             if sequences[curseq].Controls[step] == id then
-                self:EmitSound(self.metadata.Interior.Sounds.SeqOK)
+                self:EmitSound(self.metadata.Interior.Sounds.SequenceOK)
                 self:SetData("cseq-step",step+1)
                 if step == #sequences[curseq].Controls then
                     sequences[curseq].OnFinish(self, a, step, part)
@@ -82,7 +82,7 @@ if SERVER then
                 end
             else
                 if id == "console" or id == "door" then return end
-                self:EmitSound(self.metadata.Interior.Sounds.SeqBad)
+                self:EmitSound(self.metadata.Interior.Sounds.SequenceFail)
                 if sequences[curseq].OnFail then
                     sequences[curseq].OnFail(self, a, step, part)
                 end
@@ -91,14 +91,13 @@ if SERVER then
             end
         end
     end)
-    ENT:AddHook("CanStartCSequence", "settingquery", function(self)
+    ENT:AddHook("controlsequence-canstart", "settingquery", function(self)
         local result = TARDIS:GetSetting("csequences-enabled",false,self:GetCreator())
         return true
     end)
 
     function ENT:TerminateSequence()
-        --print("force-quitting current tardis cseq ("..self:GetData("cseq-curseq")..")")
-        local sequences = TARDIS:GetCSequence(self.metadata.Interior.Sequences)
+        local sequences = TARDIS:GetControlSequence(self.metadata.Interior.Sequences)
         local curseq = self:GetData("cseq-curseq","none")
         for _,v in pairs(sequences[curseq].Controls) do
             local p = TARDIS:GetPart(self,v)

@@ -14,6 +14,5 @@ if SERVER then
         self.exterior:ToggleHads()
     end
 end
-        
 
 TARDIS:AddPart(PART)

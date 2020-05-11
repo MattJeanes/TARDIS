@@ -72,35 +72,41 @@ TARDIS:AddScreen("Virtual Console", {menu=false}, function(self,ext,int,frame,sc
     local fastremat=vgui.Create("DButton",frame)
     fastremat:SetSize( frame:GetWide()*0.2, frame:GetTall()*0.2 )
     fastremat:SetPos(frame:GetWide()*0.13 - fastremat:GetWide()*0.5,frame:GetTall()*0.4 - fastremat:GetTall()*0.5)
-    fastremat:SetText("Fast Remat PLH")
+    fastremat:SetText("Fast Remat "..(ext:GetData("demat-fast") and "on" or "off"))
     fastremat:SetFont("TARDIS-Default")
-    fastremat.DoClick = function()
+    fastremat.DoClick = function(self)
         TARDIS:Control("fastremat")
     end
+    fastremat.oldon = ext:GetData("demat-fast")
     function fastremat:Think()
         local on = ext:GetData("demat-fast")
+        if self.oldon == on then return end
         if on then
             self:SetText("Fast Remat on")
         else
             self:SetText("Fast Remat off")
         end
+        self.oldon = on
     end
     
     local physbrake = vgui.Create("DButton",frame)
     physbrake:SetSize( frame:GetWide()*0.2, frame:GetTall()*0.2)
     physbrake:SetFont("TARDIS-Default")
     physbrake:SetPos((frame:GetWide()*0.35)-(physbrake:GetWide()*0.5),(frame:GetTall()*0.4)-(physbrake:GetTall()*0.5))
-    physbrake:SetText("Physlock PLH")
+    physbrake:SetText("Physlock "..(ext:GetData("physlock") and "on" or "off"))
     physbrake.DoClick = function()
         TARDIS:Control("physbrake")
     end
+    physbrake.oldon = ext:GetData("physlock")
     function physbrake:Think()
         local on = ext:GetData("physlock", false)
+        if self.oldon == on then return end
         if on then
             self:SetText("Physlock on")
         else
             self:SetText("Physlock off")
         end
+        self.oldon = on
     end
 
     local fastreturn=vgui.Create("DButton",frame)
@@ -115,18 +121,21 @@ TARDIS:AddScreen("Virtual Console", {menu=false}, function(self,ext,int,frame,sc
 	local hads=vgui.Create("DButton",frame)
 	hads:SetSize( frame:GetWide()*0.2, frame:GetTall()*0.2 )
 	hads:SetPos(frame:GetWide()*0.35 - power:GetWide()*0.5,frame:GetTall()*0.65 - power:GetTall()*0.5)
-	hads:SetText("HADS PLH")
+	hads:SetText("HADS "..(ext:GetData("hads") and "on" or "off"))
 	hads:SetFont("TARDIS-Default")
 	hads.DoClick = function()
 		TARDIS:Control("hads")
-	end
+    end
+    hads.oldon = ext:GetData("hads")
     function hads:Think()
         local on = ext:GetData("hads", false)
+        if self.oldon == on then return end
         if on then
             self:SetText("HADS on")
         else
             self:SetText("HADS off")
         end
+        self.oldon = on
     end
     
 end)

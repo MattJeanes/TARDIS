@@ -16,6 +16,5 @@ if SERVER then
         ply:ChatPrint("Physics Lock ".. (result and "engaged" or "disengaged"))
     end
 end
-        
 
 TARDIS:AddPart(PART)

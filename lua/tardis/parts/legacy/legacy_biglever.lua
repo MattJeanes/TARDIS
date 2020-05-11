@@ -13,6 +13,5 @@ if SERVER then
         self.exterior:FastReturn()
     end
 end
-        
 
 TARDIS:AddPart(PART)

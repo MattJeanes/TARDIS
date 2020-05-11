@@ -23,6 +23,5 @@ if SERVER then
         ply:ChatPrint("Spin direction set to "..dir)
     end
 end
-        
 
 TARDIS:AddPart(PART)

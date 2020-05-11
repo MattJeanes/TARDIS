@@ -11,9 +11,8 @@ PART.Animate = true
 if SERVER then
     function PART:Use(ply)
         self:EmitSound("tardis/control_handbrake.wav")
-        self.interior:TogglePartsPerms()
+        --self.interior:TogglePartsPerms() comment this out for now since it doesn't do anything
     end
 end
-        
 
 TARDIS:AddPart(PART)
