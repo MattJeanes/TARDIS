@@ -125,6 +125,11 @@ function TARDIS:SwitchScreen(screen,newscreen)
 	end
 end
 
+function TARDIS:PopToScreen(name)
+	self:HUDScreen()
+	self:SwitchScreen(self.screenpop, self:GetScreenByName(name))
+end
+
 function TARDIS:PopScreen(screen,all)
 	if #screen.backstack>0 then
 		local info=screen.backstack[#screen.backstack]
@@ -325,6 +330,7 @@ function TARDIS:LoadScreenUI(screen)
 	menubutton.DoClick = function(self)
 		if not ((not IsValid(screen.curscreen)) and mmenu:IsVisible()) then
 			mmenu:SetVisible(not mmenu:IsVisible())
+			pagename:SetText("")
 			if mmenu:IsVisible() and backbutton:IsVisible() then
 				backbutton:SetVisible(false)
 			elseif (not mmenu:IsVisible()) and (#screen.backstack>0) then
@@ -502,7 +508,7 @@ function TARDIS:LoadScreen(id,options)
 	popup:SetPos(titlebar:GetWide()-popup:GetWide()-close:GetWide()-screen.gap,0)
 	popup.DoClick = function()
 		close:DoClick()
-		self:HUDScreen()
+		self:PopToScreen(screen.pagename:GetText())
 	end
 	
 	return screen
