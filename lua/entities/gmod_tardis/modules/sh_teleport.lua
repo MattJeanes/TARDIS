@@ -21,7 +21,7 @@ TARDIS:AddKeyBind("teleport-demat",{
 					self:Demat(pos,ang)
 				end
 			end
-			if not down then
+			if not down and ply:GetTardisData("teleport-demat-bind-down",false) then
 				ply:SetTardisData("teleport-demat-bind-down", nil)
 			end
 		else
