@@ -119,11 +119,11 @@ if SERVER then
                 self:CallHook("ThirdPerson", ply, true)
                 ply:SetTardisData("wasthirdperson", false, true)
 
-                ply:SetTardisData("destination", enabled, true)
-			    self:CallHook("Destination", ply, enabled)
+                ply:SetTardisData("destination", false, true)
+                self:CallHook("Destination", ply, false)
                 self:SendMessage("destination",function()
-                    net.WriteBool(enabled)
-                end,ply)
+                    net.WriteBool(false)
+                end, ply)
                 return true
             elseif self:SetOutsideView(ply, enabled) then
 			    ply:SetTardisData("destination", enabled, true)
