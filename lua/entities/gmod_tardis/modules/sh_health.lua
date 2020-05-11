@@ -1,7 +1,7 @@
 -- Health
 
-CreateConVar("tardisrw_maxhealth", 1000, {FCVAR_ARCHIVE, FCVAR_REPLICATED}, "TARDIS Rewrite - Maximum health")
-CreateConVar("tardisrw_damage", 1, {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, "TARDIS Rewrite - Damage enabled (1 enables, 0 disables)", 0, 1)
+CreateConVar("tardis2_maxhealth", 1000, {FCVAR_ARCHIVE, FCVAR_REPLICATED}, "TARDIS Rewrite - Maximum health")
+CreateConVar("tardis2_damage", 1, {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, "TARDIS Rewrite - Damage enabled (1 enables, 0 disables)", 0, 1)
 
 
 TARDIS:AddSetting({
