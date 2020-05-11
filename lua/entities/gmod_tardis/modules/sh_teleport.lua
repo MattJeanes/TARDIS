@@ -8,7 +8,11 @@ TARDIS:AddKeyBind("teleport-demat",{
 		if TARDIS:HUDScreenOpen(ply) then return end
 		local pilot = self:GetData("pilot")
 		if SERVER then
-			if ply==pilot and (not down) then
+			if ply==pilot and down then
+				ply:SetTardisData("teleport-demat-bind-down", true)
+			end
+			if ply==pilot and (not down) and ply:GetTardisData("teleport-demat-bind-down") then
+				ply:SetTardisData("teleport-demat-bind-down", false)
 				if not self:GetData("vortex") then
 					if self:GetData("demat-pos") then
 						self:Demat()
