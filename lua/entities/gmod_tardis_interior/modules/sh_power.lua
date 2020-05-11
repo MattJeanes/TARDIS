@@ -1,24 +1,22 @@
--- Power Module - courtesy of Win (shameless self promotion)
-
-ENT:AddHook("Initialize","power-init", function(self)
-    self:SetData("power-state",true,true)
-end)
+-- Power Interior
 
 if SERVER then
     function ENT:TogglePower()
-        local on = not self:GetData("power-state",false)
-        self:SetPower(on)
+        self.exterior:TogglePower()
     end
+
     function ENT:SetPower(on)
-        if not (self:CallHook("CanTogglePower")==true or self.exterior:CallHook("CanTogglePower")==true) then return end
-        self:SetData("power-state",on,true)
-        self:SendMessage("power-toggled")
-        self:CallHook("PowerToggled",on)
-        self.exterior:CallHook("PowerToggled",on)
+        self.exterior:SetPower(on)
     end
+
+    ENT:AddHook("PowerToggled", "interior-power", function(self, state)
+        self:SendMessage("power-toggled", function()
+            net.WriteBool(state)
+        end)
+    end)
 else
     ENT:OnMessage("power-toggled", function(self)
-        local state = self:GetData("power-state") or false
+        local state = net.ReadBool()
         if TARDIS:GetSetting("sound") then
             local sound_on = self.metadata.Interior.Sounds.Power.On
             local sound_off = self.metadata.Interior.Sounds.Power.Off

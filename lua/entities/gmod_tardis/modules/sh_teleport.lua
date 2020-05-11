@@ -259,7 +259,7 @@ if SERVER then
 	end
 	
 	ENT:AddHook("CanDemat", "teleport", function(self)
-		if self:GetData("teleport") or self:GetData("vortex") or (not self.interior:GetData("power-state",false)) then
+		if self:GetData("teleport") or self:GetData("vortex") or (not self:GetData("power-state",false)) then
 			return false
 		end
 	end)
@@ -386,10 +386,8 @@ else
 					self:EmitSound(ext.mat)
 					self.interior:EmitSound(int.mat or ext.mat)
 				end
-			else
-				if not self:GetData("demat-fast",false) then
-					sound.Play(ext.mat,pos)
-				end
+			elseif not self:GetData("demat-fast",false) then
+				sound.Play(ext.mat,pos)
 			end
 		end
 	end)
@@ -478,7 +476,7 @@ ENT:AddHook("Think","teleport",function(self,delta)
 		target=self:GetTargetAlpha()
 		self:SetData("alphatarget",target)
 	end
-	local sequencespeed = self.metadata.Exterior.Teleport.SequenceSpeed * (self:GetData("demat-fast",false) and 1.1 or 1)
+	local sequencespeed = (self:GetData("demat-fast",false) and self.metadata.Exterior.Teleport.SequenceSpeed or self.metadata.Exterior.Teleport.SequenceSpeedFast)
 	alpha=math.Approach(alpha,target,delta*66*sequencespeed)
 	self:SetData("alpha",alpha)
 	local attached=self:GetData("demat-attached")

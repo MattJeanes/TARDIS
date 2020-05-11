@@ -80,7 +80,7 @@ ENT:AddHook("Draw", "lights-roundthings", function(self)
 end)
 
 ENT:AddHook("ShouldDrawLight", "lights", function(self,id,light)
-	if not self:GetData("power-state",false) then
+	if not self.exterior:GetData("power-state",false) then
 		return false
 	end
 end)
