@@ -206,7 +206,7 @@ else
 		if snds.enabled and TARDIS:GetSetting("doorsounds-enabled") and TARDIS:GetSetting("sound") then
 			local extpart = self:GetPart("door")
 			local snd = open and snds.open or snds.close
-			if IsValid(extpart) then
+			if IsValid(extpart) and extpart.exterior:CallHook("ShouldEmitDoorSound")~=false then
 				extpart:EmitSound(snd)
 			end
 			if IsValid(self.interior) then

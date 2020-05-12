@@ -179,4 +179,10 @@ else
 			return true
 		end
 	end)
+
+	ENT:AddHook("ShouldEmitDoorSound", "vortex", function(self)
+		if self:GetData("vortex") then
+			return false
+		end
+	end)
 end
