@@ -36,7 +36,7 @@ function ENT:ChangeHealth(newhealth)
         return
     end
     local oldhealth = self:GetHealth()
-    if newhealth <= 0 then 
+    if newhealth <= 0 then
         newhealth = 0
         if newhealth == 0 and not (newhealth == oldhealth) then
             self:CallHook("health-depleted")
@@ -58,22 +58,19 @@ end
 if SERVER then
     cvars.AddChangeCallback("tardisrw_maxhealth", function(cvname, oldvalue, newvalue)
        TARDIS:SetSetting("health-max", tonumber(newvalue), true)
-    end, "UpdateOnChange")  
-    
+    end, "UpdateOnChange")
+
     cvars.AddChangeCallback("tardisrw_damage", function(cvname, oldvalue, newvalue)
        TARDIS:SetSetting("health-enabled", tobool(newvalue), true)
     end, "UpdateOnChange")
 
     function ENT:Explode()
-        if not vFireInstalled then
-            local explode = ents.Create("env_explosion")
-            explode:SetPos( self:LocalToWorld(Vector(0,0,50)) ) //Puts the explosion where you are aiming
-            explode:SetOwner( self ) //Sets the owner of the explosion
-            explode:Spawn()
-            explode:SetKeyValue("iMagnitude","100") //Sets the magnitude of the explosion
-            explode:Fire("Explode", 0, 0 ) //Tells the explode entity to explode
-        else
-        end
+        local explode = ents.Create("env_explosion")
+        explode:SetPos( self:LocalToWorld(Vector(0,0,50)) )
+        explode:SetOwner( self )
+        explode:Spawn()
+        explode:SetKeyValue("iMagnitude","100")
+        explode:Fire("Explode", 0, 0 )
     end
 
     function ENT:ToggleRepair()
@@ -97,6 +94,15 @@ if SERVER then
         end
     end
 
+    function ENT:StartRepair()
+        if not IsValid(self) then return end
+        self:SetLocked(true)
+        local time = CurTime()+(math.Clamp((TARDIS:GetSetting("health-max")-self:GetData("health-val"))*0.1, 1, 60))
+        self:SetData("repair-time", time, true)
+        self:SetData("repairing", true, true)
+        self:SetData("repair-primed", false)
+    end
+
     function ENT:FinishRepair()
         self:EmitSound(self.metadata.Exterior.Sounds.RepairFinish)
         self:SetData("repairing", false, true)
@@ -118,19 +124,26 @@ if SERVER then
     end)
 
     ENT:AddHook("PlayerExit", "repair", function(self,ply,forced,notp)
-        if (self:GetData("repair-primed",false)==true) and (#self.occupants==0) then
-            timer.Simple(0.3, function()
-                if not IsValid(self) then return end
-                self:SetLocked(true)
-                local time = CurTime()+(math.Clamp((TARDIS:GetSetting("health-max")-self:GetData("health-val"))*0.1, 1, 60))
-                self:SetData("repair-time", time, true)
-                self:SetData("repairing", true, true)
-                self:SetData("repair-primed", false)
-            end)
+        -- hacky af because occupant table gets updated too late for this, and as a result, when the last player exits, the count is still 1
+        if (self:GetData("repair-primed",false)==true) and (table.Count(self.occupants)==1 and table.GetFirstKey(self.occupants) == ply) then
+            self:SetData("repair-shouldstart", true)
+            self:SetData("repair-delay", CurTime()+0.3)
         end
     end)
-    
+
+    ENT:AddHook("PlayerEnter", "repair", function(self,ply,forced,notp)
+        print(#self.occupants)
+        if (self:GetData("repair-primed",false)==true) and table.Count(self.occupants)>=0 then
+            self:SetData("repair-shouldstart", false)
+        end
+    end)
+
     ENT:AddHook("Think", "repair", function(self)
+        if self:GetData("repair-primed",false) and self:GetData("repair-shouldstart") and CurTime() > self:GetData("repair-delay") then
+            self:SetData("repair-shouldstart", false)
+            self:StartRepair()
+        end
+
         if (self:GetData("repairing",false) and CurTime()>self:GetData("repair-time",0)) then
             self:FinishRepair()
         end
@@ -160,8 +173,8 @@ if SERVER then
             self:Mat()
         end
         self:Explode()
-    end)    
-else    
+    end)
+else
     ENT:OnMessage("health-networking", function(self, ply)
         local newhealth = net.ReadInt(32)
         self:ChangeHealth(newhealth)
