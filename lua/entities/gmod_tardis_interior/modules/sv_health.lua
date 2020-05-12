@@ -4,17 +4,12 @@ ENT:AddHook("OnTakeDamage", "Health", function(self, dmginfo)
 end)
 
 function ENT:Explode()
-    if not vFireInstalled then
-        local explode = ents.Create("env_explosion")
-        explode:SetPos( self:LocalToWorld(Vector(0,0,0)) ) //Puts the explosion where you are aiming
-        explode:SetOwner( self ) //Sets the owner of the explosion
-        explode:Spawn()
-        explode:SetKeyValue("iMagnitude","100") //Sets the magnitude of the explosion
-        explode:Fire("Explode", 0, 0 ) //Tells the explode entity to explode
-        //explode:EmitSound("weapon_AWP.Single", 400, 400 ) //Adds sound to the explosion
-    else
-        //Alternate Explosion
-    end
+    local explode = ents.Create("env_explosion")
+    explode:SetPos( self:LocalToWorld(Vector(0,0,0)) )
+    explode:SetOwner( self )
+    explode:Spawn()
+    explode:SetKeyValue("iMagnitude","0")
+    explode:Fire("Explode", 0, 0 )
 end
 
 ENT:AddHook("health-depleted", "interior-death", function(self)

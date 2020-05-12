@@ -69,7 +69,7 @@ if SERVER then
         explode:SetPos( self:LocalToWorld(Vector(0,0,50)) )
         explode:SetOwner( self )
         explode:Spawn()
-        explode:SetKeyValue("iMagnitude","100")
+        explode:SetKeyValue("iMagnitude","60")
         explode:Fire("Explode", 0, 0 )
     end
 
