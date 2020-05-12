@@ -107,4 +107,8 @@ if SERVER then
         self:SetData("cseq-curseq",nil)
         self:SetData("cseq-active",false)
     end
+
+    function ENT:GetSequencesEnabled()
+        return TARDIS:GetSetting("csequences-enabled", false, self:GetCreator())
+    end
 end
