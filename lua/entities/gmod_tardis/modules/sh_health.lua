@@ -123,9 +123,8 @@ if SERVER then
         if (not self:GetData("repairing",false)) then return true end
     end)
 
-    ENT:AddHook("PlayerExit", "repair", function(self,ply,forced,notp)
-        -- hacky af because occupant table gets updated too late for this, and as a result, when the last player exits, the count is still 1
-        if (self:GetData("repair-primed",false)==true) and (table.Count(self.occupants)==1 and table.GetFirstKey(self.occupants) == ply) then
+    ENT:AddHook("PostPlayerExit", "repair", function(self,ply,forced,notp)
+        if (self:GetData("repair-primed",false)==true) and (table.IsEmpty(self.occupants)) then
             self:SetData("repair-shouldstart", true)
             self:SetData("repair-delay", CurTime()+0.3)
         end
