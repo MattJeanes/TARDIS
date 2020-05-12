@@ -181,7 +181,7 @@ else
 	end)
 
 	ENT:AddHook("ShouldEmitDoorSound", "vortex", function(self)
-		if self:GetData("vortex") then
+		if self:GetData("vortex") and LocalPlayer():GetTardisData("exterior")~=self then
 			return false
 		end
 	end)
