@@ -26,7 +26,7 @@ TARDIS:AddControl("power",{
 TARDIS:AddControl("hads",{
     func=function(self,ply)
         local on = self:GetData("hads",false)
-        self:SetData("hads", !on, true)
+        self:SetData("hads", not on, true)
 	end,
 	exterior=true,
 	serveronly=true,

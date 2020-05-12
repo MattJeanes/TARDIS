@@ -6,7 +6,7 @@ if SERVER then
 		min = self:LocalToWorld(min)
 		max = self:LocalToWorld(max)
 		local entities = ents.FindInBox(min, max)
-		if #entities != 0 then
+		if #entities ~= 0 then
 			for k,v in pairs(entities) do
 				if v:IsPlayer() then
 					self:PlayerEnter(v)
