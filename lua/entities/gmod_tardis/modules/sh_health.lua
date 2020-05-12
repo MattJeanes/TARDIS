@@ -136,6 +136,13 @@ if SERVER then
         end
     end)
 
+    ENT:AddHook("LockedUse", "repair", function(self, a)
+        if self:GetData("repairing") then
+            a:ChatPrint("This TARDIS is repairing. It will be done in "..math.floor(self:GetRepairTime()).." seconds.")
+            return true
+        end
+    end)
+
     ENT:AddHook("Think", "repair", function(self)
         if self:GetData("repair-primed",false) and self:GetData("repair-shouldstart") and CurTime() > self:GetData("repair-delay") then
             self:SetData("repair-shouldstart", false)

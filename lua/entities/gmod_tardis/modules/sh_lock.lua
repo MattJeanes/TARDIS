@@ -51,9 +51,7 @@ if SERVER then
 	
 	ENT:AddHook("Use", "lock", function(self,a,c)
 		if self:GetData("locked") and IsValid(a) and a:IsPlayer() then
-			if self:GetData("repairing") then
-				a:ChatPrint("This TARDIS is repairing. It will be done in "..math.floor(self:GetRepairTime()).." seconds.")
-			else
+			if self:CallHook("LockedUse",a,c)==nil then
 				a:ChatPrint("This TARDIS is locked.")
 			end
 			self:EmitSound("doors/door_lock_1.wav")
