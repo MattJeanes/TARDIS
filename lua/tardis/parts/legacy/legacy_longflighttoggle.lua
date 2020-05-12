@@ -11,7 +11,7 @@ PART.Animate = true
 if SERVER then
     function PART:Use(ply)
         self.exterior:ToggleFastRemat()
-        ply:ChatPrint("Vortex flightmode is now ".. (self.exterior:GetData("demat-fast",false) and "on" or "off"))
+        ply:ChatPrint("Vortex flightmode is now ".. (self.exterior:GetData("demat-fast",false) and "off" or "on"))
     end
 end
 
