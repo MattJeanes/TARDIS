@@ -132,7 +132,6 @@ if SERVER then
     end)
 
     ENT:AddHook("PlayerEnter", "repair", function(self,ply,forced,notp)
-        print(#self.occupants)
         if (self:GetData("repair-primed",false)==true) and table.Count(self.occupants)>=0 then
             self:SetData("repair-shouldstart", false)
         end
