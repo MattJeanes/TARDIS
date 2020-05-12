@@ -8,7 +8,6 @@ function ENT:Explode()
     explode:SetPos( self:LocalToWorld(Vector(0,0,0)) )
     explode:SetOwner( self )
     explode:Spawn()
-    explode:SetKeyValue("iMagnitude","0")
     explode:Fire("Explode", 0, 0 )
 end
 
