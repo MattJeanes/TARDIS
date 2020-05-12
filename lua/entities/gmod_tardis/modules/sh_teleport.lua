@@ -291,6 +291,12 @@ if SERVER then
 		end
 	end)
 	
+	ENT:AddHook("CanPlayerEnterDoor","teleport",function(self)
+		if (self:GetData("teleport") or self:GetData("vortex")) then
+			return false
+		end
+	end)
+	
 	ENT:AddHook("CanPlayerExit","teleport",function(self)
 		if self:GetData("teleport") or self:GetData("vortex") then
 			return false
