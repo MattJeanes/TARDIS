@@ -7,11 +7,10 @@ PART.Model = "models/drmatt/tardis/throttle.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 PART.Animate = true
+PART.Sound = "tardis/control_throttle.wav"
 
 if SERVER then
     function PART:Use(ply)
-        self:EmitSound("tardis/control_throttle.wav")
-        if self.InSequence==true then return end
         if self.exterior:GetData("teleport")==true or self.exterior:GetData("vortex")==true then
             self.exterior:Mat()
         end

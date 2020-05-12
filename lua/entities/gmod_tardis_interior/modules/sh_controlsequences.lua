@@ -96,6 +96,12 @@ if SERVER then
         return true
     end)
 
+    ENT:AddHook("CanUsePart", "csequence-disable", function(self, part, a)
+        if part.InSequence then
+            return false, true
+        end
+    end)
+
     function ENT:TerminateSequence()
         local sequences = TARDIS:GetControlSequence(self.metadata.Interior.Sequences)
         local curseq = self:GetData("cseq-curseq","none")
