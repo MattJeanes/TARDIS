@@ -25,3 +25,7 @@ function ENT:Initialize()
 	end
 	self.BaseClass.Initialize(self)
 end
+
+function ENT:OnTakeDamage(dmginfo)
+	self:CallHook("OnTakeDamage", dmginfo)
+end

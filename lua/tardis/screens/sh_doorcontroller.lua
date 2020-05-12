@@ -22,6 +22,7 @@ TARDIS:AddScreen("Door controller", {intonly=true,menu=false}, function(self,ext
 
 	local button = vgui.Create("DButton",frame)
 	button.first=true
+	button.moving = false
 	button:SetFont("TARDIS-Default")
 	button:SetSize(frame:GetWide()*0.3,frame:GetTall()*0.15)
 	button:SetPos((frame:GetWide()*0.5)-(button:GetWide()*0.5),(frame:GetTall()*0.6)-(button:GetTall()*0.5))
@@ -30,6 +31,8 @@ TARDIS:AddScreen("Door controller", {intonly=true,menu=false}, function(self,ext
 	end
 	button.Think = function(button)
 		if ext:DoorMoving() then
+			button.moving = true
+			button.first = true
 			if not button:GetDisabled() then
 				if button.open then
 					doorstatus:SetText("The door is closing")
@@ -40,9 +43,14 @@ TARDIS:AddScreen("Door controller", {intonly=true,menu=false}, function(self,ext
 				button:SetDisabled(true)
 			end
 		elseif button:GetDisabled() then
+			if not button.open then
+				button.moving = false
+			end
 			button:SetDisabled(false)
 		elseif ext:DoorOpen() and (not button.open) or button.first then
-			button.open=true
+			if not button.moving then
+				button.open = true
+			end
 			button:SetText("Close the door")
 			doorstatus:SetText("The door is open")
 			doorstatus:DoLayout()

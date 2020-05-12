@@ -18,11 +18,15 @@ T.Interior={
 		ang=Angle(0,90,0)
 	},
 	Sounds={
-		Teleport={}, -- uses exterior sounds if not specified
+		Teleport={
+		}, -- uses exterior sounds if not specified
 		Power={
 			On="drmatt/tardis/power_on.wav",
 			Off="drmatt/tardis/power_off.wav"
-		}
+		},
+		SequenceOK = "drmatt/tardis/seq_ok.wav",
+		SequenceFail = "drmatt/tardis/seq_bad.wav",
+		Cloister = "tardis/cloisterbell_loop.wav"
 	},
 	ScreenDistance=500
 }
@@ -47,8 +51,10 @@ T.Exterior={
 	Sounds={
 		Teleport={
 			demat="drmatt/tardis/demat.wav",
-			mat="drmatt/tardis/mat.wav"
+			mat="drmatt/tardis/mat.wav",
+			fullflight = "drmatt/tardis/full.wav"
 		},
+		RepairFinish="drmatt/tardis/repairfinish.wav",
 		Lock="drmatt/tardis/lock.wav",
 		Door={
 			enabled=true,
@@ -67,6 +73,7 @@ T.Exterior={
 	},
 	Teleport={
 		SequenceSpeed=0.85,
+		SequenceSpeedFast=0.935,
 		DematSequence={
 			150,
 			200,

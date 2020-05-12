@@ -34,7 +34,6 @@ function ENT:DrawLight(id,light)
 end
 
 ENT:AddHook("Draw", "lights", function(self)
-	--render.SuppressEngineLighting(false)
 	local light=self.metadata.Interior.Light
 	local lights=self.metadata.Interior.Lights
 	local index=self:EntIndex()
@@ -81,7 +80,7 @@ ENT:AddHook("Draw", "lights-roundthings", function(self)
 end)
 
 ENT:AddHook("ShouldDrawLight", "lights", function(self,id,light)
-	if not self:GetData("power-state",false) then
+	if not self.exterior:GetData("power-state",false) then
 		return false
 	end
 end)

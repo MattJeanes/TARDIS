@@ -8,9 +8,24 @@ function TARDIS:HUDScreenOpen(ply)
 	end
 end
 
+function TARDIS:PopToScreen(name, ply)
+	if SERVER then
+		if IsValid(ply) and ply:IsPlayer() then
+			net.Start("TARDIS-PopToScreen")
+				net.WriteString(name)
+			net.Send(ply)
+		end
+	else
+		self:HUDScreen()
+		self:SwitchScreen(self.screenpop, self:GetScreenByName(name))
+	end
+end
+
+
 if SERVER then
 	TARDIS:LoadFolder("screens")
 	util.AddNetworkString("TARDIS-HUDScreen")
+	util.AddNetworkString("TARDIS-PopToScreen")
 	net.Receive("TARDIS-HUDScreen",function(len,ply)
 		ply.TARDISHUDScreen=net.ReadBool()
 	end)
@@ -89,6 +104,24 @@ function TARDIS:ScreenActive(name)
 	end
 end
 
+function TARDIS:GetScreenFrames()
+	if not self.HUDScreenActive or not IsValid(self.screenpop) then return end
+	local tab = {}
+
+	for k,v in pairs(self.screenpop.screens) do
+		tab[v[1]] = v[2]
+	end
+
+	return tab
+end
+
+function TARDIS:GetScreenByName(name)
+	if not self.HUDScreenActive or not IsValid(self.screenpop) then return end
+	local screen = self:GetScreenFrames()[name]
+	if not IsValid(screen) then return end
+	return screen
+end
+
 function TARDIS:SwitchScreen(screen,newscreen)
 	if IsValid(newscreen) then
 		if #screen.backstack>0 then
@@ -106,6 +139,11 @@ function TARDIS:SwitchScreen(screen,newscreen)
 		end
 	end
 end
+
+net.Receive("TARDIS-PopToScreen", function(len)
+	local name = net.ReadString()
+	TARDIS:PopToScreen(name)
+end)
 
 function TARDIS:PopScreen(screen,all)
 	if #screen.backstack>0 then
@@ -307,6 +345,7 @@ function TARDIS:LoadScreenUI(screen)
 	menubutton.DoClick = function(self)
 		if not ((not IsValid(screen.curscreen)) and mmenu:IsVisible()) then
 			mmenu:SetVisible(not mmenu:IsVisible())
+			pagename:SetText("")
 			if mmenu:IsVisible() and backbutton:IsVisible() then
 				backbutton:SetVisible(false)
 			elseif (not mmenu:IsVisible()) and (#screen.backstack>0) then
@@ -484,7 +523,7 @@ function TARDIS:LoadScreen(id,options)
 	popup:SetPos(titlebar:GetWide()-popup:GetWide()-close:GetWide()-screen.gap,0)
 	popup.DoClick = function()
 		close:DoClick()
-		self:HUDScreen()
+		self:PopToScreen(screen.pagename:GetText())
 	end
 	
 	return screen

@@ -6,6 +6,12 @@ function ENT:IsVortexEnabled(pilot)
 	return ((not pilot and SERVER) or TARDIS:GetSetting("vortex-enabled",false,pilot)) and IsValid(self:GetPart("vortex")) and (SERVER or self:GetData("vortexmodelvalid"))
 end
 
+ENT:AddHook("VortexEnabled", "demat-fast", function(self, pilot)
+	if self:GetData("demat-fast", false) then
+		return false
+	end
+end)
+
 if SERVER then
 	ENT:AddHook("PhysicsUpdate","vortex",function(self,ph)
 		-- Simulate flight without actually moving anywhere
@@ -171,6 +177,12 @@ else
 	ENT:AddHook("ShouldTurnOffLight","vortex",function(self)
 		if self:GetData("vortex") and (TARDIS:GetExteriorEnt()~=self or (not self:IsVortexEnabled())) then
 			return true
+		end
+	end)
+
+	ENT:AddHook("ShouldEmitDoorSound", "vortex", function(self)
+		if self:GetData("vortex") and LocalPlayer():GetTardisData("exterior")~=self then
+			return false
 		end
 	end)
 end

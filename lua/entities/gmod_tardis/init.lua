@@ -30,3 +30,10 @@ function ENT:Initialize()
 	self.Fallback=self.metadata.Exterior.Fallback
 	self.BaseClass.Initialize(self)
 end
+
+function ENT:PhysicsCollide(colData, collider)
+	self:CallHook("PhysicsCollide", colData, collider)
+end
+function ENT:OnTakeDamage(dmginfo)
+	self:CallHook("OnTakeDamage", dmginfo)
+end

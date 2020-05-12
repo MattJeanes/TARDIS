@@ -39,7 +39,9 @@ if SERVER then
 	function PART:Use(a)
 		if self.exterior:GetData("locked") then
 			if IsValid(a) and a:IsPlayer() then
-				a:ChatPrint("The doors are locked.")
+				if self.exterior:CallHook("LockedUse",a)==nil then
+					a:ChatPrint("The doors are locked.")
+				end
 				self:EmitSound("doors/door_lock_1.wav")
 			end
 		else
@@ -50,6 +52,7 @@ if SERVER then
 					self.exterior:PlayerExit(a)
 				end
 			else
+				if (self.exterior:GetData("repair-primed",false) or self.exterior:GetData("repairing",false)) and self.ExteriorPart then return end
 				self.exterior:ToggleDoor()
 			end
 		end
