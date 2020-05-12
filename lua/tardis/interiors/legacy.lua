@@ -69,6 +69,16 @@ T.Interior={
 		legacy_blacksticks={pos=Vector(4.480469, -43.906372, 7.000000), ang=Angle(13.000, 0.000, 24.176)},
 		legacy_longflighttoggle={pos=Vector(-37.242310, -27.915344, 7.428223), ang=Angle(338.000, 28.721, 15.000)},
 		legacy_longflightdemat={pos=Vector(-43.168457, -31.015625, 4.700000), ang=Angle(22.000, 209.224, 348.000)},
+	},
+	Seats={
+		{
+			pos=Vector(130,-96,-30),
+			ang=Angle(0,40,0)
+		},
+		{
+			pos=Vector(125,55,-30),
+			ang=Angle(0,135,0)
+		}
 	}
 }
 T.Exterior={
