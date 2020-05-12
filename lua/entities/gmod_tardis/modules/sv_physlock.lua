@@ -3,13 +3,13 @@
 if SERVER then
     function ENT:SetPhyslock(on)
         local phys = self:GetPhysicsObject()
-        phys:EnableMotion(!on)
+        phys:EnableMotion(not on)
         phys:Wake()
         return self:SetData("physlock", on, true)
     end
 
     function ENT:TogglePhyslock()
-        local on = !self:GetData("physlock", false)
+        local on = not self:GetData("physlock", false)
         return self:SetPhyslock(on)
     end
 
