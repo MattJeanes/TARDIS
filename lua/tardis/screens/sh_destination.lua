@@ -215,8 +215,9 @@ TARDIS:AddScreen("Destination", {menu=false}, function(self,ext,int,frame,screen
 	end
 	function remove:Think()
 		if list:GetSelectedLine() ~= nil then
+			if self:IsEnabled() then return end
 			self:SetEnabled(true)
-		else
+		elseif self:IsEnabled() then
 			self:SetEnabled(false)
 		end
 	end
