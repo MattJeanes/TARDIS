@@ -10,14 +10,14 @@ local Seq = {
             "legacy_handbrake",
             "legacy_throttle"
         },
-        OnFinish = function(self)
+        OnFinish = function(self, ply, step, part)
             if IsValid(self) and IsValid(self) then
                 self.exterior:Demat()
             end
+        end,
+        OnFail = function(self, ply, step, part)
+            -- fail stuff
         end
-        /*OnFail = function(self)
-            fail stuff
-        end*/
     }
 }
 
