@@ -15,6 +15,9 @@ local Seq = {
                 self.exterior:Demat()
             end
         end
+        /*OnFail = function(self)
+            fail stuff
+        end*/
     }
 }
 
