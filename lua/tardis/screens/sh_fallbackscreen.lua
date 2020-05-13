@@ -25,12 +25,10 @@ TARDIS:AddControl("power",{
 
 TARDIS:AddControl("hads",{
     func=function(self,ply)
-        local on = self:GetData("hads",false)
-        self:SetData("hads", not on, true)
+        self:ToggleHADS()
 	end,
 	exterior=true,
 	serveronly=true,
-	interior=true
 })
 TARDIS:AddControl("repair",{
 	func=function(self,ply)
