@@ -56,11 +56,11 @@ function ENT:GetRepairTime()
 end
 
 if SERVER then
-    cvars.AddChangeCallback("tardisrw_maxhealth", function(cvname, oldvalue, newvalue)
+    cvars.AddChangeCallback("tardis2_maxhealth", function(cvname, oldvalue, newvalue)
        TARDIS:SetSetting("health-max", tonumber(newvalue), true)
     end, "UpdateOnChange")
 
-    cvars.AddChangeCallback("tardisrw_damage", function(cvname, oldvalue, newvalue)
+    cvars.AddChangeCallback("tardis2_damage", function(cvname, oldvalue, newvalue)
        TARDIS:SetSetting("health-enabled", tobool(newvalue), true)
     end, "UpdateOnChange")
 
