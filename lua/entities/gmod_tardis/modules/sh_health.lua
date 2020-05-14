@@ -155,6 +155,7 @@ if SERVER then
     end)
 
     ENT:AddHook("OnTakeDamage", "Health", function(self, dmginfo)
+        if dmginfo:GetInflictor():GetClass() == "env_fire" then return end
         local newhealth = self:GetHealth() - (dmginfo:GetDamage()/2)
         self:ChangeHealth(newhealth)
     end)
