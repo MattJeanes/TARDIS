@@ -35,7 +35,11 @@ function ENT:ChangeHealth(newhealth)
     if self:GetData("repairing", false) then
         return
     end
+    local maxhealth = TARDIS:GetSetting("health-max")
     local oldhealth = self:GetHealth()
+    if newhealth > oldhealth and oldhealth+newhealth > maxhealth then
+        newhealth = maxhealth
+    end
     if newhealth <= 0 then
         newhealth = 0
         if newhealth == 0 and not (newhealth == oldhealth) then
