@@ -19,22 +19,20 @@ if CLIENT then
 			htoggle:SetText("Enable Health and Damage")
 			htoggle:SetValue(TARDIS:GetSetting("health-enabled"))
 			function htoggle:OnChange(val)
-				net.Start("TARDIS-SvCvars")
-					net.WriteString("tardis2_damage")
-					net.WriteType(val)
+				net.Start("TARDIS-DamageCvar")
+					net.WriteBool(val)
 				net.SendToServer()
 			end
 			panel:AddItem(htoggle)
 		end)
 	end)
 else
-	util.AddNetworkString("TARDIS-SvCvars")
+	util.AddNetworkString("TARDIS-DamageCvar")
 
 	net.Receive("TARDIS-SvCvars", function(len, ply)
-		local cvname = net.ReadString()
-		local val = net.ReadType()
 		if ply:IsAdmin() or ply:IsSuperAdmin() then
-			RunConsoleCommand( cvname, tostring(val) )
+			local val = net.ReadBool()
+			RunConsoleCommand( "tardis2_damage", tostring(val) )
 		end
 	end)
 end
