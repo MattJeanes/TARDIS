@@ -29,7 +29,7 @@ if CLIENT then
 else
 	util.AddNetworkString("TARDIS-DamageCvar")
 
-	net.Receive("TARDIS-SvCvars", function(len, ply)
+	net.Receive("TARDIS-DamageCvar", function(len, ply)
 		if ply:IsAdmin() or ply:IsSuperAdmin() then
 			local val = net.ReadBool()
 			RunConsoleCommand( "tardis2_damage", tostring(val) )

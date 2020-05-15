@@ -15,3 +15,7 @@ ENT:AddHook("health-depleted", "interior-death", function(self)
     util.ScreenShake(self:GetPos(), 10, 10, 1, 10)
     self:Explode()
 end)
+
+ENT:AddHook("ShouldTakeDamage", "DamageOff", function(self, dmginfo)
+    if not TARDIS:GetSetting("health-enabled") then return false end
+end)

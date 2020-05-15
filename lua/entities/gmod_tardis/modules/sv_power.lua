@@ -17,4 +17,8 @@ if SERVER then
             self.interior:CallHook("PowerToggled",on)
         end
     end
+
+    ENT:AddHook("CanTriggerHads","power",function(self)
+        if not self:GetData("power-state",false) then return false end
+    end)
 end
