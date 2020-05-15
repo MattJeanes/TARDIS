@@ -31,7 +31,6 @@ ENT:AddHook("Initialize","health-init",function(self)
     self:SetData("health-val", TARDIS:GetSetting("health-max"), true)
 end)
 function ENT:ChangeHealth(newhealth)
-    if not TARDIS:GetSetting("health-enabled") then return end
     if self:GetData("repairing", false) then
         return
     end
@@ -61,7 +60,11 @@ end
 
 if SERVER then
     cvars.AddChangeCallback("tardis2_maxhealth", function(cvname, oldvalue, newvalue)
-       TARDIS:SetSetting("health-max", tonumber(newvalue), true)
+        local nvnum = tonumber(newvalue)
+        if nvnum < 0 then
+            nvnum = 1
+        end
+       TARDIS:SetSetting("health-max", nvnum, true)
     end, "UpdateOnChange")
 
     cvars.AddChangeCallback("tardis2_damage", function(cvname, oldvalue, newvalue)
@@ -82,6 +85,10 @@ if SERVER then
         self:SetRepair(on)
     end
     function ENT:SetRepair(on)
+        if not TARDIS:GetSetting("health-enabled") and self:GetHealth()~=TARDIS:GetSetting("health-max",1) then 
+            self:ChangeHealth(TARDIS:GetSetting("health-max"),1)
+            return 
+        end
         if (self:GetHealth() > TARDIS:GetSetting("health-max",1)-1) or self:GetData("vortex",false) then return end
         if on==true then
             for k,_ in pairs(self.occupants) do
@@ -158,6 +165,10 @@ if SERVER then
         end
     end)
 
+    ENT:AddHook("ShouldTakeDamage", "DamageOff", function(self, dmginfo)
+        if not TARDIS:GetSetting("health-enabled") then return false end
+    end)
+
     ENT:AddHook("OnTakeDamage", "Health", function(self, dmginfo)
         if dmginfo:GetInflictor():GetClass() == "env_fire" then return end
         local newhealth = self:GetHealth() - (dmginfo:GetDamage()/2)
@@ -165,6 +176,7 @@ if SERVER then
     end)
 
     ENT:AddHook("PhysicsCollide", "Health", function(self, data, collider)
+        if not TARDIS:GetSetting("health-enabled") then return end
         if (data.Speed < 300) then return end
         local newhealth = self:GetHealth() - data.Speed / 23
         self:ChangeHealth(newhealth)

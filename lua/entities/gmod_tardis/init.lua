@@ -35,5 +35,6 @@ function ENT:PhysicsCollide(colData, collider)
 	self:CallHook("PhysicsCollide", colData, collider)
 end
 function ENT:OnTakeDamage(dmginfo)
+	if self:CallHook("ShouldTakeDamage",dmginfo)==false then return end
 	self:CallHook("OnTakeDamage", dmginfo)
 end
