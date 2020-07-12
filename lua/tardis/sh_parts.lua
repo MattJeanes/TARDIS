@@ -70,9 +70,9 @@ local overrides={
 		if SERVER and (animate~=false) and (res~=false) then
 			local on = self:GetOn()
 			if self.SoundOn and on then
-				self:EmitSound(self.SoundOn)
-			elseif self.SoundOff and (not on) then
 				self:EmitSound(self.SoundOff)
+			elseif self.SoundOff and (not on) then
+				self:EmitSound(self.SoundOn)
 			elseif self.Sound then
 				self:EmitSound(self.Sound)
 			end
