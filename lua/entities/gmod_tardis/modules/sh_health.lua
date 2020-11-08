@@ -29,7 +29,9 @@ TARDIS:AddSetting({
 
 ENT:AddHook("Initialize","health-init",function(self)
     self:SetData("health-val", TARDIS:GetSetting("health-max"), true)
+    self.CloisterLoop = CreateSound(self, "tardis/cloisterbell_loop.wav")
 end)
+
 function ENT:ChangeHealth(newhealth)
     if self:GetData("repairing", false) then
         return
@@ -52,6 +54,12 @@ end
 
 function ENT:GetHealth()
     return self:GetData("health-val", 0)
+end
+
+function ENT:GetHealthPercent()
+    local val = self:GetData("health-val", 0)
+    local percent = (val * 100)/TARDIS:GetSetting("health-max",1)
+    return percent
 end
 
 function ENT:GetRepairTime()
@@ -112,6 +120,7 @@ if SERVER then
         self:SetData("repair-time", time, true)
         self:SetData("repairing", true, true)
         self:SetData("repair-primed", false)
+        self:StopCloisters()
     end
 
     function ENT:FinishRepair()
@@ -121,8 +130,67 @@ if SERVER then
         self.interior:SetPower(true)
         self:SetLocked(false, nil, true)
         self:GetCreator():ChatPrint("Your TARDIS has finished self-repairing")
+        self:StopCloisters()
+        self:StopSmoke()
         self:FlashLight(1.5)
     end
+
+    function ENT:StartCloisters()
+        if not self:GetData("health-warning",false) then
+            self:SetData("health-warning", true, true)
+            --TODO: Figure out how to play exterior cloisterbell properly // Should only play in ext-only mode outside.
+            if self.interior then
+                self.interior:StartCloisters()
+            end
+        end
+    end
+
+    function ENT:StopCloisters()
+        if self:GetData("health-warning",false) then
+            self:SetData("health-warning", false, true)
+            self.CloisterLoop:Stop()
+            if self.interior then
+                self.interior:StopCloisters()
+            end
+        end
+    end
+
+    function ENT:StartSmoke()
+        local smoke = ents.Create("env_smokestack")
+        smoke:SetPos(self:LocalToWorld(Vector(0,0,80)))
+        smoke:SetAngles(self:GetAngles()+Angle(-90,0,0))
+        smoke:SetKeyValue("InitialState", "1")
+        smoke:SetKeyValue("WindAngle", "0 0 0")
+        smoke:SetKeyValue("WindSpeed", "0")
+        smoke:SetKeyValue("rendercolor", "50 50 50")
+        smoke:SetKeyValue("renderamt", "170")
+        smoke:SetKeyValue("SmokeMaterial", "particle/smokesprites_0001.vmt")
+        smoke:SetKeyValue("BaseSpread", "5")
+        smoke:SetKeyValue("SpreadSpeed", "10")
+        smoke:SetKeyValue("Speed", "50")
+        smoke:SetKeyValue("StartSize", "30")
+        smoke:SetKeyValue("EndSize", "70")
+        smoke:SetKeyValue("roll", "20")
+        smoke:SetKeyValue("Rate", "10")
+        smoke:SetKeyValue("JetLength", "100")
+        smoke:SetKeyValue("twist", "5")
+        smoke:Spawn()
+        smoke:SetParent(self)
+        smoke:Activate()
+        self.smoke=smoke
+    end
+
+    function ENT:StopSmoke()
+        if self.smoke and IsValid(self.smoke) then
+            self.smoke:Remove()
+            self.smoke=nil
+        end
+    end
+
+    ENT:AddHook("OnRemove", "Health", function(self)
+        self.CloisterLoop:Stop()
+        self.CloisterLoop = null
+    end)
 
     ENT:AddHook("CanTogglePower", "health", function(self)
         if (not (self:GetData("health-val", 0) > 0)) or (self:GetData("repairing",false) or self:GetData("repair-primed", false)) then
@@ -196,10 +264,52 @@ if SERVER then
         end
         self:Explode()
     end)
+    
+    ENT:AddHook("PlayerExit", "health-cloisters", function(self, ply)
+        self:SendMessage("health-cloisterstop", function()
+            net.WriteEntity(ply)
+        end)
+    end)
+
+    ENT:AddHook("health-change", "warning", function(self)
+        if self:GetHealthPercent() <= 20 and (not self:GetData("health-warning",false)) then
+            self:SetData("health-warning", true, true)
+            --self:StartCloisters()
+            self:StartSmoke()
+            if self.interior then
+                self.interior:StartCloisters()
+            end
+        end
+    end)
+
+    ENT:AddHook("health-change", "warning-stop", function(self)
+        if self:GetHealthPercent() > 20 and (self:GetData("health-warning",false)) then
+            self:SetData("health-warning", false, true)
+            --self:StartCloisters()
+            self:StopSmoke()
+            if self.interior then
+                self.interior:StopCloisters()
+            end
+        end
+    end)
 else
+    ENT:AddHook("Initialize", "health-client", function(self)
+        
+    end)
+
     ENT:OnMessage("health-networking", function(self, ply)
         local newhealth = net.ReadInt(32)
         self:ChangeHealth(newhealth)
         self:SetData("UpdateHealthScreen", true, true)
     end)
+
+    --[[ENT:AddHook("health-change", "cloisters", function(self)
+        if self:GetHealthPercent() < 20 and (not self:GetData("health-warning",false)) then
+            self:SetData("health-warning", true, true)
+            --self:StartCloisters()
+            if self.interior then
+                self.interior:StartCloisters()
+            end
+        end
+    end)]]
 end

@@ -61,7 +61,8 @@ T.Exterior={
 			open="drmatt/tardis/door_open.wav",
 			close="drmatt/tardis/door_close.wav"
 		},
-		FlightLoop="drmatt/tardis/flight_loop.wav"
+		FlightLoop="drmatt/tardis/flight_loop.wav",
+		Cloister="tardis/cloisterbell_loop.wav"
 	},
 	Parts={
 		vortex={

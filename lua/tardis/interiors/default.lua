@@ -16,6 +16,7 @@ T.Interior={
 	},
 	Light={
 		color=Color(0,100,255),
+		warncolor=Color(255,100,0),
 		pos=Vector(0,0,0),
 		brightness=8
 	},

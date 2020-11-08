@@ -22,10 +22,12 @@ function ENT:DrawLight(id,light)
 	if ( dlight ) then
 		local size=1024
 		local c=light.color
+		local warnc = light.warncolor or c
+		local warning = self.exterior:GetData("health-warning", false)
 		dlight.Pos = self:LocalToWorld(light.pos)
-		dlight.r = c.r
-		dlight.g = c.g
-		dlight.b = c.b
+		dlight.r = (warning) and warnc.r or c.r
+		dlight.g = (warning) and warnc.g or c.g
+		dlight.b = (warning) and warnc.b or c.b
 		dlight.Brightness = light.brightness
 		dlight.Decay = size * 5
 		dlight.Size = size
@@ -81,6 +83,6 @@ end)
 
 ENT:AddHook("ShouldDrawLight", "lights", function(self,id,light)
 	if not self.exterior:GetData("power-state",false) then
-		return false
+		return light.nopower or false
 	end
 end)
