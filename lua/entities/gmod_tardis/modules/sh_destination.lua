@@ -62,7 +62,7 @@ TARDIS:AddKeyBind("destination-slow",{
 TARDIS:AddKeyBind("destination-rotate",{
 	name="Rotate",
 	section="Destination",
-	desc="Hold this and the left or right keys to rotate",
+	desc="Hold this with the boost and left or right keys to rotate",
 	key=KEY_LALT,
 	clientonly=true,
 	exterior=true
