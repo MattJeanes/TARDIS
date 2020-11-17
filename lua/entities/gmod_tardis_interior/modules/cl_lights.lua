@@ -83,6 +83,7 @@ end)
 
 ENT:AddHook("ShouldDrawLight", "lights", function(self,id,light)
 	if not self.exterior:GetData("power-state",false) then
+		if not IsValid(light) then return false end
 		return light.nopower or false
 	end
 end)
