@@ -130,17 +130,19 @@ if SERVER then
             local creator = self:GetCreator()
             local ent = ents.Create("gmod_tardis")
             ent:SetCreator(creator)
-            ent:SetPos(pos)
+            ent:SetPos(pos+Vector(0,0,2))
             ent:SetAngles(ang)
             self:Remove()
 
             ent:Spawn()
+            ent:GetPhysicsObject():Sleep()
             undo.Create("TARDIS Rewrite")
                 undo.AddEntity(ent)
                 undo.SetPlayer(creator)
             undo.Finish()
-            timer.Simple(1.2, function()
+            timer.Simple(0.5, function()
                 if not IsValid(ent) then return end
+                ent:GetPhysicsObject():Wake()
                 ent:FinishRepair()
             end)
             return
