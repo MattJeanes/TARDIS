@@ -10,8 +10,9 @@ TARDIS:AddSetting({
 	networked=true
 })
 
-function ENT:CalcLightBrightness()
-    local lightcolour = render.GetLightColor(self:GetPos()):ToColor()
+function ENT:CalcLightBrightness(interior)
+    local pos = (interior and self.interior:GetPos() or self:GetPos())
+    local lightcolour = render.GetLightColor(pos):ToColor()
     local rm = 0.299*lightcolour.r
     local gm = 0.587*lightcolour.g
     local bm = 0.114*lightcolour.b
@@ -20,6 +21,7 @@ function ENT:CalcLightBrightness()
 end
 
 ENT:AddHook("Initialize", "projectedlight", function(self)
+    if not self.interior then return end
     self.projlightsettings = {}
     self.projectedlight = ProjectedTexture()
     self.projectedlight:SetTexture("effects/flashlight/square")
@@ -30,7 +32,7 @@ ENT:AddHook("Initialize", "projectedlight", function(self)
     --self.projectedlight:SetBrightness(0.5)
 	self.projectedlight:SetPos(self:LocalToWorld(Vector(0,0,50)))
     self.projectedlight:SetAngles(self:GetAngles())
-    self.projlightsettings.basebrightness = 1
+    self.projlightsettings.basebrightness = 0.5
     self.projlightsettings.calculatedbrightness = self.projlightsettings.basebrightness
 	self.projectedlight:Update()
 end)
@@ -46,7 +48,9 @@ ENT:AddHook("ShouldDrawProjectedLight", "setting", function(self)
 end)
 
 ENT:AddHook("Think", "projectedlight", function(self)
+    if not self.interior then return end
     if (self:CallHook("ShouldDrawProjectedLight")==false) then
+
         if self.projectedlight:GetEnableShadows() == true then 
             self.projectedlight:SetEnableShadows(false)
             self.projectedlight:SetBrightness(0)
