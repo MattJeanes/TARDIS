@@ -20,6 +20,7 @@ function ENT:CalcLightBrightness()
 end
 
 ENT:AddHook("Initialize", "projectedlight", function(self)
+    self.projlightsettings = {}
     self.projectedlight = ProjectedTexture()
     self.projectedlight:SetTexture("effects/flashlight/square")
     self.projectedlight:SetFarZ(250)
@@ -28,7 +29,9 @@ ENT:AddHook("Initialize", "projectedlight", function(self)
     self.projectedlight:SetColor(self.metadata.Interior.Light.color)
     --self.projectedlight:SetBrightness(0.5)
 	self.projectedlight:SetPos(self:LocalToWorld(Vector(0,0,50)))
-	self.projectedlight:SetAngles(self:GetAngles())
+    self.projectedlight:SetAngles(self:GetAngles())
+    self.projlightsettings.basebrightness = 1
+    self.projlightsettings.calculatedbrightness = self.projlightsettings.basebrightness
 	self.projectedlight:Update()
 end)
 
@@ -38,8 +41,12 @@ ENT:AddHook("OnRemove", "projectedlight", function(self)
 	end
 end)
 
+ENT:AddHook("ShouldDrawProjectedLight", "setting", function(self)
+    if (not TARDIS:GetSetting("extprojlight-enabled")) then return false end
+end)
+
 ENT:AddHook("Think", "projectedlight", function(self)
-    if (not TARDIS:GetSetting("extprojlight-enabled")) then
+    if (self:CallHook("ShouldDrawProjectedLight")==false) then
         if self.projectedlight:GetEnableShadows() == true then 
             self.projectedlight:SetEnableShadows(false)
             self.projectedlight:SetBrightness(0)
@@ -53,7 +60,7 @@ ENT:AddHook("Think", "projectedlight", function(self)
         self.projectedlight:Update()
     elseif self:DoorOpen(true) and self.projectedlight:GetBrightness() == 0 then
         self.projectedlight:SetEnableShadows(true)
-        self.projectedlight:SetBrightness(0.5)
+        self.projectedlight:SetBrightness(self.projlightsettings.calculatedbrightness)
     end
     if ( IsValid( self.projectedlight ) ) and self:DoorOpen(true) then
 		self.projectedlight:SetPos( self:LocalToWorld(Vector(-25,0,51.1)) )

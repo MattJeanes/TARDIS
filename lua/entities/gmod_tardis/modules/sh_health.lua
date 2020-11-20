@@ -124,6 +124,27 @@ if SERVER then
     end
 
     function ENT:FinishRepair()
+        if TARDIS:GetSetting("interior","default",self:GetCreator()) ~= self.metadata.ID then
+            local pos = self:GetPos()
+            local ang = self:GetAngles()
+            local creator = self:GetCreator()
+            local ent = ents.Create("gmod_tardis")
+            ent:SetCreator(creator)
+            ent:SetPos(pos)
+            ent:SetAngles(ang)
+            self:Remove()
+
+            ent:Spawn()
+            undo.Create("TARDIS Rewrite")
+                undo.AddEntity(ent)
+                undo.SetPlayer(creator)
+            undo.Finish()
+            timer.Simple(1.2, function()
+                if not IsValid(ent) then return end
+                ent:FinishRepair()
+            end)
+            return
+        end
         self:EmitSound(self.metadata.Exterior.Sounds.RepairFinish)
         self:SetData("repairing", false, true)
         self:ChangeHealth(TARDIS:GetSetting("health-max"))
