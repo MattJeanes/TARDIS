@@ -21,4 +21,8 @@ if SERVER then
     ENT:AddHook("CanTriggerHads","power",function(self)
         if not self:GetData("power-state",false) then return false end
     end)
+else
+    ENT:AddHook("ShouldDrawProjectedLight", "power", function(self)
+        if not self:GetData("power-state") then return false end
+    end)
 end
