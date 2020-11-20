@@ -4,7 +4,7 @@ function TARDIS:ChangeOption(id,data)
 	local frame = vgui.Create("DFrame")
 	frame:SetSkin("TARDIS")
 	frame:SetTitle("TARDIS Interface")
-	frame:SetSize(250,125)
+	frame:SetSize(250,150)
 	frame:SetDraggable(false)
 	frame:SetBackgroundBlur(true)
 	
