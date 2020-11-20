@@ -13,6 +13,7 @@ TARDIS:AddSetting({
 
 local function predraw_o(self)
     if not TARDIS:GetSetting("lightoverride-enabled",false,LocalPlayer()) then return end
+    if self.metadata.Interior.Light == nil then return end --because for some reason SOMEONE OUT THERE didn't define a light.
     render.SuppressEngineLighting(true)
     --render.SetLightingMode(1)
 
