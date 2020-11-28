@@ -60,7 +60,7 @@ if SERVER then
         local active = self:GetData("cseq-active",false)
         local step = self:GetData("cseq-step")
         if active==false and sequences[id] then
-            local allowed = self:CallHook("controlsequence-canstart")
+            local allowed = self:CallHook("CanStartControlSequence")
             if allowed==false then return end
             self:EmitSound(self.metadata.Interior.Sounds.SequenceOK)
             self:SetData("cseq-active", true)
@@ -91,7 +91,7 @@ if SERVER then
             end
         end
     end)
-    ENT:AddHook("controlsequence-canstart", "settingquery", function(self)
+    ENT:AddHook("CanStartControlSequence", "settingquery", function(self)
         local result = TARDIS:GetSetting("csequences-enabled",false,self:GetCreator())
         return true
     end)

@@ -28,7 +28,7 @@ function ENT:StopCloisters()
     self.CloisterLoop:Stop()
 end
 
-ENT:AddHook("health-depleted", "interior-death", function(self)
+ENT:AddHook("OnHealthDepleted", "interior-death", function(self)
     util.ScreenShake(self:GetPos(), 10, 10, 1, 10)
     self:Explode()
 end)

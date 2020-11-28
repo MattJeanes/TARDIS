@@ -44,12 +44,12 @@ function ENT:ChangeHealth(newhealth)
     if newhealth <= 0 then
         newhealth = 0
         if newhealth == 0 and not (newhealth == oldhealth) then
-            self:CallHook("health-depleted")
-            self.interior:CallHook("health-depleted")
+            self:CallHook("OnHealthDepleted")
+            self.interior:CallHook("OnHealthDepleted")
         end
     end
     self:SetData("health-val", newhealth, true)
-    self:CallHook("health-change")
+    self:CallHook("OnHealthChange")
 end
 
 function ENT:GetHealth()
@@ -273,14 +273,14 @@ if SERVER then
         self:ChangeHealth(newhealth)
     end)
 
-    ENT:AddHook("health-change", "FallbackNetwork", function(self)
+    ENT:AddHook("OnHealthChange", "FallbackNetwork", function(self)
         local health = self:GetData("health-val")
         self:SendMessage("health-networking", function()
             net.WriteInt(health, 32)
         end)
     end)
 
-    ENT:AddHook("health-depleted", "death", function(self)
+    ENT:AddHook("OnHealthDepleted", "death", function(self)
         self.interior:SetPower(false)
         if self:GetData("vortex",false) then
             self:Mat()
@@ -294,7 +294,7 @@ if SERVER then
         end)
     end)
 
-    ENT:AddHook("health-change", "warning", function(self)
+    ENT:AddHook("OnHealthChange", "warning", function(self)
         if self:GetHealthPercent() <= 20 and (not self:GetData("health-warning",false)) then
             self:SetData("health-warning", true, true)
             --self:StartCloisters()
@@ -305,7 +305,7 @@ if SERVER then
         end
     end)
 
-    ENT:AddHook("health-change", "warning-stop", function(self)
+    ENT:AddHook("OnHealthChange", "warning-stop", function(self)
         if self:GetHealthPercent() > 20 and (self:GetData("health-warning",false)) then
             self:SetData("health-warning", false, true)
             --self:StartCloisters()
@@ -326,7 +326,7 @@ else
         self:SetData("UpdateHealthScreen", true, true)
     end)
 
-    --[[ENT:AddHook("health-change", "cloisters", function(self)
+    --[[ENT:AddHook("OnHealthChange", "cloisters", function(self)
         if self:GetHealthPercent() < 20 and (not self:GetData("health-warning",false)) then
             self:SetData("health-warning", true, true)
             --self:StartCloisters()
