@@ -49,7 +49,8 @@ function ENT:ChangeHealth(newhealth)
         end
     end
     self:SetData("health-val", newhealth, true)
-    self:CallHook("OnHealthChange")
+    self:CallHook("OnHealthChange",newhealth, oldhealth)
+    self.interior:CallHook("OnHealthChange", newhealth, oldhealth)
 end
 
 function ENT:GetHealth()
