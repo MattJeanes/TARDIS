@@ -20,7 +20,10 @@ local function predraw_o(self)
     render.ResetModelLighting(0.5, 0.5, 0.5)
     local light=self.metadata.Interior.Light
     local lights=self.metadata.Interior.Lights
-    local c = light.color:ToVector()
+    local warning = self.exterior:GetData("health-warning", false)
+    local c=light.color
+    local warnc = light.warncolor or c
+    local lcolor = (warning) and warnc:ToVector() or c:ToVector()
     if self:CallHook("ShouldDrawLight") == false then 
         render.ResetModelLighting(0.05, 0.05, 0.05)
         render.SetLocalModelLights()
@@ -29,15 +32,18 @@ local function predraw_o(self)
     --render.SetModelLighting(BOX_TOP, 1, 2, 3)
     local tab={{
         type=MATERIAL_LIGHT_POINT,
-        color=light.color:ToVector()*light.brightness,
+        color=lcolor*light.brightness,
         pos = self:LocalToWorld(light.pos),
         quadraticFalloff=20,
     }}
     if lights then
         for _,light in pairs(lights) do
+            local c=light.color
+            local warnc = light.warncolor or c
+            local lcolor = (warning) and warnc:ToVector() or c:ToVector()
             local tab2 = {
                 type=MATERIAL_LIGHT_POINT,
-                color=light.color:ToVector()*light.brightness,
+                color=lcolor*light.brightness,
                 pos = self:LocalToWorld(light.pos),
                 quadraticFalloff=10,
             }
