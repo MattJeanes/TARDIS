@@ -4,7 +4,7 @@ ENT:AddHook("OnTakeDamage", "Health", function(self, dmginfo)
 end)
 
 ENT:AddHook("Initialize", "Health", function(self)
-    self.CloisterLoop = CreateSound(self, self.metadata.Interior.Sounds.Cloister)
+    self.CloisterLoop = CreateSound(self, self.metadata.Interior.Sounds.Cloister, RecipientFilter():AddAllPlayers())
 end)
 
 ENT:AddHook("OnRemove", "Health", function(self)

@@ -49,7 +49,7 @@ function ENT:ChangeHealth(newhealth)
         end
     end
     self:SetData("health-val", newhealth, true)
-    self:CallHook("OnHealthChange",newhealth, oldhealth)
+    self:CallHook("OnHealthChange", newhealth, oldhealth)
     self.interior:CallHook("OnHealthChange", newhealth, oldhealth)
 end
 
@@ -151,6 +151,7 @@ if SERVER then
         self:EmitSound(self.metadata.Exterior.Sounds.RepairFinish)
         self:SetData("repairing", false, true)
         self:ChangeHealth(TARDIS:GetSetting("health-max"))
+        self:CallHook("RepairFinished")
         self.interior:SetPower(true)
         self:SetLocked(false, nil, true)
         self:GetCreator():ChatPrint("Your TARDIS has finished self-repairing")
@@ -298,7 +299,6 @@ if SERVER then
     ENT:AddHook("OnHealthChange", "warning", function(self)
         if self:GetHealthPercent() <= 20 and (not self:GetData("health-warning",false)) then
             self:SetData("health-warning", true, true)
-            --self:StartCloisters()
             self:StartSmoke()
             if self.interior then
                 self.interior:StartCloisters()
@@ -309,7 +309,6 @@ if SERVER then
     ENT:AddHook("OnHealthChange", "warning-stop", function(self)
         if self:GetHealthPercent() > 20 and (self:GetData("health-warning",false)) then
             self:SetData("health-warning", false, true)
-            --self:StartCloisters()
             self:StopSmoke()
             if self.interior then
                 self.interior:StopCloisters()
