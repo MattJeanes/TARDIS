@@ -18,13 +18,12 @@ if CLIENT then
     end)
 
     ENT:AddHook("ShouldTurnOnCloisters","cloisters",function(self)
-        return self:GetData("cloisters",false)
+        return self:GetData("cloisters")
     end)
 
     ENT:AddHook("Think", "cloistersound", function(self)
         local shouldon=self:CallHook("ShouldTurnOnCloisters")
         local shouldoff=self:CallHook("ShouldTurnOffCloisters")
-
         local sound = self.metadata.Interior.Sounds.Cloister
 
         if TARDIS:GetSetting("cloistersound") and TARDIS:GetSetting("sound") then
