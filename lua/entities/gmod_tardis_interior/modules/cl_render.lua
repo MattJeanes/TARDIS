@@ -16,18 +16,21 @@ local function predraw_o(self)
     if self.metadata.Interior.Light == nil then return end --because for some reason SOMEONE OUT THERE didn't define a light.
     render.SuppressEngineLighting(true)
     --render.SetLightingMode(1)
-    render.ResetModelLighting(0.3, 0.3, 0.3)
     local light=self.metadata.Interior.Light
     local lights=self.metadata.Interior.Lights
     local warning = self.exterior:GetData("health-warning", false)
-    local c=light.color
-    local warnc = light.warncolor or c
-    local lcolor = (warning) and warnc:ToVector() or c:ToVector()
+    render.ResetModelLighting(0.3, 0.3, 0.3)
+
     local tab={}
-    if self:CallHook("ShouldDrawLight",nil,light)==false then 
-        render.ResetModelLighting(0.05, 0.05, 0.05)
+    if self:CallHook("ShouldDrawLight",nil,light)==false then
+        --print("lights off")
         render.SetLocalModelLights()
+        render.ResetModelLighting(0.05, 0.05, 0.05)
     else
+        --print("lights on")
+        local c=light.color
+        local warnc = light.warncolor or c
+        local lcolor = (warning) and warnc:ToVector() or c:ToVector()
         table.insert(tab,{
             type=MATERIAL_LIGHT_POINT,
             color=lcolor*light.brightness,
@@ -36,20 +39,24 @@ local function predraw_o(self)
         })
     end
     if lights then
-        for _,light in pairs(lights) do
-            if self:CallHook("ShouldDrawLight",nil,light)==false then return end
-            local c=light.color
-            local warnc = light.warncolor or c
+       -- print("i have lights")
+        for _,l in pairs(lights) do
+            if self:CallHook("ShouldDrawLight",nil,l)==false then return end
+            local c=l.color
+            local warnc = l.warncolor or c
             local lcolor = (warning) and warnc:ToVector() or c:ToVector()
             local tab2 = {
                 type=MATERIAL_LIGHT_POINT,
-                color=lcolor*light.brightness,
-                pos = self:LocalToWorld(light.pos),
+                color=lcolor*l.brightness,
+                pos = self:LocalToWorld(l.pos),
                 quadraticFalloff=10,
             }
+            --print("inserting lights")
             table.insert(tab, tab2)
         end
     end
+    --print("final lights table follows")
+    --PrintTable(tab)
     render.SetLocalModelLights(tab)
 end
 
