@@ -105,7 +105,7 @@ if SERVER then
 				else
 					self:SendMessage("premat",function() net.WriteVector(self:GetData("demat-pos",Vector())) end)
 					self:SetData("teleport",true)
-					local timerdelay = (self:GetData("demat-fast",false) and 1.8 or 8.5)
+					local timerdelay = (self:GetData("demat-fast",false) and 1.9 or 8.5)
 					timer.Simple(timerdelay,function()
 						if not IsValid(self) then return end
 						self:SendMessage("mat")
@@ -215,11 +215,11 @@ if SERVER then
 			end
 		end
 		self:CallHook("StopDemat")
-	end
+    end
 
 	ENT:AddHook("StopDemat", "teleport-fast", function(self)
 		if self:GetData("demat-fast",false) then
-			timer.Simple(0.1, function()
+			timer.Simple(0.3, function()
 				if not IsValid(self) then return end
 				self:Mat()
 			end)
@@ -384,7 +384,7 @@ else
 		end
 	end)
 	
-	ENT:OnMessage("premat", function(self)
+    ENT:OnMessage("premat", function(self)
 		self:SetData("teleport",true)
 		if TARDIS:GetSetting("teleport-sound") and TARDIS:GetSetting("sound") then
 			local ext = self.metadata.Exterior.Sounds.Teleport
@@ -405,7 +405,7 @@ else
         self:SetData("vortex",false)
 	end)
 	
-	function ENT:StopDemat()
+    function ENT:StopDemat()
 		self:SetData("demat",false)
 		self:SetData("step",1)
 		self:SetData("vortex",true)
@@ -413,7 +413,7 @@ else
 		self:CallHook("StopDemat")
 	end
 	
-	function ENT:StopMat()
+    function ENT:StopMat()
 		self:SetData("mat",false)
 		self:SetData("step",1)
         self:SetData("teleport",false)
@@ -467,7 +467,7 @@ ENT:AddHook("Think","teleport",function(self,delta)
 	if alpha==target then
 		if demat then
 			if step>=#self.metadata.Exterior.Teleport.DematSequence then
-				self:StopDemat()
+                self:StopDemat()
 				return
 			else
 				self:SetData("step",step+1)
