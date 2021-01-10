@@ -267,8 +267,9 @@ if SERVER then
         if self:GetHealthPercent() <= 20 and (not self:GetData("health-warning",false)) then
             self:SetData("health-warning", true, true)
             self:StartSmoke()
+            self:CallHook("HealthWarningToggled",true)
             if self.interior then
-                self.interior:StartCloisters()
+                self.interior:CallHook("HealthWarningToggled",true)
             end
         end
     end)
@@ -277,8 +278,9 @@ if SERVER then
         if self:GetHealthPercent() > 20 and (self:GetData("health-warning",false)) then
             self:SetData("health-warning", false, true)
             self:StopSmoke()
+            self:CallHook("HealthWarningToggled",false)
             if self.interior then
-                self.interior:StopCloisters()
+                self.interior:CallHook("HealthWarningToggled",false)
             end
         end
     end)
