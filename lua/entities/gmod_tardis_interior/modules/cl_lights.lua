@@ -1,21 +1,5 @@
 -- Lights
 
---[[
-ENT:AddHook("PreDraw", "lights", function(self)
-	render.SuppressEngineLighting(true)
-	render.SetLocalModelLights({
-		{
-			pos=self:LocalToWorld(Vector(0,0,200)),
-			color=Vector(0,3,8)
-		},
-		{
-			pos=self:LocalToWorld(Vector(0,0,100)),
-			color=Vector(0,5,5)
-		}
-	})
-end)
-]]--
-
 function ENT:DrawLight(id,light)
 	if self:CallHook("ShouldDrawLight",id,light)==false then return end
 	local dlight = DynamicLight(id)
@@ -82,8 +66,9 @@ ENT:AddHook("Draw", "lights-roundthings", function(self)
 end)
 
 ENT:AddHook("ShouldDrawLight", "lights", function(self,id,light)
-	if not self.exterior:GetData("power-state",false) then
-		if not IsValid(light) then return false end
+    local power = self.exterior:GetData("power-state",false)
+	if not power then
+        -- if not IsValid(light) then return power end
 		return light.nopower or false
 	end
 end)
