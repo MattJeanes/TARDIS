@@ -402,21 +402,21 @@ else
 	ENT:OnMessage("mat", function(self)
 		self:SetData("mat",true)
 		self:SetData("step",1)
-		self:SetData("vortex",false)
+        self:SetData("vortex",false)
 	end)
 	
 	function ENT:StopDemat()
 		self:SetData("demat",false)
 		self:SetData("step",1)
 		self:SetData("vortex",true)
-		self:SetData("teleport",false)
+        self:SetData("teleport",false)
 		self:CallHook("StopDemat")
 	end
 	
 	function ENT:StopMat()
 		self:SetData("mat",false)
 		self:SetData("step",1)
-		self:SetData("teleport",false)
+        self:SetData("teleport",false)
 	end
 	
 	hook.Add("PostDrawTranslucentRenderables", "tardis-trace", function()
@@ -482,7 +482,7 @@ ENT:AddHook("Think","teleport",function(self,delta)
 		end
 		target=self:GetTargetAlpha()
 		self:SetData("alphatarget",target)
-	end
+    end
 	local sequencespeed = (self:GetData("demat-fast",false) and self.metadata.Exterior.Teleport.SequenceSpeedFast or self.metadata.Exterior.Teleport.SequenceSpeed)
 	alpha=math.Approach(alpha,target,delta*66*sequencespeed)
 	self:SetData("alpha",alpha)

@@ -29,7 +29,6 @@ TARDIS:AddSetting({
 
 ENT:AddHook("Initialize","health-init",function(self)
     self:SetData("health-val", TARDIS:GetSetting("health-max"), true)
-    self.CloisterLoop = CreateSound(self, "tardis/cloisterbell_loop.wav")
 end)
 
 function ENT:ChangeHealth(newhealth)
@@ -121,7 +120,7 @@ if SERVER then
         self:SetData("repair-time", time, true)
         self:SetData("repairing", true, true)
         self:SetData("repair-primed", false)
-        self:StopCloisters()
+        self:CallHook("RepairStarted")
     end
 
     function ENT:FinishRepair()
@@ -155,29 +154,8 @@ if SERVER then
         self.interior:SetPower(true)
         self:SetLocked(false, nil, true)
         self:GetCreator():ChatPrint("Your TARDIS has finished self-repairing")
-        self:StopCloisters()
         self:StopSmoke()
         self:FlashLight(1.5)
-    end
-
-    function ENT:StartCloisters()
-        if not self:GetData("health-warning",false) then
-            self:SetData("health-warning", true, true)
-            --TODO: Figure out how to play exterior cloisterbell properly // Should only play in ext-only mode outside.
-            if self.interior then
-                self.interior:StartCloisters()
-            end
-        end
-    end
-
-    function ENT:StopCloisters()
-        if self:GetData("health-warning",false) then
-            self:SetData("health-warning", false, true)
-            self.CloisterLoop:Stop()
-            if self.interior then
-                self.interior:StopCloisters()
-            end
-        end
     end
 
     function ENT:StartSmoke()
@@ -211,11 +189,6 @@ if SERVER then
             self.smoke=nil
         end
     end
-
-    ENT:AddHook("OnRemove", "Health", function(self)
-        self.CloisterLoop:Stop()
-        self.CloisterLoop = null
-    end)
 
     ENT:AddHook("CanTogglePower", "health", function(self)
         if (not (self:GetData("health-val", 0) > 0)) or (self:GetData("repairing",false) or self:GetData("repair-primed", false)) then
@@ -289,12 +262,6 @@ if SERVER then
         end
         self:Explode()
     end)
-    
-    ENT:AddHook("PlayerExit", "health-cloisters", function(self, ply)
-        self:SendMessage("health-cloisterstop", function()
-            net.WriteEntity(ply)
-        end)
-    end)
 
     ENT:AddHook("OnHealthChange", "warning", function(self)
         if self:GetHealthPercent() <= 20 and (not self:GetData("health-warning",false)) then
@@ -325,14 +292,4 @@ else
         self:ChangeHealth(newhealth)
         self:SetData("UpdateHealthScreen", true, true)
     end)
-
-    --[[ENT:AddHook("OnHealthChange", "cloisters", function(self)
-        if self:GetHealthPercent() < 20 and (not self:GetData("health-warning",false)) then
-            self:SetData("health-warning", true, true)
-            --self:StartCloisters()
-            if self.interior then
-                self.interior:StartCloisters()
-            end
-        end
-    end)]]
 end
