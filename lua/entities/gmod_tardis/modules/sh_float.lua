@@ -100,7 +100,13 @@ if SERVER then
 		if self:GetData("float") then
 			self.phys:Wake()
 		end
-	end)
+    end)
+    
+    ENT:AddHook("OnHealthDepleted","float",function(self)
+        if self:GetData("float") then
+            self:SetFloat(false)
+        end
+    end)
 	
 	ENT:AddHook("PhysicsUpdate", "float", function(self,ph)
 		if self:GetData("float") then
