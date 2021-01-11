@@ -65,7 +65,7 @@ local overrides={
         if self.ExteriorPart then
             allowed, animate = self.exterior:CallHook("CanUsePart",self,a)
         else
-            allowed, animate =  self.interior:CallHook("CanUsePart",self,a)
+            allowed, animate = self.interior:CallHook("CanUsePart",self,a)
         end
 		if allowed~=false then
 			res=self.o.Use(self,a,...)
