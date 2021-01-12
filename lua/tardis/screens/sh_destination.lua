@@ -99,12 +99,9 @@ TARDIS:AddScreen("Destination", {menu=false}, function(self,ext,int,frame,screen
 		end
 		if namebox:GetText() ~= "" then
 			name = namebox:GetText()
-		end
-		if pos ~= 0 and ang ~= 0 and name ~= "" then
-			return pos,ang,name
-		else
-			return false,false,false
-		end
+        end
+        if name == "" then name = "Unnamed" end
+		return pos,ang,name
 	end
 	if ext:GetData("demat-pos") and ext:GetData("demat-ang") then
 		updatetextinputs(ext:GetData("demat-pos"), ext:GetData("demat-ang"),"Current Set Destination")
@@ -161,12 +158,13 @@ TARDIS:AddScreen("Destination", {menu=false}, function(self,ext,int,frame,screen
 		function(text)
 			name = text
 			Derma_Query(
-				"Use current TARDIS position and rotation?",
+				"Use current TARDIS position and rotation?\nSelecting 'No' will use the information on the inputs.",
 				"New Location",
 				"Yes",
 				function() 
 						pos = ext:GetPos() 
-						ang = ext:GetAngles() 
+                        ang = ext:GetAngles() 
+                        if name == "" then name = "Unnamed" end
 						TARDIS:AddLocation(pos,ang,name,map) 
 						updatelist() 
 				end,
@@ -186,7 +184,7 @@ TARDIS:AddScreen("Destination", {menu=false}, function(self,ext,int,frame,screen
 	edit:SetEnabled(false)
 	function edit:DoClick()
 		pendingchanges = true
-		local pos,ang,name = fetchtextinputs()
+        local pos,ang,name = fetchtextinputs()
 		local index = list:GetSelectedLine()
 		if not index then return end
 		TARDIS:UpdateLocation(pos,ang,name,map,index)
@@ -258,7 +256,7 @@ TARDIS:AddScreen("Destination", {menu=false}, function(self,ext,int,frame,screen
 	confirm:SetFont("TARDIS-Default")
 	function confirm:DoClick()
 		local pos,ang = fetchtextinputs()
-		if pos ~= false then
+		if pos ~= nil then
 			ext:SendMessage("destination-demat", function()
 				net.WriteVector(pos)
 				net.WriteAngle(ang)
