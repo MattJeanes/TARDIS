@@ -98,7 +98,7 @@ if SERVER then
 
     ENT:AddHook("CanUsePart", "csequence-disable", function(self, part, a)
         if part.InSequence then
-            return false, true
+            return false
         end
     end)
 
@@ -107,7 +107,7 @@ if SERVER then
         local curseq = self:GetData("cseq-curseq","none")
         for _,v in pairs(sequences[curseq].Controls) do
             local p = TARDIS:GetPart(self,v)
-            p.InSequence = false
+            p.InSequence = nil
         end
         self:SetData("cseq-step",nil)
         self:SetData("cseq-curseq",nil)
