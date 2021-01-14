@@ -94,7 +94,7 @@ T.Interior={
 		},
 		door=true
 	},
-	/*
+	--[[
 	CustomPortals={
 		test={
 			entry={
@@ -113,7 +113,7 @@ T.Interior={
 			}
 		}
 	}
-	*/
+	--]]
 }
 T.Exterior={
 	Parts={
