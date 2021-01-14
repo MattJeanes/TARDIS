@@ -22,7 +22,7 @@ TARDIS:AddGUISetting("Interior", function(self,frame,screen)
 				button:SetFont("TARDIS-Default")
 				button.DoClick = function()
 					TARDIS:SetSetting("interior",v[2],true)
-					LocalPlayer():ChatPrint("TARDIS interior changed. Respawn the TARDIS for changes to apply.")
+					LocalPlayer():ChatPrint("TARDIS interior changed. Respawn or repair the TARDIS for changes to apply.")
 				end
 				table.insert(buttons,button)
 			end
