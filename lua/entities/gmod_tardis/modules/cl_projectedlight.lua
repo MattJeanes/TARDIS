@@ -15,18 +15,19 @@ function ENT:CalcLightBrightness(pos)
 	local rm = 0.299*lightcolour.r
 	local gm = 0.587*lightcolour.g
 	local bm = 0.114*lightcolour.b
-	local luminance = rm + gm + rm
+	local luminance = rm + gm + bm
 	return luminance
 end
 
 function ENT:CreateProjectedLight()
 	if self.projectedlight then return end
-	local pl = ProjectedTexture()
+    local pl = ProjectedTexture()
+    self:SetData("pl-warning",self:GetData("health-warning"))
 	pl:SetTexture("effects/flashlight/square")
 	pl:SetFarZ(250)
 	pl:SetVerticalFOV(self.metadata.Exterior.Portal.height)
 	pl:SetHorizontalFOV(self.metadata.Exterior.Portal.width+10)
-	pl:SetColor(self.metadata.Interior.Light.color)
+	pl:SetColor(self:GetData("health-warning",false) and self.metadata.Interior.Light.warncolor or self.metadata.Interior.Light.color)
     pl:SetBrightness(0.5)
     pl:SetPos(self:LocalToWorld(Vector(-21,0,51.1)))
     pl:SetEnableShadows(true)
@@ -43,6 +44,15 @@ function ENT:RemoveProjectedLight()
 end
 
 function ENT:UpdateProjectedLight()
+    local warning = self:GetData("health-warning",false)
+    if warning~=self:GetData("pl-warning",false) then
+        self:SetData("pl-warning",warning)
+        if warning then
+            self.projectedlight:SetColor(self.metadata.Interior.Light.warncolor or self.metadata.Interior.Light.color)
+        else
+            self.projectedlight:SetColor(self.metadata.Interior.Light.color)
+        end
+    end
     self.projectedlight:SetPos(self:LocalToWorld(Vector(-21,0,51.1)))
     self.projectedlight:SetAngles(self:GetAngles())
     self.projectedlight:Update()

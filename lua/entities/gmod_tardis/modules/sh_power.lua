@@ -22,7 +22,7 @@ if SERVER then
         if not self:GetData("power-state",false) then return false end
     end)
 else
-    ENT:AddHook("ShouldDrawProjectedLight", "power", function(self)
-        if not self:GetData("power-state") then return false end
+    ENT:AddHook("ShouldNotDrawProjectedLight", "power", function(self)
+        if not self:GetData("power-state") then return true end
     end)
 end
