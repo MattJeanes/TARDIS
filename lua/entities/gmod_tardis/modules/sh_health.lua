@@ -193,8 +193,8 @@ if SERVER then
     
     ENT:AddHook("CanRepair", "health", function(self)
         local intsetting = TARDIS:GetSetting("interior","default",self:GetCreator())
-        if TARDIS:GetInterior(intsetting) and (intsetting ~= self.metadata.ID) then return end
-        if (self:GetHealth() >= TARDIS:GetSetting("health-max",1)) or self:GetData("vortex",false) then return false end
+        if TARDIS:GetInterior(intsetting) and (intsetting ~= self.metadata.ID) and (not self:GetData("vortex",false))then return end
+        if (self:GetHealth() >= TARDIS:GetSetting("health-max",1)) then return false end
     end)
 
 	ENT:AddHook("CanTogglePower", "health", function(self)
