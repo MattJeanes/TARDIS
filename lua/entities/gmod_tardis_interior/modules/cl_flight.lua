@@ -24,7 +24,7 @@ ENT:AddHook("Think", "flight", function(self)
 			self.flightsound:ChangePitch(95+p,0.1)
 			self.flightsound:ChangeVolume(0.4)
 		else
-			self.flightsound=CreateSound(self, self.metadata.Exterior.Sounds.FlightLoop)	
+			self.flightsound=CreateSound(self, self.metadata.Interior.Sounds.FlightLoop or self.metadata.Exterior.Sounds.FlightLoop)	
 			self.flightsound:Play()
 		end
 	elseif self.flightsound then
