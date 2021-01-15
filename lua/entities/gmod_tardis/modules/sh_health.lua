@@ -97,7 +97,6 @@ if SERVER then
 			self:ChangeHealth(TARDIS:GetSetting("health-max"),1)
 			return 
 		end
-        if (self:GetHealth() >= TARDIS:GetSetting("health-max",1)) or self:GetData("vortex",false) then return end
         if self:CallHook("CanRepair")==false then return end
 		if on==true then
 			for k,_ in pairs(self.occupants) do
