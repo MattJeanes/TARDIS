@@ -26,7 +26,7 @@ T.Interior={
 		},
 		SequenceOK = "drmatt/tardis/seq_ok.wav",
 		SequenceFail = "drmatt/tardis/seq_bad.wav",
-		Cloister = "tardis/cloisterbell_loop.wav"
+		Cloister = "drmatt/tardis/cloisterbell_loop.wav"
 	},
 	LightOverride={
 		basebrightness=0.3, --Base interior brightness when power is on.
