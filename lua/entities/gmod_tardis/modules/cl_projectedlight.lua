@@ -1,5 +1,7 @@
 --Fake light bleeding
+
 --Settings
+
 TARDIS:AddSetting({
 	id="extprojlight-enabled",
 	name="Door Light Enabled",
@@ -9,7 +11,9 @@ TARDIS:AddSetting({
 	type="bool",
 	option=true,
 })
+
 --Methods
+
 function ENT:CalcLightBrightness(pos)
 	local lightcolour = render.GetLightColor(pos):ToColor()
 	local rm = 0.299*lightcolour.r
@@ -63,7 +67,9 @@ function ENT:UpdateProjectedLight()
 	self.projectedlight:SetAngles(self:GetAngles())
 	self.projectedlight:Update()
 end
+
 --Hooks
+
 ENT:AddHook("OnRemove", "projectedlight", function(self)
 	if ( IsValid( self.projectedlight ) ) then
 		self.projectedlight:Remove()
