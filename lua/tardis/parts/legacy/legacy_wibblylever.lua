@@ -9,9 +9,9 @@ PART.Collision = true
 PART.Animate = true
 
 if SERVER then
-    function PART:Use(ply)
-        self.exterior:ToggleLocked()
-    end
+	function PART:Use(ply)
+		self.exterior:ToggleLocked()
+	end
 end
 
 TARDIS:AddPart(PART)

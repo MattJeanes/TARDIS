@@ -61,12 +61,12 @@ local overrides={
 		local call=false
 		local res
 		if (not self.NoStrictUse) and IsValid(a) and a:IsPlayer() and a:GetEyeTraceNoCursor().Entity~=self then return end
-        local allowed, animate
-        if self.ExteriorPart then
-            allowed, animate = self.exterior:CallHook("CanUsePart",self,a)
-        else
-            allowed, animate = self.interior:CallHook("CanUsePart",self,a)
-        end
+		local allowed, animate
+		if self.ExteriorPart then
+			allowed, animate = self.exterior:CallHook("CanUsePart",self,a)
+		else
+			allowed, animate = self.interior:CallHook("CanUsePart",self,a)
+		end
 		if allowed~=false then
 			res=self.o.Use(self,a,...)
 		end

@@ -9,10 +9,10 @@ PART.Collision = true
 PART.Animate = true
 
 if SERVER then
-    function PART:Use(ply)
-        if not ply:IsPlayer() then return end
-        TARDIS:PopToScreen("Destination",ply)
-    end
+	function PART:Use(ply)
+		if not ply:IsPlayer() then return end
+		TARDIS:PopToScreen("Destination",ply)
+	end
 end
 
 TARDIS:AddPart(PART)

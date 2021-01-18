@@ -66,9 +66,9 @@ ENT:AddHook("Draw", "lights-roundthings", function(self)
 end)
 
 ENT:AddHook("ShouldDrawLight", "lights", function(self,id,light)
-    local power = self.exterior:GetData("power-state",false)
+	local power = self.exterior:GetData("power-state",false)
 	if power~=true then
-        if light==nil then return false end
+		if light==nil then return false end
 		return light.nopower or false
 	end
 end)

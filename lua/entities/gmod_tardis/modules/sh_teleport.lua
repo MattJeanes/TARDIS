@@ -215,7 +215,7 @@ if SERVER then
 			end
 		end
 		self:CallHook("StopDemat")
-    end
+	end
 
 	ENT:AddHook("StopDemat", "teleport-fast", function(self)
 		if self:GetData("demat-fast",false) then
@@ -384,7 +384,7 @@ else
 		end
 	end)
 	
-    ENT:OnMessage("premat", function(self)
+	ENT:OnMessage("premat", function(self)
 		self:SetData("teleport",true)
 		if TARDIS:GetSetting("teleport-sound") and TARDIS:GetSetting("sound") then
 			local ext = self.metadata.Exterior.Sounds.Teleport
@@ -402,21 +402,21 @@ else
 	ENT:OnMessage("mat", function(self)
 		self:SetData("mat",true)
 		self:SetData("step",1)
-        self:SetData("vortex",false)
+		self:SetData("vortex",false)
 	end)
 	
-    function ENT:StopDemat()
+	function ENT:StopDemat()
 		self:SetData("demat",false)
 		self:SetData("step",1)
 		self:SetData("vortex",true)
-        self:SetData("teleport",false)
+		self:SetData("teleport",false)
 		self:CallHook("StopDemat")
 	end
 	
-    function ENT:StopMat()
+	function ENT:StopMat()
 		self:SetData("mat",false)
 		self:SetData("step",1)
-        self:SetData("teleport",false)
+		self:SetData("teleport",false)
 	end
 	
 	hook.Add("PostDrawTranslucentRenderables", "tardis-trace", function()
@@ -467,7 +467,7 @@ ENT:AddHook("Think","teleport",function(self,delta)
 	if alpha==target then
 		if demat then
 			if step>=#self.metadata.Exterior.Teleport.DematSequence then
-                self:StopDemat()
+				self:StopDemat()
 				return
 			else
 				self:SetData("step",step+1)
@@ -482,7 +482,7 @@ ENT:AddHook("Think","teleport",function(self,delta)
 		end
 		target=self:GetTargetAlpha()
 		self:SetData("alphatarget",target)
-    end
+	end
 	local sequencespeed = (self:GetData("demat-fast",false) and self.metadata.Exterior.Teleport.SequenceSpeedFast or self.metadata.Exterior.Teleport.SequenceSpeed)
 	alpha=math.Approach(alpha,target,delta*66*sequencespeed)
 	self:SetData("alpha",alpha)

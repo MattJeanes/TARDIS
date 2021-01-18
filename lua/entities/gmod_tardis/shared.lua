@@ -27,15 +27,15 @@ function ENT:RemoveHook(name,id)
 end
 
 function ENT:GetHooksTable()
-    return hooks
+	return hooks
 end
 
 function ENT:ListHooks(listInteriorHooks)
-    print("[Exterior]"..(SERVER and "[Server]" or "[Client]"))
-    for h in pairs(hooks) do
-        print(h)
-    end
-    if listInteriorHooks then self.interior:ListHooks() end
+	print("[Exterior]"..(SERVER and "[Server]" or "[Client]"))
+	for h in pairs(hooks) do
+		print(h)
+	end
+	if listInteriorHooks then self.interior:ListHooks() end
 end
 
 function ENT:CallHook(name,...)

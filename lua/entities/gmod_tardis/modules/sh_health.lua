@@ -97,7 +97,7 @@ if SERVER then
 			self:ChangeHealth(TARDIS:GetSetting("health-max"),1)
 			return 
 		end
-        if self:CallHook("CanRepair")==false then return end
+		if self:CallHook("CanRepair")==false then return end
 		if on==true then
 			for k,_ in pairs(self.occupants) do
 				k:ChatPrint("This TARDIS has been set to self-repair. Please vacate the interior.")
@@ -189,13 +189,13 @@ if SERVER then
 			self.smoke:Remove()
 			self.smoke=nil
 		end
-    end
-    
-    ENT:AddHook("CanRepair", "health", function(self)
-        local intsetting = TARDIS:GetSetting("interior","default",self:GetCreator())
-        if TARDIS:GetInterior(intsetting) and (intsetting ~= self.metadata.ID) and (not self:GetData("vortex",false))then return end
-        if (self:GetHealth() >= TARDIS:GetSetting("health-max",1)) then return false end
-    end)
+	end
+	
+	ENT:AddHook("CanRepair", "health", function(self)
+		local intsetting = TARDIS:GetSetting("interior","default",self:GetCreator())
+		if TARDIS:GetInterior(intsetting) and (intsetting ~= self.metadata.ID) and (not self:GetData("vortex",false))then return end
+		if (self:GetHealth() >= TARDIS:GetSetting("health-max",1)) then return false end
+	end)
 
 	ENT:AddHook("CanTogglePower", "health", function(self)
 		if (not (self:GetData("health-val", 0) > 0)) or (self:GetData("repairing",false) or self:GetData("repair-primed", false)) then

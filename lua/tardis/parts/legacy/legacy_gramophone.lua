@@ -8,10 +8,10 @@ PART.AutoSetup = true
 PART.Collision = true
 
 if SERVER then
-    function PART:Use(ply)
-        if not ply:IsPlayer() then return end
-        TARDIS:PopToScreen("Music",ply)
-    end
+	function PART:Use(ply)
+		if not ply:IsPlayer() then return end
+		TARDIS:PopToScreen("Music",ply)
+	end
 end
 
 TARDIS:AddPart(PART)

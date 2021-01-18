@@ -5,7 +5,7 @@ function ENT:SetHADS(on)
 end
 
 function ENT:ToggleHADS()
-    local on = not self:GetData("hads",false)
+	local on = not self:GetData("hads",false)
 	self:SetHADS(on)
 end
 

@@ -99,8 +99,8 @@ TARDIS:AddScreen("Destination", {menu=false}, function(self,ext,int,frame,screen
 		end
 		if namebox:GetText() ~= "" then
 			name = namebox:GetText()
-        end
-        if name == "" then name = "Unnamed" end
+		end
+		if name == "" then name = "Unnamed" end
 		return pos,ang,name
 	end
 	if ext:GetData("demat-pos") and ext:GetData("demat-ang") then
@@ -163,8 +163,8 @@ TARDIS:AddScreen("Destination", {menu=false}, function(self,ext,int,frame,screen
 				"Yes",
 				function() 
 						pos = ext:GetPos() 
-                        ang = ext:GetAngles() 
-                        if name == "" then name = "Unnamed" end
+						ang = ext:GetAngles() 
+						if name == "" then name = "Unnamed" end
 						TARDIS:AddLocation(pos,ang,name,map) 
 						updatelist() 
 				end,
@@ -184,7 +184,7 @@ TARDIS:AddScreen("Destination", {menu=false}, function(self,ext,int,frame,screen
 	edit:SetEnabled(false)
 	function edit:DoClick()
 		pendingchanges = true
-        local pos,ang,name = fetchtextinputs()
+		local pos,ang,name = fetchtextinputs()
 		local index = list:GetSelectedLine()
 		if not index then return end
 		TARDIS:UpdateLocation(pos,ang,name,map,index)

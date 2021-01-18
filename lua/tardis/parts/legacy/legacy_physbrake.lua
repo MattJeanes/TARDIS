@@ -10,10 +10,10 @@ PART.Animate = true
 PART.Sound = "tardis/control_handbrake.wav"
 
 if SERVER then
-    function PART:Use(ply)
-        local result = self.exterior:TogglePhyslock() or false
-        ply:ChatPrint("Physics Lock ".. (result and "engaged" or "disengaged"))
-    end
+	function PART:Use(ply)
+		local result = self.exterior:TogglePhyslock() or false
+		ply:ChatPrint("Physics Lock ".. (result and "engaged" or "disengaged"))
+	end
 end
 
 TARDIS:AddPart(PART)
