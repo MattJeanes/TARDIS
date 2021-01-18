@@ -9,9 +9,9 @@ function ENT:DrawLight(id,light)
 		local warnc = light.warncolor or c
 		local warning = self.exterior:GetData("health-warning", false)
 		dlight.Pos = self:LocalToWorld(light.pos)
-		dlight.r = (warning) and warnc.r or c.r
-		dlight.g = (warning) and warnc.g or c.g
-		dlight.b = (warning) and warnc.b or c.b
+		dlight.r = warning and warnc.r or c.r
+		dlight.g = warning and warnc.g or c.g
+		dlight.b = warning and warnc.b or c.b
 		dlight.Brightness = light.brightness
 		dlight.Decay = size * 5
 		dlight.Size = size
