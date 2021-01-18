@@ -27,14 +27,8 @@ function ENT:PickProjectedLightColour()
 	local warning = self:GetData("health-warning",false)
 	local color = self.metadata.Exterior.ProjectedLight.color or self.metadata.Interior.Light.color
 	local warncolor = self.metadata.Exterior.ProjectedLight.warncolor or self.metadata.Interior.Light.warncolor
-	if warning~=self:GetData("pl-warning",false) then
-		self:SetData("pl-warning",warning)
-		if warning then
-			self.projectedlight:SetColor(warncolor or color)
-		else
-			self.projectedlight:SetColor(color)
-		end
-	end
+	local pickedcolour = warning and (warncolor or color) or color
+	return pickedcolour
 end
 
 function ENT:CreateProjectedLight()
@@ -45,12 +39,9 @@ function ENT:CreateProjectedLight()
 	pl:SetFarZ(self.metadata.Exterior.ProjectedLight.farz)
 	pl:SetVerticalFOV(self.metadata.Exterior.ProjectedLight.vertfov or self.metadata.Exterior.Portal.height)
 	pl:SetHorizontalFOV(self.metadata.Exterior.ProjectedLight.horizfov or self.metadata.Exterior.Portal.width+10)
-	pl:SetColor(self:GetData("health-warning",false) and self.metadata.Interior.Light.warncolor or self.metadata.Interior.Light.color)
 	pl:SetBrightness(self.metadata.Exterior.ProjectedLight.brightness)
-	pl:SetPos(self:LocalToWorld(self.metadata.Exterior.ProjectedLight.offset))
 	pl:SetEnableShadows(true)
-	pl:SetAngles(self:GetAngles())
-	pl:Update()
+	pl:SetColor(self:PickProjectedLightColour())
 	self.projectedlight = pl
 end
 
@@ -62,7 +53,12 @@ function ENT:RemoveProjectedLight()
 end
 
 function ENT:UpdateProjectedLight()
-	self:PickProjectedLightColour()
+	local warning = self:GetData("health-warning",false)
+	if warning~=self:GetData("pl-warning",false) then
+		local color = self:PickProjectedLightColour()
+		self:SetData("pl-warning",warning)
+		self.projectedlight:SetColor(color)
+	end
 	self.projectedlight:SetPos(self:LocalToWorld(self.metadata.Exterior.ProjectedLight.offset))
 	self.projectedlight:SetAngles(self:GetAngles())
 	self.projectedlight:Update()
@@ -71,16 +67,16 @@ end
 --Hooks
 
 ENT:AddHook("OnRemove", "projectedlight", function(self)
-	if ( IsValid( self.projectedlight ) ) then
+	if IsValid(self.projectedlight) then
 		self.projectedlight:Remove()
 	end
 end)
 
-ENT:AddHook("ShouldDrawProjectedLight", "baseShouldDraw", function(self)
+ENT:AddHook("ShouldDrawProjectedLight", "projectedlight", function(self)
 	return self:DoorOpen(true)
 end)
 
-ENT:AddHook("ShouldNotDrawProjectedLight","baseShouldntDraw",function(self)
+ENT:AddHook("ShouldNotDrawProjectedLight","projectedlight",function(self)
 	if (not TARDIS:GetSetting("extprojlight-enabled")) or (not self.interior) then return true end
 	if self:GetData("vortex",false)==true then return true end
 end)
@@ -93,6 +89,7 @@ ENT:AddHook("Think", "projectedlight", function(self)
 	if shouldon and (not shouldoff) then
 		if (not self.projectedlight) or (not IsValid(self.projectedlight)) then
 			self:CreateProjectedLight()
+			self:UpdateProjectedLight()
 		else
 			self:UpdateProjectedLight()
 		end
