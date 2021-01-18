@@ -22,7 +22,8 @@ local function predraw_o(self)
 	local tab={}
 
 	if self:CallHook("ShouldDrawLight",nil,light)~=false then
-		render.ResetModelLighting(0.3, 0.3, 0.3)
+		local bb = self.metadata.Interior.LightOverride.basebrightness
+		render.ResetModelLighting(bb, bb, bb)
 
 		local c=light.color
 		local warnc = light.warncolor or c
@@ -31,7 +32,7 @@ local function predraw_o(self)
 			type=MATERIAL_LIGHT_POINT,
 			color=lcolor*light.brightness,
 			pos = self:LocalToWorld(light.pos),
-			quadraticFalloff=20,
+			quadraticFalloff=light.falloff or 20,
 		})
 	else
 		table.insert(tab,{
@@ -40,7 +41,8 @@ local function predraw_o(self)
 			pos = self:LocalToWorld(light.pos),
 			quadraticFalloff=1,
 		})
-		render.ResetModelLighting(0.05, 0.05, 0.05)
+		local ob = self.metadata.Interior.LightOverride.nopowerbrightness
+		render.ResetModelLighting(ob, ob, ob)
 	end
 	if lights then
 		for _,l in pairs(lights) do
@@ -48,12 +50,12 @@ local function predraw_o(self)
 			if shouldDraw==false then return end
 			local c=l.color
 			local warnc = l.warncolor or c
-			local lcolor = (warning) and warnc:ToVector() or c:ToVector()
+			local lcolor = warning and warnc:ToVector() or c:ToVector()
 			local tab2 = {
 				type=MATERIAL_LIGHT_POINT,
 				color=lcolor*l.brightness,
 				pos = self:LocalToWorld(l.pos),
-				quadraticFalloff=10,
+				quadraticFalloff=l.falloff or 10,
 			}
 			table.insert(tab, tab2)
 		end
@@ -62,6 +64,7 @@ local function predraw_o(self)
 end
 
 local function postdraw_o(self)
+	if not TARDIS:GetSetting("lightoverride-enabled",false) then return end
 	render.SuppressEngineLighting(false)
 end
 

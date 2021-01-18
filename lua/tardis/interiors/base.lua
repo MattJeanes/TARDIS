@@ -28,6 +28,10 @@ T.Interior={
 		SequenceFail = "drmatt/tardis/seq_bad.wav",
 		Cloister = "tardis/cloisterbell_loop.wav"
 	},
+	LightOverride={
+		basebrightness=0.3, --Base interior brightness when power is on.
+		nopowerbrightness=0.05 --Interior brightness with no power. Should always be darker than basebrightness.
+	},
 	ScreenDistance=500
 }
 T.Exterior={
