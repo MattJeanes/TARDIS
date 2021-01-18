@@ -19,18 +19,32 @@ function ENT:CalcLightBrightness(pos)
 	return luminance
 end
 
+function ENT:PickProjectedLightColour()
+	local warning = self:GetData("health-warning",false)
+	local color = self.metadata.Exterior.ProjectedLight.color or self.metadata.Interior.Light.color
+	local warncolor = self.metadata.Exterior.ProjectedLight.warncolor or self.metadata.Interior.Light.warncolor
+	if warning~=self:GetData("pl-warning",false) then
+		self:SetData("pl-warning",warning)
+		if warning then
+			self.projectedlight:SetColor(warncolor or color)
+		else
+			self.projectedlight:SetColor(color)
+		end
+	end
+end
+
 function ENT:CreateProjectedLight()
 	if self.projectedlight then return end
-    local pl = ProjectedTexture()
-    self:SetData("pl-warning",self:GetData("health-warning"))
-	pl:SetTexture("effects/flashlight/square")
-	pl:SetFarZ(250)
-	pl:SetVerticalFOV(self.metadata.Exterior.Portal.height)
-	pl:SetHorizontalFOV(self.metadata.Exterior.Portal.width+10)
+	local pl = ProjectedTexture()
+	self:SetData("pl-warning",self:GetData("health-warning"))
+	pl:SetTexture(self.metadata.Exterior.ProjectedLight.texture)
+	pl:SetFarZ(self.metadata.Exterior.ProjectedLight.farz)
+	pl:SetVerticalFOV(self.metadata.Exterior.ProjectedLight.vertfov or self.metadata.Exterior.Portal.height)
+	pl:SetHorizontalFOV(self.metadata.Exterior.ProjectedLight.horizfov or self.metadata.Exterior.Portal.width+10)
 	pl:SetColor(self:GetData("health-warning",false) and self.metadata.Interior.Light.warncolor or self.metadata.Interior.Light.color)
-    pl:SetBrightness(0.5)
-    pl:SetPos(self:LocalToWorld(Vector(-21,0,51.1)))
-    pl:SetEnableShadows(true)
+	pl:SetBrightness(self.metadata.Exterior.ProjectedLight.brightness)
+	pl:SetPos(self:LocalToWorld(self.metadata.Exterior.ProjectedLight.offset))
+	pl:SetEnableShadows(true)
 	pl:SetAngles(self:GetAngles())
 	pl:Update()
 	self.projectedlight = pl
@@ -44,18 +58,10 @@ function ENT:RemoveProjectedLight()
 end
 
 function ENT:UpdateProjectedLight()
-    local warning = self:GetData("health-warning",false)
-    if warning~=self:GetData("pl-warning",false) then
-        self:SetData("pl-warning",warning)
-        if warning then
-            self.projectedlight:SetColor(self.metadata.Interior.Light.warncolor or self.metadata.Interior.Light.color)
-        else
-            self.projectedlight:SetColor(self.metadata.Interior.Light.color)
-        end
-    end
-    self.projectedlight:SetPos(self:LocalToWorld(Vector(-21,0,51.1)))
-    self.projectedlight:SetAngles(self:GetAngles())
-    self.projectedlight:Update()
+	self:PickProjectedLightColour()
+	self.projectedlight:SetPos(self:LocalToWorld(self.metadata.Exterior.ProjectedLight.offset))
+	self.projectedlight:SetAngles(self:GetAngles())
+	self.projectedlight:Update()
 end
 --Hooks
 ENT:AddHook("OnRemove", "projectedlight", function(self)
@@ -69,8 +75,8 @@ ENT:AddHook("ShouldDrawProjectedLight", "baseShouldDraw", function(self)
 end)
 
 ENT:AddHook("ShouldNotDrawProjectedLight","baseShouldntDraw",function(self)
-    if (not TARDIS:GetSetting("extprojlight-enabled")) or (not self.interior) then return true end
-    if self:GetData("vortex",false)==true then return true end
+	if (not TARDIS:GetSetting("extprojlight-enabled")) or (not self.interior) then return true end
+	if self:GetData("vortex",false)==true then return true end
 end)
 
 ENT:AddHook("Think", "projectedlight", function(self)
@@ -79,12 +85,12 @@ ENT:AddHook("Think", "projectedlight", function(self)
 	local shouldoff = self:CallHook("ShouldNotDrawProjectedLight")
 
 	if shouldon and (not shouldoff) then
-        if (not self.projectedlight) or (not IsValid(self.projectedlight)) then
-            self:CreateProjectedLight()
-        else
-            self:UpdateProjectedLight()
-        end
-    elseif self.projectedlight then
-        self:RemoveProjectedLight()
-    end
+		if (not self.projectedlight) or (not IsValid(self.projectedlight)) then
+			self:CreateProjectedLight()
+		else
+			self:UpdateProjectedLight()
+		end
+	elseif self.projectedlight then
+		self:RemoveProjectedLight()
+	end
 end)
