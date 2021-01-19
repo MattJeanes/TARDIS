@@ -292,10 +292,6 @@ if SERVER then
 		end
 	end)
 else
-	ENT:AddHook("Initialize", "health-client", function(self)
-		
-	end)
-
 	ENT:OnMessage("health-networking", function(self, ply)
 		local newhealth = net.ReadInt(32)
 		self:ChangeHealth(newhealth)
