@@ -53,6 +53,7 @@ function ENT:RemoveProjectedLight()
 end
 
 function ENT:UpdateProjectedLight()
+	if not IsValid(self.projectedlight) or not self.projectedlight then return end
 	local warning = self:GetData("health-warning",false)
 	if warning~=self:GetData("pl-warning",false) then
 		local color = self:PickProjectedLightColour()
@@ -89,11 +90,9 @@ ENT:AddHook("Think", "projectedlight", function(self)
 	if shouldon and (not shouldoff) then
 		if (not self.projectedlight) or (not IsValid(self.projectedlight)) then
 			self:CreateProjectedLight()
-			self:UpdateProjectedLight()
-		else
-			self:UpdateProjectedLight()
 		end
 	elseif self.projectedlight then
 		self:RemoveProjectedLight()
 	end
+	self:UpdateProjectedLight()
 end)
