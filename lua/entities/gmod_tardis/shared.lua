@@ -9,7 +9,7 @@ ENT.TardisExterior=true
 ENT.Interior="gmod_tardis_interior"
 
 local class=string.sub(ENT.Folder,string.find(ENT.Folder, "/[^/]*$")+1) -- only works if in a folder
-	
+
 local hooks={}
 
 -- Hook system for modules
