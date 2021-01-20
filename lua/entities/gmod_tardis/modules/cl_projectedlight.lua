@@ -91,8 +91,8 @@ ENT:AddHook("Think", "projectedlight", function(self)
 		if (not self.projectedlight) or (not IsValid(self.projectedlight)) then
 			self:CreateProjectedLight()
 		end
+		self:UpdateProjectedLight()
 	elseif self.projectedlight then
 		self:RemoveProjectedLight()
 	end
-	self:UpdateProjectedLight()
 end)
