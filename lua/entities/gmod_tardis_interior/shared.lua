@@ -23,6 +23,17 @@ function ENT:RemoveHook(name,id)
 	end
 end
 
+function ENT:GetHooksTable()
+	return hooks
+end
+
+function ENT:ListHooks()
+	print("[Interior]"..(SERVER and "[Server]" or "[Client]"))
+	for h in pairs(hooks) do
+		print(h)
+	end
+end
+
 function ENT:CallHook(name,...)
 	local a,b,c,d,e,f
 	a,b,c,d,e,f=self.BaseClass.CallHook(self,name,...)

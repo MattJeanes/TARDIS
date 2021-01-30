@@ -5,6 +5,7 @@ PART.ID = "console"
 PART.Name = "The Console"
 PART.AutoSetup = true
 PART.Collision = true
+PART.ShouldTakeDamage = true
 
 if SERVER then	
 	function PART:Use(ply)

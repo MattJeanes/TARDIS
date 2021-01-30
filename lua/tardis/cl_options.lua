@@ -4,7 +4,7 @@ function TARDIS:ChangeOption(id,data)
 	local frame = vgui.Create("DFrame")
 	frame:SetSkin("TARDIS")
 	frame:SetTitle("TARDIS Interface")
-	frame:SetSize(250,125)
+	frame:SetSize(250,150)
 	frame:SetDraggable(false)
 	frame:SetBackgroundBlur(true)
 	
@@ -17,12 +17,15 @@ function TARDIS:ChangeOption(id,data)
 	text:SetPos(10,30)
 	text:SetTextColor(color_white)
 	
-	local value=TARDIS:GetSetting(id,data.value,LocalPlayer())
+	local value=TARDIS:GetSetting(id,data.value)
 	
 	local update
 	if data.type=="number" then
 		local textentry,option
 		function update(v)
+			if not v then
+				v = 0
+			end
 			option:SetSlideX((v)/(data.max-data.min))
 			textentry:SetText(v)
 		end

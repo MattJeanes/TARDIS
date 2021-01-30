@@ -7,8 +7,9 @@ TARDIS:AddKeyBind("float-toggle",{
 	desc="Lets the TARDIS fly as if there is no gravity",
 	func=function(self,down,ply)
 		if ply==self.pilot and down then
-			self:ToggleFloat()
-			ply:ChatPrint("Float "..(self:GetData("floatfirst") and "en" or "dis").."abled")
+			if self:ToggleFloat() then
+				ply:ChatPrint("Float "..(self:GetData("floatfirst") and "en" or "dis").."abled")
+			end
 		end
 	end,
 	key=KEY_T,
@@ -71,8 +72,10 @@ TARDIS:AddKeyBind("float-brake",{
 if SERVER then
 	function ENT:SetFloat(on)
 		if (not on) and self:CallHook("CanTurnOffFloat")==false then return end
+		if (on) and self:CallHook("CanTurnOnFloat")==false then return end
 		self:SetData("float",on,true)
 		self.phys:EnableGravity(not on)
+		return true
 	end
 	
 	function ENT:ToggleFloat()
@@ -82,16 +85,26 @@ if SERVER then
 		else
 			self:SetData("floatfirst",on)
 		end
-		self:SetFloat(on)
+		return self:SetFloat(on)
 	end
 	
 	ENT:AddHook("CanTurnOffFloat", "float", function(self)
 		if self:GetData("floatfirst") then return false	end
 	end)
+
+	ENT:AddHook("CanTurnOnFloat", "float", function(self)
+		if not self:GetData("power-state") then return false end
+	end)
 	
 	ENT:AddHook("Think", "float", function(self)
 		if self:GetData("float") then
 			self.phys:Wake()
+		end
+	end)
+	
+	ENT:AddHook("OnHealthDepleted","float",function(self)
+		if self:GetData("float") and self:GetData("floatfirst") then
+			self:ToggleFloat()
 		end
 	end)
 	

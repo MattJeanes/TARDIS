@@ -4,7 +4,7 @@ if SERVER then
 	function ENT:SetOutsideView(ply, enabled)
 		if IsValid(ply) and ply:IsPlayer() and self.occupants[ply] and CurTime()>ply:GetTardisData("outsidecool", 0) then
 			if enabled then
-				if IsValid(ply:GetActiveWeapon()) then
+				if IsValid(ply:GetActiveWeapon()) and (ply:GetActiveWeapon():GetClass()~="tardis_hands") then
 					ply:SetTardisData("activewep", ply:GetActiveWeapon():GetClass())
 				end
 				ply:Give("tardis_hands")

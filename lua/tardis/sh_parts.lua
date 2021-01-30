@@ -61,18 +61,22 @@ local overrides={
 		local call=false
 		local res
 		if (not self.NoStrictUse) and IsValid(a) and a:IsPlayer() and a:GetEyeTraceNoCursor().Entity~=self then return end
-		local allowed, animate = (self.ExteriorPart and self.exterior:CallHook("CanUsePart",self,a) or self.interior:CallHook("CanUsePart",self,a))
-		
+		local allowed, animate
+		if self.ExteriorPart then
+			allowed, animate = self.exterior:CallHook("CanUsePart",self,a)
+		else
+			allowed, animate = self.interior:CallHook("CanUsePart",self,a)
+		end
 		if allowed~=false then
 			res=self.o.Use(self,a,...)
 		end
 		
 		if SERVER and (animate~=false) and (res~=false) then
 			local on = self:GetOn()
-			if self.SoundOn and on then
-				self:EmitSound(self.SoundOn)
-			elseif self.SoundOff and (not on) then
+			if self.SoundOff and on then
 				self:EmitSound(self.SoundOff)
+			elseif self.SoundOn and (not on) then
+				self:EmitSound(self.SoundOn)
 			elseif self.Sound then
 				self:EmitSound(self.Sound)
 			end

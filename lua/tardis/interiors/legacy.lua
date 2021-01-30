@@ -18,8 +18,17 @@ T.Interior={
 	},
 	Light={
 		color=Color(255,50,0),
+		warncolor=Color(255,0,0),
 		pos=Vector(0,0,120),
 		brightness=5
+	},
+	Lights={
+		{
+			color=Color(0,255,0),
+			pos=Vector(0,0,-50),
+			brightness=2,
+			nopower=true
+		}
 	},
 	Portal={
 		pos=Vector(316.7,334.9,-36.5),

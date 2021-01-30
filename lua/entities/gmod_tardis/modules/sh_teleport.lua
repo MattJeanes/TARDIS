@@ -105,7 +105,7 @@ if SERVER then
 				else
 					self:SendMessage("premat",function() net.WriteVector(self:GetData("demat-pos",Vector())) end)
 					self:SetData("teleport",true)
-					local timerdelay = (self:GetData("demat-fast",false) and 1.8 or 8.5)
+					local timerdelay = (self:GetData("demat-fast",false) and 1.9 or 8.5)
 					timer.Simple(timerdelay,function()
 						if not IsValid(self) then return end
 						self:SendMessage("mat")
@@ -219,7 +219,7 @@ if SERVER then
 
 	ENT:AddHook("StopDemat", "teleport-fast", function(self)
 		if self:GetData("demat-fast",false) then
-			timer.Simple(0.1, function()
+			timer.Simple(0.3, function()
 				if not IsValid(self) then return end
 				self:Mat()
 			end)

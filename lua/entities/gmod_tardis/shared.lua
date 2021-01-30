@@ -9,7 +9,7 @@ ENT.TardisExterior=true
 ENT.Interior="gmod_tardis_interior"
 
 local class=string.sub(ENT.Folder,string.find(ENT.Folder, "/[^/]*$")+1) -- only works if in a folder
-	
+
 local hooks={}
 
 -- Hook system for modules
@@ -24,6 +24,18 @@ function ENT:RemoveHook(name,id)
 	if hooks[name] and hooks[name][id] then
 		hooks[name][id]=nil
 	end
+end
+
+function ENT:GetHooksTable()
+	return hooks
+end
+
+function ENT:ListHooks(listInteriorHooks)
+	print("[Exterior]"..(SERVER and "[Server]" or "[Client]"))
+	for h in pairs(hooks) do
+		print(h)
+	end
+	if listInteriorHooks then self.interior:ListHooks() end
 end
 
 function ENT:CallHook(name,...)

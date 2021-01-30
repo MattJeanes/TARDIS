@@ -26,7 +26,11 @@ T.Interior={
 		},
 		SequenceOK = "drmatt/tardis/seq_ok.wav",
 		SequenceFail = "drmatt/tardis/seq_bad.wav",
-		Cloister = "tardis/cloisterbell_loop.wav"
+		Cloister = "drmatt/tardis/cloisterbell_loop.wav"
+	},
+	LightOverride={
+		basebrightness=0.3, --Base interior brightness when power is on.
+		nopowerbrightness=0.05 --Interior brightness with no power. Should always be darker than basebrightness.
 	},
 	ScreenDistance=500
 }
@@ -48,6 +52,16 @@ T.Exterior={
 		pos=Vector(0,0,122),
 		color=Color(255,255,255)
 	},
+	ProjectedLight={
+		--color=Color(r,g,b), --Base color. Will use main interior light if not set.
+		--warncolor=Color(r,g,b), --Warning color. Will use main interior warn color if not set.
+		brightness=0.1, --Light's brightness
+		--vertfov=90,
+		--horizfov=90, --vertical and horizontal field of view of the light. Will default to portal height and width.
+		farz=750, --FarZ property of the light. Determines how far the light projects.]]
+		offset=Vector(-21,0,51.1), --Offset from box origin
+		texture="effects/flashlight/square" --Texture the projected light will use. You can get these from the Lamp tool.
+	},
 	Sounds={
 		Teleport={
 			demat="drmatt/tardis/demat.wav",
@@ -61,7 +75,7 @@ T.Exterior={
 			open="drmatt/tardis/door_open.wav",
 			close="drmatt/tardis/door_close.wav"
 		},
-		FlightLoop="drmatt/tardis/flight_loop.wav"
+		FlightLoop="drmatt/tardis/flight_loop.wav",
 	},
 	Parts={
 		vortex={
