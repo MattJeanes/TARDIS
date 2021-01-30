@@ -31,7 +31,7 @@ TARDIS:AddSetting({
 	desc="Override distance of light, reset for default",
 	value=false,
 	min=0,
-	max=2000,
+	max=5000,
 	type="number",
 	option=true,
 })
@@ -78,7 +78,6 @@ end
 function ENT:CreateProjectedLight()
 	if self.projectedlight then return end
 	local pl = ProjectedTexture()
-	self:SetData("pl-warning",self:GetData("health-warning"))
 	pl:SetTexture(self.metadata.Exterior.ProjectedLight.texture)
 	pl:SetVerticalFOV(self.metadata.Exterior.ProjectedLight.vertfov or self.metadata.Exterior.Portal.height)
 	pl:SetHorizontalFOV(self.metadata.Exterior.ProjectedLight.horizfov or self.metadata.Exterior.Portal.width+10)
@@ -87,6 +86,9 @@ function ENT:CreateProjectedLight()
 end
 
 function ENT:RemoveProjectedLight()
+	self:SetData("pl-color",nil)
+	self:SetData("pl-brightness",nil)
+	self:SetData("pl-distance",nil)
 	if self.projectedlight then
 		self.projectedlight:Remove()
 		self.projectedlight = nil

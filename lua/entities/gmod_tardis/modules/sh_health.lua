@@ -72,6 +72,11 @@ if SERVER then
 			nvnum = 1
 		end
 	   TARDIS:SetSetting("health-max", nvnum, true)
+	   for k,v in pairs(ents.FindByClass("gmod_tardis")) do
+			if v:GetHealth() > nvnum then
+				v:ChangeHealth(nvnum)
+			end
+	   end
 	end, "UpdateOnChange")
 
 	cvars.AddChangeCallback("tardis2_damage", function(cvname, oldvalue, newvalue)
