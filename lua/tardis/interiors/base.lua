@@ -53,8 +53,8 @@ T.Exterior={
 		color=Color(255,255,255)
 	},
 	ProjectedLight={
-		--color=Color(r,g,b), --Base colour. Will use main interior light if not set.
-		--warncolor=Color(r,g,b), --Warning colour. Will use main interior warn colour if not set.
+		--color=Color(r,g,b), --Base color. Will use main interior light if not set.
+		--warncolor=Color(r,g,b), --Warning color. Will use main interior warn color if not set.
 		brightness=0.1, --Light's brightness
 		--vertfov=90,
 		--horizfov=90, --vertical and horizontal field of view of the light. Will default to portal height and width.

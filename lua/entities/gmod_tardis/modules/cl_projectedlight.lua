@@ -4,31 +4,75 @@
 
 TARDIS:AddSetting({
 	id="extprojlight-enabled",
-	name="Door Light Enabled",
-	section="Misc",
+	name="Enabled",
+	section="Door Light",
 	desc="Should light shine out through the doors when they're open?",
 	value=true,
 	type="bool",
 	option=true,
 })
 
+TARDIS:AddSetting({
+	id="extprojlight-brightness-override",
+	name="Brightness Override",
+	section="Door Light",
+	desc="Override brightness of light, reset for default",
+	value=false,
+	type="number",
+	min=0,
+	max=10,
+	option=true,
+})
+
+TARDIS:AddSetting({
+	id="extprojlight-distance-override",
+	name="Distance Override",
+	section="Door Light",
+	desc="Override distance of light, reset for default",
+	value=false,
+	min=0,
+	max=2000,
+	type="number",
+	option=true,
+})
+
+TARDIS:AddSetting({
+	id="extprojlight-color-override",
+	name="Color Override",
+	section="Door Light",
+	desc="Override color of light, reset for default",
+	value=false,
+	type="color",
+	option=true,
+})
+
 --Methods
 
 function ENT:CalcLightBrightness(pos)
-	local lightcolour = render.GetLightColor(pos):ToColor()
-	local rm = 0.299*lightcolour.r
-	local gm = 0.587*lightcolour.g
-	local bm = 0.114*lightcolour.b
+	local lightcolor = render.GetLightColor(pos):ToColor()
+	local rm = 0.299*lightcolor.r
+	local gm = 0.587*lightcolor.g
+	local bm = 0.114*lightcolor.b
 	local luminance = rm + gm + bm
 	return luminance
 end
 
-function ENT:PickProjectedLightColour()
+function ENT:PickProjectedLightColor()
+	local override = TARDIS:GetSetting("extprojlight-color-override")
+	if override then return override end
 	local warning = self:GetData("health-warning",false)
 	local color = self.metadata.Exterior.ProjectedLight.color or self.metadata.Interior.Light.color
 	local warncolor = self.metadata.Exterior.ProjectedLight.warncolor or self.metadata.Interior.Light.warncolor
-	local pickedcolour = warning and (warncolor or color) or color
-	return pickedcolour
+	local pickedcolor = warning and (warncolor or color) or color
+	return pickedcolor
+end
+
+function ENT:PickProjectedLightBrightness()
+	return TARDIS:GetSetting("extprojlight-brightness-override") or self.metadata.Exterior.ProjectedLight.brightness
+end
+
+function ENT:PickProjectedLightDistance()
+	return TARDIS:GetSetting("extprojlight-distance-override") or self.metadata.Exterior.ProjectedLight.farz
 end
 
 function ENT:CreateProjectedLight()
@@ -36,12 +80,9 @@ function ENT:CreateProjectedLight()
 	local pl = ProjectedTexture()
 	self:SetData("pl-warning",self:GetData("health-warning"))
 	pl:SetTexture(self.metadata.Exterior.ProjectedLight.texture)
-	pl:SetFarZ(self.metadata.Exterior.ProjectedLight.farz)
 	pl:SetVerticalFOV(self.metadata.Exterior.ProjectedLight.vertfov or self.metadata.Exterior.Portal.height)
 	pl:SetHorizontalFOV(self.metadata.Exterior.ProjectedLight.horizfov or self.metadata.Exterior.Portal.width+10)
-	pl:SetBrightness(self.metadata.Exterior.ProjectedLight.brightness)
 	pl:SetEnableShadows(true)
-	pl:SetColor(self:PickProjectedLightColour())
 	self.projectedlight = pl
 end
 
@@ -54,11 +95,20 @@ end
 
 function ENT:UpdateProjectedLight()
 	if not IsValid(self.projectedlight) or not self.projectedlight then return end
-	local warning = self:GetData("health-warning",false)
-	if warning~=self:GetData("pl-warning",false) then
-		local color = self:PickProjectedLightColour()
-		self:SetData("pl-warning",warning)
+	local color = self:PickProjectedLightColor()
+	if color~=self:GetData("pl-color",false) then
+		self:SetData("pl-color",color)
 		self.projectedlight:SetColor(color)
+	end
+	local brightness = self:PickProjectedLightBrightness()
+	if brightness~=self:GetData("pl-brightness",false) then
+		self:SetData("pl-brightness",brightness)
+		self.projectedlight:SetBrightness(brightness)
+	end
+	local distance = self:PickProjectedLightDistance()
+	if distance~=self:GetData("pl-distance",false) then
+		self:SetData("pl-distance",distance)
+		self.projectedlight:SetFarZ(distance)
 	end
 	self.projectedlight:SetPos(self:LocalToWorld(self.metadata.Exterior.ProjectedLight.offset))
 	self.projectedlight:SetAngles(self:GetAngles())

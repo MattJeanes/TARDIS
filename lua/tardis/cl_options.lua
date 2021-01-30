@@ -23,6 +23,9 @@ function TARDIS:ChangeOption(id,data)
 	if data.type=="number" then
 		local textentry,option
 		function update(v)
+			if not v then
+				v = 0
+			end
 			option:SetSlideX((v)/(data.max-data.min))
 			textentry:SetText(v)
 		end

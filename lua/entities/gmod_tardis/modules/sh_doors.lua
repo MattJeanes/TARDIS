@@ -173,7 +173,7 @@ else
 		id="doorsounds-enabled",
 		name="Door Sound",
 		desc="Whether a sound is made when toggling the door or not",
-		section="Misc",
+		section="Sound",
 		value=true,
 		type="bool",
 		option=true

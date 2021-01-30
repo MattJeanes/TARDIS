@@ -62,7 +62,7 @@ else
 		id="locksound-enabled",
 		name="Lock Sound",
 		desc="Whether a sound is made when toggling the lock or not",
-		section="Misc",
+		section="Sound",
 		value=true,
 		type="bool",
 		option=true
