@@ -3,7 +3,6 @@
 CreateConVar("tardis2_maxhealth", 1000, {FCVAR_ARCHIVE, FCVAR_REPLICATED}, "TARDIS - Maximum health")
 CreateConVar("tardis2_damage", 1, {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, "TARDIS - Damage enabled (1 enables, 0 disables)", 0, 1)
 
-
 TARDIS:AddSetting({
 	id="health-enabled",
 	name="Enable Health",
@@ -106,7 +105,7 @@ if SERVER then
 			self:SetData("repair-primed",true,true)
 		else
 			self:SetData("repair-primed",false,true)
-			self.interior:SetPower(true)
+			self:SetPower(true)
 			for k,_ in pairs(self.occupants) do
 				k:ChatPrint("TARDIS self-repair has been cancelled.")
 			end
@@ -152,7 +151,7 @@ if SERVER then
 		self:SetData("repairing", false, true)
 		self:ChangeHealth(TARDIS:GetSetting("health-max"))
 		self:CallHook("RepairFinished")
-		self.interior:SetPower(true)
+		self:SetPower(true)
 		self:SetLocked(false, nil, true)
 		self:GetCreator():ChatPrint("Your TARDIS has finished self-repairing")
 		self:StopSmoke()
@@ -263,8 +262,9 @@ if SERVER then
 	end)
 
 	ENT:AddHook("OnHealthDepleted", "death", function(self)
-		self.interior:SetPower(false)
+		self:SetPower(false)
 		if self:GetData("vortex",false) then
+			self:SetData("prevortex-flight", false)
 			self:Mat()
 		end
 		self:Explode()

@@ -55,10 +55,10 @@ T.Exterior={
 	ProjectedLight={
 		--color=Color(r,g,b), --Base colour. Will use main interior light if not set.
 		--warncolor=Color(r,g,b), --Warning colour. Will use main interior warn colour if not set.
-		brightness=0.5, --Light's brightness
+		brightness=0.1, --Light's brightness
 		--vertfov=90,
 		--horizfov=90, --vertical and horizontal field of view of the light. Will default to portal height and width.
-		farz=150, --FarZ property of the light. Determines how far the light projects.]]
+		farz=750, --FarZ property of the light. Determines how far the light projects.]]
 		offset=Vector(-21,0,51.1), --Offset from box origin
 		texture="effects/flashlight/square" --Texture the projected light will use. You can get these from the Lamp tool.
 	},

@@ -7,9 +7,10 @@ hook.Add("HUDPaint", "TARDISRewrite-HUD", function()
 	if not IsValid(tardis) then return end
 	local sw = ScrW()
 	local sh = ScrH()
-	local health = tardis:GetHealthPercent()
-	local minwidth = 160
-	local width = minwidth + math.Clamp( ((#tostring(health)-4) * 30), 0, math.huge)
+	local health = math.ceil(tardis:GetHealthPercent())
+	local width = 115
+	if health >= 10 then width = width + 10 end
+	if health == 100 then width = width + 35 end
 	local height = (sw >= 800) and 120 or 95
 	local healthfont = (height == 120) and "TARDIS-Large" or "TARDIS-Med"
 	local x = (ScrW()-width)*0.02
@@ -20,5 +21,5 @@ hook.Add("HUDPaint", "TARDISRewrite-HUD", function()
 	if (health > 20) then textcolor = NamedColor("FgColor")
 	else textcolor = NamedColor("Caution") end
 	draw.DrawText( "TARDIS", "TARDIS-PageName", x+10, y+10, textcolor, TEXT_ALIGN_LEFT )
-	draw.DrawText( health, healthfont, x+10, y+45, textcolor, TEXT_ALIGN_LEFT )
+	draw.DrawText( tostring(health) .. "%", healthfont, x+10, y+45, textcolor, TEXT_ALIGN_LEFT )
 end)

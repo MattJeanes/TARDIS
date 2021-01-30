@@ -103,8 +103,8 @@ if SERVER then
 	end)
 	
 	ENT:AddHook("OnHealthDepleted","float",function(self)
-		if self:GetData("float") then
-			self:SetFloat(false)
+		if self:GetData("float") and self:GetData("floatfirst") then
+			self:ToggleFloat()
 		end
 	end)
 	
