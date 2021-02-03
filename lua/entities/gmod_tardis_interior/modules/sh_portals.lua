@@ -1,21 +1,16 @@
 -- Handles portals for rendering, thanks to bliptec (http://facepunch.com/member.php?u=238641) for being a babe
 
 if SERVER then
-	hook.Add("wp-shouldtp", "tardisint-portals", function(self,ent)
-		local e=self:GetParent()
-		if IsValid(e) then
-			local class=e:GetClass()
-			if class=="gmod_tardis" then
-				if not e:DoorOpen() then
-					return false
-				end
-			elseif class=="gmod_tardis_interior" then
-				if not e.exterior:DoorOpen() and self==e.portals.interior then
-					return false
-				end
+	ENT:AddHook("ShouldTeleportPortal", "portals", function(self,portal,ent)
+		if (not self.exterior:DoorOpen() and portal==self.portals.interior) or ent.TardisPart then
+			return false
+		end
+		if portal:GetCustomLink() then
+			local part = self:GetPart(portal:GetCustomLink())
+			if IsValid(part) and part:GetOn()==false then
+				return false
 			end
 		end
-		if ent.TardisPart then return false end
 	end)
 else
 	TARDIS:AddSetting({
@@ -39,22 +34,28 @@ else
 		option=true
 	})
 	
-	hook.Add("wp-shouldrender", "tardisint-portals", function(portal,exit,origin)
-		local p=portal:GetParent()
-		if IsValid(p) and (p.TardisExterior or p.TardisInterior) and p._init then
-			local dont,black = p:CallHook("ShouldNotRenderPortal",p,portal,exit,origin)
-			if dont==nil then
-				local other = p.TardisExterior and p.interior or p.exterior
-				if IsValid(other) then
-					dont,black = other:CallHook("ShouldNotRenderPortal",p,portal,exit,origin)
-				end
+	ENT:AddHook("ShouldRenderPortal", "portals", function(self,portal,exit,origin)
+		local dont,black = self:CallHook("ShouldNotRenderPortal",portal,exit,origin)
+		if dont==nil then
+			local other = self.exterior
+			if IsValid(other) then
+				dont,black = other:CallHook("ShouldNotRenderPortal",portal,exit,origin)
 			end
-			if dont then
-				return false, black
-			elseif (not (p.DoorOpen and p:DoorOpen(true))) and (p.TardisExterior or (p.TardisInterior and portal==p.portals.interior)) then
-				return false
-			elseif (not TARDIS:GetSetting("portals-enabled")) then
-				return false, p.TardisInterior and (p.portals.interior==portal or portal.black)
+		end
+		if dont then
+			return false, black
+		elseif (not (self.DoorOpen and self:DoorOpen(true))) and portal==self.portals.interior then
+			return false
+		elseif (not TARDIS:GetSetting("portals-enabled")) then
+			return false, self.portals.interior==portal or portal.black
+		end
+	end)
+
+	ENT:AddHook("ShouldNotRenderPortal", "portals", function(self,parent,portal)
+		if portal:GetCustomLink() then
+			local part = self:GetPart(portal:GetCustomLink())
+			if IsValid(part) and ((part.Animate and part.posepos==0) or ((not part.Animate) and part:GetOn()==false)) then
+				return true
 			end
 		end
 	end)
@@ -82,18 +83,23 @@ else
 	end)
 end
 
-hook.Add("wp-bullet", "tardisint-portals", function(ent)
-	local e=ent:GetParent()
-	if IsValid(e) then
-		local class=e:GetClass()
-		if class=="gmod_tardis" then
-			if not e:DoorOpen() then
-				return false
-			end
-		elseif class=="gmod_tardis_interior" then
-			if not e.exterior:DoorOpen() and ent==e.portals.interior then
-				return false
-			end
+ENT:AddHook("ShouldTracePortal", "portals", function(self,portal)
+	if (not self.exterior:DoorOpen()) and portal==self.portals.interior then
+		return false
+	end
+	if portal:GetCustomLink() then
+		local part = self:GetPart(portal:GetCustomLink())
+		if IsValid(part) and part:GetOn()==false then
+			return false
 		end
+	end
+end)
+
+ENT:AddHook("TraceFilterPortal", "portals", function(self,portal)
+	if portal==self.portals.interior then
+		return self.exterior:GetPart("door")
+	end
+	if portal:GetCustomLink() then
+		return self:GetPart(portal:GetCustomLink())
 	end
 end)

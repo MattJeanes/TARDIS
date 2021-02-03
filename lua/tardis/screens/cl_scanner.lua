@@ -107,6 +107,7 @@ hook.Add("RenderScene", "TARDISI_Scanner", function(pos,ang)
 					local camAngle = ext:LocalToWorldAngles(v.scannerang)
 					if IsValid(int) then
 						int.scannerrender=true
+						int:CallHook("PreScannerRender")
 					end
 					render.RenderView({
 						x = 0,
@@ -124,6 +125,7 @@ hook.Add("RenderScene", "TARDISI_Scanner", function(pos,ang)
 					})
 					if IsValid(int) then
 						int.scannerrender=false
+						int:CallHook("PostScannerRender")
 					end
 				render.SetRenderTarget( oldRT )
 			end

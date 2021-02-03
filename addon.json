@@ -8,6 +8,7 @@
 		"*.txt",
 		"*.git*",
 		"*.fgd",
-		"*.psd"
+		"*.psd",
+		"CODEOWNERS"
 	]
 }
