@@ -7,7 +7,6 @@ PART.Model = "models/drmatt/tardis/exterior/door.mdl"
 PART.AutoSetup = true
 PART.AutoPosition = false
 PART.ClientThinkOverride = true
-PART.ClientDrawOverride = true
 PART.Collision = true
 PART.NoStrictUse = true
 PART.ShouldTakeDamage = true
@@ -18,9 +17,11 @@ if SERVER then
 		self:SetBodygroup(2,1) -- Lit sign
 		
 		if self.ExteriorPart then
+			self.ClientDrawOverride = true
 			self:SetSolid(SOLID_VPHYSICS)
 			--self:SetCollisionGroup(COLLISION_GROUP_WORLD)
 		elseif self.InteriorPart then
+			self.DrawThroughPortal = true
 			self:SetBodygroup(3,1) -- 3D sign
 			table.insert(self.interior.stuckfilter, self)
 		end
