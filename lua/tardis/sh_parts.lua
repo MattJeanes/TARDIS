@@ -93,11 +93,15 @@ local overrides={
 
 function SetupOverrides(e)
 	local name=e.ClassName
-	e.o={}
+	if not e.o then
+		e.o={}
+	end
 	for k,v in pairs(overrides) do
 		local o=scripted_ents.GetMember(name, k)
 		if o and v[2] then
-			e.o[k] = o
+			if not e.o[k] then
+				e.o[k] = o
+			end
 			e[k] = v[1]
 		end
 	end
