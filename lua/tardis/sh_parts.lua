@@ -117,6 +117,9 @@ end
 local overridequeue={}
 postinit=postinit or false -- local vars cannot stay on autorefresh
 function TARDIS:AddPart(e)
+	if parts[e.ID] then
+		error("Duplicate part ID registered: " .. e.ID)
+	end
 	e=table.Copy(e)
 	e.Base = "gmod_tardis_part"	
 	local name="gmod_tardis_part_"..e.ID
