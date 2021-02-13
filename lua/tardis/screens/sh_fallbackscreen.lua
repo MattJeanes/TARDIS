@@ -45,9 +45,25 @@ TARDIS:AddControl("physbrake",{
 	serveronly=true
 })
 
+TARDIS:AddControl("doorcontroller",{
+	func=function(self,ply)
+		self:ToggleDoor()
+	end,
+	exterior=true,
+	serveronly=true
+})
+
+TARDIS:AddControl("lockcontroller",{
+	func=function(self,ply)
+		self:ToggleLocked()
+	end,
+	exterior=true,
+	serveronly=true
+})
+
 if SERVER then return end
 
-TARDIS:AddScreen("Virtual Console", {menu=false}, function(self,ext,int,frame,screen)
+TARDIS:AddScreen("Controls", {menu=false}, function(self,ext,int,frame,screen)
 
 	local power=vgui.Create("DButton",frame)
 	power:SetSize( frame:GetWide()*0.2, frame:GetTall()*0.2 )
