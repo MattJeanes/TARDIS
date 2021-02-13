@@ -135,5 +135,89 @@ TARDIS:AddScreen("Virtual Console", {menu=false}, function(self,ext,int,frame,sc
 		end
 		self.oldon = on
 	end
-	
+
+	local doorswitch = vgui.Create("DButton",frame)
+	local doorlock = vgui.Create("DButton",frame)
+
+	doorswitch:SetSize( frame:GetWide()*0.2, frame:GetTall()*0.1)
+	doorswitch:SetFont("TARDIS-Default")
+	doorswitch:SetPos((frame:GetWide()*0.57)-(doorswitch:GetWide()*0.5),(frame:GetTall()*0.15)-(doorswitch:GetTall()*1))
+	doorswitch:SetText(ext:DoorOpen() and "Close door" or "Open door")
+
+	doorlock:SetSize( frame:GetWide()*0.2, frame:GetTall()*0.1)
+	doorlock:SetFont("TARDIS-Default")
+	doorlock:SetPos((frame:GetWide()*0.57)-(doorlock:GetWide()*0.5),(frame:GetTall()*0.15)-(doorlock:GetTall()*0))
+	doorlock:SetText(ext:Locked() and "Unlock door" or "Lock door")
+
+	doorswitch.DoClick = function(doorswitch)
+		TARDIS:Control("doorcontroller")
+	end
+
+	doorlock.DoClick = function()
+		TARDIS:Control("lockcontroller")
+	end
+
+	function doorswitch:Think()
+		if ext:DoorMoving() then
+			doorswitch.moving = true
+			doorswitch.first = true
+			if not doorswitch:GetDisabled() then
+				if doorswitch.open then
+					doorswitch:SetText("Door closing")
+				else
+					doorswitch:SetText("Door opening")
+				end
+				doorswitch:SetDisabled(true)
+			end
+		elseif doorswitch:GetDisabled() and not doorlock.lock then
+			if not doorswitch.open then
+				doorswitch.moving = false
+			end
+			doorswitch:SetDisabled(false)
+		elseif ext:DoorOpen() and (not doorswitch.open) or doorswitch.first then
+			if not doorswitch.moving then
+				doorswitch.open = true
+			end
+			doorswitch:SetText("Close door")
+			if doorswitch.first then
+				doorswitch.first=nil
+			end
+		elseif not ext:DoorOpen() and doorswitch.open or doorswitch.first then
+			doorswitch.open=false
+			doorswitch:SetText("Open door")
+			if doorswitch.first then
+				doorswitch.first=nil
+			end
+		end
+	end
+
+	function doorlock:Think()
+		if ext:Locking() then
+			if not doorlock:GetDisabled() then
+				if ext:Locked() then
+					doorlock:SetText("Lock: Unlocking")
+				else
+					doorlock:SetText("Lock: Locking")
+				end
+				doorlock:SetDisabled(true)
+			end
+		elseif doorlock:GetDisabled() then
+			doorlock:SetDisabled(false)
+		elseif ext:Locked() and (not doorlock.lock) or doorlock.first then
+			doorlock.lock=true
+			doorlock:SetText("Unlock door")
+			doorswitch:SetDisabled(true)
+			if doorlock.first then
+				doorlock.first=nil
+			end
+		elseif not ext:Locked() and doorlock.lock or doorlock.first then
+			doorlock.lock=false
+			doorlock:SetText("Lock door")
+			doorswitch:SetDisabled(false)
+			if doorlock.first then
+				doorlock.first=nil
+			end
+		end
+	end
+
 end)
