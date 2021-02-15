@@ -210,7 +210,7 @@ function TARDIS:HUDScreen()
 		self:RemoveHUDScreen()
 		return
 	end
-	
+
 	local frame=vgui.Create("DFrame")
 	frame:SetSkin("TARDIS")
 	frame:SetTitle("TARDIS Interface")
@@ -218,7 +218,7 @@ function TARDIS:HUDScreen()
 	frame:ShowCloseButton(false)
 	frame:MakePopup()
 	self.screenpopframe=frame
-	
+
 	local screen = vgui.Create("DPanel",frame)
 	screen.id="pop"
 	screen.width=485*self.screenres
@@ -238,7 +238,7 @@ function TARDIS:HUDScreen()
 	frame:SetSize(x+4,y+27)
 	frame:Center()
 	self.screenpop=screen
-	
+
 	local titlebar=screen.titlebar
 	close = vgui.Create("DButton",titlebar)
 	close:SetText("X")
@@ -248,7 +248,7 @@ function TARDIS:HUDScreen()
 	close.DoClick = function(self)
 		TARDIS:RemoveHUDScreen()
 	end
-	
+
 	if timer.Exists("TARDIS-HUDScreen") then
 		timer.Remove("TARDIS-HUDScreen")
 	end
@@ -265,15 +265,15 @@ function TARDIS:LoadScreenUI(screen)
 	local frame = vgui.Create("DPanel", screen)
 	frame:SetSize(screen:GetWide()-screen.gap2,screen:GetTall()-screen.gap2)
 	screen.frame=frame
-	
+
 	screen.backstack={}
-	
+
 	local titlebar = vgui.Create("DPanel",frame)
 	titlebar:SetSize(frame:GetWide(), frame:GetTall()*0.1)
 	titlebar:SetPos(0,0)
 	titlebar:SetBackgroundColor(Color(220,220,220))
 	screen.titlebar=titlebar
-	
+
 	local pagename = vgui.Create("DLabel",titlebar)
 	pagename:SetTextColor(Color(0,0,0))
 	pagename:SetFont("TARDIS-PageName")
@@ -284,7 +284,7 @@ function TARDIS:LoadScreenUI(screen)
 	pagename:SetText("")
 	pagename:DoLayout()
 	screen.pagename=pagename
-	
+
 	local backbutton = vgui.Create("DButton",titlebar)
 	backbutton:SetVisible(false)
 	backbutton:SetText("Back")
@@ -295,12 +295,12 @@ function TARDIS:LoadScreenUI(screen)
 		self:PopScreen(screen)
 	end
 	screen.backbutton=backbutton
-	
+
 	local main = vgui.Create("DPanel",frame)
 	main:SetSize(frame:GetWide(),frame:GetTall()-titlebar:GetTall())
 	main:SetPos(0,titlebar:GetTall())
 	screen.main=main
-	
+
 	screen.screens={}
 	local ext=screen.ext
 	local int=screen.int
@@ -317,12 +317,12 @@ function TARDIS:LoadScreenUI(screen)
 		table.insert(screen.screens,{k,frame})
 	end
 	table.SortByMember(screen.screens,1,true)
-	
+
 	local mmenu = vgui.Create("DPanel",main)
 	mmenu:SetSize(main:GetSize())
 	mmenu:SetPos(0,0)
 	screen.mmenu=mmenu
-	
+
 	self:LoadButtons(screen,mmenu,function(frame)
 		local buttons={}
 		for k,v in ipairs(screen.screens) do
@@ -336,7 +336,7 @@ function TARDIS:LoadScreenUI(screen)
 		end
 		return buttons
 	end)
-	
+
 	local menubutton=vgui.Create("DButton",titlebar)
 	menubutton:SetSize(titlebar:GetWide()*0.1,titlebar:GetTall())
 	menubutton:SetPos(0,0)
@@ -354,7 +354,7 @@ function TARDIS:LoadScreenUI(screen)
 		end
 	end
 	screen.menubutton=menubutton
-	
+
 	return main
 end
 
@@ -392,17 +392,17 @@ function TARDIS:LoadButtons(screen,frame,func)
 		return w,h
 	end
 	newpage()
-	
+
 	local buttons=func(frame)
 	for k,v in ipairs(buttons) do
 		v:SetParent(page)
 		v:SetSize(page:GetWide()*0.318,page:GetTall()*0.295)
 		v:SetPos(movebutton(v))
 	end
-	
+
 	if #pages>1 then
 		local curpage=1
-		
+
 		local label = vgui.Create("DLabel",frame)
 		label:SetTextColor(Color(0,0,0))
 		label:SetFont("TARDIS-PageName")
@@ -412,7 +412,7 @@ function TARDIS:LoadButtons(screen,frame,func)
 		end
 		label:SetText("Page "..curpage.." of "..#pages)
 		label:DoLayout()
-		
+
 		local nxt
 		local back=vgui.Create("DButton",frame)
 		back:SetVisible(false)
@@ -473,14 +473,14 @@ function TARDIS:LoadScreen(id,options)
 	screen:SetSize(screen.width,screen.height)
 	screen:SetPaintedManually(true)
 	screen:SetDrawBackground(false)
-	
+
 	local main=self:LoadScreenUI(screen)
 	local frame=screen.frame
 	frame:SetVisible(false)
 	frame:SetPos(screen.gap,screen.gap)
 	frame:SetAlpha(230)
 	local titlebar=screen.titlebar
-	
+
 	local label = vgui.Create("DLabel",screen)
 	label:SetTextColor(Color(0,0,0))
 	label:SetFont("TARDIS-Main")
@@ -491,9 +491,9 @@ function TARDIS:LoadScreen(id,options)
 	label:SetText([[ TARDIS Rewrite
 	Work In Progress]])
 	label:DoLayout()
-	
+
 	local close,popup
-	
+
 	local showui = vgui.Create("DButton",screen)
 	showui:SetText("Open UI")
 	showui:SetFont("TARDIS-Default")
@@ -504,7 +504,7 @@ function TARDIS:LoadScreen(id,options)
 		self:SetVisible(false)
 		frame:SetVisible(true)
 	end
-	
+
 	close = vgui.Create("DButton",titlebar)
 	close:SetText("X")
 	close:SetFont("TARDIS-Default")
@@ -515,7 +515,7 @@ function TARDIS:LoadScreen(id,options)
 		showui:SetVisible(true)
 		frame:SetVisible(false)
 	end
-	
+
 	popup = vgui.Create("DButton",titlebar)
 	popup:SetText("Popup")
 	popup:SetFont("TARDIS-Default")
@@ -525,6 +525,6 @@ function TARDIS:LoadScreen(id,options)
 		close:DoClick()
 		self:PopToScreen(screen.pagename:GetText())
 	end
-	
+
 	return screen
 end
