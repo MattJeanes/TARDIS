@@ -221,8 +221,17 @@ function TARDIS:HUDScreen()
 
 	local screen = vgui.Create("DPanel",frame)
 	screen.id="pop"
-	screen.width=485*self.screenres
-	screen.height=250*self.screenres
+
+	if TARDIS:GetSetting("visual_gui_enabled")
+		and TARDIS:GetSetting("visual_gui_bigpopup")
+	then
+		screen.width=960*self.screenres
+		screen.height=540*self.screenres
+	else
+		screen.width=485*self.screenres
+		screen.height=250*self.screenres
+	end
+
 	screen.res=self.screenres
 	screen.crosshair=6*screen.res
 	screen.gap=5*screen.res

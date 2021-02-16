@@ -59,11 +59,21 @@ end
 function HexagonalLayout:DrawButtons()
 	local m = self.n_cols
 	local n = self.n_rows
-	local i = 0
+	local i = -1
 	local j = 1
 	for k,button in ipairs(self.buttons) do
-		i = i + 1
-		if i > n then i = 1; j = j + 1; end
+		i = i + 2
+		if i > n
+		then
+			if (i % 2) == 0
+			then
+				j = j + 1
+				i = 1
+			else
+				i = 2
+			end
+		end
+
 		button:SetVisible(true) --not (j > m))
 		button:SetSize(self:GetButtonSize())
 		button:SetPos(self:GetButtonPos(i, j))

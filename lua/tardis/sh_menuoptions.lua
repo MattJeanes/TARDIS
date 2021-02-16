@@ -57,6 +57,14 @@ if CLIENT then
 			end
 			panel:AddItem(visual_gui_toggle)
 
+			local visual_gui_big_toggle = vgui.Create("DCheckBoxLabel")
+			visual_gui_big_toggle:SetText("Visual GUI big popup")
+			visual_gui_big_toggle:SetValue(TARDIS:GetSetting("visual_gui_bigpopup"))
+			function visual_gui_big_toggle:OnChange(val)
+				TARDIS:SetSetting("visual_gui_bigpopup", val)
+			end
+			panel:AddItem(visual_gui_big_toggle)
+
 			local DLabel3 = vgui.Create( "DLabel" )
 			DLabel3:SetText("Number of visual GUI button rows on the screen:")
 			panel:AddItem(DLabel3)

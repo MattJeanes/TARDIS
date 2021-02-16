@@ -12,6 +12,17 @@ TARDIS:AddSetting({
 })
 
 TARDIS:AddSetting({
+	id="visual_gui_bigpopup",
+	name="Visual GUI big popup",
+	desc="Should the popup for new visual GUI be bigger?",
+	section="Misc",
+	value=true,
+	type="bool",
+	option=true,
+	networked=false
+})
+
+TARDIS:AddSetting({
 	id="visual_gui_screen_numrows",
 	name="Visual GUI rows (screen)",
 	desc="How many rows of buttons should the visual GUI on the screen have?",
@@ -200,6 +211,26 @@ TARDIS:AddScreen("Visual GUI", {menu=false}, function(self,ext,int,frame,screen)
 		hads:SetControl("hads")
 		hads:SetPressedStateData(ext, "hads")
 		layout:AddNewButton(hads)
+
+		local music = TardisScreenButton:new(button_panel)
+		music:SetIsToggle(false)
+		music:SetImages(theme.."b_music.png")
+		layout:AddNewButton(music)
+
+		local scanner = TardisScreenButton:new(button_panel)
+		scanner:SetIsToggle(false)
+		scanner:SetImages(theme.."b_scanner.png")
+		layout:AddNewButton(scanner)
+
+		local coords = TardisScreenButton:new(button_panel)
+		coords:SetIsToggle(false)
+		coords:SetImages(theme.."b_coordselect.png")
+		layout:AddNewButton(coords)
+
+		local settings = TardisScreenButton:new(button_panel)
+		settings:SetIsToggle(false)
+		settings:SetImages(theme.."b_settings.png")
+		layout:AddNewButton(settings)
 
 		layout:DrawButtons()
 		local scroll_size = math.floor(layout:GetCols() / 2)
