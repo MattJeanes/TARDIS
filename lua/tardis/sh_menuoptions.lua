@@ -49,6 +49,14 @@ if CLIENT then
 			end
 			panel:AddItem(comboBox)
 
+			local visual_gui_toggle = vgui.Create("DCheckBoxLabel")
+			visual_gui_toggle:SetText("Enable new visual GUI")
+			visual_gui_toggle:SetValue(TARDIS:GetSetting("visual_gui_enabled"))
+			function visual_gui_toggle:OnChange(val)
+				TARDIS:SetSetting("visual_gui_enabled", val, false)
+			end
+			panel:AddItem(visual_gui_toggle)
+
 		end)
 	end)
 else

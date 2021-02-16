@@ -240,13 +240,16 @@ function TARDIS:HUDScreen()
 	self.screenpop=screen
 
 	local titlebar=screen.titlebar
-	close = vgui.Create("DButton",titlebar)
-	close:SetText("X")
-	close:SetFont("TARDIS-Default")
-	close:SetSize(titlebar:GetWide()*0.08,titlebar:GetTall())
-	close:SetPos(titlebar:GetWide()-close:GetWide())
-	close.DoClick = function(self)
-		TARDIS:RemoveHUDScreen()
+	if not TARDIS:GetSetting("visual_gui_enabled")
+	then
+		close = vgui.Create("DButton",titlebar)
+		close:SetText("X")
+		close:SetFont("TARDIS-Default")
+		close:SetSize(titlebar:GetWide()*0.08,titlebar:GetTall())
+		close:SetPos(titlebar:GetWide()-close:GetWide())
+		close.DoClick = function(self)
+			TARDIS:RemoveHUDScreen()
+		end
 	end
 
 	if timer.Exists("TARDIS-HUDScreen") then
@@ -285,16 +288,19 @@ function TARDIS:LoadScreenUI(screen)
 	pagename:DoLayout()
 	screen.pagename=pagename
 
-	local backbutton = vgui.Create("DButton",titlebar)
-	backbutton:SetVisible(false)
-	backbutton:SetText("Back")
-	backbutton:SetFont("TARDIS-Default")
-	backbutton:SetSize(titlebar:GetWide()*0.1, titlebar:GetTall())
-	backbutton:SetPos(titlebar:GetWide()*0.1+screen.gap,0)
-	backbutton.DoClick = function()
-		self:PopScreen(screen)
+	if not TARDIS:GetSetting("visual_gui_enabled")
+	then
+		local backbutton = vgui.Create("DButton",titlebar)
+		backbutton:SetVisible(false)
+		backbutton:SetText("Back")
+		backbutton:SetFont("TARDIS-Default")
+		backbutton:SetSize(titlebar:GetWide()*0.1, titlebar:GetTall())
+		backbutton:SetPos(titlebar:GetWide()*0.1+screen.gap,0)
+		backbutton.DoClick = function()
+			self:PopScreen(screen)
+		end
+		screen.backbutton=backbutton
 	end
-	screen.backbutton=backbutton
 
 	local main = vgui.Create("DPanel",frame)
 	main:SetSize(frame:GetWide(),frame:GetTall()-titlebar:GetTall())
@@ -325,35 +331,41 @@ function TARDIS:LoadScreenUI(screen)
 
 	self:LoadButtons(screen,mmenu,function(frame)
 		local buttons={}
-		for k,v in ipairs(screen.screens) do
-			local button=vgui.Create("DButton")
-			button:SetText(v[1])
-			button:SetFont("TARDIS-Default")
-			button.DoClick = function()
-				self:SwitchScreen(screen,v[2])
+		if not TARDIS:GetSetting("visual_gui_enabled")
+		then
+			for k,v in ipairs(screen.screens) do
+				local button=vgui.Create("DButton")
+				button:SetText(v[1])
+				button:SetFont("TARDIS-Default")
+				button.DoClick = function()
+					self:SwitchScreen(screen,v[2])
+				end
+				table.insert(buttons,button)
 			end
-			table.insert(buttons,button)
 		end
 		return buttons
 	end)
 
-	local menubutton=vgui.Create("DButton",titlebar)
-	menubutton:SetSize(titlebar:GetWide()*0.1,titlebar:GetTall())
-	menubutton:SetPos(0,0)
-	menubutton:SetText("Menu")
-	menubutton:SetFont("TARDIS-Default")
-	menubutton.DoClick = function(self)
-		if not ((not IsValid(screen.curscreen)) and mmenu:IsVisible()) then
-			mmenu:SetVisible(not mmenu:IsVisible())
-			pagename:SetText("")
-			if mmenu:IsVisible() and backbutton:IsVisible() then
-				backbutton:SetVisible(false)
-			elseif (not mmenu:IsVisible()) and (#screen.backstack>0) then
-				backbutton:SetVisible(true)
+	if not TARDIS:GetSetting("visual_gui_enabled")
+	then
+		local menubutton=vgui.Create("DButton",titlebar)
+		menubutton:SetSize(titlebar:GetWide()*0.1,titlebar:GetTall())
+		menubutton:SetPos(0,0)
+		menubutton:SetText("Menu")
+		menubutton:SetFont("TARDIS-Default")
+		menubutton.DoClick = function(self)
+			if not ((not IsValid(screen.curscreen)) and mmenu:IsVisible()) then
+				mmenu:SetVisible(not mmenu:IsVisible())
+				pagename:SetText("")
+				if mmenu:IsVisible() and backbutton:IsVisible() then
+					backbutton:SetVisible(false)
+				elseif (not mmenu:IsVisible()) and (#screen.backstack>0) then
+					backbutton:SetVisible(true)
+				end
 			end
 		end
+		screen.menubutton=menubutton
 	end
-	screen.menubutton=menubutton
 
 	return main
 end
@@ -414,47 +426,61 @@ function TARDIS:LoadButtons(screen,frame,func)
 		label:DoLayout()
 
 		local nxt
-		local back=vgui.Create("DButton",frame)
-		back:SetVisible(false)
-		back:SetSize(frame:GetTall()*0.1-screen.gap,frame:GetTall()*0.1-screen.gap)
-		back:SetPos(screen.gap,frame:GetTall()-back:GetTall()-screen.gap)
-		back:SetText("<")
-		back:SetFont("TARDIS-Default")
-		back.DoClick = function(self)
-			if pages[curpage-1] then
-				pages[curpage]:SetVisible(false)
-				curpage=curpage-1
-				pages[curpage]:SetVisible(true)
-				label:SetText("Page "..curpage.." of "..#pages)
-				if curpage==1 then
-					back:SetVisible(false)
-				end
-				if not nxt:IsVisible() then
-					nxt:SetVisible(true)
+		if not TARDIS:GetSetting("visual_gui_enabled")
+		then
+			local back=vgui.Create("DButton",frame)
+			back:SetVisible(false)
+			back:SetSize(frame:GetTall()*0.1-screen.gap,frame:GetTall()*0.1-screen.gap)
+			back:SetPos(screen.gap,frame:GetTall()-back:GetTall()-screen.gap)
+			back:SetText("<")
+			back:SetFont("TARDIS-Default")
+			back.DoClick = function(self)
+				if pages[curpage-1] then
+					pages[curpage]:SetVisible(false)
+					curpage=curpage-1
+					pages[curpage]:SetVisible(true)
+					label:SetText("Page "..curpage.." of "..#pages)
+					if curpage==1 then
+						back:SetVisible(false)
+					end
+					if not nxt:IsVisible() then
+						nxt:SetVisible(true)
+					end
 				end
 			end
-		end
-		nxt=vgui.Create("DButton",frame)
-		nxt:SetSize(frame:GetTall()*0.1-screen.gap,frame:GetTall()*0.1-screen.gap)
-		nxt:SetPos(frame:GetWide()-nxt:GetWide()-screen.gap,frame:GetTall()-nxt:GetTall()-screen.gap)
-		nxt:SetText(">")
-		nxt:SetFont("TARDIS-Default")
-		nxt.DoClick = function(self)
-			if pages[curpage+1] then
-				pages[curpage]:SetVisible(false)
-				curpage=curpage+1
-				pages[curpage]:SetVisible(true)
-				label:SetText("Page "..curpage.." of "..#pages)
-				if curpage==#pages then
-					nxt:SetVisible(false)
-				end
-				if not back:IsVisible() then
-					back:SetVisible(true)
+			nxt=vgui.Create("DButton",frame)
+			nxt:SetSize(frame:GetTall()*0.1-screen.gap,frame:GetTall()*0.1-screen.gap)
+			nxt:SetPos(frame:GetWide()-nxt:GetWide()-screen.gap,frame:GetTall()-nxt:GetTall()-screen.gap)
+			nxt:SetText(">")
+			nxt:SetFont("TARDIS-Default")
+			nxt.DoClick = function(self)
+				if pages[curpage+1] then
+					pages[curpage]:SetVisible(false)
+					curpage=curpage+1
+					pages[curpage]:SetVisible(true)
+					label:SetText("Page "..curpage.." of "..#pages)
+					if curpage==#pages then
+						nxt:SetVisible(false)
+					end
+					if not back:IsVisible() then
+						back:SetVisible(true)
+					end
 				end
 			end
 		end
 	end
 end
+
+TARDIS:AddSetting({
+	id="visual_gui_enabled",
+	name="Visual GUI Enabled",
+	desc="Should new visual GUI be used?",
+	section="Misc",
+	value=false,
+	type="bool",
+	option=true,
+	networked=false
+})
 
 function TARDIS:LoadScreen(id,options)
 	local screen = vgui.Create("DPanel")
@@ -481,50 +507,53 @@ function TARDIS:LoadScreen(id,options)
 	frame:SetAlpha(230)
 	local titlebar=screen.titlebar
 
-	local label = vgui.Create("DLabel",screen)
-	label:SetTextColor(Color(0,0,0))
-	label:SetFont("TARDIS-Main")
-	label.DoLayout = function(self)
-		label:SizeToContents()
-		label:SetPos((screen:GetWide()*0.5)-(label:GetWide()*0.5),(screen:GetTall()*0.4)-(label:GetTall()*0.5))
+	if not TARDIS:GetSetting("visual_gui_enabled")
+	then
+
+		local label = vgui.Create("DLabel",screen)
+		label:SetTextColor(Color(0,0,0))
+		label:SetFont("TARDIS-Main")
+		label.DoLayout = function(self)
+			label:SizeToContents()
+			label:SetPos((screen:GetWide()*0.5)-(label:GetWide()*0.5),(screen:GetTall()*0.4)-(label:GetTall()*0.5))
+		end
+		label:SetText([[ TARDIS Rewrite
+		Work In Progress]])
+		label:DoLayout()
+
+		local close,popup
+
+		local showui = vgui.Create("DButton",screen)
+		showui:SetText("Open UI")
+		showui:SetFont("TARDIS-Default")
+		showui:SetSize(screen:GetWide()*0.2,screen:GetTall()*0.1)
+		showui:SetPos((screen:GetWide()*0.5)-(showui:GetWide()*0.5),(screen:GetTall()*0.8)-(showui:GetTall()*0.5))
+		showui.DoClick = function(self)
+			label:SetVisible(false)
+			self:SetVisible(false)
+			frame:SetVisible(true)
+		end
+
+		close = vgui.Create("DButton",titlebar)
+		close:SetText("X")
+		close:SetFont("TARDIS-Default")
+		close:SetSize(titlebar:GetWide()*0.08,titlebar:GetTall())
+		close:SetPos(titlebar:GetWide()-close:GetWide())
+		close.DoClick = function(self)
+			label:SetVisible(true)
+			showui:SetVisible(true)
+			frame:SetVisible(false)
+		end
+
+		popup = vgui.Create("DButton",titlebar)
+		popup:SetText("Popup")
+		popup:SetFont("TARDIS-Default")
+		popup:SetSize(titlebar:GetWide()*0.1,titlebar:GetTall())
+		popup:SetPos(titlebar:GetWide()-popup:GetWide()-close:GetWide()-screen.gap,0)
+		popup.DoClick = function()
+			close:DoClick()
+			self:PopToScreen(screen.pagename:GetText())
+		end
 	end
-	label:SetText([[ TARDIS Rewrite
-	Work In Progress]])
-	label:DoLayout()
-
-	local close,popup
-
-	local showui = vgui.Create("DButton",screen)
-	showui:SetText("Open UI")
-	showui:SetFont("TARDIS-Default")
-	showui:SetSize(screen:GetWide()*0.2,screen:GetTall()*0.1)
-	showui:SetPos((screen:GetWide()*0.5)-(showui:GetWide()*0.5),(screen:GetTall()*0.8)-(showui:GetTall()*0.5))
-	showui.DoClick = function(self)
-		label:SetVisible(false)
-		self:SetVisible(false)
-		frame:SetVisible(true)
-	end
-
-	close = vgui.Create("DButton",titlebar)
-	close:SetText("X")
-	close:SetFont("TARDIS-Default")
-	close:SetSize(titlebar:GetWide()*0.08,titlebar:GetTall())
-	close:SetPos(titlebar:GetWide()-close:GetWide())
-	close.DoClick = function(self)
-		label:SetVisible(true)
-		showui:SetVisible(true)
-		frame:SetVisible(false)
-	end
-
-	popup = vgui.Create("DButton",titlebar)
-	popup:SetText("Popup")
-	popup:SetFont("TARDIS-Default")
-	popup:SetSize(titlebar:GetWide()*0.1,titlebar:GetTall())
-	popup:SetPos(titlebar:GetWide()-popup:GetWide()-close:GetWide()-screen.gap,0)
-	popup.DoClick = function()
-		close:DoClick()
-		self:PopToScreen(screen.pagename:GetText())
-	end
-
 	return screen
 end
