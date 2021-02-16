@@ -61,6 +61,44 @@ TARDIS:AddControl("lockcontroller",{
 	serveronly=true
 })
 
+TARDIS:AddControl("teleport",{
+	func=function(self,ply)
+		if (self:GetData("teleport") or self:GetData("vortex"))
+		then
+			self:Mat()
+		else
+			self:Demat()
+		end
+	end,
+	exterior=true,
+	serveronly=true
+})
+
+TARDIS:AddControl("flight",{
+	func=function(self,ply)
+		self:ToggleFlight()
+	end,
+	exterior=true,
+	serveronly=true
+})
+
+TARDIS:AddControl("float",{
+	func=function(self,ply)
+		self:ToggleFloat()
+	end,
+	exterior=true,
+	serveronly=true
+})
+
+TARDIS:AddControl("flightcontrol",{
+	func=function(self,ply)
+		self:PlayerThirdPerson(ply, not ply:GetTardisData("thirdperson"))
+	end,
+	exterior=true,
+	serveronly=true
+})
+
+
 if SERVER then return end
 
 TARDIS:AddScreen("Controls", {menu=false}, function(self,ext,int,frame,screen)

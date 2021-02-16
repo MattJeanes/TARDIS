@@ -53,9 +53,37 @@ if CLIENT then
 			visual_gui_toggle:SetText("Enable new visual GUI")
 			visual_gui_toggle:SetValue(TARDIS:GetSetting("visual_gui_enabled"))
 			function visual_gui_toggle:OnChange(val)
-				TARDIS:SetSetting("visual_gui_enabled", val, false)
+				TARDIS:SetSetting("visual_gui_enabled", val)
 			end
 			panel:AddItem(visual_gui_toggle)
+
+			local DLabel3 = vgui.Create( "DLabel" )
+			DLabel3:SetText("Number of visual GUI button rows on the screen:")
+			panel:AddItem(DLabel3)
+			local visual_gui_screen_numrows = vgui.Create("DNumSlider")
+			visual_gui_screen_numrows:SetMinMax(2, 10)
+			visual_gui_screen_numrows:SetDecimals(0)
+			visual_gui_screen_numrows:SetValue(TARDIS:GetSetting("visual_gui_screen_numrows"))
+			function visual_gui_screen_numrows:OnValueChanged(val)
+				val = math.floor(val)
+				visual_gui_screen_numrows:SetValue(val)
+				TARDIS:SetSetting("visual_gui_screen_numrows", val)
+			end
+			panel:AddItem(visual_gui_screen_numrows)
+
+			local DLabel4 = vgui.Create( "DLabel" )
+			DLabel4:SetText("Number of visual GUI button rows in the popup:")
+			panel:AddItem(DLabel4)
+			local visual_gui_popup_numrows = vgui.Create("DNumSlider")
+			visual_gui_popup_numrows:SetMinMax(2, 10)
+			visual_gui_popup_numrows:SetDecimals(0)
+			visual_gui_popup_numrows:SetValue(TARDIS:GetSetting("visual_gui_popup_numrows"))
+			function visual_gui_popup_numrows:OnValueChanged(val)
+				val = math.floor(val)
+				visual_gui_popup_numrows:SetValue(val)
+				TARDIS:SetSetting("visual_gui_popup_numrows", val)
+			end
+			panel:AddItem(visual_gui_popup_numrows)
 
 		end)
 	end)

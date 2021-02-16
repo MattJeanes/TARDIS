@@ -1,54 +1,129 @@
 TardisScreenButton = {}
 
 function TardisScreenButton:new(parent)
-	local screen_button = {}
+	local sb = {}
 
-	screen_button.visible = true
-	screen_button.icon = vgui.Create("DImageButton", parent)
-	screen_button.label = vgui.Create("DLabel", parent)
-	screen_button.label:SetColor(Color(255,255,255,0))
-	screen_button.is_toggle = false
-	screen_button.icon_off = "materials/vgui/tardis-desktops/default/default_off.png"
-	screen_button.icon_on = "materials/vgui/tardis-desktops/default/default_on.png"
-	screen_button.icon:SetImage(screen_button.icon_off)
-	screen_button.Think = function() end
+	sb.visible = true
+	sb.outside_of_parent = false
+	sb.icon = vgui.Create("DImageButton", parent)
+	sb.label = vgui.Create("DLabel", parent)
+	sb.label:SetColor(Color(255,255,255,0))
+	sb.is_toggle = false
+	sb.icon_off = "materials/vgui/tardis-desktops/default/default_off.png"
+	sb.icon_on = "materials/vgui/tardis-desktops/default/default_on.png"
+	sb.icon:SetImage(sb.icon_off)
+	sb.pos = {0, 0}
 
-	function screen_button.icon:Think()
-		if not screen_button.is_toggle and screen_button.on
-			and CurTime() > screen_button.click_end_time
+	sb.moving = {}
+	sb.moving.now = false
+
+	sb.toggle_images = false
+
+	sb.Think = function() end
+	sb.DoClick = function() end
+
+	function sb.icon:Think()
+		if not sb.is_toggle and sb.on
+			and CurTime() > sb.click_end_time
 		then
-			screen_button.icon:SetImage(screen_button.icon_off)
-			screen_button.on = false
+			sb.icon:SetImage(sb.icon_off)
+			sb.on = false
 		end
-		screen_button.Think()
+		if sb.moving.now and CurTime() > sb.moving.last + 0.01
+		then
+			sb.moving.move()
+		end
+		sb.outside_of_parent = (sb.pos[1] < 10) or (sb.pos[2] < 10) or
+			(sb.pos[1] + sb.size[1] > parent:GetWide()) or
+			(sb.pos[2] + sb.size[2] > parent:GetTall())
+
+		sb.icon:SetVisible(sb.visible)--- and not sb.outside_of_parent)
+		sb.label:SetVisible(sb.visible)--- and not sb.outside_of_parent)
+
+		sb.icon:SetPos(sb.pos[1], sb.pos[2])
+		sb.label:SetPos(sb.pos[1], sb.pos[2])
+		sb.icon:SetSize(sb.size[1], sb.size[2])
+		sb.label:SetSize(sb.size[1], sb.size[2])
+		sb.Think()
 	end
 
-
-	screen_button.icon.DoClick = function()
-		screen_button.DoClick()
-		screen_button.on = not screen_button.on
-		if screen_button.on then
-			screen_button.icon:SetImage(screen_button.icon_on)
+	sb.icon.DoClick = function()
+		sb.DoClick()
+		if sb.is_toggle
+		then
+			sb.on = not sb.on
+			if sb.toggle_images
+			then
+				if sb.on then
+					sb.icon:SetImage(sb.icon_on)
+				else
+					sb.icon:SetImage(sb.icon_off)
+				end
+			end
 		else
-			screen_button.icon:SetImage(screen_button.icon_off)
+			sb.on = true
+			sb.icon:SetImage(sb.icon_on)
+			sb.click_end_time = CurTime() + 1
 		end
-		screen_button.click_end_time = CurTime() + 1
 	end
-	screen_button.label.DoClick = screen_button.icon.DoClick
+	sb.label.DoClick = sb.icon.DoClick
 
-	setmetatable(screen_button,self)
+	setmetatable(sb,self)
 	self.__index = self
-	return screen_button
+	return sb
 end
 
 function TardisScreenButton:SetSize(sizeX, sizeY)
-	self.icon:SetSize(sizeX, sizeY)
-	self.label:SetSize(sizeX, sizeY)
+	self.size = {sizeX, sizeY}
 end
 
 function TardisScreenButton:SetPos(posX, posY)
-	self.icon:SetPos(posX, posY)
-	self.label:SetPos(posX, posY)
+	self.pos = {posX, posY}
+end
+
+function TardisScreenButton:SlowMove(x, y, relative, speed)
+	local moving = {}
+	moving.now = true
+	moving.parent = self
+	moving.last = CurTime()
+	moving.speed = speed or 100
+	if relative
+	then
+		moving.aim = { self.pos[1] + x, self.pos[2] + y }
+		moving.step = { x, y }
+	else
+		moving.aim = { x, y }
+		moving.step = { x - self.pos[1], y - self.pos[2] }
+	end
+
+	moving.step = { moving.step[1] * moving.speed / 1000, moving.step[2] * moving.speed / 1000 }
+
+	moving.move = function()
+		local sb = moving.parent
+		sb.pos = { sb.pos[1] + moving.step[1], sb.pos[2] + moving.step[2] }
+		moving.last = CurTime()
+
+		local distance = math.Distance(sb.pos[1], sb.pos[2], moving.aim[1], moving.aim[2])
+		if distance <= 1
+		then
+			sb.pos = moving.aim
+			moving.now = false
+		end
+	end
+	self.moving = moving
+end
+
+function TardisScreenButton:GetPosX()
+	return self.pos[1]
+end
+function TardisScreenButton:GetPosY()
+	return self.pos[2]
+end
+function TardisScreenButton:GetTall()
+	return self.icon:GetTall()
+end
+function TardisScreenButton:GetWide()
+	return self.icon:GetWide()
 end
 
 function TardisScreenButton:SetImages(off, on)
@@ -61,15 +136,7 @@ function TardisScreenButton:SetIsToggle(is_toggle)
 	self.is_toggle=is_toggle
 end
 
-function TardisScreenButton:GetTall()
-	return self.icon:GetTall()
-end
-
-function TardisScreenButton:GetWide()
-	return self.icon:GetWide()
-end
-
-function TardisScreenButton:SetToggle(on)
+function TardisScreenButton:SetPressed(on)
 	self.on = on
 	if on then
 		self.icon:SetImage(self.icon_on)
@@ -79,11 +146,31 @@ function TardisScreenButton:SetToggle(on)
 end
 
 function TardisScreenButton:SetVisible(visible)
-	self.icon:SetVisible(visible)
-	self.label:SetVisible(visible)
 	self.visible = visible
 end
 
-function TardisScreenButton:GetVisible()
-	return self.visible
+--function TardisScreenButton:GetVisible()
+	--return self.visible
+--end
+
+function TardisScreenButton:SetTransparency(x)
+	self.icon:SetColor(Color(255,255,255,x));
+end
+
+function TardisScreenButton:SetControl(control)
+	self.DoClick = function()
+		TARDIS:Control(control)
+	end
+end
+function TardisScreenButton:SetPressedStateData(ext, data1, data2)
+	if data2 == nil
+	then
+		self.Think = function()
+			self:SetPressed(ext:GetData(data1))
+		end
+	else
+		self.Think = function()
+			self:SetPressed(ext:GetData(data1) or ext:GetData(data2))
+		end
+	end
 end
