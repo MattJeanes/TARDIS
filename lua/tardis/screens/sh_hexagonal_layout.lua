@@ -14,14 +14,14 @@ function HexagonalLayout:new(screen, n_rows, gap_scale)
 	layout.gap_scale = gap_scale
 	layout.x_offset = 0
 
-	layout.button_side_length = 2 * layout.screen_height / (2 * gap_scale + (2 + n_rows) * (v3 + gap_scale))
+	layout.button_side_length = 2 * layout.screen_height / (2 * gap_scale + (1 + n_rows) * (v3 + gap_scale))
 	layout.n_cols = 2 * (layout.screen_width + layout.button_side_length) / (layout.button_side_length * (3 + v3 * gap_scale)) - 2
 	layout.n_cols = math.floor(layout.n_cols)
 
 	layout.dh = (v3 + gap_scale) * layout.button_side_length / 2
 	layout.dw = (3 + v3 * gap_scale) * layout.button_side_length / 2
 
-	layout.button_size = {v3 * self.button_side_length, 2 * self.button_side_length}
+	layout.button_size = {2 * layout.button_side_length, v3 * layout.button_side_length}
 
 	layout.buttons = {}
 
@@ -45,11 +45,12 @@ end
 function HexagonalLayout:SetOffsetX(x)
 	self.x_offset = x
 end
-function HexagonalLayout:AddOffsetX(x)
-	self.x_offset = self.x_offset + x
-end
 function HexagonalLayout:GetOffsetX()
 	return self.x_offset
+end
+
+function HexagonalLayout:ScrollButtons(x)
+	self.x_offset = self.x_offset + x * self.button_size[1]
 end
 
 function HexagonalLayout:AddNewButton(screen_button)
@@ -65,7 +66,7 @@ function HexagonalLayout:DrawButtons()
 	for k,button in ipairs(self.buttons) do
 		i = i + 1
 		if i > n then i = 1; j = j + 1; end
-		button:SetVisible((not j > m))
+		button:SetVisible(not (j > m))
 		button:SetSize(self:GetButtonSize())
 		button:SetPos(self:GetButtonPos(i, j))
 	end

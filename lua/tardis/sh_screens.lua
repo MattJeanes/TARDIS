@@ -471,17 +471,6 @@ function TARDIS:LoadButtons(screen,frame,func)
 	end
 end
 
-TARDIS:AddSetting({
-	id="visual_gui_enabled",
-	name="Visual GUI Enabled",
-	desc="Should new visual GUI be used?",
-	section="Misc",
-	value=false,
-	type="bool",
-	option=true,
-	networked=false
-})
-
 function TARDIS:LoadScreen(id,options)
 	local screen = vgui.Create("DPanel")
 	screen.id=id
