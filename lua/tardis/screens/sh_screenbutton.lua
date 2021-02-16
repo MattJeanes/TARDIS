@@ -3,12 +3,13 @@ TardisScreenButton = {}
 function TardisScreenButton:new(parent)
 	local screen_button = {}
 
-	screen_button.icon=vgui.Create("DImageButton", parent)
-	screen_button.label=vgui.Create("DLabel", parent)
+	screen_button.visible = true
+	screen_button.icon = vgui.Create("DImageButton", parent)
+	screen_button.label = vgui.Create("DLabel", parent)
 	screen_button.label:SetColor(Color(255,255,255,0))
-	screen_button.is_toggle=false
-	screen_button.icon_off="materials/vgui/buttons/default_off.png"
-	screen_button.icon_on="materials/vgui/buttons/default_on.png"
+	screen_button.is_toggle = false
+	screen_button.icon_off = "materials/vgui/tardis-desktops/default/default_off.png"
+	screen_button.icon_on = "materials/vgui/tardis-desktops/default/default_on.png"
 	screen_button.icon:SetImage(screen_button.icon_off)
 	screen_button.Think = function() end
 
@@ -75,4 +76,14 @@ function TardisScreenButton:SetToggle(on)
 	else
 		self.icon:SetImage(self.icon_off)
 	end
+end
+
+function TardisScreenButton:SetVisible(visible)
+	self.icon:SetVisible(visible)
+	self.label:SetVisible(visible)
+	self.visible = visible
+end
+
+function TardisScreenButton:GetVisible()
+	return self.visible
 end
