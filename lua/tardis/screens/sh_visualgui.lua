@@ -248,7 +248,8 @@ TARDIS:AddScreen("Visual GUI", {menu=false}, function(self,ext,int,frame,screen)
 		settings:SetImages(theme.."b_settings.png")
 		layout:AddNewButton(settings)
 
-		layout:DrawButtons()
+		local layout_leftspace = button_panel:GetWide() - layout:GetButtonSize(1) * layout:GetCols()
+		layout:DrawButtons(layout_leftspace * 0.25)
 
 		local scroll_size = math.floor(layout:GetCols() / 2)
 		local total_scroll = 0

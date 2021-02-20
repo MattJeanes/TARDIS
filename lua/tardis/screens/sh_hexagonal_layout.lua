@@ -56,9 +56,10 @@ function HexagonalLayout:AddNewButton(screen_button)
 	table.insert(self.buttons, screen_button)
 end
 
-function HexagonalLayout:DrawButtons()
+function HexagonalLayout:DrawButtons(x)
 	local m = self.n_cols
 	local n = self.n_rows
+	local offsetX = x or 0
 	local i = -1
 	local j = 1
 	for k,button in ipairs(self.buttons) do
@@ -78,7 +79,7 @@ function HexagonalLayout:DrawButtons()
 		button:SetPos(self:GetButtonPos(i, j))
 		button:SetVisible(true)
 		button:Think()
-		button:SlowMove(0, 0, true, 100)
+		button:SlowMove(offsetX, 0, true, 100)
 	end
 end
 
