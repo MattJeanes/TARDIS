@@ -3,16 +3,22 @@ TardisScreenButton = {}
 function TardisScreenButton:new(parent)
 	local sb = {}
 
-	sb.visible = true
-	sb.outside_of_parent = false
+	sb.visible = false
+	sb.transparency = 0
+	sb.outside = false
+	sb.parent = parent
+
 	sb.icon = vgui.Create("DImageButton", parent)
 	sb.label = vgui.Create("DLabel", parent)
 	sb.label:SetColor(Color(255,255,255,0))
+
 	sb.is_toggle = false
 	sb.icon_off = "materials/vgui/tardis-desktops/default/default_off.png"
 	sb.icon_on = "materials/vgui/tardis-desktops/default/default_on.png"
+
 	sb.icon:SetImage(sb.icon_off)
 	sb.pos = {0, 0}
+	sb.size = {10, 10}
 
 	sb.moving = {}
 	sb.moving.now = false
@@ -22,7 +28,18 @@ function TardisScreenButton:new(parent)
 	sb.Think = function() end
 	sb.DoClick = function() end
 
-	function sb.icon:Think()
+	sb.SetVisibleCustom = function(vis)
+		if vis
+		then
+			sb.transparency = 255
+		else
+			sb.transparency = 0
+		end
+	end
+
+	sb.ThinkInternal = function()
+		sb.transparency = math.min(sb.transparency, 255)
+		sb.transparency = math.max(sb.transparency, 0)
 		if not sb.is_toggle and sb.on
 			and CurTime() > sb.click_end_time
 		then
@@ -32,20 +49,36 @@ function TardisScreenButton:new(parent)
 		if sb.moving.now and CurTime() > sb.moving.last + 0.01
 		then
 			sb.moving.move()
+			sb.icon:SetColor(Color(255,255,255, sb.transparency))
 		end
-		sb.outside_of_parent = (sb.pos[1] < 10) or (sb.pos[2] < 10) or
-			(sb.pos[1] + sb.size[1] > parent:GetWide()) or
-			(sb.pos[2] + sb.size[2] > parent:GetTall())
 
-		sb.icon:SetVisible(sb.visible)--- and not sb.outside_of_parent)
-		sb.label:SetVisible(sb.visible)--- and not sb.outside_of_parent)
-
-		sb.icon:SetPos(sb.pos[1], sb.pos[2])
+		local realpos = { math.min(math.max(sb.pos[1], 0), sb.parent:GetWide() - sb.size[1]),
+						  math.min(math.max(sb.pos[2], 0), sb.parent:GetTall() - sb.size[2]) }
+		sb.icon:SetPos(realpos[1], realpos[2])
 		sb.label:SetPos(sb.pos[1], sb.pos[2])
 		sb.icon:SetSize(sb.size[1], sb.size[2])
 		sb.label:SetSize(sb.size[1], sb.size[2])
+		if not sb.moving.now
+		then
+			sb.outside = (sb.pos[1] < 0) or (sb.pos[2] < 0)
+				or (sb.pos[1] + sb.size[1] > sb.parent:GetWide())
+				or (sb.pos[2] + sb.size[2] > sb.parent:GetTall())
+			sb.SetVisibleCustom(not sb.outside)
+		end
+		if not sb.visible
+		then
+			sb.SetVisibleCustom(false)
+		end
 		sb.Think()
 	end
+
+	sb.icon.Think = function()
+		sb.ThinkInternal()
+	end
+	sb.label.Think = function()
+		sb.ThinkInternal()
+	end
+	sb.ThinkInternal()
 
 	sb.icon.DoClick = function()
 		sb.DoClick()
@@ -73,12 +106,18 @@ function TardisScreenButton:new(parent)
 	return sb
 end
 
+function TardisScreenButton:Think()
+	self.ThinkInternal()
+end
+
 function TardisScreenButton:SetSize(sizeX, sizeY)
 	self.size = {sizeX, sizeY}
+	self.ThinkInternal()
 end
 
 function TardisScreenButton:SetPos(posX, posY)
 	self.pos = {posX, posY}
+	self.ThinkInternal()
 end
 
 function TardisScreenButton:SlowMove(x, y, relative, speed)
@@ -87,6 +126,7 @@ function TardisScreenButton:SlowMove(x, y, relative, speed)
 	moving.parent = self
 	moving.last = CurTime()
 	moving.speed = speed or 100
+
 	if relative
 	then
 		moving.aim = { self.pos[1] + x, self.pos[2] + y }
@@ -96,12 +136,36 @@ function TardisScreenButton:SlowMove(x, y, relative, speed)
 		moving.step = { x - self.pos[1], y - self.pos[2] }
 	end
 
+	moving.now_outside = (self.pos[1] < 0) or (self.pos[2] < 0)
+		or (self.pos[1] + self.size[1] > self.parent:GetWide())
+		or (self.pos[2] + self.size[2] > self.parent:GetTall())
+
+	moving.aim_outside = (moving.aim[1] < 0) or (moving.aim[2] < 0)
+		or (moving.aim[1] + self.size[1] > self.parent:GetWide())
+		or (moving.aim[2] + self.size[2] > self.parent:GetTall())
+
+
 	moving.step = { moving.step[1] * moving.speed / 1000, moving.step[2] * moving.speed / 1000 }
+	moving.transp_step = 0
+	if moving.now_outside and moving.aim_outside
+	then
+		self.transparency = 0
+		moving.transp_step = 0
+	elseif moving.now_outside
+	then
+		self.transparency = 0
+		moving.transp_step = 255 * speed / 1000;
+	elseif moving.aim_outside
+	then
+		self.transparency = 255
+		moving.transp_step = - 255 * speed / 1000;
+	end
 
 	moving.move = function()
 		local sb = moving.parent
 		sb.pos = { sb.pos[1] + moving.step[1], sb.pos[2] + moving.step[2] }
 		moving.last = CurTime()
+		sb.transparency = sb.transparency + moving.transp_step
 
 		local distance = math.Distance(sb.pos[1], sb.pos[2], moving.aim[1], moving.aim[2])
 		if distance <= 1
@@ -119,11 +183,11 @@ end
 function TardisScreenButton:GetPosY()
 	return self.pos[2]
 end
-function TardisScreenButton:GetTall()
-	return self.icon:GetTall()
-end
 function TardisScreenButton:GetWide()
-	return self.icon:GetWide()
+	return self.size[1]
+end
+function TardisScreenButton:GetTall()
+	return self.size[2]
 end
 
 function TardisScreenButton:SetImages(off, on)
@@ -147,11 +211,12 @@ end
 
 function TardisScreenButton:SetVisible(visible)
 	self.visible = visible
+	self.ThinkInternal()
 end
 
---function TardisScreenButton:GetVisible()
-	--return self.visible
---end
+function TardisScreenButton:GetVisible()
+	return self.visible
+end
 
 function TardisScreenButton:SetTransparency(x)
 	self.icon:SetColor(Color(255,255,255,x));

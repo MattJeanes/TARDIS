@@ -74,16 +74,17 @@ function HexagonalLayout:DrawButtons()
 			end
 		end
 
-		button:SetVisible(true) --not (j > m))
 		button:SetSize(self:GetButtonSize())
 		button:SetPos(self:GetButtonPos(i, j))
-		button.Think()
+		button:SetVisible(true)
+		button:Think()
+		button:SlowMove(0, 0, true, 100)
 	end
 end
 
 function HexagonalLayout:ScrollButtons(x)
 	for k,button in ipairs(self.buttons) do
-		button:SlowMove(x * self.dw, 0, true, 100)
+		button:SlowMove(x * self.dw, 0, true, 25)
 	end
 end
 

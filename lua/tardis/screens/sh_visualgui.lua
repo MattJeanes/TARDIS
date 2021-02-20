@@ -263,13 +263,5 @@ TARDIS:AddScreen("Visual GUI", {menu=false}, function(self,ext,int,frame,screen)
 				layout:ScrollButtons(scroll_size)
 			end
 		end
-
-		--if screen.is3D2D
-		--then
-		--	button_panel:SetSize(button_panel:GetWide() - 2 * layout:GetButtonSize(1), button_panel:GetTall())
-		--	button_panel:SetPos(layout:GetButtonSize(1), 0)
-		--	layout:ScrollButtons(-1)
-		--end
-
 	end
 end)
