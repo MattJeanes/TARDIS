@@ -93,6 +93,13 @@ if CLIENT then
 			end
 			panel:AddItem(visual_gui_popup_numrows)
 
+			local visual_gui_controls = vgui.Create("DCheckBoxLabel")
+			visual_gui_controls:SetText("Enable controls in the visual GUI")
+			visual_gui_controls:SetValue(TARDIS:GetSetting("visual_gui_controls"))
+			function visual_gui_controls:OnChange(val)
+				TARDIS:SetSetting("visual_gui_controls", val)
+			end
+			panel:AddItem(visual_gui_controls)
 		end)
 	end)
 else

@@ -46,6 +46,17 @@ TARDIS:AddSetting({
 	value=4
 })
 
+TARDIS:AddSetting({
+	id="visual_gui_controls",
+	name="Visual GUI Controls",
+	desc="Should new visual GUI have controls in it?",
+	section="Misc",
+	value=true,
+	type="bool",
+	option=true,
+	networked=false
+})
+
 TARDIS:AddScreen("Visual GUI", {menu=false}, function(self,ext,int,frame,screen)
 
 	if TARDIS:GetSetting("visual_gui_enabled")
@@ -124,53 +135,86 @@ TARDIS:AddScreen("Visual GUI", {menu=false}, function(self,ext,int,frame,screen)
 
 		-- controls
 
-		local door = TardisScreenButton:new(button_panel)
-		door:SetIsToggle(true)
-		door:SetImages(theme.."l_door_closed.png", theme.."l_door_open.png")
-		door:SetControl("doorcontroller")
-		door:SetPressedStateData(ext, "doorstate")
-		layout:AddNewButton(door)
+		if TARDIS:GetSetting("visual_gui_controls")
+		then
 
-		local lock = TardisScreenButton:new(button_panel)
-		lock:SetIsToggle(true)
-		lock:SetImages(theme.."l_lock_off.png", theme.."l_lock_on.png")
-		lock:SetControl("lockcontroller")
-		lock:SetPressedStateData(ext, "locked")
-		layout:AddNewButton(lock)
+			local door = TardisScreenButton:new(button_panel)
+			door:SetIsToggle(true)
+			door:SetImages(theme.."l_door_closed.png", theme.."l_door_open.png")
+			door:SetControl("doorcontroller")
+			door:SetPressedStateData(ext, "doorstate")
+			layout:AddNewButton(door)
 
-		local power = TardisScreenButton:new(button_panel)
-		power:SetIsToggle(true)
-		power:SetImages(theme.."l_power_off.png", theme.."l_power_on.png")
-		power:SetControl("power")
-		power:SetPressedStateData(ext, "power-state")
-		layout:AddNewButton(power)
+			local lock = TardisScreenButton:new(button_panel)
+			lock:SetIsToggle(true)
+			lock:SetImages(theme.."l_lock_off.png", theme.."l_lock_on.png")
+			lock:SetControl("lockcontroller")
+			lock:SetPressedStateData(ext, "locked")
+			layout:AddNewButton(lock)
 
-		local repair = TardisScreenButton:new(button_panel)
-		repair:SetIsToggle(true)
-		repair:SetImages(theme.."l_repair_off.png", theme.."l_repair_on.png")
-		repair:SetControl("repair")
-		repair:SetPressedStateData(ext, "repair-primed")
-		layout:AddNewButton(repair)
+			local power = TardisScreenButton:new(button_panel)
+			power:SetIsToggle(true)
+			power:SetImages(theme.."l_power_off.png", theme.."l_power_on.png")
+			power:SetControl("power")
+			power:SetPressedStateData(ext, "power-state")
+			layout:AddNewButton(power)
 
-		local fastremat = TardisScreenButton:new(button_panel)
-		fastremat:SetIsToggle(true)
-		fastremat:SetImages(theme.."l_fastremat_off.png", theme.."l_fastremat_on.png")
-		fastremat:SetControl("fastremat")
-		fastremat:SetPressedStateData(ext, "demat-fast")
-		layout:AddNewButton(fastremat)
+			local repair = TardisScreenButton:new(button_panel)
+			repair:SetIsToggle(true)
+			repair:SetImages(theme.."l_repair_off.png", theme.."l_repair_on.png")
+			repair:SetControl("repair")
+			repair:SetPressedStateData(ext, "repair-primed")
+			layout:AddNewButton(repair)
 
-		local throttle = TardisScreenButton:new(button_panel)
-		throttle:SetIsToggle(true)
-		throttle:SetImages(theme.."l_throttle_off.png", theme.."l_throttle_on.png")
-		throttle:SetControl("teleport")
-		throttle:SetPressedStateData(ext, "teleport", "vortex")
-		layout:AddNewButton(throttle)
+			local fastremat = TardisScreenButton:new(button_panel)
+			fastremat:SetIsToggle(true)
+			fastremat:SetImages(theme.."l_fastremat_off.png", theme.."l_fastremat_on.png")
+			fastremat:SetControl("fastremat")
+			fastremat:SetPressedStateData(ext, "demat-fast")
+			layout:AddNewButton(fastremat)
 
-		local fastreturn = TardisScreenButton:new(button_panel)
-		fastreturn:SetIsToggle(false)
-		fastreturn:SetImages(theme.."b_fastreturn.png", theme.."b_fastreturn_on.png")
-		fastreturn:SetControl("fastreturn")
-		layout:AddNewButton(fastreturn)
+			local throttle = TardisScreenButton:new(button_panel)
+			throttle:SetIsToggle(true)
+			throttle:SetImages(theme.."l_throttle_off.png", theme.."l_throttle_on.png")
+			throttle:SetControl("teleport")
+			throttle:SetPressedStateData(ext, "teleport", "vortex")
+			layout:AddNewButton(throttle)
+
+			local fastreturn = TardisScreenButton:new(button_panel)
+			fastreturn:SetIsToggle(false)
+			fastreturn:SetImages(theme.."b_fastreturn.png", theme.."b_fastreturn_on.png")
+			fastreturn:SetControl("fastreturn")
+			layout:AddNewButton(fastreturn)
+
+			local flight = TardisScreenButton:new(button_panel)
+			flight:SetIsToggle(true)
+			flight:SetImages(theme.."l_flight_off.png", theme.."l_flight_on.png")
+			flight:SetControl("flight")
+			flight:SetPressedStateData(ext, "flight")
+			layout:AddNewButton(flight)
+
+			local float = TardisScreenButton:new(button_panel)
+			float:SetIsToggle(true)
+			float:SetImages(theme.."l_float_off.png", theme.."l_float_on.png")
+			float:SetControl("float")
+			float:SetPressedStateData(ext, "float")
+			layout:AddNewButton(float)
+
+			local physlock = TardisScreenButton:new(button_panel)
+			physlock:SetIsToggle(true)
+			physlock:SetImages(theme.."l_physlock_off.png", theme.."l_physlock_on.png")
+			physlock:SetControl("physbrake")
+			physlock:SetPressedStateData(ext, "physlock")
+			layout:AddNewButton(physlock)
+
+			local hads = TardisScreenButton:new(button_panel)
+			hads:SetIsToggle(true)
+			hads:SetImages(theme.."l_hads_off.png", theme.."l_hads_on.png")
+			hads:SetControl("hads")
+			hads:SetPressedStateData(ext, "hads")
+			layout:AddNewButton(hads)
+
+		end
 
 		local destination = TardisScreenButton:new(button_panel)
 		destination:SetIsToggle(false)
@@ -183,34 +227,6 @@ TARDIS:AddScreen("Visual GUI", {menu=false}, function(self,ext,int,frame,screen)
 		flightcontrol:SetImages(theme.."b_flightcontrol.png")
 		flightcontrol:SetControl("flightcontrol")
 		layout:AddNewButton(flightcontrol)
-
-		local flight = TardisScreenButton:new(button_panel)
-		flight:SetIsToggle(true)
-		flight:SetImages(theme.."l_flight_off.png", theme.."l_flight_on.png")
-		flight:SetControl("flight")
-		flight:SetPressedStateData(ext, "flight")
-		layout:AddNewButton(flight)
-
-		local float = TardisScreenButton:new(button_panel)
-		float:SetIsToggle(true)
-		float:SetImages(theme.."l_float_off.png", theme.."l_float_on.png")
-		float:SetControl("float")
-		float:SetPressedStateData(ext, "float")
-		layout:AddNewButton(float)
-
-		local physlock = TardisScreenButton:new(button_panel)
-		physlock:SetIsToggle(true)
-		physlock:SetImages(theme.."l_physlock_off.png", theme.."l_physlock_on.png")
-		physlock:SetControl("physbrake")
-		physlock:SetPressedStateData(ext, "physlock")
-		layout:AddNewButton(physlock)
-
-		local hads = TardisScreenButton:new(button_panel)
-		hads:SetIsToggle(true)
-		hads:SetImages(theme.."l_hads_off.png", theme.."l_hads_on.png")
-		hads:SetControl("hads")
-		hads:SetPressedStateData(ext, "hads")
-		layout:AddNewButton(hads)
 
 		local music = TardisScreenButton:new(button_panel)
 		music:SetIsToggle(false)
@@ -233,6 +249,7 @@ TARDIS:AddScreen("Visual GUI", {menu=false}, function(self,ext,int,frame,screen)
 		layout:AddNewButton(settings)
 
 		layout:DrawButtons()
+
 		local scroll_size = math.floor(layout:GetCols() / 2)
 		local total_scroll = 0
 		right_arrow.DoClick = function()
