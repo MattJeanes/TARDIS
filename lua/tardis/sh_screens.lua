@@ -491,30 +491,7 @@ function TARDIS:LoadScreen(id,options)
 	frame:SetAlpha(230)
 	local titlebar=screen.titlebar
 
-
-	local label = vgui.Create("DLabel",screen)
-	label:SetTextColor(Color(0,0,0))
-	label:SetFont("TARDIS-Main")
-	label.DoLayout = function(self)
-		label:SizeToContents()
-		label:SetPos((screen:GetWide()*0.5)-(label:GetWide()*0.5),(screen:GetTall()*0.4)-(label:GetTall()*0.5))
-	end
-	label:SetText([[ TARDIS Rewrite
-	Work In Progress]])
-	label:DoLayout()
-
 	local close,popup
-
-	local showui = vgui.Create("DButton",screen)
-	showui:SetText("Open UI")
-	showui:SetFont("TARDIS-Default")
-	showui:SetSize(screen:GetWide()*0.2,screen:GetTall()*0.1)
-	showui:SetPos((screen:GetWide()*0.5)-(showui:GetWide()*0.5),(screen:GetTall()*0.8)-(showui:GetTall()*0.5))
-	showui.DoClick = function(self)
-		label:SetVisible(false)
-		self:SetVisible(false)
-		frame:SetVisible(true)
-	end
 
 	close = vgui.Create("DButton",titlebar)
 	close:SetText("X")
@@ -522,9 +499,8 @@ function TARDIS:LoadScreen(id,options)
 	close:SetSize(titlebar:GetWide()*0.08,titlebar:GetTall())
 	close:SetPos(titlebar:GetWide()-close:GetWide())
 	close.DoClick = function(self)
-		label:SetVisible(true)
-		showui:SetVisible(true)
-		frame:SetVisible(false)
+		--TARDIS:SwitchScreen(screen, TARDIS:GetScreenByName("Classic Screensaver"))
+		--frame:SetVisible(false)
 	end
 
 	popup = vgui.Create("DButton",titlebar)
@@ -534,7 +510,7 @@ function TARDIS:LoadScreen(id,options)
 	popup:SetPos(titlebar:GetWide()-popup:GetWide()-close:GetWide()-screen.gap,0)
 	popup.DoClick = function()
 		close:DoClick()
-		self:PopToScreen(screen.pagename:GetText())
+		TARDIS:PopToScreen(screen.pagename:GetText())
 	end
 
 	return screen
