@@ -241,15 +241,15 @@ if SERVER then
 			end
 			if e.enabled==false then
 				e:Remove()
-				continue
+			else
+				if e.AutoSetup then
+					AutoSetup(ent,e,k)
+				end
+				e:Spawn()
+				e:Activate()
+				ent:DeleteOnRemove(e)
+				ent.parts[k]=e
 			end
-			if e.AutoSetup then
-				AutoSetup(ent,e,k)
-			end
-			e:Spawn()
-			e:Activate()
-			ent:DeleteOnRemove(e)
-			ent.parts[k]=e
 		end
 	end
 	net.Receive("TARDIS-SetupPart", function(_,ply)
