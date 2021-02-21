@@ -423,21 +423,16 @@ function TARDIS:LoadScreenUI(screen)
 	menubutton.DoClick = function(self)
 		if not ((not IsValid(screen.curscreen)) and mmenu:IsVisible()) then
 			mmenu:SetVisible(not mmenu:IsVisible())
+			if TARDIS:GetSetting("visual_gui_enabled")
+			then
+				screen.left_arrow:SetVisible(mmenu:IsVisible())
+				screen.right_arrow:SetVisible(mmenu:IsVisible())
+			end
 			pagename:SetText("")
 			if mmenu:IsVisible() and backbutton:IsVisible() then
 				backbutton:SetVisible(false)
-				if TARDIS:GetSetting("visual_gui_enabled")
-				then
-					screen.left_arrow:SetVisible(true)
-					screen.right_arrow:SetVisible(true)
-				end
 			elseif (not mmenu:IsVisible()) and (#screen.backstack > 0) then
 				backbutton:SetVisible(true)
-				if TARDIS:GetSetting("visual_gui_enabled")
-				then
-					screen.left_arrow:SetVisible(false)
-					screen.right_arrow:SetVisible(false)
-				end
 			end
 		end
 	end
