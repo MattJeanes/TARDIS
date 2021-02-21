@@ -286,34 +286,16 @@ local function new_virtual_console(self,ext,int,frame,screen)
 
 	-- toolbar
 
-	local toolbar_scale = 0.2
-	local toolbar_button_scale = 0.75
-	local toolbar_color = Color(1, 1, 100, 200)
+	local toolbar_scale = 0.15
+	local toolbar_button_scale = 0.95
+	local toolbar_color = Color(1, 1, 100, 0)
 
 	local toolbar = vgui.Create("DPanel", frame)
-	toolbar:SetSize(frame:GetWide(), frame:GetTall() * toolbar_scale )
-	toolbar:SetPos(0, frame:GetTall() - toolbar:GetTall() )
+	toolbar:SetSize(frame:GetWide() * 0.5, frame:GetTall() * toolbar_scale )
+	toolbar:SetPos(frame:GetWide() * 0.25, frame:GetTall() - toolbar:GetTall())
 	toolbar:SetBackgroundColor(toolbar_color)
 
 	local toolbar_button_size = { toolbar:GetTall() * toolbar_button_scale * 2, toolbar:GetTall() * toolbar_button_scale }
-
-	local exit_popup_button = TardisScreenButton:new(toolbar)
-	exit_popup_button:SetSize(toolbar_button_size[1], toolbar_button_size[2])
-	local toolbar_button_posY = toolbar:GetTall() * 0.5 - toolbar_button_size[2] * 0.5
-	exit_popup_button:SetPos(toolbar:GetWide() * 0.5 - toolbar_button_size[1] * 0.5, toolbar_button_posY)
-	exit_popup_button:SetIsToggle(false)
-	if not screen.is3D2D
-	then
-		exit_popup_button:SetImages(theme.."i_exit.png", theme.."i_exit_on.png")
-		exit_popup_button.DoClick = function()
-			TARDIS:RemoveHUDScreen()
-		end
-	else
-		exit_popup_button:SetImages(theme.."i_popup.png", theme.."i_popup_on.png")
-		exit_popup_button.DoClick = function()
-			self:PopToScreen(screen.pagename:GetText())
-		end
-	end
 
 	local left_arrow = TardisScreenButton:new(toolbar)
 	left_arrow:SetSize(toolbar_button_size[1], toolbar_button_size[2])
@@ -439,30 +421,6 @@ local function new_virtual_console(self,ext,int,frame,screen)
 	flightcontrol:SetImages(theme.."b_flightcontrol.png")
 	flightcontrol:SetControl("flightcontrol")
 	layout:AddNewButton(flightcontrol)
-
-	local music = TardisScreenButton:new(button_panel)
-	music:SetIsToggle(false)
-	music:SetImages(theme.."b_music.png")
-	music:SetScreen(screen, "Music", self)
-	layout:AddNewButton(music)
-
-	local scanner = TardisScreenButton:new(button_panel)
-	scanner:SetIsToggle(false)
-	scanner:SetImages(theme.."b_scanner.png")
-	scanner:SetScreen(screen, "Scanner", ext)
-	layout:AddNewButton(scanner)
-
-	local coords = TardisScreenButton:new(button_panel)
-	coords:SetIsToggle(false)
-	coords:SetImages(theme.."b_coordselect.png")
-	coords:SetScreen(screen, "Destination", ext)
-	layout:AddNewButton(coords)
-
-	local settings = TardisScreenButton:new(button_panel)
-	settings:SetIsToggle(false)
-	settings:SetImages(theme.."b_settings.png")
-	settings:SetScreen(screen, "Settings", ext)
-	layout:AddNewButton(settings)
 
 	local layout_leftspace = button_panel:GetWide() - layout:GetButtonSize(1) * layout:GetCols()
 	layout:DrawButtons(layout_leftspace * 0.25)

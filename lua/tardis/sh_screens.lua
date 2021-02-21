@@ -287,7 +287,7 @@ function TARDIS:LoadScreenUI(screen)
 	local titlebar = vgui.Create("DPanel",frame)
 	if TARDIS:GetSetting("visual_gui_enabled")
 	then
-		titlebar:SetSize(frame:GetWide(), frame:GetTall() * 0.2 )
+		titlebar:SetSize(frame:GetWide(), frame:GetTall() * 0.15 )
 		titlebar:SetPos(0, frame:GetTall() - titlebar:GetTall() )
 		titlebar:SetBackgroundColor(Color(1, 1, 100, 255))
 	else
