@@ -1,5 +1,3 @@
-if SERVER then return end
-
 TARDIS:AddSetting({
 	id="visual_gui_enabled",
 	name="Visual GUI Enabled",
@@ -254,8 +252,11 @@ TARDIS:AddScreen("Visual GUI", {menu=false}, function(self,ext,int,frame,screen)
 		local scroll_size = math.floor(layout:GetCols() / 2)
 		local total_scroll = 0
 		right_arrow.DoClick = function()
-			total_scroll = total_scroll + scroll_size
-			layout:ScrollButtons(-scroll_size)
+			if total_scroll <= layout:GetCols()
+			then
+				total_scroll = total_scroll + scroll_size
+				layout:ScrollButtons(-scroll_size)
+			end
 		end
 		left_arrow.DoClick = function()
 			if total_scroll - scroll_size >= 0

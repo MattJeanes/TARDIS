@@ -121,6 +121,8 @@ function TardisScreenButton:SetPos(posX, posY)
 end
 
 function TardisScreenButton:SlowMove(x, y, relative, speed)
+	if self.moving.now then return end
+
 	local moving = {}
 	moving.now = true
 	moving.parent = self
