@@ -1,4 +1,4 @@
-
+if false then
 TARDIS:AddScreen("Classic Screensaver", {menu=false, notitle=true}, function(self,ext,int,frame,screen)
 
 	frame:SetBackgroundColor(Color(0,0,128,255))
@@ -29,3 +29,4 @@ TARDIS:AddScreen("Classic Screensaver", {menu=false, notitle=true}, function(sel
 		screen.menubutton:DoClick()
 	end
 end)
+end

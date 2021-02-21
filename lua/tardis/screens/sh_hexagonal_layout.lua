@@ -50,7 +50,6 @@ function HexagonalLayout:GetCols()
 	return self.n_cols
 end
 
-
 function HexagonalLayout:AddNewButton(screen_button)
 	screen_button:SetVisible(false)
 	table.insert(self.buttons, screen_button)
@@ -79,13 +78,20 @@ function HexagonalLayout:DrawButtons(x)
 		button:SetPos(self:GetButtonPos(i, j))
 		button:SetVisible(true)
 		button:Think()
-		button:SlowMove(offsetX, 0, true, 100)
+		button:InitiateMove(offsetX, 0, true, 100)
 	end
 end
 
 function HexagonalLayout:ScrollButtons(x)
 	for k,button in ipairs(self.buttons) do
-		button:SlowMove(x * self.dw, 0, true, 25)
+		button:InitiateMove(x * self.dw, 0, true, 50)
 	end
 end
 
+function HexagonalLayout:GetMaxButtonX()
+	local maxX = 0
+	for k,button in ipairs(self.buttons) do
+		maxX = math.max(button:GetPosX() + button:GetWide(), maxX)
+	end
+	return maxX - self.n_cols * self.button_size[1]
+end

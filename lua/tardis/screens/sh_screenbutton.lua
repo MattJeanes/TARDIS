@@ -3,7 +3,7 @@ TardisScreenButton = {}
 function TardisScreenButton:new(parent)
 	local sb = {}
 
-	sb.visible = false
+	sb.visible = true
 	sb.transparency = 0
 	sb.outside = false
 	sb.parent = parent
@@ -11,6 +11,7 @@ function TardisScreenButton:new(parent)
 	sb.icon = vgui.Create("DImageButton", parent)
 	sb.label = vgui.Create("DLabel", parent)
 	sb.label:SetColor(Color(255,255,255,0))
+	sb.label:SetText("")
 
 	sb.is_toggle = false
 	sb.icon_off = "materials/vgui/tardis-desktops/default/default_off.png"
@@ -49,7 +50,8 @@ function TardisScreenButton:new(parent)
 		if sb.moving.now and CurTime() > sb.moving.last + 0.01
 		then
 			sb.moving.move()
-			sb.icon:SetColor(Color(255,255,255, sb.transparency))
+			sb.icon:SetColor(Color(255, 255, 255, sb.transparency))
+			sb.label:SetColor(Color(0, 0, 0, sb.transparency))
 		end
 
 		local realpos = { math.min(math.max(sb.pos[1], 0), sb.parent:GetWide() - sb.size[1]),
@@ -64,10 +66,6 @@ function TardisScreenButton:new(parent)
 				or (sb.pos[1] + sb.size[1] > sb.parent:GetWide())
 				or (sb.pos[2] + sb.size[2] > sb.parent:GetTall())
 			sb.SetVisibleCustom(not sb.outside)
-		end
-		if not sb.visible
-		then
-			sb.SetVisibleCustom(false)
 		end
 		sb.Think()
 	end
@@ -116,11 +114,34 @@ function TardisScreenButton:SetSize(sizeX, sizeY)
 end
 
 function TardisScreenButton:SetPos(posX, posY)
-	self.pos = {posX, posY}
+	if posY == nil
+	then
+		self.pos = {posX, 0}
+	else
+		self.pos = {posX, posY}
+	end
 	self.ThinkInternal()
 end
 
-function TardisScreenButton:SlowMove(x, y, relative, speed)
+function TardisScreenButton:SetText(text)
+	local theme = "materials/vgui/tardis-desktops/default/"
+	if file.Exists(theme..text..".png", "GAME")
+	then
+		self:SetImages(theme..text..".png")
+	elseif file.Exists(theme..text.."_off.png", "GAME")
+	then
+		self:SetImages(theme..text.."_off.png", theme..text.."_on.png")
+	else
+		self.label:SetColor(Color(0,0,0,255))
+		self.label:SetText("    "..text)
+	end
+end
+
+function TardisScreenButton:SetFont(font)
+	self.label:SetFont(font)
+end
+
+function TardisScreenButton:InitiateMove(x, y, relative, speed)
 	if self.moving.now then return end
 
 	local moving = {}
@@ -191,6 +212,9 @@ end
 function TardisScreenButton:GetTall()
 	return self.size[2]
 end
+function TardisScreenButton:GetSize()
+	return self.size[1], self.size[2]
+end
 
 function TardisScreenButton:SetImages(off, on)
 	self.icon_off = off
@@ -213,15 +237,16 @@ end
 
 function TardisScreenButton:SetVisible(visible)
 	self.visible = visible
-	self.ThinkInternal()
+	self.icon:SetVisible(visible)
+	self.label:SetVisible(visible)
 end
 
-function TardisScreenButton:GetVisible()
+function TardisScreenButton:IsVisible()
 	return self.visible
 end
 
 function TardisScreenButton:SetTransparency(x)
-	self.icon:SetColor(Color(255,255,255,x));
+	self.transparency = x
 end
 
 function TardisScreenButton:SetControl(control)
@@ -229,6 +254,7 @@ function TardisScreenButton:SetControl(control)
 		TARDIS:Control(control)
 	end
 end
+
 function TardisScreenButton:SetPressedStateData(ext, data1, data2)
 	if data2 == nil
 	then
@@ -239,5 +265,11 @@ function TardisScreenButton:SetPressedStateData(ext, data1, data2)
 		self.Think = function()
 			self:SetPressed(ext:GetData(data1) or ext:GetData(data2))
 		end
+	end
+end
+
+function TardisScreenButton:SetScreen(oldscreen, newscreen, tardis)
+	self.DoClick = function()
+	--	tardis:SwitchScreen(oldscreen, TARDIS:GetScreenByName(newscreen))
 	end
 end
