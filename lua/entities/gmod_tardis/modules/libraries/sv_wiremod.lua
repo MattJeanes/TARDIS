@@ -28,10 +28,9 @@ function ENT:AddWireOutput(name, desc, type)
 end
 
 --Hooks
-if WireLib then
-	function ENT:TriggerInput(name, value)
-		self:CallHook("WireInput", name, value)
-	end
+function ENT:TriggerInput(name, value)
+	if not WireLib then return end
+	self:CallHook("OnWireInput", name, value)
 end
 
 function ENT:TriggerWireOutput(name, value)
