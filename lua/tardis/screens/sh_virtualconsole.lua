@@ -383,8 +383,7 @@ local function new_virtual_console(self,ext,int,frame,screen)
 	flightcontrol:SetControl("flightcontrol")
 	layout:AddNewButton(flightcontrol)
 
-	local layout_leftspace = frame:GetWide() - layout:GetButtonSize(1) * layout:GetCols()
-	layout:DrawButtons(layout_leftspace * 0.25)
+	layout:DrawButtons()
 
 	layout.scroll_size = math.max(1, math.floor(layout:GetCols() / 2))
 	layout.max_scroll = layout:GetMaxScrollX()

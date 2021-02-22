@@ -33,8 +33,8 @@ end
 
 function HexagonalLayout:GetButtonPos(i, j)
 	local px = v3 * self.gap_scale * self.button_side_length / 2
-	px = px + self.dw * ((i + 1) % 2 + 2 * (j - 1))
-	local py = self.gap_scale * self.button_side_length + (i - 1) * self.dh
+	px = px + self.dw * (j % 2 + 2 * (i - 1))
+	local py = self.gap_scale * self.button_side_length + (j - 1) * self.dh
 	return px,py
 end
 
@@ -55,30 +55,50 @@ function HexagonalLayout:AddNewButton(screen_button)
 	table.insert(self.buttons, screen_button)
 end
 
-function HexagonalLayout:DrawButtons(x)
+function HexagonalLayout:DrawButtons()
 	local m = self.n_cols
 	local n = self.n_rows
-	local offsetX = x or 0
-	local i = -1
-	local j = 1
-	for k,button in ipairs(self.buttons) do
-		i = i + 2
-		if i > n
+	local i = 1 -- cols
+	local j = 0 -- rows
+	local maxX = 0
+
+	for k,button in ipairs(self.buttons)
+	do
+		j = j + 2
+		if j > n
 		then
-			if (i % 2) == 0
+			if (j % 2) == 1
 			then
-				j = j + 1
-				i = 1
+				j = 2
+				i = i + 1
 			else
-				i = 2
+				j = 1
 			end
 		end
+		print(i.." "..j)
 
 		button:SetSize(self:GetButtonSize())
 		button:SetPos(self:GetButtonPos(i, j))
 		button:SetVisible(true)
 		button:Think()
-		button:InitiateMove(offsetX, 0, true, 100)
+		maxX = math.max(button:GetPosX() + button:GetWide(), maxX)
+
+	end
+
+	maxX = maxX + 0.5 * v3 * self.gap_scale * self.button_side_length
+	local unused = self.screen_width - maxX
+
+	local offsetX = self.screen_width - self.button_side_length * (2 + v3 * self.gap_scale)
+
+	if unused > 0
+	then
+		offsetX = unused
+	else
+		offsetX = offsetX % self.dw
+	end
+
+	for k,button in ipairs(self.buttons) do
+		button:InitiateMove(0.5 * offsetX, 0, true, 100)
 	end
 end
 
