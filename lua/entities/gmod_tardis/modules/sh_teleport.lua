@@ -264,12 +264,18 @@ if SERVER then
 
 	ENT:AddWireInput("Demat", "Dematerialise the TARDIS")
 	ENT:AddWireInput("Mat", "Materialise the TARDIS")
+	ENT:AddWireInput("Pos", "X,Y,Z: Teleport position", "VECTOR")
+	ENT:AddWireInput("Ang", "X,Y,Z: Teleport angle", "ANGLE")
 
 	ENT:AddHook("OnWireInput","teleport",function (self, name, value)
 		if name == "Demat" and value >= 1 then
 			self:Demat()
 		elseif name == "Mat" and value >= 1 then
 			self:Mat()
+		elseif name == "Pos" then
+			self:SetData("demat-pos",value,true)
+		elseif name == "Ang" then
+			self:SetData("demat-ang",value,true)
 		end
 	end)
 	
