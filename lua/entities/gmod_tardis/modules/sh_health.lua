@@ -28,6 +28,9 @@ TARDIS:AddSetting({
 
 ENT:AddHook("Initialize","health-init",function(self)
 	self:SetData("health-val", TARDIS:GetSetting("health-max"), true)
+	if SERVER and WireLib then
+		self:TriggerWireOutput("Health", self:GetHealth())
+	end
 end)
 
 function ENT:ChangeHealth(newhealth)
@@ -43,12 +46,12 @@ function ENT:ChangeHealth(newhealth)
 		newhealth = 0
 		if newhealth == 0 and not (newhealth == oldhealth) then
 			self:CallHook("OnHealthDepleted")
-			self.interior:CallHook("OnHealthDepleted")
+			if self.interior then self.interior:CallHook("OnHealthDepleted") end
 		end
 	end
 	self:SetData("health-val", newhealth, true)
 	self:CallHook("OnHealthChange", newhealth, oldhealth)
-	self.interior:CallHook("OnHealthChange", newhealth, oldhealth)
+	if self.interior then self.interior:CallHook("OnHealthChange", newhealth, oldhealth) end
 end
 
 function ENT:GetHealth()
@@ -82,6 +85,8 @@ if SERVER then
 	cvars.AddChangeCallback("tardis2_damage", function(cvname, oldvalue, newvalue)
 	   TARDIS:SetSetting("health-enabled", tobool(newvalue), true)
 	end, "UpdateOnChange")
+
+	ENT:AddWireOutput("Health", "TARDIS Health")
 
 	function ENT:Explode()
 		local explode = ents.Create("env_explosion")
@@ -264,6 +269,10 @@ if SERVER then
 		self:SendMessage("health-networking", function()
 			net.WriteInt(health, 32)
 		end)
+	end)
+
+	ENT:AddHook("OnHealthChange", "wiremod", function (self)
+		self:TriggerWireOutput("Health",self:GetHealth())
 	end)
 
 	ENT:AddHook("OnHealthDepleted", "death", function(self)
