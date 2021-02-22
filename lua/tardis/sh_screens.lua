@@ -287,7 +287,7 @@ function TARDIS:LoadScreenUI(screen)
 	local titlebar = vgui.Create("DPanel",frame)
 	if TARDIS:GetSetting("visual_gui_enabled")
 	then
-		titlebar:SetSize(frame:GetWide(), frame:GetTall() * 0.15 )
+		titlebar:SetSize(frame:GetWide(), frame:GetTall() * 0.15)
 		titlebar:SetPos(0, frame:GetTall() - titlebar:GetTall() )
 		titlebar:SetBackgroundColor(Color(1, 1, 100, 255))
 	else
@@ -421,8 +421,11 @@ function TARDIS:LoadScreenUI(screen)
 	menubutton:SetText("Menu")
 	menubutton:SetFont("TARDIS-Default")
 	menubutton.DoClick = function(self)
-		if not ((not IsValid(screen.curscreen)) and mmenu:IsVisible()) then
+		if IsValid(screen.curscreen) or not mmenu:IsVisible() then
 			mmenu:SetVisible(not mmenu:IsVisible())
+			if IsValid(screen.curscreen) then
+				screen.curscreen:SetVisible(not mmenu:IsVisible())
+			end
 			if TARDIS:GetSetting("visual_gui_enabled")
 			then
 				screen.left_arrow:SetVisible(mmenu:IsVisible())
@@ -507,14 +510,14 @@ function TARDIS:LoadButtons(screen, frame, func, isvgui)
 		layout.scroll_size = math.floor(layout:GetCols() / 2)
 		layout.total_scroll = 0
 		screen.right_arrow.DoClick = function()
-			if layout.total_scroll <= layout:GetMaxButtonX()
+			if layout.total_scroll <= layout:GetMaxButtonX() and not screen.left_arrow:IsPressed()
 			then
 				layout.total_scroll = layout.total_scroll + layout.scroll_size
 				layout:ScrollButtons(-layout.scroll_size)
 			end
 		end
 		screen.left_arrow.DoClick = function()
-			if layout.total_scroll >= layout.scroll_size
+			if layout.total_scroll >= layout.scroll_size and not screen.right_arrow:IsPressed()
 			then
 				layout.total_scroll = layout.total_scroll - layout.scroll_size
 				layout:ScrollButtons(layout.scroll_size)

@@ -18,6 +18,7 @@ function TardisScreenButton:new(parent)
 	sb.icon_on = "materials/vgui/tardis-desktops/default/default_on.png"
 
 	sb.icon:SetImage(sb.icon_off)
+	sb.on = false
 	sb.pos = {0, 0}
 	sb.size = {10, 10}
 
@@ -268,8 +269,6 @@ function TardisScreenButton:SetPressedStateData(ext, data1, data2)
 	end
 end
 
-function TardisScreenButton:SetScreen(oldscreen, newscreen, tardis)
-	self.DoClick = function()
-	--	tardis:SwitchScreen(oldscreen, TARDIS:GetScreenByName(newscreen))
-	end
+function TardisScreenButton:IsPressed()
+	return self.on
 end
