@@ -41,7 +41,9 @@ e2function number entity:t2Demat(vector pos)
 end
 
 e2function number entity:t2Mat()
-	return this:Mat()
+	local ret
+	this:Mat(function(result) ret = result end)
+	return ret
 end
 
 e2function number entity:t2SetDestination(vector pos, angle ang)
