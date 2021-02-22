@@ -88,10 +88,10 @@ function HexagonalLayout:ScrollButtons(x)
 	end
 end
 
-function HexagonalLayout:GetMaxButtonX()
+function HexagonalLayout:GetMaxScrollX()
 	local maxX = 0
 	for k,button in ipairs(self.buttons) do
 		maxX = math.max(button:GetPosX() + button:GetWide(), maxX)
 	end
-	return maxX - self.n_cols * self.button_size[1]
+	return 1 + math.floor(maxX / self.dw) - self.n_cols * 2
 end

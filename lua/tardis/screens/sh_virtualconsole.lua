@@ -284,33 +284,6 @@ local function new_virtual_console(self,ext,int,frame,screen)
 	background:SetImage(theme.."i_background3.png")
 	background:SetSize( frame:GetWide(), frame:GetTall() )
 
-	-- toolbar
-
-	local toolbar_scale = 0.15
-	local toolbar_button_scale = 0.95
-	local toolbar_color = Color(1, 1, 100, 0)
-
-	local toolbar = vgui.Create("DPanel", frame)
-	toolbar:SetSize(frame:GetWide() * 0.5, frame:GetTall() * toolbar_scale )
-	toolbar:SetPos(frame:GetWide() * 0.25, frame:GetTall() - toolbar:GetTall())
-	toolbar:SetBackgroundColor(toolbar_color)
-
-	local toolbar_button_size = { toolbar:GetTall() * toolbar_button_scale * 2, toolbar:GetTall() * toolbar_button_scale }
-
-	local left_arrow = TardisScreenButton:new(toolbar)
-	left_arrow:SetSize(toolbar_button_size[1], toolbar_button_size[2])
-	left_arrow:SetPos( toolbar:GetWide() * 0.2 - toolbar_button_size[1] * 0.5, toolbar_button_posY)
-	left_arrow:SetIsToggle(false)
-	left_arrow:SetImages(theme.."i_arrow_left.png", theme.."i_arrow_left_on.png")
-
-	local right_arrow = TardisScreenButton:new(toolbar)
-	right_arrow:SetSize(toolbar_button_size[1], toolbar_button_size[2])
-	right_arrow:SetPos( toolbar:GetWide() * 0.8 - toolbar_button_size[1] * 0.5, toolbar_button_posY)
-	right_arrow:SetIsToggle(false)
-	right_arrow:SetImages(theme.."i_arrow_right.png", theme.."i_arrow_right_on.png")
-
-	-- button panel
-
 	local layout_rows
 	if screen.is3D2D
 	then
@@ -413,25 +386,36 @@ local function new_virtual_console(self,ext,int,frame,screen)
 	local layout_leftspace = frame:GetWide() - layout:GetButtonSize(1) * layout:GetCols()
 	layout:DrawButtons(layout_leftspace * 0.25)
 
-	local scroll_size = math.floor(layout:GetCols() / 2)
-	local total_scroll = 0
-	right_arrow.DoClick = function()
-		if total_scroll <= layout:GetMaxButtonX()
-		then
-			total_scroll = total_scroll + scroll_size
-			layout:ScrollButtons(-scroll_size)
+	layout.scroll_size = math.max(1, math.floor(layout:GetCols() / 2))
+	layout.max_scroll = layout:GetMaxScrollX()
+	layout.total_scroll = 0
+
+	frame.Think = function()
+		screen.left_arrow:SetVisible(true)
+		screen.right_arrow:SetVisible(true)
+		screen.right_arrow.DoClick = function()
+			if layout.total_scroll <= layout.max_scroll
+				and not screen.left_arrow:IsPressed()
+				and not screen.right_arrow:IsPressed()
+			then
+				layout.total_scroll = layout.total_scroll + layout.scroll_size
+				layout:ScrollButtons(-layout.scroll_size)
+			end
+		end
+		screen.left_arrow.DoClick = function()
+			if layout.total_scroll - layout.scroll_size >= 0
+				and not screen.right_arrow:IsPressed()
+				and not screen.left_arrow:IsPressed()
+			then
+				layout.total_scroll = layout.total_scroll - layout.scroll_size
+				layout:ScrollButtons(layout.scroll_size)
+			end
 		end
 	end
-	left_arrow.DoClick = function()
-		if total_scroll >= scroll_size
-		then
-			total_scroll = total_scroll - scroll_size
-			layout:ScrollButtons(scroll_size)
-		end
-	end
+
 end
 
-TARDIS:AddScreen("Virtual Console", {menu=false}, function(self,ext,int,frame,screen)
+TARDIS:AddScreen("Console", {menu=false}, function(self,ext,int,frame,screen)
 	if TARDIS:GetSetting("visual_gui_enabled")
 	then
 		new_virtual_console(self,ext,int,frame,screen)

@@ -80,9 +80,9 @@ function TardisScreenButton:new(parent)
 	sb.ThinkInternal()
 
 	sb.icon.DoClick = function()
-		sb.DoClick()
 		if sb.is_toggle
 		then
+			sb.DoClick()
 			sb.on = not sb.on
 			if sb.toggle_images
 			then
@@ -93,9 +93,13 @@ function TardisScreenButton:new(parent)
 				end
 			end
 		else
-			sb.on = true
-			sb.icon:SetImage(sb.icon_on)
-			sb.click_end_time = CurTime() + 1
+			if not sb.on
+			then
+				sb.DoClick()
+				sb.on = true
+				sb.icon:SetImage(sb.icon_on)
+				sb.click_end_time = CurTime() + 0.5
+			end
 		end
 	end
 	sb.label.DoClick = sb.icon.DoClick

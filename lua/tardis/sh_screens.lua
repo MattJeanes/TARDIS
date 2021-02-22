@@ -135,6 +135,11 @@ function TARDIS:SwitchScreen(screen,newscreen)
 		screen.pagename:DoLayout()
 		if IsValid(screen.mmenu) then
 			screen.mmenu:SetVisible(false)
+			if TARDIS:GetSetting("visual_gui_enabled")
+			then
+				screen.left_arrow:SetVisible(false)
+				screen.right_arrow:SetVisible(false)
+			end
 		end
 	end
 end
@@ -159,6 +164,7 @@ function TARDIS:PopScreen(screen,all)
 			then
 				screen.left_arrow:SetVisible(true)
 				screen.right_arrow:SetVisible(true)
+				screen.RestoreHexLayout()
 			end
 		elseif all then
 			self:PopScreen(screen,all)
@@ -324,25 +330,6 @@ function TARDIS:LoadScreenUI(screen)
 	end
 	screen.main=main
 
-	screen.screens={}
-	local ext=screen.ext
-	local int=screen.int
-	for k,v in pairs(screens) do
-		if (v[1].intonly and (not IsValid(int))) or
-			(v[1].menu==false and (not (IsValid(ext) and IsValid(int))))
-		then
-			continue
-		end
-		local frame = vgui.Create("DPanel",main)
-		frame:SetVisible(false)
-		frame:SetSize(main:GetSize())
-		frame:SetPos(0,0)
-		frame._name=k
-		v[2](self,ext,int,frame,screen)
-		table.insert(screen.screens,{k,frame})
-	end
-	table.SortByMember(screen.screens,1,true)
-
 	local mmenu = vgui.Create("DPanel",main)
 	mmenu:SetSize(main:GetSize())
 	mmenu:SetPos(0,0)
@@ -381,9 +368,6 @@ function TARDIS:LoadScreenUI(screen)
 		left_arrow:SetPos(titlebar:GetWide() * 0.3 - titlebar.button_size, titlebar.button_posY)
 		left_arrow:SetIsToggle(false)
 		left_arrow:SetText("left")
-		left_arrow.Think = function()
-			left_arrow:SetVisible(mmenu:IsVisible())
-		end
 		screen.left_arrow = left_arrow
 
 		local right_arrow = TardisScreenButton:new(titlebar)
@@ -391,9 +375,6 @@ function TARDIS:LoadScreenUI(screen)
 		right_arrow:SetPos(titlebar:GetWide() * 0.7 - titlebar.button_size, titlebar.button_posY)
 		right_arrow:SetIsToggle(false)
 		right_arrow:SetText("right")
-		right_arrow.Think = function()
-			right_arrow:SetVisible(mmenu:IsVisible())
-		end
 		screen.right_arrow = right_arrow
 	else
 		menubutton = vgui.Create("DButton", titlebar)
@@ -430,6 +411,10 @@ function TARDIS:LoadScreenUI(screen)
 			then
 				screen.left_arrow:SetVisible(mmenu:IsVisible())
 				screen.right_arrow:SetVisible(mmenu:IsVisible())
+				if mmenu:IsVisible()
+				then
+					screen.RestoreHexLayout()
+				end
 			end
 			pagename:SetText("")
 			if mmenu:IsVisible() and backbutton:IsVisible() then
@@ -454,6 +439,25 @@ function TARDIS:LoadScreenUI(screen)
 			self:PopToScreen(screen.pagename:GetText())
 		end
 	end
+
+	screen.screens={}
+	local ext=screen.ext
+	local int=screen.int
+	for k,v in pairs(screens) do
+		if (v[1].intonly and (not IsValid(int))) or
+			(v[1].menu==false and (not (IsValid(ext) and IsValid(int))))
+		then
+			continue
+		end
+		local frame = vgui.Create("DPanel",main)
+		frame:SetVisible(false)
+		frame:SetSize(main:GetSize())
+		frame:SetPos(0,0)
+		frame._name=k
+		v[2](self,ext,int,frame,screen)
+		table.insert(screen.screens,{k,frame})
+	end
+	table.SortByMember(screen.screens,1,true)
 
 	self:LoadButtons(screen, mmenu, function(parent)
 		local buttons={}
@@ -507,23 +511,34 @@ function TARDIS:LoadButtons(screen, frame, func, isvgui)
 		local layout_leftspace = frame:GetWide() - layout:GetButtonSize(1) * layout:GetCols()
 		layout:DrawButtons(layout_leftspace * 0.25)
 
-		layout.scroll_size = math.floor(layout:GetCols() / 2)
+		layout.scroll_size = math.max(1, math.floor(layout:GetCols() / 2))
 		layout.total_scroll = 0
-		screen.right_arrow.DoClick = function()
-			if layout.total_scroll <= layout:GetMaxButtonX() and not screen.left_arrow:IsPressed()
+		layout.max_scroll = layout:GetMaxScrollX()
+
+		local DoClickRight = function()
+			if layout.total_scroll + layout.scroll_size <= layout.max_scroll
+				and not screen.left_arrow:IsPressed()
+				and not screen.right_arrow:IsPressed()
 			then
 				layout.total_scroll = layout.total_scroll + layout.scroll_size
 				layout:ScrollButtons(-layout.scroll_size)
 			end
 		end
-		screen.left_arrow.DoClick = function()
-			if layout.total_scroll >= layout.scroll_size and not screen.right_arrow:IsPressed()
+		local DoClickLeft = function()
+			if layout.total_scroll - layout.scroll_size >= 0
+				and not screen.right_arrow:IsPressed()
+				and not screen.left_arrow:IsPressed()
 			then
 				layout.total_scroll = layout.total_scroll - layout.scroll_size
 				layout:ScrollButtons(layout.scroll_size)
 			end
 		end
 
+		screen.RestoreHexLayout = function()
+			screen.left_arrow.DoClick = DoClickLeft
+			screen.right_arrow.DoClick = DoClickRight
+		end
+		screen.RestoreHexLayout()
 	else
 		local pages={}
 		local page,spacew,spaceh
