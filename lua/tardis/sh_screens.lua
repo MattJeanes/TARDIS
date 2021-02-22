@@ -448,18 +448,17 @@ function TARDIS:LoadScreenUI(screen)
 	local ext=screen.ext
 	local int=screen.int
 	for k,v in pairs(screens) do
-		if (v[1].intonly and (not IsValid(int))) or
-			(v[1].menu==false and (not (IsValid(ext) and IsValid(int))))
+		if not ((v[1].intonly and (not IsValid(int)))
+			or (v[1].menu==false and (not (IsValid(ext) and IsValid(int)))))
 		then
-			continue
+			local frame = vgui.Create("DPanel",main)
+			frame:SetVisible(false)
+			frame:SetSize(main:GetSize())
+			frame:SetPos(0,0)
+			frame._name=k
+			v[2](self,ext,int,frame,screen)
+			table.insert(screen.screens,{k,frame})
 		end
-		local frame = vgui.Create("DPanel",main)
-		frame:SetVisible(false)
-		frame:SetSize(main:GetSize())
-		frame:SetPos(0,0)
-		frame._name=k
-		v[2](self,ext,int,frame,screen)
-		table.insert(screen.screens,{k,frame})
 	end
 	table.SortByMember(screen.screens,1,true)
 
