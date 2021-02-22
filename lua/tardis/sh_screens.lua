@@ -276,6 +276,10 @@ concommand.Add("tardis_toggleui", function()
 end)
 
 function TARDIS:LoadScreenUI(screen)
+	local background_img = TARDIS.visualgui_theme_basefolder
+	background_img = background_img..TARDIS:GetSetting("visual_gui_theme")
+	background_img = background_img.."/background.png"
+
 	local frame = vgui.Create("DPanel", screen)
 	frame:SetSize(screen:GetWide() - screen.gap2, screen:GetTall() - screen.gap2)
 	screen.frame=frame
@@ -286,7 +290,7 @@ function TARDIS:LoadScreenUI(screen)
 	then
 		frame:SetBackgroundColor(Color(0,0,0,255))
 		local frame_background=vgui.Create("DImage", frame)
-		frame_background:SetImage("materials/vgui/tardis-desktops/default/i_background3.png")
+		frame_background:SetImage(background_img)
 		frame_background:SetSize( frame:GetWide(), frame:GetTall() )
 	end
 
@@ -335,7 +339,7 @@ function TARDIS:LoadScreenUI(screen)
 	mmenu:SetPos(0,0)
 	mmenu:SetBackgroundColor(Color(0,0,0,255))
 	local mmenu_background=vgui.Create("DImage", mmenu)
-	mmenu_background:SetImage("materials/vgui/tardis-desktops/default/i_background3.png")
+	mmenu_background:SetImage(background_img)
 	mmenu_background:SetSize( mmenu:GetWide(), mmenu:GetTall() )
 	screen.mmenu=mmenu
 
@@ -358,7 +362,7 @@ function TARDIS:LoadScreenUI(screen)
 
 		exitpopup_button = TardisScreenButton:new(titlebar)
 		exitpopup_button:SetSize(titlebar.button_size * 2, titlebar.button_size)
-		exitpopup_button:SetPos(titlebar:GetWide() - titlebar.button_size, titlebar.button_posY)
+		exitpopup_button:SetPos(titlebar:GetWide() * 0.95 - titlebar.button_size, titlebar.button_posY)
 		exitpopup_button:SetIsToggle(false)
 
 		local left_arrow, right_arrow
@@ -511,24 +515,20 @@ function TARDIS:LoadButtons(screen, frame, func, isvgui)
 		layout:DrawButtons()
 
 		layout.scroll_size = math.max(1, math.floor(layout:GetCols() / 2))
-		layout.total_scroll = 0
-		layout.max_scroll = layout:GetMaxScrollX()
 
 		local DoClickRight = function()
-			if layout.total_scroll + layout.scroll_size <= layout.max_scroll
+			if layout:CanMoveLeft()
 				and not screen.left_arrow:IsPressed()
 				and not screen.right_arrow:IsPressed()
 			then
-				layout.total_scroll = layout.total_scroll + layout.scroll_size
 				layout:ScrollButtons(-layout.scroll_size)
 			end
 		end
 		local DoClickLeft = function()
-			if layout.total_scroll - layout.scroll_size >= 0
+			if layout:CanMoveRight()
 				and not screen.right_arrow:IsPressed()
 				and not screen.left_arrow:IsPressed()
 			then
-				layout.total_scroll = layout.total_scroll - layout.scroll_size
 				layout:ScrollButtons(layout.scroll_size)
 			end
 		end

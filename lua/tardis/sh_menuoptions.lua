@@ -29,25 +29,26 @@ if CLIENT then
 			DLabel2:SetText("TARDIS Interior:")
 			panel:AddItem(DLabel2)
 
-			local comboBox = vgui.Create("DComboBox")
-			comboBox:SetText("Interior")
+			local interior_combobox = vgui.Create("DComboBox")
+			interior_combobox:SetText("Interior")
 			for k,v in pairs(TARDIS:GetInteriors()) do
-				if v.Base != true then
-					v.OptionID=comboBox:AddChoice(v.Name,v.ID)
+				if v.Base != true
+				then
+					v.OptionID=interior_combobox:AddChoice(v.Name,v.ID)
 				end
 			end
 			local selectedinterior=TARDIS:GetSetting("interior","default")
 			for k,v in pairs(TARDIS:GetInteriors()) do
 				if selectedinterior==v.ID then
-					comboBox:ChooseOption(v.OptionID)
-					comboBox:SetText(v.Name)
+					interior_combobox:ChooseOption(v.OptionID)
+					interior_combobox:SetText(v.Name)
 				end
 			end
-			comboBox.OnSelect = function(panel,index,value,data)
+			interior_combobox.OnSelect = function(panel,index,value,data)
 				TARDIS:SetSetting("interior",data,true)
 				LocalPlayer():ChatPrint("TARDIS interior changed. Respawn or repair the TARDIS for changes to apply.")
 			end
-			panel:AddItem(comboBox)
+			panel:AddItem(interior_combobox)
 
 			local visual_gui_toggle = vgui.Create("DCheckBoxLabel")
 			visual_gui_toggle:SetText("Enable new visual GUI")
@@ -93,13 +94,42 @@ if CLIENT then
 			end
 			panel:AddItem(visual_gui_popup_numrows)
 
-			local visual_gui_controls = vgui.Create("DCheckBoxLabel")
-			visual_gui_controls:SetText("Enable controls in the visual GUI")
-			visual_gui_controls:SetValue(TARDIS:GetSetting("visual_gui_controls"))
-			function visual_gui_controls:OnChange(val)
-				TARDIS:SetSetting("visual_gui_controls", val)
+			local DLabel4 = vgui.Create( "DLabel" )
+			DLabel4:SetText("TARDIS Visual GUI Theme:")
+			panel:AddItem(DLabel4)
+
+			local visual_gui_theme = vgui.Create("DComboBox")
+			visual_gui_theme:SetText("Visual GUI Theme")
+			local themes = {}
+			local theme_basefolder = TARDIS.visualgui_theme_basefolder
+			local files, folders = file.Find(theme_basefolder.."*", "GAME", "nameasc")
+			for k,folder in pairs(folders) do
+				if file.Exists(theme_basefolder..folder.."/default_on.png", "GAME")
+					and file.Exists(theme_basefolder..folder.."/default_off.png", "GAME")
+					and file.Exists(theme_basefolder..folder.."/background.png", "GAME")
+					and file.Exists(theme_basefolder..folder.."/theme.json", "GAME")
+					-- File theme.json is not required yet, but might be needed in the future
+					-- it's easier to make all packs support it now than after they are
+					-- incompatible
+				then
+					local theme = {}
+					theme.ID = visual_gui_theme:AddChoice(folder)
+					theme.name = folder
+					table.insert(themes, theme)
+				end
 			end
-			panel:AddItem(visual_gui_controls)
+			local selectedtheme=TARDIS:GetSetting("visual_gui_theme", "default")
+			for k,theme in pairs(themes) do
+				if selectedtheme == theme.name then
+					visual_gui_theme:ChooseOption(theme.ID)
+					visual_gui_theme:SetText(theme.name)
+				end
+			end
+			visual_gui_theme.OnSelect = function(panel, index, value)
+				TARDIS:SetSetting("visual_gui_theme", value)
+				LocalPlayer():ChatPrint("TARDIS visual GUI theme changed to "..value)
+			end
+			panel:AddItem(visual_gui_theme)
 		end)
 	end)
 else

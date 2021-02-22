@@ -75,7 +75,6 @@ function HexagonalLayout:DrawButtons()
 				j = 1
 			end
 		end
-		print(i.." "..j)
 
 		button:SetSize(self:GetButtonSize())
 		button:SetPos(self:GetButtonPos(i, j))
@@ -108,10 +107,18 @@ function HexagonalLayout:ScrollButtons(x)
 	end
 end
 
-function HexagonalLayout:GetMaxScrollX()
+function HexagonalLayout:CanMoveLeft()
 	local maxX = 0
 	for k,button in ipairs(self.buttons) do
 		maxX = math.max(button:GetPosX() + button:GetWide(), maxX)
 	end
-	return 1 + math.floor(maxX / self.dw) - self.n_cols * 2
+	return (maxX > self.screen_width)
+end
+
+function HexagonalLayout:CanMoveRight()
+	local minX = 0
+	for k,button in ipairs(self.buttons) do
+		minX = math.min(button:GetPosX(), minX)
+	end
+	return (minX < 0)
 end

@@ -1,3 +1,5 @@
+-- currently disabled due to visual gui implementation
+-- will be returned later
 if false then
 TARDIS:AddScreen("Classic Screensaver", {menu=false, notitle=true}, function(self,ext,int,frame,screen)
 

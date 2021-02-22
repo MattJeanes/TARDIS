@@ -12,10 +12,14 @@ function TardisScreenButton:new(parent)
 	sb.label = vgui.Create("DLabel", parent)
 	sb.label:SetColor(Color(255,255,255,0))
 	sb.label:SetText("")
+	sb.label:SetFont("TARDIS-Default")
 
 	sb.is_toggle = false
-	sb.icon_off = "materials/vgui/tardis-desktops/default/default_off.png"
-	sb.icon_on = "materials/vgui/tardis-desktops/default/default_on.png"
+
+	sb.theme_dir = TARDIS.visualgui_theme_basefolder
+	sb.theme_dir = sb.theme_dir..TARDIS:GetSetting("visual_gui_theme").."/"
+	sb.icon_off = sb.theme_dir.."default_off.png"
+	sb.icon_on = sb.theme_dir.."default_on.png"
 
 	sb.icon:SetImage(sb.icon_off)
 	sb.on = false
@@ -71,15 +75,7 @@ function TardisScreenButton:new(parent)
 		sb.Think()
 	end
 
-	sb.icon.Think = function()
-		sb.ThinkInternal()
-	end
-	sb.label.Think = function()
-		sb.ThinkInternal()
-	end
-	sb.ThinkInternal()
-
-	sb.icon.DoClick = function()
+	sb.DoClickInternal = function()
 		if sb.is_toggle
 		then
 			sb.DoClick()
@@ -102,7 +98,12 @@ function TardisScreenButton:new(parent)
 			end
 		end
 	end
-	sb.label.DoClick = sb.icon.DoClick
+
+	sb.icon.Think = sb.ThinkInternal
+	sb.label.Think = sb.ThinkInternal
+	sb.icon.DoClick = sb.DoClickInternal
+	sb.label.DoClick = sb.DoClickInternal
+	sb.ThinkInternal()
 
 	setmetatable(sb,self)
 	self.__index = self
@@ -129,21 +130,96 @@ function TardisScreenButton:SetPos(posX, posY)
 end
 
 function TardisScreenButton:SetText(text)
-	local theme = "materials/vgui/tardis-desktops/default/"
-	if file.Exists(theme..text..".png", "GAME")
+	local theme = self.theme_dir
+	local file_on = theme.."on/"..text..".png"
+	local file_off = theme.."off/"..text..".png"
+
+	if file.Exists(file_on, "GAME")
+		and file.Exists(file_off, "GAME")
 	then
-		self:SetImages(theme..text..".png")
-	elseif file.Exists(theme..text.."_off.png", "GAME")
+		self:SetImages(file_off, file_on)
+	elseif file.Exists(file_off, "GAME")
 	then
-		self:SetImages(theme..text.."_off.png", theme..text.."_on.png")
+		self:SetImages(file_off)
 	else
 		self.label:SetColor(Color(0,0,0,255))
-		self.label:SetText("    "..text)
+		self.label:SetText("   "..text)
 	end
 end
 
 function TardisScreenButton:SetFont(font)
 	self.label:SetFont(font)
+end
+
+function TardisScreenButton:GetPosX()
+	return self.pos[1]
+end
+function TardisScreenButton:GetPosY()
+	return self.pos[2]
+end
+function TardisScreenButton:GetWide()
+	return self.size[1]
+end
+function TardisScreenButton:GetTall()
+	return self.size[2]
+end
+function TardisScreenButton:GetSize()
+	return self.size[1], self.size[2]
+end
+
+function TardisScreenButton:SetImages(off, on)
+	self.icon_off = off
+	self.icon_on = on or off
+	self.icon:SetImage(self.icon_off)
+end
+
+function TardisScreenButton:SetIsToggle(is_toggle)
+	self.is_toggle=is_toggle
+end
+
+function TardisScreenButton:SetPressed(on)
+	self.on = on
+	if on then
+		self.icon:SetImage(self.icon_on)
+	else
+		self.icon:SetImage(self.icon_off)
+	end
+end
+function TardisScreenButton:IsPressed()
+	return self.on
+end
+
+function TardisScreenButton:SetVisible(visible)
+	self.visible = visible
+	self.icon:SetVisible(visible)
+	self.label:SetVisible(visible)
+end
+
+function TardisScreenButton:IsVisible()
+	return self.visible
+end
+
+function TardisScreenButton:SetTransparency(x)
+	self.transparency = x
+end
+
+function TardisScreenButton:SetControl(control)
+	self.DoClick = function()
+		TARDIS:Control(control)
+	end
+end
+
+function TardisScreenButton:SetPressedStateData(ext, data1, data2)
+	if data2 == nil
+	then
+		self.Think = function()
+			self:SetPressed(ext:GetData(data1))
+		end
+	else
+		self.Think = function()
+			self:SetPressed(ext:GetData(data1) or ext:GetData(data2))
+		end
+	end
 end
 
 function TardisScreenButton:InitiateMove(x, y, relative, speed)
@@ -203,76 +279,4 @@ function TardisScreenButton:InitiateMove(x, y, relative, speed)
 		end
 	end
 	self.moving = moving
-end
-
-function TardisScreenButton:GetPosX()
-	return self.pos[1]
-end
-function TardisScreenButton:GetPosY()
-	return self.pos[2]
-end
-function TardisScreenButton:GetWide()
-	return self.size[1]
-end
-function TardisScreenButton:GetTall()
-	return self.size[2]
-end
-function TardisScreenButton:GetSize()
-	return self.size[1], self.size[2]
-end
-
-function TardisScreenButton:SetImages(off, on)
-	self.icon_off = off
-	self.icon_on = on or off
-	self.icon:SetImage(self.icon_off)
-end
-
-function TardisScreenButton:SetIsToggle(is_toggle)
-	self.is_toggle=is_toggle
-end
-
-function TardisScreenButton:SetPressed(on)
-	self.on = on
-	if on then
-		self.icon:SetImage(self.icon_on)
-	else
-		self.icon:SetImage(self.icon_off)
-	end
-end
-
-function TardisScreenButton:SetVisible(visible)
-	self.visible = visible
-	self.icon:SetVisible(visible)
-	self.label:SetVisible(visible)
-end
-
-function TardisScreenButton:IsVisible()
-	return self.visible
-end
-
-function TardisScreenButton:SetTransparency(x)
-	self.transparency = x
-end
-
-function TardisScreenButton:SetControl(control)
-	self.DoClick = function()
-		TARDIS:Control(control)
-	end
-end
-
-function TardisScreenButton:SetPressedStateData(ext, data1, data2)
-	if data2 == nil
-	then
-		self.Think = function()
-			self:SetPressed(ext:GetData(data1))
-		end
-	else
-		self.Think = function()
-			self:SetPressed(ext:GetData(data1) or ext:GetData(data2))
-		end
-	end
-end
-
-function TardisScreenButton:IsPressed()
-	return self.on
 end

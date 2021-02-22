@@ -275,13 +275,14 @@ local function old_virtual_console(self,ext,int,frame,screen)
 end
 
 local function new_virtual_console(self,ext,int,frame,screen)
-	local theme = "materials/vgui/tardis-desktops/default/"
 	frame:SetBackgroundColor(Color(0,0,0))
 
 	--background
 
 	local background=vgui.Create("DImage", frame)
-	background:SetImage(theme.."i_background3.png")
+	local theme = TARDIS.visualgui_theme_basefolder
+	theme = theme..TARDIS:GetSetting("visual_gui_theme").."/"
+	background:SetImage(theme.."background.png")
 	background:SetSize( frame:GetWide(), frame:GetTall() )
 
 	local layout_rows
@@ -297,116 +298,112 @@ local function new_virtual_console(self,ext,int,frame,screen)
 
 	local door = TardisScreenButton:new(frame)
 	door:SetIsToggle(true)
-	door:SetImages(theme.."l_door_closed.png", theme.."l_door_open.png")
+	door:SetText("door")
 	door:SetControl("doorcontroller")
 	door:SetPressedStateData(ext, "doorstate")
 	layout:AddNewButton(door)
 
 	local lock = TardisScreenButton:new(frame)
 	lock:SetIsToggle(true)
-	lock:SetImages(theme.."l_lock_off.png", theme.."l_lock_on.png")
+	lock:SetText("lock")
 	lock:SetControl("lockcontroller")
 	lock:SetPressedStateData(ext, "locked")
 	layout:AddNewButton(lock)
 
 	local power = TardisScreenButton:new(frame)
 	power:SetIsToggle(true)
-	power:SetImages(theme.."l_power_off.png", theme.."l_power_on.png")
+	power:SetText("power")
 	power:SetControl("power")
 	power:SetPressedStateData(ext, "power-state")
 	layout:AddNewButton(power)
 
 	local repair = TardisScreenButton:new(frame)
 	repair:SetIsToggle(true)
-	repair:SetImages(theme.."l_repair_off.png", theme.."l_repair_on.png")
+	repair:SetText("repair")
 	repair:SetControl("repair")
 	repair:SetPressedStateData(ext, "repair-primed")
 	layout:AddNewButton(repair)
 
 	local fastremat = TardisScreenButton:new(frame)
 	fastremat:SetIsToggle(true)
-	fastremat:SetImages(theme.."l_fastremat_off.png", theme.."l_fastremat_on.png")
+	fastremat:SetText("fast_remat")
 	fastremat:SetControl("fastremat")
 	fastremat:SetPressedStateData(ext, "demat-fast")
 	layout:AddNewButton(fastremat)
 
 	local throttle = TardisScreenButton:new(frame)
 	throttle:SetIsToggle(true)
-	throttle:SetImages(theme.."l_throttle_off.png", theme.."l_throttle_on.png")
+	throttle:SetText("throttle")
 	throttle:SetControl("teleport")
 	throttle:SetPressedStateData(ext, "teleport", "vortex")
 	layout:AddNewButton(throttle)
 
 	local fastreturn = TardisScreenButton:new(frame)
 	fastreturn:SetIsToggle(false)
-	fastreturn:SetImages(theme.."b_fastreturn.png", theme.."b_fastreturn_on.png")
+	fastreturn:SetText("fast_return")
 	fastreturn:SetControl("fastreturn")
 	layout:AddNewButton(fastreturn)
 
 	local flight = TardisScreenButton:new(frame)
 	flight:SetIsToggle(true)
-	flight:SetImages(theme.."l_flight_off.png", theme.."l_flight_on.png")
+	flight:SetText("flight")
 	flight:SetControl("flight")
 	flight:SetPressedStateData(ext, "flight")
 	layout:AddNewButton(flight)
 
 	local float = TardisScreenButton:new(frame)
 	float:SetIsToggle(true)
-	float:SetImages(theme.."l_float_off.png", theme.."l_float_on.png")
+	float:SetText("anti-gravs")
 	float:SetControl("float")
 	float:SetPressedStateData(ext, "float")
 	layout:AddNewButton(float)
 
 	local physlock = TardisScreenButton:new(frame)
 	physlock:SetIsToggle(true)
-	physlock:SetImages(theme.."l_physlock_off.png", theme.."l_physlock_on.png")
+	physlock:SetText("physlock")
 	physlock:SetControl("physbrake")
 	physlock:SetPressedStateData(ext, "physlock")
 	layout:AddNewButton(physlock)
 
 	local hads = TardisScreenButton:new(frame)
 	hads:SetIsToggle(true)
-	hads:SetImages(theme.."l_hads_off.png", theme.."l_hads_on.png")
+	hads:SetText("hads")
 	hads:SetControl("hads")
 	hads:SetPressedStateData(ext, "hads")
 	layout:AddNewButton(hads)
 
 	local destination = TardisScreenButton:new(frame)
 	destination:SetIsToggle(false)
-	destination:SetImages(theme.."b_manualselect.png")
+	destination:SetText("manual_destination_select")
 	destination:SetControl("destination")
 	layout:AddNewButton(destination)
 
 	local flightcontrol = TardisScreenButton:new(frame)
 	flightcontrol:SetIsToggle(false)
-	flightcontrol:SetImages(theme.."b_flightcontrol.png")
+	flightcontrol:SetText("flight_control")
 	flightcontrol:SetControl("flightcontrol")
 	layout:AddNewButton(flightcontrol)
 
 	layout:DrawButtons()
 
 	layout.scroll_size = math.max(1, math.floor(layout:GetCols() / 2))
-	layout.max_scroll = layout:GetMaxScrollX()
-	layout.total_scroll = 0
 
 	frame.Think = function()
 		screen.left_arrow:SetVisible(true)
 		screen.right_arrow:SetVisible(true)
 		screen.right_arrow.DoClick = function()
-			if layout.total_scroll <= layout.max_scroll
+			if layout:CanMoveLeft()
 				and not screen.left_arrow:IsPressed()
 				and not screen.right_arrow:IsPressed()
 			then
-				layout.total_scroll = layout.total_scroll + layout.scroll_size
 				layout:ScrollButtons(-layout.scroll_size)
 			end
 		end
 		screen.left_arrow.DoClick = function()
-			if layout.total_scroll - layout.scroll_size >= 0
+			if layout:CanMoveRight()
 				and not screen.right_arrow:IsPressed()
 				and not screen.left_arrow:IsPressed()
 			then
-				layout.total_scroll = layout.total_scroll - layout.scroll_size
 				layout:ScrollButtons(layout.scroll_size)
 			end
 		end
