@@ -1,0 +1,1 @@
+E2Helper.Descriptions["tardis2Get"] = "Returns exterior shell of a tardis when used on an occupant, the exterior itself, or the interior."
