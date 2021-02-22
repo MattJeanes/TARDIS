@@ -14,12 +14,12 @@ end)
 
 function ENT:MakeVehicle( Pos, Ang, Model, Class, VName, VTable )
 	local ent = ents.Create( Class )
-	if (!ent) then return NULL end
+	if not ent then return NULL end
 	
 	ent:SetModel( Model )
 	
 	-- Fill in the keyvalues if we have them
-	if ( VTable && VTable.KeyValues ) then
+	if VTable and VTable.KeyValues then
 		for k, v in pairs( VTable.KeyValues ) do
 			ent:SetKeyValue( k, v )
 		end

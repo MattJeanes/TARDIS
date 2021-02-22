@@ -21,5 +21,7 @@ ENT:AddHook("OnTakeDamage", "hads", function(self)
 end)
 
 ENT:AddHook("StopDemat","hads",function(self)
-	self:SetData("hads-triggered",false,true)
+	if self:GetData("hads-triggered",false) then
+		self:SetData("hads-triggered",false,true)
+	end
 end)
