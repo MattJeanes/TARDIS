@@ -225,6 +225,7 @@ if SERVER then
 			end)
 		end
 	end)
+
 	function ENT:StopMat()
 		self:SetBodygroup(1,1)
 		self:SetData("mat",false)
@@ -260,6 +261,17 @@ if SERVER then
 		self:SetData("demat-ang",ang,true)
 		return true
 	end
+
+	ENT:AddWireInput("Demat", "Dematerialise the TARDIS")
+	ENT:AddWireInput("Mat", "Materialise the TARDIS")
+
+	ENT:AddHook("OnWireInput","teleport",function (self, name, value)
+		if name == "Demat" and value >= 1 then
+			self:Demat()
+		elseif name == "Mat" and value >= 1 then
+			self:Mat()
+		end
+	end)
 	
 	ENT:AddHook("CanDemat", "teleport", function(self)
 		if self:GetData("teleport") or self:GetData("vortex") or (not self:GetData("power-state",false)) then
