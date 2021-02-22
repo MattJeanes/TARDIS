@@ -7,36 +7,40 @@ local outputs = outputs or {}
 
 --Methods
 
-function ENT:AddWireInput(Name, Desc, Type)
+function ENT:AddWireInput(name, desc, type)
 	if not WireLib then return end
 	local input = {
-		name = Name,
-		desc = Desc,
-		datatype = Type
+		name = name,
+		desc = desc,
+		datatype = type
 	}
 	table.insert(inputs, input)
 end
 
-function ENT:AddWireOutput(Name, Desc, Type)
+function ENT:AddWireOutput(name, desc, type)
 	if not WireLib then return end
 	local output = {
-		name = Name,
-		desc = Desc,
-		datatype = Type
+		name = name,
+		desc = desc,
+		datatype = type
 	}
 	table.insert(outputs, output)
 end
 
 --Hooks
+if WireLib then
+	function ENT:TriggerInput(name, value)
+		self:CallHook("WireInput", name, value)
+	end
+end
 
-function ENT:TriggerInput(name, value)
-	self:CallHook("WireInput", name, value)
+function ENT:TriggerWireOutput(name, value)
+	if not WireLib then return end
+	WireLib.TriggerOutput(self, name, value)
 end
 
 ENT:AddHook("Initialize", "wiremod", function(self)
 	if not WireLib then return end
-	PrintTable(inputs)
-	PrintTable(outputs)
 	local ins = {}
 	local indescs = {}
 	local intypes = {}
@@ -54,6 +58,5 @@ ENT:AddHook("Initialize", "wiremod", function(self)
 		outdescs[k] = v.desc or nil
 		outtypes[k] = v.datatype or nil
 	end
-	PrintTable(outdescs)
 	WireLib.CreateSpecialOutputs(self, outs, outtypes, outdescs)
 end)
