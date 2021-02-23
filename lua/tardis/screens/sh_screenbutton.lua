@@ -52,7 +52,7 @@ function TardisScreenButton:new(parent)
 			sb.icon:SetImage(sb.icon_off)
 			sb.on = false
 		end
-		if sb.moving.now and CurTime() > sb.moving.last + 0.01
+		if sb.moving.now and CurTime() > sb.moving.last + 0.02 - FrameTime()
 		then
 			sb.moving.move()
 			sb.icon:SetColor(Color(255, 255, 255, sb.transparency))
