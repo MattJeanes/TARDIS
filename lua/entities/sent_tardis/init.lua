@@ -1686,7 +1686,34 @@ local E2Commands = {
 			end
 		end
 		return 0
-	end
+	end,
+
+	["Flightmode"] =  function(ent,data)
+		if ent and IsValid(ent) and CheckPP(data.player,ent) then
+			if not (ent:GetClass()=="sent_tardis") then return 0 end
+			local success=ent:ToggleFlight()
+			if success then
+				return 1
+			else
+				return 0
+			end
+		end
+		return 0
+	end,
+
+	["FastReturn"] = function(ent,data)
+		if ent and IsValid(ent) and CheckPP(data.player,ent) then
+			if not (ent:GetClass()=="sent_tardis") then return 0 end
+			local success=ent:FastReturn()
+			if success then
+				return 1
+			else
+				return 0
+			end
+		else
+			return 0
+		end
+	end,
 	
 }
 
