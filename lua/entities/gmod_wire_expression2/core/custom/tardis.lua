@@ -24,6 +24,14 @@ local function getTardis(ent)
 	end
 end
 
+local function HandleE2(ent, name, ...)
+	if IsValid(getTardis(ent)) then
+		return ent:HandleE2(name, ...)
+	else
+		error("Can't call TARDIS functions on something other than a TARDIS.")
+	end
+end
+
 local function TARDIS_Phase(data,ent)
 	if ent and IsValid(ent) and CheckPP(data.player,ent) then
 		if not (ent:GetClass()=="sent_tardis") then return 0 end
@@ -148,22 +156,6 @@ local function TARDIS_Spinmode(data,ent,spinmode)
 		return ent.spinmode
 	end
 	return 0
-end
-
-local function TARDIS_SetDestination(data,ent,pos,ang)
-	if ent and IsValid(ent) and CheckPP(data.player,ent) then
-		if not (ent:GetClass()=="sent_tardis") then return 0 end
-		local pos=Vector(pos[1], pos[2], pos[3])
-		if ang then ang=Angle(ang[1], ang[2], ang[3]) end
-		if ent.invortex then
-			ent:SetDestination(pos,ang)
-			return 1
-		else
-			return 0
-		end
-	else
-		return 0
-	end
 end
 
 local function TARDIS_FastReturn(data,ent)
@@ -405,12 +397,12 @@ e2function entity entity:tardisGet()
 	return getTardis(this)
 end
 
-e2function number entity:tardisDemat(vector pos)
-	return this:HandleE2("Demat",self, this, pos)
+e2function number entity:tardisDemat(vector pos, angle rot)
+	return HandleE2(this, "Demat",self, pos, rot)
 end
 
-e2function number entity:tardisDemat(vector pos, angle rot)
-	return this:HandleE2("Demat",self, this, pos, rot)
+e2function number entity:tardisDemat(vector pos)
+	return HandleE2(this, "Demat",self, pos)
 end
 
 e2function number entity:tardisPhase()
@@ -442,7 +434,7 @@ e2function number entity:tardisLongflight()
 end
 
 e2function number entity:tardisMaterialise()
-	return this:HandleE2("Mat", self, this)
+	return HandleE2(this, "Mat", self)
 end
 
 e2function number entity:tardisSelfrepair()
@@ -457,12 +449,12 @@ e2function number entity:tardisSpinmode(number spinmode)
 	return TARDIS_Spinmode(self, this, spinmode)
 end
 
-e2function number entity:tardisSetDestination(vector pos)
-	return TARDIS_SetDestination(self, this, pos)
+e2function number entity:tardisSetDestination(vector pos, angle ang)
+	return HandleE2(this, "SetDestination", self, pos, ang)
 end
 
-e2function number entity:tardisSetDestination(vector pos, angle rot)
-	return TARDIS_SetDestination(self, this, pos, rot)
+e2function number entity:tardisSetDestination(vector pos)
+	return HandleE2(this, "SetDestination", self, pos)
 end
 
 e2function number entity:tardisFastReturn()

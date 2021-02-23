@@ -1630,7 +1630,7 @@ local function CheckPP(ply, ent) // Prop Protection
 end
 
 local E2Commands = {
-	["Demat"] = function(data,ent,pos,ang)
+	["Demat"] = function(ent,data,pos,ang)
 		if ent and IsValid(ent) and CheckPP(data.player,ent) then
 			if not (ent:GetClass()=="sent_tardis") then return 0 end
 			local pos=Vector(pos[1], pos[2], pos[3])
@@ -1646,7 +1646,7 @@ local E2Commands = {
 		end
 	end,
 
-	["Mat"] = function(data,ent)
+	["Mat"] = function(ent,data)
 		if ent and IsValid(ent) and CheckPP(data.player,ent) then
 			if not (ent:GetClass()=="sent_tardis") then return 0 end
 			local success=ent:LongReappear()
@@ -1657,12 +1657,28 @@ local E2Commands = {
 			end
 		end
 		return 0
+	end,
+
+	["SetDestination"] = function(ent,data,pos,ang)
+		if ent and IsValid(ent) and CheckPP(data.player,ent) then
+			if not (ent:GetClass()=="sent_tardis") then return 0 end
+			local pos=Vector(pos[1], pos[2], pos[3])
+			if ang then ang=Angle(ang[1], ang[2], ang[3]) end
+			if ent.invortex then
+				ent:SetDestination(pos,ang)
+				return 1
+			else
+				return 0
+			end
+		else
+			return 0
+		end
 	end
 }
 
 function ENT:HandleE2(cmd, ...)
 	if not E2Commands[cmd] then return end
-	return E2Commands[cmd](...)
+	return E2Commands[cmd](self,...)
 end
 
 function ENT:Think()
