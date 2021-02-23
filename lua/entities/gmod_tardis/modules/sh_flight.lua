@@ -289,6 +289,15 @@ if SERVER then
 			ph:AddVelocity(brake)
 		end
 	end)
+
+	ENT:AddHook("HandleE2", "flight", function(self, name, e2, on)
+		if not name == "Flightmode" then return end
+		if on then
+			return self:SetFlight(on) and 1 or 0
+		else
+			return self:ToggleFlight() and 1 or 0
+		end
+	end)
 else
 	TARDIS:AddSetting({
 		id="flight-externalsound",
