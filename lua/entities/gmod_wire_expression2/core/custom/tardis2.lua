@@ -52,6 +52,11 @@ e2function number entity:tardisSetDestination(vector pos)
 	return HandleE2(this, "SetDestination", self, pos)
 end
 
+e2function number entity:tardisLongflight()
+	return HandleE2(this,"Longflight",self)
+end
+
+
 e2function number entity:t2SetFlight(normal on)
 	return this:SetFlight(tobool(on))
 end

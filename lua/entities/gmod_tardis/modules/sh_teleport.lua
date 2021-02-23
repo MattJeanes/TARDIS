@@ -283,7 +283,7 @@ if SERVER then
 		if name == "Demat" then
 			local success = self:CallHook("CanDemat")
 			self:Demat(Vector(pos[1], pos[2], pos[3]), Angle(ang[1], ang[2], ang[3]))
-			return tonumber(success)
+			return success and 1 or 0
 		end
 	end)
 
@@ -291,7 +291,7 @@ if SERVER then
 		if name == "Mat" then
 			local success = self:GetData("vortex",false) and self:CallHook("CanMat")
 			self:Mat()
-			return tonumber(success) or 0
+			return success and 1 or 0
 		end
 	end)
 
@@ -299,7 +299,13 @@ if SERVER then
 		if name == "SetDestination" then
 			local pos2 = Vector(pos[1], pos[2], pos[3])
 			local ang2 = Angle(ang[1], ang[2], ang[3])
-			return self:SetDestination(pos2,ang2)
+			return self:SetDestination(pos2,ang2) and 1 or 0
+		end
+	end)
+
+	ENT:AddHook("HandleE2", "teleport_fastremat", function(self, name, e2)
+		if name == "Longflight" then
+			return self:ToggleFastRemat() and 1 or 0
 		end
 	end)
 	
