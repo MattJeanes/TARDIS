@@ -67,8 +67,7 @@ function HexagonalLayout:DrawButtons()
 		j = j + 2
 		if j > n
 		then
-			if (j % 2) == 1
-			then
+			if (j % 2) == 1 then
 				j = 2
 				i = i + 1
 			else

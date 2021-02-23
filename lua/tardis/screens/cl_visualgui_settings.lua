@@ -3,7 +3,7 @@ TARDIS:AddSetting({
 	name="Visual GUI Enabled",
 	desc="Should new visual GUI be used?",
 	section="Misc",
-	value=false,
+	value=true,
 	type="bool",
 	option=true,
 	networked=false

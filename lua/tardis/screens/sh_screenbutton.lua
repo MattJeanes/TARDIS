@@ -47,12 +47,12 @@ function TardisScreenButton:new(parent)
 		sb.transparency = math.min(sb.transparency, 255)
 		sb.transparency = math.max(sb.transparency, 0)
 		if not sb.is_toggle and sb.on
-			and CurTime() > sb.click_end_time
+			and FrameTime() > sb.click_end_time
 		then
 			sb.icon:SetImage(sb.icon_off)
 			sb.on = false
 		end
-		if sb.moving.now and CurTime() > sb.moving.last + 0.01
+		if sb.moving.now and FrameTime() > sb.moving.last + 0.01
 		then
 			sb.moving.move()
 			sb.icon:SetColor(Color(255, 255, 255, sb.transparency))
@@ -94,7 +94,7 @@ function TardisScreenButton:new(parent)
 				sb.DoClick()
 				sb.on = true
 				sb.icon:SetImage(sb.icon_on)
-				sb.click_end_time = CurTime() + 0.5
+				sb.click_end_time = FrameTime() + 0.5
 			end
 		end
 	end
@@ -228,7 +228,7 @@ function TardisScreenButton:InitiateMove(x, y, relative, speed)
 	local moving = {}
 	moving.now = true
 	moving.parent = self
-	moving.last = CurTime()
+	moving.last = FrameTime()
 	moving.speed = speed or 100
 
 	if relative
@@ -268,7 +268,7 @@ function TardisScreenButton:InitiateMove(x, y, relative, speed)
 	moving.move = function()
 		local sb = moving.parent
 		sb.pos = { sb.pos[1] + moving.step[1], sb.pos[2] + moving.step[2] }
-		moving.last = CurTime()
+		moving.last = FrameTime()
 		sb.transparency = sb.transparency + moving.transp_step
 
 		local distance = math.Distance(sb.pos[1], sb.pos[2], moving.aim[1], moving.aim[2])

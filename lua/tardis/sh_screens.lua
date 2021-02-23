@@ -316,8 +316,7 @@ function TARDIS:LoadScreenUI(screen)
 	pagename:SetFont("TARDIS-PageName")
 	pagename.DoLayout = function(self)
 		pagename:SizeToContents()
-		pagename:SetPos((titlebar:GetWide()*0.5)-(pagename:GetWide()*0.5),
-						(titlebar:GetTall()*0.5)-(pagename:GetTall()*0.5))
+		pagename:SetPos((titlebar:GetWide()*0.5)-(pagename:GetWide()*0.5), (titlebar:GetTall()*0.5)-(pagename:GetTall()*0.5))
 	end
 	pagename:SetText("")
 	pagename:DoLayout()
