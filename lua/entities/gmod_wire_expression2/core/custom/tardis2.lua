@@ -1,27 +1,22 @@
 E2Lib.RegisterExtension("tardis2", true)
 
 local function getTardis(ent)
-	if ent and IsValid(ent) then
-		if ent:GetClass()=="gmod_tardis_interior" and IsValid(ent.exterior) then
-			return ent.exterior
-		elseif ent:GetClass()=="gmod_tardis" then
-			return ent
-		elseif ent:IsPlayer() then
-			if IsValid(TARDIS:GetExteriorEnt(ent)) then
-				return TARDIS:GetExteriorEnt(ent)
-			else
-				return NULL
-			end
-		elseif ent.Base == "gmod_tardis_part" then
-			return ent.exterior
-		else
-			return NULL
-		end
+	if not IsValid(ent) then return end
+	local class = ent:GetClass()
+	if class == "gmod_tardis" or class == "sent_tardis" then
+		return ent
+	elseif class == "sent_tardis_interior" and IsValid(ent.tardis) then
+		return ent.tardis
+	elseif (class == "gmod_tardis_interior" or ent.Base == "gmod_tardis_part") and IsValid(ent.exterior) then
+		return ent.exterior
+	elseif ent:IsPlayer() and IsValid(ent.tardis) then
+		return ent.tardis.exterior or ent.tardis
+	else
+		return NULL
 	end
-	return NULL
 end
 
-e2function entity entity:t2GetTardis()
+e2function entity entity:tardisGet()
 	return getTardis(this)
 end
 
