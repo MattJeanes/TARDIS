@@ -24,21 +24,16 @@ e2function string entity:t2GetData(string id)
 	return tostring(this:GetData(id,false))
 end
 
-e2function number entity:t2Demat(vector pos, angle ang)
-	local pos2 = Vector(pos[1], pos[2], pos[3])
-	local ang2 = Angle(ang[1], ang[2], ang[3])
-	return this:Demat(pos2, ang2)
+e2function number entity:tardisDemat(vector pos, angle rot)
+	return this:HandleE2("Demat",self, this, pos, rot)
 end
 
-e2function number entity:t2Demat(vector pos)
-	local pos2 = Vector(pos[1], pos[2], pos[3])
-	return this:Demat(pos2)
+e2function number entity:tardisDemat(vector pos)
+	return this:HandleE2("Demat",self, this, pos)
 end
 
-e2function number entity:t2Mat()
-	local ret
-	this:Mat(function(result) ret = result end)
-	return ret
+e2function number entity:tardisMaterialise()
+	return this:HandleE2("Mat", self, this)
 end
 
 e2function number entity:t2SetDestination(vector pos, angle ang)

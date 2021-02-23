@@ -31,6 +31,11 @@ function ENT:HandleE2(cmd, ...)
 	return self:CallHook("HandleE2", cmd, ...)
 end
 
+function ENT:TriggerWireOutput(name, value)
+	if not WireLib then return end
+	WireLib.TriggerOutput(self, name, value)
+end
+
 --Hooks
 
 function ENT:TriggerInput(name, value)
@@ -38,10 +43,6 @@ function ENT:TriggerInput(name, value)
 	self:CallHook("OnWireInput", name, value)
 end
 
-function ENT:TriggerWireOutput(name, value)
-	if not WireLib then return end
-	WireLib.TriggerOutput(self, name, value)
-end
 
 ENT:AddHook("Initialize", "wiremod", function(self)
 	if not WireLib then return end

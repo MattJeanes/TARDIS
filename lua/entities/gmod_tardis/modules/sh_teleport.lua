@@ -278,6 +278,22 @@ if SERVER then
 			self:SetData("demat-ang",value,true)
 		end
 	end)
+
+	ENT:AddHook("HandleE2", "teleport_demat", function(self, name, e2, ent, pos, ang)
+		if name == "Demat" then
+			local success = self:CallHook("CanDemat")
+			self:Demat(Vector(pos[1], pos[2], pos[3]), Angle(ang[1], ang[2], ang[3]))
+			return tonumber(success)
+		end
+	end)
+
+	ENT:AddHook("HandleE2", "teleport_mat", function(self, name, e2)
+		if name == "Mat" then
+			local success = self:GetData("vortex",false) and self:CallHook("CanMat")
+			self:Mat()
+			return tonumber(success) or 0
+		end
+	end)
 	
 	ENT:AddHook("CanDemat", "teleport", function(self)
 		if self:GetData("teleport") or self:GetData("vortex") or (not self:GetData("power-state",false)) then
@@ -286,7 +302,7 @@ if SERVER then
 	end)
 	
 	ENT:AddHook("CanMat", "teleport", function(self)
-		if self:GetData("teleport") then
+		if self:GetData("teleport") or (not self:GetData("vortex")) then
 			return false
 		end
 	end)
