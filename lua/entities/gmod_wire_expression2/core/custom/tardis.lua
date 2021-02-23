@@ -8,38 +8,19 @@ local function CheckPP(ply, ent) // Prop Protection
 	return hook.Call("PhysgunPickup", GAMEMODE, ply, ent)
 end
 
-local function TARDIS_Get(ent)
-	if ent and IsValid(ent) then
-		if ent:GetClass()=="sent_tardis_interior" and IsValid(ent.tardis) then
-			return ent.tardis
-		elseif ent:GetClass()=="sent_tardis" then
-			return ent
-		elseif ent:IsPlayer() then
-			if IsValid(ent.tardis) then
-				return ent.tardis
-			else
-				return NULL
-			end
-		else
-			return NULL
-		end
-	end
-	return NULL
-end
-
-local function TARDIS_Teleport(data,ent,pos,ang)
-	if ent and IsValid(ent) and CheckPP(data.player,ent) then
-		if not (ent:GetClass()=="sent_tardis") then return 0 end
-		local pos=Vector(pos[1], pos[2], pos[3])
-		if ang then ang=Angle(ang[1], ang[2], ang[3]) end
-		local success=ent:Go(pos,ang)
-		if success then
-			return 1
-		else
-			return 0
-		end
+local function getTardis(ent)
+	if not IsValid(ent) then return end
+	local class = ent:GetClass()
+	if class == "gmod_tardis" or class == "sent_tardis" then
+		return ent
+	elseif class == "sent_tardis_interior" and IsValid(ent.tardis) then
+		return ent.tardis
+	elseif (class == "gmod_tardis_interior" or ent.Base == "gmod_tardis_part") and IsValid(ent.exterior) then
+		return ent.exterior
+	elseif ent:IsPlayer() and IsValid(ent.tardis) then
+		return ent.tardis.exterior or ent.tardis
 	else
-		return 0
+		return NULL
 	end
 end
 
@@ -125,19 +106,6 @@ local function TARDIS_Longflight(data,ent)
 	if ent and IsValid(ent) and CheckPP(data.player,ent) then
 		if not (ent:GetClass()=="sent_tardis") then return 0 end
 		local success=ent:ToggleLongFlight()
-		if success then
-			return 1
-		else
-			return 0
-		end
-	end
-	return 0
-end
-
-local function TARDIS_Materialise(data,ent)
-	if ent and IsValid(ent) and CheckPP(data.player,ent) then
-		if not (ent:GetClass()=="sent_tardis") then return 0 end
-		local success=ent:LongReappear()
 		if success then
 			return 1
 		else
@@ -434,15 +402,15 @@ end
 
 //set details
 e2function entity entity:tardisGet()
-	return TARDIS_Get(this)
+	return getTardis(this)
 end
 
 e2function number entity:tardisDemat(vector pos)
-	return TARDIS_Teleport(self, this, pos)
+	return this:HandleE2("Demat",self, this, pos)
 end
 
 e2function number entity:tardisDemat(vector pos, angle rot)
-	return TARDIS_Teleport(self, this, pos, rot)
+	return this:HandleE2("Demat",self, this, pos, rot)
 end
 
 e2function number entity:tardisPhase()
@@ -474,7 +442,7 @@ e2function number entity:tardisLongflight()
 end
 
 e2function number entity:tardisMaterialise()
-	return TARDIS_Materialise(self, this)
+	return this:HandleE2("Mat", self, this)
 end
 
 e2function number entity:tardisSelfrepair()

@@ -1625,6 +1625,46 @@ function ENT:TogglePower()
 	return false
 end
 
+local function CheckPP(ply, ent) // Prop Protection
+	return hook.Call("PhysgunPickup", GAMEMODE, ply, ent)
+end
+
+local E2Commands = {
+	["Demat"] = function(data,ent,pos,ang)
+		if ent and IsValid(ent) and CheckPP(data.player,ent) then
+			if not (ent:GetClass()=="sent_tardis") then return 0 end
+			local pos=Vector(pos[1], pos[2], pos[3])
+			if ang then ang=Angle(ang[1], ang[2], ang[3]) end
+			local success=ent:Go(pos,ang)
+			if success then
+				return 1
+			else
+				return 0
+			end
+		else
+			return 0
+		end
+	end,
+
+	["Mat"] = function(data,ent)
+		if ent and IsValid(ent) and CheckPP(data.player,ent) then
+			if not (ent:GetClass()=="sent_tardis") then return 0 end
+			local success=ent:LongReappear()
+			if success then
+				return 1
+			else
+				return 0
+			end
+		end
+		return 0
+	end
+}
+
+function ENT:HandleE2(cmd, ...)
+	if not E2Commands[cmd] then return end
+	return E2Commands[cmd](...)
+end
+
 function ENT:Think()
 	if self.demat or self.mat then
 		self:UpdateAlpha()
