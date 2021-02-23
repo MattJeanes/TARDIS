@@ -1673,7 +1673,21 @@ local E2Commands = {
 		else
 			return 0
 		end
+	end,
+
+	["Longflight"] = function(ent,data)
+		if ent and IsValid(ent) and CheckPP(data.player,ent) then
+			if not (ent:GetClass()=="sent_tardis") then return 0 end
+			local success=ent:ToggleLongFlight()
+			if success then
+				return 1
+			else
+				return 0
+			end
+		end
+		return 0
 	end
+	
 }
 
 function ENT:HandleE2(cmd, ...)

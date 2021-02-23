@@ -110,19 +110,6 @@ local function TARDIS_Isomorph(data,ent)
 	return 0
 end
 
-local function TARDIS_Longflight(data,ent)
-	if ent and IsValid(ent) and CheckPP(data.player,ent) then
-		if not (ent:GetClass()=="sent_tardis") then return 0 end
-		local success=ent:ToggleLongFlight()
-		if success then
-			return 1
-		else
-			return 0
-		end
-	end
-	return 0
-end
-
 local function TARDIS_Selfrepair(data,ent)
 	if ent and IsValid(ent) and CheckPP(data.player,ent) then
 		if not (ent:GetClass()=="sent_tardis") then return 0 end
@@ -430,7 +417,7 @@ e2function number entity:tardisIsomorph()
 end
 
 e2function number entity:tardisLongflight()
-	return TARDIS_Longflight(self, this)
+	return HandleE2(this,"Longflight",self)
 end
 
 e2function number entity:tardisMaterialise()
