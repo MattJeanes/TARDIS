@@ -28,9 +28,11 @@ e2function entity entity:tardisGet()
 	return getTardis(this)
 end
 
-e2function string  entity:tardisGetData(string id)
+e2function string entity:tardisGetData(string id)
 	return tostring(this:GetData(id,false))
 end
+
+//Setters and actions
 
 e2function number entity:tardisDemat(vector pos, angle rot)
 	return HandleE2(this, "Demat",self, pos, rot)
@@ -52,15 +54,18 @@ e2function number entity:tardisSetDestination(vector pos)
 	return HandleE2(this, "SetDestination", self, pos)
 end
 
+e2function number entity:tardisFastReturn()
+	return HandleE2(this, "FastReturn", self)
+end
+
 e2function number entity:tardisLongflight()
-	return HandleE2(this,"Longflight",self)
+	return HandleE2(this, "Longflight", self)
 end
 
-
-e2function number entity:t2SetFlight(normal on)
-	return this:SetFlight(tobool(on))
+e2function number entity:tardisFlightmode(normal on)
+	return HandleE2(this, "Flightmode", self, on)
 end
 
-e2function number entity:t2ToggleFlight()
-	return this:ToggleFlight()
+e2function number entity:tardisFlightmode()
+	return HandleE2(this, "Flightmode", self)
 end
