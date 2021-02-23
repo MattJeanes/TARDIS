@@ -16,35 +16,40 @@ local function getTardis(ent)
 	end
 end
 
+local function HandleE2(ent, name, ...)
+	if IsValid(getTardis(ent)) then
+		return ent:HandleE2(name, ...)
+	else
+		error("Can't call TARDIS functions on something other than a TARDIS.")
+	end
+end
+
 e2function entity entity:tardisGet()
 	return getTardis(this)
 end
 
-e2function string entity:t2GetData(string id)
+e2function string  entity:tardisGetData(string id)
 	return tostring(this:GetData(id,false))
 end
 
 e2function number entity:tardisDemat(vector pos, angle rot)
-	return this:HandleE2("Demat",self, this, pos, rot)
+	return HandleE2(this, "Demat",self, pos, rot)
 end
 
 e2function number entity:tardisDemat(vector pos)
-	return this:HandleE2("Demat",self, this, pos)
+	return HandleE2(this, "Demat",self, pos)
 end
 
 e2function number entity:tardisMaterialise()
-	return this:HandleE2("Mat", self, this)
+	return HandleE2(this, "Mat", self)
 end
 
-e2function number entity:t2SetDestination(vector pos, angle ang)
-	local pos2 = Vector(pos[1], pos[2], pos[3])
-	local ang2 = Angle(ang[1], ang[2], ang[3])
-	return this:SetDestination(pos2, ang2)
+e2function number entity:tardisSetDestination(vector pos, angle ang)
+	return HandleE2(this, "SetDestination", self, pos, ang)
 end
 
-e2function number entity:t2SetDestination(vector pos)
-	local pos2 = Vector(pos[1], pos[2], pos[3])
-	return this:SetDestination(pos2)
+e2function number entity:tardisSetDestination(vector pos)
+	return HandleE2(this, "SetDestination", self, pos)
 end
 
 e2function number entity:t2SetFlight(normal on)

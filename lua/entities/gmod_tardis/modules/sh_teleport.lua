@@ -279,7 +279,7 @@ if SERVER then
 		end
 	end)
 
-	ENT:AddHook("HandleE2", "teleport_demat", function(self, name, e2, ent, pos, ang)
+	ENT:AddHook("HandleE2", "teleport_demat", function(self, name, e2, pos, ang)
 		if name == "Demat" then
 			local success = self:CallHook("CanDemat")
 			self:Demat(Vector(pos[1], pos[2], pos[3]), Angle(ang[1], ang[2], ang[3]))
@@ -292,6 +292,14 @@ if SERVER then
 			local success = self:GetData("vortex",false) and self:CallHook("CanMat")
 			self:Mat()
 			return tonumber(success) or 0
+		end
+	end)
+
+	ENT:AddHook("HandleE2", "teleport_destination", function(self, name, e2, pos, ang)
+		if name == "SetDestination" then
+			local pos2 = Vector(pos[1], pos[2], pos[3])
+			local ang2 = Angle(ang[1], ang[2], ang[3])
+			return self:SetDestination(pos2,ang2)
 		end
 	end)
 	
