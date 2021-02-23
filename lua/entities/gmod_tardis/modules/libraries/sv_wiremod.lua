@@ -27,7 +27,12 @@ function ENT:AddWireOutput(name, desc, type)
 	table.insert(outputs, output)
 end
 
+function ENT:HandleE2(cmd, ...)
+	return self:CallHook("HandleE2", cmd, ...)
+end
+
 --Hooks
+
 function ENT:TriggerInput(name, value)
 	if not WireLib then return end
 	self:CallHook("OnWireInput", name, value)
