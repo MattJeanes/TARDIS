@@ -279,33 +279,29 @@ if SERVER then
 		end
 	end)
 
-	ENT:AddHook("HandleE2", "teleport_demat", function(self, name, e2, pos, ang)
+	ENT:AddHook("HandleE2", "teleport_args", function(self, name, e2, pos, ang)
 		if name == "Demat" then
 			local success = self:CallHook("CanDemat")
 			self:Demat(Vector(pos[1], pos[2], pos[3]), Angle(ang[1], ang[2], ang[3]))
 			return success and 1 or 0
-		end
-	end)
-
-	ENT:AddHook("HandleE2", "teleport_mat", function(self, name, e2)
-		if name == "Mat" then
-			local success = self:GetData("vortex",false) and self:CallHook("CanMat")
-			self:Mat()
-			return success and 1 or 0
-		end
-	end)
-
-	ENT:AddHook("HandleE2", "teleport_destination", function(self, name, e2, pos, ang)
-		if name == "SetDestination" then
+		elseif name == "SetDestination" then
 			local pos2 = Vector(pos[1], pos[2], pos[3])
 			local ang2 = Angle(ang[1], ang[2], ang[3])
 			return self:SetDestination(pos2,ang2) and 1 or 0
 		end
 	end)
 
-	ENT:AddHook("HandleE2", "teleport_fastremat", function(self, name, e2)
-		if name == "Longflight" then
+	ENT:AddHook("HandleE2", "teleport_noargs", function(self, name, e2)
+		if name == "Mat" then
+			local success = self:GetData("vortex",false) and self:CallHook("CanMat")
+			self:Mat()
+			return success and 1 or 0
+		elseif name == "Longflight" then
 			return self:ToggleFastRemat() and 1 or 0
+		elseif name == "FastReturn" then
+			local success = self:CallHook("CanDemat")
+			self:FastReturn()
+			return success and 1 or 0
 		end
 	end)
 	
