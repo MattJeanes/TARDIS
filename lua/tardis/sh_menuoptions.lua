@@ -107,10 +107,6 @@ if CLIENT then
 				if file.Exists(theme_basefolder..folder.."/default_on.png", "GAME")
 					and file.Exists(theme_basefolder..folder.."/default_off.png", "GAME")
 					and file.Exists(theme_basefolder..folder.."/background.png", "GAME")
-					and file.Exists(theme_basefolder..folder.."/theme.json", "GAME")
-					-- File theme.json is not required yet, but might be needed in the future
-					-- it's easier to make all packs support it now than after they are
-					-- incompatible
 				then
 					local theme = {}
 					theme.ID = visual_gui_theme:AddChoice(folder)
