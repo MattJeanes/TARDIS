@@ -28,18 +28,14 @@ e2function entity entity:tardisGet()
 	return getTardis(this)
 end
 
-e2function string entity:tardisGetData(string id)
-	return tostring(this:GetData(id,false))
-end
-
-//Setters and actions
+--Setters and actions
 
 e2function number entity:tardisDemat(vector pos, angle rot)
-	return HandleE2(this, "Demat",self, pos, rot)
+	return HandleE2(this, "Demat", self, pos, rot)
 end
 
 e2function number entity:tardisDemat(vector pos)
-	return HandleE2(this, "Demat",self, pos)
+	return HandleE2(this, "Demat", self, pos)
 end
 
 e2function number entity:tardisMaterialise()
@@ -69,3 +65,30 @@ end
 e2function number entity:tardisFlightmode()
 	return HandleE2(this, "Flightmode", self)
 end
+
+-- Data getters
+
+e2function string entity:tardisGetData(string id)
+	return tostring(this:GetData(id,false))
+end
+
+e2function number entity:tardisMoving()
+	return HandleE2(this, "GetMoving", self)
+end
+
+e2function number entity:tardisFlying()
+	return HandleE2(this, "GetFlying", self)
+end
+
+e2function number entity:tardisHealth()
+	return HandleE2(this, "GetHealth", self)
+end
+
+e2function number entity:tardisInVortex()
+	return HandleE2(this, "GetInVortex", self)
+end
+
+e2function number entity:tardisLongflighted()
+	return HandleE2(this, "GetLongflight", self)
+end
+

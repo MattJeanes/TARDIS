@@ -291,7 +291,7 @@ if SERVER then
 	end)
 
 	ENT:AddHook("HandleE2", "flight", function(self, name, e2, on)
-		if not name == "Flightmode" then return end
+		if not (name == "Flightmode") then return end
 		if on then
 			return self:SetFlight(on) and 1 or 0
 		else
