@@ -32,8 +32,7 @@ if CLIENT then
 			local interior_combobox = vgui.Create("DComboBox")
 			interior_combobox:SetText("Interior")
 			for k,v in pairs(TARDIS:GetInteriors()) do
-				if v.Base != true
-				then
+				if v.Base != true then
 					v.OptionID=interior_combobox:AddChoice(v.Name,v.ID)
 				end
 			end

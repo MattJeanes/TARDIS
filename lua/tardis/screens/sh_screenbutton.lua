@@ -35,8 +35,7 @@ function TardisScreenButton:new(parent)
 	sb.DoClick = function() end
 
 	sb.SetVisibleCustom = function(vis)
-		if vis
-		then
+		if vis then
 			sb.transparency = 255
 		else
 			sb.transparency = 0
@@ -46,14 +45,11 @@ function TardisScreenButton:new(parent)
 	sb.ThinkInternal = function()
 		sb.transparency = math.min(sb.transparency, 255)
 		sb.transparency = math.max(sb.transparency, 0)
-		if not sb.is_toggle and sb.on
-			and CurTime() > sb.click_end_time
-		then
+		if not sb.is_toggle and sb.on and CurTime() > sb.click_end_time then
 			sb.icon:SetImage(sb.icon_off)
 			sb.on = false
 		end
-		if sb.moving.now and CurTime() > sb.moving.last + 0.02 - FrameTime()
-		then
+		if sb.moving.now and CurTime() > sb.moving.last + 0.02 - FrameTime() then
 			sb.moving.move()
 			sb.icon:SetColor(Color(255, 255, 255, sb.transparency))
 			sb.label:SetColor(Color(0, 0, 0, sb.transparency))
@@ -65,8 +61,7 @@ function TardisScreenButton:new(parent)
 		sb.label:SetPos(sb.pos[1], sb.pos[2])
 		sb.icon:SetSize(sb.size[1], sb.size[2])
 		sb.label:SetSize(sb.size[1], sb.size[2])
-		if not sb.moving.now
-		then
+		if not sb.moving.now then
 			sb.outside = (sb.pos[1] < 0) or (sb.pos[2] < 0)
 				or (sb.pos[1] + sb.size[1] > sb.parent:GetWide())
 				or (sb.pos[2] + sb.size[2] > sb.parent:GetTall())
@@ -76,12 +71,10 @@ function TardisScreenButton:new(parent)
 	end
 
 	sb.DoClickInternal = function()
-		if sb.is_toggle
-		then
+		if sb.is_toggle then
 			sb.DoClick()
 			sb.on = not sb.on
-			if sb.toggle_images
-			then
+			if sb.toggle_images then
 				if sb.on then
 					sb.icon:SetImage(sb.icon_on)
 				else
@@ -89,8 +82,7 @@ function TardisScreenButton:new(parent)
 				end
 			end
 		else
-			if not sb.on
-			then
+			if not sb.on then
 				sb.DoClick()
 				sb.on = true
 				sb.icon:SetImage(sb.icon_on)
@@ -120,8 +112,7 @@ function TardisScreenButton:SetSize(sizeX, sizeY)
 end
 
 function TardisScreenButton:SetPos(posX, posY)
-	if posY == nil
-	then
+	if posY == nil then
 		self.pos = {posX, 0}
 	else
 		self.pos = {posX, posY}
@@ -134,12 +125,9 @@ function TardisScreenButton:SetText(text)
 	local file_on = theme.."on/"..text..".png"
 	local file_off = theme.."off/"..text..".png"
 
-	if file.Exists(file_on, "GAME")
-		and file.Exists(file_off, "GAME")
-	then
+	if file.Exists(file_on, "GAME") and file.Exists(file_off, "GAME") then
 		self:SetImages(file_off, file_on)
-	elseif file.Exists(file_off, "GAME")
-	then
+	elseif file.Exists(file_off, "GAME") then
 		self:SetImages(file_off)
 	else
 		self.label:SetColor(Color(0,0,0,255))
@@ -210,8 +198,7 @@ function TardisScreenButton:SetControl(control)
 end
 
 function TardisScreenButton:SetPressedStateData(ext, data1, data2)
-	if data2 == nil
-	then
+	if data2 == nil then
 		self.Think = function()
 			self:SetPressed(ext:GetData(data1))
 		end
@@ -231,8 +218,7 @@ function TardisScreenButton:InitiateMove(x, y, relative, speed)
 	moving.last = CurTime()
 	moving.speed = speed or 100
 
-	if relative
-	then
+	if relative then
 		moving.aim = { self.pos[1] + x, self.pos[2] + y }
 		moving.step = { x, y }
 	else
@@ -251,16 +237,13 @@ function TardisScreenButton:InitiateMove(x, y, relative, speed)
 
 	moving.step = { moving.step[1] * moving.speed / 1000, moving.step[2] * moving.speed / 1000 }
 	moving.transp_step = 0
-	if moving.now_outside and moving.aim_outside
-	then
+	if moving.now_outside and moving.aim_outside then
 		self.transparency = 0
 		moving.transp_step = 0
-	elseif moving.now_outside
-	then
+	elseif moving.now_outside then
 		self.transparency = 0
 		moving.transp_step = 255 * speed / 1000;
-	elseif moving.aim_outside
-	then
+	elseif moving.aim_outside then
 		self.transparency = 255
 		moving.transp_step = - 255 * speed / 1000;
 	end
@@ -272,8 +255,7 @@ function TardisScreenButton:InitiateMove(x, y, relative, speed)
 		sb.transparency = sb.transparency + moving.transp_step
 
 		local distance = math.Distance(sb.pos[1], sb.pos[2], moving.aim[1], moving.aim[2])
-		if distance <= 1
-		then
+		if distance <= 1 then
 			sb.pos = moving.aim
 			moving.now = false
 		end

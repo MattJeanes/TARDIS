@@ -63,8 +63,7 @@ TARDIS:AddControl("lockcontroller",{
 
 TARDIS:AddControl("teleport",{
 	func=function(self,ply)
-		if (self:GetData("teleport") or self:GetData("vortex"))
-		then
+		if (self:GetData("teleport") or self:GetData("vortex")) then
 			self:Mat()
 		else
 			self:Demat()
@@ -286,8 +285,7 @@ local function new_virtual_console(self,ext,int,frame,screen)
 	background:SetSize( frame:GetWide(), frame:GetTall() )
 
 	local layout_rows
-	if screen.is3D2D
-	then
+	if screen.is3D2D then
 		layout_rows = math.floor(TARDIS:GetSetting("visual_gui_screen_numrows"))
 	else
 		layout_rows = math.floor(TARDIS:GetSetting("visual_gui_popup_numrows"))
@@ -394,16 +392,14 @@ local function new_virtual_console(self,ext,int,frame,screen)
 		screen.right_arrow.DoClick = function()
 			if layout:CanMoveLeft()
 				and not screen.left_arrow:IsPressed()
-				and not screen.right_arrow:IsPressed()
-			then
+				and not screen.right_arrow:IsPressed() then
 				layout:ScrollButtons(-layout.scroll_size)
 			end
 		end
 		screen.left_arrow.DoClick = function()
 			if layout:CanMoveRight()
 				and not screen.right_arrow:IsPressed()
-				and not screen.left_arrow:IsPressed()
-			then
+				and not screen.left_arrow:IsPressed() then
 				layout:ScrollButtons(layout.scroll_size)
 			end
 		end
@@ -412,8 +408,7 @@ local function new_virtual_console(self,ext,int,frame,screen)
 end
 
 TARDIS:AddScreen("Console", {menu=false}, function(self,ext,int,frame,screen)
-	if TARDIS:GetSetting("visual_gui_enabled")
-	then
+	if TARDIS:GetSetting("visual_gui_enabled") then
 		new_virtual_console(self,ext,int,frame,screen)
 	else
 		old_virtual_console(self,ext,int,frame,screen)

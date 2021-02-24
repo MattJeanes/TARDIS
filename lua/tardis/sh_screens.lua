@@ -135,8 +135,7 @@ function TARDIS:SwitchScreen(screen,newscreen)
 		screen.pagename:DoLayout()
 		if IsValid(screen.mmenu) then
 			screen.mmenu:SetVisible(false)
-			if TARDIS:GetSetting("visual_gui_enabled")
-			then
+			if TARDIS:GetSetting("visual_gui_enabled") then
 				screen.left_arrow:SetVisible(false)
 				screen.right_arrow:SetVisible(false)
 			end
@@ -160,8 +159,7 @@ function TARDIS:PopScreen(screen,all)
 		table.remove(screen.backstack)
 		if #screen.backstack==0 then
 			screen.backbutton:SetVisible(false)
-			if TARDIS:GetSetting("visual_gui_enabled")
-			then
+			if TARDIS:GetSetting("visual_gui_enabled") then
 				screen.left_arrow:SetVisible(true)
 				screen.right_arrow:SetVisible(true)
 				screen.RestoreHexLayout()
@@ -189,8 +187,7 @@ function TARDIS:PushScreen(name,screen,f,f2)
 	)
 	if not screen.backbutton:IsVisible() then
 		screen.backbutton:SetVisible(true)
-		if TARDIS:GetSetting("visual_gui_enabled")
-		then
+		if TARDIS:GetSetting("visual_gui_enabled") then
 			screen.left_arrow:SetVisible(false)
 			screen.right_arrow:SetVisible(false)
 		end
@@ -286,8 +283,7 @@ function TARDIS:LoadScreenUI(screen)
 
 	screen.backstack={}
 
-	if TARDIS:GetSetting("visual_gui_enabled")
-	then
+	if TARDIS:GetSetting("visual_gui_enabled") then
 		frame:SetBackgroundColor(Color(0,0,0,255))
 		local frame_background=vgui.Create("DImage", frame)
 		frame_background:SetImage(background_img)
@@ -295,8 +291,7 @@ function TARDIS:LoadScreenUI(screen)
 	end
 
 	local titlebar = vgui.Create("DPanel",frame)
-	if TARDIS:GetSetting("visual_gui_enabled")
-	then
+	if TARDIS:GetSetting("visual_gui_enabled") then
 		titlebar:SetSize(frame:GetWide(), frame:GetTall() * 0.15)
 		titlebar:SetPos(0, frame:GetTall() - titlebar:GetTall() )
 		titlebar:SetBackgroundColor(Color(1, 1, 100, 255))
@@ -307,8 +302,7 @@ function TARDIS:LoadScreenUI(screen)
 	end
 
 	local pagename = vgui.Create("DLabel",titlebar)
-	if TARDIS:GetSetting("visual_gui_enabled")
-	then
+	if TARDIS:GetSetting("visual_gui_enabled") then
 		pagename:SetTextColor(Color(255,255,255))
 	else
 		pagename:SetTextColor(Color(0,0,0))
@@ -324,8 +318,7 @@ function TARDIS:LoadScreenUI(screen)
 
 	local main = vgui.Create("DPanel",frame)
 	main:SetSize(frame:GetWide(),frame:GetTall() - titlebar:GetTall())
-	if TARDIS:GetSetting("visual_gui_enabled")
-	then
+	if TARDIS:GetSetting("visual_gui_enabled") then
 		main:SetPos(0,0)
 		main:SetBackgroundColor(Color(0,0,0,255))
 	else
@@ -344,8 +337,7 @@ function TARDIS:LoadScreenUI(screen)
 
 	local backbutton, menubutton, exitpopup_button
 
-	if TARDIS:GetSetting("visual_gui_enabled")
-	then
+	if TARDIS:GetSetting("visual_gui_enabled") then
 		titlebar.button_size = math.min(titlebar:GetTall() * 0.8, titlebar:GetWide() * 0.25)
 		titlebar.button_posY = titlebar:GetTall() * 0.5 - titlebar.button_size * 0.5
 
@@ -410,12 +402,10 @@ function TARDIS:LoadScreenUI(screen)
 			if IsValid(screen.curscreen) then
 				screen.curscreen:SetVisible(not mmenu:IsVisible())
 			end
-			if TARDIS:GetSetting("visual_gui_enabled")
-			then
+			if TARDIS:GetSetting("visual_gui_enabled") then
 				screen.left_arrow:SetVisible(mmenu:IsVisible())
 				screen.right_arrow:SetVisible(mmenu:IsVisible())
-				if mmenu:IsVisible()
-				then
+				if mmenu:IsVisible() then
 					screen.RestoreHexLayout()
 				end
 			end
@@ -430,8 +420,7 @@ function TARDIS:LoadScreenUI(screen)
 	screen.menubutton=menubutton
 
 	exitpopup_button:SetFont("TARDIS-Default")
-	if not screen.is3D2D
-	then
+	if not screen.is3D2D then
 		exitpopup_button:SetText("X")
 		exitpopup_button.DoClick = function()
 			TARDIS:RemoveHUDScreen()
@@ -465,8 +454,7 @@ function TARDIS:LoadScreenUI(screen)
 		local buttons={}
 		for k,v in ipairs(screen.screens) do
 			local button
-			if TARDIS:GetSetting("visual_gui_enabled")
-			then
+			if TARDIS:GetSetting("visual_gui_enabled") then
 				button = TardisScreenButton:new(parent)
 				button:SetIsToggle(false)
 			else
@@ -486,11 +474,9 @@ function TARDIS:LoadScreenUI(screen)
 end
 
 function TARDIS:LoadButtons(screen, frame, func, isvgui)
-	if isvgui ~= nil and isvgui
-	then
+	if isvgui ~= nil and isvgui then
 		local layout_rows
-		if screen.is3D2D
-		then
+		if screen.is3D2D then
 			layout_rows = math.floor(TARDIS:GetSetting("visual_gui_screen_numrows"))
 		else
 			layout_rows = math.floor(TARDIS:GetSetting("visual_gui_popup_numrows"))

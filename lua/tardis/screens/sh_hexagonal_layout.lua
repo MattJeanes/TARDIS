@@ -39,7 +39,9 @@ function HexagonalLayout:GetButtonPos(i, j)
 end
 
 function HexagonalLayout:GetButtonSize(x)
-	if x then return self.button_size[x] end
+	if x then
+		return self.button_size[x]
+	end
 	return self.button_size[1], self.button_size[2]
 end
 
@@ -62,11 +64,9 @@ function HexagonalLayout:DrawButtons()
 	local j = 0 -- rows
 	local maxX = 0
 
-	for k,button in ipairs(self.buttons)
-	do
+	for k,button in ipairs(self.buttons) do
 		j = j + 2
-		if j > n
-		then
+		if j > n then
 			if (j % 2) == 1 then
 				j = 2
 				i = i + 1
@@ -88,8 +88,7 @@ function HexagonalLayout:DrawButtons()
 
 	local offsetX = self.screen_width - self.button_side_length * (2 + v3 * self.gap_scale)
 
-	if unused > 0
-	then
+	if unused > 0 then
 		offsetX = unused
 	else
 		offsetX = offsetX % self.dw
