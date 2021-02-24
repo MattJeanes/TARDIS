@@ -48,7 +48,7 @@ if SERVER then
 			if callback then
 				callbacks[callback]=true
 			end
-			self:SetData("doorchange",CurTime()+0.5)
+			self:SetData("doorchange",CurTime()+self.metadata.Exterior.DoorAnimationTime)
 		end
 	end
 	

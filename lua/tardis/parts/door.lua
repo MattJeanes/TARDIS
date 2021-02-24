@@ -85,7 +85,7 @@ else
 			self.DoorTarget=self.exterior.DoorOverride or (self.exterior:GetData("doorstatereal",false) and 1 or 0)
 			
 			-- Have to spam it otherwise it glitches out (http://facepunch.com/showthread.php?t=1414695)
-			self.DoorPos=self.exterior.DoorOverride or math.Approach(self.DoorPos,self.DoorTarget,FrameTime()*2)
+			self.DoorPos=self.exterior.DoorOverride or math.Approach(self.DoorPos,self.DoorTarget,FrameTime()*(1/self.exterior.metadata.Exterior.DoorAnimationTime))
 			
 			self:SetPoseParameter("switch", self.DoorPos)
 			self:InvalidateBoneCache()
