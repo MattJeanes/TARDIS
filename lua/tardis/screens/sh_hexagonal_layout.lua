@@ -95,13 +95,21 @@ function HexagonalLayout:DrawButtons()
 	end
 
 	for k,button in ipairs(self.buttons) do
-		button:InitiateMove(0.5 * offsetX, 0, true, 100)
+		button:InitiateMove(0.5 * offsetX, 0, true, 500)
 	end
 end
 
 function HexagonalLayout:ScrollButtons(x)
+	local cancel = false
 	for k,button in ipairs(self.buttons) do
-		button:InitiateMove(x * self.dw, 0, true, 50)
+		if button.moving.now then
+			cancel = true
+		end
+	end
+	if not cancel then
+		for k,button in ipairs(self.buttons) do
+			button:InitiateMove(x * self.dw, 0, true, 200)
+		end
 	end
 end
 

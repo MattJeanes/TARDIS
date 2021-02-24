@@ -49,7 +49,7 @@ function TardisScreenButton:new(parent)
 			sb.icon:SetImage(sb.icon_off)
 			sb.on = false
 		end
-		if sb.moving.now and CurTime() > sb.moving.last + 0.02 - FrameTime() then
+		if sb.moving.now then
 			sb.moving.move()
 			sb.icon:SetColor(Color(255, 255, 255, sb.transparency))
 			sb.label:SetColor(Color(0, 0, 0, sb.transparency))
@@ -215,15 +215,12 @@ function TardisScreenButton:InitiateMove(x, y, relative, speed)
 	local moving = {}
 	moving.now = true
 	moving.parent = self
-	moving.last = CurTime()
 	moving.speed = speed or 100
 
 	if relative then
 		moving.aim = { self.pos[1] + x, self.pos[2] + y }
-		moving.step = { x, y }
 	else
 		moving.aim = { x, y }
-		moving.step = { x - self.pos[1], y - self.pos[2] }
 	end
 
 	moving.now_outside = (self.pos[1] < 0) or (self.pos[2] < 0)
@@ -234,29 +231,18 @@ function TardisScreenButton:InitiateMove(x, y, relative, speed)
 		or (moving.aim[1] + self.size[1] > self.parent:GetWide())
 		or (moving.aim[2] + self.size[2] > self.parent:GetTall())
 
-
-	moving.step = { moving.step[1] * moving.speed / 1000, moving.step[2] * moving.speed / 1000 }
-	moving.transp_step = 0
-	if moving.now_outside and moving.aim_outside then
-		self.transparency = 0
-		moving.transp_step = 0
-	elseif moving.now_outside then
-		self.transparency = 0
-		moving.transp_step = 255 * speed / 1000;
-	elseif moving.aim_outside then
-		self.transparency = 255
-		moving.transp_step = - 255 * speed / 1000;
+	if moving.aim_outside then
+		moving.transp_aim = 0
+	else
+		moving.transp_aim = 255
 	end
 
 	moving.move = function()
 		local sb = moving.parent
-		sb.pos = { sb.pos[1] + moving.step[1], sb.pos[2] + moving.step[2] }
-		moving.last = CurTime()
-		sb.transparency = sb.transparency + moving.transp_step
-
-		local distance = math.Distance(sb.pos[1], sb.pos[2], moving.aim[1], moving.aim[2])
-		if distance <= 1 then
-			sb.pos = moving.aim
+		sb.pos[1] = math.Approach(sb.pos[1], moving.aim[1], moving.speed * FrameTime())
+		sb.pos[2] = math.Approach(sb.pos[2], moving.aim[2], moving.speed * FrameTime())
+		sb.transparency = math.Approach(sb.transparency, moving.transp_aim, moving.speed * FrameTime() * 1.5)
+		if sb.pos[1] == moving.aim[1] and sb.pos[2] == moving.aim[2] and sb.transparency == moving.transp_aim then
 			moving.now = false
 		end
 	end
