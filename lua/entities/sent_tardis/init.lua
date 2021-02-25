@@ -1714,6 +1714,75 @@ local E2Commands = {
 			return 0
 		end
 	end,
+
+	["Spinmode"] = function(ent,data,spinmode)
+		if ent and IsValid(ent) and CheckPP(data.player,ent) then
+			if not (ent:GetClass()=="sent_tardis") then return 0 end
+			ent:SetSpinMode(spinmode)
+			return ent.spinmode
+		end
+		return 0
+	end,
+
+	["GetLongflight"] = function(ent)
+		if ent and IsValid(ent) then
+			if not (ent:GetClass()=="sent_tardis") then return 0 end
+			if ent.longflight then
+				return 1
+			else
+				return 0
+			end
+		end
+		return 0
+	end,
+
+	["GetHealth"] = function(ent)
+		if ent and IsValid(ent) then
+			if not (ent:GetClass()=="sent_tardis") then return 0 end
+			if ent.health then
+				return math.floor(ent.health)
+			else
+				return 0
+			end
+		end
+		return 0
+	end,
+
+	["GetInVortex"] = function(ent)
+		if ent and IsValid(ent) then
+			if not (ent:GetClass()=="sent_tardis") then return 0 end
+			if ent.invortex then
+				return 1
+			else
+				return 0
+			end
+		end
+		return 0
+	end,
+
+	["GetFlying"] = function(ent)
+		if ent and IsValid(ent) then
+			if not (ent:GetClass()=="sent_tardis") then return 0 end
+			if ent.flightmode then
+				return 1
+			else
+				return 0
+			end
+		end
+		return 0
+	end,
+
+	["GetMoving"] = function(ent)
+		if ent and IsValid(ent) then
+			if not (ent:GetClass()=="sent_tardis") then return 0 end
+			if ent.moving then
+				return 1
+			else
+				return 0
+			end
+		end
+		return 0
+	end
 	
 }
 
