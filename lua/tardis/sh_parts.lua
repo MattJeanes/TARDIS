@@ -117,19 +117,20 @@ end
 local overridequeue={}
 postinit=postinit or false -- local vars cannot stay on autorefresh
 function TARDIS:AddPart(e)
-	if parts[e.ID] then
-		error("Duplicate part ID registered: " .. e.ID)
+	local source = debug.getinfo(2).short_src
+	if parts[e.ID] and parts[e.ID].source ~= source then
+		error("Duplicate part ID registered: " .. e.ID .. " (exists in both " .. parts[e.ID].source .. " and " .. source .. ")")
 	end
 	e=table.Copy(e)
 	e.Base = "gmod_tardis_part"	
-	local name="gmod_tardis_part_"..e.ID
-	scripted_ents.Register(e,name)
+	local class="gmod_tardis_part_"..e.ID
+	scripted_ents.Register(e,class)
 	if postinit then
 		SetupOverrides(e)
 	else
 		table.insert(overridequeue,e)
 	end
-	parts[e.ID]=name
+	parts[e.ID] = { class = class, source = source }
 end
 
 hook.Add("InitPostEntity", "tardis-parts", function() 
@@ -206,7 +207,7 @@ if SERVER then
 		end
 		if data and data.Parts then
 			for k,v in pairs(data.Parts) do
-				local class=parts[k]
+				local class=parts[k].class
 				if class then
 					tempparts[k]=class
 				end
@@ -214,7 +215,7 @@ if SERVER then
 		end
 		for k,v in pairs(parts) do
 			if not tempparts[k] then
-				local tbl=scripted_ents.GetStored(v).t
+				local tbl=scripted_ents.GetStored(v.class).t
 				local t
 				if ent.TardisExterior then
 					t=tbl.Exteriors
@@ -222,7 +223,7 @@ if SERVER then
 					t=tbl.Interiors
 				end
 				if t and t[ent.metadata.ID] then
-					tempparts[k]=v
+					tempparts[k]=v.class
 				end
 			end
 		end

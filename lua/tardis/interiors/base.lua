@@ -37,6 +37,7 @@ T.Interior={
 T.Exterior={
 	Model="models/drmatt/tardis/exterior/exterior.mdl",
 	Mass=5000,
+	DoorAnimationTime=0.5,
 	Portal={
 		pos=Vector(26,0,51.65),
 		ang=Angle(0,0,0),
