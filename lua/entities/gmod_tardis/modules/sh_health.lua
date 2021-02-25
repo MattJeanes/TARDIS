@@ -305,6 +305,11 @@ if SERVER then
 			end
 		end
 	end)
+
+	ENT:AddHook("HandleE2", "health", function(self,name,e2)
+		if not (name=="GetHealth") then return end
+		return self:GetHealthPercent()
+	end)
 else
 	ENT:OnMessage("health-networking", function(self, ply)
 		local newhealth = net.ReadInt(32)

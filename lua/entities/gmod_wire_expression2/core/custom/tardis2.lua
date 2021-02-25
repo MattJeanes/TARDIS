@@ -76,14 +76,6 @@ e2function number entity:tardisMoving()
 	return HandleE2(this, "GetMoving", self)
 end
 
-e2function number entity:tardisFlying()
-	return HandleE2(this, "GetFlying", self)
-end
-
-e2function number entity:tardisHealth()
-	return HandleE2(this, "GetHealth", self)
-end
-
 e2function number entity:tardisInVortex()
 	return HandleE2(this, "GetInVortex", self)
 end
@@ -92,3 +84,10 @@ e2function number entity:tardisLongflighted()
 	return HandleE2(this, "GetLongflight", self)
 end
 
+e2function number entity:tardisFlying()
+	return HandleE2(this, "GetFlying", self)
+end
+
+e2function number entity:tardisHealth()
+	return HandleE2(this, "GetHealth", self)
+end

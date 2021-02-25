@@ -298,6 +298,11 @@ if SERVER then
 			return self:ToggleFlight() and 1 or 0
 		end
 	end)
+
+	ENT:AddHook("HandleE2", "flight_get", function(self, name, e2)
+		if not (name == "GetFlying") then return end
+		return self:GetData("flight",false) and 1 or 0
+	end)
 else
 	TARDIS:AddSetting({
 		id="flight-externalsound",
