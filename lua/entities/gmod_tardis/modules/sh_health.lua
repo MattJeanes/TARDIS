@@ -83,12 +83,13 @@ if SERVER then
 	   TARDIS:SetSetting("health-enabled", tobool(newvalue), true)
 	end, "UpdateOnChange")
 
-	function ENT:Explode()
+	function ENT:Explode(f)
+		local force = tostring(f) or "60"
 		local explode = ents.Create("env_explosion")
 		explode:SetPos( self:LocalToWorld(Vector(0,0,50)) )
 		explode:SetOwner( self )
 		explode:Spawn()
-		explode:SetKeyValue("iMagnitude","60")
+		explode:SetKeyValue("iMagnitude", force)
 		explode:Fire("Explode", 0, 0 )
 	end
 
@@ -272,7 +273,7 @@ if SERVER then
 			self:SetData("prevortex-flight", false)
 			self:Mat()
 		end
-		self:Explode()
+		self:Explode(300)
 	end)
 
 	ENT:AddHook("OnHealthChange", "warning", function(self)
