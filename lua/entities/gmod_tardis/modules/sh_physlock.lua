@@ -18,7 +18,6 @@ TARDIS:AddKeyBind("physlock-toggle",{
 
 if SERVER then
 	function ENT:SetPhyslock(on)
-
 		if not on and self:CallHook("CanTurnOffPhyslock") == false then
 			return false
 		end
@@ -84,5 +83,4 @@ if SERVER then
 		end
 	end)
 end
-
 
