@@ -6,6 +6,7 @@ PART.Name = "Legacy Atom Accelerator"
 PART.Model = "models/drmatt/tardis/atomaccel.mdl"
 PART.AutoSetup = true
 PART.Collision = true
+PART.BypassIsomorphic = false
 
 if SERVER then
 	function PART:Use(ply)
