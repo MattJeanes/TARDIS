@@ -12,7 +12,7 @@ end)
 
 function ENT:Initialize()
 	if self.spacecheck then
-		self.metadata=TARDIS:GetInterior(TARDIS:GetSetting("interior","default",self:GetCreator()))
+		self.metadata=TARDIS:GetInterior(self.exterior.metadataID)
 		if not self.metadata then
 			self.metadata=TARDIS:GetInterior("default")
 		end
