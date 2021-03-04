@@ -11,8 +11,11 @@ PART.Sound = "tardis/control_handbrake.wav"
 
 if SERVER then
 	function PART:Use(ply)
-		local result = self.exterior:TogglePhyslock() or false
-		ply:ChatPrint("Physics Lock ".. (result and "engaged" or "disengaged"))
+		if self.exterior:TogglePhyslock() then
+			ply:ChatPrint("Physics Lock ".. (self.exterior:GetData("physlock") and "engaged" or "disengaged"))
+		else
+			ply:ChatPrint("Failed to set physics lock")
+		end
 	end
 end
 
