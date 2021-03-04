@@ -27,7 +27,6 @@ function TARDIS:AddInterior(t)
 		ent.PrintName=t.Name
 		if file.Exists("materials/vgui/entities/tardis/"..t.ID..".vtf", "GAME")
 		then
-			print("AAA"..t.ID)
 			ent.IconOverride="vgui/entities/tardis/"..t.ID..".vtf"
 		else
 			ent.IconOverride="vgui/entities/tardis/"..t.ID..".png"
