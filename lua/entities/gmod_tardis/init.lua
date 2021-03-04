@@ -20,8 +20,17 @@ if not TARDIS.DoorsFound then
 	end
 end
 
+ENT:AddHook("CustomData", "metadata", function(self, customData)
+	if customData.metadataID then
+		self.metadataID = customData.metadataID
+	end
+end)
+
 function ENT:Initialize()
-	self.metadata=TARDIS:GetInterior(TARDIS:GetSetting("interior","default",self:GetCreator()))
+	if not self.metadataID then
+		self.metadataID = TARDIS:GetSetting("interior","default",self:GetCreator())
+	end
+	self.metadata=TARDIS:GetInterior(self.metadataID)
 	if not self.metadata then
 		self.metadata=TARDIS:GetInterior("default")
 	end
