@@ -1,7 +1,7 @@
 -- TARDIS
 
 ENT.Base="gmod_door_exterior"
-ENT.Spawnable=true
+ENT.Spawnable=false
 ENT.PrintName="TARDIS Rewrite"
 ENT.Category="Doctor Who"
 ENT.Author="Dr. Matt"
