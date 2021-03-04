@@ -25,7 +25,13 @@ function TARDIS:AddInterior(t)
 		local ent={}
 		ent.Category="Doctor Who - TARDIS"
 		ent.PrintName=t.Name
-		ent.IconOverride="vgui/entities/tardis/"..t.ID..".png"
+		if file.Exists("materials/vgui/entities/tardis/"..t.ID..".vtf", "GAME")
+		then
+			print("AAA"..t.ID)
+			ent.IconOverride="vgui/entities/tardis/"..t.ID..".vtf"
+		else
+			ent.IconOverride="vgui/entities/tardis/"..t.ID..".png"
+		end
 		ent.ScriptedEntityType="tardis"
 		list.Set("SpawnableEntities", t.ID, ent)
 	end
