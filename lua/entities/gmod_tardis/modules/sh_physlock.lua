@@ -28,7 +28,7 @@ if SERVER then
 		local phys = self:GetPhysicsObject()
 		local vel = phys:GetVelocity():Length()
 		if on then
-			util.ScreenShake(self.interior:GetPos(),5,100,1,700)
+			util.ScreenShake(self.interior:GetPos(), 1, 20, 0.3, 700)
 			if vel > 1000 then
 				self:Explode(math.max((vel - 2500) / 5, 0))
 			end
