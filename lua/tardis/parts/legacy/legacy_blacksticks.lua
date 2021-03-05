@@ -7,5 +7,11 @@ PART.Model = "models/drmatt/tardis/blacksticks.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 PART.Animate = true
+PART.BypassIsomorphic = false
+
+function PART:Use(ply)
+    local result = self.exterior:ToggleCloak() or false
+    ply:ChatPrint("Cloaking " .. (result and "engaged" or "disengaged"))
+end
 
 TARDIS:AddPart(PART)

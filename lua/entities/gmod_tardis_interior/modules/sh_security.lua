@@ -29,7 +29,10 @@ end)
 
 ENT:AddHook("CanUsePart","security",function(self,part,ply)
 	if self:GetData("security", false) and (ply~=self:GetCreator()) then
-		if part.ID == "door" then return end
+		// Default to false if not exists. This is to not break any extensions' parts
+		part.BypassIsomorphic = part.BypassIsomorphic or false
+
+		if part.ID == "door" or part.BypassIsomorphic then return end
 		ply:ChatPrint("This TARDIS uses Isomorphic Security. You may not use any controls.")
 		return false,false
 	end

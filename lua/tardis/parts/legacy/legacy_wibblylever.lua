@@ -7,6 +7,7 @@ PART.Model = "models/drmatt/tardis/wibblylever.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 PART.Animate = true
+PART.BypassIsomorphic = false
 
 if SERVER then
 	function PART:Use(ply)
