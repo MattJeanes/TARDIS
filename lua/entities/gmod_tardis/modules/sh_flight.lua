@@ -308,7 +308,9 @@ else
 	end)
 	
 	ENT:AddHook("Think", "flight", function(self)
-		if self:GetData("flight") and TARDIS:GetSetting("flight-externalsound") and TARDIS:GetSetting("sound") and (not self:CallHook("ShouldTurnOffFlightSound")) then
+		local isCloaked = self:GetData("cloaked")
+
+		if self:GetData("flight") and TARDIS:GetSetting("flight-externalsound") and TARDIS:GetSetting("sound") and (not self:CallHook("ShouldTurnOffFlightSound")) and not isCloaked then
 			if self.flightsound and self.flightsound:IsPlaying() then
 				local p=math.Clamp(self:GetVelocity():Length()/250,0,15)
 				local ply=LocalPlayer()

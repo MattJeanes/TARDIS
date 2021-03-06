@@ -362,7 +362,8 @@ else
 		self:SetData("demat",true)
 		self:SetData("step",1)
 		self:SetData("teleport",true)
-		if TARDIS:GetSetting("teleport-sound") and TARDIS:GetSetting("sound") then
+		local isCloaked = self:GetData("cloaked")
+		if TARDIS:GetSetting("teleport-sound") and TARDIS:GetSetting("sound") and not isCloaked then
 			local ext = self.metadata.Exterior.Sounds.Teleport
 			local int = self.metadata.Interior.Sounds.Teleport
 			local pos = net.ReadVector()
@@ -386,7 +387,8 @@ else
 	
 	ENT:OnMessage("premat", function(self)
 		self:SetData("teleport",true)
-		if TARDIS:GetSetting("teleport-sound") and TARDIS:GetSetting("sound") then
+		local isCloaked = self:GetData("cloaked")
+		if TARDIS:GetSetting("teleport-sound") and TARDIS:GetSetting("sound") && !isCloaked then
 			local ext = self.metadata.Exterior.Sounds.Teleport
 			local int = self.metadata.Interior.Sounds.Teleport
 			local pos=net.ReadVector()

@@ -45,13 +45,14 @@ else
 	local size=64
 
 	ENT:AddHook("Draw", "light", function(self)
+		local isCloaked = self:GetData("cloaked")
 		local light = self.metadata.Exterior.Light
 		if not light.enabled then return end
 		
 		local shouldon=self:CallHook("ShouldTurnOnLight")
 		local shouldoff=self:CallHook("ShouldTurnOffLight")
 		
-		if shouldon and (not shouldoff) then
+		if shouldon and (not shouldoff) and not isCloaked then
 			if self.lightpixvis and (not wp.drawing) and (halo.RenderedEntity()~=self) then
 				local pos=self:LocalToWorld(light.pos)
 				local pulse=(math.sin(CurTime()*8)+1)*(255/4)+(255/2)-50

@@ -77,6 +77,7 @@ T.Exterior={
 			close="drmatt/tardis/door_close.wav"
 		},
 		FlightLoop="drmatt/tardis/flight_loop.wav",
+		Cloak = "drmatt/tardis/phase_enable.wav",
 	},
 	Parts={
 		vortex={

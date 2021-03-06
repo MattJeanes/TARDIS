@@ -97,6 +97,14 @@ TARDIS:AddControl("flightcontrol",{
 	serveronly=true
 })
 
+TARDIS:AddControl("cloak", {
+	func = function(self, ply)
+		self:ToggleCloak()
+	end,
+	exterior = true,
+	serveronly = true
+})
+
 
 if SERVER then return end
 
@@ -271,6 +279,30 @@ local function old_virtual_console(self,ext,int,frame,screen)
 			end
 		end
 	end
+
+	local cloak = frame:Add("DButton")
+	cloak:SetSize(frame:GetWide() * 0.2, frame:GetTall() * 0.2)
+	cloak:SetPos(frame:GetWide() * 0.57 - repair:GetWide() * 0.5, frame:GetTall() * 0.15 - repair:GetTall() * 0.5)
+	cloak:SetText("Cloak ".. (ext:GetData("cloaked") && "on" || "off"))
+	cloak:SetFont("TARDIS-Default")
+	cloak.DoClick = function()
+		TARDIS:Control("cloak")
+	end
+	cloak.oldon = ext:GetData("cloaked")
+
+	function cloak:Think()
+		local val = ext:GetData("cloaked")
+		if self.oldon == val then return end // Value hasn't changed, no need to continue
+
+		if val then
+			self:SetText("Cloak on")
+		else
+			self:SetText("Cloak off")
+		end
+
+		// Update old value to new value for future checking
+		self.oldon = val
+	end
 end
 
 local function new_virtual_console(self,ext,int,frame,screen)
@@ -381,6 +413,13 @@ local function new_virtual_console(self,ext,int,frame,screen)
 	flightcontrol:SetText("flight_control")
 	flightcontrol:SetControl("flightcontrol")
 	layout:AddNewButton(flightcontrol)
+
+	local cloak = TardisScreenButton:new(frame)
+	cloak:SetIsToggle(true)
+	cloak:SetText("Cloak")
+	cloak:SetControl("cloak")
+	cloak:SetPressedStateData(ext, "cloaked")
+	layout:AddNewButton(cloak)
 
 	layout:DrawButtons()
 
