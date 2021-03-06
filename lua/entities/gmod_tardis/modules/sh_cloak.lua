@@ -5,17 +5,15 @@ ENT:AddHook("Initialize", "cloak-init", function(self)
 
     self.mins = self:OBBMins()
     self.maxs = self:OBBMaxs()
-    self.maxs.z = self.maxs.z // We are adding on to the value to avoid any of the top of model appearing when flying
+    self.maxs.z = self.maxs.z + 25 -- We are adding on to the value to avoid any of the top of model appearing when flying
     self.height = (self.maxs.z - self.mins.z)
-
-    print(self.height)
 
     self.phaseTimeCloak = CurTime() + 1
     self.phaseTimeUncloak = CurTime() - 1
 
     self.percent = 1
 
-    // For animating with math.approach
+    -- For animating with math.approach
     self.LastThink = 0
 end)
 
@@ -52,7 +50,7 @@ else
         self.percent = math.Clamp(self.percent, 0, 1)
         self.highPercent = math.Clamp(self.highPercent, 0, 1)
 
-        // Plane clipping, for animating the invisible effect
+        -- Plane clipping, for animating the invisible effect
         local normal = self:GetUp()
         local pos = self:GetPos() + self:GetUp() * (self.maxs.z - (self.height * self.percent))
         local dist = normal:Dot(pos)
@@ -63,7 +61,7 @@ else
         doors:SetRenderClipPlaneEnabled(true)
         doors:SetRenderClipPlane(normal, dist)
 
-        /*local oldClip = render.EnableClipping(true)
+        --[[local oldClip = render.EnableClipping(true)
 
         local restoreT = self:GetMaterial()
 
@@ -85,7 +83,7 @@ else
 		render.PopCustomClipPlane()
 		
 		render.MaterialOverride(restoreT)
-		render.EnableClipping(oldClip)*/
+		render.EnableClipping(oldClip)--]]
     end)
 
     TARDIS:AddSetting({
