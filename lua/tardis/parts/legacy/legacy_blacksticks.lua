@@ -10,8 +10,8 @@ PART.Animate = true
 PART.BypassIsomorphic = false
 
 function PART:Use(ply)
-    local result = self.exterior:ToggleCloak() || false
-    ply:ChatPrint("Cloaking " .. (result and "engaged" || "disengaged"))
+    local result = self.exterior:ToggleCloak() or false
+    ply:ChatPrint("Cloaking " .. (result and "engaged" or "disengaged"))
 end
 
 TARDIS:AddPart(PART)
