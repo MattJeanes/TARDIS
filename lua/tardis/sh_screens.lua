@@ -648,5 +648,12 @@ function TARDIS:LoadScreen(id,options)
 	frame:SetPos(screen.gap,screen.gap)
 	frame:SetAlpha(230)
 
+	screen.int:SetData("screens_on", true, true)
+	screen.Think = function()
+		local scr_on = screen.int:GetData("screens_on", false)
+		local pwr_on = screen.ext:GetData("power-state", false)
+		screen.frame:SetVisible(scr_on and pwr_on)
+	end
+
 	return screen
 end

@@ -23,6 +23,14 @@ TARDIS:AddControl("power",{
 	serveronly=true
 })
 
+TARDIS:AddControl("toggle_screens",{
+	func=function(self,ply)
+		self:ToggleScreens()
+	end,
+	interior=true,
+	clientonly=true
+})
+
 TARDIS:AddControl("hads",{
 	func=function(self,ply)
 		self:ToggleHADS()
@@ -381,6 +389,13 @@ local function new_virtual_console(self,ext,int,frame,screen)
 	flightcontrol:SetText("flight_control")
 	flightcontrol:SetControl("flightcontrol")
 	layout:AddNewButton(flightcontrol)
+
+	local interior_screens = TardisScreenButton:new(frame)
+	interior_screens:SetIsToggle(true)
+	interior_screens:SetText("interior_screens")
+	interior_screens:SetControl("toggle_screens")
+	interior_screens:SetPressedStateData(ext, "screens_on")
+	layout:AddNewButton(interior_screens)
 
 	layout:DrawButtons()
 
