@@ -4,6 +4,15 @@ ENT:AddHook("Initialize","power-init", function(self)
 	self:SetData("power-state",true,true)
 end)
 
+function ENT:SetScreensOn(on)
+	self:SetData("screens_on", on, true)
+	return true
+end
+function ENT:ToggleScreens()
+	self:SetScreensOn(not self:GetData("screens_on", false))
+	return true
+end
+
 if SERVER then
 	function ENT:TogglePower()
 		local on = not self:GetData("power-state",false)

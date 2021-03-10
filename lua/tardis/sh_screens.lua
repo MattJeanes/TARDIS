@@ -623,7 +623,7 @@ function TARDIS:LoadButtons(screen, frame, func, isvgui)
 	end
 end
 
-function TARDIS:LoadScreen(id,options)
+function TARDIS:LoadScreen(id, options)
 	local screen = vgui.Create("DPanel")
 	screen.id=id
 	screen.is3D2D=true
@@ -640,7 +640,7 @@ function TARDIS:LoadScreen(id,options)
 	screen:SetSize(screen.width, screen.height)
 	screen:SetPaintedManually(true)
 	screen:SetDrawBackground(true)
-	screen:SetBackgroundColor(Color(0,0,0,255))
+	screen:SetBackgroundColor(Color(0,0,0,0))
 
 	local main=self:LoadScreenUI(screen)
 	local frame=screen.frame
@@ -648,11 +648,16 @@ function TARDIS:LoadScreen(id,options)
 	frame:SetPos(screen.gap,screen.gap)
 	frame:SetAlpha(230)
 
-	screen.int:SetData("screens_on", true, true)
+	screen.int:SetData("screens_on", true, false)
 	screen.Think = function()
-		local scr_on = screen.int:GetData("screens_on", false)
+		local scr_on = screen.ext:GetData("screens_on", false)
 		local pwr_on = screen.ext:GetData("power-state", false)
 		screen.frame:SetVisible(scr_on and pwr_on)
+		if pwr_on then
+			screen:SetBackgroundColor(Color(0,0,0,0))
+		else
+			screen:SetBackgroundColor(Color(0,0,0,255))
+		end
 	end
 
 	return screen

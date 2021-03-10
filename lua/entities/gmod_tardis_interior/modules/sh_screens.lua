@@ -65,7 +65,7 @@ ENT:AddHook("PostDrawTranslucentRenderables", "screens", function(self)
 		for k,v in pairs(self.screens3D) do
 			local should,pos,ang = self:ShouldRenderScreen(v)
 			if should then
-				local col=Color(0,0,0,255)
+				local col=Color(0,0,0,0)
 				vgui.Start3D2D(pos,ang,0.0624*(1/TARDIS.screenres))
 					draw.RoundedBox(0,0,0,v.width,v.height,col)
 					v:Paint3D2D()
@@ -75,20 +75,3 @@ ENT:AddHook("PostDrawTranslucentRenderables", "screens", function(self)
 	end
 end)
 
-function ENT:SetScreensOn(on)
-	if on then
-		local screens=self.metadata.Interior.Screens
-		if screens then
-			for k,v in pairs(screens) do
-				self.screens3D[k].frame:SetVisible(on)
-			end
-		end
-	end
-	self:SetData("screens_on", on, true)
-	return true
-end
-
-function ENT:ToggleScreens()
-	self:SetScreensOn(not self:GetData("screens_on", false))
-	return true
-end

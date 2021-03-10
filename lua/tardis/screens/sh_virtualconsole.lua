@@ -27,7 +27,7 @@ TARDIS:AddControl("toggle_screens",{
 	func=function(self,ply)
 		self:ToggleScreens()
 	end,
-	interior=true,
+	exterior=true,
 	clientonly=true
 })
 
