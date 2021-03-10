@@ -3,7 +3,7 @@ AddCSLuaFile( "shared.lua" )  -- and shared scripts are sent.
 include('shared.lua')
 
 function ENT:Initialize()
-	self:SetModel( "models/drmatt/tardis/rails.mdl" )
+	self:SetModel( "models/drmatt/legtar/rails.mdl" )
 	self:PhysicsInit( SOLID_VPHYSICS )
 	self:SetMoveType( MOVETYPE_VPHYSICS )
 	self:SetSolid( SOLID_VPHYSICS )

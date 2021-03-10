@@ -1,0 +1,5 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/drmatt/legtar/Console_Base_Ao"
+	"$nodecal" "1"
+}

@@ -9,7 +9,7 @@ util.AddNetworkString("TARDISInt-SetAdv")
 util.AddNetworkString("TARDISInt-ControlSound")
 
 function ENT:Initialize()
-	self:SetModel( "models/drmatt/tardis/interior.mdl" )
+	self:SetModel( "models/drmatt/legtar/interior.mdl" )
 	// cheers to doctor who team for the model
 	self:PhysicsInit( SOLID_VPHYSICS )
 	self:SetMoveType( MOVETYPE_VPHYSICS )

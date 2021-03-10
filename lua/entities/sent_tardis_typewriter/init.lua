@@ -7,7 +7,7 @@ util.AddNetworkString("TARDISInt-Locations-GUI")
 util.AddNetworkString("TARDISInt-Locations-Send")
 
 function ENT:Initialize()
-	self:SetModel( "models/drmatt/tardis/typewriter.mdl" )
+	self:SetModel( "models/drmatt/legtar/typewriter.mdl" )
 	self:PhysicsInit( SOLID_VPHYSICS )
 	self:SetMoveType( MOVETYPE_VPHYSICS )
 	self:SetSolid( SOLID_VPHYSICS )

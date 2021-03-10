@@ -1,0 +1,6 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/drmatt/legtar/ConsoleFront_DiffSpec"
+	"$translucent" 1
+	"$nodecal" "1"
+}

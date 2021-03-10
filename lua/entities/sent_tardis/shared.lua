@@ -12,7 +12,7 @@ ENT.Purpose			= "Time and Relative Dimension in Space"
 ENT.Spawnable		= true
 ENT.AdminSpawnable	= true
 ENT.RenderGroup = RENDERGROUP_BOTH
-ENT.Category		= "Doctor Who"
+ENT.Category		= "Legacy TARDIS"
 
 CreateConVar("tardis_takedamage", "1", {FCVAR_NOTIFY, FCVAR_SERVER_CAN_EXECUTE, FCVAR_REPLICATED})
 CreateConVar("tardis_flightphase", "1", {FCVAR_NOTIFY, FCVAR_SERVER_CAN_EXECUTE, FCVAR_REPLICATED})

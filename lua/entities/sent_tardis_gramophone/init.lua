@@ -7,7 +7,7 @@ util.AddNetworkString("TARDISInt-Gramophone-Bounce")
 util.AddNetworkString("TARDISInt-Gramophone-Send")
 
 function ENT:Initialize()
-	self:SetModel( "models/drmatt/tardis/gramophone.mdl" )
+	self:SetModel( "models/drmatt/legtar/gramophone.mdl" )
 	self:PhysicsInit( SOLID_VPHYSICS )
 	self:SetMoveType( MOVETYPE_VPHYSICS )
 	self:SetSolid( SOLID_VPHYSICS )
