@@ -653,10 +653,10 @@ function TARDIS:LoadScreen(id, options)
 		local scr_on = screen.ext:GetData("screens_on", false)
 		local pwr_on = screen.ext:GetData("power-state", false)
 		screen.frame:SetVisible(scr_on and pwr_on)
-		if pwr_on then
-			screen:SetBackgroundColor(Color(0,0,0,0))
-		else
+		if scr_on or not pwr_on then
 			screen:SetBackgroundColor(Color(0,0,0,255))
+		else
+			screen:SetBackgroundColor(Color(0,0,0,0))
 		end
 	end
 
