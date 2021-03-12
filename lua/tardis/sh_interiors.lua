@@ -23,7 +23,7 @@ function TARDIS:AddInterior(t)
 
 	if t.Base~=true then
 		local ent={}
-		ent.Category="TARDIS"
+		ent.Category="Doctor Who - TARDIS"
 		ent.PrintName=t.Name
 		ent.IconOverride="vgui/entities/tardis/"..t.ID..".png"
 		ent.ScriptedEntityType="tardis"
