@@ -3,11 +3,13 @@ ENT:AddHook("OnTakeDamage", "Health", function(self, dmginfo)
 	self.exterior:ChangeHealth(newhealth)
 end)
 
-function ENT:Explode()
+function ENT:Explode(f)
+	local force = tostring(f) or "60"
 	local explode = ents.Create("env_explosion")
 	explode:SetPos( self:LocalToWorld(Vector(0,0,0)) )
 	explode:SetOwner( self )
 	explode:Spawn()
+	explode:SetKeyValue("iMagnitude", force)
 	explode:Fire("Explode", 0, 0 )
 end
 

@@ -3,7 +3,7 @@
 -- Binds
 TARDIS:AddKeyBind("flight-toggle",{
 	name="Toggle",
-	section="Flight",
+	section="Third Person",
 	func=function(self,down,ply)
 		if ply==self.pilot and down then
 			self:ToggleFlight()
