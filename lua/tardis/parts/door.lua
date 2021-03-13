@@ -10,6 +10,7 @@ PART.ClientThinkOverride = true
 PART.Collision = true
 PART.NoStrictUse = true
 PART.ShouldTakeDamage = true
+PART.BypassIsomorphic = true
 
 if SERVER then
 	function PART:Initialize()	
