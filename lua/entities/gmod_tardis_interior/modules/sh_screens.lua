@@ -2,20 +2,22 @@
 
 ENT:AddHook("Initialize", "screens-toggle", function(self)
 	local screens_on = self.metadata.Interior.ScreensEnabled
-	if screens_on == nil then
-		screens_on = true
-	end
 	self:SetData("screens_on", screens_on, true)
 end)
+
+function ENT:GetScreensOn(on)
+	return self:GetData("screens_on", false)
+end
+
 function ENT:SetScreensOn(on)
 	self:SetData("screens_on", on, true)
 	return true
 end
+
 function ENT:ToggleScreens()
-	self:SetScreensOn(not self:GetData("screens_on", false))
+	self:SetScreensOn(not self:GetScreensOn())
 	return true
 end
-
 
 if SERVER then
 	ENT:LoadFolder("modules/screens")
@@ -43,14 +45,13 @@ ENT:AddHook("Initialize", "screens", function(self)
 	if screens then
 		self.screens3D={}
 		for k,v in pairs(screens) do
-			self.screens3D[k]=TARDIS:LoadScreen(k,
-				{
-					width=v.width,
-					height=v.height,
-					ext=self.exterior,
-					int=self,
-					visgui_rows=v.visgui_rows
-				})
+			self.screens3D[k]=TARDIS:LoadScreen(k, {
+				width=v.width,
+				height=v.height,
+				ext=self.exterior,
+				int=self,
+				visgui_rows=v.visgui_rows
+			})
 			self.screens3D[k].pos3D=v.pos
 			self.screens3D[k].ang3D=v.ang
 		end	
@@ -96,5 +97,11 @@ ENT:AddHook("PostDrawTranslucentRenderables", "screens", function(self)
 				vgui.End3D2D()
 			end
 		end
+	end
+end)
+
+ENT:AddHook("ShouldNotDrawScreen", "screens", function(self)
+	if not self:GetScreensOn() then
+		return true
 	end
 end)

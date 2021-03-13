@@ -33,7 +33,7 @@ if SERVER then
 				self:Explode(math.max((vel - 2500) / 5, 0))
 			end
 		end
-		if self:GetData("power-state") then
+		if self:GetPower() then
 			self:SetData("physlock", on, true)
 			phys:EnableMotion(not on)
 		else
@@ -78,7 +78,7 @@ if SERVER then
 	end)
 
 	ENT:AddHook("CanTurnOnPhyslock", "physlock", function(self)
-		if not self:GetData("power-state", false) then
+		if not self:GetPower() then
 			return false
 		end
 	end)

@@ -76,6 +76,15 @@ if CLIENT then
 			local DLabel3 = vgui.Create( "DLabel" )
 			DLabel3:SetText("Number of visual GUI button rows on the screen:")
 			panel:AddItem(DLabel3)
+
+			local visgui_numrows_override = vgui.Create("DCheckBoxLabel")
+			visgui_numrows_override:SetText("Override interior settings")
+			visgui_numrows_override:SetValue(TARDIS:GetSetting("visgui_override_numrows"))
+			function visgui_numrows_override:OnChange(val)
+				TARDIS:SetSetting("visgui_override_numrows", val)
+			end
+			panel:AddItem(visgui_numrows_override)
+
 			local visgui_screen_numrows = vgui.Create("DNumSlider")
 			visgui_screen_numrows:SetMinMax(2, 10)
 			visgui_screen_numrows:SetDecimals(0)
@@ -86,14 +95,6 @@ if CLIENT then
 				TARDIS:SetSetting("visgui_screen_numrows", val)
 			end
 			panel:AddItem(visgui_screen_numrows)
-
-			local visgui_numrows_override = vgui.Create("DCheckBoxLabel")
-			visgui_numrows_override:SetText("Override interior settings")
-			visgui_numrows_override:SetValue(TARDIS:GetSetting("visgui_override_numrows"))
-			function visgui_numrows_override:OnChange(val)
-				TARDIS:SetSetting("visgui_override_numrows", val)
-			end
-			panel:AddItem(visgui_numrows_override)
 
 			local DLabel4 = vgui.Create( "DLabel" )
 			DLabel4:SetText("Number of visual GUI button rows in the popup:")

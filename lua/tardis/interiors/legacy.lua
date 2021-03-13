@@ -49,7 +49,6 @@ T.Interior={
 			visgui_rows=2,
 		}
 	},
-	ScreensEnabled=true,
 	Sequences="legacy_sequences",
 	Parts={
 		door={
