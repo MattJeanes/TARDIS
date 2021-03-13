@@ -5,7 +5,7 @@ TARDIS:AddSetting({
 	name="Tips",
 	desc="Should tips be shown for TARDIS controls?",
 	section="Misc",
-	value=true,
+	value=false,
 	type="bool",
 	option=true,
 	networked=false
@@ -32,7 +32,7 @@ end)
 
 hook.Add("HUDPaint", "TARDISRewrite-DrawTips", function()
 	local interior = TARDIS:GetInteriorEnt(LocalPlayer())
-	if not (interior and interior.tips) then return end
+	if not (interior and interior.tips and TARDIS:GetSetting("tips")) then return end
 	local player_pos = LocalPlayer():GetPos()
 	for k,tip in ipairs(interior.tips)
 	do

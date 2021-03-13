@@ -32,7 +32,7 @@ if CLIENT then
 			local interior_combobox = vgui.Create("DComboBox")
 			interior_combobox:SetText("Interior")
 			for k,v in pairs(TARDIS:GetInteriors()) do
-				if v.Base != true then
+				if v.Base ~= true then
 					v.OptionID=interior_combobox:AddChoice(v.Name,v.ID)
 				end
 			end
@@ -49,13 +49,13 @@ if CLIENT then
 			end
 			panel:AddItem(interior_combobox)
 
-			local learning_mode_toggle = vgui.Create("DCheckBoxLabel")
-			learning_mode_toggle:SetText("Enable learning mode (control tips)")
-			learning_mode_toggle:SetValue(TARDIS:GetSetting("learning_mode_enabled"))
-			function learning_mode_toggle:OnChange(val)
-				TARDIS:SetSetting("learning_mode_enabled", val)
+			local tips_toggle = vgui.Create("DCheckBoxLabel")
+			tips_toggle:SetText("Enable tips")
+			tips_toggle:SetValue(TARDIS:GetSetting("tips"))
+			function tips_toggle:OnChange(val)
+				TARDIS:SetSetting("tips", val)
 			end
-			panel:AddItem(learning_mode_toggle)
+			panel:AddItem(tips_toggle)
 
 			local visual_gui_toggle = vgui.Create("DCheckBoxLabel")
 			visual_gui_toggle:SetText("Enable new visual GUI")
