@@ -5,7 +5,7 @@ TARDIS:AddSetting({
 	name="Tips",
 	desc="Should tips be shown for TARDIS controls?",
 	section="Misc",
-	value=false,
+	value=true,
 	type="bool",
 	option=true,
 	networked=false
