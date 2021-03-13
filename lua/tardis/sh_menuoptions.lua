@@ -32,7 +32,7 @@ if CLIENT then
 			local interior_combobox = vgui.Create("DComboBox")
 			interior_combobox:SetText("Interior")
 			for k,v in pairs(TARDIS:GetInteriors()) do
-				if v.Base != true then
+				if v.Base ~= true then
 					v.OptionID=interior_combobox:AddChoice(v.Name,v.ID)
 				end
 			end
@@ -48,6 +48,14 @@ if CLIENT then
 				LocalPlayer():ChatPrint("TARDIS interior changed. Respawn or repair the TARDIS for changes to apply.")
 			end
 			panel:AddItem(interior_combobox)
+
+			local tips_toggle = vgui.Create("DCheckBoxLabel")
+			tips_toggle:SetText("Enable tips")
+			tips_toggle:SetValue(TARDIS:GetSetting("tips"))
+			function tips_toggle:OnChange(val)
+				TARDIS:SetSetting("tips", val)
+			end
+			panel:AddItem(tips_toggle)
 
 			local visual_gui_toggle = vgui.Create("DCheckBoxLabel")
 			visual_gui_toggle:SetText("Enable new visual GUI")
