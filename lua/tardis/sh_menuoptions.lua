@@ -49,6 +49,14 @@ if CLIENT then
 			end
 			panel:AddItem(interior_combobox)
 
+			local learning_mode_toggle = vgui.Create("DCheckBoxLabel")
+			learning_mode_toggle:SetText("Enable learning mode (control tips)")
+			learning_mode_toggle:SetValue(TARDIS:GetSetting("learning_mode_enabled"))
+			function learning_mode_toggle:OnChange(val)
+				TARDIS:SetSetting("learning_mode_enabled", val)
+			end
+			panel:AddItem(learning_mode_toggle)
+
 			local visual_gui_toggle = vgui.Create("DCheckBoxLabel")
 			visual_gui_toggle:SetText("Enable new visual GUI")
 			visual_gui_toggle:SetValue(TARDIS:GetSetting("visual_gui_enabled"))
