@@ -37,7 +37,7 @@ hook.Add("HUDPaint", "TARDISRewrite-DrawTips", function()
 	for k,tip in ipairs(interior.tips)
 	do
 		local dist = tip.pos:Distance(player_pos)
-		if (dist <= tip.view_range) and (not tip.invisible) then
+		if dist <= tip.view_range then
 			surface.SetFont(tip.font)
 			local w, h = surface.GetTextSize( tip.text )
 			local pos = tip.pos:ToScreen()
