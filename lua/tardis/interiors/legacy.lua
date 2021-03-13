@@ -30,38 +30,6 @@ T.Interior={
 			nopower=true
 		}
 	},
-	Tips={
-		default = {
-			pos=Vector(230.002930, 250.807617, -32.078125),
-			text="Example",
-			invisible=true,
-			view_range=110,
-			text_color = Color( 255, 255, 255, 255 ),
-			tip_color = Color( 10, 10, 255, 100 ),
-			frame_color = Color( 10, 10, 50, 100 ),
-			font = "Trebuchet24",
-		},
-		{pos=Vector(-8.87,-50,5.5), text="Throttle"},
-		{pos=Vector(-26.000000, -41.000000, 4.000000), text="Helmic Regulator"},
-		{pos=Vector(-48.000000, 18.000000, 5.400000), text="Door lock"},
-		{pos=Vector(44.000000, -18.000000, 5.500000), text="Power"},
-		{pos=Vector(29.000000, -53.000000, -8.000000), text="Keyboard"},
-		{pos=Vector(39.000000, 22.750000, 5.828125), text="HADS"},
-		{pos=Vector(19.002930, 48.807617, 2.078125), text="Destination"},
-		{pos=Vector(-0.431641, 44.75, 6.4), text="Flight"},
-		{pos=Vector(-6.623535, 44.351563, 7.000000), text="Self Repair"},
-		{pos=Vector(-40.088379, -21.466797, 7.924805), text="Handbrake"},
-		{pos=Vector(-26.000000, -1.500000, 30.000000), text="Gramophone"},
-		{pos=Vector(-9.940000, -65.000000, -12.000000), text="Fast Return"},
-		{pos=Vector(39.000000, -22.750000, 6.914063), text="Physlock"},
-		{pos=Vector(-39.500000, 22.000000, 6.629883), text="Isomorphic system"},
-		{pos=Vector(20.000000, -37.669998, 1.750000), text="Atom accelerator"},
-		{pos=Vector(12.500000, -24.500000, 23.000000), text="Directional pointer"},
-		{pos=Vector(-2.5, -45.5, 7.75), text=""},
-		{pos=Vector(4.480469, -43.906372, 7.000000), text="Phase constoller"},
-		{pos=Vector(-37.242310, -27.915344, 7.428223), text="Toggle long flight"},
-		{pos=Vector(-43.168457, -31.015625, 4.700000), text="Long flight demat"},
-	},
 	Portal={
 		pos=Vector(316.7,334.9,-36.5),
 		ang=Angle(0,230,0),
@@ -110,6 +78,38 @@ T.Interior={
 		legacy_blacksticks={pos=Vector(4.480469, -43.906372, 7.000000), ang=Angle(13.000, 0.000, 24.176)},
 		legacy_longflighttoggle={pos=Vector(-37.242310, -27.915344, 7.428223), ang=Angle(338.000, 28.721, 15.000)},
 		legacy_longflightdemat={pos=Vector(-43.168457, -31.015625, 4.700000), ang=Angle(22.000, 209.224, 348.000)},
+	},
+	Tips={
+		default = {
+			pos=Vector(230.002930, 250.807617, -32.078125),
+			text="Default",
+			invisible=false,
+			view_range=110,
+			text_color = Color( 255, 255, 255, 255 ),
+			background_color = Color( 10, 10, 255, 100 ),
+			frame_color = Color( 10, 10, 50, 100 ),
+			font = "Trebuchet24",
+		},
+		{pos=Vector(19, 48.80, 2.07),      text="Destination"}, --"Programmable Flight Mode"
+		{pos=Vector(39, 22.75, 5.82),      text="Hostile Action Displacement System"}, --"HADS"
+		{pos=Vector(42, 0.75, 27.1),       text="Monitor"},
+		{pos=Vector(44, -18, 5.5),         text="Power"},
+		{pos=Vector(49, -27.75, 5.5),      text="Locking-Down Mechanism"}, --"Physlock" or "Physbrake"
+		{pos=Vector(29, -53, -8),          text="Navigations mode"}, --"Keyboard"
+		{pos=Vector(20, -37.66, 1.75),     text="Atom Accelerator"},
+		{pos=Vector(12.5, -24.5, 23),      text="Directional pointer"},
+		{pos=Vector(4.48, -43.9, 7),       text="Phase Controller"},
+		{pos=Vector(-8.87, -50, 5.5),      text="Space-Time Throttle"},
+		{pos=Vector(-9.94, -65, -12),      text="Fast-Return Protocol"},
+		{pos=Vector(-26, -41, 4),          text="Helmic Regulator"},
+		{pos=Vector(-37.24, -27.91, 7.42), text="Long Flight Toggler"},
+		{pos=Vector(-43.16, -31.01, 4.7),  text="Dematerialisation Cirquit"},
+		{pos=Vector(-52, -29.5, 3.5),      text="Time-Rotor Handbrake"},
+		{pos=Vector(-26, -1.50, 40),       text="Gramophone"},
+		{pos=Vector(-48, 18, 5.4),         text="Wibbly Lever"}, --"Door lock"
+		{pos=Vector(-47.5, 26, 4),         text="Isomorphic Security System"},
+		{pos=Vector(-6.62, 44.35, 7),      text="Self-Repair Lever"},
+		{pos=Vector(-0.43, 55.75, 4),      text="Flightmode"},
 	},
 	Seats={
 		{

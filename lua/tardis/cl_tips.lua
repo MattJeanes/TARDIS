@@ -12,7 +12,6 @@ TARDIS:AddSetting({
 hook.Add("HUDPaint", "TARDISRewrite-DrawTips", function()
 
 	local interior = TARDIS:GetInteriorEnt(LocalPlayer())
-
 	if not (interior and interior.metadata and interior.metadata.Interior
 		and interior.metadata.Interior.Tips
 		and TARDIS:GetSetting("learning_mode_enabled"))
@@ -21,67 +20,47 @@ hook.Add("HUDPaint", "TARDISRewrite-DrawTips", function()
 	end
 
 	local interior_metadata = interior.metadata.Interior
-	local default = interior_metadata.Tips.default
+	local interior_default = interior_metadata.Tips.default
 
-	for k,tip in pairs(interior_metadata.Tips)
+	for k,interior_tip in pairs(interior_metadata.Tips)
 	do
-		if tip == default or tip.text == nil or tip.text == "" or tip.invisible then continue end
-		local text = tip.text
+		local tip={
+			pos=Vector(0,0,0),
+			text="Tip",
+			invisible=false,
+			view_range=110,
+			text_color=Color(0, 0, 0, 255),
+			background_color=Color(255, 255, 200, 255),
+			frame_color=Color(0, 0, 0, 255),
+			font="GModWorldtip",
+		}
 
-		local pos = tip.pos + interior:GetPos()
-		local range = tip.view_range or 110
-		local dist = pos:Distance(LocalPlayer():GetPos())
-
-		if (dist > range) then continue end
-		local pos = pos:ToScreen()
-
-		local text_col, tip_col, frame_col, font
-
-		if tip.text_color then
-			text_col = tip.text_color
-		elseif default and default.text_color then
-			text_col = default.text_color
-		else
-			text_col = Color(0, 0, 0, 255)
+		if interior_default ~= nil then
+			for setting,value in pairs(interior_default) do
+				tip[setting]=value
+			end
 		end
 
-		if tip.tip_color then
-			tip_col = tip.tip_color
-		elseif default and default.tip_color then
-			tip_col = default.tip_color
-		else
-			tip_col = Color(255, 255, 200, 255)
+		for setting,value in pairs(interior_tip) do
+			tip[setting]=value
 		end
 
-		if tip.frame_color then
-			frame_col = tip.frame_color
-		elseif default and default.frame_color then
-			frame_col = default.frame_color
-		else
-			frame_col = Color(0, 0, 0, 255)
+		tip.pos = tip.pos + interior:GetPos()
+
+		local dist = tip.pos:Distance(LocalPlayer():GetPos())
+		if (dist > tip.view_range) or k == "default" or tip.invisible then
+			continue
 		end
 
-		if tip.font then
-			font = tip.font
-		elseif default and default.font then
-			font = default.font
-		else
-			font = "GModWorldtip"
-		end
-
-		local x = 0
-		local y = 0
+		surface.SetFont(tip.font)
+		local w, h = surface.GetTextSize( tip.text )
+		local pos = tip.pos:ToScreen()
 		local padding = 10
 		local offset = 50
+		local x = pos.x - w - offset
+		local y = pos.y - h - offset
 
-		surface.SetFont(font)
-		local w, h = surface.GetTextSize( text )
-
-		x = pos.x - w - offset
-		y = pos.y - h - offset
-
-
-		draw.RoundedBox( 8, x-padding-2, y-padding-2, w+padding*2+4, h+padding*2+4, frame_col )
+		draw.RoundedBox(8, x-padding-2, y-padding-2, w+padding*2+4, h+padding*2+4, tip.frame_color)
 
 		local verts = {}
 		verts[1] = { x=x+w/1.5-2, y=y+h+2 }
@@ -89,10 +68,10 @@ hook.Add("HUDPaint", "TARDISRewrite-DrawTips", function()
 		verts[3] = { x=pos.x-offset/2+2, y=pos.y-offset/2+2 }
 
 		draw.NoTexture()
-		surface.SetDrawColor( 0, 0, 0, tip_col.a )
+		surface.SetDrawColor( 0, 0, 0, tip.background_color.a )
 		surface.DrawPoly( verts )
 
-		draw.RoundedBox( 8, x-padding, y-padding, w+padding*2, h+padding*2, tip_col )
+		draw.RoundedBox( 8, x-padding, y-padding, w+padding*2, h+padding*2, tip.background_color )
 
 		local verts = {}
 		verts[1] = { x=x+w/1.5, y=y+h }
@@ -100,9 +79,10 @@ hook.Add("HUDPaint", "TARDISRewrite-DrawTips", function()
 		verts[3] = { x=pos.x-offset/2, y=pos.y-offset/2 }
 
 		draw.NoTexture()
-		surface.SetDrawColor( tip_col.r, tip_col.g, tip_col.b, tip_col.a )
+		surface.SetDrawColor(tip.background_color.r, tip.background_color.g, tip.background_color.b, tip.background_color.a)
 		surface.DrawPoly( verts )
 
-		draw.DrawText( text, font, x + w/2, y, text_col, TEXT_ALIGN_CENTER )
+		draw.DrawText( tip.text, tip.font, x + w/2, y, tip.text_color, TEXT_ALIGN_CENTER )
+		tip={}
 	end
 end)
