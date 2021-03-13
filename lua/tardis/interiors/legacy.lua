@@ -80,36 +80,26 @@ T.Interior={
 		legacy_longflightdemat={pos=Vector(-43.168457, -31.015625, 4.700000), ang=Angle(22.000, 209.224, 348.000)},
 	},
 	Tips={
-		default = {
-			pos=Vector(230.002930, 250.807617, -32.078125),
-			text="Default",
-			invisible=false,
-			view_range=110,
-			text_color = Color( 255, 255, 255, 255 ),
-			background_color = Color( 10, 10, 255, 100 ),
-			frame_color = Color( 10, 10, 50, 100 ),
-			font = "Trebuchet24",
-		},
-		{pos=Vector(19, 48.80, 2.07),      text="Destination"}, --"Programmable Flight Mode"
-		{pos=Vector(39, 22.75, 5.82),      text="Hostile Action Displacement System"}, --"HADS"
+		{pos=Vector(19, 48.80, 2.07),      text="Destination"},
+		{pos=Vector(39, 22.75, 5.82),      text="Hostile Action Displacement System"},
 		{pos=Vector(42, 0.75, 27.1),       text="Monitor"},
 		{pos=Vector(44, -18, 5.5),         text="Power"},
-		{pos=Vector(49, -27.75, 5.5),      text="Locking-Down Mechanism"}, --"Physlock" or "Physbrake"
-		{pos=Vector(29, -53, -8),          text="Navigations mode"}, --"Keyboard"
+		{pos=Vector(49, -27.75, 5.5),      text="Locking-Down Mechanism"},
+		{pos=Vector(29, -53, -8),          text="Navigation Mode"},
 		{pos=Vector(20, -37.66, 1.75),     text="Atom Accelerator"},
-		{pos=Vector(12.5, -24.5, 23),      text="Directional pointer"},
+		{pos=Vector(12.5, -24.5, 23),      text="Directional Pointer"},
 		{pos=Vector(4.48, -43.9, 7),       text="Phase Controller"},
 		{pos=Vector(-8.87, -50, 5.5),      text="Space-Time Throttle"},
 		{pos=Vector(-9.94, -65, -12),      text="Fast-Return Protocol"},
 		{pos=Vector(-26, -41, 4),          text="Helmic Regulator"},
 		{pos=Vector(-37.24, -27.91, 7.42), text="Long Flight Toggler"},
-		{pos=Vector(-43.16, -31.01, 4.7),  text="Dematerialisation Cirquit"},
+		{pos=Vector(-43.16, -31.01, 4.7),  text="Dematerialisation Circuit"},
 		{pos=Vector(-52, -29.5, 3.5),      text="Time-Rotor Handbrake"},
 		{pos=Vector(-26, -1.50, 40),       text="Gramophone"},
-		{pos=Vector(-48, 18, 5.4),         text="Wibbly Lever"}, --"Door lock"
+		{pos=Vector(-48, 18, 5.4),         text="Wibbly Lever"},
 		{pos=Vector(-47.5, 26, 4),         text="Isomorphic Security System"},
 		{pos=Vector(-6.62, 44.35, 7),      text="Self-Repair Lever"},
-		{pos=Vector(-0.43, 55.75, 4),      text="Flightmode"},
+		{pos=Vector(-0.43, 55.75, 4),      text="Flight Mode"},
 	},
 	Seats={
 		{
