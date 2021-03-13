@@ -4,6 +4,10 @@ ENT:AddHook("Initialize","power-init", function(self)
 	self:SetData("power-state",true,true)
 end)
 
+ENT:AddHook("Initialize", "screens-toggle-init", function(self)
+	self:SetData("screens_on", true, true)
+end)
+
 function ENT:SetScreensOn(on)
 	self:SetData("screens_on", on, true)
 	return true
