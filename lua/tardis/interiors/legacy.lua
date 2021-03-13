@@ -96,6 +96,7 @@ T.Interior={
 		{pos=Vector(19, 48.80, 2.07),      text="Destination"}, --"Programmable Flight Mode"
 		{pos=Vector(39, 22.75, 5.82),      text="Hostile Action Displacement System"}, --"HADS"
 		{pos=Vector(42, 0.75, 27.1),       text="Monitor"},
+		{pos=Vector(46.2, 10.25, 38.6),    text="Toggle screen"},
 		{pos=Vector(44, -18, 5.5),         text="Power"},
 		{pos=Vector(49, -27.75, 5.5),      text="Locking-Down Mechanism"}, --"Physlock" or "Physbrake"
 		{pos=Vector(29, -53, -8),          text="Navigations mode"}, --"Keyboard"
