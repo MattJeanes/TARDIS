@@ -6,6 +6,5 @@ PART.Name = "Legacy Screen"
 PART.Model = "models/drmatt/tardis/screen.mdl"
 PART.AutoSetup = true
 PART.Collision = true
-PART.BypassIsomorphic = false
 
 TARDIS:AddPart(PART)

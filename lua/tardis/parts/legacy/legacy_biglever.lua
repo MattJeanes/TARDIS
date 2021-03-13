@@ -7,7 +7,6 @@ PART.Model = "models/drmatt/tardis/biglever.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 PART.Animate = true
-PART.BypassIsomorphic = false
 
 if SERVER then
 	function PART:Use(ply)

@@ -8,7 +8,6 @@ PART.AutoSetup = true
 PART.Collision = true
 PART.Animate = true
 PART.Sound = "tardis/control_throttle.wav"
-PART.BypassIsomorphic = false
 
 if SERVER then
 	function PART:Use(ply)

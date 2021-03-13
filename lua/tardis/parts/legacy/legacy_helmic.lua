@@ -8,6 +8,5 @@ PART.AutoSetup = true
 PART.Collision = true
 PART.Animate = true
 PART.AutomaticFrameAdvance = true
-PART.BypassIsomorphic = false
 
 TARDIS:AddPart(PART)
