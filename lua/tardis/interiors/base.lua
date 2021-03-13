@@ -28,6 +28,15 @@ T.Interior={
 		SequenceFail = "drmatt/tardis/seq_bad.wav",
 		Cloister = "drmatt/tardis/cloisterbell_loop.wav"
 	},
+	Tips={
+		default={
+			view_range=110,
+			text_color=Color(255,255,255,255),
+			background_color=Color(50,50,50,100),
+			frame_color=Color(70,70,70,100),
+			font="Trebuchet24",
+		}
+	},
 	LightOverride={
 		basebrightness=0.3, --Base interior brightness when power is on.
 		nopowerbrightness=0.05 --Interior brightness with no power. Should always be darker than basebrightness.
