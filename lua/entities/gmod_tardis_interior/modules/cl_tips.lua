@@ -12,27 +12,27 @@ TARDIS:AddSetting({
 })
 
 ENT:AddHook("Initialize", "tips", function(self)
-    if TARDIS:GetSetting("tips") and #self.metadata.Interior.Tips == 0 then
-        LocalPlayer():ChatPrint("WARNING: Tips are enabled but this interior does not support them")
-        return
-    end
+	if TARDIS:GetSetting("tips") and #self.metadata.Interior.Tips == 0 then
+		LocalPlayer():ChatPrint("WARNING: Tips are enabled but this interior does not support them")
+		return
+	end
 
-    self.tips = {}
+	self.tips = {}
 	local default = self.metadata.Interior.Tips.default
-    for k,interior_tip in ipairs(self.metadata.Interior.Tips)
+	for k,interior_tip in ipairs(self.metadata.Interior.Tips)
 	do
 		local tip = table.Copy(default)
 		for setting,value in pairs(interior_tip) do
 			tip[setting]=value
 		end
 		tip.pos=self:LocalToWorld(tip.pos)
-        table.insert(self.tips, tip)
-    end
+		table.insert(self.tips, tip)
+	end
 end)
 
 hook.Add("HUDPaint", "TARDISRewrite-DrawTips", function()
 	local interior = TARDIS:GetInteriorEnt(LocalPlayer())
-    if not (interior and interior.tips) then return end
+	if not (interior and interior.tips) then return end
 	local player_pos = LocalPlayer():GetPos()
 	for k,tip in ipairs(interior.tips)
 	do
