@@ -23,6 +23,14 @@ TARDIS:AddControl("power",{
 	serveronly=true
 })
 
+TARDIS:AddControl("toggle_screens",{
+	func=function(self,ply)
+		self:ToggleScreens()
+	end,
+	interior=true,
+	clientonly=true
+})
+
 TARDIS:AddControl("hads",{
 	func=function(self,ply)
 		self:ToggleHADS()
@@ -279,16 +287,22 @@ local function new_virtual_console(self,ext,int,frame,screen)
 	--background
 
 	local background=vgui.Create("DImage", frame)
-	local theme = TARDIS.visualgui_theme_basefolder
-	theme = theme..TARDIS:GetSetting("visual_gui_theme").."/"
+	local theme = TARDIS.visgui_theme_basefolder
+	theme = theme..TARDIS:GetSetting("visgui_theme").."/"
 	background:SetImage(theme.."background.png")
 	background:SetSize( frame:GetWide(), frame:GetTall() )
 
 	local layout_rows
 	if screen.is3D2D then
-		layout_rows = math.floor(TARDIS:GetSetting("visual_gui_screen_numrows"))
+		if screen.visgui_rows == nil
+			or TARDIS:GetSetting("visgui_override_numrows")
+		then
+			layout_rows = math.floor(TARDIS:GetSetting("visgui_screen_numrows"))
+		else
+			layout_rows = math.floor(screen.visgui_rows)
+		end
 	else
-		layout_rows = math.floor(TARDIS:GetSetting("visual_gui_popup_numrows"))
+		layout_rows = math.floor(TARDIS:GetSetting("visgui_popup_numrows"))
 	end
 	local layout = HexagonalLayout:new(frame, layout_rows, 0.15)
 
@@ -382,6 +396,13 @@ local function new_virtual_console(self,ext,int,frame,screen)
 	flightcontrol:SetControl("flightcontrol")
 	layout:AddNewButton(flightcontrol)
 
+	local interior_screens = TardisScreenButton:new(frame)
+	interior_screens:SetIsToggle(true)
+	interior_screens:SetText("interior_screens")
+	interior_screens:SetControl("toggle_screens")
+	interior_screens:SetPressedStateData(int, "screens_on")
+	layout:AddNewButton(interior_screens)
+
 	layout:DrawButtons()
 
 	layout.scroll_size = math.max(1, math.floor(layout:GetCols() / 2))
@@ -408,7 +429,7 @@ local function new_virtual_console(self,ext,int,frame,screen)
 end
 
 TARDIS:AddScreen("Console", {menu=false}, function(self,ext,int,frame,screen)
-	if TARDIS:GetSetting("visual_gui_enabled") then
+	if TARDIS:GetSetting("visgui_enabled") then
 		new_virtual_console(self,ext,int,frame,screen)
 	else
 		old_virtual_console(self,ext,int,frame,screen)
