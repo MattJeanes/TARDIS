@@ -1,5 +1,22 @@
 -- Adds screens
 
+ENT:AddHook("Initialize", "screens-toggle", function(self)
+	local screens_on = self.metadata.Interior.ScreensEnabled
+	if screens_on == nil then
+		screens_on = true
+	end
+	self:SetData("screens_on", screens_on, true)
+end)
+function ENT:SetScreensOn(on)
+	self:SetData("screens_on", on, true)
+	return true
+end
+function ENT:ToggleScreens()
+	self:SetScreensOn(not self:GetData("screens_on", false))
+	return true
+end
+
+
 if SERVER then
 	ENT:LoadFolder("modules/screens")
 	return
@@ -26,7 +43,14 @@ ENT:AddHook("Initialize", "screens", function(self)
 	if screens then
 		self.screens3D={}
 		for k,v in pairs(screens) do
-			self.screens3D[k]=TARDIS:LoadScreen(k,{width=v.width,height=v.height,ext=self.exterior,int=self})
+			self.screens3D[k]=TARDIS:LoadScreen(k,
+				{
+					width=v.width,
+					height=v.height,
+					ext=self.exterior,
+					int=self,
+					visgui_rows=v.visgui_rows
+				})
 			self.screens3D[k].pos3D=v.pos
 			self.screens3D[k].ang3D=v.ang
 		end	
@@ -74,4 +98,3 @@ ENT:AddHook("PostDrawTranslucentRenderables", "screens", function(self)
 		end
 	end
 end)
-

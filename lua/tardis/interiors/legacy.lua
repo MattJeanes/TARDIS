@@ -45,9 +45,11 @@ T.Interior={
 			pos=Vector(44.5, -6.5, 39),
 			ang=Angle(0, 84.5, 91),
 			width=227.75,
-			height=140
+			height=140,
+			visgui_rows=2,
 		}
 	},
+	ScreensEnabled=true,
 	Sequences="legacy_sequences",
 	Parts={
 		door={

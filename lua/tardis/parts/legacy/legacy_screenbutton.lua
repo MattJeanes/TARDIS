@@ -9,8 +9,8 @@ PART.Collision = true
 PART.Animate = true
 
 if SERVER then
-	function PART:Use()
-		self.exterior:ToggleScreens()
+	function PART:Use(ply)
+		self.interior:ToggleScreens()
 	end
 end
 
