@@ -57,6 +57,27 @@ if CLIENT then
 			end
 			panel:AddItem(tips_toggle)
 
+			local DLabelTips = vgui.Create( "DLabel" )
+			DLabelTips:SetText("Tips style:")
+			panel:AddItem(DLabelTips)
+
+			local tips_style = vgui.Create("DComboBox")
+			tips_style:SetText("Tips style")
+			for k,v in pairs(TARDIS:GetTipStyles()) do
+				v.OptionID=tips_style:AddChoice(v.style_name,v.style_id)
+			end
+			local selected_tip_style=TARDIS:GetSetting("tips_style","default")
+			for k,v in pairs(TARDIS:GetTipStyles()) do
+				if selected_tip_style==v.style_id then
+					tips_style:ChooseOption(v.OptionID)
+					tips_style:SetText(v.style_name)
+				end
+			end
+			tips_style.OnSelect = function(panel,index,value,data)
+				TARDIS:SetSetting("tips_style", data)
+			end
+			panel:AddItem(tips_style)
+
 			local visgui_toggle = vgui.Create("DCheckBoxLabel")
 			visgui_toggle:SetText("Enable new visual GUI")
 			visgui_toggle:SetValue(TARDIS:GetSetting("visgui_enabled"))
