@@ -112,7 +112,7 @@ if SERVER then
 			for k,_ in pairs(self.occupants) do
 				k:ChatPrint("This TARDIS has been set to self-repair. Please vacate the interior.")
 			end
-			if self:GetData("power-state") then self:SetPower(false) end
+			if self:GetPower() then self:SetPower(false) end
 			self:SetData("repair-primed",true,true)
 		else
 			self:SetData("repair-primed",false,true)

@@ -28,11 +28,17 @@ T.Interior={
 		SequenceFail = "drmatt/tardis/seq_bad.wav",
 		Cloister = "drmatt/tardis/cloisterbell_loop.wav"
 	},
+	Tips={
+		style="white_on_grey",
+		view_range_min=70,
+		view_range_max=100,
+	},
 	LightOverride={
 		basebrightness=0.3, --Base interior brightness when power is on.
 		nopowerbrightness=0.05 --Interior brightness with no power. Should always be darker than basebrightness.
 	},
-	ScreenDistance=500
+	ScreenDistance=500,
+	ScreensEnabled=true
 }
 T.Exterior={
 	Model="models/drmatt/tardis/exterior/exterior.mdl",

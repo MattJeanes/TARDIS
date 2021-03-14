@@ -1,5 +1,9 @@
 -- Power Interior
 
+function ENT:GetPower()
+	return self.exterior:GetPower()
+end
+
 if SERVER then
 	function ENT:TogglePower()
 		self.exterior:TogglePower()
@@ -35,6 +39,18 @@ else
 					end
 				end
 			end
+		end
+	end)
+
+	ENT:AddHook("ShouldNotDrawScreen", "power", function(self)
+		if not self:GetPower() then
+			return true
+		end
+	end)
+
+	ENT:AddHook("ShouldDrawBlackScreen", "power", function(self)
+		if not self:GetPower() then
+			return true
 		end
 	end)
 end

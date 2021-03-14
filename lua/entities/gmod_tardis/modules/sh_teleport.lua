@@ -316,7 +316,7 @@ if SERVER then
 	end)
 	
 	ENT:AddHook("CanDemat", "teleport", function(self)
-		if self:GetData("teleport") or self:GetData("vortex") or (not self:GetData("power-state",false)) then
+		if self:GetData("teleport") or self:GetData("vortex") or (not self:GetPower()) then
 			return false
 		end
 	end)

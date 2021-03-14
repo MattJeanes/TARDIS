@@ -42,10 +42,11 @@ T.Interior={
 	},
 	Screens={
 		{
-			pos=Vector(41.1,-13,47),
-			ang=Angle(0,84.5,90),
-			width=443,
-			height=335
+			pos=Vector(44.5, -6.5, 39),
+			ang=Angle(0, 84.5, 91),
+			width=227.75,
+			height=140,
+			visgui_rows=2,
 		}
 	},
 	Sequences="legacy_sequences",
@@ -59,7 +60,8 @@ T.Interior={
 		rails=true,
 		legacy_throttle={pos=Vector(-8.87,-50,5.5), ang=Angle(-12,-5,24)},
 		legacy_flightlever={pos=Vector(-0.431641, 44.75, 6.4), ang=Angle(-63.913, 137.035, 136.118)},
-		--legacy_screen={pos=Vector(42,0.75,27.1), ang=Angle(0,-5,0)}, -- 3d2d screen replaces this
+		legacy_screen={pos=Vector(42,0.75,27.1), ang=Angle(0,-5,0)},
+		legacy_screenbutton={pos=Vector(44.5,9.75,38.2), ang=Angle(215,85,90)},
 		legacy_helmic={pos=Vector(-26.000000, -41.000000, 4.000000), ang=Angle(0.000, 330.000, 24.500)},
 		legacy_wibblylever={pos=Vector(-48.000000, 18.000000, 5.400000), ang=Angle(335.000, 347.000, 6.000)},
 		legacy_powerlever={pos=Vector(44.000000, -18.000000, 5.500000), ang=Angle(22.000, 328.000, 347.500)},
@@ -78,6 +80,29 @@ T.Interior={
 		legacy_blacksticks={pos=Vector(4.480469, -43.906372, 7.000000), ang=Angle(13.000, 0.000, 24.176)},
 		legacy_longflighttoggle={pos=Vector(-37.242310, -27.915344, 7.428223), ang=Angle(338.000, 28.721, 15.000)},
 		legacy_longflightdemat={pos=Vector(-43.168457, -31.015625, 4.700000), ang=Angle(22.000, 209.224, 348.000)},
+	},
+	Tips={
+		{pos=Vector(19, 48.80, 2.07),      text="Destination"},
+		{pos=Vector(39, 22.75, 5.82),      text="Hostile Action Displacement System"},
+		{pos=Vector(42, 0.75, 27.1),       text="Monitor"},
+		{pos=Vector(46.2, 10.25, 38.6),    text="Toggle screen"},
+		{pos=Vector(44, -18, 5.5),         text="Power"},
+		{pos=Vector(49, -27.75, 5.5),      text="Locking-Down Mechanism"},
+		{pos=Vector(29, -53, -8),          text="Navigation Mode"},
+		{pos=Vector(20, -37.66, 1.75),     text="Atom Accelerator"},
+		{pos=Vector(12.5, -24.5, 23),      text="Directional Pointer"},
+		{pos=Vector(4.48, -43.9, 7),       text="Phase Controller"},
+		{pos=Vector(-8.87, -50, 5.5),      text="Space-Time Throttle"},
+		{pos=Vector(-9.94, -65, -12),      text="Fast-Return Protocol"},
+		{pos=Vector(-26, -41, 4),          text="Helmic Regulator"},
+		{pos=Vector(-37.24, -27.91, 7.42), text="Long Flight Toggler"},
+		{pos=Vector(-43.16, -31.01, 4.7),  text="Dematerialisation Circuit"},
+		{pos=Vector(-52, -29.5, 3.5),      text="Time-Rotor Handbrake"},
+		{pos=Vector(-26, -1.50, 40),       text="Gramophone"},
+		{pos=Vector(-48, 18, 5.4),         text="Wibbly Lever"},
+		{pos=Vector(-47.5, 26, 4),         text="Isomorphic Security System"},
+		{pos=Vector(-6.62, 44.35, 7),      text="Self-Repair Lever"},
+		{pos=Vector(-0.43, 55.75, 4),      text="Flight Mode"},
 	},
 	Seats={
 		{
