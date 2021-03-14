@@ -294,9 +294,7 @@ local function new_virtual_console(self,ext,int,frame,screen)
 
 	local layout_rows
 	if screen.is3D2D then
-		if screen.visgui_rows == nil
-			or TARDIS:GetSetting("visgui_override_numrows")
-		then
+		if screen.visgui_rows == nil or TARDIS:GetSetting("visgui_override_numrows") then
 			layout_rows = math.floor(TARDIS:GetSetting("visgui_screen_numrows"))
 		else
 			layout_rows = math.floor(screen.visgui_rows)

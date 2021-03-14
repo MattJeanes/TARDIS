@@ -4,10 +4,13 @@ ENT:AddHook("Initialize","power-init", function(self)
 	self:SetData("power-state",true,true)
 end)
 
+function ENT:GetPower()
+	return self:GetData("power-state", false)
+end
+
 if SERVER then
 	function ENT:TogglePower()
-		local on = not self:GetData("power-state",false)
-		self:SetPower(on)
+		self:SetPower(not self:GetPower())
 	end
 	function ENT:SetPower(on)
 		if (self:CallHook("CanTogglePower")==false or self.interior:CallHook("CanTogglePower")==false) then return end
@@ -19,10 +22,10 @@ if SERVER then
 	end
 
 	ENT:AddHook("CanTriggerHads","power",function(self)
-		if not self:GetData("power-state",false) then return false end
+		if not self:GetPower() then return false end
 	end)
 else
 	ENT:AddHook("ShouldNotDrawProjectedLight", "power", function(self)
-		if not self:GetData("power-state") then return true end
+		if not self:GetPower() then return true end
 	end)
 end

@@ -32,7 +32,7 @@ if CLIENT then
 			local interior_combobox = vgui.Create("DComboBox")
 			interior_combobox:SetText("Interior")
 			for k,v in pairs(TARDIS:GetInteriors()) do
-				if v.Base != true then
+				if v.Base ~= true then
 					v.OptionID=interior_combobox:AddChoice(v.Name,v.ID)
 				end
 			end
@@ -49,13 +49,13 @@ if CLIENT then
 			end
 			panel:AddItem(interior_combobox)
 
-			local learning_mode_toggle = vgui.Create("DCheckBoxLabel")
-			learning_mode_toggle:SetText("Enable learning mode (control tips)")
-			learning_mode_toggle:SetValue(TARDIS:GetSetting("learning_mode_enabled"))
-			function learning_mode_toggle:OnChange(val)
-				TARDIS:SetSetting("learning_mode_enabled", val)
+			local tips_toggle = vgui.Create("DCheckBoxLabel")
+			tips_toggle:SetText("Enable tips")
+			tips_toggle:SetValue(TARDIS:GetSetting("tips"))
+			function tips_toggle:OnChange(val)
+				TARDIS:SetSetting("tips", val)
 			end
-			panel:AddItem(learning_mode_toggle)
+			panel:AddItem(tips_toggle)
 
 			local visgui_toggle = vgui.Create("DCheckBoxLabel")
 			visgui_toggle:SetText("Enable new visual GUI")
@@ -76,6 +76,15 @@ if CLIENT then
 			local DLabel3 = vgui.Create( "DLabel" )
 			DLabel3:SetText("Number of visual GUI button rows on the screen:")
 			panel:AddItem(DLabel3)
+
+			local visgui_numrows_override = vgui.Create("DCheckBoxLabel")
+			visgui_numrows_override:SetText("Override interior settings")
+			visgui_numrows_override:SetValue(TARDIS:GetSetting("visgui_override_numrows"))
+			function visgui_numrows_override:OnChange(val)
+				TARDIS:SetSetting("visgui_override_numrows", val)
+			end
+			panel:AddItem(visgui_numrows_override)
+
 			local visgui_screen_numrows = vgui.Create("DNumSlider")
 			visgui_screen_numrows:SetMinMax(2, 10)
 			visgui_screen_numrows:SetDecimals(0)
@@ -86,14 +95,6 @@ if CLIENT then
 				TARDIS:SetSetting("visgui_screen_numrows", val)
 			end
 			panel:AddItem(visgui_screen_numrows)
-
-			local visgui_numrows_override = vgui.Create("DCheckBoxLabel")
-			visgui_numrows_override:SetText("Override interior settings")
-			visgui_numrows_override:SetValue(TARDIS:GetSetting("visgui_override_numrows"))
-			function visgui_numrows_override:OnChange(val)
-				TARDIS:SetSetting("visgui_override_numrows", val)
-			end
-			panel:AddItem(visgui_numrows_override)
 
 			local DLabel4 = vgui.Create( "DLabel" )
 			DLabel4:SetText("Number of visual GUI button rows in the popup:")

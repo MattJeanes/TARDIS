@@ -477,9 +477,7 @@ function TARDIS:LoadButtons(screen, frame, func, isvgui)
 	if isvgui ~= nil and isvgui then
 		local layout_rows
 		if screen.is3D2D then
-			if screen.visgui_rows == nil
-				or TARDIS:GetSetting("visgui_override_numrows")
-			then
+			if screen.visgui_rows == nil or TARDIS:GetSetting("visgui_override_numrows") then
 				layout_rows = math.floor(TARDIS:GetSetting("visgui_screen_numrows"))
 			else
 				layout_rows = math.floor(screen.visgui_rows)
@@ -655,14 +653,20 @@ function TARDIS:LoadScreen(id, options)
 	frame:SetPos(screen.gap,screen.gap)
 	frame:SetAlpha(230)
 
-	screen.Think = function()
-		local scr_on = screen.int:GetData("screens_on", false)
-		local pwr_on = screen.ext:GetData("power-state", false)
-		screen.frame:SetVisible(scr_on and pwr_on)
-		if scr_on or not pwr_on then
-			screen:SetBackgroundColor(Color(0,0,0,255))
-		else
-			screen:SetBackgroundColor(Color(0,0,0,0))
+	screen.Think = function(self)
+		local shouldDraw = not (self.int:CallHook("ShouldNotDrawScreen", self.id) or false)
+		local blackScreen = self.int:CallHook("ShouldDrawBlackScreen", self.id) or false
+		local scr_on = self.int:GetData("screens_on", false)
+		local pwr_on = self.ext:GetData("power-state", false)
+		if self.draw ~= shouldDraw or self.black ~= blackScreen then
+			self.frame:SetVisible(shouldDraw and not blackScreen)
+			if shouldDraw or blackScreen then
+				self:SetBackgroundColor(Color(0,0,0,255))
+			else
+				self:SetBackgroundColor(Color(0,0,0,0))
+			end
+			self.draw = shouldDraw
+			self.black = blackScreen
 		end
 	end
 
