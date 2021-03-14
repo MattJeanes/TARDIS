@@ -1,5 +1,24 @@
 -- Adds screens
 
+ENT:AddHook("Initialize", "screens-toggle", function(self)
+	local screens_on = self.metadata.Interior.ScreensEnabled
+	self:SetData("screens_on", screens_on, true)
+end)
+
+function ENT:GetScreensOn(on)
+	return self:GetData("screens_on", false)
+end
+
+function ENT:SetScreensOn(on)
+	self:SetData("screens_on", on, true)
+	return true
+end
+
+function ENT:ToggleScreens()
+	self:SetScreensOn(not self:GetScreensOn())
+	return true
+end
+
 if SERVER then
 	ENT:LoadFolder("modules/screens")
 	return
@@ -26,7 +45,13 @@ ENT:AddHook("Initialize", "screens", function(self)
 	if screens then
 		self.screens3D={}
 		for k,v in pairs(screens) do
-			self.screens3D[k]=TARDIS:LoadScreen(k,{width=v.width,height=v.height,ext=self.exterior,int=self})
+			self.screens3D[k]=TARDIS:LoadScreen(k, {
+				width=v.width,
+				height=v.height,
+				ext=self.exterior,
+				int=self,
+				visgui_rows=v.visgui_rows
+			})
 			self.screens3D[k].pos3D=v.pos
 			self.screens3D[k].ang3D=v.ang
 		end	
@@ -65,12 +90,18 @@ ENT:AddHook("PostDrawTranslucentRenderables", "screens", function(self)
 		for k,v in pairs(self.screens3D) do
 			local should,pos,ang = self:ShouldRenderScreen(v)
 			if should then
-				local col=HSVToColor(180+math.sin(CurTime()*0.1)*180,0.5,1)
+				local col=Color(0,0,0,0)
 				vgui.Start3D2D(pos,ang,0.0624*(1/TARDIS.screenres))
 					draw.RoundedBox(0,0,0,v.width,v.height,col)
 					v:Paint3D2D()
 				vgui.End3D2D()
 			end
 		end
+	end
+end)
+
+ENT:AddHook("ShouldNotDrawScreen", "screens", function(self)
+	if not self:GetScreensOn() then
+		return true
 	end
 end)

@@ -16,8 +16,8 @@ function TardisScreenButton:new(parent)
 
 	sb.is_toggle = false
 
-	sb.theme_dir = TARDIS.visualgui_theme_basefolder
-	sb.theme_dir = sb.theme_dir..TARDIS:GetSetting("visual_gui_theme").."/"
+	sb.theme_dir = TARDIS.visgui_theme_basefolder
+	sb.theme_dir = sb.theme_dir..TARDIS:GetSetting("visgui_theme").."/"
 	sb.icon_off = sb.theme_dir.."default_off.png"
 	sb.icon_on = sb.theme_dir.."default_on.png"
 
@@ -197,14 +197,14 @@ function TardisScreenButton:SetControl(control)
 	end
 end
 
-function TardisScreenButton:SetPressedStateData(ext, data1, data2)
+function TardisScreenButton:SetPressedStateData(parent, data1, data2)
 	if data2 == nil then
 		self.Think = function()
-			self:SetPressed(ext:GetData(data1))
+			self:SetPressed(parent:GetData(data1))
 		end
 	else
 		self.Think = function()
-			self:SetPressed(ext:GetData(data1) or ext:GetData(data2))
+			self:SetPressed(parent:GetData(data1) or parent:GetData(data2))
 		end
 	end
 end

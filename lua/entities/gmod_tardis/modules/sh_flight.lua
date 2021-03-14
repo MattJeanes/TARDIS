@@ -141,7 +141,7 @@ if SERVER then
 	end)
 
 	ENT:AddHook("CanTurnOnFlight", "flight", function(self)
-		if not self:GetData("power-state",false) then
+		if not self:GetPower() then
 			return false
 		end
 	end)
