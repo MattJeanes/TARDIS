@@ -114,6 +114,13 @@ if SERVER then
 			end
 			if self:GetPower() then self:SetPower(false) end
 			self:SetData("repair-primed",true,true)
+
+			if table.IsEmpty(self.occupants) then
+				timer.Simple(0, function() 
+					self:SetData("repair-shouldstart", true)
+					self:SetData("repair-delay", CurTime()+0.3)
+				end)
+			end
 		else
 			self:SetData("repair-primed",false,true)
 			self:SetPower(true)
@@ -308,8 +315,22 @@ if SERVER then
 	end)
 
 	ENT:AddHook("HandleE2", "health", function(self,name,e2)
-		if not (name=="GetHealth") then return end
-		return self:GetHealthPercent()
+		if name == "GetHealth" then
+			return self:GetHealthPercent()
+		elseif name == "Selfrepair" then
+			self:ToggleRepair()
+			return self:GetData("repair-primed",false) and 1 or 0
+		elseif name == "GetSelfrepairing" then
+			local repairing = self:GetData("repairing",false)
+			local primed = self:GetData("repair-primed",false)
+			if repairing then
+				return 1
+			elseif primed then
+				return 2
+			else
+				return 0
+			end
+		end
 	end)
 else
 	ENT:OnMessage("health-networking", function(self, ply)
