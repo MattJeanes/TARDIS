@@ -11,28 +11,55 @@ TARDIS:AddSetting({
 	networked=false
 })
 
+TARDIS:AddSetting({
+	id="tips_style",
+	name="Tips Style",
+	desc="Which style should the TARDIS tips use?",
+	section="Misc",
+	value="default",
+	option=true,
+	networked=false
+})
+
+function ENT:InitializeTips(style_name)
+	if style_name == "default" then
+		style_name = self.metadata.Interior.Tips.style
+	end
+	self.tip_style_name = style_name
+	local style = TARDIS:GetTipStyle(style_name)
+	local tips = {}
+	for k,interior_tip in ipairs(self.metadata.Interior.Tips)
+	do
+		local tip = table.Copy(style)
+		tip.view_range = self.metadata.Interior.Tips.view_range
+		for setting,value in pairs(interior_tip) do
+			tip[setting]=value
+		end
+		tip.pos=self:LocalToWorld(tip.pos)
+		table.insert(tips, tip)
+	end
+	return tips
+end
+
 ENT:AddHook("Initialize", "tips", function(self)
 	if TARDIS:GetSetting("tips") and #self.metadata.Interior.Tips == 0 then
 		LocalPlayer():ChatPrint("WARNING: Tips are enabled but this interior does not support them")
 		return
 	end
 
-	self.tips = {}
-	local default = self.metadata.Interior.Tips.default
-	for k,interior_tip in ipairs(self.metadata.Interior.Tips)
-	do
-		local tip = table.Copy(default)
-		for setting,value in pairs(interior_tip) do
-			tip[setting]=value
-		end
-		tip.pos=self:LocalToWorld(tip.pos)
-		table.insert(self.tips, tip)
-	end
+	local style_name = TARDIS:GetSetting("tips_style", "default", false)
+	self.tips = self:InitializeTips(style_name)
 end)
 
 hook.Add("HUDPaint", "TARDISRewrite-DrawTips", function()
 	local interior = TARDIS:GetInteriorEnt(LocalPlayer())
 	if not (interior and interior.tips and TARDIS:GetSetting("tips")) then return end
+
+	local selected_tip_style = TARDIS:GetSetting("tips_style", "default", false)
+	if interior.tip_style_name ~= selected_tip_style then
+		interior.tips = interior:InitializeTips(selected_tip_style)
+	end
+
 	local player_pos = LocalPlayer():GetPos()
 	for k,tip in ipairs(interior.tips)
 	do
