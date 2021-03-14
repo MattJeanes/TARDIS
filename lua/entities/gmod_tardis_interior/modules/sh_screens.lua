@@ -65,7 +65,7 @@ end)
 
 -- Thanks world-portals
 function ENT:ShouldRenderScreen(screen)
-	local camOrigin = GetViewEntity():GetPos()
+	local camOrigin = GetViewEntity():EyePos()
 	local pos = self:LocalToWorld(screen.pos3D)
 	local ang = self:LocalToWorldAngles(screen.ang3D)
 	local distance = camOrigin:Distance(pos)
