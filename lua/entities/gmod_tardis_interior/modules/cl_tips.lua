@@ -66,6 +66,7 @@ hook.Add("HUDPaint", "TARDISRewrite-DrawTips", function()
 		local dist = tip.pos:Distance(player_pos)
 		if dist <= tip.view_range then
 			surface.SetFont(tip.font)
+			surface.SetDrawColor(tip.background_color.r, tip.background_color.g, tip.background_color.b, tip.background_color.a)
 			local w, h = surface.GetTextSize( tip.text )
 			local pos = tip.pos:ToScreen()
 			local padding = 10
@@ -76,23 +77,16 @@ hook.Add("HUDPaint", "TARDISRewrite-DrawTips", function()
 			draw.RoundedBox(8, x-padding-2, y-padding-2, w+padding*2+4, h+padding*2+4, tip.frame_color)
 
 			local verts = {}
-			verts[1] = { x=x+w/1.5-2, y=y+h+2 }
-			verts[2] = { x=x+w+2, y=y+h/2-1 }
+			verts[1] = { x=x+w-(padding*2), y=y+h+padding+2 }
+			verts[2] = { x=x+w+(padding/2), y=y+h+padding+2 }
 			verts[3] = { x=pos.x-offset/2+2, y=pos.y-offset/2+2 }
 
 			draw.NoTexture()
-			surface.SetDrawColor( 0, 0, 0, tip.background_color.a )
 			surface.DrawPoly( verts )
 
 			draw.RoundedBox( 8, x-padding, y-padding, w+padding*2, h+padding*2, tip.background_color )
 
-			local verts = {}
-			verts[1] = { x=x+w/1.5, y=y+h }
-			verts[2] = { x=x+w, y=y+h/2 }
-			verts[3] = { x=pos.x-offset/2, y=pos.y-offset/2 }
-
 			draw.NoTexture()
-			surface.SetDrawColor(tip.background_color.r, tip.background_color.g, tip.background_color.b, tip.background_color.a)
 			surface.DrawPoly( verts )
 
 			draw.DrawText( tip.text, tip.font, x + w/2, y, tip.text_color, TEXT_ALIGN_CENTER )
