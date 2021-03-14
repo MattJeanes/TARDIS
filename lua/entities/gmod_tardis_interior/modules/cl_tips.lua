@@ -31,14 +31,13 @@ function ENT:InitializeTips(style_name)
 	for k,interior_tip in ipairs(self.metadata.Interior.Tips)
 	do
 		local tip = table.Copy(style)
-		tip.view_range = self.metadata.Interior.Tips.view_range
 		for setting,value in pairs(interior_tip) do
 			tip[setting]=value
 		end
 		tip.pos=self:LocalToWorld(tip.pos)
 		table.insert(tips, tip)
 	end
-	return tips
+	self.tips = tips
 end
 
 ENT:AddHook("Initialize", "tips", function(self)
@@ -48,7 +47,7 @@ ENT:AddHook("Initialize", "tips", function(self)
 	end
 
 	local style_name = TARDIS:GetSetting("tips_style", "default", false)
-	self.tips = self:InitializeTips(style_name)
+	self:InitializeTips(style_name)
 end)
 
 hook.Add("HUDPaint", "TARDISRewrite-DrawTips", function()
@@ -57,39 +56,52 @@ hook.Add("HUDPaint", "TARDISRewrite-DrawTips", function()
 
 	local selected_tip_style = TARDIS:GetSetting("tips_style", "default", false)
 	if interior.tip_style_name ~= selected_tip_style then
-		interior.tips = interior:InitializeTips(selected_tip_style)
+		interior:InitializeTips(selected_tip_style)
 	end
 
-	local player_pos = LocalPlayer():GetPos()
+	local view_range_min = interior.metadata.Interior.Tips.view_range_min
+	local view_range_max = interior.metadata.Interior.Tips.view_range_max
+
+	local player_pos = LocalPlayer():EyePos()
 	for k,tip in ipairs(interior.tips)
 	do
 		local dist = tip.pos:Distance(player_pos)
-		if dist <= tip.view_range then
+		if dist <= view_range_max then
 			surface.SetFont(tip.font)
-			surface.SetDrawColor(tip.background_color.r, tip.background_color.g, tip.background_color.b, tip.background_color.a)
 			local w, h = surface.GetTextSize( tip.text )
 			local pos = tip.pos:ToScreen()
 			local padding = 10
 			local offset = 50
 			local x = pos.x - w - offset
 			local y = pos.y - h - offset
+			local alpha = tip.background_color.a
+			if dist > view_range_min then
+				local normalised = 1 - ((dist - view_range_min) / (view_range_max - view_range_min))
+				alpha = (tip.background_color.a) * normalised
+			end
 
-			draw.RoundedBox(8, x-padding-2, y-padding-2, w+padding*2+4, h+padding*2+4, tip.frame_color)
+			local background_color = ColorAlpha(tip.background_color, alpha)
+			local frame_color = ColorAlpha(tip.frame_color, alpha)
+			local text_color = ColorAlpha(tip.text_color, alpha)
 
 			local verts = {}
-			verts[1] = { x=x+w-(padding*2), y=y+h+padding+2 }
-			verts[2] = { x=x+w+(padding/2), y=y+h+padding+2 }
+			verts[1] = { x=x+w-(padding*2), y=y+h+padding }
+			verts[2] = { x=x+w+(padding/2), y=y+h+padding }
 			verts[3] = { x=pos.x-offset/2+2, y=pos.y-offset/2+2 }
 
 			draw.NoTexture()
+			surface.SetDrawColor( background_color:Unpack() )
+			surface.DrawPoly( verts )
+			surface.SetDrawColor( frame_color:Unpack() )
 			surface.DrawPoly( verts )
 
-			draw.RoundedBox( 8, x-padding, y-padding, w+padding*2, h+padding*2, tip.background_color )
+			draw.RoundedBox( 8, x-padding-2, y-padding-2, w+padding*2+4, h+padding*2+4, frame_color )
+			draw.RoundedBox( 8, x-padding, y-padding, w+padding*2, h+padding*2, background_color )
 
 			draw.NoTexture()
 			surface.DrawPoly( verts )
 
-			draw.DrawText( tip.text, tip.font, x + w/2, y, tip.text_color, TEXT_ALIGN_CENTER )
+			draw.DrawText( tip.text, tip.font, x + w/2, y, text_color, TEXT_ALIGN_CENTER )
 		end
 	end
 end)

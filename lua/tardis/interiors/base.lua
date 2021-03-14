@@ -30,7 +30,8 @@ T.Interior={
 	},
 	Tips={
 		style="white_on_grey",
-		view_range=110,
+		view_range_min=70,
+		view_range_max=100,
 	},
 	LightOverride={
 		basebrightness=0.3, --Base interior brightness when power is on.
