@@ -28,4 +28,8 @@ else
 	ENT:AddHook("ShouldNotDrawProjectedLight", "power", function(self)
 		if not self:GetPower() then return true end
 	end)
+
+	ENT:AddHook("ShouldTurnOffLight", "power", function(self)
+		if not self:GetPower() then return true end
+	end)
 end

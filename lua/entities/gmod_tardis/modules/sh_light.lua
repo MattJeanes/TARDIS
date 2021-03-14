@@ -17,12 +17,26 @@ else
 		option=true,
 		networked=true
 	})
+
+	TARDIS:AddSetting({
+		id="extlight-alwayson",
+		name="Always On Light",
+		section="Misc",
+		desc="Should the exterior light always be lit?",
+		value=false,
+		type="bool",
+		option=true,
+		networked=true
+	})
 	
 	function ENT:FlashLight(time)
 		self:SetData("flashuntil",CurTime()+time)
 	end
 	
 	ENT:AddHook("ShouldTurnOnLight","light",function(self)
+		if TARDIS:GetSetting("extlight-alwayson", false) then
+			return true
+		end
 		local flashuntil=self:GetData("flashuntil")
 		if flashuntil then
 			if CurTime()<flashuntil then
@@ -49,12 +63,13 @@ else
 		if not light.enabled then return end
 		
 		local shouldon=self:CallHook("ShouldTurnOnLight")
+		local shouldpulse=self:CallHook("ShouldPulseLight")
 		local shouldoff=self:CallHook("ShouldTurnOffLight")
 		
 		if shouldon and (not shouldoff) then
 			if self.lightpixvis and (not wp.drawing) and (halo.RenderedEntity()~=self) then
 				local pos=self:LocalToWorld(light.pos)
-				local pulse=(math.sin(CurTime()*8)+1)*(255/4)+(255/2)-50
+				local alpha=shouldpulse and (math.sin(CurTime()*8)+1)*(255/4)+(255/2)-50 or 100
 				render.SetMaterial(mat)
 				local fallback=false
 				for k,v in pairs(wp.portals) do -- not ideal but does the job
@@ -68,11 +83,11 @@ else
 					col = light.color
 				end
 				if fallback then
-					render.DrawSprite(pos, size, size, Color(col.r,col.g,col.b,pulse))
+					render.DrawSprite(pos, size, size, Color(col.r,col.g,col.b,alpha))
 				else
 					local vis=util.PixelVisible(pos, 3, self.lightpixvis)*255
 					if vis>0 then
-						render.DrawSprite(pos, size, size, Color(col.r,col.g,col.b,math.min(vis,pulse)))
+						render.DrawSprite(pos, size, size, Color(col.r,col.g,col.b,math.min(vis,alpha)))
 					end
 				end
 			end
