@@ -306,6 +306,15 @@ local function new_virtual_console(self,ext,int,frame,screen)
 
 	-- controls
 
+	if not screen.is3D2D then
+		local interior_screens = TardisScreenButton:new(frame)
+		interior_screens:SetIsToggle(true)
+		interior_screens:SetText("interior_screens")
+		interior_screens:SetControl("toggle_screens")
+		interior_screens:SetPressedStateData(int, "screens_on")
+		layout:AddNewButton(interior_screens)
+	end
+
 	local door = TardisScreenButton:new(frame)
 	door:SetIsToggle(true)
 	door:SetText("door")
@@ -393,13 +402,6 @@ local function new_virtual_console(self,ext,int,frame,screen)
 	flightcontrol:SetText("flight_control")
 	flightcontrol:SetControl("flightcontrol")
 	layout:AddNewButton(flightcontrol)
-
-	local interior_screens = TardisScreenButton:new(frame)
-	interior_screens:SetIsToggle(true)
-	interior_screens:SetText("interior_screens")
-	interior_screens:SetControl("toggle_screens")
-	interior_screens:SetPressedStateData(int, "screens_on")
-	layout:AddNewButton(interior_screens)
 
 	layout:DrawButtons()
 
