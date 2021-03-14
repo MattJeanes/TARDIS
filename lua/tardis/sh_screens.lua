@@ -287,7 +287,7 @@ function TARDIS:HUDScreen()
 		net.WriteBool(true)
 	net.SendToServer()
 end
-concommand.Add("tardis_toggleui", function()
+concommand.Add("tardis2_toggleui", function()
 	TARDIS:HUDScreen()
 end)
 
