@@ -31,22 +31,21 @@ if SERVER then
 	return
 end
 
-TARDIS.screenres=1.7
-
 TARDIS.fonts = {}
 TARDIS.fontcache = {}
 function TARDIS:GetScreenFont(screen, name)
-	if not self.fontcache[screen.res] then self.fontcache[screen.res] = {} end
-	local fontCached = self.fontcache[screen.res][name]
-	local fontName = "TARDIS_" .. tostring(screen.res) .. "_" .. name
+	local scale = screen.res * screen.resscale
+	if not self.fontcache[scale] then self.fontcache[scale] = {} end
+	local fontCached = self.fontcache[scale][name]
+	local fontName = "TARDIS_" .. tostring(scale) .. "_" .. name
 	if not fontCached then
 		local font = self.fonts[name]
 		if not font then error("TARDIS font '"..name.."' is not defined") end
 		local fontCopy = table.Copy(font)
-		fontCopy.size = font.size * screen.res
+		fontCopy.size = font.size * scale
 		print("Generating TARDIS font ".. name .. " with size " .. tostring(fontCopy.size))
 		surface.CreateFont(fontName, fontCopy)
-		self.fontcache[screen.res][name] = true
+		self.fontcache[scale][name] = true
 	end
 	return fontName
 end
@@ -255,25 +254,23 @@ function TARDIS:HUDScreen()
 
 	local screen = vgui.Create("DPanel",frame)
 	screen.id="pop"
-	screen.res=self.screenres
+	screen.width=825
+	screen.height=425
 
-	if TARDIS:GetSetting("visgui_enabled")
-		and TARDIS:GetSetting("visgui_bigpopup")
-	then
-		screen.width=727.5 * screen.res
-		screen.height=375 * screen.res
-	else
-		screen.width=485 * screen.res
-		screen.height=250 * screen.res
+	if TARDIS:GetSetting("visgui_enabled") and TARDIS:GetSetting("visgui_bigpopup") then
+		screen.width=screen.width*1.5
+		screen.height=screen.height*1.5
 	end
 
+	screen.resscale = 1
+	screen.res=screen.width/485
 	screen.crosshair=6*screen.res
 	screen.gap=5*screen.res
 	screen.gap2=screen.gap*2
 	screen.ext=TARDIS:GetExteriorEnt()
 	screen.int=TARDIS:GetInteriorEnt()
 	screen:SetSize(screen.width,screen.height)
-	screen:SetPos( 2,25 )
+	screen:SetPos(2,25)
 	self:LoadScreenUI(screen)
 	local x,y=screen:GetSize()
 	screen:SetSize(x-screen.gap2,y-screen.gap2)
@@ -653,19 +650,25 @@ function TARDIS:LoadScreen(id, options)
 	local screen = vgui.Create("DPanel")
 	screen.id=id
 	screen.is3D2D=true
-	screen.res=self.screenres
-	screen.width=options.width*screen.res
-	screen.height=options.height*screen.res
+	local maxWidth = math.min(ScrW(), 1000)
+	local maxHeight = math.min(ScrH(), 1000)
+	local idealWidth = maxHeight * (options.width / options.height)
+	local newWidth = math.min(idealWidth, maxWidth)
+	local newHeight = maxHeight / (idealWidth / newWidth)
+	screen.width=newWidth
+	screen.height=newHeight
+	screen.resscale = (options.width / screen.width) * 1.7
+	screen.res=screen.width / options.width
 	screen.ext=options.ext
 	screen.int=options.int
 	screen.visgui_rows=options.visgui_rows
 	screen.crosshair=6 * screen.res
-	screen.gap=5 * screen.res
+	screen.gap=options.gap
 	screen.gap2=screen.gap * 2
 	screen:SetSkin("TARDIS")
 	screen:SetPos(0, 0)
 	screen:SetSize(screen.width, screen.height)
-	screen:SetPaintedManually(true)
+	screen:SetPaintedManually(true) -- change to false to debug screen sizes in 2D
 	screen:SetDrawBackground(true)
 	screen:SetBackgroundColor(Color(0,0,0,0))
 

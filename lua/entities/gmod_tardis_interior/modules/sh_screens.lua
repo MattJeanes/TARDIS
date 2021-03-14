@@ -44,7 +44,8 @@ ENT:AddHook("Initialize", "screens", function(self)
 				height=v.height,
 				ext=self.exterior,
 				int=self,
-				visgui_rows=v.visgui_rows
+				visgui_rows=v.visgui_rows,
+				gap=v.gap or 0
 			})
 			self.screens3D[k].pos3D=v.pos
 			self.screens3D[k].ang3D=v.ang

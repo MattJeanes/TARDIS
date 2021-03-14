@@ -47,6 +47,7 @@ T.Interior={
 			width=227.75,
 			height=140,
 			visgui_rows=2,
+			gap=20
 		}
 	},
 	Sequences="legacy_sequences",
