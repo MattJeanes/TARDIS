@@ -38,7 +38,7 @@ TARDIS:AddScreen("Scanner", {menu=false}, function(self,ext,int,frame,screen)
 	end
 	
 	local label = vgui.Create("DLabel",frame)
-	label:SetFont("TARDIS-Med")
+	label:SetFont(TARDIS:GetScreenFont(screen, "Med"))
 	label.DoLayout = function()
 		label:SizeToContents()
 		label:SetPos(frame:GetWide()/2-label:GetWide()/2-screen.gap,frame:GetTall()-label:GetTall()-screen.gap)
@@ -65,7 +65,7 @@ TARDIS:AddScreen("Scanner", {menu=false}, function(self,ext,int,frame,screen)
 	back:SetSize(frame:GetTall()*0.2-screen.gap,frame:GetTall()*0.15-screen.gap)
 	back:SetPos(screen.gap+1,frame:GetTall()-back:GetTall()-screen.gap-1)
 	back:SetText("<")
-	back:SetFont("TARDIS-Default")
+	back:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 	back.DoClick = function()
 		screen.scannerang.y=screen.scannerang.y+90
 		if screen.scannerang.y>=180 then
@@ -78,7 +78,7 @@ TARDIS:AddScreen("Scanner", {menu=false}, function(self,ext,int,frame,screen)
 	nxt:SetSize(frame:GetTall()*0.2-screen.gap,frame:GetTall()*0.15-screen.gap)
 	nxt:SetPos(frame:GetWide()-nxt:GetWide()-screen.gap-1,frame:GetTall()-nxt:GetTall()-screen.gap-1)
 	nxt:SetText(">")
-	nxt:SetFont("TARDIS-Default")
+	nxt:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 	nxt.DoClick = function()
 		screen.scannerang.y=screen.scannerang.y-90
 		if screen.scannerang.y<=-180 then

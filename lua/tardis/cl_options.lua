@@ -122,7 +122,7 @@ TARDIS:AddGUISetting("Options", function(self,frame,screen)
 				if data.section==v then
 					local button = vgui.Create("DButton",frame)
 					button:SetText(name or id)
-					button:SetFont("TARDIS-Default")
+					button:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 					button.DoClick = function()
 						self:ChangeOption(id,data)
 					end
@@ -142,7 +142,7 @@ TARDIS:AddGUISetting("Options", function(self,frame,screen)
 		for k,v in ipairs(sections) do
 			local button = vgui.Create("DButton",frame)
 			button:SetText(v.name)
-			button:SetFont("TARDIS-Default")
+			button:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 			button.DoClick = function()
 				self:PushScreen(v.name,screen,frame,v)
 			end
@@ -153,7 +153,7 @@ TARDIS:AddGUISetting("Options", function(self,frame,screen)
 			if not data.section then
 				local button = vgui.Create("DButton",frame)
 				button:SetText(name or id)
-				button:SetFont("TARDIS-Default")
+				button:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 				button.DoClick = function()
 					self:ChangeOption(id,data)
 				end

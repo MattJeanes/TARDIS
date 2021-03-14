@@ -33,29 +33,51 @@ end
 
 TARDIS.screenres=1.7
 
-surface.CreateFont("TARDIS-Default", {
+TARDIS.fonts = {}
+TARDIS.fontcache = {}
+function TARDIS:GetScreenFont(screen, name)
+	if not self.fontcache[screen.res] then self.fontcache[screen.res] = {} end
+	local fontCached = self.fontcache[screen.res][name]
+	local fontName = "TARDIS_" .. tostring(screen.res) .. "_" .. name
+	if not fontCached then
+		local font = self.fonts[name]
+		if not font then error("TARDIS font '"..name.."' is not defined") end
+		local fontCopy = table.Copy(font)
+		fontCopy.size = font.size * screen.res
+		print("Generating TARDIS font ".. name .. " with size " .. tostring(fontCopy.size))
+		surface.CreateFont(fontName, fontCopy)
+		self.fontcache[screen.res][name] = true
+	end
+	return fontName
+end
+
+function TARDIS:CreateScreenFont(name, font)
+	self.fonts[name] = font
+end
+
+TARDIS:CreateScreenFont("Default", {
 	font="Tahoma",
-	size=13*TARDIS.screenres
+	size=13
 })
 
-surface.CreateFont("TARDIS-Main", {
+TARDIS:CreateScreenFont("Main", {
 	font="Roboto",
-	size=50*TARDIS.screenres
+	size=50
 })
 
-surface.CreateFont("TARDIS-Large", {
+TARDIS:CreateScreenFont("Large", {
 	font="Roboto",
-	size=40*TARDIS.screenres
+	size=40
 })
 
-surface.CreateFont("TARDIS-Med", {
+TARDIS:CreateScreenFont("Med", {
 	font="Roboto",
-	size=24*TARDIS.screenres
+	size=24
 })
 
-surface.CreateFont("TARDIS-PageName", {
+TARDIS:CreateScreenFont("PageName", {
 	font="Roboto",
-	size=20*TARDIS.screenres
+	size=20
 })
 
 TARDIS:AddKeyBind("tp-openscreen",{
@@ -233,18 +255,18 @@ function TARDIS:HUDScreen()
 
 	local screen = vgui.Create("DPanel",frame)
 	screen.id="pop"
+	screen.res=self.screenres
 
 	if TARDIS:GetSetting("visgui_enabled")
 		and TARDIS:GetSetting("visgui_bigpopup")
 	then
-		screen.width=727.5 * self.screenres
-		screen.height=375 * self.screenres
+		screen.width=727.5 * screen.res
+		screen.height=375 * screen.res
 	else
-		screen.width=485 * self.screenres
-		screen.height=250 * self.screenres
+		screen.width=485 * screen.res
+		screen.height=250 * screen.res
 	end
 
-	screen.res=self.screenres
 	screen.crosshair=6*screen.res
 	screen.gap=5*screen.res
 	screen.gap2=screen.gap*2
@@ -307,7 +329,7 @@ function TARDIS:LoadScreenUI(screen)
 	else
 		pagename:SetTextColor(Color(0,0,0))
 	end
-	pagename:SetFont("TARDIS-PageName")
+	pagename:SetFont(TARDIS:GetScreenFont(screen, "PageName"))
 	pagename.DoLayout = function(self)
 		pagename:SizeToContents()
 		pagename:SetPos((titlebar:GetWide()*0.5)-(pagename:GetWide()*0.5), (titlebar:GetTall()*0.5)-(pagename:GetTall()*0.5))
@@ -341,31 +363,31 @@ function TARDIS:LoadScreenUI(screen)
 		titlebar.button_size = math.min(titlebar:GetTall() * 0.8, titlebar:GetWide() * 0.25)
 		titlebar.button_posY = titlebar:GetTall() * 0.5 - titlebar.button_size * 0.5
 
-		menubutton = TardisScreenButton:new(titlebar)
+		menubutton = TardisScreenButton:new(titlebar,screen)
 		menubutton:SetSize(titlebar.button_size * 2, titlebar.button_size)
 		menubutton:SetPos(0, titlebar.button_posY)
 		menubutton:SetIsToggle(false)
 
-		backbutton = TardisScreenButton:new(titlebar)
+		backbutton = TardisScreenButton:new(titlebar,screen)
 		backbutton:SetSize(titlebar.button_size * 2, titlebar.button_size)
 		backbutton:SetPos(titlebar:GetWide() * 0.3 - titlebar.button_size, titlebar.button_posY)
 		backbutton:SetIsToggle(false)
 
-		exitpopup_button = TardisScreenButton:new(titlebar)
+		exitpopup_button = TardisScreenButton:new(titlebar,screen)
 		exitpopup_button:SetSize(titlebar.button_size * 2, titlebar.button_size)
 		exitpopup_button:SetPos(titlebar:GetWide() * 0.95 - titlebar.button_size, titlebar.button_posY)
 		exitpopup_button:SetIsToggle(false)
 
 		local left_arrow, right_arrow
 
-		local left_arrow = TardisScreenButton:new(titlebar)
+		local left_arrow = TardisScreenButton:new(titlebar,screen)
 		left_arrow:SetSize(titlebar.button_size * 2, titlebar.button_size)
 		left_arrow:SetPos(titlebar:GetWide() * 0.3 - titlebar.button_size, titlebar.button_posY)
 		left_arrow:SetIsToggle(false)
 		left_arrow:SetText("left")
 		screen.left_arrow = left_arrow
 
-		local right_arrow = TardisScreenButton:new(titlebar)
+		local right_arrow = TardisScreenButton:new(titlebar,screen)
 		right_arrow:SetSize(titlebar.button_size * 2, titlebar.button_size)
 		right_arrow:SetPos(titlebar:GetWide() * 0.7 - titlebar.button_size, titlebar.button_posY)
 		right_arrow:SetIsToggle(false)
@@ -387,7 +409,7 @@ function TARDIS:LoadScreenUI(screen)
 	screen.titlebar=titlebar
 
 	backbutton:SetText("Back")
-	backbutton:SetFont("TARDIS-Default")
+	backbutton:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 	backbutton:SetVisible(false)
 	backbutton.DoClick = function()
 		self:PopScreen(screen)
@@ -395,7 +417,7 @@ function TARDIS:LoadScreenUI(screen)
 	screen.backbutton=backbutton
 
 	menubutton:SetText("Menu")
-	menubutton:SetFont("TARDIS-Default")
+	menubutton:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 	menubutton.DoClick = function(self)
 		if IsValid(screen.curscreen) or not mmenu:IsVisible() then
 			mmenu:SetVisible(not mmenu:IsVisible())
@@ -419,7 +441,7 @@ function TARDIS:LoadScreenUI(screen)
 	end
 	screen.menubutton=menubutton
 
-	exitpopup_button:SetFont("TARDIS-Default")
+	exitpopup_button:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 	if not screen.is3D2D then
 		exitpopup_button:SetText("X")
 		exitpopup_button.DoClick = function()
@@ -455,13 +477,13 @@ function TARDIS:LoadScreenUI(screen)
 		for k,v in ipairs(screen.screens) do
 			local button
 			if TARDIS:GetSetting("visgui_enabled") then
-				button = TardisScreenButton:new(parent)
+				button = TardisScreenButton:new(parent,screen)
 				button:SetIsToggle(false)
 			else
 				button = vgui.Create("DButton")
 			end
 			button:SetText(v[1])
-			button:SetFont("TARDIS-Default")
+			button:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 			button.DoClick = function()
 				self:SwitchScreen(screen, v[2])
 			end
@@ -490,10 +512,10 @@ function TARDIS:LoadButtons(screen, frame, func, isvgui)
 
 		for k,v in ipairs(screen.screens) do
 			local button
-			button = TardisScreenButton:new(frame)
+			button = TardisScreenButton:new(frame,screen)
 			button:SetIsToggle(false)
 			button:SetText(v[1])
-			button:SetFont("TARDIS-Default")
+			button:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 			button.DoClick = function()
 				self:SwitchScreen(screen, v[2])
 			end
@@ -574,7 +596,7 @@ function TARDIS:LoadButtons(screen, frame, func, isvgui)
 
 			local label = vgui.Create("DLabel",frame)
 			label:SetTextColor(Color(0,0,0))
-			label:SetFont("TARDIS-PageName")
+			label:SetFont(TARDIS:GetScreenFont(screen, "PageName"))
 			label.DoLayout = function()
 				label:SizeToContents()
 				label:SetPos(frame:GetWide()/2-label:GetWide()/2-screen.gap,frame:GetTall()-label:GetTall()-screen.gap)
@@ -589,7 +611,7 @@ function TARDIS:LoadButtons(screen, frame, func, isvgui)
 			back:SetSize(frame:GetTall()*0.1-screen.gap,frame:GetTall()*0.1-screen.gap)
 			back:SetPos(screen.gap,frame:GetTall()-back:GetTall()-screen.gap)
 			back:SetText("<")
-			back:SetFont("TARDIS-Default")
+			back:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 			back.DoClick = function(self)
 				if pages[curpage-1] then
 					pages[curpage]:SetVisible(false)
@@ -608,7 +630,7 @@ function TARDIS:LoadButtons(screen, frame, func, isvgui)
 			nxt:SetSize(frame:GetTall()*0.1-screen.gap,frame:GetTall()*0.1-screen.gap)
 			nxt:SetPos(frame:GetWide()-nxt:GetWide()-screen.gap,frame:GetTall()-nxt:GetTall()-screen.gap)
 			nxt:SetText(">")
-			nxt:SetFont("TARDIS-Default")
+			nxt:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 			nxt.DoClick = function(self)
 				if pages[curpage+1] then
 					pages[curpage]:SetVisible(false)
@@ -631,12 +653,12 @@ function TARDIS:LoadScreen(id, options)
 	local screen = vgui.Create("DPanel")
 	screen.id=id
 	screen.is3D2D=true
-	screen.width=options.width*self.screenres
-	screen.height=options.height*self.screenres
+	screen.res=self.screenres
+	screen.width=options.width*screen.res
+	screen.height=options.height*screen.res
 	screen.ext=options.ext
 	screen.int=options.int
 	screen.visgui_rows=options.visgui_rows
-	screen.res=self.screenres
 	screen.crosshair=6 * screen.res
 	screen.gap=5 * screen.res
 	screen.gap2=screen.gap * 2

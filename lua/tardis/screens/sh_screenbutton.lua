@@ -1,6 +1,6 @@
 TardisScreenButton = {}
 
-function TardisScreenButton:new(parent)
+function TardisScreenButton:new(parent,screen)
 	local sb = {}
 
 	sb.visible = true
@@ -12,7 +12,7 @@ function TardisScreenButton:new(parent)
 	sb.label = vgui.Create("DLabel", parent)
 	sb.label:SetColor(Color(255,255,255,0))
 	sb.label:SetText("")
-	sb.label:SetFont("TARDIS-Default")
+	sb.label:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 
 	sb.is_toggle = false
 
