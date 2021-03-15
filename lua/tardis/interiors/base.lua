@@ -58,7 +58,10 @@ T.Exterior={
 	Light={
 		enabled=true,
 		pos=Vector(0,0,122),
-		color=Color(255,255,255)
+		color=Color(255,255,255),
+		dynamicpos=Vector(0,0,130),
+		dynamicbrightness=2,
+		dynamicsize=300
 	},
 	ProjectedLight={
 		--color=Color(r,g,b), --Base color. Will use main interior light if not set.

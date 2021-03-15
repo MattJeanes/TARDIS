@@ -28,6 +28,17 @@ else
 		option=true,
 		networked=true
 	})
+
+	TARDIS:AddSetting({
+		id="extlight-dynamic",
+		name="Dynamic Exterior Light",
+		section="Misc",
+		desc="Should the exterior emit dynamic lighting?",
+		value=true,
+		type="bool",
+		option=true,
+		networked=true
+	})
 	
 	function ENT:FlashLight(time)
 		self:SetData("flashuntil",CurTime()+time)
@@ -67,6 +78,10 @@ else
 		local shouldoff=self:CallHook("ShouldTurnOffLight")
 		
 		if shouldon and (not shouldoff) then
+			local col = TARDIS:GetSetting("extlight-color",nil,self:GetCreator())
+			if not col then
+				col = light.color
+			end
 			if self.lightpixvis and (not wp.drawing) and (halo.RenderedEntity()~=self) then
 				local pos=self:LocalToWorld(light.pos)
 				local alpha=shouldpulse and (math.sin(CurTime()*8)+1)*(255/4)+(255/2)-50 or 100
@@ -78,10 +93,7 @@ else
 						break
 					end
 				end
-				local col = TARDIS:GetSetting("extlight-color",nil,self:GetCreator())
-				if not col then
-					col = light.color
-				end
+				
 				if fallback then
 					render.DrawSprite(pos, size, size, Color(col.r,col.g,col.b,alpha))
 				else
@@ -91,23 +103,33 @@ else
 					end
 				end
 			end
-			
-			--[[ disabled due to flickering todo: investigate why this is
+		end
+	end)
+
+	ENT:AddHook("Think", "light", function(self)
+		local light = self.metadata.Exterior.Light
+		if not (light.enabled and TARDIS:GetSetting("extlight-dynamic",false)) then return end
+		
+		local shouldon=self:CallHook("ShouldTurnOnLight")
+		local shouldoff=self:CallHook("ShouldTurnOffLight")
+		
+		if shouldon and (not shouldoff) then
+			local col = TARDIS:GetSetting("extlight-color",nil,self:GetCreator())
+			if not col then
+				col = light.color
+			end
 			local dlight = DynamicLight( self:EntIndex() )
 			if ( dlight ) then
-				local size=400
-				local v=Vector(255,255,255)
-				local c=Color(v.x,v.y,v.z)
-				dlight.Pos = self:GetPos() + self:GetUp() * 135
+				local c=Color(col.r,col.g,col.b)
+				dlight.Pos = self:GetPos() + light.dynamicpos
 				dlight.r = c.r
 				dlight.g = c.g
 				dlight.b = c.b
-				dlight.Brightness = 5
-				dlight.Decay = size * 5
-				dlight.Size = size
+				dlight.Brightness = light.dynamicbrightness
+				dlight.Decay = light.dynamicsize * light.dynamicbrightness
+				dlight.Size = light.dynamicsize
 				dlight.DieTime = CurTime() + 1
 			end
-			--]]
 		end
 	end)
 end
