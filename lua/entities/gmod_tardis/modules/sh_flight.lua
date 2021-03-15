@@ -290,18 +290,29 @@ if SERVER then
 		end
 	end)
 
-	ENT:AddHook("HandleE2", "flight", function(self, name, e2, on)
-		if not (name == "Flightmode") then return end
-		if on then
-			return self:SetFlight(on) and 1 or 0
-		else
-			return self:ToggleFlight() and 1 or 0
+	ENT:AddHook("HandleE2", "flight", function(self, name, e2, ...)
+		local args = {...}
+		if name == "Flightmode" then
+			local on = args[1]
+			if on then
+				return self:SetFlight(on) and 1 or 0
+			else
+				return self:ToggleFlight() and 1 or 0
+			end
+		elseif name == "Spinmode" then
+			local spindir = args[1]
+			self.spindir = spindir
 		end
 	end)
 
 	ENT:AddHook("HandleE2", "flight_get", function(self, name, e2)
-		if not (name == "GetFlying") then return end
-		return self:GetData("flight",false) and 1 or 0
+		if name == "GetFlying" then
+			return self:GetData("flight",false) and 1 or 0
+		elseif name == "GetTracking" then
+			return NULL --We don't have flight tracking yet
+		elseif name == "GetPilot" then
+			return self:GetData("pilot", NULL) or NULL
+		end
 	end)
 else
 	TARDIS:AddSetting({
