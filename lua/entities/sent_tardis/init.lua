@@ -1625,7 +1625,7 @@ function ENT:TogglePower()
 	return false
 end
 
-local function CheckPP(ply, ent) // Prop Protection
+local function CheckPP(ply, ent) -- Prop Protection
 	return hook.Call("PhysgunPickup", GAMEMODE, ply, ent)
 end
 
