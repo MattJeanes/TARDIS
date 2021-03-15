@@ -321,9 +321,9 @@ if SERVER then
 		elseif name == "GetLongflight" then
 			return self:GetData("demat-fast",false) and 0 or 1
 		elseif name == "LastAng" then
-			
+			return self:GetData("fastreturn-ang", {0,0,0})
 		elseif name == "LastPos" then
-			--Not sure we store LastPos and LastAng anymore, will reimplement.
+			return self:GetData("fastreturn-pos", Vector(0,0,0))
 		end
 	end)
 	
