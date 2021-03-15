@@ -84,5 +84,13 @@ if SERVER then
 			return false
 		end
 	end)
+
+	ENT:AddHook("HandleE2", "physlock", function(self, name, e2)
+		if name == "GetPhyslocked" then
+			return self:GetData("physlock",false) and 1 or 0
+		elseif name == "Physlock" then
+			return self:TogglePhyslock()
+		end
+	end)
 end
 
