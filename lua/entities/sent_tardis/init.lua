@@ -2003,7 +2003,10 @@ function ENT:Think()
 				local force=5
 				local vec=a2-a1
 				vec:Normalize()
-				v:GetPhysicsObject():AddVelocity(vec*force)
+				local physobj=v:GetPhysicsObject()
+				if IsValid(physobj) then
+					physobj:AddVelocity(vec*force)
+				end
 			end
 		end
 		if not self.invortex and self.visible then
