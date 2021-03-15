@@ -39,12 +39,13 @@ ENT:AddHook("Initialize", "screens", function(self)
 	if screens then
 		self.screens3D={}
 		for k,v in pairs(screens) do
-			self.screens3D[k]=TARDIS:LoadScreen(k, {
-				width=v.width,
-				height=v.height,
-				ext=self.exterior,
-				int=self,
-				visgui_rows=v.visgui_rows
+			self.screens3D[k] = TARDIS:LoadScreen(k, {
+				width = v.width,
+				height = v.height,
+				ext = self.exterior,
+				int = self,
+				visgui_rows = v.visgui_rows,
+				power_off_black = v.power_off_black,
 			})
 			self.screens3D[k].pos3D=v.pos
 			self.screens3D[k].ang3D=v.ang

@@ -42,11 +42,12 @@ T.Interior={
 	},
 	Screens={
 		{
-			pos=Vector(44.5, -6.5, 39),
-			ang=Angle(0, 84.5, 91),
-			width=227.75,
-			height=140,
-			visgui_rows=2
+			pos = Vector(44.5, -6.5, 39),
+			ang = Angle(0, 84.5, 91),
+			width = 227.75,
+			height = 140,
+			visgui_rows = 2,
+			power_off_black = true
 		}
 	},
 	Sequences="default_sequences",
