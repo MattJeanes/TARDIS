@@ -1,12 +1,17 @@
 -- TARDIS
 
 ENT.Base="gmod_door_exterior"
-ENT.Spawnable=true
-ENT.PrintName=" TARDIS " -- spaces are for it to go first in the list
+ENT.Spawnable=false
+ENT.PrintName="TARDIS"
 ENT.Category="Doctor Who - TARDIS"
 ENT.Author="Dr. Matt"
 ENT.TardisExterior=true
 ENT.Interior="gmod_tardis_interior"
+
+local spawnEntity = table.Copy(ENT)
+spawnEntity.PrintName = " TARDIS " -- Spaces used for ordering
+spawnEntity.Spawnable = true
+list.Set("SpawnableEntities", "gmod_tardis", spawnEntity)
 
 local class=string.sub(ENT.Folder,string.find(ENT.Folder, "/[^/]*$")+1) -- only works if in a folder
 
