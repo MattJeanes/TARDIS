@@ -51,7 +51,7 @@ ENT:AddHook("Initialize", "tips", function(self)
 end)
 
 ENT:AddHook("ShouldDrawTips", "tips", function(self)
-	if ply:GetTardisData("thirdperson") then
+	if LocalPlayer():GetTardisData("thirdperson") then
 		return false
 	end
 end)
