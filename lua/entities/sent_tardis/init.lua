@@ -1632,7 +1632,6 @@ end
 local E2Commands = {
 	["Demat"] = function(ent,data,pos,ang)
 		if ent and IsValid(ent) and CheckPP(data.player,ent) then
-			if not (ent:GetClass()=="sent_tardis") then return 0 end
 			local pos=Vector(pos[1], pos[2], pos[3])
 			if ang then ang=Angle(ang[1], ang[2], ang[3]) end
 			local success=ent:Go(pos,ang)
@@ -1648,7 +1647,6 @@ local E2Commands = {
 
 	["Mat"] = function(ent,data)
 		if ent and IsValid(ent) and CheckPP(data.player,ent) then
-			if not (ent:GetClass()=="sent_tardis") then return 0 end
 			local success=ent:LongReappear()
 			if success then
 				return 1
@@ -1661,7 +1659,6 @@ local E2Commands = {
 
 	["SetDestination"] = function(ent,data,pos,ang)
 		if ent and IsValid(ent) and CheckPP(data.player,ent) then
-			if not (ent:GetClass()=="sent_tardis") then return 0 end
 			local pos=Vector(pos[1], pos[2], pos[3])
 			if ang then ang=Angle(ang[1], ang[2], ang[3]) end
 			if ent.invortex then
@@ -1677,7 +1674,6 @@ local E2Commands = {
 
 	["Longflight"] = function(ent,data)
 		if ent and IsValid(ent) and CheckPP(data.player,ent) then
-			if not (ent:GetClass()=="sent_tardis") then return 0 end
 			local success=ent:ToggleLongFlight()
 			if success then
 				return 1
@@ -1690,7 +1686,6 @@ local E2Commands = {
 
 	["Flightmode"] =  function(ent,data)
 		if ent and IsValid(ent) and CheckPP(data.player,ent) then
-			if not (ent:GetClass()=="sent_tardis") then return 0 end
 			local success=ent:ToggleFlight()
 			if success then
 				return 1
@@ -1703,7 +1698,6 @@ local E2Commands = {
 
 	["FastReturn"] = function(ent,data)
 		if ent and IsValid(ent) and CheckPP(data.player,ent) then
-			if not (ent:GetClass()=="sent_tardis") then return 0 end
 			local success=ent:FastReturn()
 			if success then
 				return 1
@@ -1717,7 +1711,6 @@ local E2Commands = {
 
 	["Spinmode"] = function(ent,data,spinmode)
 		if ent and IsValid(ent) and CheckPP(data.player,ent) then
-			if not (ent:GetClass()=="sent_tardis") then return 0 end
 			ent:SetSpinMode(spinmode)
 			return ent.spinmode
 		end
@@ -1726,7 +1719,6 @@ local E2Commands = {
 
 	["FastDemat"] = function(ent,data)
 		if ent and IsValid(ent) and CheckPP(data.player,ent) then
-			if not (ent:GetClass()=="sent_tardis") then return 0 end
 			local success=ent:DematFast()
 			if success then
 				return 1
@@ -1740,7 +1732,6 @@ local E2Commands = {
 
 	["HADS"] = function(ent,data)
 		if ent and IsValid(ent) and CheckPP(data.player,ent) then
-			if not (ent:GetClass()=="sent_tardis") then return 0 end
 			local success=ent:ToggleHADS()
 			if success then
 				return 1
@@ -1753,7 +1744,6 @@ local E2Commands = {
 
 	["Track"] = function TARDIS_Track(ent,data,trackent)
 		if ent and IsValid(ent) and CheckPP(data.player,ent) then
-			if not (ent:GetClass()=="sent_tardis") then return 0 end
 			local success=ent:SetTrackingEnt(trackent)
 			if success then
 				return 1
@@ -1766,7 +1756,6 @@ local E2Commands = {
 
 	["Selfrepair"] = function(ent,data)
 		if ent and IsValid(ent) and CheckPP(data.player,ent) then
-			if not (ent:GetClass()=="sent_tardis") then return 0 end
 			local success=ent:ToggleRepair()
 			if success then
 				return 1
@@ -1792,7 +1781,6 @@ local E2Commands = {
 
 	["Power"] = function(ent,data)
 		if ent and IsValid(ent) and CheckPP(data.player,ent) then
-			if not (ent:GetClass()=="sent_tardis") then return 0 end
 			local success=ent:TogglePower()
 			if success then
 				return 1
@@ -1805,7 +1793,6 @@ local E2Commands = {
 
 	["Physlock"] = function(ent,data)
 		if ent and IsValid(ent) and CheckPP(data.player,ent) then
-			if not (ent:GetClass()=="sent_tardis") then return 0 end
 			local success=ent:TogglePhysLock()
 			if success then
 				return 1
@@ -1818,7 +1805,6 @@ local E2Commands = {
 
 	["Lock"] = function(ent,data)
 		if ent and IsValid(ent) and CheckPP(data.player,ent) then
-			if not (ent:GetClass()=="sent_tardis") then return 0 end
 			local success=ent:ToggleLocked()
 			if success then
 				return 1
@@ -1831,7 +1817,6 @@ local E2Commands = {
 
 	["Phase"] = function(ent,data)
 		if ent and IsValid(ent) and CheckPP(data.player,ent) then
-			if not (ent:GetClass()=="sent_tardis") then return 0 end
 			local success=ent:TogglePhase()
 			if success then
 				return 1
@@ -1844,7 +1829,6 @@ local E2Commands = {
 
 	["GetLongflight"] = function(ent)
 		if ent and IsValid(ent) then
-			if not (ent:GetClass()=="sent_tardis") then return 0 end
 			if ent.longflight then
 				return 1
 			else
@@ -1856,7 +1840,6 @@ local E2Commands = {
 
 	["GetHealth"] = function(ent)
 		if ent and IsValid(ent) then
-			if not (ent:GetClass()=="sent_tardis") then return 0 end
 			if ent.health then
 				return math.floor(ent.health)
 			else
@@ -1868,7 +1851,6 @@ local E2Commands = {
 
 	["GetInVortex"] = function(ent)
 		if ent and IsValid(ent) then
-			if not (ent:GetClass()=="sent_tardis") then return 0 end
 			if ent.invortex then
 				return 1
 			else
@@ -1880,7 +1862,6 @@ local E2Commands = {
 
 	["GetFlying"] = function(ent)
 		if ent and IsValid(ent) then
-			if not (ent:GetClass()=="sent_tardis") then return 0 end
 			if ent.flightmode then
 				return 1
 			else
@@ -1892,7 +1873,6 @@ local E2Commands = {
 
 	["GetMoving"] = function(ent)
 		if ent and IsValid(ent) then
-			if not (ent:GetClass()=="sent_tardis") then return 0 end
 			if ent.moving then
 				return 1
 			else
@@ -1913,7 +1893,6 @@ local E2Commands = {
 
 	["GetHADS"] = function(ent)
 		if ent and IsValid(ent) then
-			if not (ent:GetClass()=="sent_tardis") then return 0 end
 			if ent.hads then
 				return 1
 			else
@@ -1925,7 +1904,6 @@ local E2Commands = {
 
 	["GetTracking"] = function(ent)
 		if ent and IsValid(ent) then
-			if not (ent:GetClass()=="sent_tardis") then return 0 end
 			if IsValid(ent.trackingent) then
 				return ent.trackingent
 			else
@@ -1937,7 +1915,6 @@ local E2Commands = {
 
 	["LastAng"] = function(ent)
 		if ent and IsValid(ent) then
-			if not (ent:GetClass()=="sent_tardis") then return 0 end
 			if ent.lastang then
 				return {ent.lastang.p, ent.lastang.y, ent.lastang.r}
 			else
@@ -1949,7 +1926,6 @@ local E2Commands = {
 
 	["LastPos"] = function(ent)
 		if ent and IsValid(ent) then
-			if not (ent:GetClass()=="sent_tardis") then return 0 end
 			if ent.lastpos then
 				return ent.lastpos
 			else
@@ -1961,7 +1937,6 @@ local E2Commands = {
 
 	["GetSelfrepairing"] = function(ent)
 		if ent and IsValid(ent) then
-			if not (ent:GetClass()=="sent_tardis") then return 0 end
 			if ent.repairing then
 				return 1
 			else
@@ -1973,7 +1948,6 @@ local E2Commands = {
 
 	["GetIsomorphic"] = function(ent)
 		if ent and IsValid(ent) then
-			if not (ent:GetClass()=="sent_tardis") then return 0 end
 			if ent.isomorphic then
 				return 1
 			else
@@ -1985,7 +1959,6 @@ local E2Commands = {
 
 	["GetPowered"] = function(ent)
 		if ent and IsValid(ent) then
-			if not (ent:GetClass()=="sent_tardis") then return 0 end
 			if ent.power then
 				return 1
 			else
@@ -1997,7 +1970,6 @@ local E2Commands = {
 
 	["GetPhyslocked"] = function(ent)
 		if ent and IsValid(ent) then
-			if not (ent:GetClass()=="sent_tardis") then return 0 end
 			if ent.physlocked then
 				return 1
 			else
@@ -2009,7 +1981,6 @@ local E2Commands = {
 
 	["GetLocked"] = function(ent)
 		if ent and IsValid(ent) then
-			if not (ent:GetClass()=="sent_tardis") then return 0 end
 			if ent.locked then
 				return 1
 			else
@@ -2021,7 +1992,6 @@ local E2Commands = {
 
 	["GetVisible"] = function(ent)
 		if ent and IsValid(ent) then
-			if not (ent:GetClass()=="sent_tardis") then return 0 end
 			if ent.visible then
 				return 1
 			else
