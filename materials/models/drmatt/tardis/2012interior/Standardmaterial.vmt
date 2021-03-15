@@ -1,6 +1,0 @@
-"VertexLitGeneric"
-{
-	"$basetexture" "models/props_combine/metal_combinebridge001"
-	"$translucent" "1"
-	"$nodecal" "1"
-}

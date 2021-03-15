@@ -92,8 +92,9 @@ if SERVER then
 		end
 	end)
 	ENT:AddHook("CanStartControlSequence", "settingquery", function(self)
-		local result = TARDIS:GetSetting("csequences-enabled",false,self:GetCreator())
-		return true
+		if not TARDIS:GetSetting("csequences-enabled",false,self:GetCreator()) then
+			return false
+		end
 	end)
 
 	ENT:AddHook("CanUsePart", "csequence-disable", function(self, part, a)

@@ -11,7 +11,7 @@ TARDIS:AddScreen("Classic Screensaver", {menu=false, notitle=true}, function(sel
 
 	local label = vgui.Create("DLabel",frame)
 	label:SetTextColor(Color(255,255,255))
-	label:SetFont("TARDIS-Main")
+	label:SetFont(TARDIS:GetScreenFont(screen, "Main"))
 	label.DoLayout = function(self)
 		label:SizeToContents()
 		label:SetPos((frame:GetWide()*0.5)-(label:GetWide()*0.5),(frame:GetTall()*0.3)-(label:GetTall()*0.5))
@@ -22,7 +22,7 @@ TARDIS:AddScreen("Classic Screensaver", {menu=false, notitle=true}, function(sel
 
 	local showui = vgui.Create("DButton",frame)
 	showui:SetText("Open UI")
-	showui:SetFont("TARDIS-Default")
+	showui:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 	showui:SetSize(frame:GetWide()*0.2,frame:GetTall()*0.1)
 	showui:SetPos((frame:GetWide()*0.5)-(showui:GetWide()*0.5),(frame:GetTall()*0.8)-(showui:GetTall()*0.5))
 	showui.DoClick = function(self)

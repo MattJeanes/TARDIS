@@ -1,8 +1,8 @@
 -- Reset settings
 
-TARDIS:AddGUISetting("Reset Settings", function(self,frame)
+TARDIS:AddGUISetting("Reset Settings", function(self,frame,screen)
 	local button = vgui.Create("DButton",frame)
-	button:SetFont("TARDIS-Default")
+	button:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 	button:SetText("Reset clientside settings")
 	button:SetSize(frame:GetWide()*0.3,frame:GetTall()*0.15)
 	button:SetPos((frame:GetWide()*0.5)-(button:GetWide()*0.5),(frame:GetTall()*0.5)-(button:GetTall()*0.5))

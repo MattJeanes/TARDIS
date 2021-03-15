@@ -173,4 +173,8 @@ else
 	ENT:AddHook("ShouldTurnOnLight", "float", function(self)
 		if self:GetData("float") then return true end
 	end)
+
+	ENT:AddHook("ShouldPulseLight", "float", function(self)
+		if self:GetData("float") then return true end
+	end)
 end

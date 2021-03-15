@@ -406,6 +406,12 @@ else
 		end
 	end)
 	
+	ENT:AddHook("ShouldPulseLight","teleport",function(self)
+		if self:GetData("teleport") then
+			return true
+		end
+	end)
+	
 	ENT:AddHook("ShouldTurnOffFlightSound", "teleport", function(self)
 		if self:GetData("teleport") or self:GetData("vortex") then
 			return true

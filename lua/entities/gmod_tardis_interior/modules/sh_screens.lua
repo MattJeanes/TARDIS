@@ -24,12 +24,6 @@ if SERVER then
 	return
 end
 
-ENT.screenres=1.7
-ENT.screenx=0
-ENT.screeny=0
-ENT.screengap=0
-ENT.screengap2=0
-
 local screens={}
 function ENT:AddScreen(name,func)
 	screens[name]=func
@@ -70,7 +64,7 @@ end)
 
 -- Thanks world-portals
 function ENT:ShouldRenderScreen(screen)
-	local camOrigin = GetViewEntity():GetPos()
+	local camOrigin = GetViewEntity():EyePos()
 	local pos = self:LocalToWorld(screen.pos3D)
 	local ang = self:LocalToWorldAngles(screen.ang3D)
 	local distance = camOrigin:Distance(pos)
@@ -91,7 +85,7 @@ ENT:AddHook("PostDrawTranslucentRenderables", "screens", function(self)
 			local should,pos,ang = self:ShouldRenderScreen(v)
 			if should then
 				local col=Color(0,0,0,0)
-				vgui.Start3D2D(pos,ang,0.0624*(1/TARDIS.screenres))
+				vgui.Start3D2D(pos,ang,0.0624*(1/v.res))
 					draw.RoundedBox(0,0,0,v.width,v.height,col)
 					v:Paint3D2D()
 				vgui.End3D2D()

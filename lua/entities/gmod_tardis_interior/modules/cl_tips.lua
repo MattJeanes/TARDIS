@@ -17,7 +17,7 @@ TARDIS:AddSetting({
 	desc="Which style should the TARDIS tips use?",
 	section="Misc",
 	value="default",
-	option=true,
+	option=false,
 	networked=false
 })
 
@@ -50,9 +50,15 @@ ENT:AddHook("Initialize", "tips", function(self)
 	self:InitializeTips(style_name)
 end)
 
+ENT:AddHook("ShouldDrawTips", "tips", function(self)
+	if LocalPlayer():GetTardisData("thirdperson") then
+		return false
+	end
+end)
+
 hook.Add("HUDPaint", "TARDISRewrite-DrawTips", function()
 	local interior = TARDIS:GetInteriorEnt(LocalPlayer())
-	if not (interior and interior.tips and TARDIS:GetSetting("tips")) then return end
+	if not (interior and interior.tips and TARDIS:GetSetting("tips") and (interior:CallHook("ShouldDrawTips")~=false)) then return end
 
 	local selected_tip_style = TARDIS:GetSetting("tips_style", "default", false)
 	if interior.tip_style_name ~= selected_tip_style then
