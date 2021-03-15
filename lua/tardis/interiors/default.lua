@@ -76,14 +76,14 @@ T.Interior={
 		legacy_isomorphic={pos=Vector(-39.500000, 22.000000, 6.629883), ang=Angle(290.762, 195.000, 137.777)},
 		legacy_atomaccel={pos=Vector(20.000000, -37.669998, 1.750000), ang=Angle(0.000, 0.000, 0.000)},
 		legacy_directionalpointer={pos=Vector(12.500000, -24.500000, 23.000000), ang=Angle(0.000, 30.000, 0.000)},
-		legacy_unused={pos=Vector(-2.5, -45.5, 7.75), ang=Angle(-56.714, -54.280, 148.819)},
+		legacy_float={pos=Vector(-2.5, -45.5, 7.75), ang=Angle(-56.714, -54.280, 148.819)},
 		legacy_blacksticks={pos=Vector(4.480469, -43.906372, 7.000000), ang=Angle(13.000, 0.000, 24.176)},
 		legacy_longflighttoggle={pos=Vector(-37.242310, -27.915344, 7.428223), ang=Angle(338.000, 28.721, 15.000)},
 		legacy_longflightdemat={pos=Vector(-43.168457, -31.015625, 4.700000), ang=Angle(22.000, 209.224, 348.000)},
 	},
 	Tips={
 		{pos=Vector(19, 48.80, 2.07),      text="Destination"},
-		{pos=Vector(39, 22.75, 5.82),      text="Hostile Action Displacement System"},
+		{pos=Vector(39, 22.75, 5.82),      text="H.A.D.S."},
 		{pos=Vector(42, 0.75, 27.1),       text="Monitor"},
 		{pos=Vector(46.2, 10.25, 38.6),    text="Toggle screen"},
 		{pos=Vector(44, -18, 5.5),         text="Power"},
@@ -103,6 +103,7 @@ T.Interior={
 		{pos=Vector(-47.5, 26, 4),         text="Isomorphic Security System"},
 		{pos=Vector(-6.62, 44.35, 7),      text="Self-Repair Lever"},
 		{pos=Vector(-0.43, 55.75, 4),      text="Flight Mode"},
+		{pos=Vector(-1.5, -60, 2),         text="Anti-Gravs"},
 	},
 	Seats={
 		{
