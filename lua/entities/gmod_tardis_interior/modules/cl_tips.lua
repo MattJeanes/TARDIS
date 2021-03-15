@@ -56,7 +56,11 @@ function ENT:InitializeTips(style_name)
 			tip[setting]=value
 		end
 		if tip.control then
-			tip.text = tip_control_texts[tip.control] or ""
+			if tip_control_texts[tip.control] then
+				tip.text = tip_control_texts[tip.control]
+			else
+				error("Control \""..tip.control.."\" does not exist")
+			end
 		end
 		tip.pos=self:LocalToWorld(tip.pos)
 		table.insert(tips, tip)
