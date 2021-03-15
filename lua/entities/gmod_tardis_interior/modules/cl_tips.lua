@@ -59,6 +59,21 @@ function ENT:InitializeTips(style_name)
 			tip.text = tip_control_texts[tip.control] or ""
 		end
 		tip.pos=self:LocalToWorld(tip.pos)
+		tip.colors.current = tip.colors.normal
+		tip.highlighted = false
+
+		tip.SetHighlight = function(on)
+			tip.highlighted = on
+			if on then
+				tip.colors.current = tip.colors.highlighted
+			else
+				tip.colors.current = tip.colors.normal
+			end
+		end
+		tip.ToggleHighlight = function()
+			tip.SetHighlight(not tip.highlighted)
+		end
+
 		table.insert(tips, tip)
 	end
 	self.tips = tips
@@ -92,9 +107,25 @@ hook.Add("HUDPaint", "TARDIS-DrawTips", function()
 	local view_range_min = interior.metadata.Interior.Tips.view_range_min
 	local view_range_max = interior.metadata.Interior.Tips.view_range_max
 
+	local cseq_enabled = TARDIS:GetSetting("csequences-enabled", false, interior:GetCreator())
+	local cseq_current_set, cseq_active
+
+	if cseq_enabled then
+		cseq_current_set = TARDIS:GetControlSequence(interior.metadata.Interior.Sequences)
+		cseq_enabled = cseq_enabled and (cseq_current_set ~= nil)
+		cseq_active = interior:GetData("cseq-active")
+		cseq_next = interior:GetData("cseq-next-control")
+	end
+
 	local player_pos = LocalPlayer():EyePos()
 	for k,tip in ipairs(interior.tips)
 	do
+		if not cseq_active then
+			tip.SetHighlight(cseq_enabled and cseq_current_set[tip.part] ~= nil)
+		else
+			tip.SetHighlight(cseq_enabled and tip.part == cseq_next)
+		end
+
 		local dist = tip.pos:Distance(player_pos)
 		if dist <= view_range_max then
 			surface.SetFont(tip.font)
@@ -104,15 +135,15 @@ hook.Add("HUDPaint", "TARDIS-DrawTips", function()
 			local offset = 50
 			local x = pos.x - w - offset
 			local y = pos.y - h - offset
-			local alpha = tip.background_color.a
+			local alpha = tip.colors.current.background.a
 			if dist > view_range_min then
 				local normalised = 1 - ((dist - view_range_min) / (view_range_max - view_range_min))
-				alpha = (tip.background_color.a) * normalised
+				alpha = (tip.colors.current.background.a) * normalised
 			end
 
-			local background_color = ColorAlpha(tip.background_color, alpha)
-			local frame_color = ColorAlpha(tip.frame_color, alpha)
-			local text_color = ColorAlpha(tip.text_color, alpha)
+			local background_color = ColorAlpha(tip.colors.current.background, alpha)
+			local frame_color = ColorAlpha(tip.colors.current.frame, alpha)
+			local text_color = ColorAlpha(tip.colors.current.text, alpha)
 
 			local verts = {}
 			verts[1] = { x=x+w-(padding*2), y=y+h+padding }
