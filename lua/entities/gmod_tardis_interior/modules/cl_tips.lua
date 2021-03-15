@@ -55,12 +55,34 @@ function ENT:InitializeTips(style_name)
 		for setting,value in pairs(interior_tip) do
 			tip[setting]=value
 		end
-		if tip.control then
-			if tip_control_texts[tip.control] then
-				tip.text = tip_control_texts[tip.control]
-			else
-				error("Control \""..tip.control.."\" does not exist")
+		if not tip.text then
+			if tip.part then
+				local part = TARDIS:GetRegisteredPart(tip.part)
+				if part then
+					if part.Control then
+						if tip_control_texts[part.Control] then
+							tip.text = tip_control_texts[part.Control]
+						else
+							error("Control \""..part.Control.."\" does not exist")
+						end
+					end
+					if part.Text then
+						tip.text = part.Text
+					end
+				else
+					error("Part \""..tip.part.."\" does not exist")
+				end
 			end
+			if tip.control then
+				if tip_control_texts[tip.control] then
+					tip.text = tip_control_texts[tip.control]
+				else
+					error("Control \""..tip.control.."\" does not exist")
+				end
+			end
+		end
+		if not tip.text then
+			error("Tip at position "..tostring(tip.pos).." has no text set")
 		end
 		tip.pos=self:LocalToWorld(tip.pos)
 		tip.colors.current = tip.colors.normal

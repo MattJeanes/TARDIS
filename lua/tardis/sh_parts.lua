@@ -133,6 +133,10 @@ function TARDIS:AddPart(e)
 	parts[e.ID] = { class = class, source = source }
 end
 
+function TARDIS:GetRegisteredPart(id)
+	return scripted_ents.Get(parts[id].class)
+end
+
 hook.Add("InitPostEntity", "tardis-parts", function() 
 	for k,v in pairs(overridequeue) do
 		SetupOverrides(v)

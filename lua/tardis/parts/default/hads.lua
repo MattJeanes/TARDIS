@@ -3,6 +3,7 @@
 local PART = {}
 PART.ID = "default_hads"
 PART.Name = "Default HADS Switch"
+PART.Control = "hads"
 PART.Model = "models/drmatt/tardis/handbrake.mdl"
 PART.AutoSetup = true
 PART.Collision = true
