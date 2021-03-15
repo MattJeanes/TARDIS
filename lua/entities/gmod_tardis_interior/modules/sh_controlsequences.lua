@@ -100,7 +100,7 @@ if SERVER then
 		end
 	end)
 	ENT:AddHook("CanStartControlSequence", "settingquery", function(self)
-		if not TARDIS:GetSetting("csequences-enabled",false,self:GetCreator()) then
+		if not self:GetSequencesEnabled() then
 			return false
 		end
 	end)

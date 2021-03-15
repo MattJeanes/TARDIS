@@ -27,7 +27,7 @@ if CLIENT then
 
 			local cstoggle = vgui.Create("DCheckBoxLabel")
 			cstoggle:SetText("Enable Control Sequences")
-			cstoggle:SetValue(TARDIS:GetSetting("csequences-enabled"))
+			cstoggle:SetValue(TARDIS:GetSetting("csequences-enabled", false, LocalPlayer()))
 			function cstoggle:OnChange(val)
 				TARDIS:SetSetting("csequences-enabled", val, true)
 			end
