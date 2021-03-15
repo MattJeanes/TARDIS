@@ -1625,6 +1625,343 @@ function ENT:TogglePower()
 	return false
 end
 
+local function CheckPP(ply, ent) -- Prop Protection
+	return hook.Call("PhysgunPickup", GAMEMODE, ply, ent)
+end
+
+local E2Commands = {
+	["Demat"] = function(self,data,pos,ang)
+		if CheckPP(data.player,self) then
+			local pos=Vector(pos[1], pos[2], pos[3])
+			if ang then ang=Angle(ang[1], ang[2], ang[3]) end
+			local success=self:Go(pos,ang)
+			if success then
+				return 1
+			else
+				return 0
+			end
+		else
+			return 0
+		end
+	end,
+
+	["Mat"] = function(self,data)
+		if CheckPP(data.player,self) then
+			local success=self:LongReappear()
+			if success then
+				return 1
+			else
+				return 0
+			end
+		end
+		return 0
+	end,
+
+	["SetDestination"] = function(self,data,pos,ang)
+		if CheckPP(data.player,self) then
+			local pos=Vector(pos[1], pos[2], pos[3])
+			if ang then ang=Angle(ang[1], ang[2], ang[3]) end
+			if self.invortex then
+				self:SetDestination(pos,ang)
+				return 1
+			else
+				return 0
+			end
+		else
+			return 0
+		end
+	end,
+
+	["Longflight"] = function(self,data)
+		if CheckPP(data.player,self) then
+			local success=self:ToggleLongFlight()
+			if success then
+				return 1
+			else
+				return 0
+			end
+		end
+		return 0
+	end,
+
+	["Flightmode"] =  function(self,data)
+		if CheckPP(data.player,self) then
+			local success=self:ToggleFlight()
+			if success then
+				return 1
+			else
+				return 0
+			end
+		end
+		return 0
+	end,
+
+	["FastReturn"] = function(self,data)
+		if CheckPP(data.player,self) then
+			local success=self:FastReturn()
+			if success then
+				return 1
+			else
+				return 0
+			end
+		else
+			return 0
+		end
+	end,
+
+	["Spinmode"] = function(self,data,spinmode)
+		if CheckPP(data.player,self) then
+			self:SetSpinMode(spinmode)
+			return self.spinmode
+		end
+		return 0
+	end,
+
+	["FastDemat"] = function(self,data)
+		if CheckPP(data.player,self) then
+			local success=self:DematFast()
+			if success then
+				return 1
+			else
+				return 0
+			end
+		else
+			return 0
+		end
+	end,
+
+	["HADS"] = function(self,data)
+		if CheckPP(data.player,self) then
+			local success=self:ToggleHADS()
+			if success then
+				return 1
+			else
+				return 0
+			end
+		end
+		return 0
+	end,
+
+	["Track"] = function(self,data,trackent)
+		if CheckPP(data.player,self) then
+			local success=self:SetTrackingEnt(trackent)
+			if success then
+				return 1
+			else
+				return 0
+			end
+		end
+		return 0
+	end,
+
+	["Selfrepair"] = function(self,data)
+		if CheckPP(data.player,self) then
+			local success=self:ToggleRepair()
+			if success then
+				return 1
+			else
+				return 0
+			end
+		end
+		return 0
+	end,
+
+	["Isomorph"] = function(self,data)
+		if CheckPP(data.player,self) then
+			if not IsValid(data.player) then return 0 end
+			local success=self:IsomorphicToggle(data.player)
+			if success then
+				return 1
+			else
+				return 0
+			end
+		end
+		return 0
+	end,
+
+	["Power"] = function(self,data)
+		if CheckPP(data.player,self) then
+			local success=self:TogglePower()
+			if success then
+				return 1
+			else
+				return 0
+			end
+		end
+		return 0
+	end,
+
+	["Physlock"] = function(self,data)
+		if CheckPP(data.player,self) then
+			local success=self:TogglePhysLock()
+			if success then
+				return 1
+			else
+				return 0
+			end
+		end
+		return 0
+	end,
+
+	["Lock"] = function(self,data)
+		if CheckPP(data.player,self) then
+			local success=self:ToggleLocked()
+			if success then
+				return 1
+			else
+				return 0
+			end
+		end
+		return 0
+	end,
+
+	["Phase"] = function(self,data)
+		if CheckPP(data.player,self) then
+			local success=self:TogglePhase()
+			if success then
+				return 1
+			else
+				return 0
+			end
+		end
+		return 0
+	end,
+
+	["GetLongflight"] = function(self)
+		if self.longflight then
+			return 1
+		else
+			return 0
+		end
+	end,
+
+	["GetHealth"] = function(self)
+		if self.health then
+			return math.floor(self.health)
+		else
+			return 0
+		end
+	end,
+
+	["GetInVortex"] = function(self)
+		if self.invortex then
+			return 1
+		else
+			return 0
+		end
+
+	end,
+
+	["GetFlying"] = function(self)
+		if self.flightmode then
+			return 1
+		else
+			return 0
+		end
+	end,
+
+	["GetMoving"] = function(self)
+		if self.moving then
+			return 1
+		else
+			return 0
+		end
+	end,
+
+	["GetPilot"] = function(self)
+		if not self.pilot then return NULL end
+		return self.pilot
+	end,
+
+	["GetHADS"] = function(self)
+		if self.hads then
+			return 1
+		else
+			return 0
+		end
+	end,
+
+	["GetTracking"] = function(self)
+		if IsValid(self.trackingent) then
+			return self.trackingent
+		else
+			return NULL
+		end
+	end,
+
+	["LastAng"] = function(self)
+		if self.lastang then
+			return {self.lastang.p, self.lastang.y, self.lastang.r}
+		else
+			return {0,0,0}
+		end
+	end,
+
+	["LastPos"] = function(self)
+		if self.lastpos then
+			return self.lastpos
+		else
+			return Vector()
+		end
+	end,
+
+	["GetSelfrepairing"] = function(self)
+		if self.repairing then
+			return 1
+		else
+			return 0
+		end
+	end,
+
+	["GetIsomorphic"] = function(self)
+		if self.isomorphic then
+			return 1
+		else
+			return 0
+		end
+	end,
+
+	["GetPowered"] = function(self)
+		if self.power then
+			return 1
+		else
+			return 0
+		end
+	end,
+
+	["GetPhyslocked"] = function(self)
+		if self.physlocked then
+			return 1
+		else
+			return 0
+		end
+	end,
+
+	["GetLocked"] = function(self)
+		if self.locked then
+			return 1
+		else
+			return 0
+		end
+	end,
+
+	["GetVisible"] = function(self)
+		if self.visible then
+			return 1
+		else
+			return 0
+		end
+	end
+}
+
+function ENT:HandleE2(cmd, ...)
+	if not E2Commands[cmd] then 
+		error("TARDIS E2 Handler for command '"..cmd.."' is not registered",0)
+		return 
+	end
+	return E2Commands[cmd](self,...)
+end
+
 function ENT:Think()
 	if self.demat or self.mat then
 		self:UpdateAlpha()
