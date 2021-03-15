@@ -303,6 +303,8 @@ if SERVER then
 			local spindir = args[1]
 			self.spindir = spindir
 			return self.spindir
+		elseif name == "Track" then
+			return 0
 		end
 	end)
 
