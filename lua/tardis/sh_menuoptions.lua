@@ -1,6 +1,6 @@
 if CLIENT then
 	hook.Add("PopulateToolMenu", "TARDIS2-PopulateToolMenu", function()
-		spawnmenu.AddToolMenuOption("Options", "Doctor Who", "TARDIS2_Options", "TARDIS Rewrite", "", "", function(panel)
+		spawnmenu.AddToolMenuOption("Options", "Doctor Who", "TARDIS2_Options", "TARDIS", "", "", function(panel)
 			panel:ClearControls()
 			-- Do menu things here
 

@@ -662,6 +662,7 @@ function TARDIS:LoadScreen(id, options)
 	screen.ext=options.ext
 	screen.int=options.int
 	screen.visgui_rows=options.visgui_rows
+	screen.power_off_black = options.power_off_black
 	screen.crosshair=6 * screen.res
 	screen.gap=10
 	screen.gap2=screen.gap * 2
@@ -685,7 +686,7 @@ function TARDIS:LoadScreen(id, options)
 		local pwr_on = self.ext:GetData("power-state", false)
 		if self.draw ~= shouldDraw or self.black ~= blackScreen then
 			self.frame:SetVisible(shouldDraw and not blackScreen)
-			if shouldDraw or blackScreen then
+			if shouldDraw or (blackScreen and self.power_off_black) then
 				self:SetBackgroundColor(Color(0,0,0,255))
 			else
 				self:SetBackgroundColor(Color(0,0,0,0))

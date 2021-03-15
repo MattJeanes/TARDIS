@@ -21,6 +21,27 @@ TARDIS:AddSetting({
 	networked=false
 })
 
+local tip_control_texts = {
+	coords = "Coordinates",
+	destination = "Destination",
+	hads = "H.A.D.S.",
+	monitor = "Monitor",
+	scanner = "Scanner", -- for the future updates
+	screen_toggle = "Toggle Screen",
+	power = "Power Switch",
+	physlock = "Physlock",
+	cloak = "Cloaking Device", -- partially exists in some interiors
+	throttle = "Space-Time Throttle",
+	fast_return = "Fast-Return Protocol",
+	long_flight = "Vortex Flight Toggler",
+	handbrake = "Time-Rotor Handbrake", -- for the future updates
+	music = "Music",
+	isomorphic = "Isomorphic Security System",
+	repair = "Self-Repair",
+	flight = "Flight Mode",
+	float = "Anti-Gravs",
+}
+
 function ENT:InitializeTips(style_name)
 	if style_name == "default" then
 		style_name = self.metadata.Interior.Tips.style
@@ -33,6 +54,13 @@ function ENT:InitializeTips(style_name)
 		local tip = table.Copy(style)
 		for setting,value in pairs(interior_tip) do
 			tip[setting]=value
+		end
+		if tip.control then
+			if tip_control_texts[tip.control] then
+				tip.text = tip_control_texts[tip.control]
+			else
+				error("Control \""..tip.control.."\" does not exist")
+			end
 		end
 		tip.pos=self:LocalToWorld(tip.pos)
 		table.insert(tips, tip)
@@ -51,12 +79,12 @@ ENT:AddHook("Initialize", "tips", function(self)
 end)
 
 ENT:AddHook("ShouldDrawTips", "tips", function(self)
-	if LocalPlayer():GetTardisData("thirdperson") then
+	if LocalPlayer():GetTardisData("thirdperson") or LocalPlayer():GetTardisData("destination") then
 		return false
 	end
 end)
 
-hook.Add("HUDPaint", "TARDISRewrite-DrawTips", function()
+hook.Add("HUDPaint", "TARDIS-DrawTips", function()
 	local interior = TARDIS:GetInteriorEnt(LocalPlayer())
 	if not (interior and interior.tips and TARDIS:GetSetting("tips") and (interior:CallHook("ShouldDrawTips")~=false)) then return end
 
