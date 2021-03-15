@@ -302,6 +302,7 @@ if SERVER then
 		elseif name == "Spinmode" then
 			local spindir = args[1]
 			self.spindir = spindir
+			return self.spindir
 		end
 	end)
 
