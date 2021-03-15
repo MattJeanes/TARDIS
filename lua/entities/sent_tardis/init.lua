@@ -1724,6 +1724,124 @@ local E2Commands = {
 		return 0
 	end,
 
+	["FastDemat"] = function(ent,data)
+		if ent and IsValid(ent) and CheckPP(data.player,ent) then
+			if not (ent:GetClass()=="sent_tardis") then return 0 end
+			local success=ent:DematFast()
+			if success then
+				return 1
+			else
+				return 0
+			end
+		else
+			return 0
+		end
+	end,
+
+	["HADS"] = function(ent,data)
+		if ent and IsValid(ent) and CheckPP(data.player,ent) then
+			if not (ent:GetClass()=="sent_tardis") then return 0 end
+			local success=ent:ToggleHADS()
+			if success then
+				return 1
+			else
+				return 0
+			end
+		end
+		return 0
+	end,
+
+	["Track"] = function TARDIS_Track(ent,data,trackent)
+		if ent and IsValid(ent) and CheckPP(data.player,ent) then
+			if not (ent:GetClass()=="sent_tardis") then return 0 end
+			local success=ent:SetTrackingEnt(trackent)
+			if success then
+				return 1
+			else
+				return 0
+			end
+		end
+		return 0
+	end,
+
+	["Selfrepair"] = function(ent,data)
+		if ent and IsValid(ent) and CheckPP(data.player,ent) then
+			if not (ent:GetClass()=="sent_tardis") then return 0 end
+			local success=ent:ToggleRepair()
+			if success then
+				return 1
+			else
+				return 0
+			end
+		end
+		return 0
+	end,
+
+	["Isomorph"] = function(ent,data)
+		if ent and IsValid(ent) and CheckPP(data.player,ent) then
+			if not (ent:GetClass()=="sent_tardis") or not IsValid(data.player) then return 0 end
+			local success=ent:IsomorphicToggle(data.player)
+			if success then
+				return 1
+			else
+				return 0
+			end
+		end
+		return 0
+	end,
+
+	["Power"] = function(ent,data)
+		if ent and IsValid(ent) and CheckPP(data.player,ent) then
+			if not (ent:GetClass()=="sent_tardis") then return 0 end
+			local success=ent:TogglePower()
+			if success then
+				return 1
+			else
+				return 0
+			end
+		end
+		return 0
+	end,
+
+	["Physlock"] = function(ent,data)
+		if ent and IsValid(ent) and CheckPP(data.player,ent) then
+			if not (ent:GetClass()=="sent_tardis") then return 0 end
+			local success=ent:TogglePhysLock()
+			if success then
+				return 1
+			else
+				return 0
+			end
+		end
+		return 0
+	end,
+
+	["Lock"] = function(ent,data)
+		if ent and IsValid(ent) and CheckPP(data.player,ent) then
+			if not (ent:GetClass()=="sent_tardis") then return 0 end
+			local success=ent:ToggleLocked()
+			if success then
+				return 1
+			else
+				return 0
+			end
+		end
+		return 0
+	end,
+
+	["Phase"] = function(ent,data)
+		if ent and IsValid(ent) and CheckPP(data.player,ent) then
+			if not (ent:GetClass()=="sent_tardis") then return 0 end
+			local success=ent:TogglePhase()
+			if success then
+				return 1
+			else
+				return 0
+			end
+		end
+		return 0
+	end,
+
 	["GetLongflight"] = function(ent)
 		if ent and IsValid(ent) then
 			if not (ent:GetClass()=="sent_tardis") then return 0 end
@@ -1782,8 +1900,136 @@ local E2Commands = {
 			end
 		end
 		return 0
+	end,
+
+	["GetPilot"] = function(ent)
+		if ent and IsValid(ent) then
+			if not (ent:GetClass()=="sent_tardis") then return NULL end
+			if not ent.pilot then return NULL end
+			return ent.pilot
+		end
+		return NULL
+	end,
+
+	["GetHADS"] = function(ent)
+		if ent and IsValid(ent) then
+			if not (ent:GetClass()=="sent_tardis") then return 0 end
+			if ent.hads then
+				return 1
+			else
+				return 0
+			end
+		end
+		return 0
+	end,
+
+	["GetTracking"] = function(ent)
+		if ent and IsValid(ent) then
+			if not (ent:GetClass()=="sent_tardis") then return 0 end
+			if IsValid(ent.trackingent) then
+				return ent.trackingent
+			else
+				return NULL
+			end
+		end
+		return NULL
+	end,
+
+	["LastAng"] = function(ent)
+		if ent and IsValid(ent) then
+			if not (ent:GetClass()=="sent_tardis") then return 0 end
+			if ent.lastang then
+				return {ent.lastang.p, ent.lastang.y, ent.lastang.r}
+			else
+				return {0,0,0}
+			end
+		end
+		return {0,0,0}
+	end,
+
+	["LastPos"] = function(ent)
+		if ent and IsValid(ent) then
+			if not (ent:GetClass()=="sent_tardis") then return 0 end
+			if ent.lastpos then
+				return ent.lastpos
+			else
+				return Vector()
+			end
+		end
+		return Vector()
+	end,
+
+	["GetSelfrepairing"] = function(ent)
+		if ent and IsValid(ent) then
+			if not (ent:GetClass()=="sent_tardis") then return 0 end
+			if ent.repairing then
+				return 1
+			else
+				return 0
+			end
+		end
+		return 0
+	end,
+
+	["GetIsomorphic"] = function(ent)
+		if ent and IsValid(ent) then
+			if not (ent:GetClass()=="sent_tardis") then return 0 end
+			if ent.isomorphic then
+				return 1
+			else
+				return 0
+			end
+		end
+		return 0
+	end,
+
+	["GetPowered"] = function(ent)
+		if ent and IsValid(ent) then
+			if not (ent:GetClass()=="sent_tardis") then return 0 end
+			if ent.power then
+				return 1
+			else
+				return 0
+			end
+		end
+		return 0
+	end,
+
+	["GetPhyslocked"] = function(ent)
+		if ent and IsValid(ent) then
+			if not (ent:GetClass()=="sent_tardis") then return 0 end
+			if ent.physlocked then
+				return 1
+			else
+				return 0
+			end
+		end
+		return 0
+	end,
+
+	["GetLocked"] = function(ent)
+		if ent and IsValid(ent) then
+			if not (ent:GetClass()=="sent_tardis") then return 0 end
+			if ent.locked then
+				return 1
+			else
+				return 0
+			end
+		end
+		return 0
+	end,
+
+	["GetVisible"] = function(ent)
+		if ent and IsValid(ent) then
+			if not (ent:GetClass()=="sent_tardis") then return 0 end
+			if ent.visible then
+				return 1
+			else
+				return 0
+			end
+		end
+		return 0
 	end
-	
 }
 
 function ENT:HandleE2(cmd, ...)
