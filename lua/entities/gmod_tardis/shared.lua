@@ -2,8 +2,8 @@
 
 ENT.Base="gmod_door_exterior"
 ENT.Spawnable=true
-ENT.PrintName="TARDIS Rewrite"
-ENT.Category="Doctor Who"
+ENT.PrintName=" TARDIS " -- spaces are for it to go first in the list
+ENT.Category="Doctor Who - TARDIS"
 ENT.Author="Dr. Matt"
 ENT.TardisExterior=true
 ENT.Interior="gmod_tardis_interior"
