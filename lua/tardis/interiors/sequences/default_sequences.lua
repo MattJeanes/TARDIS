@@ -1,14 +1,14 @@
---Legacy Interior - Control Sequences (advanced mode)
+--Default Interior - Control Sequences (advanced mode)
 
 local Seq = {
-	ID = "legacy_sequences",
+	ID = "default_sequences",
 
-	["legacy_longflightdemat"] = {
+	["default_longflightdemat"] = {
 		Controls = {
-			"legacy_helmic",
-			"legacy_physbrake",
-			"legacy_handbrake",
-			"legacy_throttle"
+			"default_helmic",
+			"default_physbrake",
+			"default_handbrake",
+			"default_throttle"
 		},
 		OnFinish = function(self, ply, step, part)
 			if IsValid(self) and IsValid(self) then

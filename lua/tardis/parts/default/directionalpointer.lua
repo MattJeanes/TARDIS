@@ -1,8 +1,8 @@
--- Legacy Interior - Directional Pointer
+-- Default Interior - Directional Pointer
 
 local PART = {}
-PART.ID = "legacy_directionalpointer"
-PART.Name = "Legacy Directional Pointer"
+PART.ID = "default_directionalpointer"
+PART.Name = "Default Directional Pointer"
 PART.Model = "models/drmatt/tardis/directionalpointer.mdl"
 PART.AutoSetup = true
 PART.Collision = true

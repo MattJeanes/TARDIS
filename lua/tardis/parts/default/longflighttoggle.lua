@@ -1,8 +1,8 @@
--- Legacy Interior - Long Flight Toggle
+-- Default Interior - Long Flight Toggle
 
 local PART = {}
-PART.ID = "legacy_longflighttoggle"
-PART.Name = "Legacy Long Flight Toggle"
+PART.ID = "default_longflighttoggle"
+PART.Name = "Default Long Flight Toggle"
 PART.Model = "models/drmatt/tardis/longflighttoggle.mdl"
 PART.AutoSetup = true
 PART.Collision = true

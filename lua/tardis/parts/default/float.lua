@@ -1,8 +1,8 @@
--- Legacy Interior - Unused Pull Handle
+-- Default Interior - Unused Pull Handle
 
 local PART = {}
-PART.ID = "legacy_float"
-PART.Name = "Legacy Float"
+PART.ID = "default_float"
+PART.Name = "Default Float"
 PART.Model = "models/drmatt/tardis/handbrake.mdl"
 PART.AutoSetup = true
 PART.Collision = true

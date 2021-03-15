@@ -1,8 +1,8 @@
--- Legacy Interior - HADS Switch
+-- Default Interior - Flightmode Lever
 
 local PART = {}
-PART.ID = "legacy_hads"
-PART.Name = "Legacy HADS Switch"
+PART.ID = "default_flightlever"
+PART.Name = "Default Flight Lever"
 PART.Model = "models/drmatt/tardis/handbrake.mdl"
 PART.AutoSetup = true
 PART.Collision = true
@@ -11,9 +11,7 @@ PART.Sound = "tardis/control_handbrake.wav"
 
 if SERVER then
 	function PART:Use(ply)
-		self.exterior:ToggleHADS()
-		local on = self.exterior:GetData("hads",false)
-		ply:ChatPrint("HADS is now "..(on and "on" or "off"))
+		self.exterior:ToggleFlight()
 	end
 end
 

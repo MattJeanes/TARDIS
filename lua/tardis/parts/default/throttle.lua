@@ -1,8 +1,8 @@
--- Legacy Interior - Throttle
+-- Default Interior - Throttle
 
 local PART = {}
-PART.ID = "legacy_throttle"
-PART.Name = "Legacy Throttle"
+PART.ID = "default_throttle"
+PART.Name = "Default Throttle"
 PART.Model = "models/drmatt/tardis/throttle.mdl"
 PART.AutoSetup = true
 PART.Collision = true

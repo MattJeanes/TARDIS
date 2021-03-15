@@ -1,8 +1,8 @@
--- Legacy Interior - Keyboard
+-- Default Interior - Keyboard
 
 local PART = {}
-PART.ID = "legacy_keyboard"
-PART.Name = "Legacy Keyboard"
+PART.ID = "default_keyboard"
+PART.Name = "Default Keyboard"
 PART.Model = "models/drmatt/tardis/keyboard.mdl"
 PART.AutoSetup = true
 PART.Collision = true

@@ -1,8 +1,8 @@
--- Legacy Interior - Long Flight Demat Switch
+-- Default Interior - Long Flight Demat Switch
 
 local PART = {}
-PART.ID = "legacy_screenbutton"
-PART.Name = "Legacy Screen Button"
+PART.ID = "default_screenbutton"
+PART.Name = "Default Screen Button"
 PART.Model = "models/drmatt/tardis/smallbutton.mdl"
 PART.AutoSetup = true
 PART.Collision = true

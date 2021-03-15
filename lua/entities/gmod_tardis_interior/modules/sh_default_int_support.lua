@@ -1,4 +1,4 @@
--- Legacy interior support
+-- Default interior support
 
 if SERVER then
 	local function playerlookingat(self,ply,vec,fov,width)	
@@ -15,8 +15,8 @@ if SERVER then
 		return false
 	end
 
-	ENT:AddHook("Use", "interior-legacy", function(self,a,c)
-		if self.metadata.ID=="legacy" and a:IsPlayer() and (not a:GetTardisData("outside")) and CurTime()>a:GetTardisData("outsidecool",0) then
+	ENT:AddHook("Use", "interior-default", function(self,a,c)
+		if self.metadata.ID=="default" and a:IsPlayer() and (not a:GetTardisData("outside")) and CurTime()>a:GetTardisData("outsidecool",0) then
 			local pos=Vector(0,0,0)
 			local pos2=self:WorldToLocal(a:GetPos())
 			local distance=pos:Distance(pos2)
@@ -27,16 +27,16 @@ if SERVER then
 	end)
 end
 
-ENT:AddHook("Initialize", "interior-legacy", function(self)
-	if self.metadata.ID=="legacy" then
+ENT:AddHook("Initialize", "interior-default", function(self)
+	if self.metadata.ID=="default" then
 		self.timerotor={}
 		self.timerotor.pos=0
 		self.timerotor.mode=1
 	end
 end)
 
-ENT:AddHook("Think", "interior-legacy", function(self)
-	if self.metadata.ID=="legacy" then
+ENT:AddHook("Think", "interior-default", function(self)
+	if self.metadata.ID=="default" then
 		local moving = self.exterior:GetData("teleport",false)
 		local flightmode = self.exterior:GetData("flight",false)
 		if not CLIENT then return end
@@ -46,7 +46,6 @@ ENT:AddHook("Think", "interior-legacy", function(self)
 		elseif self.timerotor.pos==0 and (moving or flightmode) then
 			self.timerotor.mode=1
 		end
-		
 		self.timerotor.pos=math.Approach( self.timerotor.pos, self.timerotor.mode, FrameTime()*1.1 )
 		self:SetPoseParameter( "glass", self.timerotor.pos )
 		end

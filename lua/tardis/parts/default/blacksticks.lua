@@ -1,8 +1,8 @@
--- Legacy Interior - Cloaking Blacksticks
+-- Default Interior - Cloaking Blacksticks
 
 local PART = {}
-PART.ID = "legacy_blacksticks"
-PART.Name = "Legacy Cloaking Blacksticks"
+PART.ID = "default_blacksticks"
+PART.Name = "Default Cloaking Blacksticks"
 PART.Model = "models/drmatt/tardis/blacksticks.mdl"
 PART.AutoSetup = true
 PART.Collision = true

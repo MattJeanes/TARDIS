@@ -1,8 +1,8 @@
--- Legacy Interior - Fast Return Lever
+-- Default Interior - Fast Return Lever
 
 local PART = {}
-PART.ID = "legacy_biglever"
-PART.Name = "Legacy Fast Return Lever"
+PART.ID = "default_biglever"
+PART.Name = "Default Fast Return Lever"
 PART.Model = "models/drmatt/tardis/biglever.mdl"
 PART.AutoSetup = true
 PART.Collision = true

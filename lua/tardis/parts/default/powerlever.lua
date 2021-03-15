@@ -1,8 +1,8 @@
--- Legacy Interior - Power Lever
+-- Default Interior - Power Lever
 
 local PART = {}
-PART.ID = "legacy_powerlever"
-PART.Name = "Legacy Power Lever"
+PART.ID = "default_powerlever"
+PART.Name = "Default Power Lever"
 PART.Model = "models/drmatt/tardis/flightlever.mdl"
 PART.AutoSetup = true
 PART.Collision = true

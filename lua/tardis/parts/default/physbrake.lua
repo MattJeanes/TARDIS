@@ -1,8 +1,8 @@
--- Legacy Interior - Physics Lock
+-- Default Interior - Physics Lock
 
 local PART = {}
-PART.ID = "legacy_physbrake"
-PART.Name = "Legacy Physics Lock"
+PART.ID = "default_physbrake"
+PART.Name = "Default Physics Lock"
 PART.Model = "models/drmatt/tardis/handbrake.mdl"
 PART.AutoSetup = true
 PART.Collision = true
