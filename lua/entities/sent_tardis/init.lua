@@ -1742,9 +1742,9 @@ local E2Commands = {
 		return 0
 	end,
 
-	["Track"] = function TARDIS_Track(self,data,trackself)
+	["Track"] = function(self,data,trackent)
 		if self and IsValid(self) and CheckPP(data.player,self) then
-			local success=self:SetTrackingself(trackself)
+			local success=self:SetTrackingself(trackent)
 			if success then
 				return 1
 			else
