@@ -54,7 +54,7 @@ CreateClientConVar("tardis_extcol_g", "255", true, true)
 CreateClientConVar("tardis_extcol_b", "255", true, true)
 
 hook.Add("PopulateToolMenu", "TARDIS-PopulateToolMenu", function()
-	spawnmenu.AddToolMenuOption("Options", "Doctor Who", "TARDIS_Options", "TARDIS", "", "", function(panel)
+	spawnmenu.AddToolMenuOption("Options", "Doctor Who", "TARDIS_Options", "Legacy TARDIS", "", "", function(panel)
 		panel:ClearControls()
 		//Do menu things here
 		
