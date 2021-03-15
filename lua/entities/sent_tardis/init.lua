@@ -1956,7 +1956,7 @@ local E2Commands = {
 
 function ENT:HandleE2(cmd, ...)
 	if not E2Commands[cmd] then 
-		error("TARDIS E2 Handler for command '"..cmd.."' is not registered")
+		error("TARDIS E2 Handler for command '"..cmd.."' is not registered",0)
 		return 
 	end
 	return E2Commands[cmd](self,...)
