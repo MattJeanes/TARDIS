@@ -282,7 +282,11 @@ if SERVER then
 	ENT:AddHook("HandleE2", "teleport_args", function(self, name, e2, pos, ang)
 		if name == "Demat" then
 			local success = self:CallHook("CanDemat")==false
-			self:Demat(Vector(pos[1], pos[2], pos[3]), Angle(ang[1], ang[2], ang[3]))
+			if not pos or not ang then
+				self:Demat()
+			else
+				self:Demat(Vector(pos[1], pos[2], pos[3]), Angle(ang[1], ang[2], ang[3]))
+			end
 			return success and 0 or 1
 		elseif name == "SetDestination" then
 			local pos2 = Vector(pos[1], pos[2], pos[3])
@@ -302,16 +306,24 @@ if SERVER then
 			local success = self:CallHook("CanDemat")==false
 			self:FastReturn()
 			return success and 0 or 1
+		elseif name == "FastDemat" then
+			local success = self:CallHook("CanDemat")==false
+			self:Demat()
+			return success and 0 or 1
 		end
 	end)
 
 	ENT:AddHook("HandleE2", "teleport_gets", function(self, name, e2)
 		if name == "GetMoving" then
-			return self:GetData("teleport",false) and (1 or 0)
+			return self:GetData("teleport",false) and 1 or 0
 		elseif name == "GetInVortex" then
 			return self:GetData("vortex",false) and 1 or 0
 		elseif name == "GetLongflight" then
-			return self:GetData("demat-fast",false) and 1 or 0
+			return self:GetData("demat-fast",false) and 0 or 1
+		elseif name == "LastAng" then
+			
+		elseif name == "LastPos" then
+			--Not sure we store LastPos and LastAng anymore, will reimplement.
 		end
 	end)
 	
