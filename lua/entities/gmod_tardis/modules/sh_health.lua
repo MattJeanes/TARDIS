@@ -297,6 +297,18 @@ if SERVER then
 			end
 		end
 	end)
+
+	ENT:AddHook("StopDemat", "warning", function(self)
+		if self.smoke then
+			self:StopSmoke()
+		end
+	end)
+
+	ENT:AddHook("MatStart", "warning", function(self)
+		if self:GetData("health-warning",false) then
+			self:StartSmoke()
+		end
+	end)
 else
 	ENT:OnMessage("health-networking", function(self, ply)
 		local newhealth = net.ReadInt(32)
