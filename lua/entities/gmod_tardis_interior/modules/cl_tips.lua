@@ -66,16 +66,16 @@ function ENT:InitializeTips(style_name)
 		tip.colors.current = tip.colors.normal
 		tip.highlighted = false
 
-		tip.SetHighlight = function(on)
-			tip.highlighted = on
+		tip.SetHighlight = function(self, on)
+			self.highlighted = on
 			if on then
-				tip.colors.current = tip.colors.highlighted
+				self.colors.current = self.colors.highlighted
 			else
-				tip.colors.current = tip.colors.normal
+				self.colors.current = self.colors.normal
 			end
 		end
-		tip.ToggleHighlight = function()
-			tip.SetHighlight(not tip.highlighted)
+		tip.ToggleHighlight = function(self)
+			self:SetHighlight(not tip.highlighted)
 		end
 
 		table.insert(tips, tip)
@@ -111,23 +111,27 @@ hook.Add("HUDPaint", "TARDIS-DrawTips", function()
 	local view_range_min = interior.metadata.Interior.Tips.view_range_min
 	local view_range_max = interior.metadata.Interior.Tips.view_range_max
 
-	local cseq_enabled = TARDIS:GetSetting("csequences-enabled", false, interior:GetCreator())
-	local cseq_current_set, cseq_active
+	local cseq_enabled = interior:GetSequencesEnabled()
+	local cseq_sequences, cseq_active, cseq_next
 
 	if cseq_enabled then
-		cseq_current_set = TARDIS:GetControlSequence(interior.metadata.Interior.Sequences)
-		cseq_enabled = cseq_enabled and (cseq_current_set ~= nil)
+		cseq_sequences = TARDIS:GetControlSequence(interior.metadata.Interior.Sequences)
+		cseq_enabled = cseq_sequences ~= nil
 		cseq_active = interior:GetData("cseq-active")
-		cseq_next = interior:GetData("cseq-next-control")
+		local cseq_curseq = interior:GetData("cseq-curseq")
+		local cseq_step = interior:GetData("cseq-step")
+		if cseq_sequences and cseq_curseq and cseq_sequences[cseq_curseq] then
+			cseq_next = cseq_sequences[cseq_curseq].Controls[cseq_step]
+		end
 	end
 
 	local player_pos = LocalPlayer():EyePos()
 	for k,tip in ipairs(interior.tips)
 	do
 		if not cseq_active then
-			tip.SetHighlight(cseq_enabled and cseq_current_set[tip.part] ~= nil)
+			tip:SetHighlight(cseq_enabled and cseq_sequences[tip.part] ~= nil)
 		else
-			tip.SetHighlight(cseq_enabled and tip.part == cseq_next)
+			tip:SetHighlight(cseq_enabled and tip.part == cseq_next)
 		end
 
 		local dist = tip.pos:Distance(player_pos)

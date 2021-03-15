@@ -52,7 +52,15 @@ TARDIS:AddSetting({
 	networked=true
 })
 
+function ENT:GetSequencesEnabled()
+	return self:GetData("cseq-enabled", false)
+end
+
 if SERVER then
+	ENT:AddHook("Initialize", "csequence", function(self)
+		self:SetData("cseq-enabled", TARDIS:GetSetting("csequences-enabled", false, self:GetCreator()), true)
+	end)
+
 	ENT:AddHook("PartUsed","HandleControlSequence",function(self,part,a)
 		local sequences = TARDIS:GetControlSequence(self.metadata.Interior.Sequences)
 		if sequences == nil then return end
@@ -66,7 +74,6 @@ if SERVER then
 			self:SetData("cseq-active", true, true)
 			self:SetData("cseq-step", 1, true)
 			self:SetData("cseq-curseq", id, true)
-			self:SetData("cseq-next-control", sequences[id].Controls[1], true)
 			for _,v in pairs(sequences[id].Controls) do
 				local p = TARDIS:GetPart(self,v)
 				p.InSequence = true
@@ -81,7 +88,6 @@ if SERVER then
 					self:TerminateSequence()
 					return
 				end
-				self:SetData("cseq-next-control", sequences[curseq].Controls[step + 1], true)
 			else
 				if id == "console" or id == "door" then return end
 				self:EmitSound(self.metadata.Interior.Sounds.SequenceFail)
@@ -115,10 +121,5 @@ if SERVER then
 		self:SetData("cseq-step", nil, true)
 		self:SetData("cseq-curseq", nil, true)
 		self:SetData("cseq-active", false, true)
-		self:SetData("cseq-next-control", nil, true)
-	end
-
-	function ENT:GetSequencesEnabled()
-		return TARDIS:GetSetting("csequences-enabled", false, self:GetCreator())
 	end
 end
