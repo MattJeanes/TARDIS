@@ -4,15 +4,18 @@ if WireLib then
 else
 	ENT.Base			= "base_gmodentity"
 end 
-ENT.PrintName		= "TARDIS"
+ENT.PrintName		= "​TARDIS (Legacy)"
 ENT.Author			= "Dr. Matt"
 ENT.Contact			= "mattjeanes23@gmail.com"
 ENT.Instructions	= "Use with the sonic or press E to pilot."
 ENT.Purpose			= "Time and Relative Dimension in Space"
-ENT.Spawnable		= true
-ENT.AdminSpawnable	= true
 ENT.RenderGroup = RENDERGROUP_BOTH
-ENT.Category		= "Doctor Who"
+ENT.Category		= "Doctor Who - TARDIS"
+
+local spawnEntity = table.Copy(ENT)
+spawnEntity.PrintName = " TARDIS (Legacy) " -- Spaces used for ordering
+spawnEntity.Spawnable = true
+list.Set("SpawnableEntities", "sent_tardis", spawnEntity)
 
 CreateConVar("tardis_takedamage", "1", {FCVAR_NOTIFY, FCVAR_SERVER_CAN_EXECUTE, FCVAR_REPLICATED})
 CreateConVar("tardis_flightphase", "1", {FCVAR_NOTIFY, FCVAR_SERVER_CAN_EXECUTE, FCVAR_REPLICATED})

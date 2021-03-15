@@ -79,7 +79,7 @@ function ENT:Initialize()
 	self.phasedraw=0
 	self.mins = self:OBBMins()
 	self.maxs = self:OBBMaxs()
-	self.wiremat = Material( "models/drmatt/tardis/phase" )
+	self.wiremat = Material( "models/drmatt/legtar/phase" )
 	self.height = self.maxs.z - self.mins.z
 end
 
@@ -97,7 +97,7 @@ end
 function ENT:Think()
 	if tobool(GetConVarNumber("tardis_flightsound"))==true then
 		if not self.flightloop then
-			self.flightloop=CreateSound(self, "tardis/flight_loop.wav")
+			self.flightloop=CreateSound(self, "legtar/flight_loop.wav")
 			self.flightloop:SetSoundLevel(90)
 			self.flightloop:Stop()
 		end
@@ -137,7 +137,7 @@ function ENT:Think()
 		
 		local interior=self:GetNWEntity("interior",NULL)
 		if not self.flightloop2 and interior and IsValid(interior) then
-			self.flightloop2=CreateSound(interior, "tardis/flight_loop.wav")
+			self.flightloop2=CreateSound(interior, "legtar/flight_loop.wav")
 			self.flightloop2:Stop()
 		end
 		if self.flightloop2 and (self.flightmode or self.invortex) and LocalPlayer().tardis_viewmode and not IsValid(LocalPlayer().tardis_skycamera) and interior and IsValid(interior) and ((self.invortex and self.moving) or not self.moving) then
@@ -198,9 +198,9 @@ net.Receive("TARDIS-Phase", function()
 		tardis.visible=tobool(net.ReadBit())
 		tardis:Phase(tardis.visible)
 		if not tardis.visible and tobool(GetConVarNumber("tardis_phasesound"))==true then
-			tardis:EmitSound("tardis/phase_enable.wav", 100, 100)
+			tardis:EmitSound("legtar/phase_enable.wav", 100, 100)
 			if IsValid(interior) then
-				interior:EmitSound("tardis/phase_enable.wav", 100, 100)
+				interior:EmitSound("legtar/phase_enable.wav", 100, 100)
 			end
 		end
 	end
@@ -228,19 +228,19 @@ end)
 
 local tpsounds={}
 tpsounds[0]={ // normal
-	"tardis/demat.wav",
-	"tardis/mat.wav",
-	"tardis/full.wav"
+	"legtar/demat.wav",
+	"legtar/mat.wav",
+	"legtar/full.wav"
 }
 tpsounds[1]={ // fast demat
-	"tardis/fast_demat.wav",
-	"tardis/mat.wav",
-	"tardis/full.wav"
+	"legtar/fast_demat.wav",
+	"legtar/mat.wav",
+	"legtar/full.wav"
 }
 tpsounds[2]={ // fast return
-	"tardis/fastreturn_demat.wav",
-	"tardis/fastreturn_mat.wav",
-	"tardis/fastreturn_full.wav"
+	"legtar/fastreturn_demat.wav",
+	"legtar/fastreturn_mat.wav",
+	"legtar/fastreturn_full.wav"
 }
 net.Receive("TARDIS-Go", function()
 	local tardis=net.ReadEntity()
@@ -328,12 +328,12 @@ net.Receive("TARDIS-SetLocked", function()
 	if IsValid(tardis) then
 		tardis.locked=locked
 		if tobool(GetConVarNumber("tardis_locksound"))==true and makesound then
-			sound.Play("tardis/lock.wav", tardis:GetPos())
+			sound.Play("legtar/lock.wav", tardis:GetPos())
 		end
 	end
 	if IsValid(interior) then
 		if tobool(GetConVarNumber("tardis_locksound"))==true and not IsValid(LocalPlayer().tardis_skycamera) and makesound then
-			sound.Play("tardis/lock.wav", interior:LocalToWorld(Vector(300,295,-79)))
+			sound.Play("legtar/lock.wav", interior:LocalToWorld(Vector(300,295,-79)))
 		end
 	end
 end)
@@ -359,10 +359,10 @@ net.Receive("TARDIS-PlayerEnter", function()
 		local ent1=net.ReadEntity()
 		local ent2=net.ReadEntity()
 		if IsValid(ent1) and ent1.visible then
-			sound.Play("tardis/door.wav", ent1:GetPos())
+			sound.Play("legtar/door.wav", ent1:GetPos())
 		end
 		if IsValid(ent2) and not IsValid(LocalPlayer().tardis_skycamera) then
-			sound.Play("tardis/door.wav", ent2:LocalToWorld(Vector(300,295,-79)))
+			sound.Play("legtar/door.wav", ent2:LocalToWorld(Vector(300,295,-79)))
 		end
 	end
 end)
@@ -372,10 +372,10 @@ net.Receive("TARDIS-PlayerExit", function()
 		local ent1=net.ReadEntity()
 		local ent2=net.ReadEntity()
 		if IsValid(ent1) and ent1.visible then
-			sound.Play("tardis/door2.wav", ent1:GetPos())
+			sound.Play("legtar/door2.wav", ent1:GetPos())
 		end
 		if IsValid(ent2) and not IsValid(LocalPlayer().tardis_skycamera) then
-			sound.Play("tardis/door2.wav", ent2:LocalToWorld(Vector(300,295,-79)))
+			sound.Play("legtar/door2.wav", ent2:LocalToWorld(Vector(300,295,-79)))
 		end
 	end
 end)
@@ -389,9 +389,9 @@ net.Receive("TARDIS-SetRepairing", function()
 	end
 	if IsValid(interior) and LocalPlayer().tardis==tardis and LocalPlayer().tardis_viewmode and tobool(GetConVarNumber("tardisint_powersound"))==true then
 		if repairing then
-			sound.Play("tardis/powerdown.wav", interior:GetPos())
+			sound.Play("legtar/powerdown.wav", interior:GetPos())
 		else
-			sound.Play("tardis/powerup.wav", interior:GetPos())
+			sound.Play("legtar/powerup.wav", interior:GetPos())
 		end
 	end
 end)
@@ -400,7 +400,7 @@ net.Receive("TARDIS-BeginRepair", function()
 	local tardis=net.ReadEntity()
 	if IsValid(tardis) then
 		/*
-		local mat=Material("models/drmatt/tardis/tardis_df")
+		local mat=Material("models/drmatt/legtar/tardis_df")
 		if not mat:IsError() then
 			mat:SetTexture("$basetexture", "models/props_combine/metal_combinebridge001")
 		end
@@ -412,12 +412,12 @@ net.Receive("TARDIS-FinishRepair", function()
 	local tardis=net.ReadEntity()
 	if IsValid(tardis) then
 		if tobool(GetConVarNumber("tardisint_repairsound"))==true and tardis.visible then
-			sound.Play("tardis/repairfinish.wav", tardis:GetPos())
+			sound.Play("legtar/repairfinish.wav", tardis:GetPos())
 		end
 		/*
-		local mat=Material("models/drmatt/tardis/tardis_df")
+		local mat=Material("models/drmatt/legtar/tardis_df")
 		if not mat:IsError() then
-			mat:SetTexture("$basetexture", "models/drmatt/tardis/tardis_df")
+			mat:SetTexture("$basetexture", "models/drmatt/legtar/tardis_df")
 		end
 		*/
 	end
@@ -440,9 +440,9 @@ net.Receive("TARDIS-SetPower", function()
 	end
 	if IsValid(interior) and LocalPlayer().tardis==tardis and LocalPlayer().tardis_viewmode and tobool(GetConVarNumber("tardisint_powersound"))==true then
 		if on then
-			sound.Play("tardis/powerup.wav", interior:GetPos())
+			sound.Play("legtar/powerup.wav", interior:GetPos())
 		else
-			sound.Play("tardis/powerdown.wav", interior:GetPos())
+			sound.Play("legtar/powerdown.wav", interior:GetPos())
 		end
 	end
 end)

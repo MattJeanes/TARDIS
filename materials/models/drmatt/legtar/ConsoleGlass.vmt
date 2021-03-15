@@ -1,0 +1,6 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/drmatt/legtar/ConsoleGlass"
+	"$translucent" "1"
+	"$nodecal" "1"
+}

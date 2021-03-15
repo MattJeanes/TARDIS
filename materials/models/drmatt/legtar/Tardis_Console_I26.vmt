@@ -1,0 +1,6 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/drmatt/legtar/Tardis_Console_I26"
+	"$translucent" 1
+	"$nodecal" "1"
+}

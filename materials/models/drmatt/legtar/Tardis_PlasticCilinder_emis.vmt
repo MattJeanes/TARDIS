@@ -1,0 +1,5 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/drmatt/legtar/Tardis_PlasticCilinder_emis"
+	"$nodecal" "1"
+}
