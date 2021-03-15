@@ -1,4 +1,4 @@
-E2Lib.RegisterExtension("tardis2", true)
+E2Lib.RegisterExtension("tardis", true)
 
 local function getTardis(ent)
 	if not IsValid(ent) then return end
