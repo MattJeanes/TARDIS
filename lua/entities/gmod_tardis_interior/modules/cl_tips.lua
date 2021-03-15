@@ -159,12 +159,6 @@ hook.Add("HUDPaint", "TARDIS-DrawTips", function()
 		local dist = tip.pos:Distance(player_pos)
 		if dist <= view_range_max then
 			surface.SetFont(tip.font)
-			local w, h = surface.GetTextSize( tip.text )
-			local pos = tip.pos:ToScreen()
-			local padding = 10
-			local offset = 50
-			local x = pos.x - w - offset
-			local y = pos.y - h - offset
 			local alpha = tip.colors.current.background.a
 			if dist > view_range_min then
 				local normalised = 1 - ((dist - view_range_min) / (view_range_max - view_range_min))
@@ -175,10 +169,49 @@ hook.Add("HUDPaint", "TARDIS-DrawTips", function()
 			local frame_color = ColorAlpha(tip.colors.current.frame, alpha)
 			local text_color = ColorAlpha(tip.colors.current.text, alpha)
 
+			local w, h = surface.GetTextSize( tip.text )
+			local pos = tip.pos:ToScreen()
+			local padding = 10
+			local offset = 50
+			local fr_width = 2 * 0
+
+			local x, y, t
+			local trX = {}
+			local trY = {}
+
+			if tip.down then
+				y = pos.y + offset
+				t = -1
+				trY[1] = pos.y + offset / 2 - fr_width
+				trY[2] = y - padding
+				trY[3] = y - padding
+			else
+				y = pos.y - h - offset
+				t = 1
+				trY[1] = y + h + padding
+				trY[2] = y + h + padding
+				trY[3] = pos.y - offset / 2 + fr_width
+			end
+			if tip.right then
+				x = pos.x + offset
+				trX[2 - t] = x - (padding / 2)
+				trX[2] = x + (padding * 2)
+				trX[2 + t] = pos.x + offset / 2 - fr_width
+			else
+				x = pos.x - w - offset
+				trX[2 - t] = x + w - (padding * 2)
+				trX[2] = x + w + (padding / 2)
+				trX[2 + t] = pos.x - offset / 2 + fr_width
+			end
+
 			local verts = {}
-			verts[1] = { x=x+w-(padding*2), y=y+h+padding }
-			verts[2] = { x=x+w+(padding/2), y=y+h+padding }
-			verts[3] = { x=pos.x-offset/2+2, y=pos.y-offset/2+2 }
+			verts[1] = { x = trX[1], y = trY[1] }
+			verts[2] = { x = trX[2], y = trY[2] }
+			verts[3] = { x = trX[3], y = trY[3] }
+
+			local box = {}
+			box[1] = {x - padding, y - padding}
+			box[2] = {w + padding * 2, h + padding * 2}
 
 			draw.NoTexture()
 			surface.SetDrawColor( background_color:Unpack() )
@@ -186,8 +219,8 @@ hook.Add("HUDPaint", "TARDIS-DrawTips", function()
 			surface.SetDrawColor( frame_color:Unpack() )
 			surface.DrawPoly( verts )
 
-			draw.RoundedBox( 8, x-padding-2, y-padding-2, w+padding*2+4, h+padding*2+4, frame_color )
-			draw.RoundedBox( 8, x-padding, y-padding, w+padding*2, h+padding*2, background_color )
+			draw.RoundedBox( 8, box[1][1] - fr_width, box[1][2] - fr_width, box[2][1] + 2 * fr_width, box[2][2] + 2 * fr_width, frame_color )
+			draw.RoundedBox( 8, box[1][1], box[1][2], box[2][1], box[2][2], background_color )
 
 			draw.NoTexture()
 			surface.DrawPoly( verts )
