@@ -7,5 +7,9 @@ ENT:AddHook("HandleE2", "security", function(self,name,e2)
 		elseif name == "GetIsomorphic" then
 			return self.interior:GetSecurity() and 1 or 0
 		end
+	else
+		if name == "Isomorph" or name == "GetIsomorphic" then
+			return 0
+		end
 	end
 end)
