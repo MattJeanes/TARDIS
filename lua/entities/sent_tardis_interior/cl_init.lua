@@ -52,9 +52,9 @@ end)
 net.Receive("TARDISInt-UpdateAdv", function()
 	local success=tobool(net.ReadBit())
 	if success then
-		surface.PlaySound("tardis/advflight_good.wav")
+		surface.PlaySound("legtar/advflight_good.wav")
 	else
-		surface.PlaySound("tardis/advflight_bad.wav")
+		surface.PlaySound("legtar/advflight_bad.wav")
 	end
 end)
 
@@ -64,7 +64,7 @@ net.Receive("TARDISInt-SetAdv", function()
 	local mode=net.ReadFloat()
 	if IsValid(interior) and IsValid(ply) and mode then
 		if ply==LocalPlayer() then
-			surface.PlaySound("tardis/advflight_good.wav")
+			surface.PlaySound("legtar/advflight_good.wav")
 		end
 		interior.flightmode=mode
 	end
@@ -87,7 +87,7 @@ function ENT:Think()
 				if self.cloisterbell and !self.cloisterbell:IsPlaying() then
 					self.cloisterbell:Play()
 				elseif not self.cloisterbell then
-					self.cloisterbell = CreateSound(self, "tardis/cloisterbell_loop.wav")
+					self.cloisterbell = CreateSound(self, "legtar/cloisterbell_loop.wav")
 					self.cloisterbell:Play()
 				end
 			else
@@ -107,7 +107,7 @@ function ENT:Think()
 			if self.idlesound and !self.idlesound:IsPlaying() then
 				self.idlesound:Play()
 			elseif not self.idlesound then
-				self.idlesound = CreateSound(self, "tardis/interior_idle_loop.wav")
+				self.idlesound = CreateSound(self, "legtar/interior_idle_loop.wav")
 				self.idlesound:Play()
 				self.idlesound:ChangeVolume(0.5,0)
 			end
@@ -115,7 +115,7 @@ function ENT:Think()
 			if self.idlesound2 and !self.idlesound2:IsPlaying() then
 				self.idlesound2:Play()
 			elseif not self.idlesound2 then
-				self.idlesound2 = CreateSound(self, "tardis/interior_idle2_loop.wav")
+				self.idlesound2 = CreateSound(self, "legtar/interior_idle2_loop.wav")
 				self.idlesound2:Play()
 				self.idlesound2:ChangeVolume(0.5,0)
 			end

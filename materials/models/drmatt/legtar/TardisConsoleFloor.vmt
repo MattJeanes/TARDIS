@@ -1,0 +1,5 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/drmatt/legtar/TardisConsoleFloor"
+	"$nodecal" "1"
+}

@@ -1,7 +1,0 @@
-"VertexLitGeneric"
-{
-	"$basetexture" "models/drmatt/tardis/TARDIS_DF_TopLight"
-	"$surfaceprop" "Glass"
-	"$selfillummask" "models/drmatt/tardis/white"
-	"$selfillum" 1
-}

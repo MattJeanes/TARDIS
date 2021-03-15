@@ -3,7 +3,7 @@ AddCSLuaFile( "shared.lua" )  -- and shared scripts are sent.
 include('shared.lua')
 
 function ENT:Initialize()
-	self:SetModel( "models/drmatt/tardis/throttle.mdl" )
+	self:SetModel( "models/drmatt/legtar/throttle.mdl" )
 	self:PhysicsInit( SOLID_VPHYSICS )
 	self:SetMoveType( MOVETYPE_VPHYSICS )
 	self:SetSolid( SOLID_VPHYSICS )
@@ -157,7 +157,7 @@ function ENT:Toggle( bEnable, ply )
 		net.Start("TARDISInt-ControlSound")
 			net.WriteEntity(self.tardis)
 			net.WriteEntity(self)
-			net.WriteString("tardis/control_throttle.wav")
+			net.WriteString("legtar/control_throttle.wav")
 		net.Broadcast()
 	end
 end

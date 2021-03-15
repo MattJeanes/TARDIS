@@ -1,0 +1,7 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/drmatt/legtar/TardisScanner"
+	"$model" 1
+	"$nodecal" 1
+	"$selfillum" 1
+}

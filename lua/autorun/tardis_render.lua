@@ -17,7 +17,7 @@ elseif CLIENT then
 	
 	hook.Add("InitPostEntity", "TARDIS-Render", function()
 		rt=GetRenderTarget("tardis_rt",size,size,false)
-		mat=Material("models/drmatt/tardis/TardisScanner")
+		mat=Material("models/drmatt/legtar/TardisScanner")
 		mat:SetTexture("$basetexture",rt)
 	end)
 	
