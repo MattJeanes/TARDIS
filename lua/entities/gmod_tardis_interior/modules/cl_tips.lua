@@ -21,6 +21,27 @@ TARDIS:AddSetting({
 	networked=false
 })
 
+local tip_control_texts = {
+	coords = "Coordinates",
+	destination = "Destination",
+	hads = "H.A.D.S.",
+	monitor = "Monitor",
+	scanner = "Scanner", -- for the future updates
+	screen_toggle = "Toggle Screen",
+	power = "Power Switch",
+	physlock = "Physlock",
+	cloak = "Cloaking Device", -- partially exists in some interiors
+	throttle = "Space-Time Throttle",
+	fast_return = "Fast-Return Protocol",
+	long_flight = "Vortex Flight Toggler",
+	handbrake = "Time-Rotor Handbrake", -- for the future updates
+	music = "Music",
+	isomorphic = "Isomorphic Security System",
+	repair = "Self-Repair",
+	flight = "Flight Mode",
+	float = "Anti-Gravs",
+}
+
 function ENT:InitializeTips(style_name)
 	if style_name == "default" then
 		style_name = self.metadata.Interior.Tips.style
@@ -33,6 +54,9 @@ function ENT:InitializeTips(style_name)
 		local tip = table.Copy(style)
 		for setting,value in pairs(interior_tip) do
 			tip[setting]=value
+		end
+		if tip.control then
+			tip.text = tip_control_texts[tip.control] or ""
 		end
 		tip.pos=self:LocalToWorld(tip.pos)
 		table.insert(tips, tip)
