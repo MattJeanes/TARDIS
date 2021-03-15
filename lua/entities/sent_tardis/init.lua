@@ -1630,11 +1630,11 @@ local function CheckPP(ply, ent) -- Prop Protection
 end
 
 local E2Commands = {
-	["Demat"] = function(ent,data,pos,ang)
-		if ent and IsValid(ent) and CheckPP(data.player,ent) then
+	["Demat"] = function(self,data,pos,ang)
+		if self and IsValid(self) and CheckPP(data.player,self) then
 			local pos=Vector(pos[1], pos[2], pos[3])
 			if ang then ang=Angle(ang[1], ang[2], ang[3]) end
-			local success=ent:Go(pos,ang)
+			local success=self:Go(pos,ang)
 			if success then
 				return 1
 			else
@@ -1645,9 +1645,9 @@ local E2Commands = {
 		end
 	end,
 
-	["Mat"] = function(ent,data)
-		if ent and IsValid(ent) and CheckPP(data.player,ent) then
-			local success=ent:LongReappear()
+	["Mat"] = function(self,data)
+		if self and IsValid(self) and CheckPP(data.player,self) then
+			local success=self:LongReappear()
 			if success then
 				return 1
 			else
@@ -1657,12 +1657,12 @@ local E2Commands = {
 		return 0
 	end,
 
-	["SetDestination"] = function(ent,data,pos,ang)
-		if ent and IsValid(ent) and CheckPP(data.player,ent) then
+	["SetDestination"] = function(self,data,pos,ang)
+		if self and IsValid(self) and CheckPP(data.player,self) then
 			local pos=Vector(pos[1], pos[2], pos[3])
 			if ang then ang=Angle(ang[1], ang[2], ang[3]) end
-			if ent.invortex then
-				ent:SetDestination(pos,ang)
+			if self.invortex then
+				self:SetDestination(pos,ang)
 				return 1
 			else
 				return 0
@@ -1672,9 +1672,9 @@ local E2Commands = {
 		end
 	end,
 
-	["Longflight"] = function(ent,data)
-		if ent and IsValid(ent) and CheckPP(data.player,ent) then
-			local success=ent:ToggleLongFlight()
+	["Longflight"] = function(self,data)
+		if self and IsValid(self) and CheckPP(data.player,self) then
+			local success=self:ToggleLongFlight()
 			if success then
 				return 1
 			else
@@ -1684,9 +1684,9 @@ local E2Commands = {
 		return 0
 	end,
 
-	["Flightmode"] =  function(ent,data)
-		if ent and IsValid(ent) and CheckPP(data.player,ent) then
-			local success=ent:ToggleFlight()
+	["Flightmode"] =  function(self,data)
+		if self and IsValid(self) and CheckPP(data.player,self) then
+			local success=self:ToggleFlight()
 			if success then
 				return 1
 			else
@@ -1696,30 +1696,9 @@ local E2Commands = {
 		return 0
 	end,
 
-	["FastReturn"] = function(ent,data)
-		if ent and IsValid(ent) and CheckPP(data.player,ent) then
-			local success=ent:FastReturn()
-			if success then
-				return 1
-			else
-				return 0
-			end
-		else
-			return 0
-		end
-	end,
-
-	["Spinmode"] = function(ent,data,spinmode)
-		if ent and IsValid(ent) and CheckPP(data.player,ent) then
-			ent:SetSpinMode(spinmode)
-			return ent.spinmode
-		end
-		return 0
-	end,
-
-	["FastDemat"] = function(ent,data)
-		if ent and IsValid(ent) and CheckPP(data.player,ent) then
-			local success=ent:DematFast()
+	["FastReturn"] = function(self,data)
+		if self and IsValid(self) and CheckPP(data.player,self) then
+			local success=self:FastReturn()
 			if success then
 				return 1
 			else
@@ -1730,9 +1709,30 @@ local E2Commands = {
 		end
 	end,
 
-	["HADS"] = function(ent,data)
-		if ent and IsValid(ent) and CheckPP(data.player,ent) then
-			local success=ent:ToggleHADS()
+	["Spinmode"] = function(self,data,spinmode)
+		if self and IsValid(self) and CheckPP(data.player,self) then
+			self:SetSpinMode(spinmode)
+			return self.spinmode
+		end
+		return 0
+	end,
+
+	["FastDemat"] = function(self,data)
+		if self and IsValid(self) and CheckPP(data.player,self) then
+			local success=self:DematFast()
+			if success then
+				return 1
+			else
+				return 0
+			end
+		else
+			return 0
+		end
+	end,
+
+	["HADS"] = function(self,data)
+		if self and IsValid(self) and CheckPP(data.player,self) then
+			local success=self:ToggleHADS()
 			if success then
 				return 1
 			else
@@ -1742,9 +1742,9 @@ local E2Commands = {
 		return 0
 	end,
 
-	["Track"] = function TARDIS_Track(ent,data,trackent)
-		if ent and IsValid(ent) and CheckPP(data.player,ent) then
-			local success=ent:SetTrackingEnt(trackent)
+	["Track"] = function TARDIS_Track(self,data,trackself)
+		if self and IsValid(self) and CheckPP(data.player,self) then
+			local success=self:SetTrackingself(trackself)
 			if success then
 				return 1
 			else
@@ -1754,9 +1754,9 @@ local E2Commands = {
 		return 0
 	end,
 
-	["Selfrepair"] = function(ent,data)
-		if ent and IsValid(ent) and CheckPP(data.player,ent) then
-			local success=ent:ToggleRepair()
+	["Selfrepair"] = function(self,data)
+		if self and IsValid(self) and CheckPP(data.player,self) then
+			local success=self:ToggleRepair()
 			if success then
 				return 1
 			else
@@ -1766,10 +1766,10 @@ local E2Commands = {
 		return 0
 	end,
 
-	["Isomorph"] = function(ent,data)
-		if ent and IsValid(ent) and CheckPP(data.player,ent) then
-			if not (ent:GetClass()=="sent_tardis") or not IsValid(data.player) then return 0 end
-			local success=ent:IsomorphicToggle(data.player)
+	["Isomorph"] = function(self,data)
+		if self and IsValid(self) and CheckPP(data.player,self) then
+			if not (self:GetClass()=="sself_tardis") or not IsValid(data.player) then return 0 end
+			local success=self:IsomorphicToggle(data.player)
 			if success then
 				return 1
 			else
@@ -1779,9 +1779,9 @@ local E2Commands = {
 		return 0
 	end,
 
-	["Power"] = function(ent,data)
-		if ent and IsValid(ent) and CheckPP(data.player,ent) then
-			local success=ent:TogglePower()
+	["Power"] = function(self,data)
+		if self and IsValid(self) and CheckPP(data.player,self) then
+			local success=self:TogglePower()
 			if success then
 				return 1
 			else
@@ -1791,9 +1791,9 @@ local E2Commands = {
 		return 0
 	end,
 
-	["Physlock"] = function(ent,data)
-		if ent and IsValid(ent) and CheckPP(data.player,ent) then
-			local success=ent:TogglePhysLock()
+	["Physlock"] = function(self,data)
+		if self and IsValid(self) and CheckPP(data.player,self) then
+			local success=self:TogglePhysLock()
 			if success then
 				return 1
 			else
@@ -1803,9 +1803,9 @@ local E2Commands = {
 		return 0
 	end,
 
-	["Lock"] = function(ent,data)
-		if ent and IsValid(ent) and CheckPP(data.player,ent) then
-			local success=ent:ToggleLocked()
+	["Lock"] = function(self,data)
+		if self and IsValid(self) and CheckPP(data.player,self) then
+			local success=self:ToggleLocked()
 			if success then
 				return 1
 			else
@@ -1815,9 +1815,9 @@ local E2Commands = {
 		return 0
 	end,
 
-	["Phase"] = function(ent,data)
-		if ent and IsValid(ent) and CheckPP(data.player,ent) then
-			local success=ent:TogglePhase()
+	["Phase"] = function(self,data)
+		if self and IsValid(self) and CheckPP(data.player,self) then
+			local success=self:TogglePhase()
 			if success then
 				return 1
 			else
@@ -1827,9 +1827,9 @@ local E2Commands = {
 		return 0
 	end,
 
-	["GetLongflight"] = function(ent)
-		if ent and IsValid(ent) then
-			if ent.longflight then
+	["GetLongflight"] = function(self)
+		if self and IsValid(self) then
+			if self.longflight then
 				return 1
 			else
 				return 0
@@ -1838,10 +1838,10 @@ local E2Commands = {
 		return 0
 	end,
 
-	["GetHealth"] = function(ent)
-		if ent and IsValid(ent) then
-			if ent.health then
-				return math.floor(ent.health)
+	["GetHealth"] = function(self)
+		if self and IsValid(self) then
+			if self.health then
+				return math.floor(self.health)
 			else
 				return 0
 			end
@@ -1849,9 +1849,9 @@ local E2Commands = {
 		return 0
 	end,
 
-	["GetInVortex"] = function(ent)
-		if ent and IsValid(ent) then
-			if ent.invortex then
+	["GetInVortex"] = function(self)
+		if self and IsValid(self) then
+			if self.invortex then
 				return 1
 			else
 				return 0
@@ -1860,9 +1860,9 @@ local E2Commands = {
 		return 0
 	end,
 
-	["GetFlying"] = function(ent)
-		if ent and IsValid(ent) then
-			if ent.flightmode then
+	["GetFlying"] = function(self)
+		if self and IsValid(self) then
+			if self.flightmode then
 				return 1
 			else
 				return 0
@@ -1871,9 +1871,9 @@ local E2Commands = {
 		return 0
 	end,
 
-	["GetMoving"] = function(ent)
-		if ent and IsValid(ent) then
-			if ent.moving then
+	["GetMoving"] = function(self)
+		if self and IsValid(self) then
+			if self.moving then
 				return 1
 			else
 				return 0
@@ -1882,18 +1882,18 @@ local E2Commands = {
 		return 0
 	end,
 
-	["GetPilot"] = function(ent)
-		if ent and IsValid(ent) then
-			if not (ent:GetClass()=="sent_tardis") then return NULL end
-			if not ent.pilot then return NULL end
-			return ent.pilot
+	["GetPilot"] = function(self)
+		if self and IsValid(self) then
+			if not (self:GetClass()=="sself_tardis") then return NULL end
+			if not self.pilot then return NULL end
+			return self.pilot
 		end
 		return NULL
 	end,
 
-	["GetHADS"] = function(ent)
-		if ent and IsValid(ent) then
-			if ent.hads then
+	["GetHADS"] = function(self)
+		if self and IsValid(self) then
+			if self.hads then
 				return 1
 			else
 				return 0
@@ -1902,10 +1902,10 @@ local E2Commands = {
 		return 0
 	end,
 
-	["GetTracking"] = function(ent)
-		if ent and IsValid(ent) then
-			if IsValid(ent.trackingent) then
-				return ent.trackingent
+	["GetTracking"] = function(self)
+		if self and IsValid(self) then
+			if IsValid(self.trackingself) then
+				return self.trackingself
 			else
 				return NULL
 			end
@@ -1913,10 +1913,10 @@ local E2Commands = {
 		return NULL
 	end,
 
-	["LastAng"] = function(ent)
-		if ent and IsValid(ent) then
-			if ent.lastang then
-				return {ent.lastang.p, ent.lastang.y, ent.lastang.r}
+	["LastAng"] = function(self)
+		if self and IsValid(self) then
+			if self.lastang then
+				return {self.lastang.p, self.lastang.y, self.lastang.r}
 			else
 				return {0,0,0}
 			end
@@ -1924,10 +1924,10 @@ local E2Commands = {
 		return {0,0,0}
 	end,
 
-	["LastPos"] = function(ent)
-		if ent and IsValid(ent) then
-			if ent.lastpos then
-				return ent.lastpos
+	["LastPos"] = function(self)
+		if self and IsValid(self) then
+			if self.lastpos then
+				return self.lastpos
 			else
 				return Vector()
 			end
@@ -1935,9 +1935,9 @@ local E2Commands = {
 		return Vector()
 	end,
 
-	["GetSelfrepairing"] = function(ent)
-		if ent and IsValid(ent) then
-			if ent.repairing then
+	["GetSelfrepairing"] = function(self)
+		if self and IsValid(self) then
+			if self.repairing then
 				return 1
 			else
 				return 0
@@ -1946,9 +1946,9 @@ local E2Commands = {
 		return 0
 	end,
 
-	["GetIsomorphic"] = function(ent)
-		if ent and IsValid(ent) then
-			if ent.isomorphic then
+	["GetIsomorphic"] = function(self)
+		if self and IsValid(self) then
+			if self.isomorphic then
 				return 1
 			else
 				return 0
@@ -1957,9 +1957,9 @@ local E2Commands = {
 		return 0
 	end,
 
-	["GetPowered"] = function(ent)
-		if ent and IsValid(ent) then
-			if ent.power then
+	["GetPowered"] = function(self)
+		if self and IsValid(self) then
+			if self.power then
 				return 1
 			else
 				return 0
@@ -1968,9 +1968,9 @@ local E2Commands = {
 		return 0
 	end,
 
-	["GetPhyslocked"] = function(ent)
-		if ent and IsValid(ent) then
-			if ent.physlocked then
+	["GetPhyslocked"] = function(self)
+		if self and IsValid(self) then
+			if self.physlocked then
 				return 1
 			else
 				return 0
@@ -1979,9 +1979,9 @@ local E2Commands = {
 		return 0
 	end,
 
-	["GetLocked"] = function(ent)
-		if ent and IsValid(ent) then
-			if ent.locked then
+	["GetLocked"] = function(self)
+		if self and IsValid(self) then
+			if self.locked then
 				return 1
 			else
 				return 0
@@ -1990,9 +1990,9 @@ local E2Commands = {
 		return 0
 	end,
 
-	["GetVisible"] = function(ent)
-		if ent and IsValid(ent) then
-			if ent.visible then
+	["GetVisible"] = function(self)
+		if self and IsValid(self) then
+			if self.visible then
 				return 1
 			else
 				return 0
