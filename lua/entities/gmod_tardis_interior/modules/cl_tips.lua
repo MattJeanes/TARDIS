@@ -56,7 +56,7 @@ ENT:AddHook("ShouldDrawTips", "tips", function(self)
 	end
 end)
 
-hook.Add("HUDPaint", "TARDISRewrite-DrawTips", function()
+hook.Add("HUDPaint", "TARDIS-DrawTips", function()
 	local interior = TARDIS:GetInteriorEnt(LocalPlayer())
 	if not (interior and interior.tips and TARDIS:GetSetting("tips") and (interior:CallHook("ShouldDrawTips")~=false)) then return end
 
