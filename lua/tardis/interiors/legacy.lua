@@ -46,8 +46,7 @@ T.Interior={
 			ang=Angle(0, 84.5, 91),
 			width=227.75,
 			height=140,
-			visgui_rows=2,
-			gap=20
+			visgui_rows=2
 		}
 	},
 	Sequences="legacy_sequences",

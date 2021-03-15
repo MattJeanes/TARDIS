@@ -663,7 +663,7 @@ function TARDIS:LoadScreen(id, options)
 	screen.int=options.int
 	screen.visgui_rows=options.visgui_rows
 	screen.crosshair=6 * screen.res
-	screen.gap=options.gap
+	screen.gap=10
 	screen.gap2=screen.gap * 2
 	screen:SetSkin("TARDIS")
 	screen:SetPos(0, 0)
