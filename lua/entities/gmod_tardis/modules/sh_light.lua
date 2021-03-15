@@ -25,8 +25,7 @@ else
 		desc="Should the exterior light always be lit?",
 		value=false,
 		type="bool",
-		option=true,
-		networked=true
+		option=true
 	})
 
 	TARDIS:AddSetting({
@@ -36,8 +35,7 @@ else
 		desc="Should the exterior emit dynamic lighting?",
 		value=true,
 		type="bool",
-		option=true,
-		networked=true
+		option=true
 	})
 	
 	function ENT:FlashLight(time)

@@ -17,7 +17,7 @@ TARDIS:AddSetting({
 	desc="Which style should the TARDIS tips use?",
 	section="Misc",
 	value="default",
-	option=true,
+	option=false,
 	networked=false
 })
 
