@@ -20,7 +20,7 @@ local function HandleE2(ent, name, ...)
 	if IsValid(getTardis(ent)) then
 		return ent:HandleE2(name, ...)
 	else
-		error("Can't call TARDIS functions on something other than a TARDIS.")
+		error("Can't call TARDIS functions on something other than a TARDIS.",0)
 	end
 end
 
