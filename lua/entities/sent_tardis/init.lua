@@ -1631,7 +1631,7 @@ end
 
 local E2Commands = {
 	["Demat"] = function(self,data,pos,ang)
-		if self and IsValid(self) and CheckPP(data.player,self) then
+		if CheckPP(data.player,self) then
 			local pos=Vector(pos[1], pos[2], pos[3])
 			if ang then ang=Angle(ang[1], ang[2], ang[3]) end
 			local success=self:Go(pos,ang)
@@ -1646,7 +1646,7 @@ local E2Commands = {
 	end,
 
 	["Mat"] = function(self,data)
-		if self and IsValid(self) and CheckPP(data.player,self) then
+		if CheckPP(data.player,self) then
 			local success=self:LongReappear()
 			if success then
 				return 1
@@ -1658,7 +1658,7 @@ local E2Commands = {
 	end,
 
 	["SetDestination"] = function(self,data,pos,ang)
-		if self and IsValid(self) and CheckPP(data.player,self) then
+		if CheckPP(data.player,self) then
 			local pos=Vector(pos[1], pos[2], pos[3])
 			if ang then ang=Angle(ang[1], ang[2], ang[3]) end
 			if self.invortex then
@@ -1673,7 +1673,7 @@ local E2Commands = {
 	end,
 
 	["Longflight"] = function(self,data)
-		if self and IsValid(self) and CheckPP(data.player,self) then
+		if CheckPP(data.player,self) then
 			local success=self:ToggleLongFlight()
 			if success then
 				return 1
@@ -1685,7 +1685,7 @@ local E2Commands = {
 	end,
 
 	["Flightmode"] =  function(self,data)
-		if self and IsValid(self) and CheckPP(data.player,self) then
+		if CheckPP(data.player,self) then
 			local success=self:ToggleFlight()
 			if success then
 				return 1
@@ -1697,7 +1697,7 @@ local E2Commands = {
 	end,
 
 	["FastReturn"] = function(self,data)
-		if self and IsValid(self) and CheckPP(data.player,self) then
+		if CheckPP(data.player,self) then
 			local success=self:FastReturn()
 			if success then
 				return 1
@@ -1710,7 +1710,7 @@ local E2Commands = {
 	end,
 
 	["Spinmode"] = function(self,data,spinmode)
-		if self and IsValid(self) and CheckPP(data.player,self) then
+		if CheckPP(data.player,self) then
 			self:SetSpinMode(spinmode)
 			return self.spinmode
 		end
@@ -1718,7 +1718,7 @@ local E2Commands = {
 	end,
 
 	["FastDemat"] = function(self,data)
-		if self and IsValid(self) and CheckPP(data.player,self) then
+		if CheckPP(data.player,self) then
 			local success=self:DematFast()
 			if success then
 				return 1
@@ -1731,7 +1731,7 @@ local E2Commands = {
 	end,
 
 	["HADS"] = function(self,data)
-		if self and IsValid(self) and CheckPP(data.player,self) then
+		if CheckPP(data.player,self) then
 			local success=self:ToggleHADS()
 			if success then
 				return 1
@@ -1743,7 +1743,7 @@ local E2Commands = {
 	end,
 
 	["Track"] = function(self,data,trackent)
-		if self and IsValid(self) and CheckPP(data.player,self) then
+		if CheckPP(data.player,self) then
 			local success=self:SetTrackingEnt(trackent)
 			if success then
 				return 1
@@ -1755,7 +1755,7 @@ local E2Commands = {
 	end,
 
 	["Selfrepair"] = function(self,data)
-		if self and IsValid(self) and CheckPP(data.player,self) then
+		if CheckPP(data.player,self) then
 			local success=self:ToggleRepair()
 			if success then
 				return 1
@@ -1767,8 +1767,8 @@ local E2Commands = {
 	end,
 
 	["Isomorph"] = function(self,data)
-		if self and IsValid(self) and CheckPP(data.player,self) then
-			if not (self:GetClass()=="sself_tardis") or not IsValid(data.player) then return 0 end
+		if CheckPP(data.player,self) then
+			if not IsValid(data.player) then return 0 end
 			local success=self:IsomorphicToggle(data.player)
 			if success then
 				return 1
@@ -1780,7 +1780,7 @@ local E2Commands = {
 	end,
 
 	["Power"] = function(self,data)
-		if self and IsValid(self) and CheckPP(data.player,self) then
+		if CheckPP(data.player,self) then
 			local success=self:TogglePower()
 			if success then
 				return 1
@@ -1792,7 +1792,7 @@ local E2Commands = {
 	end,
 
 	["Physlock"] = function(self,data)
-		if self and IsValid(self) and CheckPP(data.player,self) then
+		if CheckPP(data.player,self) then
 			local success=self:TogglePhysLock()
 			if success then
 				return 1
@@ -1804,7 +1804,7 @@ local E2Commands = {
 	end,
 
 	["Lock"] = function(self,data)
-		if self and IsValid(self) and CheckPP(data.player,self) then
+		if CheckPP(data.player,self) then
 			local success=self:ToggleLocked()
 			if success then
 				return 1
@@ -1816,7 +1816,7 @@ local E2Commands = {
 	end,
 
 	["Phase"] = function(self,data)
-		if self and IsValid(self) and CheckPP(data.player,self) then
+		if CheckPP(data.player,self) then
 			local success=self:TogglePhase()
 			if success then
 				return 1
@@ -1828,177 +1828,129 @@ local E2Commands = {
 	end,
 
 	["GetLongflight"] = function(self)
-		if self and IsValid(self) then
-			if self.longflight then
-				return 1
-			else
-				return 0
-			end
+		if self.longflight then
+			return 1
+		else
+			return 0
 		end
-		return 0
 	end,
 
 	["GetHealth"] = function(self)
-		if self and IsValid(self) then
-			if self.health then
-				return math.floor(self.health)
-			else
-				return 0
-			end
+		if self.health then
+			return math.floor(self.health)
+		else
+			return 0
 		end
-		return 0
 	end,
 
 	["GetInVortex"] = function(self)
-		if self and IsValid(self) then
-			if self.invortex then
-				return 1
-			else
-				return 0
-			end
+		if self.invortex then
+			return 1
+		else
+			return 0
 		end
-		return 0
+
 	end,
 
 	["GetFlying"] = function(self)
-		if self and IsValid(self) then
-			if self.flightmode then
-				return 1
-			else
-				return 0
-			end
+		if self.flightmode then
+			return 1
+		else
+			return 0
 		end
-		return 0
 	end,
 
 	["GetMoving"] = function(self)
-		if self and IsValid(self) then
-			if self.moving then
-				return 1
-			else
-				return 0
-			end
+		if self.moving then
+			return 1
+		else
+			return 0
 		end
-		return 0
 	end,
 
 	["GetPilot"] = function(self)
-		if self and IsValid(self) then
-			if not (self:GetClass()=="sself_tardis") then return NULL end
-			if not self.pilot then return NULL end
-			return self.pilot
-		end
-		return NULL
+		if not self.pilot then return NULL end
+		return self.pilot
 	end,
 
 	["GetHADS"] = function(self)
-		if self and IsValid(self) then
-			if self.hads then
-				return 1
-			else
-				return 0
-			end
+		if self.hads then
+			return 1
+		else
+			return 0
 		end
-		return 0
 	end,
 
 	["GetTracking"] = function(self)
-		if self and IsValid(self) then
-			if IsValid(self.trackingent) then
-				return self.trackingent
-			else
-				return NULL
-			end
+		if IsValid(self.trackingent) then
+			return self.trackingent
+		else
+			return NULL
 		end
-		return NULL
 	end,
 
 	["LastAng"] = function(self)
-		if self and IsValid(self) then
-			if self.lastang then
-				return {self.lastang.p, self.lastang.y, self.lastang.r}
-			else
-				return {0,0,0}
-			end
+		if self.lastang then
+			return {self.lastang.p, self.lastang.y, self.lastang.r}
+		else
+			return {0,0,0}
 		end
-		return {0,0,0}
 	end,
 
 	["LastPos"] = function(self)
-		if self and IsValid(self) then
-			if self.lastpos then
-				return self.lastpos
-			else
-				return Vector()
-			end
+		if self.lastpos then
+			return self.lastpos
+		else
+			return Vector()
 		end
-		return Vector()
 	end,
 
 	["GetSelfrepairing"] = function(self)
-		if self and IsValid(self) then
-			if self.repairing then
-				return 1
-			else
-				return 0
-			end
+		if self.repairing then
+			return 1
+		else
+			return 0
 		end
-		return 0
 	end,
 
 	["GetIsomorphic"] = function(self)
-		if self and IsValid(self) then
-			if self.isomorphic then
-				return 1
-			else
-				return 0
-			end
+		if self.isomorphic then
+			return 1
+		else
+			return 0
 		end
-		return 0
 	end,
 
 	["GetPowered"] = function(self)
-		if self and IsValid(self) then
-			if self.power then
-				return 1
-			else
-				return 0
-			end
+		if self.power then
+			return 1
+		else
+			return 0
 		end
-		return 0
 	end,
 
 	["GetPhyslocked"] = function(self)
-		if self and IsValid(self) then
-			if self.physlocked then
-				return 1
-			else
-				return 0
-			end
+		if self.physlocked then
+			return 1
+		else
+			return 0
 		end
-		return 0
 	end,
 
 	["GetLocked"] = function(self)
-		if self and IsValid(self) then
-			if self.locked then
-				return 1
-			else
-				return 0
-			end
+		if self.locked then
+			return 1
+		else
+			return 0
 		end
-		return 0
 	end,
 
 	["GetVisible"] = function(self)
-		if self and IsValid(self) then
-			if self.visible then
-				return 1
-			else
-				return 0
-			end
+		if self.visible then
+			return 1
+		else
+			return 0
 		end
-		return 0
 	end
 }
 
