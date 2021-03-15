@@ -25,6 +25,14 @@ if CLIENT then
 			end
 			panel:AddItem(htoggle)
 
+			local cstoggle = vgui.Create("DCheckBoxLabel")
+			cstoggle:SetText("Enable Control Sequences")
+			cstoggle:SetValue(TARDIS:GetSetting("csequences-enabled", false, LocalPlayer()))
+			function cstoggle:OnChange(val)
+				TARDIS:SetSetting("csequences-enabled", val, true)
+			end
+			panel:AddItem(cstoggle)
+
 			local DLabel2 = vgui.Create( "DLabel" )
 			DLabel2:SetText("TARDIS Interior:")
 			panel:AddItem(DLabel2)

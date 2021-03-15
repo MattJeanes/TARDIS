@@ -55,14 +55,51 @@ function ENT:InitializeTips(style_name)
 		for setting,value in pairs(interior_tip) do
 			tip[setting]=value
 		end
-		if tip.control then
-			if tip_control_texts[tip.control] then
-				tip.text = tip_control_texts[tip.control]
-			else
-				error("Control \""..tip.control.."\" does not exist")
+		if not tip.text then
+			if tip.part then
+				local part = TARDIS:GetRegisteredPart(tip.part)
+				if part then
+					if part.Control then
+						if tip_control_texts[part.Control] then
+							tip.text = tip_control_texts[part.Control]
+						else
+							error("Control \""..part.Control.."\" does not exist")
+						end
+					end
+					if part.Text then
+						tip.text = part.Text
+					end
+				else
+					error("Part \""..tip.part.."\" does not exist")
+				end
+			end
+			if tip.control then
+				if tip_control_texts[tip.control] then
+					tip.text = tip_control_texts[tip.control]
+				else
+					error("Control \""..tip.control.."\" does not exist")
+				end
 			end
 		end
+		if not tip.text then
+			error("Tip at position "..tostring(tip.pos).." has no text set")
+		end
 		tip.pos=self:LocalToWorld(tip.pos)
+		tip.colors.current = tip.colors.normal
+		tip.highlighted = false
+
+		tip.SetHighlight = function(self, on)
+			self.highlighted = on
+			if on then
+				self.colors.current = self.colors.highlighted
+			else
+				self.colors.current = self.colors.normal
+			end
+		end
+		tip.ToggleHighlight = function(self)
+			self:SetHighlight(not tip.highlighted)
+		end
+
 		table.insert(tips, tip)
 	end
 	self.tips = tips
@@ -96,9 +133,29 @@ hook.Add("HUDPaint", "TARDIS-DrawTips", function()
 	local view_range_min = interior.metadata.Interior.Tips.view_range_min
 	local view_range_max = interior.metadata.Interior.Tips.view_range_max
 
+	local cseq_enabled = interior:GetSequencesEnabled()
+	local cseq_sequences, cseq_active, cseq_next
+
+	if cseq_enabled then
+		cseq_sequences = TARDIS:GetControlSequence(interior.metadata.Interior.Sequences)
+		cseq_enabled = cseq_sequences ~= nil
+		cseq_active = interior:GetData("cseq-active")
+		local cseq_curseq = interior:GetData("cseq-curseq")
+		local cseq_step = interior:GetData("cseq-step")
+		if cseq_sequences and cseq_curseq and cseq_sequences[cseq_curseq] then
+			cseq_next = cseq_sequences[cseq_curseq].Controls[cseq_step]
+		end
+	end
+
 	local player_pos = LocalPlayer():EyePos()
 	for k,tip in ipairs(interior.tips)
 	do
+		if not cseq_active then
+			tip:SetHighlight(cseq_enabled and cseq_sequences[tip.part] ~= nil)
+		else
+			tip:SetHighlight(cseq_enabled and tip.part == cseq_next)
+		end
+
 		local dist = tip.pos:Distance(player_pos)
 		if dist <= view_range_max then
 			surface.SetFont(tip.font)
@@ -108,15 +165,15 @@ hook.Add("HUDPaint", "TARDIS-DrawTips", function()
 			local offset = 50
 			local x = pos.x - w - offset
 			local y = pos.y - h - offset
-			local alpha = tip.background_color.a
+			local alpha = tip.colors.current.background.a
 			if dist > view_range_min then
 				local normalised = 1 - ((dist - view_range_min) / (view_range_max - view_range_min))
-				alpha = (tip.background_color.a) * normalised
+				alpha = (tip.colors.current.background.a) * normalised
 			end
 
-			local background_color = ColorAlpha(tip.background_color, alpha)
-			local frame_color = ColorAlpha(tip.frame_color, alpha)
-			local text_color = ColorAlpha(tip.text_color, alpha)
+			local background_color = ColorAlpha(tip.colors.current.background, alpha)
+			local frame_color = ColorAlpha(tip.colors.current.frame, alpha)
+			local text_color = ColorAlpha(tip.colors.current.text, alpha)
 
 			local verts = {}
 			verts[1] = { x=x+w-(padding*2), y=y+h+padding }
