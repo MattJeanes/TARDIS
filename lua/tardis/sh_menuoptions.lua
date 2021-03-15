@@ -1,6 +1,6 @@
 if CLIENT then
 	hook.Add("PopulateToolMenu", "TARDIS2-PopulateToolMenu", function()
-		spawnmenu.AddToolMenuOption("Options", "Doctor Who", "TARDIS2_Options", "TARDIS Rewrite", "", "", function(panel)
+		spawnmenu.AddToolMenuOption("Options", "Doctor Who", "TARDIS2_Options", "TARDIS", "", "", function(panel)
 			panel:ClearControls()
 			-- Do menu things here
 
@@ -24,6 +24,14 @@ if CLIENT then
 				net.SendToServer()
 			end
 			panel:AddItem(htoggle)
+
+			local cstoggle = vgui.Create("DCheckBoxLabel")
+			cstoggle:SetText("Enable Control Sequences")
+			cstoggle:SetValue(TARDIS:GetSetting("csequences-enabled", false, LocalPlayer()))
+			function cstoggle:OnChange(val)
+				TARDIS:SetSetting("csequences-enabled", val, true)
+			end
+			panel:AddItem(cstoggle)
 
 			local DLabel2 = vgui.Create( "DLabel" )
 			DLabel2:SetText("TARDIS Interior:")

@@ -3,6 +3,7 @@
 local PART = {}
 PART.ID = "default_flightlever"
 PART.Name = "Default Flight Lever"
+PART.Control = "flight"
 PART.Model = "models/drmatt/tardis/handbrake.mdl"
 PART.AutoSetup = true
 PART.Collision = true

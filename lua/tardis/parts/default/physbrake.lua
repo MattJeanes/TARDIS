@@ -3,6 +3,7 @@
 local PART = {}
 PART.ID = "default_physbrake"
 PART.Name = "Default Physics Lock"
+PART.Control = "physlock"
 PART.Model = "models/drmatt/tardis/handbrake.mdl"
 PART.AutoSetup = true
 PART.Collision = true

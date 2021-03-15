@@ -153,7 +153,7 @@ if SERVER then
 
 			ent:Spawn()
 			ent:GetPhysicsObject():Sleep()
-			undo.Create("TARDIS Rewrite")
+			undo.Create("TARDIS")
 				undo.AddEntity(ent)
 				undo.SetPlayer(creator)
 			undo.Finish()

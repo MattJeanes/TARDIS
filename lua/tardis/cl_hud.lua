@@ -15,7 +15,7 @@ surface.CreateFont("TARDIS-HUD-Small", {
 	size=34
 })
 
-hook.Add("HUDPaint", "TARDISRewrite-HUD", function()
+hook.Add("HUDPaint", "TARDIS-HUD", function()
 	if not TARDIS:GetSetting("health-enabled", true) then return end
 	if not (LocalPlayer():GetTardisData("interior") or LocalPlayer():GetTardisData("exterior")) then return end
 	local tardis = LocalPlayer():GetTardisData("exterior")
