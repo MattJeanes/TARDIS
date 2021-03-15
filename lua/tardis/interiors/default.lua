@@ -1,4 +1,4 @@
--- Default (used to be Legacy)
+-- Default
 
 local T={}
 T.Base="base"
