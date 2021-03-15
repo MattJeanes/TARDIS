@@ -99,12 +99,12 @@ T.Interior={
 		{pos = Vector(-0.43, 55.75, 4),      part = "default_flightlever"},
 		{pos = Vector(-1.5, -60, 2),         part = "default_float"},
 		{pos = Vector(-47.5, 26, 4),         part = "default_isomorphic"},
-		{pos = Vector(20, -37.66, 1.75),     part = "default_atomaccel",          text = "Atom Accelerator"},
-		{pos = Vector(12.5, -24.5, 23),      part = "default_directionalpointer", text = "Directional Pointer"},
-		{pos = Vector(-26, -41, 4),          part = "default_helmic",             text = "Helmic Regulator"},
-		{pos = Vector(-43.16, -31.01, 4.7),  part = "default_longflightdemat",    text = "Dematerialisation Circuit"},
-		{pos = Vector(-26, -1.50, 40),       part = "default_gramophone",         text = "Gramophone"},
-		{pos = Vector(-48, 18, 5.4),         part = "default_wibblylever",        text = "Wibbly Lever"},
+		{pos = Vector(20, -37.66, 1.75),     part = "default_atomaccel"},
+		{pos = Vector(12.5, -24.5, 23),      part = "default_directionalpointer"},
+		{pos = Vector(-26, -41, 4),          part = "default_helmic"},
+		{pos = Vector(-43.16, -31.01, 4.7),  part = "default_longflightdemat"},
+		{pos = Vector(-26, -1.50, 40),       part = "default_gramophone"},
+		{pos = Vector(-48, 18, 5.4),         part = "default_wibblylever"},
 	},
 	Seats={
 		{
