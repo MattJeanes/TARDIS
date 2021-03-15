@@ -1744,7 +1744,7 @@ local E2Commands = {
 
 	["Track"] = function(self,data,trackent)
 		if self and IsValid(self) and CheckPP(data.player,self) then
-			local success=self:SetTrackingself(trackent)
+			local success=self:SetTrackingEnt(trackent)
 			if success then
 				return 1
 			else
@@ -1904,8 +1904,8 @@ local E2Commands = {
 
 	["GetTracking"] = function(self)
 		if self and IsValid(self) then
-			if IsValid(self.trackingself) then
-				return self.trackingself
+			if IsValid(self.trackingent) then
+				return self.trackingent
 			else
 				return NULL
 			end
