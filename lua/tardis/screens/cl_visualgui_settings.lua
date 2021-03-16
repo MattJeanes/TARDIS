@@ -54,13 +54,3 @@ TARDIS:AddSetting({
 	option=true,
 	value=4
 })
-
-TARDIS:AddSetting({
-	id="visgui_theme",
-	name="VisGUI Theme",
-	desc="Theme for new Visual GUI",
-	value="default",
-	networked=true
-})
-
-TARDIS.visgui_theme_basefolder = "materials/vgui/tardis-desktop-themes/"

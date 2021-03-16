@@ -17,5 +17,3 @@ function TARDIS:GetTipStyle(id)
 		return tip_styles[id]
 	end
 end
-
-TARDIS:LoadFolder("themes/tips", nil, true)

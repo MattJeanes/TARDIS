@@ -9,6 +9,7 @@ function TardisScreenButton:new(parent,screen)
 	sb.parent = parent
 
 	sb.icon = vgui.Create("DImageButton", parent)
+	sb.frame = vgui.Create("DImageButton", parent)
 	sb.label = vgui.Create("DLabel", parent)
 	sb.label:SetColor(Color(255,255,255,0))
 	sb.label:SetText("")
@@ -16,12 +17,16 @@ function TardisScreenButton:new(parent,screen)
 
 	sb.is_toggle = false
 
-	sb.theme_dir = TARDIS.visgui_theme_basefolder
-	sb.theme_dir = sb.theme_dir..TARDIS:GetSetting("visgui_theme").."/"
-	sb.icon_off = sb.theme_dir.."default_off.png"
-	sb.icon_on = sb.theme_dir.."default_on.png"
+	sb.theme = TARDIS:GetSetting("visgui_theme")
+
+	sb.frame_off = TARDIS:GetGUIThemeElement(sb.theme, "frames", "off")
+	sb.frame_on  = TARDIS:GetGUIThemeElement(sb.theme, "frames", "on")
+	sb.icon_off  = TARDIS:GetGUIThemeElement(sb.theme, "text_icons_off")
+	sb.icon_on   = TARDIS:GetGUIThemeElement(sb.theme, "text_icons_on")
 
 	sb.icon:SetImage(sb.icon_off)
+	sb.frame:SetImage(sb.frame_off)
+
 	sb.on = false
 	sb.pos = {0, 0}
 	sb.size = {10, 10}
@@ -47,19 +52,23 @@ function TardisScreenButton:new(parent,screen)
 		sb.transparency = math.max(sb.transparency, 0)
 		if not sb.is_toggle and sb.on and CurTime() > sb.click_end_time then
 			sb.icon:SetImage(sb.icon_off)
+			sb.frame:SetImage(sb.frame_off)
 			sb.on = false
 		end
 		if sb.moving.now then
 			sb.moving.move()
 			sb.icon:SetColor(Color(255, 255, 255, sb.transparency))
+			sb.frame:SetColor(Color(255, 255, 255, sb.transparency))
 			sb.label:SetColor(Color(0, 0, 0, sb.transparency))
 		end
 
 		local realpos = { math.min(math.max(sb.pos[1], 0), sb.parent:GetWide() - sb.size[1]),
 						  math.min(math.max(sb.pos[2], 0), sb.parent:GetTall() - sb.size[2]) }
 		sb.icon:SetPos(realpos[1], realpos[2])
+		sb.frame:SetPos(realpos[1], realpos[2])
 		sb.label:SetPos(sb.pos[1], sb.pos[2])
 		sb.icon:SetSize(sb.size[1], sb.size[2])
+		sb.frame:SetSize(sb.size[1], sb.size[2])
 		sb.label:SetSize(sb.size[1], sb.size[2])
 		if not sb.moving.now then
 			sb.outside = (sb.pos[1] < 0) or (sb.pos[2] < 0)
@@ -77,8 +86,10 @@ function TardisScreenButton:new(parent,screen)
 			if sb.toggle_images then
 				if sb.on then
 					sb.icon:SetImage(sb.icon_on)
+					sb.frame:SetImage(sb.frame_on)
 				else
 					sb.icon:SetImage(sb.icon_off)
+					sb.frame:SetImage(sb.frame_off)
 				end
 			end
 		else
@@ -86,14 +97,17 @@ function TardisScreenButton:new(parent,screen)
 				sb.DoClick()
 				sb.on = true
 				sb.icon:SetImage(sb.icon_on)
+				sb.frame:SetImage(sb.frame_on)
 				sb.click_end_time = CurTime() + 0.5
 			end
 		end
 	end
 
 	sb.icon.Think = sb.ThinkInternal
+	sb.frame.Think = sb.ThinkInternal
 	sb.label.Think = sb.ThinkInternal
 	sb.icon.DoClick = sb.DoClickInternal
+	sb.frame.DoClick = sb.DoClickInternal
 	sb.label.DoClick = sb.DoClickInternal
 	sb.ThinkInternal()
 
@@ -120,19 +134,34 @@ function TardisScreenButton:SetPos(posX, posY)
 	self.ThinkInternal()
 end
 
-function TardisScreenButton:SetText(text)
-	local theme = self.theme_dir
-	local file_on = theme.."on/"..text..".png"
-	local file_off = theme.."off/"..text..".png"
+function TardisScreenButton:SetImages(off, on)
+	self.icon_off = off
+	self.icon_on = on or off
+	self.icon:SetImage(self.icon_off)
+end
 
-	if file.Exists(file_on, "GAME") and file.Exists(file_off, "GAME") then
-		self:SetImages(file_off, file_on)
-	elseif file.Exists(file_off, "GAME") then
-		self:SetImages(file_off)
-	else
+function TardisScreenButton:SetFrameImages(off, on)
+	self.frame_off = off
+	self.frame_on = on or off
+	self.frame:SetImage(self.frame_off)
+end
+
+function TardisScreenButton:SetText(text)
+	local theme = self.theme
+	local file_on =  TARDIS:GetGUIThemeElement(sb.theme, "text_icons_on", text, true)
+	local file_off = TARDIS:GetGUIThemeElement(sb.theme, "text_icons_off", text, true)
+
+	if file_on == nil then
+		file_on = file_off
+	end
+	if file_off == nil then
+		file_on =  TARDIS:GetGUIThemeElement(sb.theme, "text_icons_on")
+		file_off = TARDIS:GetGUIThemeElement(sb.theme, "text_icons_off")
 		self.label:SetColor(Color(0,0,0,255))
 		self.label:SetText("   "..text)
 	end
+
+	self:SetImages(file_off, file_on)
 end
 
 function TardisScreenButton:SetFont(font)
@@ -155,12 +184,6 @@ function TardisScreenButton:GetSize()
 	return self.size[1], self.size[2]
 end
 
-function TardisScreenButton:SetImages(off, on)
-	self.icon_off = off
-	self.icon_on = on or off
-	self.icon:SetImage(self.icon_off)
-end
-
 function TardisScreenButton:SetIsToggle(is_toggle)
 	self.is_toggle=is_toggle
 end
@@ -169,8 +192,10 @@ function TardisScreenButton:SetPressed(on)
 	self.on = on
 	if on then
 		self.icon:SetImage(self.icon_on)
+		self.frame:SetImage(self.frame_on)
 	else
 		self.icon:SetImage(self.icon_off)
+		self.frame:SetImage(self.frame_off)
 	end
 end
 function TardisScreenButton:IsPressed()
@@ -180,6 +205,7 @@ end
 function TardisScreenButton:SetVisible(visible)
 	self.visible = visible
 	self.icon:SetVisible(visible)
+	self.frame:SetVisible(visible)
 	self.label:SetVisible(visible)
 end
 

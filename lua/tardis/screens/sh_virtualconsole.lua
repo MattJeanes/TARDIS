@@ -296,10 +296,11 @@ local function new_virtual_console(self,ext,int,frame,screen)
 	--background
 
 	local background=vgui.Create("DImage", frame)
-	local theme = TARDIS.visgui_theme_basefolder
-	theme = theme..TARDIS:GetSetting("visgui_theme").."/"
-	background:SetImage(theme.."background.png")
-	background:SetSize( frame:GetWide(), frame:GetTall() )
+
+	local theme = TARDIS:GetSetting("visgui_theme")
+	local background_img = TARDIS:GetGUIThemeElement(theme, "backgrounds", "virtualconsole")
+	background:SetImage(background_img)
+	background:SetSize(frame:GetWide(), frame:GetTall())
 
 	local layout_rows
 	if screen.is3D2D then

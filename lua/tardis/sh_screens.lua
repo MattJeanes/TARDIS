@@ -292,9 +292,8 @@ concommand.Add("tardis2_toggleui", function()
 end)
 
 function TARDIS:LoadScreenUI(screen)
-	local background_img = TARDIS.visgui_theme_basefolder
-	background_img = background_img..TARDIS:GetSetting("visgui_theme")
-	background_img = background_img.."/background.png"
+	local theme = TARDIS:GetSetting("visgui_theme")
+	local background_img = TARDIS:GetGUIThemeElement(theme, "backgrounds", "main")
 
 	local frame = vgui.Create("DPanel", screen)
 	frame:SetSize(screen:GetWide() - screen.gap2, screen:GetTall() - screen.gap2)
