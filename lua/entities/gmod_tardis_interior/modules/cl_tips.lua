@@ -49,9 +49,11 @@ function ENT:InitializeTips(style_name)
 	self.tip_style_name = style_name
 	local style = TARDIS:GetTipStyle(style_name)
 	local tips = {}
-	for k,interior_tip in ipairs(self.metadata.Interior.Tips)
-	do
+
+	for k,interior_tip in ipairs(self.alltips) do
 		local tip = table.Copy(style)
+		tip.view_range_min = self.metadata.Interior.Tips.view_range_min
+		tip.view_range_max = self.metadata.Interior.Tips.view_range_max
 		for setting,value in pairs(interior_tip) do
 			tip[setting]=value
 		end
@@ -106,7 +108,21 @@ function ENT:InitializeTips(style_name)
 end
 
 ENT:AddHook("Initialize", "tips", function(self)
-	if TARDIS:GetSetting("tips") and #self.metadata.Interior.Tips == 0 then
+	self.alltips = {}
+	if #self.metadata.Interior.Tips ~= 0 then
+		for inttip_id, inttip in ipairs(self.metadata.Interior.Tips) do
+			table.insert(self.alltips, inttip)
+		end
+	end
+	for part_id,part in pairs(self.metadata.Interior.Parts) do
+		if istable(part) and part.tip then
+			local tip = table.Copy(part.tip)
+			tip.part = part_id
+			table.insert(self.alltips, tip)
+		end
+	end
+
+	if TARDIS:GetSetting("tips") and #self.alltips == 0 then
 		LocalPlayer():ChatPrint("WARNING: Tips are enabled but this interior does not support them")
 		return
 	end
@@ -130,9 +146,6 @@ hook.Add("HUDPaint", "TARDIS-DrawTips", function()
 		interior:InitializeTips(selected_tip_style)
 	end
 
-	local view_range_min = interior.metadata.Interior.Tips.view_range_min
-	local view_range_max = interior.metadata.Interior.Tips.view_range_max
-
 	local cseq_enabled = interior:GetSequencesEnabled()
 	local cseq_sequences, cseq_active, cseq_next
 
@@ -150,6 +163,9 @@ hook.Add("HUDPaint", "TARDIS-DrawTips", function()
 	local player_pos = LocalPlayer():EyePos()
 	for k,tip in ipairs(interior.tips)
 	do
+		local view_range_min = tip.view_range_min
+		local view_range_max = tip.view_range_max
+
 		if not cseq_active then
 			tip:SetHighlight(cseq_enabled and cseq_sequences[tip.part] ~= nil)
 		else
@@ -171,9 +187,9 @@ hook.Add("HUDPaint", "TARDIS-DrawTips", function()
 
 			local w, h = surface.GetTextSize( tip.text )
 			local pos = tip.pos:ToScreen()
-			local padding = 10
-			local offset = 50
-			local fr_width = 2 * 0
+			local padding = tip.padding or 10
+			local offset = tip.offset or 30
+			local fr_width = tip.fr_width or 2
 
 			local x, y, t
 			local trX = {}
@@ -182,7 +198,7 @@ hook.Add("HUDPaint", "TARDIS-DrawTips", function()
 			if tip.down then
 				y = pos.y + offset
 				t = -1
-				trY[1] = pos.y + offset / 2 - fr_width
+				trY[1] = pos.y
 				trY[2] = y - padding
 				trY[3] = y - padding
 			else
@@ -190,18 +206,18 @@ hook.Add("HUDPaint", "TARDIS-DrawTips", function()
 				t = 1
 				trY[1] = y + h + padding
 				trY[2] = y + h + padding
-				trY[3] = pos.y - offset / 2 + fr_width
+				trY[3] = pos.y
 			end
 			if tip.right then
 				x = pos.x + offset
 				trX[2 - t] = x - (padding / 2)
 				trX[2] = x + (padding * 2)
-				trX[2 + t] = pos.x + offset / 2 - fr_width
+				trX[2 + t] = pos.x
 			else
 				x = pos.x - w - offset
 				trX[2 - t] = x + w - (padding * 2)
 				trX[2] = x + w + (padding / 2)
-				trX[2 + t] = pos.x - offset / 2 + fr_width
+				trX[2 + t] = pos.x
 			end
 
 			local verts = {}
