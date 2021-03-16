@@ -42,8 +42,6 @@ local tip_control_texts = {
 	float = "Anti-Gravs",
 }
 
-local alltips = {}
-
 function ENT:InitializeTips(style_name)
 	if style_name == "default" then
 		style_name = self.metadata.Interior.Tips.style
@@ -52,7 +50,7 @@ function ENT:InitializeTips(style_name)
 	local style = TARDIS:GetTipStyle(style_name)
 	local tips = {}
 
-	for k,interior_tip in ipairs(alltips) do
+	for k,interior_tip in ipairs(self.alltips) do
 		local tip = table.Copy(style)
 		tip.view_range_min = self.metadata.Interior.Tips.view_range_min
 		tip.view_range_max = self.metadata.Interior.Tips.view_range_max
@@ -110,21 +108,21 @@ function ENT:InitializeTips(style_name)
 end
 
 ENT:AddHook("Initialize", "tips", function(self)
-	table.Empty(alltips)
+	self.alltips = {}
 	if #self.metadata.Interior.Tips ~= 0 then
 		for inttip_id, inttip in ipairs(self.metadata.Interior.Tips) do
-			table.insert(alltips, inttip)
+			table.insert(self.alltips, inttip)
 		end
 	end
 	for part_id,part in pairs(self.metadata.Interior.Parts) do
 		if istable(part) and part.tip then
 			local tip = table.Copy(part.tip)
 			tip.part = part_id
-			table.insert(alltips, tip)
+			table.insert(self.alltips, tip)
 		end
 	end
 
-	if TARDIS:GetSetting("tips") and #alltips == 0 then
+	if TARDIS:GetSetting("tips") and #self.alltips == 0 then
 		LocalPlayer():ChatPrint("WARNING: Tips are enabled but this interior does not support them")
 		return
 	end
