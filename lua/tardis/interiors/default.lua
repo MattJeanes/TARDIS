@@ -9,11 +9,11 @@ T.Interior={
 	IdleSound={
 		{
 			path="tardis/interior_idle_loop.wav",
-			volume=0.5	
+			volume=0.5
 		},
 		{
 			path="tardis/interior_idle2_loop.wav",
-			volume=0.5	
+			volume=0.5
 		}
 	},
 	Light={
@@ -85,25 +85,25 @@ T.Interior={
 	Tips={
 		view_range_min=70,
 		view_range_max=90,
-		{pos = Vector(39, 22.75, 5.82),      part = "default_hads"},
+		{pos = Vector(52, 31, 1),            part = "default_hads",             down = true},
 		{pos = Vector(19, 48.80, 2.07),      part = "default_typewriter"},
 		{pos = Vector(42, 0.75, 29.1),       part = "default_screen",           down = true},
 		{pos = Vector(47, 10, 38),           part = "default_screenbutton",     right = true},
 		{pos = Vector(44, -18, 5.5),         part = "default_powerlever",       right = true},
-		{pos = Vector(49, -27.75, 5.5),      part = "default_physbrake",        down = true},
+		{pos = Vector(52, -30, 0),           part = "default_physbrake",        down = true},
 		{pos = Vector(29, -53, -8),          part = "default_keyboard",         right = true, down = true},
-		{pos = Vector(4.48, -43.9, 7),       part = "default_blacksticks"},
+		--{pos = Vector(4.48, -43.9, 7),       part = "default_blacksticks"}, --cloak control which isn't ready yet
 		{pos = Vector(-8.87, -50, 5.5),      part = "default_throttle",         down = true},
 		{pos = Vector(-9.94, -65, -12),      part = "default_biglever"},
 		{pos = Vector(-37.24, -27.91, 7.42), part = "default_longflighttoggle"},
-		{pos = Vector(-52, -29.5, 3.5),      part = "default_handbrake"},
-		{pos = Vector(-6.62, 44.35, 7),      part = "default_repairlever",      right = true},
-		{pos = Vector(-0.43, 55.75, 4),      part = "default_flightlever",      right = true, down = true},
-		{pos = Vector(-1.5, -60, 2),         part = "default_float",            right = true, down = true},
-		{pos = Vector(-47.5, 26, 4),         part = "default_isomorphic",       down = true},
-		{pos = Vector(20, -37, 4),           part = "default_atomaccel",        right = true},
+		{pos = Vector(-52, -29, 2),          part = "default_handbrake",        down = true},
+		{pos = Vector(-8, 45, 9),            part = "default_repairlever",      right = true},
+		{pos = Vector(-1, 59, 2),            part = "default_flightlever",      right = true, down = true},
+		{pos = Vector(-2, -60, 1),           part = "default_float",            right = true, down = true},
+		{pos = Vector(-52, 29, 2),           part = "default_isomorphic",       down = true},
+		{pos = Vector(20, -38, 6),           part = "default_atomaccel",        right = true},
 		{pos = Vector(12.5, -24.5, 23),      part = "default_directionalpointer"},
-		{pos = Vector(-26, -41, 4),          part = "default_helmic",           right = true},
+		{pos = Vector(-26, -41, 4),          part = "default_helmic",           right = true, view_range_max = 70, view_range_min = 50 }, --less view range since there's a lot stuff there
 		{pos = Vector(-43.16, -31.01, 4.7),  part = "default_longflightdemat",  right = true, down = true},
 		{pos = Vector(-26, -1.50, 40),       part = "default_gramophone",       right = true, down = true},
 		{pos = Vector(-48, 18, 5.4),         part = "default_wibblylever",      right = true},
