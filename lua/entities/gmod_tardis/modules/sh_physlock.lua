@@ -90,8 +90,6 @@ if SERVER then
 			return self:GetData("physlock",false) and 1 or 0
 		elseif name == "Physlock" and TARDIS:CheckPP(e2.player, self) then
 			return self:TogglePhyslock() and 1 or 0
-		else
-			return 0
 		end
 	end)
 end

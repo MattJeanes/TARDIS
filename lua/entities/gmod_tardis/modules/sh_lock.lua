@@ -68,8 +68,6 @@ if SERVER then
 		elseif name == "Lock" and TARDIS:CheckPP(e2.player, self) then
 			self:ToggleLocked()
 			return self:CallHook("CanLock") == true and 1 or 0
-		else
-			return 0
 		end
 	end)
 else

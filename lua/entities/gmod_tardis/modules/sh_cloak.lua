@@ -5,7 +5,5 @@ ENT:AddHook("HandleE2", "cloak", function(self,name,e2)
 		return 0
 	elseif name == "GetVisible" then
 		return 0
-	else
-		return 0
 	end
 end)

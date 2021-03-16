@@ -31,8 +31,6 @@ if SERVER then
 			return self:TogglePower() and 1 or 0
 		elseif name == "GetPowered" then
 			return self:GetPower() and 1 or 0
-		else
-			return 0
 		end
 	end)
 else
