@@ -105,6 +105,15 @@ TARDIS:AddControl("flightcontrol",{
 	serveronly=true
 })
 
+TARDIS:AddControl("redecorate",{
+	func=function(self,ply)
+		local on = self:GetData("redecorate",false)
+		self:SetData("redecorate", not on, true)
+	end,
+	exterior=true,
+	serveronly=true
+})
+
 
 if SERVER then return end
 
@@ -342,6 +351,13 @@ local function new_virtual_console(self,ext,int,frame,screen)
 	repair:SetControl("repair")
 	repair:SetPressedStateData(ext, "repair-primed")
 	layout:AddNewButton(repair)
+
+	local redecorate = TardisScreenButton:new(frame,screen)
+	redecorate:SetIsToggle(true)
+	redecorate:SetText("Redecorate")
+	redecorate:SetControl("redecorate")
+	redecorate:SetPressedStateData(ext, "redecorate")
+	layout:AddNewButton(redecorate)
 
 	local fastremat = TardisScreenButton:new(frame,screen)
 	fastremat:SetIsToggle(true)

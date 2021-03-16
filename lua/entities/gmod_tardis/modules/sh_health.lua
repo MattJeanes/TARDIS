@@ -136,12 +136,16 @@ if SERVER then
 		local time = CurTime()+(math.Clamp((TARDIS:GetSetting("health-max")-self:GetData("health-val"))*0.1, 1, 60))
 		self:SetData("repair-time", time, true)
 		self:SetData("repairing", true, true)
-		self:SetData("repair-primed", false)
+		self:SetData("repair-primed", false, true)
 		self:CallHook("RepairStarted")
 	end
 
+	ENT:AddHook("ShouldRedecorate", "health", function(self)
+		return self:GetData("redecorate",false) and true or nil
+	end)
+
 	function ENT:FinishRepair()
-		if TARDIS:GetSetting("interior","default",self:GetCreator()) ~= self.metadata.ID then
+		if self:CallHook("ShouldRedecorate") then
 			local pos = self:GetPos()
 			local ang = self:GetAngles()
 			local creator = self:GetCreator()
@@ -207,11 +211,15 @@ if SERVER then
 			self.smoke=nil
 		end
 	end
-	
+
 	ENT:AddHook("CanRepair", "health", function(self)
+		if self:GetData("vortex", false) then return false end
 		local intsetting = TARDIS:GetSetting("interior","default",self:GetCreator())
-		if TARDIS:GetInterior(intsetting) and (intsetting ~= self.metadata.ID) and (not self:GetData("vortex",false))then return end
-		if (self:GetHealth() >= TARDIS:GetSetting("health-max",1)) then return false end
+		if (self:GetHealth() >= TARDIS:GetSetting("health-max", 1))
+			and not self:GetData("redecorate", false) or not TARDIS:GetInterior(intsetting)
+		then
+			return false
+		end
 	end)
 
 	ENT:AddHook("CanTogglePower", "health", function(self)
@@ -248,6 +256,10 @@ if SERVER then
 		if self:GetData("repair-primed",false) and self:GetData("repair-shouldstart") and CurTime() > self:GetData("repair-delay") then
 			self:SetData("repair-shouldstart", false)
 			self:StartRepair()
+		end
+
+		if self:GetData("repair-primed", false) and self:CallHook("CanRepair") == false then
+			self:SetData("repair-primed", false, true)
 		end
 
 		if (self:GetData("repairing",false) and CurTime()>self:GetData("repair-time",0)) then
