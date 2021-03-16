@@ -280,6 +280,7 @@ if SERVER then
 	end)
 
 	ENT:AddHook("HandleE2", "teleport_args", function(self, name, e2, pos, ang)
+		if not TARDIS:CheckPP(e2.player, self) then return end
 		if name == "Demat" then
 			local success = self:CallHook("CanDemat")==false
 			if not pos or not ang then
@@ -296,6 +297,7 @@ if SERVER then
 	end)
 
 	ENT:AddHook("HandleE2", "teleport_noargs", function(self, name, e2)
+		if not TARDIS:CheckPP(e2.player, self) then return end
 		if name == "Mat" then
 			local success = (self:GetData("vortex",false) and self:CallHook("CanMat"))==false
 			self:Mat()

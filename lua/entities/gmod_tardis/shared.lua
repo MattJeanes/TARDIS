@@ -8,10 +8,14 @@ ENT.Author="Dr. Matt"
 ENT.TardisExterior=true
 ENT.Interior="gmod_tardis_interior"
 
-local spawnEntity = table.Copy(ENT)
-spawnEntity.PrintName = " TARDIS " -- Spaces used for ordering
-spawnEntity.Spawnable = true
-list.Set("SpawnableEntities", "gmod_tardis", spawnEntity)
+if SERVER then
+	ENT.Spawnable = true
+else
+	local spawnEntity = table.Copy(ENT)
+	spawnEntity.PrintName = " TARDIS " -- Spaces used for ordering
+	spawnEntity.Spawnable = true
+	list.Set("SpawnableEntities", "gmod_tardis", spawnEntity)
+end
 
 local class=string.sub(ENT.Folder,string.find(ENT.Folder, "/[^/]*$")+1) -- only works if in a folder
 

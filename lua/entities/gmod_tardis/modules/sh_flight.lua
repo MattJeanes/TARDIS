@@ -291,6 +291,7 @@ if SERVER then
 	end)
 
 	ENT:AddHook("HandleE2", "flight", function(self, name, e2, ...)
+		if not TARDIS:CheckPP(e2.player, self) then return end
 		local args = {...}
 		if name == "Flightmode" then
 			local on = args[1]
@@ -304,7 +305,7 @@ if SERVER then
 			self.spindir = spindir
 			return self.spindir
 		elseif name == "Track" then
-			return 0
+			return 0 -- Not yet implemented
 		end
 	end)
 

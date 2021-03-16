@@ -329,7 +329,7 @@ if SERVER then
 	ENT:AddHook("HandleE2", "health", function(self,name,e2)
 		if name == "GetHealth" then
 			return self:GetHealthPercent()
-		elseif name == "Selfrepair" then
+		elseif name == "Selfrepair" and TARDIS:CheckPP(e2.player, self) then
 			self:ToggleRepair()
 			return self:GetData("repair-primed",false) and 1 or 0
 		elseif name == "GetSelfrepairing" then
@@ -342,6 +342,8 @@ if SERVER then
 			else
 				return 0
 			end
+		else
+			return 0
 		end
 	end)
 
