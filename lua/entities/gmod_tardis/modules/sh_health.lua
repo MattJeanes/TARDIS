@@ -28,6 +28,9 @@ TARDIS:AddSetting({
 
 ENT:AddHook("Initialize","health-init",function(self)
 	self:SetData("health-val", TARDIS:GetSetting("health-max"), true)
+	if SERVER and WireLib then
+		self:TriggerWireOutput("Health", self:GetHealth())
+	end
 end)
 
 function ENT:ChangeHealth(newhealth)
@@ -43,12 +46,12 @@ function ENT:ChangeHealth(newhealth)
 		newhealth = 0
 		if newhealth == 0 and not (newhealth == oldhealth) then
 			self:CallHook("OnHealthDepleted")
-			self.interior:CallHook("OnHealthDepleted")
+			if self.interior then self.interior:CallHook("OnHealthDepleted") end
 		end
 	end
 	self:SetData("health-val", newhealth, true)
 	self:CallHook("OnHealthChange", newhealth, oldhealth)
-	self.interior:CallHook("OnHealthChange", newhealth, oldhealth)
+	if self.interior then self.interior:CallHook("OnHealthChange", newhealth, oldhealth) end
 end
 
 function ENT:GetHealth()
@@ -83,6 +86,8 @@ if SERVER then
 	   TARDIS:SetSetting("health-enabled", tobool(newvalue), true)
 	end, "UpdateOnChange")
 
+	ENT:AddWireOutput("Health", "TARDIS Health")
+	
 	function ENT:Explode(f)
 		local force = tostring(f) or "60"
 		local explode = ents.Create("env_explosion")
@@ -109,6 +114,13 @@ if SERVER then
 			end
 			if self:GetPower() then self:SetPower(false) end
 			self:SetData("repair-primed",true,true)
+
+			if table.IsEmpty(self.occupants) then
+				timer.Simple(0, function() 
+					self:SetData("repair-shouldstart", true)
+					self:SetData("repair-delay", CurTime()+0.3)
+				end)
+			end
 		else
 			self:SetData("repair-primed",false,true)
 			self:SetPower(true)
@@ -267,6 +279,10 @@ if SERVER then
 		end)
 	end)
 
+	ENT:AddHook("OnHealthChange", "wiremod", function (self)
+		self:TriggerWireOutput("Health",self:GetHealth())
+	end)
+
 	ENT:AddHook("OnHealthDepleted", "death", function(self)
 		self:SetPower(false)
 		if self:GetData("vortex",false) then
@@ -298,6 +314,25 @@ if SERVER then
 		end
 	end)
 
+	ENT:AddHook("HandleE2", "health", function(self,name,e2)
+		if name == "GetHealth" then
+			return self:GetHealthPercent()
+		elseif name == "Selfrepair" then
+			self:ToggleRepair()
+			return self:GetData("repair-primed",false) and 1 or 0
+		elseif name == "GetSelfrepairing" then
+			local repairing = self:GetData("repairing",false)
+			local primed = self:GetData("repair-primed",false)
+			if repairing then
+				return 1
+			elseif primed then
+				return 2
+			else
+				return 0
+			end
+		end
+	end)
+
 	ENT:AddHook("StopDemat", "warning", function(self)
 		if self.smoke then
 			self:StopSmoke()
@@ -309,6 +344,7 @@ if SERVER then
 			self:StartSmoke()
 		end
 	end)
+
 else
 	ENT:OnMessage("health-networking", function(self, ply)
 		local newhealth = net.ReadInt(32)
