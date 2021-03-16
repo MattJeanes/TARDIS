@@ -12,10 +12,14 @@ ENT.Purpose			= "Time and Relative Dimension in Space"
 ENT.RenderGroup = RENDERGROUP_BOTH
 ENT.Category		= "Doctor Who - TARDIS"
 
-local spawnEntity = table.Copy(ENT)
-spawnEntity.PrintName = " TARDIS (Legacy) " -- Spaces used for ordering
-spawnEntity.Spawnable = true
-list.Set("SpawnableEntities", "sent_tardis", spawnEntity)
+if SERVER then
+	ENT.Spawnable = true
+else
+	local spawnEntity = table.Copy(ENT)
+	spawnEntity.PrintName = " TARDIS (Legacy) " -- Spaces used for ordering
+	spawnEntity.Spawnable = true
+	list.Set("SpawnableEntities", "sent_tardis", spawnEntity)
+end
 
 CreateConVar("tardis_takedamage", "1", {FCVAR_NOTIFY, FCVAR_SERVER_CAN_EXECUTE, FCVAR_REPLICATED})
 CreateConVar("tardis_flightphase", "1", {FCVAR_NOTIFY, FCVAR_SERVER_CAN_EXECUTE, FCVAR_REPLICATED})
