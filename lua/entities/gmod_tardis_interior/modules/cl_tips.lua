@@ -86,7 +86,6 @@ function ENT:InitializeTips(style_name)
 		if not tip.text then
 			error("Tip at position "..tostring(tip.pos).." has no text set")
 		end
-		tip.pos=self:LocalToWorld(tip.pos)
 		tip.colors.current = tip.colors.normal
 		tip.highlighted = false
 
@@ -172,7 +171,8 @@ hook.Add("HUDPaint", "TARDIS-DrawTips", function()
 			tip:SetHighlight(cseq_enabled and tip.part == cseq_next)
 		end
 
-		local dist = tip.pos:Distance(player_pos)
+		local pos = interior:LocalToWorld(tip.pos)
+		local dist = pos:Distance(player_pos)
 		if dist <= view_range_max then
 			surface.SetFont(tip.font)
 			local alpha = tip.colors.current.background.a
@@ -186,7 +186,7 @@ hook.Add("HUDPaint", "TARDIS-DrawTips", function()
 			local text_color = ColorAlpha(tip.colors.current.text, alpha)
 
 			local w, h = surface.GetTextSize( tip.text )
-			local pos = tip.pos:ToScreen()
+			local pos = pos:ToScreen()
 			local padding = tip.padding or 10
 			local offset = tip.offset or 30
 			local fr_width = tip.fr_width or 2

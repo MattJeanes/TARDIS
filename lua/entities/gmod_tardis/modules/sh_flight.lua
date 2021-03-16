@@ -150,7 +150,7 @@ if SERVER then
 		if enabled then
 			if IsValid(self.pilot) then
 				ply:ChatPrint(self.pilot:Nick().." is the pilot.")
-			else
+			elseif self:CallHook("CanChangePilot",ply)~=false then
 				self.pilot=ply
 				ply:ChatPrint("You are now the pilot.")
 				self:CallHook("PilotChanged",nil,ply)

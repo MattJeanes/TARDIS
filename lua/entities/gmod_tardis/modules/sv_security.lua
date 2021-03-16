@@ -13,3 +13,9 @@ ENT:AddHook("HandleE2", "security", function(self,name,e2)
 		end
 	end
 end)
+
+ENT:AddHook("CanChangePilot", "flight", function(self, ply)
+    if ply~=self:GetCreator() and self.interior and self.interior:GetSecurity() then
+        return false
+    end
+end)
