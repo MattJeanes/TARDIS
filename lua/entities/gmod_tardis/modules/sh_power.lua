@@ -13,13 +13,13 @@ if SERVER then
 		return self:SetPower(not self:GetPower())
 	end
 	function ENT:SetPower(on)
-		if (self:CallHook("CanTogglePower")==false or self.interior:CallHook("CanTogglePower")==false) then return end
-		local success = self:SetData("power-state",on,true)
+		if (self:CallHook("CanTogglePower")==false or self.interior:CallHook("CanTogglePower")==false) then return false end
+		self:SetData("power-state",on,true)
 		self:CallHook("PowerToggled",on)
 		if self.interior then
 			self.interior:CallHook("PowerToggled",on)
 		end
-		return success
+		return true
 	end
 
 	ENT:AddHook("CanTriggerHads","power",function(self)
@@ -28,7 +28,7 @@ if SERVER then
 
 	ENT:AddHook("HandleE2", "power", function(self,name,e2)
 		if name == "Power" then
-			return self:TogglePower()
+			return self:TogglePower() and 1 or 0
 		elseif name == "GetPowered" then
 			return self:GetPower() and 1 or 0
 		end

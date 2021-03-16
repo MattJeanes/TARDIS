@@ -89,7 +89,7 @@ if SERVER then
 		if name == "GetPhyslocked" then
 			return self:GetData("physlock",false) and 1 or 0
 		elseif name == "Physlock" then
-			return self:TogglePhyslock()
+			return self:TogglePhyslock() and 1 or 0
 		end
 	end)
 end

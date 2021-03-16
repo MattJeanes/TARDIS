@@ -15,7 +15,8 @@ function PART:Use(ply)
         ply:ChatPrint("This is not your TARDIS")
         return
     end
-    local result = self.interior:ToggleSecurity() or false
-    ply:ChatPrint("Isomorphic ".. (result and "engaged" or "disengaged"))
+    if self.interior:ToggleSecurity() then
+        ply:ChatPrint("Isomorphic ".. (self.interior:GetSecurity() and "engaged" or "disengaged"))
+    end
 end
 TARDIS:AddPart(PART)

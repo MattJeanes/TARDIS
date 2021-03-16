@@ -20,8 +20,8 @@ if SERVER then
 	end
 
 	function ENT:ToggleSecurity()
-		local on = not self:GetSecurity()
-		return self:SetSecurity(on)
+		self:SetSecurity(not self:GetSecurity())
+		return true
 	end
 end
 
