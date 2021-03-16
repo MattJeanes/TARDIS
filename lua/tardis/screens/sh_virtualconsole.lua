@@ -352,6 +352,13 @@ local function new_virtual_console(self,ext,int,frame,screen)
 	repair:SetPressedStateData(ext, "repair-primed")
 	layout:AddNewButton(repair)
 
+	local redecorate = TardisScreenButton:new(frame,screen)
+	redecorate:SetIsToggle(true)
+	redecorate:SetText("Redecorate")
+	redecorate:SetControl("redecorate")
+	redecorate:SetPressedStateData(ext, "redecorate")
+	layout:AddNewButton(redecorate)
+
 	local fastremat = TardisScreenButton:new(frame,screen)
 	fastremat:SetIsToggle(true)
 	fastremat:SetText("fast_remat")
@@ -411,13 +418,6 @@ local function new_virtual_console(self,ext,int,frame,screen)
 	flightcontrol:SetText("flight_control")
 	flightcontrol:SetControl("flightcontrol")
 	layout:AddNewButton(flightcontrol)
-
-	local redecorate = TardisScreenButton:new(frame,screen)
-	redecorate:SetIsToggle(true)
-	redecorate:SetText("Redecorate")
-	redecorate:SetControl("redecorate")
-	redecorate:SetPressedStateData(ext, "redecorate")
-	layout:AddNewButton(redecorate)
 
 	layout:DrawButtons()
 
