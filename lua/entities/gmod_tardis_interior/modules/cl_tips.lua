@@ -108,6 +108,14 @@ function ENT:InitializeTips(style_name)
 end
 
 ENT:AddHook("Initialize", "tips", function(self)
+	for part_id,part in pairs(self.metadata.Interior.Parts) do
+		if istable(part) and part.tip then
+			local tip = table.Copy(part.tip)
+			tip.part = part_id
+			table.insert(self.metadata.Interior.Tips, tip)
+		end
+	end
+
 	if TARDIS:GetSetting("tips") and #self.metadata.Interior.Tips == 0 then
 		LocalPlayer():ChatPrint("WARNING: Tips are enabled but this interior does not support them")
 		return
