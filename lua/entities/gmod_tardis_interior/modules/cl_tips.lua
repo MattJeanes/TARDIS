@@ -42,6 +42,8 @@ local tip_control_texts = {
 	float = "Anti-Gravs",
 }
 
+local alltips = {}
+
 function ENT:InitializeTips(style_name)
 	if style_name == "default" then
 		style_name = self.metadata.Interior.Tips.style
@@ -50,7 +52,7 @@ function ENT:InitializeTips(style_name)
 	local style = TARDIS:GetTipStyle(style_name)
 	local tips = {}
 
-	for k,interior_tip in ipairs(self.metadata.Interior.Tips) do
+	for k,interior_tip in ipairs(alltips) do
 		local tip = table.Copy(style)
 		tip.view_range_min = self.metadata.Interior.Tips.view_range_min
 		tip.view_range_max = self.metadata.Interior.Tips.view_range_max
@@ -108,15 +110,21 @@ function ENT:InitializeTips(style_name)
 end
 
 ENT:AddHook("Initialize", "tips", function(self)
+	table.Empty(alltips)
+	if #self.metadata.Interior.Tips ~= 0 then
+		for inttip_id, inttip in ipairs(self.metadata.Interior.Tips) do
+			table.insert(alltips, inttip)
+		end
+	end
 	for part_id,part in pairs(self.metadata.Interior.Parts) do
 		if istable(part) and part.tip then
 			local tip = table.Copy(part.tip)
 			tip.part = part_id
-			table.insert(self.metadata.Interior.Tips, tip)
+			table.insert(alltips, tip)
 		end
 	end
 
-	if TARDIS:GetSetting("tips") and #self.metadata.Interior.Tips == 0 then
+	if TARDIS:GetSetting("tips") and #alltips == 0 then
 		LocalPlayer():ChatPrint("WARNING: Tips are enabled but this interior does not support them")
 		return
 	end
@@ -181,9 +189,9 @@ hook.Add("HUDPaint", "TARDIS-DrawTips", function()
 
 			local w, h = surface.GetTextSize( tip.text )
 			local pos = tip.pos:ToScreen()
-			local padding = 10
-			local offset = 30
-			local fr_width = 2 * 0
+			local padding = tip.padding or 10
+			local offset = tip.offset or 30
+			local fr_width = tip.fr_width or 2
 
 			local x, y, t
 			local trX = {}
