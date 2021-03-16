@@ -140,8 +140,12 @@ if SERVER then
 		self:CallHook("RepairStarted")
 	end
 
+	ENT:AddHook("ShouldRedecorate", "health", function(self)
+		return self:GetData("redecorate",false) and true or nil
+	end)
+
 	function ENT:FinishRepair()
-		if TARDIS:GetSetting("interior","default",self:GetCreator()) ~= self.metadata.ID then
+		if self:CallHook("ShouldRedecorate") and TARDIS:GetSetting("interior","default",self:GetCreator()) ~= self.metadata.ID then
 			local pos = self:GetPos()
 			local ang = self:GetAngles()
 			local creator = self:GetCreator()

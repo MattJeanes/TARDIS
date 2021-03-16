@@ -105,6 +105,15 @@ TARDIS:AddControl("flightcontrol",{
 	serveronly=true
 })
 
+TARDIS:AddControl("redecorate",{
+	func=function(self,ply)
+		local on = self:GetData("redecorate",false)
+		self:SetData("redecorate", not on, true)
+	end,
+	exterior=true,
+	serveronly=true
+})
+
 
 if SERVER then return end
 
@@ -402,6 +411,13 @@ local function new_virtual_console(self,ext,int,frame,screen)
 	flightcontrol:SetText("flight_control")
 	flightcontrol:SetControl("flightcontrol")
 	layout:AddNewButton(flightcontrol)
+
+	local redecorate = TardisScreenButton:new(frame,screen)
+	redecorate:SetIsToggle(true)
+	redecorate:SetText("Redecorate")
+	redecorate:SetControl("redecorate")
+	redecorate:SetPressedStateData(ext, "redecorate")
+	layout:AddNewButton(redecorate)
 
 	layout:DrawButtons()
 
