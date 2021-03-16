@@ -1,0 +1,11 @@
+"VertexLitGeneric"
+{
+// File Created by Wall Worm Pro ( http://dev.wallworm.com )
+
+// BEGIN Color
+	"$color2" "{203.0 37.0 5.0}"
+// END Color
+
+	"%keywords" "wallworm,precision"
+
+}
