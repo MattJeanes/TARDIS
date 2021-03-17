@@ -29,7 +29,7 @@ end)
 ENT:AddHook("HandleE2", "hads", function(self,name,e2)
 	if name == "GetHADS" then
 		return self:GetData("hads",false) and 1 or 0
-	elseif name == "HADS" then
+	elseif name == "HADS" and TARDIS:CheckPP(e2.player, self) then
 		return self:ToggleHADS()
 	end
 end)

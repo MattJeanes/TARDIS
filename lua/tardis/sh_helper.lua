@@ -43,6 +43,11 @@ function TARDIS:IsBehind( object_pos, plane_pos, plane_forward )
 	return false
 end
 
+-- Prop Protection
+function TARDIS:CheckPP(ply, ent)
+	return hook.Call("PhysgunPickup", GAMEMODE, ply, ent)
+end
+
 --[[
 local meta=FindMetaTable("Player")
 meta.OldSetEyeAngles=meta.OldSetEyeAngles or meta.SetEyeAngles

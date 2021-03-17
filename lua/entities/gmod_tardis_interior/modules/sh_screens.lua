@@ -5,17 +5,33 @@ ENT:AddHook("Initialize", "screens-toggle", function(self)
 	self:SetData("screens_on", screens_on, true)
 end)
 
+ENT:AddHook("CanToggleScreens", "power", function(self)
+	if not self.exterior:GetData("power-state") then
+		return false
+	end
+end)
+
+ENT:AddHook("CanEnableScreens", "power", function(self)
+	if not self.exterior:GetData("power-state") then
+		return false
+	end
+end)
+
 function ENT:GetScreensOn(on)
 	return self:GetData("screens_on", false)
 end
 
 function ENT:SetScreensOn(on)
-	self:SetData("screens_on", on, true)
+	if not on or self:CallHook("CanEnableScreens") ~= false then
+		self:SetData("screens_on", on, true)
+	end
 	return true
 end
 
 function ENT:ToggleScreens()
-	self:SetScreensOn(not self:GetScreensOn())
+	if self:CallHook("CanToggleScreens") ~= false then
+		self:SetScreensOn(not self:GetScreensOn())
+	end
 	return true
 end
 

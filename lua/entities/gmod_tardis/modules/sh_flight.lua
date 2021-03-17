@@ -150,7 +150,7 @@ if SERVER then
 		if enabled then
 			if IsValid(self.pilot) then
 				ply:ChatPrint(self.pilot:Nick().." is the pilot.")
-			else
+			elseif self:CallHook("CanChangePilot",ply)~=false then
 				self.pilot=ply
 				ply:ChatPrint("You are now the pilot.")
 				self:CallHook("PilotChanged",nil,ply)
@@ -292,19 +292,19 @@ if SERVER then
 
 	ENT:AddHook("HandleE2", "flight", function(self, name, e2, ...)
 		local args = {...}
-		if name == "Flightmode" then
+		if name == "Flightmode" and TARDIS:CheckPP(e2.player, self) then
 			local on = args[1]
 			if on then
 				return self:SetFlight(on) and 1 or 0
 			else
 				return self:ToggleFlight() and 1 or 0
 			end
-		elseif name == "Spinmode" then
+		elseif name == "Spinmode" and TARDIS:CheckPP(e2.player, self) then
 			local spindir = args[1]
 			self.spindir = spindir
 			return self.spindir
-		elseif name == "Track" then
-			return 0
+		elseif name == "Track" and TARDIS:CheckPP(e2.player, self) then
+			return 0 -- Not yet implemented
 		end
 	end)
 

@@ -280,7 +280,7 @@ if SERVER then
 	end)
 
 	ENT:AddHook("HandleE2", "teleport_args", function(self, name, e2, pos, ang)
-		if name == "Demat" then
+		if name == "Demat" and TARDIS:CheckPP(e2.player, self) then
 			local success = self:CallHook("CanDemat")==false
 			if not pos or not ang then
 				self:Demat()
@@ -288,7 +288,7 @@ if SERVER then
 				self:Demat(Vector(pos[1], pos[2], pos[3]), Angle(ang[1], ang[2], ang[3]))
 			end
 			return success and 0 or 1
-		elseif name == "SetDestination" then
+		elseif name == "SetDestination" and TARDIS:CheckPP(e2.player, self) then
 			local pos2 = Vector(pos[1], pos[2], pos[3])
 			local ang2 = Angle(ang[1], ang[2], ang[3])
 			return self:SetDestination(pos2,ang2) and 1 or 0
@@ -296,17 +296,17 @@ if SERVER then
 	end)
 
 	ENT:AddHook("HandleE2", "teleport_noargs", function(self, name, e2)
-		if name == "Mat" then
+		if name == "Mat" and TARDIS:CheckPP(e2.player, self) then
 			local success = (self:GetData("vortex",false) and self:CallHook("CanMat"))==false
 			self:Mat()
 			return success and 0 or 1
-		elseif name == "Longflight" then
+		elseif name == "Longflight" and TARDIS:CheckPP(e2.player, self) then
 			return self:ToggleFastRemat() and 1 or 0
-		elseif name == "FastReturn" then
+		elseif name == "FastReturn" and TARDIS:CheckPP(e2.player, self) then
 			local success = self:CallHook("CanDemat")==false
 			self:FastReturn()
 			return success and 0 or 1
-		elseif name == "FastDemat" then
+		elseif name == "FastDemat" and TARDIS:CheckPP(e2.player, self)then
 			local success = self:CallHook("CanDemat")==false
 			self:Demat()
 			return success and 0 or 1

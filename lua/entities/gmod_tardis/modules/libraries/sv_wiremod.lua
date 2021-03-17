@@ -28,7 +28,9 @@ function ENT:AddWireOutput(name, desc, type)
 end
 
 function ENT:HandleE2(cmd, ...)
-	return self:CallHook("HandleE2", cmd, ...)
+	local ret=self:CallHook("HandleE2", cmd, ...)
+	if ret==nil then ret=0 end
+	return ret
 end
 
 function ENT:TriggerWireOutput(name, value)

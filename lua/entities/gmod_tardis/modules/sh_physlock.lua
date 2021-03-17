@@ -88,7 +88,7 @@ if SERVER then
 	ENT:AddHook("HandleE2", "physlock", function(self, name, e2)
 		if name == "GetPhyslocked" then
 			return self:GetData("physlock",false) and 1 or 0
-		elseif name == "Physlock" then
+		elseif name == "Physlock" and TARDIS:CheckPP(e2.player, self) then
 			return self:TogglePhyslock() and 1 or 0
 		end
 	end)

@@ -27,7 +27,7 @@ if SERVER then
 	end)
 
 	ENT:AddHook("HandleE2", "power", function(self,name,e2)
-		if name == "Power" then
+		if name == "Power" and TARDIS:CheckPP(e2.player, self) then
 			return self:TogglePower() and 1 or 0
 		elseif name == "GetPowered" then
 			return self:GetPower() and 1 or 0
