@@ -380,14 +380,14 @@ function TARDIS:LoadScreenUI(screen)
 		left_arrow:SetSize(titlebar.button_size * 2, titlebar.button_size)
 		left_arrow:SetPos(titlebar:GetWide() * 0.3 - titlebar.button_size, titlebar.button_posY)
 		left_arrow:SetIsToggle(false)
-		left_arrow:SetText("left")
+		left_arrow:SetText("<<<")
 		screen.left_arrow = left_arrow
 
 		local right_arrow = TardisScreenButton:new(titlebar,screen)
 		right_arrow:SetSize(titlebar.button_size * 2, titlebar.button_size)
 		right_arrow:SetPos(titlebar:GetWide() * 0.7 - titlebar.button_size, titlebar.button_posY)
 		right_arrow:SetIsToggle(false)
-		right_arrow:SetText("right")
+		right_arrow:SetText(">>>")
 		screen.right_arrow = right_arrow
 	else
 		menubutton = vgui.Create("DButton", titlebar)
@@ -404,7 +404,7 @@ function TARDIS:LoadScreenUI(screen)
 	end
 	screen.titlebar=titlebar
 
-	backbutton:SetText("Back")
+	backbutton:SetText("back")
 	backbutton:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 	backbutton:SetVisible(false)
 	backbutton.DoClick = function()
@@ -412,7 +412,7 @@ function TARDIS:LoadScreenUI(screen)
 	end
 	screen.backbutton=backbutton
 
-	menubutton:SetText("Menu")
+	menubutton:SetText("menu")
 	menubutton:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 	menubutton.DoClick = function(self)
 		if IsValid(screen.curscreen) or not mmenu:IsVisible() then
@@ -439,12 +439,12 @@ function TARDIS:LoadScreenUI(screen)
 
 	exitpopup_button:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 	if not screen.is3D2D then
-		exitpopup_button:SetText("X")
+		exitpopup_button:SetText("exit")
 		exitpopup_button.DoClick = function()
 			TARDIS:RemoveHUDScreen()
 		end
 	else
-		exitpopup_button:SetText("Popup")
+		exitpopup_button:SetText("popup")
 		exitpopup_button.DoClick = function()
 			self:PopToScreen(screen.pagename:GetText())
 		end

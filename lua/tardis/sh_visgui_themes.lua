@@ -34,6 +34,20 @@ function TARDIS:GetGUITheme(id)
 	end
 end
 
+function TARDIS:GetGUIThemeFolder(id)
+	local theme = self.visgui_themes[id]
+	if not theme then
+		return nil
+	end
+	if theme.folder then
+		return theme.folder
+	end
+	if theme.base_id then
+		return TARDIS:GetGUIThemeFolder(theme.base_id)
+	end
+	return nil
+end
+
 function TARDIS:GetGUIThemeElement(theme_id, section, element, no_defaults)
 	if element == nil then
 		return TARDIS:GetGUIThemeElement(theme_id, section, "default")
@@ -50,11 +64,18 @@ function TARDIS:GetGUIThemeElement(theme_id, section, element, no_defaults)
 			return nil
 		end
 	end
-	if theme[section][element] then
-		if theme[section].subfolder ~= nil then
-			return theme.folder..theme[section].subfolder.."/"..theme[section][element]
+	if theme[section][element] ~= nil then
+		local folder = TARDIS:GetGUIThemeFolder(theme_id)
+		if folder == nil then
+			error("Trying to open non-existing folder "..folder)
 		end
-		return theme.folder..theme[section][element]
+		if theme[section].subfolder ~= nil then
+			folder = folder..theme[section].subfolder.."/"
+		end
+		local element = folder..theme[section][element]
+		if file.Exists(element, "GAME") then
+			return element
+		end
 	end
 	if theme.base_id ~= nil then
 		local inherited = TARDIS:GetGUIThemeElement(theme.base_id, section, element, true)
