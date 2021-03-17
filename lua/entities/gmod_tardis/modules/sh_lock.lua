@@ -57,6 +57,19 @@ if SERVER then
 			self:EmitSound("doors/door_lock_1.wav")
 		end
 	end)
+
+	ENT:AddHook("HandleE2", "lock", function(self,name,e2)
+		if name == "GetLocked" then
+			if self:Locked() or self:Locking() then
+				return 1
+			else
+				return 0
+			end
+		elseif name == "Lock" and TARDIS:CheckPP(e2.player, self) then
+			self:ToggleLocked()
+			return self:CallHook("CanLock") == true and 1 or 0
+		end
+	end)
 else
 	TARDIS:AddSetting({
 		id="locksound-enabled",

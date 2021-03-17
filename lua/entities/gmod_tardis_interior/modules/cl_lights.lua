@@ -19,7 +19,7 @@ function ENT:DrawLight(id,light)
 	end
 end
 
-ENT:AddHook("Draw", "lights", function(self)
+ENT:AddHook("Think", "lights", function(self)
 	local light=self.metadata.Interior.Light
 	local lights=self.metadata.Interior.Lights
 	local index=self:EntIndex()
@@ -30,7 +30,7 @@ ENT:AddHook("Draw", "lights", function(self)
 		local i=0
 		for _,light in pairs(lights) do
 			i=i+1
-			self:DrawLight(index*i*1000,light)
+			self:DrawLight((index*1000)+i,light)
 		end
 	end
 end)
@@ -66,7 +66,7 @@ ENT:AddHook("Draw", "lights-roundthings", function(self)
 end)
 
 ENT:AddHook("ShouldDrawLight", "lights", function(self,id,light)
-	local power = self.exterior:GetData("power-state",false)
+	local power = self.exterior:GetPower()
 	if power~=true then
 		if light==nil then return false end
 		return light.nopower or false

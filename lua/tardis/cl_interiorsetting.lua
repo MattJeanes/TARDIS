@@ -16,10 +16,10 @@ TARDIS:AddGUISetting("Interior", function(self,frame,screen)
 	self:LoadButtons(screen,frame,function(frame)
 		local buttons={}
 		for k,v in ipairs(interiors) do
-			if v[3] != true then
+			if v[3] ~= true then
 				local button = vgui.Create("DButton",frame)
 				button:SetText(v[1])
-				button:SetFont("TARDIS-Default")
+				button:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 				button.DoClick = function()
 					TARDIS:SetSetting("interior",v[2],true)
 					LocalPlayer():ChatPrint("TARDIS interior changed. Respawn or repair the TARDIS for changes to apply.")

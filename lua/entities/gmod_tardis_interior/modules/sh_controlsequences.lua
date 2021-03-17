@@ -52,7 +52,15 @@ TARDIS:AddSetting({
 	networked=true
 })
 
+function ENT:GetSequencesEnabled()
+	return self:GetData("cseq-enabled", false)
+end
+
 if SERVER then
+	ENT:AddHook("Initialize", "csequence", function(self)
+		self:SetData("cseq-enabled", TARDIS:GetSetting("csequences-enabled", false, self:GetCreator()), true)
+	end)
+
 	ENT:AddHook("PartUsed","HandleControlSequence",function(self,part,a)
 		local sequences = TARDIS:GetControlSequence(self.metadata.Interior.Sequences)
 		if sequences == nil then return end
@@ -63,9 +71,9 @@ if SERVER then
 			local allowed = self:CallHook("CanStartControlSequence")
 			if allowed==false then return end
 			self:EmitSound(self.metadata.Interior.Sounds.SequenceOK)
-			self:SetData("cseq-active", true)
-			self:SetData("cseq-step", 1)
-			self:SetData("cseq-curseq", id)
+			self:SetData("cseq-active", true, true)
+			self:SetData("cseq-step", 1, true)
+			self:SetData("cseq-curseq", id, true)
 			for _,v in pairs(sequences[id].Controls) do
 				local p = TARDIS:GetPart(self,v)
 				p.InSequence = true
@@ -74,7 +82,7 @@ if SERVER then
 			local curseq = self:GetData("cseq-curseq","none")
 			if sequences[curseq].Controls[step] == id then
 				self:EmitSound(self.metadata.Interior.Sounds.SequenceOK)
-				self:SetData("cseq-step",step+1)
+				self:SetData("cseq-step", step + 1, true)
 				if step == #sequences[curseq].Controls then
 					sequences[curseq].OnFinish(self, a, step, part)
 					self:TerminateSequence()
@@ -92,8 +100,9 @@ if SERVER then
 		end
 	end)
 	ENT:AddHook("CanStartControlSequence", "settingquery", function(self)
-		local result = TARDIS:GetSetting("csequences-enabled",false,self:GetCreator())
-		return true
+		if not self:GetSequencesEnabled() then
+			return false
+		end
 	end)
 
 	ENT:AddHook("CanUsePart", "csequence-disable", function(self, part, a)
@@ -109,12 +118,8 @@ if SERVER then
 			local p = TARDIS:GetPart(self,v)
 			p.InSequence = nil
 		end
-		self:SetData("cseq-step",nil)
-		self:SetData("cseq-curseq",nil)
-		self:SetData("cseq-active",false)
-	end
-
-	function ENT:GetSequencesEnabled()
-		return TARDIS:GetSetting("csequences-enabled", false, self:GetCreator())
+		self:SetData("cseq-step", nil, true)
+		self:SetData("cseq-curseq", nil, true)
+		self:SetData("cseq-active", false, true)
 	end
 end

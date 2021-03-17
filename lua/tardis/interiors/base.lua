@@ -5,7 +5,7 @@ T.Base=true
 T.Name="Base"
 T.ID="base"
 T.Interior={
-	Model="models/drmatt/tardis/2012interior/interior.mdl",
+	Model="models/drmatt/tardis/interior.mdl",
 	ExitDistance=600,
 	Portal={
 		pos=Vector(-1,-353.5,136),
@@ -28,15 +28,23 @@ T.Interior={
 		SequenceFail = "drmatt/tardis/seq_bad.wav",
 		Cloister = "drmatt/tardis/cloisterbell_loop.wav"
 	},
+	Tips={
+		style="white_on_grey",
+		view_range_min=70,
+		view_range_max=100,
+	},
 	LightOverride={
 		basebrightness=0.3, --Base interior brightness when power is on.
 		nopowerbrightness=0.05 --Interior brightness with no power. Should always be darker than basebrightness.
 	},
-	ScreenDistance=500
+	ScreenDistance=500,
+	ScreensEnabled=true
 }
 T.Exterior={
 	Model="models/drmatt/tardis/exterior/exterior.mdl",
 	Mass=5000,
+	DoorAnimationTime=0.5,
+	ScannerOffset=Vector(22,0,50),
 	Portal={
 		pos=Vector(26,0,51.65),
 		ang=Angle(0,0,0),
@@ -50,7 +58,10 @@ T.Exterior={
 	Light={
 		enabled=true,
 		pos=Vector(0,0,122),
-		color=Color(255,255,255)
+		color=Color(255,255,255),
+		dynamicpos=Vector(0,0,130),
+		dynamicbrightness=2,
+		dynamicsize=300
 	},
 	ProjectedLight={
 		--color=Color(r,g,b), --Base color. Will use main interior light if not set.

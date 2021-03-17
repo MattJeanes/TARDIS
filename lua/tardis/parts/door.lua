@@ -10,6 +10,7 @@ PART.ClientThinkOverride = true
 PART.Collision = true
 PART.NoStrictUse = true
 PART.ShouldTakeDamage = true
+PART.BypassIsomorphic = true
 
 if SERVER then
 	function PART:Initialize()	
@@ -85,7 +86,7 @@ else
 			self.DoorTarget=self.exterior.DoorOverride or (self.exterior:GetData("doorstatereal",false) and 1 or 0)
 			
 			-- Have to spam it otherwise it glitches out (http://facepunch.com/showthread.php?t=1414695)
-			self.DoorPos=self.exterior.DoorOverride or math.Approach(self.DoorPos,self.DoorTarget,FrameTime()*2)
+			self.DoorPos=self.exterior.DoorOverride or math.Approach(self.DoorPos,self.DoorTarget,FrameTime()*(1/self.exterior.metadata.Exterior.DoorAnimationTime))
 			
 			self:SetPoseParameter("switch", self.DoorPos)
 			self:InvalidateBoneCache()

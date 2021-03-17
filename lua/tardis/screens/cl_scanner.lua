@@ -12,13 +12,6 @@ local mat = CreateMaterial(
 
 local uid=0
 TARDIS:AddScreen("Scanner", {menu=false}, function(self,ext,int,frame,screen)
-	for i=0.1,2,0.1 do -- autodetects maximum resolution
-		if (screen.width*i<=ScrW()) or (screen.height*i<=ScrH()) then
-			ext.scannerres=i
-		else
-			break
-		end
-	end
 	screen.scanner=GetRenderTarget("tardisi_scanner-"..uid.."-"..screen.id,
 		screen.width*screen.res,
 		screen.height*screen.res,
@@ -38,7 +31,7 @@ TARDIS:AddScreen("Scanner", {menu=false}, function(self,ext,int,frame,screen)
 	end
 	
 	local label = vgui.Create("DLabel",frame)
-	label:SetFont("TARDIS-Med")
+	label:SetFont(TARDIS:GetScreenFont(screen, "Med"))
 	label.DoLayout = function()
 		label:SizeToContents()
 		label:SetPos(frame:GetWide()/2-label:GetWide()/2-screen.gap,frame:GetTall()-label:GetTall()-screen.gap)
@@ -65,7 +58,7 @@ TARDIS:AddScreen("Scanner", {menu=false}, function(self,ext,int,frame,screen)
 	back:SetSize(frame:GetTall()*0.2-screen.gap,frame:GetTall()*0.15-screen.gap)
 	back:SetPos(screen.gap+1,frame:GetTall()-back:GetTall()-screen.gap-1)
 	back:SetText("<")
-	back:SetFont("TARDIS-Default")
+	back:SetFont(TARDIS:GetScreenFont(screen, "Med"))
 	back.DoClick = function()
 		screen.scannerang.y=screen.scannerang.y+90
 		if screen.scannerang.y>=180 then
@@ -78,7 +71,7 @@ TARDIS:AddScreen("Scanner", {menu=false}, function(self,ext,int,frame,screen)
 	nxt:SetSize(frame:GetTall()*0.2-screen.gap,frame:GetTall()*0.15-screen.gap)
 	nxt:SetPos(frame:GetWide()-nxt:GetWide()-screen.gap-1,frame:GetTall()-nxt:GetTall()-screen.gap-1)
 	nxt:SetText(">")
-	nxt:SetFont("TARDIS-Default")
+	nxt:SetFont(TARDIS:GetScreenFont(screen, "Med"))
 	nxt.DoClick = function()
 		screen.scannerang.y=screen.scannerang.y-90
 		if screen.scannerang.y<=-180 then
@@ -101,7 +94,8 @@ hook.Add("RenderScene", "TARDISI_Scanner", function(pos,ang)
 					render.ClearDepth()
 					render.ClearStencil()
 					
-					local vec=Vector(22,0,50)
+					local offset = ext.metadata.Exterior.ScannerOffset
+					local vec=Vector(offset.x, offset.y, offset.z)
 					vec:Rotate(v.scannerang)
 					local camOrigin = ext:LocalToWorld(vec)
 					local camAngle = ext:LocalToWorldAngles(v.scannerang)
@@ -113,7 +107,7 @@ hook.Add("RenderScene", "TARDISI_Scanner", function(pos,ang)
 						x = 0,
 						y = 0,
 						w = v.width*v.res,
-						h = v.width*v.res,
+						h = v.height*v.res,
 						fov = 120,
 						origin = camOrigin,
 						angles = camAngle,

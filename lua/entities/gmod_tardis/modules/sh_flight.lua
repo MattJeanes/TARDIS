@@ -2,8 +2,8 @@
 
 -- Binds
 TARDIS:AddKeyBind("flight-toggle",{
-	name="Toggle",
-	section="Flight",
+	name="Toggle Flight",
+	section="Third Person",
 	func=function(self,down,ply)
 		if ply==self.pilot and down then
 			self:ToggleFlight()
@@ -141,7 +141,7 @@ if SERVER then
 	end)
 
 	ENT:AddHook("CanTurnOnFlight", "flight", function(self)
-		if not self:GetData("power-state",false) then
+		if not self:GetPower() then
 			return false
 		end
 	end)
@@ -150,7 +150,7 @@ if SERVER then
 		if enabled then
 			if IsValid(self.pilot) then
 				ply:ChatPrint(self.pilot:Nick().." is the pilot.")
-			else
+			elseif self:CallHook("CanChangePilot",ply)~=false then
 				self.pilot=ply
 				ply:ChatPrint("You are now the pilot.")
 				self:CallHook("PilotChanged",nil,ply)
@@ -287,6 +287,34 @@ if SERVER then
 			ph:AddAngleVelocity(angbrake)
 			local brake=vel*-0.01
 			ph:AddVelocity(brake)
+		end
+	end)
+
+	ENT:AddHook("HandleE2", "flight", function(self, name, e2, ...)
+		local args = {...}
+		if name == "Flightmode" and TARDIS:CheckPP(e2.player, self) then
+			local on = args[1]
+			if on then
+				return self:SetFlight(on) and 1 or 0
+			else
+				return self:ToggleFlight() and 1 or 0
+			end
+		elseif name == "Spinmode" and TARDIS:CheckPP(e2.player, self) then
+			local spindir = args[1]
+			self.spindir = spindir
+			return self.spindir
+		elseif name == "Track" and TARDIS:CheckPP(e2.player, self) then
+			return 0 -- Not yet implemented
+		end
+	end)
+
+	ENT:AddHook("HandleE2", "flight_get", function(self, name, e2)
+		if name == "GetFlying" then
+			return self:GetData("flight",false) and 1 or 0
+		elseif name == "GetTracking" then
+			return NULL --We don't have flight tracking yet
+		elseif name == "GetPilot" then
+			return self:GetData("pilot", NULL) or NULL
 		end
 	end)
 else

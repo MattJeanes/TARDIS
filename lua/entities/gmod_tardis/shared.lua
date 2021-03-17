@@ -1,12 +1,21 @@
 -- TARDIS
 
 ENT.Base="gmod_door_exterior"
-ENT.Spawnable=true
-ENT.PrintName="TARDIS Rewrite"
-ENT.Category="Doctor Who"
+ENT.Spawnable=false
+ENT.PrintName="TARDIS"
+ENT.Category="Doctor Who - TARDIS"
 ENT.Author="Dr. Matt"
 ENT.TardisExterior=true
 ENT.Interior="gmod_tardis_interior"
+
+if SERVER then
+	ENT.Spawnable = true
+else
+	local spawnEntity = table.Copy(ENT)
+	spawnEntity.PrintName = " TARDIS " -- Spaces used for ordering
+	spawnEntity.Spawnable = true
+	list.Set("SpawnableEntities", "gmod_tardis", spawnEntity)
+end
 
 local class=string.sub(ENT.Folder,string.find(ENT.Folder, "/[^/]*$")+1) -- only works if in a folder
 

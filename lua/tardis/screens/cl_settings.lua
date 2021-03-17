@@ -19,7 +19,7 @@ TARDIS:AddScreen("Settings", {}, function(self,ext,int,frame,screen)
 		for k,v in ipairs(settings) do
 			local button = vgui.Create("DButton",frame)
 			button:SetText(v[1])
-			button:SetFont("TARDIS-Default")
+			button:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 			button.DoClick = function()
 				self:PushScreen(v[1],screen,frame,v[2])
 			end

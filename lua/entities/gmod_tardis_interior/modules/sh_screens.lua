@@ -1,15 +1,44 @@
 -- Adds screens
 
+ENT:AddHook("Initialize", "screens-toggle", function(self)
+	local screens_on = self.metadata.Interior.ScreensEnabled
+	self:SetData("screens_on", screens_on, true)
+end)
+
+ENT:AddHook("CanToggleScreens", "power", function(self)
+	if not self.exterior:GetData("power-state") then
+		return false
+	end
+end)
+
+ENT:AddHook("CanEnableScreens", "power", function(self)
+	if not self.exterior:GetData("power-state") then
+		return false
+	end
+end)
+
+function ENT:GetScreensOn(on)
+	return self:GetData("screens_on", false)
+end
+
+function ENT:SetScreensOn(on)
+	if not on or self:CallHook("CanEnableScreens") ~= false then
+		self:SetData("screens_on", on, true)
+	end
+	return true
+end
+
+function ENT:ToggleScreens()
+	if self:CallHook("CanToggleScreens") ~= false then
+		self:SetScreensOn(not self:GetScreensOn())
+	end
+	return true
+end
+
 if SERVER then
 	ENT:LoadFolder("modules/screens")
 	return
 end
-
-ENT.screenres=1.7
-ENT.screenx=0
-ENT.screeny=0
-ENT.screengap=0
-ENT.screengap2=0
 
 local screens={}
 function ENT:AddScreen(name,func)
@@ -26,7 +55,18 @@ ENT:AddHook("Initialize", "screens", function(self)
 	if screens then
 		self.screens3D={}
 		for k,v in pairs(screens) do
-			self.screens3D[k]=TARDIS:LoadScreen(k,{width=v.width,height=v.height,ext=self.exterior,int=self})
+			local black = v.power_off_black
+			if black == nil then
+				black = true
+			end
+			self.screens3D[k] = TARDIS:LoadScreen(k, {
+				width = v.width,
+				height = v.height,
+				ext = self.exterior,
+				int = self,
+				visgui_rows = v.visgui_rows,
+				power_off_black = black,
+			})
 			self.screens3D[k].pos3D=v.pos
 			self.screens3D[k].ang3D=v.ang
 		end	
@@ -45,7 +85,7 @@ end)
 
 -- Thanks world-portals
 function ENT:ShouldRenderScreen(screen)
-	local camOrigin = GetViewEntity():GetPos()
+	local camOrigin = GetViewEntity():EyePos()
 	local pos = self:LocalToWorld(screen.pos3D)
 	local ang = self:LocalToWorldAngles(screen.ang3D)
 	local distance = camOrigin:Distance(pos)
@@ -65,12 +105,18 @@ ENT:AddHook("PostDrawTranslucentRenderables", "screens", function(self)
 		for k,v in pairs(self.screens3D) do
 			local should,pos,ang = self:ShouldRenderScreen(v)
 			if should then
-				local col=HSVToColor(180+math.sin(CurTime()*0.1)*180,0.5,1)
-				vgui.Start3D2D(pos,ang,0.0624*(1/TARDIS.screenres))
+				local col=Color(0,0,0,0)
+				vgui.Start3D2D(pos,ang,0.0624*(1/v.res))
 					draw.RoundedBox(0,0,0,v.width,v.height,col)
 					v:Paint3D2D()
 				vgui.End3D2D()
 			end
 		end
+	end
+end)
+
+ENT:AddHook("ShouldNotDrawScreen", "screens", function(self)
+	if not self:GetScreensOn() then
+		return true
 	end
 end)

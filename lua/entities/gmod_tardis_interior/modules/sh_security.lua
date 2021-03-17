@@ -1,4 +1,4 @@
---Security System (Isomorphic)
+-- Security System (Isomorphic)
 
 TARDIS:AddSetting({
 	id="security",
@@ -10,14 +10,18 @@ TARDIS:AddSetting({
 	desc="Whether or not people other than you can use your TARDIS' controls."
 })
 
+function ENT:GetSecurity()
+	return self:GetData("security", false)
+end
+
 if SERVER then
 	function ENT:SetSecurity(on)
 		return self:SetData("security", on, true)
 	end
 
 	function ENT:ToggleSecurity()
-		local on = not self:GetData("security", false)
-		return self:SetSecurity(on)
+		self:SetSecurity(not self:GetSecurity())
+		return true
 	end
 end
 
@@ -28,8 +32,9 @@ ENT:AddHook("Initialize","security", function(self)
 end)
 
 ENT:AddHook("CanUsePart","security",function(self,part,ply)
-	if self:GetData("security", false) and (ply~=self:GetCreator()) then
-		if part.ID == "door" then return end
+	if self:GetSecurity() and (ply~=self:GetCreator()) then
+		if part.BypassIsomorphic then return end
+		
 		ply:ChatPrint("This TARDIS uses Isomorphic Security. You may not use any controls.")
 		return false,false
 	end

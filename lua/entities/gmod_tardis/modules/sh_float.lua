@@ -93,7 +93,7 @@ if SERVER then
 	end)
 
 	ENT:AddHook("CanTurnOnFloat", "float", function(self)
-		if not self:GetData("power-state") then return false end
+		if not self:GetPower() then return false end
 	end)
 	
 	ENT:AddHook("Think", "float", function(self)
@@ -171,6 +171,10 @@ if SERVER then
 	end)
 else
 	ENT:AddHook("ShouldTurnOnLight", "float", function(self)
+		if self:GetData("float") then return true end
+	end)
+
+	ENT:AddHook("ShouldPulseLight", "float", function(self)
 		if self:GetData("float") then return true end
 	end)
 end
