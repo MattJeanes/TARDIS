@@ -8,7 +8,7 @@ PART.Model = "models/drmatt/tardis/throttle.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 PART.Animate = true
-PART.Sound = "tardis/control_throttle.wav"
+PART.Sound = "drmatt/tardis/default/control_throttle.wav"
 
 if SERVER then
 	function PART:Use(ply)

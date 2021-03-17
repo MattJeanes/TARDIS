@@ -45,7 +45,7 @@ if SERVER then
 				if self.exterior:CallHook("LockedUse",a)==nil then
 					a:ChatPrint("The doors are locked.")
 				end
-				self:EmitSound("doors/door_lock_1.wav")
+				self:EmitSound(self.exterior.metadata.Exterior.Sounds.Door.locked)
 			end
 		else
 			if a:KeyDown(IN_WALK) then

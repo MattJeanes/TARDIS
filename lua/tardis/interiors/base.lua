@@ -84,7 +84,8 @@ T.Exterior={
 		Door={
 			enabled=true,
 			open="drmatt/tardis/door_open.wav",
-			close="drmatt/tardis/door_close.wav"
+			close="drmatt/tardis/door_close.wav",
+			locked="drmatt/tardis/door_locked.wav"
 		},
 		FlightLoop="drmatt/tardis/flight_loop.wav",
 	},
