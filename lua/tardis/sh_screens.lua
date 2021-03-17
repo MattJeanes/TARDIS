@@ -360,16 +360,19 @@ function TARDIS:LoadScreenUI(screen)
 		titlebar.button_posY = titlebar:GetTall() * 0.5 - titlebar.button_size * 0.5
 
 		menubutton = TardisScreenButton:new(titlebar,screen)
+		menubutton:SetFrameType(0, 1)
 		menubutton:SetSize(titlebar.button_size * 2, titlebar.button_size)
 		menubutton:SetPos(0, titlebar.button_posY)
 		menubutton:SetIsToggle(false)
 
 		backbutton = TardisScreenButton:new(titlebar,screen)
+		backbutton:SetFrameType(0, 1)
 		backbutton:SetSize(titlebar.button_size * 2, titlebar.button_size)
 		backbutton:SetPos(titlebar:GetWide() * 0.3 - titlebar.button_size, titlebar.button_posY)
 		backbutton:SetIsToggle(false)
 
 		exitpopup_button = TardisScreenButton:new(titlebar,screen)
+		exitpopup_button:SetFrameType(0, 1)
 		exitpopup_button:SetSize(titlebar.button_size * 2, titlebar.button_size)
 		exitpopup_button:SetPos(titlebar:GetWide() * 0.95 - titlebar.button_size, titlebar.button_posY)
 		exitpopup_button:SetIsToggle(false)
@@ -377,6 +380,7 @@ function TARDIS:LoadScreenUI(screen)
 		local left_arrow, right_arrow
 
 		local left_arrow = TardisScreenButton:new(titlebar,screen)
+		left_arrow:SetFrameType(0, 1)
 		left_arrow:SetSize(titlebar.button_size * 2, titlebar.button_size)
 		left_arrow:SetPos(titlebar:GetWide() * 0.3 - titlebar.button_size, titlebar.button_posY)
 		left_arrow:SetIsToggle(false)
@@ -384,6 +388,7 @@ function TARDIS:LoadScreenUI(screen)
 		screen.left_arrow = left_arrow
 
 		local right_arrow = TardisScreenButton:new(titlebar,screen)
+		right_arrow:SetFrameType(0, 1)
 		right_arrow:SetSize(titlebar.button_size * 2, titlebar.button_size)
 		right_arrow:SetPos(titlebar:GetWide() * 0.7 - titlebar.button_size, titlebar.button_posY)
 		right_arrow:SetIsToggle(false)
@@ -471,13 +476,7 @@ function TARDIS:LoadScreenUI(screen)
 	self:LoadButtons(screen, mmenu, function(parent)
 		local buttons={}
 		for k,v in ipairs(screen.screens) do
-			local button
-			if TARDIS:GetSetting("visgui_enabled") then
-				button = TardisScreenButton:new(parent,screen)
-				button:SetIsToggle(false)
-			else
-				button = vgui.Create("DButton")
-			end
+			local button = vgui.Create("DButton")
 			button:SetText(v[1])
 			button:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 			button.DoClick = function()
@@ -509,6 +508,7 @@ function TARDIS:LoadButtons(screen, frame, func, isvgui)
 		for k,v in ipairs(screen.screens) do
 			local button
 			button = TardisScreenButton:new(frame,screen)
+			button:SetFrameType(0, 1)
 			button:SetIsToggle(false)
 			button:SetText(v[1])
 			button:SetFont(TARDIS:GetScreenFont(screen, "Default"))

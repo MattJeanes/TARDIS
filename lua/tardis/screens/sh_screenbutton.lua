@@ -7,6 +7,7 @@ function TardisScreenButton:new(parent,screen)
 	sb.transparency = 0
 	sb.outside = false
 	sb.parent = parent
+	sb.clickable = true
 
 	sb.icon = vgui.Create("DImageButton", parent)
 	sb.frame = vgui.Create("DImageButton", parent)
@@ -60,6 +61,7 @@ function TardisScreenButton:new(parent,screen)
 			sb.icon:SetColor(Color(255, 255, 255, sb.transparency))
 			sb.frame:SetColor(Color(255, 255, 255, sb.transparency))
 			sb.label:SetColor(Color(0, 0, 0, sb.transparency))
+			sb.clickable = (sb.transparency ~= 0)
 		end
 
 		local realpos = { math.min(math.max(sb.pos[1], 0), sb.parent:GetWide() - sb.size[1]),
@@ -80,6 +82,7 @@ function TardisScreenButton:new(parent,screen)
 	end
 
 	sb.DoClickInternal = function()
+		if not sb.clickable then return end
 		if sb.is_toggle then
 			sb.DoClick()
 			sb.on = not sb.on
@@ -143,6 +146,24 @@ end
 function TardisScreenButton:SetFrameImages(off, on)
 	self.frame_off = off
 	self.frame_on = on or off
+	self.frame:SetImage(self.frame_off)
+end
+
+function TardisScreenButton:SetFrameType(type1, type2)
+	if type2 == nil then
+		type2 = type1
+	end
+	local function getFrameType(type)
+		if     type == 0 then
+			return "default", true
+		elseif type == 1 then
+			return "on"
+		elseif type == 2 then
+			return "off"
+		end
+	end
+	self.frame_off = TARDIS:GetGUIThemeElement(self.theme, "frames", getFrameType(type1))
+	self.frame_on  = TARDIS:GetGUIThemeElement(self.theme, "frames", getFrameType(type2))
 	self.frame:SetImage(self.frame_off)
 end
 
