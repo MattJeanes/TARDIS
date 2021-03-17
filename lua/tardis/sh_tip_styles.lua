@@ -1,7 +1,9 @@
 local tip_styles={}
 
 function TARDIS:AddTipStyle(style)
-	tip_styles[style.style_id]=table.Copy(style)
+	if CLIENT then
+		tip_styles[style.style_id]=table.Copy(style)
+	end
 end
 
 function TARDIS:RemoveTipStyle(id)
@@ -17,3 +19,5 @@ function TARDIS:GetTipStyle(id)
 		return tip_styles[id]
 	end
 end
+
+TARDIS:LoadFolder("themes/tips", nil, true)
