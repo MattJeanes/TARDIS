@@ -165,7 +165,9 @@ hook.Add("HUDPaint", "TARDIS-DrawTips", function()
 		local view_range_min = tip.view_range_min
 		local view_range_max = tip.view_range_max
 
-		if not cseq_active then
+		local cseq_canstart = cseq_sequences[tip.part] ~= nil and interior:CallHook("CanStartControlSequence",tip.part)~=false
+
+		if not cseq_active and cseq_canstart then
 			tip:SetHighlight(cseq_enabled and cseq_sequences[tip.part] ~= nil)
 		else
 			tip:SetHighlight(cseq_enabled and tip.part == cseq_next)
