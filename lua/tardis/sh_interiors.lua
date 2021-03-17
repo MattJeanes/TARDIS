@@ -65,6 +65,14 @@ hook.Add("PostGamemodeLoaded", "tardis-interiors", function()
 			surface.PlaySound("ui/buttonclickrelease.wav")
 		end
 
+		icon.OpenMenu = function(self)
+			local dmenu = DermaMenu()
+			dmenu:AddOption("Set as preferred", function()
+				TARDIS:SetSetting("interior",obj.spawnname,true)
+			end):SetIcon("icon16/star.png")
+			dmenu:Open()
+		end
+
 		if IsValid(container) then
 			container:Add(icon)
 		end
