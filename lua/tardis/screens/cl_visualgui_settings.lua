@@ -54,3 +54,13 @@ TARDIS:AddSetting({
 	option=true,
 	value=4
 })
+
+TARDIS:AddSetting({
+	id = "visgui_theme",
+	name = "VisGUI Theme",
+	desc = "Theme for new Visual GUI",
+	section = "Misc",
+	value = "default",
+	option = false,
+	networked = true
+})

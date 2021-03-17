@@ -148,15 +148,15 @@ end
 
 function TardisScreenButton:SetText(text)
 	local theme = self.theme
-	local file_on =  TARDIS:GetGUIThemeElement(sb.theme, "text_icons_on", text, true)
-	local file_off = TARDIS:GetGUIThemeElement(sb.theme, "text_icons_off", text, true)
+	local file_on =  TARDIS:GetGUIThemeElement(self.theme, "text_icons_on", text, true)
+	local file_off = TARDIS:GetGUIThemeElement(self.theme, "text_icons_off", text, true)
 
 	if file_on == nil then
 		file_on = file_off
 	end
 	if file_off == nil then
-		file_on =  TARDIS:GetGUIThemeElement(sb.theme, "text_icons_on")
-		file_off = TARDIS:GetGUIThemeElement(sb.theme, "text_icons_off")
+		file_on =  TARDIS:GetGUIThemeElement(self.theme, "text_icons_on")
+		file_off = TARDIS:GetGUIThemeElement(self.theme, "text_icons_off")
 		self.label:SetColor(Color(0,0,0,255))
 		self.label:SetText("   "..text)
 	end

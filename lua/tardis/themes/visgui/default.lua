@@ -1,6 +1,6 @@
 local theme = {
 	id = "default",
 	name = "Default",
-	base = "base",
+	base_id = "base",
 }
 TARDIS:AddGUITheme(theme)
