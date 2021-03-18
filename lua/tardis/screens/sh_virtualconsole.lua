@@ -421,23 +421,9 @@ local function new_virtual_console(self,ext,int,frame,screen)
 	hads:SetPressedStateData(ext, "hads")
 	layout:AddNewButton(hads)
 
-	local destination = TardisScreenButton:new(frame,screen)
-	destination:SetIsToggle(false)
-	destination:SetFrameType(0, 1)
-	destination:SetText("Destination Select")
-	destination:SetControl("destination")
-	layout:AddNewButton(destination)
-
-	local flightcontrol = TardisScreenButton:new(frame,screen)
-	flightcontrol:SetIsToggle(false)
-	flightcontrol:SetFrameType(0, 1)
-	flightcontrol:SetText("Flight Control")
-	flightcontrol:SetControl("flightcontrol")
-	layout:AddNewButton(flightcontrol)
-
 	layout:DrawButtons()
 
-	layout.scroll_size = math.max(1, math.floor(layout:GetCols() / 2))
+	layout.scroll_size = math.max(1, layout:GetCols() - 1)
 
 	frame.Think = function()
 		screen.left_arrow:SetVisible(true)

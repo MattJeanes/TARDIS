@@ -52,9 +52,12 @@ function TARDIS:GetGUIThemeElement(theme_id, section, element, no_defaults)
 	if element == nil then
 		return TARDIS:GetGUIThemeElement(theme_id, section, "default")
 	end
+	if theme_id == nil then
+		error("Attempt to access theme without id")
+	end
 	local theme = self.visgui_themes[theme_id]
 	if theme == nil then
-		error("Attempt to access non-existing theme "..theme_id)
+		error("Attempt to access non-existing theme"..theme_id)
 		return nil
 	end
 	if theme[section] == nil then
