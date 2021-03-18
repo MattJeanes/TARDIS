@@ -109,6 +109,7 @@ function TardisScreenButton:new(parent,screen)
 	sb.icon.Think = sb.ThinkInternal
 	sb.frame.Think = sb.ThinkInternal
 	sb.label.Think = sb.ThinkInternal
+
 	sb.icon.DoClick = sb.DoClickInternal
 	sb.frame.DoClick = sb.DoClickInternal
 	sb.label.DoClick = sb.DoClickInternal
@@ -125,6 +126,7 @@ end
 
 function TardisScreenButton:SetSize(sizeX, sizeY)
 	self.size = {sizeX, sizeY}
+	self:AdjustTextOffset()
 	self.ThinkInternal()
 end
 
@@ -179,14 +181,36 @@ function TardisScreenButton:SetText(text)
 		file_on =  TARDIS:GetGUIThemeElement(self.theme, "text_icons_on")
 		file_off = TARDIS:GetGUIThemeElement(self.theme, "text_icons_off")
 		self.label:SetColor(Color(0,0,0,255))
-		self.label:SetText("   "..text)
+		self.label:SetText(text)
 	end
 
 	self:SetImages(file_off, file_on)
+	self:AdjustTextOffset()
+end
+
+function TardisScreenButton:AdjustTextOffset()
+	local label = self.label
+	local text = label:GetText()
+	local w, h = self.label:GetTextSize()
+	local size = self.size[1]
+
+	label:SetBGColor(255,255,255,255)
+
+	if w < size then
+		surface.SetFont(label:GetFont())
+		local spacesizeX, spacesizeY = surface.GetTextSize(" ")
+
+		local spaces = math.floor(0.5 * (size - w) / spacesizeX)
+		for i = 1, spaces do
+			text = " "..text.." "
+		end
+		label:SetText(text)
+	end
 end
 
 function TardisScreenButton:SetFont(font)
 	self.label:SetFont(font)
+	self:AdjustTextOffset()
 end
 
 function TardisScreenButton:GetPosX()
