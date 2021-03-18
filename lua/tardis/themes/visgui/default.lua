@@ -6,9 +6,9 @@ local theme = {
 	folder = "default",
 	frames = {
 		subfolder = "frames",
-		default = "tlblue.png",
-		on = "tlgreen.png",
-		off = "tlred.png",
+		default = "blue.png",
+		on = "green.png",
+		off = "red.png",
 	},
 	backgrounds = {
 		subfolder = "backgrounds",
@@ -33,10 +33,10 @@ local theme = {
 		["Physlock"] = "control_physlock.png",
 		["H.A.D.S."] = "control_hads.png",
 
-		["Destination Select"] = "screen_destination.png",
+		["Destination"] = "screen_destination.png",
 		["Flight Control"] = "screen_thirdperson.png",
 		["Console"] = "screen_console.png",
-		["Destination"] = "screen_coords.png",
+		["Coordinates"] = "screen_coords.png",
 		["Music"] = "screen_music.png",
 		["Scanner"] = "screen_scanner.png",
 		["Settings"] = "screen_settings.png",
@@ -59,26 +59,15 @@ local theme = {
 		["Redecoration"] = "control_redecoration.png",
 		["Vortex Flight"] = "control_fastremat.png",
 		["Throttle"] = "control_throttle.png",
-		--["Fast Return"] = "control_fastreturn.png",
 		["Flightmode"] = "control_flight.png",
 		["Anti-Gravs"] = "control_float.png",
 		["Physlock"] = "control_physlock.png",
 		["H.A.D.S."] = "control_hads.png",
 
-		--[[
-		["Destination Select"] = "screen_destination.png",
-		["Flight Control"] = "screen_thirdperson.png",
-		["Console"] = "screen_console.png",
-		["Destination"] = "screen_coords.png",
-		["Music"] = "screen_music.png",
-		["Scanner"] = "screen_scanner.png",
-		["Settings"] = "screen_settings.png", ]]--
-
 		["menu"] = "interface_menu.png",
 		["back"] = "interface_back.png",
 		["<<<"] = "interface_left.png",
 		[">>>"] = "interface_right.png",
-		--["exit"] = "interface_exit.png",
 		["popup"] = "interface_popup.png",
 	},
 }

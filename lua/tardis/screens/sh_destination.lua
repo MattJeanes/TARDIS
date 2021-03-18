@@ -12,28 +12,7 @@ if SERVER then return end
 
 TARDIS:AddScreen("Destination", {menu=false}, function(self,ext,int,frame,screen)
 	
-	if screen.is3D2D then
-		local label = vgui.Create("DLabel",frame)
-		label:SetTextColor(Color(0,0,0))
-		label:SetFont(TARDIS:GetScreenFont(screen, "Med"))
-		label.DoLayout = function(self)
-			label:SizeToContents()
-			label:SetPos((frame:GetWide()*0.5)-(label:GetWide()*0.5),(frame:GetTall()*0.3)-(label:GetTall()*0.5))
-		end
-		label:SetText("Pop screen for full functionality")
-		label:DoLayout()
 
-		local button=vgui.Create("DButton",frame)
-		button:SetSize( frame:GetWide()*0.2, frame:GetTall()*0.1 )
-		button:SetPos(frame:GetWide()*0.5 - button:GetWide()*0.5,frame:GetTall()*0.5 - button:GetTall()*0.5)
-		button:SetText("Select Manually")
-		button:SetFont(TARDIS:GetScreenFont(screen, "Default"))
-		button.DoClick = function()
-			TARDIS:Control("destination")
-			if TARDIS:HUDScreenOpen(ply) then TARDIS:RemoveHUDScreen() end
-		end
-		return
-	end
 	local button=vgui.Create("DButton",frame)
 	button:SetSize( frame:GetWide()*0.2, frame:GetTall()*0.1 )
 	button:SetPos(frame:GetWide()*0.86 - button:GetWide()*0.5,frame:GetTall()*0.08 - button:GetTall()*0.5)

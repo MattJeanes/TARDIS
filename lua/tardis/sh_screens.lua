@@ -510,10 +510,18 @@ function TARDIS:LoadButtons(screen, frame, func, isvgui)
 			button = TardisScreenButton:new(frame,screen)
 			button:SetFrameType(0, 1)
 			button:SetIsToggle(false)
-			button:SetText(v[1])
 			button:SetFont(TARDIS:GetScreenFont(screen, "Default"))
-			button.DoClick = function()
-				self:SwitchScreen(screen, v[2])
+
+			if v[1] == "Destination" then
+				button:SetText("Coordinates")
+				button.DoClick = function()
+					self:PopToScreen("Destination")
+				end
+			else
+				button:SetText(v[1])
+				button.DoClick = function()
+					self:SwitchScreen(screen, v[2])
+				end
 			end
 			layout:AddNewButton(button)
 		end
@@ -521,7 +529,7 @@ function TARDIS:LoadButtons(screen, frame, func, isvgui)
 		local destination = TardisScreenButton:new(frame,screen)
 		destination:SetIsToggle(false)
 		destination:SetFrameType(0, 1)
-		destination:SetText("Destination Select")
+		destination:SetText("Destination")
 		destination:SetControl("destination")
 		layout:AddNewButton(destination)
 
