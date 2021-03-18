@@ -79,8 +79,8 @@ if SERVER then
 					local attached
 					if constrained then
 						for k,v in pairs(constrained) do
-							if not (v.TardisPart or v==self) then
-								local a=v:GetColor().a
+							if not (k.TardisPart or k==self) then
+								local a=k:GetColor().a
 								if not attached then attached = {} end
 								attached[k] = a
 							end
@@ -148,6 +148,10 @@ if SERVER then
 									local phys=k:GetPhysicsObject()
 									if phys and IsValid(phys) then
 										k:SetSolid(SOLID_VPHYSICS)
+										if k.gravity~=nil then
+											phys:EnableGravity(k.gravity)
+											k.gravity = nil
+										end
 									end
 									k.nocollide=nil
 								end
@@ -199,6 +203,8 @@ if SERVER then
 					local phys=k:GetPhysicsObject()
 					if phys and IsValid(phys) then
 						k:SetSolid(SOLID_NONE)
+						k.gravity = phys:IsGravityEnabled()
+						phys:EnableGravity(false)
 					end
 				end
 			end
