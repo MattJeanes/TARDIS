@@ -1,5 +1,5 @@
-ENT:AddHook("VortexEnabled", "scanner", function(self)
+ENT:AddHook("ShouldVortexIgnoreZ", "scanner", function(self)
 	if self.interior and self.interior.scannerrender then
-		return false
+		return true
 	end
 end)

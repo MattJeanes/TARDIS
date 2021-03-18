@@ -95,6 +95,12 @@ else
 		local enabled = net.ReadBool()
 		self:CallHook("Outside",ply,enabled)
 	end)
+
+	ENT:AddHook("ShouldVortexIgnoreZ", "outside", function(self)
+		if LocalPlayer():GetTardisData("outside") then
+			return true
+		end
+	end)
 	
 	oldgetviewentity=oldgetviewentity or GetViewEntity
 	function GetViewEntity(...)
