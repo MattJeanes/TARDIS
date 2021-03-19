@@ -1,6 +1,6 @@
 -- Settings
 
-TARDIS:AddScreen("Settings", {}, function(self,ext,int,frame,screen)	
+TARDIS:AddScreen("Settings", {hl_order=20}, function(self,ext,int,frame,screen)	
 	local settings={}
 	for k,v in pairs(self.GUISettings) do
 		local f=vgui.Create("DPanel",frame)
@@ -10,10 +10,10 @@ TARDIS:AddScreen("Settings", {}, function(self,ext,int,frame,screen)
 		table.insert(settings,{k,f})
 	end
 	table.SortByMember(settings,1,true)
-	
+
 	local mainf=vgui.Create("DPanel",frame)
 	mainf:SetSize(frame:GetSize())
-	
+
 	self:LoadButtons(screen,mainf,function(frame)
 		local buttons={}
 		for k,v in ipairs(settings) do

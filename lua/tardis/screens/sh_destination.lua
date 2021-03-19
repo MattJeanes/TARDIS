@@ -10,7 +10,7 @@ TARDIS:AddControl("destination",{
 
 if SERVER then return end
 
-TARDIS:AddScreen("Destination", {menu=false}, function(self,ext,int,frame,screen)
+TARDIS:AddScreen("Destination", {menu=false, hl_order=2}, function(self,ext,int,frame,screen)
 	
 
 	local button=vgui.Create("DButton",frame)

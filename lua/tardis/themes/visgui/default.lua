@@ -35,11 +35,12 @@ local theme = {
 
 		["Destination"] = "screen_destination.png",
 		["Flight Control"] = "screen_thirdperson.png",
-		["Console"] = "screen_console.png",
+		["Virtual Console"] = "screen_console.png",
 		["Coordinates"] = "screen_coords.png",
 		["Music"] = "screen_music.png",
 		["Scanner"] = "screen_scanner.png",
 		["Settings"] = "screen_settings.png",
+		["TARDIS Status"] = "screen_status.png",
 
 		["menu"] = "interface_menu.png",
 		["back"] = "interface_back.png",

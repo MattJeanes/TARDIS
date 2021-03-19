@@ -64,6 +64,15 @@ function HexagonalLayout:DrawButtons()
 	local j = 0 -- rows
 	local maxX = 0
 
+	table.sort(self.buttons, function(a, b)
+		if a.hl_order and b.hl_order then
+			return (a.hl_order < b.hl_order)
+		end
+		if a.hl_order then return true end
+		if b.hl_order then return false end
+		return (a.text < b.text)
+	end)
+
 	for k,button in ipairs(self.buttons) do
 		j = j + 2
 		if j > n then

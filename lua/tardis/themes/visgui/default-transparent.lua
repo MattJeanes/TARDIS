@@ -28,6 +28,7 @@ local theme = {
 		["Music"] = "screen_music.png",
 		["Scanner"] = "screen_scanner.png",
 		["Settings"] = "screen_settings.png",
+		["TARDIS Status"] = "screen_status.png",
 	},
 	text_icons_on = {
 		subfolder = "on",

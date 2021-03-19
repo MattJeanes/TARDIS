@@ -1,6 +1,6 @@
 -- Music
 
-TARDIS:AddScreen("Music", {menu=false}, function(self,ext,int,frame,screen)
+TARDIS:AddScreen("Music", {menu=false, hl_order=10}, function(self,ext,int,frame,screen)
 	local label = vgui.Create("DLabel",frame)
 	label:SetTextColor(Color(0,0,0))
 	label:SetFont(TARDIS:GetScreenFont(screen, "Med"))

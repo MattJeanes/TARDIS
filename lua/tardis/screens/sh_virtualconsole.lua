@@ -446,7 +446,7 @@ local function new_virtual_console(self,ext,int,frame,screen)
 
 end
 
-TARDIS:AddScreen("Console", {menu=false}, function(self,ext,int,frame,screen)
+TARDIS:AddScreen("Virtual Console", {menu=false, hl_order=1}, function(self,ext,int,frame,screen)
 	if TARDIS:GetSetting("visgui_enabled") then
 		new_virtual_console(self,ext,int,frame,screen)
 	else

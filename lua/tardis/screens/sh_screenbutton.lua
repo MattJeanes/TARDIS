@@ -8,6 +8,7 @@ function TardisScreenButton:new(parent,screen)
 	sb.outside = false
 	sb.parent = parent
 	sb.clickable = true
+	sb.text = ""
 
 	sb.icon = vgui.Create("DImageButton", parent)
 	sb.frame = vgui.Create("DImageButton", parent)
@@ -170,6 +171,7 @@ function TardisScreenButton:SetFrameType(type1, type2)
 end
 
 function TardisScreenButton:SetText(text)
+	self.text = text
 	local theme = self.theme
 	local file_on =  TARDIS:GetGUIThemeElement(self.theme, "text_icons_on", text, true)
 	local file_off = TARDIS:GetGUIThemeElement(self.theme, "text_icons_off", text, true)

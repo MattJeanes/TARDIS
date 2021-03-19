@@ -468,7 +468,7 @@ function TARDIS:LoadScreenUI(screen)
 			frame:SetPos(0,0)
 			frame._name=k
 			v[2](self,ext,int,frame,screen)
-			table.insert(screen.screens,{k,frame})
+			table.insert(screen.screens,{k,frame,v[1].hl_order})
 		end
 	end
 	table.SortByMember(screen.screens,1,true)
@@ -523,6 +523,9 @@ function TARDIS:LoadButtons(screen, frame, func, isvgui)
 					self:SwitchScreen(screen, v[2])
 				end
 			end
+			if v[3] ~= nil then
+				button.hl_order = v[3]
+			end
 			layout:AddNewButton(button)
 		end
 
@@ -531,6 +534,7 @@ function TARDIS:LoadButtons(screen, frame, func, isvgui)
 		destination:SetFrameType(0, 1)
 		destination:SetText("Destination")
 		destination:SetControl("destination")
+		destination.hl_order=4
 		layout:AddNewButton(destination)
 
 		local flightcontrol = TardisScreenButton:new(frame,screen)
@@ -538,6 +542,7 @@ function TARDIS:LoadButtons(screen, frame, func, isvgui)
 		flightcontrol:SetFrameType(0, 1)
 		flightcontrol:SetText("Flight Control")
 		flightcontrol:SetControl("flightcontrol")
+		flightcontrol.hl_order=5
 		layout:AddNewButton(flightcontrol)
 
 		layout:DrawButtons()
