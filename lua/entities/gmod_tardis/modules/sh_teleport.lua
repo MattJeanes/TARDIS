@@ -75,21 +75,18 @@ if SERVER then
 					for k,v in pairs(self.parts) do
 						v:DrawShadow(false)
 					end
-					local attached = constraint.GetAllConstrainedEntities(self)
-					if attached then
-						for k,v in pairs(attached) do
-							if v.TardisPart or v==self then
-								attached[k]=nil
-							end
-						end
-						for k,v in pairs(attached) do
-							local a=v:GetColor().a
-							if not (a==255) then
-								v.tempa=a
+					local constrained = constraint.GetAllConstrainedEntities(self)
+					local attached
+					if constrained then
+						for k,v in pairs(constrained) do
+							if not (k.TardisPart or k==self) then
+								local a=k:GetColor().a
+								if not attached then attached = {} end
+								attached[k] = a
 							end
 						end
 					end
-					self:SetData("demat-attached",attached)
+					self:SetData("demat-attached",attached,true)
 					if callback then callback(true) end
 				end
 			end)
@@ -125,10 +122,10 @@ if SERVER then
 						local attached=self:GetData("demat-attached")
 						if attached then
 							for k,v in pairs(attached) do
-								if IsValid(v) and not IsValid(v:GetParent()) then
-									v.telepos=v:GetPos()-self:GetPos()
-									if v:GetClass()=="gmod_hoverball" then -- fixes hoverballs spazzing out
-										v:SetTargetZ( (pos-self:GetPos()).z+v:GetTargetZ() )
+								if IsValid(k) and not IsValid(k:GetParent()) then
+									k.telepos=k:GetPos()-self:GetPos()
+									if k:GetClass()=="gmod_hoverball" then -- fixes hoverballs spazzing out
+										k:SetTargetZ( (pos-self:GetPos()).z+k:GetTargetZ() )
 									end
 								end
 							end
@@ -137,26 +134,26 @@ if SERVER then
 						self:SetAngles(ang)
 						if attached then
 							for k,v in pairs(attached) do
-								if IsValid(v) and not IsValid(v:GetParent()) then
-									if v:IsRagdoll() then
-										for i=0,v:GetPhysicsObjectCount() do
-											local bone=v:GetPhysicsObjectNum(i)
+								if IsValid(k) and not IsValid(k:GetParent()) then
+									if k:IsRagdoll() then
+										for i=0,k:GetPhysicsObjectCount() do
+											local bone=k:GetPhysicsObjectNum(i)
 											if IsValid(bone) then
-												bone:SetPos(self:GetPos()+v.telepos)
+												bone:SetPos(self:GetPos()+k.telepos)
 											end
 										end
 									end
-									v:SetPos(self:GetPos()+v.telepos)
-									v.telepos=nil
-									local phys=v:GetPhysicsObject()
+									k:SetPos(self:GetPos()+k.telepos)
+									k.telepos=nil
+									local phys=k:GetPhysicsObject()
 									if phys and IsValid(phys) then
-										if not v.frozen and not v.physlocked then
-											phys:EnableMotion(true)
+										k:SetSolid(SOLID_VPHYSICS)
+										if k.gravity~=nil then
+											phys:EnableGravity(k.gravity)
+											k.gravity = nil
 										end
-										v:SetSolid(SOLID_VPHYSICS)
 									end
-									v.frozen=nil
-									v.nocollide=nil
+									k.nocollide=nil
 								end
 							end
 						end
@@ -202,14 +199,12 @@ if SERVER then
 		local attached=self:GetData("demat-attached")
 		if attached then
 			for k,v in pairs(attached) do
-				if IsValid(v) and not IsValid(v:GetParent()) then
-					local phys=v:GetPhysicsObject()
+				if IsValid(k) and not IsValid(k:GetParent()) then
+					local phys=k:GetPhysicsObject()
 					if phys and IsValid(phys) then
-						if not phys:IsMotionEnabled() then
-							v.frozen=true
-						end
-						phys:EnableMotion(false)
-						v:SetSolid(SOLID_NONE)
+						k:SetSolid(SOLID_NONE)
+						k.gravity = phys:IsGravityEnabled()
+						phys:EnableGravity(false)
 					end
 				end
 			end
@@ -241,15 +236,12 @@ if SERVER then
 		local attached=self:GetData("demat-attached")
 		if attached then
 			for k,v in pairs(attached) do
-				if IsValid(v) and v.tempa then
-					local col=v:GetColor()
-					col=Color(col.r,col.g,col.b,v.tempa)
-					v:SetColor(col)
-					v.tempa=nil
+				if IsValid(k) then
+					k:SetColor(ColorAlpha(k:GetColor(),v))
 				end
 			end
 		end
-		self:SetData("demat-attached")
+		self:SetData("demat-attached",nil,true)
 		if self:GetData("fastreturn",false) then
 			self:SetFastRemat(false)
 			self:SetData("fastreturn",false)
@@ -561,14 +553,12 @@ ENT:AddHook("Think","teleport",function(self,delta)
 	local attached=self:GetData("demat-attached")
 	if attached then
 		for k,v in pairs(attached) do
-			if IsValid(v) then
-				local col=v:GetColor()
-				col=Color(col.r,col.g,col.b,alpha)
-				if not (v.tempa==0) then
-					if not (v:GetRenderMode()==RENDERMODE_TRANSALPHA) then
-						v:SetRenderMode(RENDERMODE_TRANSALPHA)
+			if IsValid(k) then
+				if not (v==0) then
+					if not (k:GetRenderMode()==RENDERMODE_TRANSALPHA) then
+						k:SetRenderMode(RENDERMODE_TRANSALPHA)
 					end
-					v:SetColor(col)
+					k:SetColor(ColorAlpha(k:GetColor(),alpha))
 				end
 			end
 		end
