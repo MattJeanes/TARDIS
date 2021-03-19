@@ -285,6 +285,10 @@ end
 function TardisScreenButton:InitiateMove(x, y, relative, speed)
 	if self.moving.now then return end
 
+	self.icon:SetVisible(true)
+	self.frame:SetVisible(true)
+	self.label:SetVisible(true)
+
 	local moving = {}
 	moving.now = true
 	moving.parent = self
@@ -317,6 +321,9 @@ function TardisScreenButton:InitiateMove(x, y, relative, speed)
 		sb.transparency = math.Approach(sb.transparency, moving.transp_aim, moving.speed * FrameTime() * 1.5)
 		if sb.pos[1] == moving.aim[1] and sb.pos[2] == moving.aim[2] and sb.transparency == moving.transp_aim then
 			moving.now = false
+			sb.icon:SetVisible(sb.transparency ~= 0)
+			sb.frame:SetVisible(sb.transparency ~= 0)
+			sb.label:SetVisible(sb.transparency ~= 0)
 		end
 	end
 	self.moving = moving

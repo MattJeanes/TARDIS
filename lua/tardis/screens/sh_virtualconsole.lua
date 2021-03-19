@@ -141,7 +141,7 @@ local function new_virtual_console(self,ext,int,frame,screen)
 	else
 		layout_rows = math.floor(TARDIS:GetSetting("visgui_popup_numrows"))
 	end
-	local layout = HexagonalLayout:new(frame, layout_rows, 0.15)
+	local layout = HexagonalLayout:new(frame, layout_rows, 0.2)
 
 	function TardisScreenButton:Setup(options)
 		if options.toggle ~= nil then self:SetIsToggle(options.toggle) end

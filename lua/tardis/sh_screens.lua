@@ -503,7 +503,7 @@ function TARDIS:LoadButtons(screen, frame, func, isvgui)
 			layout_rows = math.floor(TARDIS:GetSetting("visgui_popup_numrows"))
 		end
 
-		local layout = HexagonalLayout:new(frame, layout_rows, 0.15)
+		local layout = HexagonalLayout:new(frame, layout_rows, 0.2)
 
 		for k,v in ipairs(screen.screens) do
 			local button
