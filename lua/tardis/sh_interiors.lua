@@ -70,6 +70,14 @@ hook.Add("PostGamemodeLoaded", "tardis-interiors", function()
 			dmenu:AddOption("Set as preferred", function()
 				TARDIS:SetSetting("interior",obj.spawnname,true)
 			end):SetIcon("icon16/star.png")
+			
+			dmenu:AddOption("Redecorate into this interior", function()
+				local int = TARDIS:GetInteriorEnt(LocalPlayer())
+				if int and IsValid(int) then
+					int:SetData("redecorate-interior",obj.spawnname,true)
+					int:SetData("redecorate",true,true)
+				end
+			end):SetIcon("icon16/color_wheel.png")
 			dmenu:Open()
 		end
 
@@ -82,8 +90,10 @@ hook.Add("PostGamemodeLoaded", "tardis-interiors", function()
 end)
 
 if SERVER then
-	local function SpawnTARDIS(ply, metadataID)
+	function TARDIS:SpawnTARDIS(ply, customData)
 		local entityName = "gmod_tardis"
+		
+		local metadataID = customData.metadataID
 
 		if not (TARDIS:GetInterior(metadataID) and IsValid(ply) and gamemode.Call("PlayerSpawnSENT", ply, entityName)) then return end
 
@@ -99,8 +109,8 @@ if SERVER then
 
 		local sent = scripted_ents.GetStored(entityName).t
 		ClassName = entityName
-		local customData = {}
-		customData.metadataID = metadataID
+		--local customData = {}
+		--customData.metadataID = metadataID
 		local SpawnFunction = scripted_ents.GetMember(entityName, "SpawnFunction")
 		if not SpawnFunction then
 			return
@@ -131,9 +141,10 @@ if SERVER then
 		ply:AddCleanup("sents", entity)
 		entity:SetVar("Player", ply)
 
+		return entity
 	end
 	concommand.Add("tardis2_spawn", function(ply, cmd, args)
-		SpawnTARDIS(ply, args[1])
+		TARDIS:SpawnTARDIS(ply, {metadataID = args[1]})
 	end)
 end
 
