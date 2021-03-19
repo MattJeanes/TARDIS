@@ -180,11 +180,6 @@ function TARDIS:PopScreen(screen,all)
 		table.remove(screen.backstack)
 		if #screen.backstack==0 then
 			screen.backbutton:SetVisible(false)
-			if TARDIS:GetSetting("visgui_enabled") then
-				screen.left_arrow:SetVisible(true)
-				screen.right_arrow:SetVisible(true)
-				screen.RestoreHexLayout()
-			end
 		elseif all then
 			self:PopScreen(screen,all)
 		end
@@ -359,22 +354,27 @@ function TARDIS:LoadScreenUI(screen)
 		titlebar.button_size = math.min(titlebar:GetTall() * 0.8, titlebar:GetWide() * 0.25)
 		titlebar.button_posY = titlebar:GetTall() * 0.5 - titlebar.button_size * 0.5
 
+		local left1 = 0.3 * titlebar.button_size
+		local left2 = 2.6 * titlebar.button_size
+		local right1 = titlebar:GetWide() - 2.3 * titlebar.button_size
+		local right2 = titlebar:GetWide() - 4.6 * titlebar.button_size
+
 		menubutton = TardisScreenButton:new(titlebar,screen)
 		menubutton:SetFrameType(0, 1)
 		menubutton:SetSize(titlebar.button_size * 2, titlebar.button_size)
-		menubutton:SetPos(0, titlebar.button_posY)
+		menubutton:SetPos(left1, titlebar.button_posY)
 		menubutton:SetIsToggle(false)
 
 		backbutton = TardisScreenButton:new(titlebar,screen)
 		backbutton:SetFrameType(0, 1)
 		backbutton:SetSize(titlebar.button_size * 2, titlebar.button_size)
-		backbutton:SetPos(titlebar:GetWide() * 0.3 - titlebar.button_size, titlebar.button_posY)
+		backbutton:SetPos(left2, titlebar.button_posY)
 		backbutton:SetIsToggle(false)
 
 		exitpopup_button = TardisScreenButton:new(titlebar,screen)
 		exitpopup_button:SetFrameType(0, 1)
 		exitpopup_button:SetSize(titlebar.button_size * 2, titlebar.button_size)
-		exitpopup_button:SetPos(titlebar:GetWide() * 0.95 - titlebar.button_size, titlebar.button_posY)
+		exitpopup_button:SetPos(right1, titlebar.button_posY)
 		exitpopup_button:SetIsToggle(false)
 
 		local left_arrow, right_arrow
@@ -382,7 +382,7 @@ function TARDIS:LoadScreenUI(screen)
 		local left_arrow = TardisScreenButton:new(titlebar,screen)
 		left_arrow:SetFrameType(0, 1)
 		left_arrow:SetSize(titlebar.button_size * 2, titlebar.button_size)
-		left_arrow:SetPos(titlebar:GetWide() * 0.3 - titlebar.button_size, titlebar.button_posY)
+		left_arrow:SetPos(left2, titlebar.button_posY)
 		left_arrow:SetIsToggle(false)
 		left_arrow:SetText("<<<")
 		screen.left_arrow = left_arrow
@@ -390,7 +390,7 @@ function TARDIS:LoadScreenUI(screen)
 		local right_arrow = TardisScreenButton:new(titlebar,screen)
 		right_arrow:SetFrameType(0, 1)
 		right_arrow:SetSize(titlebar.button_size * 2, titlebar.button_size)
-		right_arrow:SetPos(titlebar:GetWide() * 0.7 - titlebar.button_size, titlebar.button_posY)
+		right_arrow:SetPos(right2, titlebar.button_posY)
 		right_arrow:SetIsToggle(false)
 		right_arrow:SetText(">>>")
 		screen.right_arrow = right_arrow
