@@ -117,6 +117,164 @@ TARDIS:AddControl("redecorate",{
 
 if SERVER then return end
 
+
+
+local function new_virtual_console(self,ext,int,frame,screen)
+	frame:SetBackgroundColor(Color(0,0,0))
+
+	--background
+
+	local background=vgui.Create("DImage", frame)
+
+	local theme = TARDIS:GetSetting("visgui_theme")
+	local background_img = TARDIS:GetGUIThemeElement(theme, "backgrounds", "virtualconsole")
+	background:SetImage(background_img)
+	background:SetSize(frame:GetWide(), frame:GetTall())
+
+	local layout_rows
+	if screen.is3D2D then
+		if screen.visgui_rows == nil or TARDIS:GetSetting("visgui_override_numrows") then
+			layout_rows = math.floor(TARDIS:GetSetting("visgui_screen_numrows"))
+		else
+			layout_rows = math.floor(screen.visgui_rows)
+		end
+	else
+		layout_rows = math.floor(TARDIS:GetSetting("visgui_popup_numrows"))
+	end
+	local layout = HexagonalLayout:new(frame, layout_rows, 0.15)
+
+	-- controls
+
+	if not screen.is3D2D then
+		local interior_screens = TardisScreenButton:new(frame,screen)
+		interior_screens:SetIsToggle(true)
+		interior_screens:SetFrameType(2, 1)
+		interior_screens:SetText("Toggle screens")
+		interior_screens:SetControl("toggle_screens")
+		interior_screens:SetPressedStateData(int, "screens_on")
+		layout:AddNewButton(interior_screens)
+	end
+
+	local door = TardisScreenButton:new(frame,screen)
+	door:SetIsToggle(true)
+	door:SetFrameType(0, 1)
+	door:SetText("Toggle door")
+	door:SetControl("doorcontroller")
+	door:SetPressedStateData(ext, "doorstate")
+	layout:AddNewButton(door)
+
+	local lock = TardisScreenButton:new(frame,screen)
+	lock:SetIsToggle(true)
+	lock:SetFrameType(1, 2)
+	lock:SetText("Toggle lock")
+	lock:SetControl("lockcontroller")
+	lock:SetPressedStateData(ext, "locked")
+	layout:AddNewButton(lock)
+
+	local power = TardisScreenButton:new(frame,screen)
+	power:SetIsToggle(true)
+	power:SetFrameType(2, 1)
+	power:SetText("Toggle power")
+	power:SetControl("power")
+	power:SetPressedStateData(ext, "power-state")
+	layout:AddNewButton(power)
+
+	local repair = TardisScreenButton:new(frame,screen)
+	repair:SetIsToggle(true)
+	repair:SetFrameType(0, 1)
+	repair:SetText("Self-repair")
+	repair:SetControl("repair")
+	repair:SetPressedStateData(ext, "repair-primed")
+	layout:AddNewButton(repair)
+
+	local redecorate = TardisScreenButton:new(frame,screen)
+	redecorate:SetIsToggle(true)
+	redecorate:SetFrameType(0, 1)
+	redecorate:SetText("Redecoration")
+	redecorate:SetControl("redecorate")
+	redecorate:SetPressedStateData(ext, "redecorate")
+	layout:AddNewButton(redecorate)
+
+	local fastremat = TardisScreenButton:new(frame,screen)
+	fastremat:SetIsToggle(true)
+	fastremat:SetFrameType(0, 1)
+	fastremat:SetText("Vortex Flight")
+	fastremat:SetControl("fastremat")
+	fastremat:SetPressedStateData(ext, "demat-fast")
+	layout:AddNewButton(fastremat)
+
+	local throttle = TardisScreenButton:new(frame,screen)
+	throttle:SetIsToggle(true)
+	throttle:SetFrameType(0, 1)
+	throttle:SetText("Throttle")
+	throttle:SetControl("teleport")
+	throttle:SetPressedStateData(ext, "teleport", "vortex")
+	layout:AddNewButton(throttle)
+
+	local fastreturn = TardisScreenButton:new(frame,screen)
+	fastreturn:SetIsToggle(false)
+	fastreturn:SetFrameType(0, 1)
+	fastreturn:SetText("Fast Return")
+	fastreturn:SetControl("fastreturn")
+	layout:AddNewButton(fastreturn)
+
+	local flight = TardisScreenButton:new(frame,screen)
+	flight:SetIsToggle(true)
+	flight:SetFrameType(2, 1)
+	flight:SetText("Flightmode")
+	flight:SetControl("flight")
+	flight:SetPressedStateData(ext, "flight")
+	layout:AddNewButton(flight)
+
+	local float = TardisScreenButton:new(frame,screen)
+	float:SetIsToggle(true)
+	float:SetFrameType(2, 1)
+	float:SetText("Anti-Gravs")
+	float:SetControl("float")
+	float:SetPressedStateData(ext, "float")
+	layout:AddNewButton(float)
+
+	local physlock = TardisScreenButton:new(frame,screen)
+	physlock:SetIsToggle(true)
+	physlock:SetFrameType(0, 2)
+	physlock:SetText("Physlock")
+	physlock:SetControl("physbrake")
+	physlock:SetPressedStateData(ext, "physlock")
+	layout:AddNewButton(physlock)
+
+	local hads = TardisScreenButton:new(frame,screen)
+	hads:SetIsToggle(true)
+	hads:SetFrameType(2, 1)
+	hads:SetText("H.A.D.S.")
+	hads:SetControl("hads")
+	hads:SetPressedStateData(ext, "hads")
+	layout:AddNewButton(hads)
+
+	layout:DrawButtons()
+
+	layout.scroll_size = math.max(1, layout:GetCols() - 1)
+
+	frame.Think = function()
+		screen.left_arrow:SetVisible(true)
+		screen.right_arrow:SetVisible(true)
+		screen.right_arrow.DoClick = function()
+			if layout:CanMoveLeft()
+				and not screen.left_arrow:IsPressed()
+				and not screen.right_arrow:IsPressed() then
+				layout:ScrollButtons(-layout.scroll_size)
+			end
+		end
+		screen.left_arrow.DoClick = function()
+			if layout:CanMoveRight()
+				and not screen.right_arrow:IsPressed()
+				and not screen.left_arrow:IsPressed() then
+				layout:ScrollButtons(layout.scroll_size)
+			end
+		end
+	end
+
+end
+
 local function old_virtual_console(self,ext,int,frame,screen)
 	local power=vgui.Create("DButton",frame)
 	power:SetSize( frame:GetWide()*0.2, frame:GetTall()*0.2 )
@@ -288,162 +446,6 @@ local function old_virtual_console(self,ext,int,frame,screen)
 			end
 		end
 	end
-end
-
-local function new_virtual_console(self,ext,int,frame,screen)
-	frame:SetBackgroundColor(Color(0,0,0))
-
-	--background
-
-	local background=vgui.Create("DImage", frame)
-
-	local theme = TARDIS:GetSetting("visgui_theme")
-	local background_img = TARDIS:GetGUIThemeElement(theme, "backgrounds", "virtualconsole")
-	background:SetImage(background_img)
-	background:SetSize(frame:GetWide(), frame:GetTall())
-
-	local layout_rows
-	if screen.is3D2D then
-		if screen.visgui_rows == nil or TARDIS:GetSetting("visgui_override_numrows") then
-			layout_rows = math.floor(TARDIS:GetSetting("visgui_screen_numrows"))
-		else
-			layout_rows = math.floor(screen.visgui_rows)
-		end
-	else
-		layout_rows = math.floor(TARDIS:GetSetting("visgui_popup_numrows"))
-	end
-	local layout = HexagonalLayout:new(frame, layout_rows, 0.15)
-
-	-- controls
-
-	if not screen.is3D2D then
-		local interior_screens = TardisScreenButton:new(frame,screen)
-		interior_screens:SetIsToggle(true)
-		interior_screens:SetFrameType(2, 1)
-		interior_screens:SetText("Toggle screens")
-		interior_screens:SetControl("toggle_screens")
-		interior_screens:SetPressedStateData(int, "screens_on")
-		layout:AddNewButton(interior_screens)
-	end
-
-	local door = TardisScreenButton:new(frame,screen)
-	door:SetIsToggle(true)
-	door:SetFrameType(0, 1)
-	door:SetText("Toggle door")
-	door:SetControl("doorcontroller")
-	door:SetPressedStateData(ext, "doorstate")
-	layout:AddNewButton(door)
-
-	local lock = TardisScreenButton:new(frame,screen)
-	lock:SetIsToggle(true)
-	lock:SetFrameType(1, 2)
-	lock:SetText("Toggle lock")
-	lock:SetControl("lockcontroller")
-	lock:SetPressedStateData(ext, "locked")
-	layout:AddNewButton(lock)
-
-	local power = TardisScreenButton:new(frame,screen)
-	power:SetIsToggle(true)
-	power:SetFrameType(2, 1)
-	power:SetText("Toggle power")
-	power:SetControl("power")
-	power:SetPressedStateData(ext, "power-state")
-	layout:AddNewButton(power)
-
-	local repair = TardisScreenButton:new(frame,screen)
-	repair:SetIsToggle(true)
-	repair:SetFrameType(0, 1)
-	repair:SetText("Self-repair")
-	repair:SetControl("repair")
-	repair:SetPressedStateData(ext, "repair-primed")
-	layout:AddNewButton(repair)
-
-	local redecorate = TardisScreenButton:new(frame,screen)
-	redecorate:SetIsToggle(true)
-	redecorate:SetFrameType(0, 1)
-	redecorate:SetText("Redecoration")
-	redecorate:SetControl("redecorate")
-	redecorate:SetPressedStateData(ext, "redecorate")
-	layout:AddNewButton(redecorate)
-
-	local fastremat = TardisScreenButton:new(frame,screen)
-	fastremat:SetIsToggle(true)
-	fastremat:SetFrameType(0, 1)
-	fastremat:SetText("Vortex Flight")
-	fastremat:SetControl("fastremat")
-	fastremat:SetPressedStateData(ext, "demat-fast")
-	layout:AddNewButton(fastremat)
-
-	local throttle = TardisScreenButton:new(frame,screen)
-	throttle:SetIsToggle(true)
-	throttle:SetFrameType(0, 1)
-	throttle:SetText("Throttle")
-	throttle:SetControl("teleport")
-	throttle:SetPressedStateData(ext, "teleport", "vortex")
-	layout:AddNewButton(throttle)
-
-	local fastreturn = TardisScreenButton:new(frame,screen)
-	fastreturn:SetIsToggle(false)
-	fastreturn:SetFrameType(0, 1)
-	fastreturn:SetText("Fast Return")
-	fastreturn:SetControl("fastreturn")
-	layout:AddNewButton(fastreturn)
-
-	local flight = TardisScreenButton:new(frame,screen)
-	flight:SetIsToggle(true)
-	flight:SetFrameType(2, 1)
-	flight:SetText("Flightmode")
-	flight:SetControl("flight")
-	flight:SetPressedStateData(ext, "flight")
-	layout:AddNewButton(flight)
-
-	local float = TardisScreenButton:new(frame,screen)
-	float:SetIsToggle(true)
-	float:SetFrameType(2, 1)
-	float:SetText("Anti-Gravs")
-	float:SetControl("float")
-	float:SetPressedStateData(ext, "float")
-	layout:AddNewButton(float)
-
-	local physlock = TardisScreenButton:new(frame,screen)
-	physlock:SetIsToggle(true)
-	physlock:SetFrameType(0, 2)
-	physlock:SetText("Physlock")
-	physlock:SetControl("physbrake")
-	physlock:SetPressedStateData(ext, "physlock")
-	layout:AddNewButton(physlock)
-
-	local hads = TardisScreenButton:new(frame,screen)
-	hads:SetIsToggle(true)
-	hads:SetFrameType(2, 1)
-	hads:SetText("H.A.D.S.")
-	hads:SetControl("hads")
-	hads:SetPressedStateData(ext, "hads")
-	layout:AddNewButton(hads)
-
-	layout:DrawButtons()
-
-	layout.scroll_size = math.max(1, layout:GetCols() - 1)
-
-	frame.Think = function()
-		screen.left_arrow:SetVisible(true)
-		screen.right_arrow:SetVisible(true)
-		screen.right_arrow.DoClick = function()
-			if layout:CanMoveLeft()
-				and not screen.left_arrow:IsPressed()
-				and not screen.right_arrow:IsPressed() then
-				layout:ScrollButtons(-layout.scroll_size)
-			end
-		end
-		screen.left_arrow.DoClick = function()
-			if layout:CanMoveRight()
-				and not screen.right_arrow:IsPressed()
-				and not screen.left_arrow:IsPressed() then
-				layout:ScrollButtons(layout.scroll_size)
-			end
-		end
-	end
-
 end
 
 TARDIS:AddScreen("Virtual Console", {menu=false, hl_order=1}, function(self,ext,int,frame,screen)
