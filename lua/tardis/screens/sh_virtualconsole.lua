@@ -143,112 +143,177 @@ local function new_virtual_console(self,ext,int,frame,screen)
 	end
 	local layout = HexagonalLayout:new(frame, layout_rows, 0.15)
 
+	function TardisScreenButton:Setup(options)
+		if options.toggle ~= nil then self:SetIsToggle(options.toggle) end
+		if options.frame_type ~= nil then self:SetFrameType(options.frame_type[1], options.frame_type[2]) end
+		if options.text ~= nil then self:SetText(options.text) end
+		if options.control ~= nil then self:SetControl(options.control) end
+		if options.pressed_state_data ~= nil and options.pressed_state_source ~= nil then
+			self:SetPressedStateData(options.pressed_state_source, options.pressed_state_data)
+		end
+		if options.hl_order ~= nil then self.hl_order = options.hl_order end
+		layout:AddNewButton(self)
+	end
+
 	-- controls
+
+	local button_num = 1
 
 	if not screen.is3D2D then
 		local interior_screens = TardisScreenButton:new(frame,screen)
-		interior_screens:SetIsToggle(true)
-		interior_screens:SetFrameType(2, 1)
-		interior_screens:SetText("Toggle screens")
-		interior_screens:SetControl("toggle_screens")
-		interior_screens:SetPressedStateData(int, "screens_on")
-		layout:AddNewButton(interior_screens)
+		interior_screens:Setup({
+			toggle = true,
+			frame_type = {2, 1},
+			text = "Toggle screens",
+			control = "toggle_screens",
+			pressed_state_source = int,
+			pressed_state_data = "screens_on",
+			hl_order = button_num,
+		})
 	end
-
-	local door = TardisScreenButton:new(frame,screen)
-	door:SetIsToggle(true)
-	door:SetFrameType(0, 1)
-	door:SetText("Toggle door")
-	door:SetControl("doorcontroller")
-	door:SetPressedStateData(ext, "doorstate")
-	layout:AddNewButton(door)
-
-	local lock = TardisScreenButton:new(frame,screen)
-	lock:SetIsToggle(true)
-	lock:SetFrameType(1, 2)
-	lock:SetText("Toggle lock")
-	lock:SetControl("lockcontroller")
-	lock:SetPressedStateData(ext, "locked")
-	layout:AddNewButton(lock)
+	button_num = button_num + 1
 
 	local power = TardisScreenButton:new(frame,screen)
-	power:SetIsToggle(true)
-	power:SetFrameType(2, 1)
-	power:SetText("Toggle power")
-	power:SetControl("power")
-	power:SetPressedStateData(ext, "power-state")
-	layout:AddNewButton(power)
+	power:Setup({
+		toggle = true,
+		frame_type = {2, 1},
+		text = "Toggle power",
+		control = "power",
+		pressed_state_source = ext,
+		pressed_state_data = "power-state",
+		hl_order = button_num,
+	})
+	button_num = button_num + 1
 
 	local repair = TardisScreenButton:new(frame,screen)
-	repair:SetIsToggle(true)
-	repair:SetFrameType(0, 1)
-	repair:SetText("Self-repair")
-	repair:SetControl("repair")
-	repair:SetPressedStateData(ext, "repair-primed")
-	layout:AddNewButton(repair)
+	repair:Setup({
+		toggle = true,
+		frame_type = {0, 1},
+		text = "Self-repair",
+		control = "repair",
+		pressed_state_source = ext,
+		pressed_state_data = "repair-primed",
+		hl_order = button_num,
+	})
+	button_num = button_num + 1
 
 	local redecorate = TardisScreenButton:new(frame,screen)
-	redecorate:SetIsToggle(true)
-	redecorate:SetFrameType(0, 1)
-	redecorate:SetText("Redecoration")
-	redecorate:SetControl("redecorate")
-	redecorate:SetPressedStateData(ext, "redecorate")
-	layout:AddNewButton(redecorate)
+	redecorate:Setup({
+		toggle = true,
+		frame_type = {0, 1},
+		text = "Redecoration",
+		control = "redecorate",
+		pressed_state_source = ext,
+		pressed_state_data = "redecorate",
+		hl_order = button_num,
+	})
+	button_num = button_num + 1
 
-	local fastremat = TardisScreenButton:new(frame,screen)
-	fastremat:SetIsToggle(true)
-	fastremat:SetFrameType(0, 1)
-	fastremat:SetText("Vortex Flight")
-	fastremat:SetControl("fastremat")
-	fastremat:SetPressedStateData(ext, "demat-fast")
-	layout:AddNewButton(fastremat)
+	local door = TardisScreenButton:new(frame,screen)
+	door:Setup({
+		toggle = true,
+		frame_type = {0, 1},
+		text = "Toggle door",
+		control = "doorcontroller",
+		pressed_state_source = ext,
+		pressed_state_data = "doorstate",
+		hl_order = button_num,
+	})
+	button_num = button_num + 1
+
+	local lock = TardisScreenButton:new(frame,screen)
+	lock:Setup({
+		toggle = true,
+		frame_type = {1, 2},
+		text = "Toggle lock",
+		control = "lockcontroller",
+		pressed_state_source = ext,
+		pressed_state_data = "locked",
+		hl_order = button_num,
+	})
+	button_num = button_num + 1
 
 	local throttle = TardisScreenButton:new(frame,screen)
-	throttle:SetIsToggle(true)
-	throttle:SetFrameType(0, 1)
-	throttle:SetText("Throttle")
-	throttle:SetControl("teleport")
-	throttle:SetPressedStateData(ext, "teleport", "vortex")
-	layout:AddNewButton(throttle)
+	throttle:Setup({
+		toggle = true,
+		frame_type = {0, 1},
+		text = "Throttle",
+		control = "teleport",
+		pressed_state_source = ext,
+		pressed_state_data = "teleport", "vortex",
+		hl_order = button_num,
+	})
+	button_num = button_num + 1
 
 	local fastreturn = TardisScreenButton:new(frame,screen)
-	fastreturn:SetIsToggle(false)
-	fastreturn:SetFrameType(0, 1)
-	fastreturn:SetText("Fast Return")
-	fastreturn:SetControl("fastreturn")
-	layout:AddNewButton(fastreturn)
+	fastreturn:Setup({
+		toggle = false,
+		frame_type = {0, 1},
+		text = "Fast Return",
+		control = "fastreturn",
+		hl_order = button_num,
+	})
+	button_num = button_num + 1
+
+	local fastremat = TardisScreenButton:new(frame,screen)
+	fastremat:Setup({
+		toggle = true,
+		frame_type = {0, 1},
+		text = "Vortex Flight",
+		control = "fastremat",
+		pressed_state_source = ext,
+		pressed_state_data = "demat-fast",
+		hl_order = button_num,
+	})
+	button_num = button_num + 1
 
 	local flight = TardisScreenButton:new(frame,screen)
-	flight:SetIsToggle(true)
-	flight:SetFrameType(2, 1)
-	flight:SetText("Flightmode")
-	flight:SetControl("flight")
-	flight:SetPressedStateData(ext, "flight")
-	layout:AddNewButton(flight)
+	flight:Setup({
+		toggle = true,
+		frame_type = {2, 1},
+		text = "Flightmode",
+		control = "flight",
+		pressed_state_source = ext,
+		pressed_state_data = "flight",
+		hl_order = button_num,
+	})
+	button_num = button_num + 1
 
 	local float = TardisScreenButton:new(frame,screen)
-	float:SetIsToggle(true)
-	float:SetFrameType(2, 1)
-	float:SetText("Anti-Gravs")
-	float:SetControl("float")
-	float:SetPressedStateData(ext, "float")
-	layout:AddNewButton(float)
+	float:Setup({
+		toggle = true,
+		frame_type = {2, 1},
+		text = "Anti-Gravs",
+		control = "float",
+		pressed_state_source = ext,
+		pressed_state_data = "float",
+		hl_order = button_num,
+	})
+	button_num = button_num + 1
 
 	local physlock = TardisScreenButton:new(frame,screen)
-	physlock:SetIsToggle(true)
-	physlock:SetFrameType(0, 2)
-	physlock:SetText("Physlock")
-	physlock:SetControl("physbrake")
-	physlock:SetPressedStateData(ext, "physlock")
-	layout:AddNewButton(physlock)
+	physlock:Setup({
+		toggle = true,
+		frame_type = {0, 2},
+		text = "Physlock",
+		control = "physbrake",
+		pressed_state_source = ext,
+		pressed_state_data = "physlock",
+		hl_order = button_num,
+	})
+	button_num = button_num + 1
 
 	local hads = TardisScreenButton:new(frame,screen)
-	hads:SetIsToggle(true)
-	hads:SetFrameType(2, 1)
-	hads:SetText("H.A.D.S.")
-	hads:SetControl("hads")
-	hads:SetPressedStateData(ext, "hads")
-	layout:AddNewButton(hads)
+	hads:Setup({
+		toggle = true,
+		frame_type = {2, 1},
+		text = "H.A.D.S.",
+		control = "hads",
+		pressed_state_source = ext,
+		pressed_state_data = "hads",
+		hl_order = button_num,
+	})
+	button_num = button_num + 1
 
 	layout:DrawButtons()
 
