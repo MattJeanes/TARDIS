@@ -232,8 +232,10 @@ if SERVER then
 		return (self:GetData("redecorate",false) and TARDIS:GetSetting("redecorate-interior","default",self:GetCreator()) ~= self.metadata.ID) and true or nil
 	end)
 
-	ENT:AddHook("CustomData", "health-repairfinish", function(self, customdata)
+	ENT:AddHook("CustomData", "health-redecorate", function(self, customdata)
 		if customdata.finishrepair then
+			self:SetPos(customdata.pos)
+			self:SetAngles(customdata.angles)
 			self:SetData("finishrepair",true)
 		end
 	end)
