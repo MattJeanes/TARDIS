@@ -143,8 +143,6 @@ if CLIENT then
 			DLabel4:SetText("TARDIS Visual GUI Theme:")
 			panel:AddItem(DLabel4)
 
-
-
 			local visgui_theme = vgui.Create("DComboBox")
 			visgui_theme:SetText("Visual GUI Theme")
 			for k,v in pairs(TARDIS:GetGUIThemes()) do

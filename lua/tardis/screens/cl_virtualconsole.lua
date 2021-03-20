@@ -1,124 +1,3 @@
-
-TARDIS:AddControl("fastreturn",{
-	func=function(self,ply)
-		self:FastReturn()
-	end,
-	exterior=true,
-	serveronly=true
-})
-
-TARDIS:AddControl("fastremat",{
-	func=function(self,ply)
-		self:ToggleFastRemat()
-	end,
-	exterior=true,
-	serveronly=true
-})
-
-TARDIS:AddControl("power",{
-	func=function(self,ply)
-		self:TogglePower()
-	end,
-	interior=true,
-	serveronly=true
-})
-
-TARDIS:AddControl("toggle_screens",{
-	func=function(self,ply)
-		self:ToggleScreens()
-	end,
-	interior=true,
-	clientonly=true
-})
-
-TARDIS:AddControl("hads",{
-	func=function(self,ply)
-		self:ToggleHADS()
-	end,
-	exterior=true,
-	serveronly=true,
-})
-TARDIS:AddControl("repair",{
-	func=function(self,ply)
-		self:ToggleRepair()
-	end,
-	exterior=true,
-	serveronly=true
-})
-TARDIS:AddControl("physbrake",{
-	func=function(self,ply)
-		self:TogglePhyslock()
-	end,
-	exterior=true,
-	serveronly=true
-})
-
-TARDIS:AddControl("doorcontroller",{
-	func=function(self,ply)
-		self:ToggleDoor()
-	end,
-	exterior=true,
-	serveronly=true
-})
-
-TARDIS:AddControl("lockcontroller",{
-	func=function(self,ply)
-		self:ToggleLocked()
-	end,
-	exterior=true,
-	serveronly=true
-})
-
-TARDIS:AddControl("teleport",{
-	func=function(self,ply)
-		if (self:GetData("teleport") or self:GetData("vortex")) then
-			self:Mat()
-		else
-			self:Demat()
-		end
-	end,
-	exterior=true,
-	serveronly=true
-})
-
-TARDIS:AddControl("flight",{
-	func=function(self,ply)
-		self:ToggleFlight()
-	end,
-	exterior=true,
-	serveronly=true
-})
-
-TARDIS:AddControl("float",{
-	func=function(self,ply)
-		self:ToggleFloat()
-	end,
-	exterior=true,
-	serveronly=true
-})
-
-TARDIS:AddControl("flightcontrol",{
-	func=function(self,ply)
-		self:PlayerThirdPerson(ply, not ply:GetTardisData("thirdperson"))
-	end,
-	exterior=true,
-	serveronly=true
-})
-
-TARDIS:AddControl("redecorate",{
-	func=function(self,ply)
-		local on = self:GetData("redecorate",false)
-		self:SetData("redecorate", not on, true)
-	end,
-	exterior=true,
-	serveronly=true
-})
-
-
-if SERVER then return end
-
-
-
 local function new_virtual_console(self,ext,int,frame,screen)
 	frame:SetBackgroundColor(Color(0,0,0))
 
@@ -144,6 +23,8 @@ local function new_virtual_console(self,ext,int,frame,screen)
 	local layout = HexagonalLayout:new(frame, layout_rows, 0.2)
 
 	function TardisScreenButton:Setup(options)
+		if not options.id then error("id is required for TARDIS screen button") end
+		self:SetID(options.id)
 		if options.toggle ~= nil then self:SetIsToggle(options.toggle) end
 		if options.frame_type ~= nil then self:SetFrameType(options.frame_type[1], options.frame_type[2]) end
 		if options.text ~= nil then self:SetText(options.text) end
@@ -151,169 +32,20 @@ local function new_virtual_console(self,ext,int,frame,screen)
 		if options.pressed_state_data ~= nil and options.pressed_state_source ~= nil then
 			self:SetPressedStateData(options.pressed_state_source, options.pressed_state_data)
 		end
-		if options.order ~= nil then self.order = options.order end
+		if options.order ~= nil then self:SetOrder(options.order) end
+
 		layout:AddNewButton(self)
 	end
 
 	-- controls
 
-	local button_num = 1
-
-	if not screen.is3D2D then
-		local interior_screens = TardisScreenButton:new(frame,screen)
-		interior_screens:Setup({
-			toggle = true,
-			frame_type = {2, 1},
-			text = "Toggle screens",
-			control = "toggle_screens",
-			pressed_state_source = int,
-			pressed_state_data = "screens_on",
-			order = button_num,
-		})
+	if IsValid(ext) then
+		ext:CallHook("SetupVirtualConsole", frame, screen)
 	end
-	button_num = button_num + 1
 
-	local power = TardisScreenButton:new(frame,screen)
-	power:Setup({
-		toggle = true,
-		frame_type = {2, 1},
-		text = "Toggle power",
-		control = "power",
-		pressed_state_source = ext,
-		pressed_state_data = "power-state",
-		order = button_num,
-	})
-	button_num = button_num + 1
-
-	local repair = TardisScreenButton:new(frame,screen)
-	repair:Setup({
-		toggle = true,
-		frame_type = {0, 1},
-		text = "Self-repair",
-		control = "repair",
-		pressed_state_source = ext,
-		pressed_state_data = "repair-primed",
-		order = button_num,
-	})
-	button_num = button_num + 1
-
-	local redecorate = TardisScreenButton:new(frame,screen)
-	redecorate:Setup({
-		toggle = true,
-		frame_type = {0, 1},
-		text = "Redecoration",
-		control = "redecorate",
-		pressed_state_source = ext,
-		pressed_state_data = "redecorate",
-		order = button_num,
-	})
-	button_num = button_num + 1
-
-	local door = TardisScreenButton:new(frame,screen)
-	door:Setup({
-		toggle = true,
-		frame_type = {0, 1},
-		text = "Toggle door",
-		control = "doorcontroller",
-		pressed_state_source = ext,
-		pressed_state_data = "doorstate",
-		order = button_num,
-	})
-	button_num = button_num + 1
-
-	local lock = TardisScreenButton:new(frame,screen)
-	lock:Setup({
-		toggle = true,
-		frame_type = {1, 2},
-		text = "Toggle lock",
-		control = "lockcontroller",
-		pressed_state_source = ext,
-		pressed_state_data = "locked",
-		order = button_num,
-	})
-	button_num = button_num + 1
-
-	local throttle = TardisScreenButton:new(frame,screen)
-	throttle:Setup({
-		toggle = true,
-		frame_type = {0, 1},
-		text = "Throttle",
-		control = "teleport",
-		pressed_state_source = ext,
-		pressed_state_data = "teleport", "vortex",
-		order = button_num,
-	})
-	button_num = button_num + 1
-
-	local fastreturn = TardisScreenButton:new(frame,screen)
-	fastreturn:Setup({
-		toggle = false,
-		frame_type = {0, 1},
-		text = "Fast Return",
-		control = "fastreturn",
-		order = button_num,
-	})
-	button_num = button_num + 1
-
-	local fastremat = TardisScreenButton:new(frame,screen)
-	fastremat:Setup({
-		toggle = true,
-		frame_type = {0, 1},
-		text = "Vortex Flight",
-		control = "fastremat",
-		pressed_state_source = ext,
-		pressed_state_data = "demat-fast",
-		order = button_num,
-	})
-	button_num = button_num + 1
-
-	local flight = TardisScreenButton:new(frame,screen)
-	flight:Setup({
-		toggle = true,
-		frame_type = {2, 1},
-		text = "Flightmode",
-		control = "flight",
-		pressed_state_source = ext,
-		pressed_state_data = "flight",
-		order = button_num,
-	})
-	button_num = button_num + 1
-
-	local float = TardisScreenButton:new(frame,screen)
-	float:Setup({
-		toggle = true,
-		frame_type = {2, 1},
-		text = "Anti-Gravs",
-		control = "float",
-		pressed_state_source = ext,
-		pressed_state_data = "float",
-		order = button_num,
-	})
-	button_num = button_num + 1
-
-	local physlock = TardisScreenButton:new(frame,screen)
-	physlock:Setup({
-		toggle = true,
-		frame_type = {0, 2},
-		text = "Physlock",
-		control = "physbrake",
-		pressed_state_source = ext,
-		pressed_state_data = "physlock",
-		order = button_num,
-	})
-	button_num = button_num + 1
-
-	local hads = TardisScreenButton:new(frame,screen)
-	hads:Setup({
-		toggle = true,
-		frame_type = {2, 1},
-		text = "H.A.D.S.",
-		control = "hads",
-		pressed_state_source = ext,
-		pressed_state_data = "hads",
-		order = button_num,
-	})
-	button_num = button_num + 1
+	if IsValid(int) then
+		int:CallHook("SetupVirtualConsole", frame, screen)
+	end
 
 	layout:DrawButtons()
 
@@ -379,16 +111,16 @@ local function old_virtual_console(self,ext,int,frame,screen)
 		self.oldon = on
 	end
 
-	local physbrake = vgui.Create("DButton",frame)
-	physbrake:SetSize( frame:GetWide()*0.2, frame:GetTall()*0.2)
-	physbrake:SetFont(TARDIS:GetScreenFont(screen, "Default"))
-	physbrake:SetPos((frame:GetWide()*0.35)-(physbrake:GetWide()*0.5),(frame:GetTall()*0.4)-(physbrake:GetTall()*0.5))
-	physbrake:SetText("Physlock "..(ext:GetData("physlock") and "on" or "off"))
-	physbrake.DoClick = function()
-		TARDIS:Control("physbrake")
+	local physlock = vgui.Create("DButton",frame)
+	physlock:SetSize( frame:GetWide()*0.2, frame:GetTall()*0.2)
+	physlock:SetFont(TARDIS:GetScreenFont(screen, "Default"))
+	physlock:SetPos((frame:GetWide()*0.35)-(physlock:GetWide()*0.5),(frame:GetTall()*0.4)-(physlock:GetTall()*0.5))
+	physlock:SetText("Physlock "..(ext:GetData("physlock") and "on" or "off"))
+	physlock.DoClick = function()
+		TARDIS:Control("physlock")
 	end
-	physbrake.oldon = ext:GetData("physlock")
-	function physbrake:Think()
+	physlock.oldon = ext:GetData("physlock")
+	function physlock:Think()
 		local on = ext:GetData("physlock", false)
 		if self.oldon == on then return end
 		if on then
@@ -513,7 +245,7 @@ local function old_virtual_console(self,ext,int,frame,screen)
 	end
 end
 
-TARDIS:AddScreen("Virtual Console", {menu=false, order=1}, function(self,ext,int,frame,screen)
+TARDIS:AddScreen("Virtual Console", {id="virtualconsole",menu=false, order=1}, function(self,ext,int,frame,screen)
 	if TARDIS:GetSetting("visgui_enabled") then
 		new_virtual_console(self,ext,int,frame,screen)
 	else

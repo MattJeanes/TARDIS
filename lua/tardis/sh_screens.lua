@@ -42,7 +42,7 @@ function TARDIS:GetScreenFont(screen, name)
 		local font = self.fonts[name]
 		if not font then error("TARDIS font '"..name.."' is not defined") end
 		local fontCopy = table.Copy(font)
-		fontCopy.size = font.size * scale
+		fontCopy.size = math.Round(font.size * scale,1)
 		print("Generating TARDIS font ".. name .. " with size " .. tostring(fontCopy.size))
 		surface.CreateFont(fontName, fontCopy)
 		self.fontcache[scale][name] = true
@@ -348,7 +348,7 @@ function TARDIS:LoadScreenUI(screen)
 	mmenu_background:SetSize( mmenu:GetWide(), mmenu:GetTall() )
 	screen.mmenu=mmenu
 
-	local backbutton, menubutton, exitpopup_button
+	local backbutton, menubutton, popup_button
 
 	if TARDIS:GetSetting("visgui_enabled") then
 		titlebar.button_size = math.min(titlebar:GetTall() * 0.8, titlebar:GetWide() * 0.25)
@@ -360,26 +360,34 @@ function TARDIS:LoadScreenUI(screen)
 		local right2 = titlebar:GetWide() - 4.6 * titlebar.button_size
 
 		menubutton = TardisScreenButton:new(titlebar,screen)
+		menubutton:SetID("menu")
 		menubutton:SetFrameType(0, 1)
 		menubutton:SetSize(titlebar.button_size * 2, titlebar.button_size)
 		menubutton:SetPos(left1, titlebar.button_posY)
 		menubutton:SetIsToggle(false)
 
 		backbutton = TardisScreenButton:new(titlebar,screen)
+		backbutton:SetID("back")
 		backbutton:SetFrameType(0, 1)
 		backbutton:SetSize(titlebar.button_size * 2, titlebar.button_size)
 		backbutton:SetPos(left2, titlebar.button_posY)
 		backbutton:SetIsToggle(false)
 
-		exitpopup_button = TardisScreenButton:new(titlebar,screen)
-		exitpopup_button:SetFrameType(0, 1)
-		exitpopup_button:SetSize(titlebar.button_size * 2, titlebar.button_size)
-		exitpopup_button:SetPos(right1, titlebar.button_posY)
-		exitpopup_button:SetIsToggle(false)
+		popup_button = TardisScreenButton:new(titlebar,screen)
+		if screen.is3D2D then
+			popup_button:SetID("popup")
+		else
+			popup_button:SetID("exit")
+		end
+		popup_button:SetFrameType(0, 1)
+		popup_button:SetSize(titlebar.button_size * 2, titlebar.button_size)
+		popup_button:SetPos(right1, titlebar.button_posY)
+		popup_button:SetIsToggle(false)
 
 		local left_arrow, right_arrow
 
 		local left_arrow = TardisScreenButton:new(titlebar,screen)
+		left_arrow:SetID("left_arrow")
 		left_arrow:SetFrameType(0, 1)
 		left_arrow:SetSize(titlebar.button_size * 2, titlebar.button_size)
 		left_arrow:SetPos(left2, titlebar.button_posY)
@@ -388,6 +396,7 @@ function TARDIS:LoadScreenUI(screen)
 		screen.left_arrow = left_arrow
 
 		local right_arrow = TardisScreenButton:new(titlebar,screen)
+		right_arrow:SetID("right_arrow")
 		right_arrow:SetFrameType(0, 1)
 		right_arrow:SetSize(titlebar.button_size * 2, titlebar.button_size)
 		right_arrow:SetPos(right2, titlebar.button_posY)
@@ -403,13 +412,13 @@ function TARDIS:LoadScreenUI(screen)
 		backbutton:SetSize(titlebar:GetWide() * 0.1, titlebar:GetTall())
 		backbutton:SetPos(titlebar:GetWide() * 0.1, 0)
 
-		exitpopup_button = vgui.Create("DButton", titlebar)
-		exitpopup_button:SetSize(titlebar:GetWide() * 0.1, titlebar:GetTall())
-		exitpopup_button:SetPos(titlebar:GetWide() - exitpopup_button:GetWide(), 0)
+		popup_button = vgui.Create("DButton", titlebar)
+		popup_button:SetSize(titlebar:GetWide() * 0.1, titlebar:GetTall())
+		popup_button:SetPos(titlebar:GetWide() - popup_button:GetWide(), 0)
 	end
 	screen.titlebar=titlebar
 
-	backbutton:SetText("back")
+	backbutton:SetText("Back")
 	backbutton:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 	backbutton:SetVisible(false)
 	backbutton.DoClick = function()
@@ -417,7 +426,7 @@ function TARDIS:LoadScreenUI(screen)
 	end
 	screen.backbutton=backbutton
 
-	menubutton:SetText("menu")
+	menubutton:SetText("Menu")
 	menubutton:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 	menubutton.DoClick = function(self)
 		if IsValid(screen.curscreen) or not mmenu:IsVisible() then
@@ -442,15 +451,15 @@ function TARDIS:LoadScreenUI(screen)
 	end
 	screen.menubutton=menubutton
 
-	exitpopup_button:SetFont(TARDIS:GetScreenFont(screen, "Default"))
+	popup_button:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 	if not screen.is3D2D then
-		exitpopup_button:SetText("exit")
-		exitpopup_button.DoClick = function()
+		popup_button:SetText("Exit")
+		popup_button.DoClick = function()
 			TARDIS:RemoveHUDScreen()
 		end
 	else
-		exitpopup_button:SetText("popup")
-		exitpopup_button.DoClick = function()
+		popup_button:SetText("Popup")
+		popup_button.DoClick = function()
 			self:PopToScreen(screen.pagename:GetText())
 		end
 	end
@@ -468,7 +477,7 @@ function TARDIS:LoadScreenUI(screen)
 			frame:SetPos(0,0)
 			frame._name=k
 			v[2](self,ext,int,frame,screen)
-			table.insert(screen.screens,{k,frame,v[1].order})
+			table.insert(screen.screens,{k,frame,v[1]})
 		end
 	end
 	table.SortByMember(screen.screens,1,true)
@@ -476,11 +485,16 @@ function TARDIS:LoadScreenUI(screen)
 	self:LoadButtons(screen, mmenu, function(parent)
 		local buttons={}
 		for k,v in ipairs(screen.screens) do
+			local options = v[3]
 			local button = vgui.Create("DButton")
 			button:SetText(v[1])
 			button:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 			button.DoClick = function()
-				self:SwitchScreen(screen, v[2])
+				if options and options.popuponly and screen.is3D2D then
+					self:PopToScreen(v[1])
+				else
+					self:SwitchScreen(screen, v[2])
+				end
 			end
 			table.insert(buttons,button)
 		end
@@ -506,44 +520,33 @@ function TARDIS:LoadButtons(screen, frame, func, isvgui)
 		local layout = HexagonalLayout:new(frame, layout_rows, 0.2)
 
 		for k,v in ipairs(screen.screens) do
-			local button
-			button = TardisScreenButton:new(frame,screen)
+			local name = v[1]
+			local options = v[3]
+			local button = TardisScreenButton:new(frame,screen)
+			button:SetID(options and options.id or name)
 			button:SetFrameType(0, 1)
 			button:SetIsToggle(false)
 			button:SetFont(TARDIS:GetScreenFont(screen, "Default"))
-
-			if v[1] == "Destination" then
-				button:SetText("Coordinates")
-				button.DoClick = function()
-					self:PopToScreen("Destination")
-				end
-			else
-				button:SetText(v[1])
-				button.DoClick = function()
+			button:SetText(name)
+			button.DoClick = function()
+				if screen.is3D2D and options and options.popuponly then
+					self:PopToScreen(name)
+				else
 					self:SwitchScreen(screen, v[2])
 				end
 			end
-			if v[3] ~= nil then
-				button.order = v[3]
+			if options ~= nil then
+				if options.text then
+					button:SetText(options.text)
+				end
+				button:SetOrder(options.order)
 			end
 			layout:AddNewButton(button)
 		end
 
-		local destination = TardisScreenButton:new(frame,screen)
-		destination:SetIsToggle(false)
-		destination:SetFrameType(0, 1)
-		destination:SetText("Destination")
-		destination:SetControl("destination")
-		destination.order=4
-		layout:AddNewButton(destination)
-
-		local flightcontrol = TardisScreenButton:new(frame,screen)
-		flightcontrol:SetIsToggle(false)
-		flightcontrol:SetFrameType(0, 1)
-		flightcontrol:SetText("Flight Control")
-		flightcontrol:SetControl("flightcontrol")
-		flightcontrol.order=5
-		layout:AddNewButton(flightcontrol)
+		if IsValid(screen.ext) then
+			screen.ext:CallHook("SetupScreenButtons", screen, frame, layout)
+		end
 
 		layout:DrawButtons()
 

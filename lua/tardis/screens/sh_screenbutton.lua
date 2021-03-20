@@ -170,11 +170,20 @@ function TardisScreenButton:SetFrameType(type1, type2)
 	self.frame:SetImage(self.frame_off)
 end
 
+function TardisScreenButton:SetID(id)
+	self.id = id
+end
+
+function TardisScreenButton:SetOrder(order)
+	self.order = order
+end 
+
 function TardisScreenButton:SetText(text)
+	if not self.id then error("You must set button id before calling SetText") end
 	self.text = text
 	local theme = self.theme
-	local file_on =  TARDIS:GetGUIThemeElement(self.theme, "text_icons_on", text, true)
-	local file_off = TARDIS:GetGUIThemeElement(self.theme, "text_icons_off", text, true)
+	local file_on =  TARDIS:GetGUIThemeElement(self.theme, "text_icons_on", self.id, true)
+	local file_off = TARDIS:GetGUIThemeElement(self.theme, "text_icons_off", self.id, true)
 
 	if file_on == nil then
 		file_on = file_off

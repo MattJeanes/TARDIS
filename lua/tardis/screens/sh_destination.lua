@@ -10,9 +10,7 @@ TARDIS:AddControl("destination",{
 
 if SERVER then return end
 
-TARDIS:AddScreen("Destination", {menu=false, order=2}, function(self,ext,int,frame,screen)
-	
-
+TARDIS:AddScreen("Destination", {id="coordinates", text="Coordinates", menu=false, order=2, popuponly=true}, function(self,ext,int,frame,screen)
 	local button=vgui.Create("DButton",frame)
 	button:SetSize( frame:GetWide()*0.2, frame:GetTall()*0.1 )
 	button:SetPos(frame:GetWide()*0.86 - button:GetWide()*0.5,frame:GetTall()*0.08 - button:GetTall()*0.5)

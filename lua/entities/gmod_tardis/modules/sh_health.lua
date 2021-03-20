@@ -26,6 +26,23 @@ TARDIS:AddSetting({
 	networked=true
 })
 
+TARDIS:AddControl("repair",{
+	func=function(self,ply)
+		self:ToggleRepair()
+	end,
+	exterior=true,
+	serveronly=true
+})
+
+TARDIS:AddControl("redecorate",{
+	func=function(self,ply)
+		local on = self:GetData("redecorate",false)
+		self:SetData("redecorate", not on, true)
+	end,
+	exterior=true,
+	serveronly=true
+})
+
 ENT:AddHook("Initialize","health-init",function(self)
 	self:SetData("health-val", TARDIS:GetSetting("health-max"), true)
 	if SERVER and WireLib then
@@ -362,5 +379,31 @@ else
 		local newhealth = net.ReadInt(32)
 		self:ChangeHealth(newhealth)
 		self:SetData("UpdateHealthScreen", true, true)
+	end)
+
+	ENT:AddHook("SetupVirtualConsole", "health", function(self,frame,screen)
+		local repair = TardisScreenButton:new(frame,screen)
+		repair:Setup({
+			id = "repair",
+			toggle = true,
+			frame_type = {0, 1},
+			text = "Self-repair",
+			control = "repair",
+			pressed_state_source = self,
+			pressed_state_data = "repair-primed",
+			order = 3,
+		})
+
+		local redecorate = TardisScreenButton:new(frame,screen)
+		redecorate:Setup({
+			id = "redecorate",
+			toggle = true,
+			frame_type = {0, 1},
+			text = "Redecoration",
+			control = "redecorate",
+			pressed_state_source = self,
+			pressed_state_data = "redecorate",
+			order = 4,
+		})
 	end)
 end

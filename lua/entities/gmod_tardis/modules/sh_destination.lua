@@ -272,6 +272,16 @@ else
 			return false
 		end
 	end)
+	ENT:AddHook("SetupScreenButtons", "destination", function(self, screen, frame, layout)
+		local destination = TardisScreenButton:new(frame,screen)
+		destination:SetID("destination")
+		destination:SetIsToggle(false)
+		destination:SetFrameType(0, 1)
+		destination:SetText("Destination")
+		destination:SetControl("destination")
+		destination:SetOrder(4)
+		layout:AddNewButton(destination)
+	end)
 	ENT:AddHook("Think", "destination", function(self)
 		if LocalPlayer():GetTardisData("destination") then
 			local prop=self:GetData("destinationprop")

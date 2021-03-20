@@ -1,5 +1,13 @@
 -- Lock
 
+TARDIS:AddControl("lockcontroller",{
+	func=function(self,ply)
+		self:ToggleLocked()
+	end,
+	exterior=true,
+	serveronly=true
+})
+
 function ENT:Locked()
 	return self:GetData("locked",false)
 end
@@ -80,6 +88,7 @@ else
 		type="bool",
 		option=true
 	})
+
 	ENT:OnMessage("locksound",function(self)
 		local snd = self.metadata.Exterior.Sounds.Lock
 		if TARDIS:GetSetting("locksound-enabled") and TARDIS:GetSetting("sound") then
@@ -88,5 +97,19 @@ else
 				self.interior:EmitSound(snd)
 			end
 		end
+	end)
+
+	ENT:AddHook("SetupVirtualConsole", "lock", function(self,frame,screen)
+		local lock = TardisScreenButton:new(frame,screen)
+		lock:Setup({
+			id = "lockcontroller",
+			toggle = true,
+			frame_type = {1, 2},
+			text = "Toggle lock",
+			control = "lockcontroller",
+			pressed_state_source = self,
+			pressed_state_data = "locked",
+			order = 6,
+		})
 	end)
 end

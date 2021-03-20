@@ -1,6 +1,6 @@
 -- Settings
 
-TARDIS:AddScreen("Settings", {order=20}, function(self,ext,int,frame,screen)	
+TARDIS:AddScreen("Settings", {id="settings", order=20}, function(self,ext,int,frame,screen)	
 	local settings={}
 	for k,v in pairs(self.GUISettings) do
 		local f=vgui.Create("DPanel",frame)
