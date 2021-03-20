@@ -1,7 +1,7 @@
 -- Lock
 
 TARDIS:AddControl({
-	id = "lockcontroller",
+	id = "doorlock",
 	ext_func=function(self,ply)
 		self:ToggleLocked()
 	end,

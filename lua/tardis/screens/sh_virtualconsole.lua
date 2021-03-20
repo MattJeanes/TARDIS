@@ -209,11 +209,11 @@ local function old_virtual_console(self,ext,int,frame,screen)
 	doorlock:SetText(ext:Locked() and "Unlock door" or "Lock door")
 
 	doorswitch.DoClick = function(doorswitch)
-		TARDIS:Control("doorcontroller")
+		TARDIS:Control("door")
 	end
 
 	doorlock.DoClick = function()
-		TARDIS:Control("lockcontroller")
+		TARDIS:Control("doorlock")
 	end
 
 	function doorswitch:Think()

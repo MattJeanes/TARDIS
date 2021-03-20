@@ -1,7 +1,7 @@
 -- Open door with E, go in with Alt-E
 
 TARDIS:AddControl({
-	id = "doorcontroller",
+	id = "door",
 	ext_func=function(self,ply)
 		self:ToggleDoor()
 	end,
