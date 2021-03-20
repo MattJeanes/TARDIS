@@ -42,7 +42,7 @@ function TARDIS:GetScreenFont(screen, name)
 		local font = self.fonts[name]
 		if not font then error("TARDIS font '"..name.."' is not defined") end
 		local fontCopy = table.Copy(font)
-		fontCopy.size = math.Round(font.size * scale,1)
+		fontCopy.size = math.Round(font.size * scale, 2)
 		print("Generating TARDIS font ".. name .. " with size " .. tostring(fontCopy.size))
 		surface.CreateFont(fontName, fontCopy)
 		self.fontcache[scale][name] = true
@@ -257,7 +257,7 @@ function TARDIS:HUDScreen()
 		screen.height=screen.height*1.5
 	end
 
-	screen.resscale = 1
+	screen.resscale = 0.7
 	screen.res=screen.width/485
 	screen.crosshair=6*screen.res
 	screen.gap=5*screen.res
