@@ -2,23 +2,10 @@ TARDIS.visgui_themes={}
 
 local theme_basefolder = "materials/vgui/tardis-themes/"
 
-local function CheckGUITheme(theme)
-	return true
-end
-
-function TARDIS:RemoveGUITheme(id)
-	if self.visgui_themes[id] then
-		self.visgui_themes[id] = nil
-	end
-end
-
 function TARDIS:AddGUITheme(theme)
-	if CheckGUITheme(theme) then
-		TARDIS:RemoveGUITheme(theme.id)
-		self.visgui_themes[theme.id] = table.Copy(theme)
-		if theme.folder ~= nil then
-			self.visgui_themes[theme.id].folder = theme_basefolder .. theme.folder .. "/"
-		end
+	self.visgui_themes[theme.id] = table.Copy(theme)
+	if theme.folder ~= nil then
+		self.visgui_themes[theme.id].folder = theme_basefolder .. theme.folder .. "/"
 	end
 end
 
