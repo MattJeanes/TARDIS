@@ -16,12 +16,23 @@ TARDIS:AddKeyBind("physlock-toggle",{
 	exterior=true
 })
 
-TARDIS:AddControl("physlock",{
-	func=function(self,ply)
+TARDIS:AddControl({
+	id = "physlock",
+	ext_func=function(self,ply)
 		self:TogglePhyslock()
 	end,
-	exterior=true,
-	serveronly=true
+	serveronly=true,
+	screen_button = {
+		virt_console = true,
+		mmenu = false,
+		toggle = true,
+		frame_type = {0, 2},
+		text = "Physlock",
+		pressed_state_from_interior = false,
+		pressed_state_data = "physlock",
+		order = 12,
+	},
+	tip_text = "Locking Down Mechanism",
 })
 
 if SERVER then
@@ -99,20 +110,6 @@ if SERVER then
 		elseif name == "Physlock" and TARDIS:CheckPP(e2.player, self) then
 			return self:TogglePhyslock() and 1 or 0
 		end
-	end)
-else
-	ENT:AddHook("SetupVirtualConsole", "physlock", function(self,frame,screen)
-		local physlock = TardisScreenButton:new(frame,screen)
-		physlock:Setup({
-			id = "physlock",
-			toggle = true,
-			frame_type = {0, 2},
-			text = "Physlock",
-			control = "physlock",
-			pressed_state_source = self,
-			pressed_state_data = "physlock",
-			order = 12,
-		})
 	end)
 end
 

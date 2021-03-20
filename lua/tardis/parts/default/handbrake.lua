@@ -3,7 +3,7 @@
 local PART = {}
 PART.ID = "default_handbrake"
 PART.Name = "Default Handbrake"
-PART.Control = "handbrake"
+PART.Text = "Time-Rotor Handbrake"
 PART.Model = "models/drmatt/tardis/handbrake.mdl"
 PART.AutoSetup = true
 PART.Collision = true

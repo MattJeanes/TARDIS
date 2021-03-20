@@ -1,11 +1,22 @@
 -- Hostile Action Displacement System
 
-TARDIS:AddControl("hads",{
-	func=function(self,ply)
+TARDIS:AddControl({
+	id = "hads",
+	ext_func=function(self,ply)
 		self:ToggleHADS()
 	end,
-	exterior=true,
 	serveronly=true,
+	screen_button = {
+		virt_console = true,
+		mmenu = false,
+		toggle = true,
+		frame_type = {2, 1},
+		text = "H.A.D.S.",
+		pressed_state_from_interior = false,
+		pressed_state_data = "hads",
+		order = 13,
+	},
+	tip_text = "H.A.D.S.",
 })
 
 if SERVER then
@@ -41,19 +52,5 @@ if SERVER then
 		elseif name == "HADS" and TARDIS:CheckPP(e2.player, self) then
 			return self:ToggleHADS()
 		end
-	end)
-else
-	ENT:AddHook("SetupVirtualConsole", "hads", function(self,frame,screen)
-		local hads = TardisScreenButton:new(frame,screen)
-		hads:Setup({
-			id = "hads",
-			toggle = true,
-			frame_type = {2, 1},
-			text = "H.A.D.S.",
-			control = "hads",
-			pressed_state_source = self,
-			pressed_state_data = "hads",
-			order = 13,
-		})
 	end)
 end

@@ -52,32 +52,63 @@ TARDIS:AddKeyBind("teleport-mat",{
 	exterior=true
 })
 
-TARDIS:AddControl("teleport",{
-	func=function(self,ply)
+TARDIS:AddControl({
+	id = "teleport",
+	ext_func=function(self,ply)
 		if (self:GetData("teleport") or self:GetData("vortex")) then
 			self:Mat()
 		else
 			self:Demat()
 		end
 	end,
-	exterior=true,
-	serveronly=true
+	serveronly=true,
+	screen_button = {
+		virt_console = true,
+		mmenu = false,
+		toggle = true,
+		frame_type = {0, 1},
+		text = "Teleport",
+		pressed_state_from_interior = false,
+		pressed_state_data = "teleport", "vortex",
+		order = 7,
+	},
+	tip_text = "Space-Time Throttle",
 })
 
-TARDIS:AddControl("fastreturn",{
-	func=function(self,ply)
+TARDIS:AddControl({
+	id = "fastreturn",
+	ext_func=function(self,ply)
 		self:FastReturn()
 	end,
-	exterior=true,
-	serveronly=true
+	serveronly = true,
+	screen_button = {
+		virt_console = true,
+		mmenu = false,
+		toggle = false,
+		frame_type = {0, 1},
+		text = "Fast Return",
+		order = 8,
+	},
+	tip_text = "Fast Return Protocol",
 })
 
-TARDIS:AddControl("fastremat",{
-	func=function(self,ply)
+TARDIS:AddControl({
+	id = "fastremat",
+	ext_func=function(self,ply)
 		self:ToggleFastRemat()
 	end,
-	exterior=true,
-	serveronly=true
+	serveronly=true,
+	screen_button = {
+		virt_console = true,
+		mmenu = false,
+		toggle = true,
+		frame_type = {1, 2},
+		text = "Vortex Flight",
+		pressed_state_from_interior = false,
+		pressed_state_data = "demat-fast",
+		order = 9,
+	},
+	tip_text = "Vortex Flight Toggler",
 })
 
 if SERVER then
@@ -533,42 +564,6 @@ else
 		if self:GetData("teleport-trace") then
 			self:SetData("teleport-trace",false)
 		end
-	end)
-
-	ENT:AddHook("SetupVirtualConsole", "teleport", function(self,frame,screen)
-		local throttle = TardisScreenButton:new(frame,screen)
-		throttle:Setup({
-			id = "teleport",
-			toggle = true,
-			frame_type = {0, 1},
-			text = "Throttle",
-			control = "teleport",
-			pressed_state_source = self,
-			pressed_state_data = "teleport", "vortex",
-			order = 7,
-		})
-
-		local fastreturn = TardisScreenButton:new(frame,screen)
-		fastreturn:Setup({
-			id = "fastreturn",
-			toggle = false,
-			frame_type = {0, 1},
-			text = "Fast Return",
-			control = "fastreturn",
-			order = 8,
-		})
-
-		local fastremat = TardisScreenButton:new(frame,screen)
-		fastremat:Setup({
-			id = "fastremat",
-			toggle = true,
-			frame_type = {0, 1},
-			text = "Vortex Flight",
-			control = "fastremat",
-			pressed_state_source = self,
-			pressed_state_data = "demat-fast",
-			order = 9,
-		})
 	end)
 end
 

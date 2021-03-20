@@ -3,7 +3,7 @@
 local PART = {}
 PART.ID = "default_longflighttoggle"
 PART.Name = "Default Long Flight Toggle"
-PART.Control = "long_flight"
+PART.Control = "fastremat"
 PART.Model = "models/drmatt/tardis/longflighttoggle.mdl"
 PART.AutoSetup = true
 PART.Collision = true

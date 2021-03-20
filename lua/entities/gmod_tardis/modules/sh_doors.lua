@@ -1,11 +1,22 @@
 -- Open door with E, go in with Alt-E
 
-TARDIS:AddControl("doorcontroller",{
-	func=function(self,ply)
+TARDIS:AddControl({
+	id = "doorcontroller",
+	ext_func=function(self,ply)
 		self:ToggleDoor()
 	end,
-	exterior=true,
-	serveronly=true
+	serveronly=true,
+	screen_button = {
+		virt_console = true,
+		mmenu = false,
+		toggle = true,
+		frame_type = {0, 1},
+		text = "Door",
+		pressed_state_from_interior = false,
+		pressed_state_data = "doorstate",
+		order = 5,
+	},
+	tip_text = "Door Switch",
 })
 
 if SERVER then
@@ -223,19 +234,5 @@ else
 				end
 			end
 		end
-	end)
-
-	ENT:AddHook("SetupVirtualConsole", "doors", function(self,frame,screen)
-		local door = TardisScreenButton:new(frame,screen)
-		door:Setup({
-			id = "doorcontroller",
-			toggle = true,
-			frame_type = {0, 1},
-			text = "Toggle door",
-			control = "doorcontroller",
-			pressed_state_source = self,
-			pressed_state_data = "doorstate",
-			order = 5,
-		})
 	end)
 end

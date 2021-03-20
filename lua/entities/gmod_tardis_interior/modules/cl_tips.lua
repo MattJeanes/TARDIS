@@ -21,27 +21,6 @@ TARDIS:AddSetting({
 	networked=false
 })
 
-local tip_control_texts = {
-	coords = "Coordinates",
-	destination = "Destination",
-	hads = "H.A.D.S.",
-	monitor = "Monitor",
-	scanner = "Scanner", -- for the future updates
-	screen_toggle = "Toggle Screen",
-	power = "Power Switch",
-	physlock = "Physlock",
-	cloak = "Cloaking Device", -- partially exists in some interiors
-	throttle = "Space-Time Throttle",
-	fast_return = "Fast-Return Protocol",
-	long_flight = "Vortex Flight Toggler",
-	handbrake = "Time-Rotor Handbrake", -- for the future updates
-	music = "Music",
-	isomorphic = "Isomorphic Security System",
-	repair = "Self-Repair",
-	flight = "Flight Mode",
-	float = "Anti-Gravs",
-}
-
 function ENT:InitializeTips(style_name)
 	if style_name == "default" then
 		style_name = self.metadata.Interior.Tips.style
@@ -62,10 +41,11 @@ function ENT:InitializeTips(style_name)
 				local part = TARDIS:GetRegisteredPart(tip.part)
 				if part then
 					if part.Control then
-						if tip_control_texts[part.Control] then
-							tip.text = tip_control_texts[part.Control]
+						local control = TARDIS:GetControl(part.Control)
+						if control and control.tip_text then
+							tip.text = control.tip_text
 						else
-							error("Control \""..part.Control.."\" does not exist")
+							error("Control \""..part.Control.."\" either does not exist or has no tip text specified")
 						end
 					end
 					if part.Text then
@@ -76,10 +56,11 @@ function ENT:InitializeTips(style_name)
 				end
 			end
 			if tip.control then
-				if tip_control_texts[tip.control] then
-					tip.text = tip_control_texts[tip.control]
+				local control = TARDIS:GetControl(tip.control)
+				if control and control.tip_text then
+					tip.text = control.tip_text
 				else
-					error("Control \""..tip.control.."\" does not exist")
+					error("Control \""..tip.control.."\" either does not exist or has no tip text specified")
 				end
 			end
 		end

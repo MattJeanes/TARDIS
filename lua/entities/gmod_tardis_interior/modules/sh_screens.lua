@@ -1,11 +1,22 @@
 -- Adds screens
 
-TARDIS:AddControl("toggle_screens",{
-	func=function(self,ply)
+TARDIS:AddControl({
+	id = "toggle_screens",
+	int_func=function(self,ply)
 		self:ToggleScreens()
 	end,
-	interior=true,
-	clientonly=true
+	screen_button = {
+		virt_console = true,
+		mmenu = false,
+		popup_only = true,
+		toggle = true,
+		frame_type = {2, 1},
+		text = "Toggle Screen",
+		pressed_state_from_interior = true,
+		pressed_state_data = "screens_on",
+		order = 1,
+	},
+	tip_text = "Toggle Screen",
 })
 
 ENT:AddHook("Initialize", "screens-toggle", function(self)
@@ -126,21 +137,5 @@ end)
 ENT:AddHook("ShouldNotDrawScreen", "screens", function(self)
 	if not self:GetScreensOn() then
 		return true
-	end
-end)
-
-ENT:AddHook("SetupVirtualConsole", "screens", function(self,frame,screen)
-	if not screen.is3D2D then
-		local interior_screens = TardisScreenButton:new(frame,screen)
-		interior_screens:Setup({
-			id = "toggle_screens",
-			toggle = true,
-			frame_type = {2, 1},
-			text = "Toggle screens",
-			control = "toggle_screens",
-			pressed_state_source = self,
-			pressed_state_data = "screens_on",
-			order = 1,
-		})
 	end
 end)

@@ -3,7 +3,7 @@
 local PART = {}
 PART.ID = "default_throttle"
 PART.Name = "Default Throttle"
-PART.Control = "throttle"
+PART.Control = "teleport"
 PART.Model = "models/drmatt/tardis/throttle.mdl"
 PART.AutoSetup = true
 PART.Collision = true

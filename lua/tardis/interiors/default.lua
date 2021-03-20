@@ -72,7 +72,7 @@ T.Interior={
 		default_handbrake          = {pos = Vector(-40.088379, -21.466797, 7.924805), ang = Angle(290.494, 208.321, 182.157), tip = {pos = Vector(-52, -29, 2), down = true},},
 		default_gramophone         = {pos = Vector(-26, -1.5, 30),                    ang = Angle(0, 30, 0),                  tip = {pos = Vector(-26, -1.50, 40), right = true, down = true},},
 		default_biglever           = {pos = Vector(-9.94, -65, -52),                  ang = Angle(0, 270, 0),                 tip = {pos = Vector(-9.94, -65, -12)},},
-		default_physlock          = {pos = Vector(39, -22.75, 6.914063),             ang = Angle(303.286, 6.660, 148.819),   tip = {pos = Vector(52, -30, 0), down = true},},
+		default_physlock           = {pos = Vector(39, -22.75, 6.914063),             ang = Angle(303.286, 6.660, 148.819),   tip = {pos = Vector(52, -30, 0), down = true},},
 		default_isomorphic         = {pos = Vector(-39.5, 22, 6.629883),              ang = Angle(290.762, 195, 137.777),     tip = {pos = Vector(-52, 29, 2), down = true},},
 		default_atomaccel          = {pos = Vector(20, -37.669998, 1.75),             ang = Angle(0, 0, 0),                   tip = {pos = Vector(20, -38, 6), right = true},},
 		default_directionalpointer = {pos = Vector(12.5, -24.5, 23),                  ang = Angle(0, 30, 0),                  tip = {pos = Vector(12.5, -24.5, 23)},},

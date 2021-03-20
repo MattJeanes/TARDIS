@@ -1,11 +1,14 @@
 -- Destination
 
-TARDIS:AddControl("destination",{
-	func=function(self,ply)
-		self:SelectDestination(ply, true)
+TARDIS:AddControl({
+	id = "coordinates",
+	ext_func=function(self,ply)
+		TARDIS:PopToScreen("Destination", ply)
 	end,
-	exterior=true,
-	serveronly=true
+	serveronly = true,
+	virt_console_button = false,
+	mmenu_button = false, -- already added as a screen
+	tip_text = "Coordinates",
 })
 
 if SERVER then return end
