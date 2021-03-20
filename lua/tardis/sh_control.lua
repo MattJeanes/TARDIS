@@ -33,7 +33,7 @@ function TARDIS:Control(id,ply)
 	if control and IsValid(ext) then
 		local int=ply:GetTardisData("interior")
 		local res,res2
-		if ((CLIENT and (control.clientonly or (not (control.clientonly and control.serveronly))) and (not control.serveronly)) or (SERVER and (control.serveronly or (not (control.serveronly and control.clientonly))) and (not control.clientonly))) and control.func then
+		if (CLIENT and not control.serveronly) or (SERVER and not control.clientonly) and control.func then
 			if control.exterior then
 				res=control.func(ext,ply)
 			end
