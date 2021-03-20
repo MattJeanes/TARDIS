@@ -233,7 +233,7 @@ if SERVER then
 		if self:GetData("vortex", false) then return false end
 		local intsetting = TARDIS:GetSetting("interior","default",self:GetCreator())
 		if (self:GetHealth() >= TARDIS:GetSetting("health-max", 1))
-			and not self:GetData("redecorate", false) or not TARDIS:GetInterior(intsetting)
+			and not self:GetData("redecorate", false)
 		then
 			return false
 		end
