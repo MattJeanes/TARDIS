@@ -6,7 +6,7 @@ local Seq = {
 	["default_longflightdemat"] = {
 		Controls = {
 			"default_helmic",
-			"default_physbrake",
+			"default_physlock",
 			"default_handbrake",
 			"default_throttle"
 		},

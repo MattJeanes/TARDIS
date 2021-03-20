@@ -1,5 +1,12 @@
 -- Open door with E, go in with Alt-E
 
+TARDIS:AddControl("doorcontroller",{
+	func=function(self,ply)
+		self:ToggleDoor()
+	end,
+	exterior=true,
+	serveronly=true
+})
 
 if SERVER then
 	local function runcallbacks(callbacks,state)
@@ -216,5 +223,19 @@ else
 				end
 			end
 		end
+	end)
+
+	ENT:AddHook("SetupVirtualConsole", "doors", function(self,frame,screen)
+		local door = TardisScreenButton:new(frame,screen)
+		door:Setup({
+			id = "doorcontroller",
+			toggle = true,
+			frame_type = {0, 1},
+			text = "Toggle door",
+			control = "doorcontroller",
+			pressed_state_source = self,
+			pressed_state_data = "doorstate",
+			order = 5,
+		})
 	end)
 end
