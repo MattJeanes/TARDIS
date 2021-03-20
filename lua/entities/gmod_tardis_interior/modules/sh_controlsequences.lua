@@ -57,7 +57,9 @@ function ENT:GetSequencesEnabled()
 end
 
 ENT:AddHook("CanStartControlSequence", "conditions", function(self,id)
-	local seq = TARDIS:GetControlSequence(self.metadata.Interior.Sequences)[id]
+	local cseqs = TARDIS:GetControlSequence(self.metadata.Interior.Sequences)
+	local seq = cseqs[id]
+	if not seq then return end
 	if not seq.Condition then return end
 	
 	if not seq.Condition(self) then
