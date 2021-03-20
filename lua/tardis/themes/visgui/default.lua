@@ -34,7 +34,7 @@ local theme = {
 		hads = "control_hads.png",
 
 		destination = "screen_destination.png",
-		flightcontrol = "screen_thirdperson.png",
+		thirdperson = "screen_thirdperson.png",
 		virtualconsole = "screen_console.png",
 		coordinates = "screen_coords.png",
 		music = "screen_music.png",

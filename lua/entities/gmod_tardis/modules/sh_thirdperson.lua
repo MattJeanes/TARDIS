@@ -14,7 +14,7 @@ TARDIS:AddKeyBind("tp-toggledoor",{
 })
 
 TARDIS:AddControl({
-	id = "flightcontrol",
+	id = "thirdperson",
 	ext_func=function(self,ply)
 		self:PlayerThirdPerson(ply, not ply:GetTardisData("thirdperson"))
 	end,
