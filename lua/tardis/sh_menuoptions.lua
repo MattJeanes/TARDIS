@@ -145,32 +145,22 @@ if CLIENT then
 
 			local visgui_theme = vgui.Create("DComboBox")
 			visgui_theme:SetText("Visual GUI Theme")
-			local themes = {}
-			local theme_basefolder = TARDIS.visgui_theme_basefolder
-			local files, folders = file.Find(theme_basefolder.."*", "GAME", "nameasc")
-			for k,folder in pairs(folders) do
-				if file.Exists(theme_basefolder..folder.."/default_on.png", "GAME")
-					and file.Exists(theme_basefolder..folder.."/default_off.png", "GAME")
-					and file.Exists(theme_basefolder..folder.."/background.png", "GAME")
-				then
-					local theme = {}
-					theme.ID = visgui_theme:AddChoice(folder)
-					theme.name = folder
-					table.insert(themes, theme)
-				end
+			for k,v in pairs(TARDIS:GetGUIThemes()) do
+				v.OptionID = visgui_theme:AddChoice(v.name, v.id)
 			end
 			local selectedtheme=TARDIS:GetSetting("visgui_theme", "default")
-			for k,theme in pairs(themes) do
-				if selectedtheme == theme.name then
-					visgui_theme:ChooseOption(theme.ID)
+			for k,theme in pairs(TARDIS:GetGUIThemes()) do
+				if selectedtheme == theme.id then
+					visgui_theme:ChooseOption(theme.OptionID)
 					visgui_theme:SetText(theme.name)
 				end
 			end
-			visgui_theme.OnSelect = function(panel, index, value)
-				TARDIS:SetSetting("visgui_theme", value)
+			visgui_theme.OnSelect = function(panel, index, value, data)
+				TARDIS:SetSetting("visgui_theme", data)
 				LocalPlayer():ChatPrint("TARDIS visual GUI theme changed to "..value)
 			end
 			panel:AddItem(visgui_theme)
+
 		end)
 	end)
 else
