@@ -235,12 +235,13 @@ if SERVER then
 	ENT:AddHook("CustomData", "health-redecorate", function(self, customdata)
 		if customdata.finishrepair then
 			self:SetPos(customdata.pos)
-			self:SetAngles(customdata.angles)
+			self:SetAngles(customdata.ang)
 			self:SetData("finishrepair",true)
 		end
 	end)
 
 	ENT:AddHook("Initialize", "health-redecorate", function(self)
+		self:SendMessage("redecorate-reset")
 		if not self:GetData("finishrepair",false) then return end
 		timer.Simple(0.5, function()
 			if not IsValid(self) then return end
@@ -248,7 +249,6 @@ if SERVER then
 			self:EmitSound(self.metadata.Exterior.Sounds.RepairFinish)
 			self:FlashLight(1.5)
 		end)
-		self:SendMessage("redecorate-reset")
 		self:SetData("finishrepair",nil)
 	end)
 
