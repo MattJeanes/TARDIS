@@ -3,7 +3,7 @@
 local Seq = {
 	ID = "default_sequences",
 
-	["default_longflightdemat"] = {
+	["default_dematcirquit"] = {
 		Controls = {
 			"default_helmic",
 			"default_physlock",

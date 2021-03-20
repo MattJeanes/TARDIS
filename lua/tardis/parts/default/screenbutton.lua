@@ -1,4 +1,4 @@
--- Default Interior - Long Flight Demat Switch
+-- Default Interior - Screen Button
 
 local PART = {}
 PART.ID = "default_screenbutton"

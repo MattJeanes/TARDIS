@@ -1,8 +1,8 @@
--- Default Interior - Long Flight Demat Switch
+-- Default Interior - Dematerialisation Circuit
 
 local PART = {}
-PART.ID = "default_longflightdemat"
-PART.Name = "Default Long Flight Demat Switch"
+PART.ID = "default_dematcirquit"
+PART.Name = "Default Dematerialisation Circuit"
 PART.Text = "Dematerialisation Circuit"
 PART.Model = "models/drmatt/tardis/smallbutton.mdl"
 PART.AutoSetup = true
