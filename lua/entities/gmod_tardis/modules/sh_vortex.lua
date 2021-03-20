@@ -131,7 +131,7 @@ else
 		if TARDIS:GetExteriorEnt()==self and enabled then
 			if (not (target == 0 and alpha == 0)) or vortexpart then
 				render.SetBlend(alpha)
-				if alpha>0 and (LocalPlayer():GetTardisData("outside") or (self.interior and wp.drawingent==self.interior.portals.interior)) then
+				if alpha>0 and self:CallHook("ShouldVortexIgnoreZ") then
 					cam.IgnoreZ(true)
 				end
 			end
@@ -144,7 +144,24 @@ else
 	
 	local function dodraw(self,part)
 		render.SetBlend(1)
-		if self:GetData("vortexalpha",0) then
+		local vortexalpha = self:GetData("vortexalpha",0)
+		if vortexalpha>0 then
+			if not part and TARDIS:GetExteriorEnt()==self then
+				local attached = self:GetData("demat-attached")
+				if attached then
+					local oldblend = render.GetBlend()
+					render.SetBlend(vortexalpha)
+					for k,v in pairs(attached) do
+						if IsValid(k) and k.DrawModel and v>0 then
+							local oldc = k:GetColor()
+							k:SetColor(ColorAlpha(oldc,v))
+							k:DrawModel()
+							k:SetColor(oldc)
+						end
+					end
+					render.SetBlend(oldblend)
+				end
+			end
 			cam.IgnoreZ(false)
 		end
 	end

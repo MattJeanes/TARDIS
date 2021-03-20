@@ -36,3 +36,9 @@ ENT:AddHook("TraceFilterPortal", "portals", function(self,portal)
         return self.interior:GetPart("door")
     end
 end)
+
+ENT:AddHook("ShouldVortexIgnoreZ", "portals", function(self)
+    if self.interior and wp.drawingent==self.interior.portals.interior then
+        return true
+    end
+end)

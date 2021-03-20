@@ -62,7 +62,7 @@ if SERVER then
 			if self:CallHook("LockedUse",a,c)==nil then
 				a:ChatPrint("This TARDIS is locked.")
 			end
-			self:EmitSound("doors/door_lock_1.wav")
+			self:EmitSound(self.metadata.Exterior.Sounds.Door.locked)
 		end
 	end)
 

@@ -8,7 +8,7 @@ PART.Model = "models/drmatt/tardis/handbrake.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 PART.Animate = true
-PART.Sound = "tardis/control_handbrake.wav"
+PART.Sound = "drmatt/tardis/default/control_handbrake.wav"
 
 if SERVER then
 	function PART:Use(ply)

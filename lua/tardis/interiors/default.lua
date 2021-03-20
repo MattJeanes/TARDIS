@@ -8,11 +8,11 @@ T.Interior={
 	Model="models/drmatt/tardis/interior.mdl",
 	IdleSound={
 		{
-			path="tardis/interior_idle_loop.wav",
+			path="drmatt/tardis/default/interior_idle_loop.wav",
 			volume=0.5
 		},
 		{
-			path="tardis/interior_idle2_loop.wav",
+			path="drmatt/tardis/default/interior_idle2_loop.wav",
 			volume=0.5
 		}
 	},
