@@ -26,13 +26,19 @@ function TARDIS:GetControl(id)
 	end
 end
 
-function TARDIS:Control(id, ply)
+function TARDIS:Control(control_id, ply)
 	if CLIENT then ply=LocalPlayer() end
 	if not ply:IsPlayer() then return end
-	local control=controls[id]
+	local control=controls[control_id]
 	local ext=ply:GetTardisData("exterior")
 	if control and IsValid(ext) then
 		local int=ply:GetTardisData("interior")
+		if not IsValid(int) then return end
+		if ext:CallHook("CanUseTardisControl", control_id, ply) == false
+			or int:CallHook("CanUseTardisControl", control_id, ply) == false
+		then
+			return
+		end
 		local res_ext, res_int
 		local cl_serv_ok = (CLIENT and not control.serveronly) or (SERVER and not control.clientonly)
 		if cl_serv_ok and control.ext_func then
@@ -43,14 +49,16 @@ function TARDIS:Control(id, ply)
 		end
 		if CLIENT and (res_ext ~= false) and (res_int ~= false) and (not control.clientonly) then
 			net.Start("TARDIS-Control")
-				net.WriteString(id)
+				net.WriteString(control_id)
 			net.SendToServer()
 		end
+		ext:CallHook("TardisControlUsed", control_id, ply)
+		int:CallHook("TardisControlUsed", control_id, ply)
 	end
 end
 
 net.Receive("TARDIS-Control", function(_,ply)
-	TARDIS:Control(net.ReadString(),ply)
+	TARDIS:Control(net.ReadString(), ply)
 end)
 
 TARDIS:AddControl({
