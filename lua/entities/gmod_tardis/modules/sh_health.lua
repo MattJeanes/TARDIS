@@ -241,7 +241,6 @@ if SERVER then
 	end)
 
 	ENT:AddHook("Initialize", "health-redecorate", function(self)
-		self:SendMessage("redecorate-reset")
 		if not self:GetData("finishrepair",false) then return end
 		timer.Simple(0.5, function()
 			if not IsValid(self) then return end
@@ -394,7 +393,8 @@ else
 		self:SetData("UpdateHealthScreen", true, true)
 	end)
 
-	ENT:OnMessage("redecorate-reset", function(self, ply)
+	ENT:AddHook("Initialize", "redecorate-reset", function(self)
+		if not IsValid(self) or (not LocalPlayer() == self:GetCreator()) then return end
 		TARDIS:SetSetting("redecorate-interior",self.metadata.ID,true)
 	end)
 	
