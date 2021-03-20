@@ -27,7 +27,7 @@ TARDIS:AddSetting({
 })
 
 TARDIS:AddSetting({
-	id="redecoration-interior",
+	id="redecorate-interior",
 	name="Redecoration interior",
 	value="default",
 	networked=true
@@ -150,7 +150,7 @@ if SERVER then
 	function ENT:FinishRepair()
 		if self:CallHook("ShouldRedecorate") then
 			local ent = TARDIS:SpawnTARDIS(self:GetCreator(),{
-				metadataID = TARDIS:GetSetting("redecoration-interior","default",self:GetCreator()),
+				metadataID = TARDIS:GetSetting("redecorate-interior","default",self:GetCreator()),
 				finishrepair = true,
 				pos = self:GetPos()+Vector(0,0,2),
 				ang = self:GetAngles()
@@ -206,14 +206,14 @@ if SERVER then
 		if self:GetData("vortex", false) then return false end
 		local intsetting = TARDIS:GetSetting("interior","default",self:GetCreator())
 		if (self:GetHealth() >= TARDIS:GetSetting("health-max", 1))
-			and not self:GetData("redecorate", false) or not TARDIS:GetInterior(intsetting)
+			and not self:CallHook("ShouldRedecorate")
 		then
 			return false
 		end
 	end)
 
 	ENT:AddHook("ShouldRedecorate", "health", function(self)
-		return self:GetData("redecorate",false) and true or nil
+		return (self:GetData("redecorate",false) and TARDIS:GetSetting("redecorate-interior","default",self:GetCreator()) ~= self.metadata.ID) and true or nil
 	end)
 
 	ENT:AddHook("CustomData", "health-repairfinish", function(self, customdata)
@@ -222,7 +222,7 @@ if SERVER then
 		end
 	end)
 
-	ENT:AddHook("Initialize", "health-repairfinish", function(self)
+	ENT:AddHook("Initialize", "health-redecorate", function(self)
 		if not self:GetData("finishrepair",false) then return end
 		timer.Simple(0.5, function()
 			if not IsValid(self) then return end
@@ -230,6 +230,7 @@ if SERVER then
 			self:EmitSound(self.metadata.Exterior.Sounds.RepairFinish)
 			self:FlashLight(1.5)
 		end)
+		self:SendMessage("redecorate-reset")
 		self:SetData("finishrepair",nil)
 	end)
 
@@ -373,5 +374,9 @@ else
 		local newhealth = net.ReadInt(32)
 		self:ChangeHealth(newhealth)
 		self:SetData("UpdateHealthScreen", true, true)
+	end)
+
+	ENT:OnMessage("redecorate-reset", function(self, ply)
+		TARDIS:SetSetting("redecorate-interior",self.metadata.ID,true)
 	end)
 end
