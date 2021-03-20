@@ -231,7 +231,6 @@ if SERVER then
 
 	ENT:AddHook("CanRepair", "health", function(self)
 		if self:GetData("vortex", false) then return false end
-		local intsetting = TARDIS:GetSetting("interior","default",self:GetCreator())
 		if (self:GetHealth() >= TARDIS:GetSetting("health-max", 1))
 			and not self:GetData("redecorate", false)
 		then
