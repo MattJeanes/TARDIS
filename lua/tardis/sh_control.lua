@@ -77,7 +77,6 @@ TARDIS:AddControl({
 			ply:ChatPrint("SERVER: "..tostring(self))
 		end
 	end,
-	virt_console_button = false,
-	mmenu_button = false,
+	screen_button = false,
 	tip_text = "Test",
 })

@@ -6,8 +6,7 @@ TARDIS:AddControl({
 		TARDIS:PopToScreen("Destination", ply)
 	end,
 	serveronly = true,
-	virt_console_button = false,
-	mmenu_button = false, -- already added as a screen
+	screen_button = false, -- already added as a screen
 	tip_text = "Coordinates",
 })
 
