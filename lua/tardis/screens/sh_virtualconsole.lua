@@ -151,7 +151,7 @@ local function new_virtual_console(self,ext,int,frame,screen)
 		if options.pressed_state_data ~= nil and options.pressed_state_source ~= nil then
 			self:SetPressedStateData(options.pressed_state_source, options.pressed_state_data)
 		end
-		if options.hl_order ~= nil then self.hl_order = options.hl_order end
+		if options.order ~= nil then self.order = options.order end
 		layout:AddNewButton(self)
 	end
 
@@ -168,7 +168,7 @@ local function new_virtual_console(self,ext,int,frame,screen)
 			control = "toggle_screens",
 			pressed_state_source = int,
 			pressed_state_data = "screens_on",
-			hl_order = button_num,
+			order = button_num,
 		})
 	end
 	button_num = button_num + 1
@@ -181,7 +181,7 @@ local function new_virtual_console(self,ext,int,frame,screen)
 		control = "power",
 		pressed_state_source = ext,
 		pressed_state_data = "power-state",
-		hl_order = button_num,
+		order = button_num,
 	})
 	button_num = button_num + 1
 
@@ -193,7 +193,7 @@ local function new_virtual_console(self,ext,int,frame,screen)
 		control = "repair",
 		pressed_state_source = ext,
 		pressed_state_data = "repair-primed",
-		hl_order = button_num,
+		order = button_num,
 	})
 	button_num = button_num + 1
 
@@ -205,7 +205,7 @@ local function new_virtual_console(self,ext,int,frame,screen)
 		control = "redecorate",
 		pressed_state_source = ext,
 		pressed_state_data = "redecorate",
-		hl_order = button_num,
+		order = button_num,
 	})
 	button_num = button_num + 1
 
@@ -217,7 +217,7 @@ local function new_virtual_console(self,ext,int,frame,screen)
 		control = "doorcontroller",
 		pressed_state_source = ext,
 		pressed_state_data = "doorstate",
-		hl_order = button_num,
+		order = button_num,
 	})
 	button_num = button_num + 1
 
@@ -229,7 +229,7 @@ local function new_virtual_console(self,ext,int,frame,screen)
 		control = "lockcontroller",
 		pressed_state_source = ext,
 		pressed_state_data = "locked",
-		hl_order = button_num,
+		order = button_num,
 	})
 	button_num = button_num + 1
 
@@ -241,7 +241,7 @@ local function new_virtual_console(self,ext,int,frame,screen)
 		control = "teleport",
 		pressed_state_source = ext,
 		pressed_state_data = "teleport", "vortex",
-		hl_order = button_num,
+		order = button_num,
 	})
 	button_num = button_num + 1
 
@@ -251,7 +251,7 @@ local function new_virtual_console(self,ext,int,frame,screen)
 		frame_type = {0, 1},
 		text = "Fast Return",
 		control = "fastreturn",
-		hl_order = button_num,
+		order = button_num,
 	})
 	button_num = button_num + 1
 
@@ -263,7 +263,7 @@ local function new_virtual_console(self,ext,int,frame,screen)
 		control = "fastremat",
 		pressed_state_source = ext,
 		pressed_state_data = "demat-fast",
-		hl_order = button_num,
+		order = button_num,
 	})
 	button_num = button_num + 1
 
@@ -275,7 +275,7 @@ local function new_virtual_console(self,ext,int,frame,screen)
 		control = "flight",
 		pressed_state_source = ext,
 		pressed_state_data = "flight",
-		hl_order = button_num,
+		order = button_num,
 	})
 	button_num = button_num + 1
 
@@ -287,7 +287,7 @@ local function new_virtual_console(self,ext,int,frame,screen)
 		control = "float",
 		pressed_state_source = ext,
 		pressed_state_data = "float",
-		hl_order = button_num,
+		order = button_num,
 	})
 	button_num = button_num + 1
 
@@ -299,7 +299,7 @@ local function new_virtual_console(self,ext,int,frame,screen)
 		control = "physbrake",
 		pressed_state_source = ext,
 		pressed_state_data = "physlock",
-		hl_order = button_num,
+		order = button_num,
 	})
 	button_num = button_num + 1
 
@@ -311,7 +311,7 @@ local function new_virtual_console(self,ext,int,frame,screen)
 		control = "hads",
 		pressed_state_source = ext,
 		pressed_state_data = "hads",
-		hl_order = button_num,
+		order = button_num,
 	})
 	button_num = button_num + 1
 
@@ -513,7 +513,7 @@ local function old_virtual_console(self,ext,int,frame,screen)
 	end
 end
 
-TARDIS:AddScreen("Virtual Console", {menu=false, hl_order=1}, function(self,ext,int,frame,screen)
+TARDIS:AddScreen("Virtual Console", {menu=false, order=1}, function(self,ext,int,frame,screen)
 	if TARDIS:GetSetting("visgui_enabled") then
 		new_virtual_console(self,ext,int,frame,screen)
 	else

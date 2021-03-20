@@ -65,11 +65,11 @@ function HexagonalLayout:DrawButtons()
 	local maxX = 0
 
 	table.sort(self.buttons, function(a, b)
-		if a.hl_order and b.hl_order then
-			return (a.hl_order < b.hl_order)
+		if a.order and b.order then
+			return (a.order < b.order)
 		end
-		if a.hl_order then return true end
-		if b.hl_order then return false end
+		if a.order then return true end
+		if b.order then return false end
 		return (a.text < b.text)
 	end)
 
