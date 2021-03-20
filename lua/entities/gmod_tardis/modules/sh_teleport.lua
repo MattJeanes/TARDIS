@@ -93,7 +93,7 @@ TARDIS:AddControl({
 })
 
 TARDIS:AddControl({
-	id = "fastremat",
+	id = "vortex_flight",
 	ext_func=function(self,ply)
 		self:ToggleFastRemat()
 	end,

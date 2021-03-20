@@ -126,16 +126,16 @@ local function old_virtual_console(self,ext,int,frame,screen)
 		TARDIS:Control("repair")
 	end
 
-	local fastremat=vgui.Create("DButton",frame)
-	fastremat:SetSize( frame:GetWide()*0.2, frame:GetTall()*0.2 )
-	fastremat:SetPos(frame:GetWide()*0.13 - fastremat:GetWide()*0.5,frame:GetTall()*0.4 - fastremat:GetTall()*0.5)
-	fastremat:SetText("Fast Remat "..(ext:GetData("demat-fast") and "on" or "off"))
-	fastremat:SetFont(TARDIS:GetScreenFont(screen, "Default"))
-	fastremat.DoClick = function(self)
-		TARDIS:Control("fastremat")
+	local vortex_flight=vgui.Create("DButton",frame)
+	vortex_flight:SetSize( frame:GetWide()*0.2, frame:GetTall()*0.2 )
+	vortex_flight:SetPos(frame:GetWide()*0.13 - vortex_flight:GetWide()*0.5,frame:GetTall()*0.4 - vortex_flight:GetTall()*0.5)
+	vortex_flight:SetText("Fast Remat "..(ext:GetData("demat-fast") and "on" or "off"))
+	vortex_flight:SetFont(TARDIS:GetScreenFont(screen, "Default"))
+	vortex_flight.DoClick = function(self)
+		TARDIS:Control("vortex_flight")
 	end
-	fastremat.oldon = ext:GetData("demat-fast")
-	function fastremat:Think()
+	vortex_flight.oldon = ext:GetData("demat-fast")
+	function vortex_flight:Think()
 		local on = ext:GetData("demat-fast")
 		if self.oldon == on then return end
 		if on then
