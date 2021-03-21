@@ -53,20 +53,21 @@ net.Receive("tardis_notification_error", function()
 	notification.AddLegacy(net.ReadString(), NOTIFY_ERROR, 5)
 end)
 
-function TARDIS:Message(ply, message, error)
+function TARDIS:Message(ply, message, error, style_override)
+	local style = style_override or self.msg_style
 	local fullmessage = "[TARDIS] "..message
-	if self.msg_style == 0 then
+	if style == 0 then
 		return
 	end
-	if self.msg_style == 1 then
+	if style == 1 then
 		print(fullmessage)
 		return
 	end
-	if self.msg_style == 2 then
+	if style == 2 then
 		ply:ChatPrint(fullmessage)
 		return
 	end
-	if self.msg_style == 3 then
+	if style == 3 then
 		if error then
 			net.Start("tardis_notification_error")
 		else
