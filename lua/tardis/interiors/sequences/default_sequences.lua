@@ -16,7 +16,10 @@ local Seq = {
 			end
 		end,
 		OnFail = function(self, ply, step, part)
-			-- fail stuff
+			-- Fail stuff
+		end,
+		Condition = function(self)
+			return self.exterior:GetData("vortex",false)==false and self.exterior:GetData("teleport",false)==false
 		end
 	}
 }
