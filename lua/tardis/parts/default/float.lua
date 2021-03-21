@@ -1,4 +1,4 @@
--- Default Interior - Unused Pull Handle
+-- Default Interior - Anti-Gravs Pull Handle
 
 local PART = {}
 PART.ID = "default_float"
