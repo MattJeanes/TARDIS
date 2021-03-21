@@ -36,7 +36,9 @@ TARDIS:AddSetting({
 TARDIS:AddControl({
 	id = "repair",
 	ext_func=function(self,ply)
-		self:ToggleRepair()
+		if not self:ToggleRepair() then
+			TARDIS:ErrorMessage(ply, "Failed to toggle self-repair")
+		end
 	end,
 	serveronly=true,
 	screen_button = {
@@ -55,8 +57,18 @@ TARDIS:AddControl({
 TARDIS:AddControl({
 	id = "redecorate",
 	ext_func=function(self,ply)
-		local on = self:GetData("redecorate",false)
-		self:SetData("redecorate", not on, true)
+		local on = self:GetData("redecorate", false)
+		on = self:SetData("redecorate", not on, true)
+
+		local chosen_int = TARDIS:GetSetting("redecorate-interior","default",self:GetCreator())
+
+		if on and (chosen_int == self.metadata.ID) then
+			TARDIS:ErrorMessage(ply, "New interior has not been selected")
+		elseif on and not self:GetData("repair-primed") then
+			TARDIS:Message(ply, "Hint: enable self-repair to start redecoration")
+			-- We print this first for it to be lower in the list
+		end
+		TARDIS:StatusMessage(ply, "Redecoration", on)
 	end,
 	serveronly=true,
 	screen_button = {
@@ -146,17 +158,17 @@ if SERVER then
 
 	function ENT:ToggleRepair()
 		local on = not self:GetData("repair-primed",false)
-		self:SetRepair(on)
+		return self:SetRepair(on)
 	end
 	function ENT:SetRepair(on)
 		if not TARDIS:GetSetting("health-enabled") and self:GetHealth()~=TARDIS:GetSetting("health-max",1) then 
 			self:ChangeHealth(TARDIS:GetSetting("health-max"),1)
-			return 
+			return false
 		end
-		if self:CallHook("CanRepair")==false then return end
+		if self:CallHook("CanRepair")==false then return false end
 		if on==true then
 			for k,_ in pairs(self.occupants) do
-				k:ChatPrint("This TARDIS has been set to self-repair. Please vacate the interior.")
+				TARDIS:Message(k, "This TARDIS has been set to self-repair. Please vacate the interior.")
 			end
 			if self:GetPower() then self:SetPower(false) end
 			self:SetData("repair-primed",true,true)
@@ -171,9 +183,10 @@ if SERVER then
 			self:SetData("repair-primed",false,true)
 			self:SetPower(true)
 			for k,_ in pairs(self.occupants) do
-				k:ChatPrint("TARDIS self-repair has been cancelled.")
+				TARDIS:Message(k, "Self-repair has been cancelled.")
 			end
 		end
+		return true
 	end
 
 	function ENT:StartRepair()

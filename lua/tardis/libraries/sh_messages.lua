@@ -47,10 +47,10 @@ if SERVER then
 	util.AddNetworkString("tardis_notification_error")
 end
 net.Receive("tardis_notification_message", function()
-	notification.AddLegacy(net.ReadString(), NOTIFY_GENERIC, 4)
+	notification.AddLegacy(net.ReadString(), NOTIFY_GENERIC, 5)
 end)
 net.Receive("tardis_notification_error", function()
-	notification.AddLegacy(net.ReadString(), NOTIFY_ERROR, 4)
+	notification.AddLegacy(net.ReadString(), NOTIFY_ERROR, 5)
 end)
 
 function TARDIS:Message(ply, message, error)
