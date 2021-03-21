@@ -3,7 +3,11 @@
 TARDIS:AddControl({
 	id = "toggle_screens",
 	int_func=function(self,ply)
-		self:ToggleScreens()
+		if self:ToggleScreens() then
+			TARDIS:StatusMessage(ply, "Interior screens", self:GetData("screens_on"))
+		else
+			TARDIS:ErrorMessage(ply, "Failed to toggle interior screens")
+		end
 	end,
 	screen_button = {
 		virt_console = true,
