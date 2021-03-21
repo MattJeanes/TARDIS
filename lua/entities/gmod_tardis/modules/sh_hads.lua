@@ -3,7 +3,7 @@
 TARDIS:AddControl({
 	id = "hads",
 	ext_func=function(self,ply)
-		self:ToggleHADS()
+		TARDIS:StatusMessage(ply, "Hostile Action Displacement System", self:ToggleHADS())
 	end,
 	serveronly=true,
 	screen_button = {

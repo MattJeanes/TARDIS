@@ -10,12 +10,4 @@ PART.Collision = true
 PART.Animate = true
 PART.Sound = "drmatt/tardis/default/control_handbrake.wav"
 
-if SERVER then
-	function PART:Use(ply)
-		self.exterior:ToggleHADS()
-		local on = self.exterior:GetData("hads",false)
-		ply:ChatPrint("HADS is now "..(on and "on" or "off"))
-	end
-end
-
 TARDIS:AddPart(PART)
