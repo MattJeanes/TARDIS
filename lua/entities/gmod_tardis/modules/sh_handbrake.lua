@@ -5,6 +5,9 @@ TARDIS:AddControl({
 	id = "handbrake",
 	ext_func=function(self, ply)
 		-- Code will be added here
+
+		-- Just a temporary joke
+		TARDIS:ErrorMessage(ply, "Handbrake is broken in this TARDIS. Please, visit Gallifreyan workshop to replace it.")
 	end,
 	serveronly=true,
 	screen_button = {
