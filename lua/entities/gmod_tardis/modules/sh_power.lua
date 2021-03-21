@@ -2,8 +2,12 @@
 
 TARDIS:AddControl({
 	id = "power",
-	int_func=function(self,ply)
-		self:TogglePower()
+	ext_func=function(self,ply)
+		if self:TogglePower() then
+			TARDIS:StatusMessage(ply, "Power", self:GetData("power-state"))
+		else
+			TARDIS:ErrorMessage(ply, "Failed to toggle power")
+		end
 	end,
 	serveronly=true,
 	screen_button = {
