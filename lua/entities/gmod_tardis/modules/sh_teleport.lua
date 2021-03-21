@@ -79,7 +79,7 @@ TARDIS:AddControl({
 		frame_type = {0, 1},
 		text = "Teleport",
 		pressed_state_from_interior = false,
-		pressed_state_data = "teleport", "vortex",
+		pressed_state_data = {"teleport", "vortex"},
 		order = 7,
 	},
 	tip_text = "Space-Time Throttle",
