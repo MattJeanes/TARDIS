@@ -56,9 +56,19 @@ TARDIS:AddControl({
 	id = "teleport",
 	ext_func=function(self,ply)
 		if (self:GetData("teleport") or self:GetData("vortex")) then
-			self:Mat()
+			self:Mat(function(result)
+				if not result then
+					TARDIS:ErrorMessage(ply, "Failed to materialise")
+				end
+			end)
 		else
-			self:Demat()
+			local pos = pos or self:GetData("demat-pos") or self:GetPos()
+			local ang = ang or self:GetData("demat-ang") or self:GetAngles()
+			self:Demat(pos, ang, function(result)
+				if not result then
+					TARDIS:ErrorMessage(ply, "Failed to dematerialise")
+				end
+			end)
 		end
 	end,
 	serveronly=true,
@@ -78,7 +88,13 @@ TARDIS:AddControl({
 TARDIS:AddControl({
 	id = "fastreturn",
 	ext_func=function(self,ply)
-		self:FastReturn()
+		self:FastReturn(function(result)
+			if result then
+				TARDIS:Message(ply, "Fast-return protocol initiated")
+			else
+				TARDIS:ErrorMessage(ply, "Failed to initiate fast-return protocol")
+			end
+		end)
 	end,
 	serveronly = true,
 	screen_button = {
@@ -95,7 +111,11 @@ TARDIS:AddControl({
 TARDIS:AddControl({
 	id = "vortex_flight",
 	ext_func=function(self,ply)
-		self:ToggleFastRemat()
+		if self:ToggleFastRemat() then
+			TARDIS:StatusMessage(ply, "Vortex flight", self:GetData("demat-fast"), "disabled", "enabled")
+		else
+			TARDIS:ErrorMessage(ply, "Failed to toggle vortex flight")
+		end
 	end,
 	serveronly=true,
 	screen_button = {
@@ -118,6 +138,9 @@ if SERVER then
 				if state then
 					if callback then callback(false) end
 				else
+					for k,_ in pairs(self.occupants) do
+						TARDIS:Message(k, "Dematerialising")
+					end
 					pos=pos or self:GetData("demat-pos") or self:GetPos()
 					ang=ang or self:GetData("demat-ang") or self:GetAngles()
 					self:SetBodygroup(1,0)
@@ -161,6 +184,9 @@ if SERVER then
 				else
 					self:SendMessage("premat",function() net.WriteVector(self:GetData("demat-pos",Vector())) end)
 					self:SetData("teleport",true)
+					for k,_ in pairs(self.occupants) do
+						TARDIS:Message(k, "Materialising")
+					end
 					local timerdelay = (self:GetData("demat-fast",false) and 1.9 or 8.5)
 					timer.Simple(timerdelay,function()
 						if not IsValid(self) then return end
@@ -175,7 +201,7 @@ if SERVER then
 						self:SetData("prevortex-flight",nil)
 						self:SetSolid(SOLID_VPHYSICS)
 						self:CallHook("MatStart")
-							
+
 						local pos=self:GetData("demat-pos",Vector())
 						local ang=self:GetData("demat-ang",Angle())
 						local attached=self:GetData("demat-attached")
