@@ -317,13 +317,17 @@ if SERVER then
 	end)
 
 	ENT:AddHook("Think", "repair", function(self)
+		if self:GetData("repair-primed", false) and self:CallHook("CanRepair") == false then
+			self:SetData("repair-primed", false, true)
+			self:SetPower(true)
+			for k,_ in pairs(self.occupants) do
+				TARDIS:Message(k, "Self-repair has been cancelled.")
+			end
+		end
+
 		if self:GetData("repair-primed",false) and self:GetData("repair-shouldstart") and CurTime() > self:GetData("repair-delay") then
 			self:SetData("repair-shouldstart", false)
 			self:StartRepair()
-		end
-
-		if self:GetData("repair-primed", false) and self:CallHook("CanRepair") == false then
-			self:SetData("repair-primed", false, true)
 		end
 
 		if (self:GetData("repairing",false) and CurTime()>self:GetData("repair-time",0)) then

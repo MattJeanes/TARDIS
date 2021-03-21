@@ -3,7 +3,7 @@
 local Seq = {
 	ID = "default_sequences",
 
-	["default_dematcirquit"] = {
+	["default_dematcircuit"] = {
 		Controls = {
 			"default_helmic",
 			"default_physlock",

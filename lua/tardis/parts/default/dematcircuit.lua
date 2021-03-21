@@ -1,7 +1,7 @@
 -- Default Interior - Dematerialisation Circuit
 
 local PART = {}
-PART.ID = "default_dematcirquit"
+PART.ID = "default_dematcircuit"
 PART.Name = "Default Dematerialisation Circuit"
 PART.Text = "Dematerialisation Circuit"
 PART.Model = "models/drmatt/tardis/smallbutton.mdl"

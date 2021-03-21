@@ -15,7 +15,7 @@ TARDIS:AddControl({
 		-- Code will be added here
 
 		-- Just a temporary joke
-		TARDIS:ErrorMessage(ply, "The cloaking cirquit is broken. Please, visit Gallifreyan workshop to replace it.")
+		TARDIS:ErrorMessage(ply, "The cloaking circuit is broken. Please, visit Gallifreyan workshop to replace it.")
 	end,
 	serveronly=true,
 	screen_button = {
