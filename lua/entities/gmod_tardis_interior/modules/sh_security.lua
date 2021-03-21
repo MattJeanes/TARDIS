@@ -14,11 +14,13 @@ TARDIS:AddControl({
 	id = "isomorphic",
 	int_func=function(self,ply)
 		if ply ~= self:GetCreator() then
-			ply:ChatPrint("This is not your TARDIS")
+			TARDIS:ErrorMessage(ply, "This is not your TARDIS")
 			return
 		end
 		if self:ToggleSecurity() then
-			ply:ChatPrint("Isomorphic security system ".. (self:GetSecurity() and "engaged" or "disengaged"))
+			TARDIS:StatusMessage(ply, "Isomorphic security", self:GetData("security"))
+		else
+			TARDIS:ErrorMessage(ply, "Failed to toggle isomorphic security")
 		end
 	end,
 	serveronly = true,

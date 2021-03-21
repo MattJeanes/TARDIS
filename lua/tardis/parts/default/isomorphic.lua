@@ -10,7 +10,4 @@ PART.Collision = true
 PART.Animate = true
 PART.Sound = "drmatt/tardis/default/control_handbrake.wav"
 
-function PART:Use(ply)
-	TARDIS:Control("isomorphic", ply)
-end
 TARDIS:AddPart(PART)
