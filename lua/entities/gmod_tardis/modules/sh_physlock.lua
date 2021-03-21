@@ -22,7 +22,7 @@ TARDIS:AddControl({
 		if self:TogglePhyslock() then
 			TARDIS:StatusMessage(ply, "Locking-down mechanism", self:GetData("physlock"), "engaged", "disengaged")
 		else
-			TARDIS:Message(ply, "Failed to toggle locking-down mechanism")
+			TARDIS:ErrorMessage(ply, "Failed to toggle locking-down mechanism")
 		end
 	end,
 	serveronly=true,

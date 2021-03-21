@@ -44,12 +44,16 @@ TARDIS.msg_style = GetConVar("tardis2_message_type"):GetInt()
 
 if SERVER then
 	util.AddNetworkString("tardis_notification_message")
+	util.AddNetworkString("tardis_notification_error")
 end
 net.Receive("tardis_notification_message", function()
 	notification.AddLegacy(net.ReadString(), NOTIFY_GENERIC, 4)
 end)
+net.Receive("tardis_notification_error", function()
+	notification.AddLegacy(net.ReadString(), NOTIFY_ERROR, 4)
+end)
 
-function TARDIS:Message(ply, message)
+function TARDIS:Message(ply, message, error)
 	local fullmessage = "[TARDIS] "..message
 	if self.msg_style == 0 then
 		return
@@ -63,11 +67,19 @@ function TARDIS:Message(ply, message)
 		return
 	end
 	if self.msg_style == 3 then
-		net.Start("tardis_notification_message")
+		if error then
+			net.Start("tardis_notification_error")
+		else
+			net.Start("tardis_notification_message")
+		end
 			net.WriteString(fullmessage)
 		net.Send(ply)
 		return
 	end
+end
+
+function TARDIS:ErrorMessage(ply, message)
+	return TARDIS:Message(ply, message, true)
 end
 
 function TARDIS:StatusMessage(ply, name, condition, enabled_msg, disabled_msg)
