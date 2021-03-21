@@ -74,6 +74,7 @@ function TARDIS:Message(ply, message, error)
 		end
 			net.WriteString(fullmessage)
 		net.Send(ply)
+		print(fullmessage)
 		return
 	end
 end
