@@ -107,8 +107,6 @@ if SERVER then
 
 		local sent = scripted_ents.GetStored(entityName).t
 		ClassName = entityName
-		--local customData = {}
-		--customData.metadataID = metadataID
 		local SpawnFunction = scripted_ents.GetMember(entityName, "SpawnFunction")
 		if not SpawnFunction then
 			return
