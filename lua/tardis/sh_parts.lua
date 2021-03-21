@@ -122,7 +122,12 @@ function TARDIS:AddPart(e)
 		error("Duplicate part ID registered: " .. e.ID .. " (exists in both " .. parts[e.ID].source .. " and " .. source .. ")")
 	end
 	e=table.Copy(e)
-	e.Base = "gmod_tardis_part"	
+	if SERVER and e.Control and e.Use == nil and TARDIS:GetControl(e.Control) ~= nil then
+		e.Use = function(self, ply)
+			TARDIS:Control(e.Control, ply)
+		end
+	end
+	e.Base = "gmod_tardis_part"
 	local class="gmod_tardis_part_"..e.ID
 	scripted_ents.Register(e,class)
 	if postinit then
