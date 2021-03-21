@@ -100,7 +100,11 @@ TARDIS:AddKeyBind("flight-spindir",{
 TARDIS:AddControl({
 	id = "flight",
 	ext_func=function(self,ply)
-		self:ToggleFlight()
+		if self:ToggleFlight() then
+			TARDIS:StatusMessage(ply, "Flight mode", self:GetData("flight"))
+		else
+			TARDIS:ErrorMessage(ply, "Failed to toggle flight mode")
+		end
 	end,
 	serveronly=true,
 	screen_button = {
