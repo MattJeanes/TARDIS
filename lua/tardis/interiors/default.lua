@@ -64,6 +64,7 @@ T.Interior={
 		default_screen             = {pos = Vector(42,0.75,27.1),                     ang = Angle(0,-5,0),                    tip = {pos = Vector(42, 0.75, 29.1), down = true},},
 		default_screenbutton       = {pos = Vector(44.5,9.75,38.2),                   ang = Angle(215,85,90),                 tip = {pos = Vector(47, 10, 38), right = true},},
 		default_wibblylever        = {pos = Vector(-48, 18, 5.4),                     ang = Angle(335, 347, 6),               tip = {pos = Vector(-48, 18, 5.4), right = true},},
+		default_doorbutton         = {pos = Vector(-60.782, -25.129, -6.108),         ang = Angle(0, 65.911, -81.515),        tip = {pos = Vector(-62.699, -24.23, -5.506), down = true},},
 		default_powerlever         = {pos = Vector(44, -18, 5.5),                     ang = Angle(22, 328, 347.5),            tip = {pos = Vector(44, -18, 5.5), right = true},},
 		default_keyboard           = {pos = Vector(29, -53, -8),                      ang = Angle(0, 30, 50),                 tip = {pos = Vector(29, -53, -8), right = true, down = true},},
 		default_hads               = {pos = Vector(39, 22.75, 5.828125),              ang = Angle(296.260, 78.027, 136.528),  tip = {pos = Vector(52, 31, 1), down = true},},

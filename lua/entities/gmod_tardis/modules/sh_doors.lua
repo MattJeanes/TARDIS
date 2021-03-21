@@ -3,7 +3,12 @@
 TARDIS:AddControl({
 	id = "door",
 	ext_func=function(self,ply)
-		self:ToggleDoor()
+		local oldstate = self:GetData("doorstate")
+		if self:ToggleDoor() then
+			TARDIS:StatusMessage(ply, "Door", not oldstate, "opened", "closed")
+		else
+			TARDIS:ErrorMessage(ply, "Failed to ".. (oldstate and "close" or "open").." door")
+		end
 	end,
 	serveronly=true,
 	screen_button = {
@@ -34,7 +39,7 @@ if SERVER then
 	end
 	
 	function ENT:ToggleDoor(callback)
-		if not IsValid(self.interior) then return end
+		if not IsValid(self.interior) then return false end
 		if not self:GetData("doorchangecallback",false) then
 			self:SetData("doorchangecallback",{})
 		end
@@ -45,7 +50,7 @@ if SERVER then
 				callback(doorstate)
 			end
 			runcallbacks(callbacks,doorstate)
-			return
+			return false
 		end
 		doorstate=not doorstate
 		
@@ -68,6 +73,7 @@ if SERVER then
 			end
 			self:SetData("doorchange",CurTime()+self.metadata.Exterior.DoorAnimationTime)
 		end
+		return true
 	end
 	
 	function ENT:OpenDoor(callback)

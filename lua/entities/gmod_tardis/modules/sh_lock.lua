@@ -3,7 +3,13 @@
 TARDIS:AddControl({
 	id = "doorlock",
 	ext_func=function(self,ply)
-		self:ToggleLocked()
+		self:ToggleLocked(function(result)
+			if result then
+				TARDIS:StatusMessage(ply, "Door", self:GetData("locked"), "locked", "unlocked")
+			else
+				TARDIS:ErrorMessage(ply, "Failed to toggle door lock")
+			end
+		end)
 	end,
 	serveronly=true,
 	screen_button = {
