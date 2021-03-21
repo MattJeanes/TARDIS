@@ -97,6 +97,14 @@ TARDIS:AddKeyBind("flight-spindir",{
 	exterior=true
 })
 
+TARDIS:AddControl("flight",{
+	func=function(self,ply)
+		self:ToggleFlight()
+	end,
+	exterior=true,
+	serveronly=true
+})
+
 if SERVER then	
 	function ENT:ToggleFlight()
 		local on = not self:GetData("flight",false)
@@ -374,5 +382,19 @@ else
 		local old=net.ReadEntity()
 		local new=net.ReadEntity()
 		self:CallHook("PilotChanged",old,new)
+	end)
+
+	ENT:AddHook("SetupVirtualConsole", "flight", function(self,frame,screen)
+		local flight = TardisScreenButton:new(frame,screen)
+		flight:Setup({
+			id = "flight",
+			toggle = true,
+			frame_type = {2, 1},
+			text = "Flightmode",
+			control = "flight",
+			pressed_state_source = self,
+			pressed_state_data = "flight",
+			order = 10,
+		})
 	end)
 end

@@ -11,7 +11,7 @@ local mat = CreateMaterial(
 )
 
 local uid=0
-TARDIS:AddScreen("Scanner", {menu=false}, function(self,ext,int,frame,screen)
+TARDIS:AddScreen("Scanner", {id="scanner", menu=false, order=3}, function(self,ext,int,frame,screen)
 	screen.scanner=GetRenderTarget("tardisi_scanner-"..uid.."-"..screen.id,
 		screen.width*screen.res,
 		screen.height*screen.res,
