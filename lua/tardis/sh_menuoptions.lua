@@ -53,7 +53,7 @@ if CLIENT then
 			end
 			interior_combobox.OnSelect = function(panel,index,value,data)
 				TARDIS:SetSetting("interior",data,true)
-				LocalPlayer():ChatPrint("TARDIS interior changed. Respawn or repair the TARDIS for changes to apply.")
+				LocalPlayer():ChatPrint("TARDIS interior changed. Respawn or redecorate the TARDIS for changes to apply.")
 			end
 			panel:AddItem(interior_combobox)
 

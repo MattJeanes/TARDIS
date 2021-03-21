@@ -26,6 +26,13 @@ TARDIS:AddSetting({
 	networked=true
 })
 
+TARDIS:AddSetting({
+	id="redecorate-interior",
+	name="Redecoration interior",
+	value="default",
+	networked=true
+})
+
 TARDIS:AddControl({
 	id = "repair",
 	ext_func=function(self,ply)
@@ -179,33 +186,16 @@ if SERVER then
 		self:CallHook("RepairStarted")
 	end
 
-	ENT:AddHook("ShouldRedecorate", "health", function(self)
-		return self:GetData("redecorate",false) and true or nil
-	end)
-
 	function ENT:FinishRepair()
 		if self:CallHook("ShouldRedecorate") then
-			local pos = self:GetPos()
-			local ang = self:GetAngles()
-			local creator = self:GetCreator()
-			local ent = ents.Create("gmod_tardis")
-			ent:SetCreator(creator)
-			ent:SetPos(pos+Vector(0,0,2))
-			ent:SetAngles(ang)
+			local ent = TARDIS:SpawnTARDIS(self:GetCreator(),{
+				metadataID = TARDIS:GetSetting("redecorate-interior","default",self:GetCreator()),
+				finishrepair = true,
+				pos = self:GetPos()+Vector(0,0,2),
+				ang = self:GetAngles()
+			})
 			self:Remove()
-
-			ent:Spawn()
 			ent:GetPhysicsObject():Sleep()
-			undo.Create("TARDIS")
-				undo.AddEntity(ent)
-				undo.SetPlayer(creator)
-			undo.Finish()
-			timer.Simple(0.5, function()
-				if not IsValid(ent) then return end
-				ent:GetPhysicsObject():Wake()
-				ent:EmitSound(ent.metadata.Exterior.Sounds.RepairFinish)
-				ent:FlashLight(1.5)
-			end)
 			return
 		end
 		self:EmitSound(self.metadata.Exterior.Sounds.RepairFinish)
@@ -254,10 +244,33 @@ if SERVER then
 	ENT:AddHook("CanRepair", "health", function(self)
 		if self:GetData("vortex", false) then return false end
 		if (self:GetHealth() >= TARDIS:GetSetting("health-max", 1))
-			and not self:GetData("redecorate", false)
+			and not self:CallHook("ShouldRedecorate")
 		then
 			return false
 		end
+	end)
+
+	ENT:AddHook("ShouldRedecorate", "health", function(self)
+		return (self:GetData("redecorate",false) and TARDIS:GetSetting("redecorate-interior","default",self:GetCreator()) ~= self.metadata.ID) and true or nil
+	end)
+
+	ENT:AddHook("CustomData", "health-redecorate", function(self, customdata)
+		if customdata.finishrepair then
+			self:SetPos(customdata.pos)
+			self:SetAngles(customdata.ang)
+			self:SetData("finishrepair",true)
+		end
+	end)
+
+	ENT:AddHook("Initialize", "health-redecorate", function(self)
+		if not self:GetData("finishrepair",false) then return end
+		timer.Simple(0.5, function()
+			if not IsValid(self) then return end
+			self:GetPhysicsObject():Wake()
+			self:EmitSound(self.metadata.Exterior.Sounds.RepairFinish)
+			self:FlashLight(1.5)
+		end)
+		self:SetData("finishrepair",nil)
 	end)
 
 	ENT:AddHook("CanTogglePower", "health", function(self)
@@ -400,5 +413,10 @@ else
 		local newhealth = net.ReadInt(32)
 		self:ChangeHealth(newhealth)
 		self:SetData("UpdateHealthScreen", true, true)
+	end)
+
+	ENT:AddHook("Initialize", "redecorate-reset", function(self)
+		if not IsValid(self) or (not LocalPlayer() == self:GetCreator()) then return end
+		TARDIS:SetSetting("redecorate-interior",self.metadata.ID,true)
 	end)
 end
