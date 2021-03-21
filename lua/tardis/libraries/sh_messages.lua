@@ -50,20 +50,21 @@ net.Receive("tardis_notification_message", function()
 end)
 
 function TARDIS:Message(ply, message)
+	local fullmessage = "[TARDIS] "..message
 	if self.msg_style == 0 then
 		return
 	end
 	if self.msg_style == 1 then
-		print(message)
+		print(fullmessage)
 		return
 	end
 	if self.msg_style == 2 then
-		ply:ChatPrint("[TARDIS] "..message)
+		ply:ChatPrint(fullmessage)
 		return
 	end
 	if self.msg_style == 3 then
 		net.Start("tardis_notification_message")
-			net.WriteString("[TARDIS] "..message)
+			net.WriteString(fullmessage)
 		net.Send(ply)
 		return
 	end
