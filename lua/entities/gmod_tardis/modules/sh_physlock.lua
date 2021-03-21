@@ -19,7 +19,11 @@ TARDIS:AddKeyBind("physlock-toggle",{
 TARDIS:AddControl({
 	id = "physlock",
 	ext_func=function(self,ply)
-		self:TogglePhyslock()
+		if self:TogglePhyslock() then
+			TARDIS:StatusMessage(ply, "Locking-down mechanism", self:GetData("physlock"), "engaged", "disengaged")
+		else
+			TARDIS:Message(ply, "Failed to toggle locking-down mechanism")
+		end
 	end,
 	serveronly=true,
 	screen_button = {
@@ -32,7 +36,7 @@ TARDIS:AddControl({
 		pressed_state_data = "physlock",
 		order = 12,
 	},
-	tip_text = "Locking Down Mechanism",
+	tip_text = "Locking-Down Mechanism",
 })
 
 if SERVER then

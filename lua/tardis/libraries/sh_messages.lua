@@ -34,3 +34,24 @@ function TARDIS:DebugPrintTable(table, name)
 	end
 end
 
+TARDIS.msg_style = 1
+
+function TARDIS:Message(ply, message)
+	if self.msg_style == -1 then
+		return
+	end
+	if self.msg_style == 0 then
+		print(message)
+		return
+	end
+	if self.msg_style == 1 then
+		ply:ChatPrint("[TARDIS] "..message)
+		return
+	end
+end
+
+function TARDIS:StatusMessage(ply, name, condition, enabled_msg, disabled_msg)
+	if not enabled_msg then enabled_msg = "enabled" end
+	if not disabled_msg then disabled_msg = "disabled" end
+	TARDIS:Message(ply, name.." "..(condition and enabled_msg or disabled_msg))
+end
