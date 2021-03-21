@@ -1,11 +1,11 @@
+-- Debug messages
+
 CreateConVar("tardis2_debug", 0, {FCVAR_ARCHIVE, FCVAR_REPLICATED}, "TARDIS - debug enabled")
-
-TARDIS.debug = GetConVar("tardis2_debug"):GetBool()
-
 cvars.AddChangeCallback("tardis2_debug", function()
 	TARDIS.debug = GetConVar("tardis2_debug"):GetBool()
 end)
 
+TARDIS.debug = GetConVar("tardis2_debug"):GetBool()
 function TARDIS:IsDebugOn()
 	return TARDIS.debug
 end
@@ -34,18 +34,37 @@ function TARDIS:DebugPrintTable(table, name)
 	end
 end
 
-TARDIS.msg_style = 1
+-- Notification messages
+CreateConVar("tardis2_message_type", 3, {FCVAR_ARCHIVE, FCVAR_REPLICATED}, "TARDIS - debug enabled")
+cvars.AddChangeCallback("tardis2_message_type", function()
+	TARDIS.msg_style = GetConVar("tardis2_message_type"):GetInt()
+end)
+
+TARDIS.msg_style = GetConVar("tardis2_message_type"):GetInt()
+
+if SERVER then
+	util.AddNetworkString("tardis_notification_message")
+end
+net.Receive("tardis_notification_message", function()
+	notification.AddLegacy(net.ReadString(), NOTIFY_GENERIC, 4)
+end)
 
 function TARDIS:Message(ply, message)
-	if self.msg_style == -1 then
-		return
-	end
 	if self.msg_style == 0 then
-		print(message)
 		return
 	end
 	if self.msg_style == 1 then
+		print(message)
+		return
+	end
+	if self.msg_style == 2 then
 		ply:ChatPrint("[TARDIS] "..message)
+		return
+	end
+	if self.msg_style == 3 then
+		net.Start("tardis_notification_message")
+			net.WriteString("[TARDIS] "..message)
+		net.Send(ply)
 		return
 	end
 end
