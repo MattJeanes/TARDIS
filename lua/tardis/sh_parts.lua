@@ -122,7 +122,7 @@ function TARDIS:AddPart(e)
 		error("Duplicate part ID registered: " .. e.ID .. " (exists in both " .. parts[e.ID].source .. " and " .. source .. ")")
 	end
 	e=table.Copy(e)
-	if SERVER and e.Control and e.Use == nil and TARDIS:GetControl(e.Control) ~= nil then
+	if SERVER and e.Control and e.Use == nil then
 		e.Use = function(self, ply)
 			TARDIS:Control(e.Control, ply)
 		end
