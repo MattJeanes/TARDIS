@@ -213,9 +213,11 @@ if SERVER then
 	end
 
 	function ENT:StopSmoke()
-		if self.smoke and IsValid(self.smoke) then
-			self.smoke:Remove()
-			self.smoke=nil
+		if self.smoke and IsValid(self.smoke) and self:GetData("smoke-killdelay")==nil then
+			self.smoke:Fire("TurnOff")
+			local jetlength = self.smoke:GetInternalVariable("JetLength")
+			local speed = self.smoke:GetInternalVariable("Speed")
+			self:SetData("smoke-killdelay",CurTime()+(speed/jetlength)*5)
 		end
 	end
 
@@ -296,8 +298,34 @@ if SERVER then
 		end
 	end)
 
-	ENT:AddHook("ShouldTakeDamage", "DamageOff", function(self, dmginfo)
-		if not TARDIS:GetSetting("health-enabled") then return false end
+	ENT:AddHook("Think", "health-warning", function(self)
+		if self:CallHook("ShouldStartSmoke") and self:CallHook("ShouldStopSmoke")~=true then
+			if self.smoke then return end
+			self:StartSmoke()
+		else
+			self:StopSmoke()
+		end
+	end)
+
+	ENT:AddHook("Think", "RemoveSmoke", function(self)
+		local smokedelay = self:GetData("smoke-killdelay")
+		if smokedelay ~= nil and CurTime() >= smokedelay then
+			if IsValid(self.smoke) then
+				self.smoke:Remove()
+				self.smoke = nil
+				self:SetData("smoke-killdelay",nil)
+			end
+		end
+	end)
+
+	ENT:AddHook("ShouldStartSmoke", "health-warning", function(self)
+		if self:GetData("health-warning",false) then
+			return true
+		end
+	end)
+
+	ENT:AddHook("ShouldTakeDamage", "Health", function(self, dmginfo)
+		if not TARDIS:GetSetting("health-enabled") or self:GetData("vortex",false) then return false end
 	end)
 
 	ENT:AddHook("OnTakeDamage", "Health", function(self, dmginfo)
@@ -336,7 +364,6 @@ if SERVER then
 	ENT:AddHook("OnHealthChange", "warning", function(self)
 		if self:GetHealthPercent() <= 20 and (not self:GetData("health-warning",false)) then
 			self:SetData("health-warning", true, true)
-			self:StartSmoke()
 			self:CallHook("HealthWarningToggled",true)
 			if self.interior then
 				self.interior:CallHook("HealthWarningToggled",true)
@@ -347,7 +374,6 @@ if SERVER then
 	ENT:AddHook("OnHealthChange", "warning-stop", function(self)
 		if self:GetHealthPercent() > 20 and (self:GetData("health-warning",false)) then
 			self:SetData("health-warning", false, true)
-			self:StopSmoke()
 			self:CallHook("HealthWarningToggled",false)
 			if self.interior then
 				self.interior:CallHook("HealthWarningToggled",false)
@@ -373,19 +399,6 @@ if SERVER then
 			end
 		end
 	end)
-
-	ENT:AddHook("StopDemat", "warning", function(self)
-		if self.smoke then
-			self:StopSmoke()
-		end
-	end)
-
-	ENT:AddHook("MatStart", "warning", function(self)
-		if self:GetData("health-warning",false) then
-			self:StartSmoke()
-		end
-	end)
-
 else
 	ENT:OnMessage("health-networking", function(self, ply)
 		local newhealth = net.ReadInt(32)

@@ -401,6 +401,10 @@ if SERVER then
 		end
 	end)
 
+	ENT:AddHook("ShouldStopSmoke", "vortex", function(self)
+		if self:GetData("vortex") then return true end
+	end)
+
 	ENT:AddHook("ShouldExteriorDoorCollide", "teleport", function(self,open)
 		if self:GetData("teleport") or self:GetData("vortex") then
 			return false
