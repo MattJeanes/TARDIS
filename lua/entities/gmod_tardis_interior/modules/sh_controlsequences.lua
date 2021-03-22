@@ -53,7 +53,7 @@ TARDIS:AddSetting({
 })
 
 function ENT:GetSequencesEnabled()
-	return self:GetData("cseq-enabled", false)
+	return TARDIS:GetSetting("csequences-enabled",false,self:GetCreator())
 end
 
 ENT:AddHook("CanStartControlSequence", "conditions", function(self,id)
@@ -68,9 +68,6 @@ ENT:AddHook("CanStartControlSequence", "conditions", function(self,id)
 end)
 
 if SERVER then
-	ENT:AddHook("Initialize", "csequence", function(self)
-		self:SetData("cseq-enabled", TARDIS:GetSetting("csequences-enabled", false, self:GetCreator()), true)
-	end)
 
 	ENT:AddHook("PartUsed","HandleControlSequence",function(self,part,a)
 		local sequences = TARDIS:GetControlSequence(self.metadata.Interior.Sequences)
