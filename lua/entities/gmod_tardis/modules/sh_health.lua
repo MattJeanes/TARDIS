@@ -296,8 +296,8 @@ if SERVER then
 		end
 	end)
 
-	ENT:AddHook("ShouldTakeDamage", "DamageOff", function(self, dmginfo)
-		if not TARDIS:GetSetting("health-enabled") then return false end
+	ENT:AddHook("ShouldTakeDamage", "Health", function(self, dmginfo)
+		if not TARDIS:GetSetting("health-enabled") or self:GetData("vortex",false) then return false end
 	end)
 
 	ENT:AddHook("OnTakeDamage", "Health", function(self, dmginfo)
