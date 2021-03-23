@@ -1,0 +1,5 @@
+"UnlitGeneric"
+{
+	"$basetexture" "killfeed/gmod_tardis"
+	"$translucent" 1
+}
