@@ -73,6 +73,8 @@ else
         option = true
     })
 
+	local oldClip
+
     ENT:AddHook("Draw", "cloak", function(self)
         local isCloaked = self:GetData("cloak", false)
         local doors = self:GetPart("door")
@@ -105,7 +107,7 @@ else
         doors:SetRenderClipPlaneEnabled(true)
         doors:SetRenderClipPlane(normal, dist)
 		
-        local oldClip = render.EnableClipping(true)
+        oldClip = render.EnableClipping(true)
         local restoreT = self:GetMaterial()
 
         render.MaterialOverride(Material(self.cloakmat))
@@ -126,8 +128,11 @@ else
 		render.PopCustomClipPlane()
 		
 		render.MaterialOverride(restoreT)
-		render.EnableClipping(oldClip)
     end)
+
+	ENT:AddHook("PostDraw", "cloak", function(self)
+		render.EnableClipping(oldClip)
+	end)
 
 	ENT:AddHook("ShouldTurnOffLight", "cloak", function(self)
 		if self:GetData("cloak",false) then return true end
