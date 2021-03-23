@@ -1,13 +1,5 @@
 --Placeholder cloak module (currently only for E2, feel free to delete later)
 
-ENT:AddHook("HandleE2", "cloak", function(self,name,e2)
-	if name == "Phase" and TARDIS:CheckPP(e2.player, self) then
-		return 0
-	elseif name == "GetVisible" then
-		return 0
-	end
-end)
-
 TARDIS:AddControl("cloak",{
 	func=function(self,ply)
 		self:ToggleCloak()
@@ -36,7 +28,6 @@ ENT:AddHook("Initialize", "cloak", function(self)
 
     self.mins = self:OBBMins()
     self.maxs = self:OBBMaxs()
-    self.maxs.z = self.maxs.z + 25 -- We are adding on to the value to avoid any of the top of model appearing when flying
     self.height = (self.maxs.z - self.mins.z)
 
     self.phaseTimeCloak = CurTime() + 1
@@ -61,6 +52,14 @@ if SERVER then
         local on = not self:GetData("cloak", false)
         return self:SetCloak(on)
     end
+
+	ENT:AddHook("HandleE2", "cloak", function(self,name,e2)
+		if name == "Phase" and TARDIS:CheckPP(e2.player, self) then
+			return self:ToggleCloak() and 1 or 0
+		elseif name == "GetVisible" then
+			return self:GetData("")
+		end
+	end)
 else
 
     TARDIS:AddSetting({
