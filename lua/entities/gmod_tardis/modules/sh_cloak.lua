@@ -8,6 +8,27 @@ ENT:AddHook("HandleE2", "cloak", function(self,name,e2)
 	end
 end)
 
+TARDIS:AddControl("cloak",{
+	func=function(self,ply)
+		self:ToggleCloak()
+	end,
+	exterior=true,
+	serveronly=true
+})
+
+TARDIS:AddKeyBind("cloak-toggle",{
+	name="Toggle",
+	section="Cloak",
+	func=function(self,down,ply)
+		if ply == self.pilot and down then
+			self:ToggleCloak()
+		end
+	end,
+	key=KEY_L,
+	serveronly=true,
+	exterior=true	
+})
+
 ENT:AddHook("Initialize", "cloak", function(self)
     self:SetData("cloaked", false, true)
 
@@ -53,7 +74,7 @@ else
     })
 
     ENT:AddHook("Draw", "cloak", function(self)
-        local isCloaked = self:GetData("cloaked", false)
+        local isCloaked = self:GetData("cloak", false)
         local doors = self:GetPart("door")
 
         local now = CurTime()
@@ -108,11 +129,25 @@ else
     end)
 
 	ENT:AddHook("ShouldTurnOffLight", "cloak", function(self)
-		if self:GetData("cloaked",false) then return true end
+		if self:GetData("cloak",false) then return true end
 	end)
 
 	ENT:AddHook("ShouldTurnOffFlightSound", "cloak", function(self)
-		if self:GetData("cloaked",false) then return true end
+		if self:GetData("cloak",false) then return true end
+	end)
+
+	ENT:AddHook("SetupVirtualConsole", "cloak", function(self,frame,screen)
+		local cloak = TardisScreenButton:new(frame,screen)
+		cloak:Setup({
+			id = "cloak",
+			toggle = true,
+			frame_type = {0, 1},
+			text = "Cloaking",
+			control = "cloak",
+			pressed_state_source = self,
+			pressed_state_data = "cloak",
+			order = 4,
+		})
 	end)
 
     ENT:OnMessage("cloaksound", function(self)
