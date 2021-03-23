@@ -82,37 +82,38 @@ else
 	    self.LastThink = now
 
         if isCloaked then
-            self.percent = math.Approach(self.percent, 0, 0.5 * timepassed)
+            self.percent = math.Approach(self.percent, -0.5, 0.5 * timepassed)
         else
             self.percent = math.Approach(self.percent, 1, 0.5 * timepassed)
         end
         
         self.highPercent = (self.percent + 0.5)
 
-        self.percent = math.Clamp(self.percent, 0, 1)
+        self.percent = math.Clamp(self.percent, -0.5, 1)
         self.highPercent = math.Clamp(self.highPercent, 0, 1)
+
+		--print(self.percent, self.highPercent)
 
         -- Plane clipping, for animating the invisible effect
         local normal = self:GetUp()
-        local pos = self:GetPos() + self:GetUp() * (self.maxs.z - (self.height * self.percent))
+        local pos = self:GetPos() + self:GetUp() * (self.maxs.z - (self.height * self.highPercent))
         local dist = normal:Dot(pos)
-
+		
         self:SetRenderClipPlaneEnabled(true)
         self:SetRenderClipPlane(normal, dist)
-
+		
         doors:SetRenderClipPlaneEnabled(true)
         doors:SetRenderClipPlane(normal, dist)
-
-        --[[local oldClip = render.EnableClipping(true)
-
+		
+        local oldClip = render.EnableClipping(true)
         local restoreT = self:GetMaterial()
 
         render.MaterialOverride(Material(self.cloakmat))
-
+        render.PushCustomClipPlane(normal, dist)
+		
         normal = self:GetUp()
         dist = normal:Dot(pos)
-
-        render.PushCustomClipPlane(normal, dist)
+		
 
         local normal2 = self:GetUp() * -1
 		local pos2 = self:GetPos() + self:GetUp() * (self.maxs.z - (self.height * self.percent))
@@ -125,7 +126,7 @@ else
 		render.PopCustomClipPlane()
 		
 		render.MaterialOverride(restoreT)
-		render.EnableClipping(oldClip)--]]
+		render.EnableClipping(oldClip)
     end)
 
 	ENT:AddHook("ShouldTurnOffLight", "cloak", function(self)
