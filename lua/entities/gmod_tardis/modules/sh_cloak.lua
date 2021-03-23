@@ -57,7 +57,7 @@ if SERVER then
 		if name == "Phase" and TARDIS:CheckPP(e2.player, self) then
 			return self:ToggleCloak() and 1 or 0
 		elseif name == "GetVisible" then
-			return self:GetData("")
+			return self:GetData("cloak",false) and 1 or 0
 		end
 	end)
 else
