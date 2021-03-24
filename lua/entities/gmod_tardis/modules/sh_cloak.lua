@@ -14,7 +14,6 @@ TARDIS:AddControl({
 	ext_func=function(self,ply)
 		-- Code will be added here
 
-		-- Just a temporary joke
 		TARDIS:ErrorMessage(ply, "Cloaking is not yet implemented")
 	end,
 	serveronly=true,
