@@ -110,30 +110,22 @@ else
 	local oldClip
 
     ENT:AddHook("Draw", "cloak", function(self)
-        -- Plane clipping, for animating the invisible effect
+		oldClip = render.EnableClipping(true)
+        local restoreT = self:GetMaterial()
+
         local normal = self:GetUp()
         local pos = self:GetData("phase-highPos",Vector(0,0,0))
         local dist = normal:Dot(pos)
-		
-        self:SetRenderClipPlaneEnabled(true)
-        self:SetRenderClipPlane(normal, dist)
-		
-        --[[doors:SetRenderClipPlaneEnabled(true)
-        doors:SetRenderClipPlane(normal, dist)]]
-		
-        oldClip = render.EnableClipping(true)
-        local restoreT = self:GetMaterial()
-
-        render.MaterialOverride(self.cloakmat)
-        render.PushCustomClipPlane(normal, dist)
-		
-        normal = self:GetUp()
-        dist = normal:Dot(pos)
-		
 
         local normal2 = self:GetUp() * -1
 		local pos2 = self:GetData("phase-pos",Vector(0,0,0))
 		local dist2 = normal2:Dot(pos2)
+
+		self:SetRenderClipPlaneEnabled(true)
+        self:SetRenderClipPlane(normal, dist)
+
+        render.PushCustomClipPlane(normal, dist)
+		render.MaterialOverride(self.cloakmat)
 		
         render.PushCustomClipPlane(normal2, dist2)
 			self:DrawModel()
