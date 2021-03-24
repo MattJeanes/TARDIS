@@ -20,7 +20,7 @@ function TARDIS:CreateCloakMaterial(metadataid, refresh)
 		["$bumpframe"] = 0,
 		Proxies = {
 			AnimatedTexture ={
-				animatedtexturevar = (normalmap~=nil) and normalmap or bumpmap,
+				animatedtexturevar = "$normalmap",
 				animatedtextureframenumvar = "$bumpframe",
 				animatedtextureframerate = 100.00
 			}
@@ -30,7 +30,20 @@ function TARDIS:CreateCloakMaterial(metadataid, refresh)
 	self.CloakMaterials[metadataid] = mat
 end
 
-function TARDIS:GetCloakMaterial(id)
-	if not self.CloakMaterials[id] then return self.CloakMaterials["default"] end
-	return self.CloakMaterials[id]
+function TARDIS:CreateCloakMaterials()
+	local interiors = self:GetInteriors()
+
+	for k,v in pairs(interiors) do
+		if v.Exterior.PhaseMaterial then return end
+		self:CreateCloakMaterial(k)
+	end
 end
+
+function TARDIS:GetCloakMaterial(id)
+	if TARDIS:GetInterior(id).Exterior.PhaseMaterial then
+		return Material(TARDIS:GetInterior(id).Exterior.PhaseMaterial)
+	end
+	return self.CloakMaterials[id] or self.CloakMaterials["default"]
+end
+
+TARDIS:CreateCloakMaterial("default")
