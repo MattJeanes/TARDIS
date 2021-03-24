@@ -1,12 +1,24 @@
 -- Placeholder cloak module (currently only for E2 and control presets, feel free to delete later)
 
-TARDIS:AddControl("cloak",{
-	func=function(self,ply)
+TARDIS:AddControl({
+	id = "cloak",
+	ext_func=function(self,ply)
 		self:ToggleCloak()
 	end,
-	exterior=true,
-	serveronly=true
+	serveronly=true,
+	screen_button = {
+		virt_console = true, -- change to true to add
+		mmenu = false,
+		toggle = true,
+		frame_type = {0, 2},
+		text = "Cloaking",
+		pressed_state_from_interior = false,
+		pressed_state_data = "cloak", -- can be changed
+		order = 12,
+	},
+	tip_text = "Cloaking Device",
 })
+
 
 TARDIS:AddKeyBind("cloak-toggle",{
 	name="Toggle",
@@ -143,20 +155,6 @@ else
 		if self:GetData("cloak",false) then return true end
 	end)
 
-	ENT:AddHook("SetupVirtualConsole", "cloak", function(self,frame,screen)
-		local cloak = TardisScreenButton:new(frame,screen)
-		cloak:Setup({
-			id = "cloak",
-			toggle = true,
-			frame_type = {0, 1},
-			text = "Cloaking",
-			control = "cloak",
-			pressed_state_source = self,
-			pressed_state_data = "cloak",
-			order = 4,
-		})
-	end)
-
     ENT:OnMessage("cloaksound", function(self)
         local snd = self.metadata.Exterior.Sounds.Cloak
 
@@ -169,25 +167,3 @@ else
         end
     end)
 end
-
--- We add this earlier so that extension creators could add them
-TARDIS:AddControl({
-	id = "cloak",
-	ext_func=function(self,ply)
-		-- Code will be added here
-
-		TARDIS:ErrorMessage(ply, "Cloaking is not yet implemented")
-	end,
-	serveronly=true,
-	screen_button = {
-		virt_console = false, -- change to true to add
-		mmenu = false,
-		toggle = true,
-		frame_type = {0, 2},
-		text = "Cloaking",
-		pressed_state_from_interior = false,
-		pressed_state_data = "cloak", -- can be changed
-		order = 12,
-	},
-	tip_text = "Cloaking Device",
-})
