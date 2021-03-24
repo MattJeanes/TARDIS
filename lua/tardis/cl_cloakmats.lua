@@ -6,8 +6,6 @@ function TARDIS:CreateCloakMaterial(metadataid, refresh)
 
 	local ent = ClientsideModel(metadata.Exterior.Model, RENDERGROUP_OTHER)
 	local basemat = Material(ent:GetMaterials()[1])
-	--print(basemat)
-	--print(basemat:GetString("$normalmap"))
 	ent:Remove()
 	ent = nil
 
@@ -18,8 +16,7 @@ function TARDIS:CreateCloakMaterial(metadataid, refresh)
 		["$model"] = 1,
 		["$refractamount"] = ".1",
 		["$bluramount"] = 0,
-		["$normalmap"] = normalmap,
-		["$bumpmap"] = bumpmap,
+		["$normalmap"] = normalmap or bumpmap,
 		["$bumpframe"] = 0,
 		Proxies = {
 			AnimatedTexture ={
@@ -34,6 +31,6 @@ function TARDIS:CreateCloakMaterial(metadataid, refresh)
 end
 
 function TARDIS:GetCloakMaterial(id)
-	if not self.CloakMaterials[id] then return end
+	if not self.CloakMaterials[id] then return self.CloakMaterials["default"] end
 	return self.CloakMaterials[id]
 end
