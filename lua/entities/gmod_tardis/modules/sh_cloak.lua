@@ -36,10 +36,6 @@ TARDIS:AddKeyBind("cloak-toggle",{
 ENT:AddHook("Initialize", "cloak", function(self)
     self:SetData("cloak", false, true)
 
-	if CLIENT then
-		self:SetData("phasemat", TARDIS:GetCloakMaterial(self.metadata.ID))
-	end
-
     self:SetData("modelmins", self:OBBMins())
 	local maxs = self:OBBMaxs()
 	maxs.z = maxs.z + 25
@@ -124,7 +120,7 @@ else
         self:SetRenderClipPlane(normal, dist)
 
         render.PushCustomClipPlane(normal, dist)
-		render.MaterialOverride(self:GetData("phasemat",restoreT))
+		render.MaterialOverride(TARDIS:GetCloakMaterial(self.metadata.ID))
 		
         render.PushCustomClipPlane(normal2, dist2)
 			self:DrawModel()
@@ -152,7 +148,7 @@ else
 			oldClipPart = render.EnableClipping(true)
 			local restoreT = part:GetMaterial()
 	
-			render.MaterialOverride(self.cloakmat)
+			render.MaterialOverride(TARDIS:GetCloakMaterial(self.metadata.ID))
 			render.PushCustomClipPlane(normal, dist)
 
 			local normal2 = self:GetUp() * -1
