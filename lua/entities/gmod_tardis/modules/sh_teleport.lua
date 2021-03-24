@@ -57,7 +57,9 @@ TARDIS:AddControl({
 	ext_func=function(self,ply)
 		if (self:GetData("teleport") or self:GetData("vortex")) then
 			self:Mat(function(result)
-				if not result then
+				if result then
+					TARDIS:Message(ply, "Materialising")
+				else
 					TARDIS:ErrorMessage(ply, "Failed to materialise")
 				end
 			end)
@@ -65,7 +67,9 @@ TARDIS:AddControl({
 			local pos = pos or self:GetData("demat-pos") or self:GetPos()
 			local ang = ang or self:GetData("demat-ang") or self:GetAngles()
 			self:Demat(pos, ang, function(result)
-				if not result then
+				if result then
+					TARDIS:Message(ply, "Dematerialising")
+				else
 					TARDIS:ErrorMessage(ply, "Failed to dematerialise")
 				end
 			end)
