@@ -7,7 +7,7 @@ TARDIS:AddControl({
 		-- Code will be added here
 
 		-- Just a temporary joke
-		TARDIS:ErrorMessage(ply, "Handbrake is broken in this TARDIS. Please, visit Gallifreyan workshop to replace it.")
+		TARDIS:ErrorMessage(ply, "Handbrake is not yet implemented")
 	end,
 	serveronly=true,
 	screen_button = {

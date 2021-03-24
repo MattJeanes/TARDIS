@@ -35,26 +35,32 @@ function TARDIS:DebugPrintTable(table, name)
 end
 
 -- Notification messages
-CreateConVar("tardis2_message_type", 3, {FCVAR_ARCHIVE, FCVAR_REPLICATED}, "TARDIS - debug enabled")
-cvars.AddChangeCallback("tardis2_message_type", function()
-	TARDIS.msg_style = GetConVar("tardis2_message_type"):GetInt()
-end)
-
-TARDIS.msg_style = GetConVar("tardis2_message_type"):GetInt()
 
 if SERVER then
-	util.AddNetworkString("tardis_notification_message")
-	util.AddNetworkString("tardis_notification_error")
-end
-net.Receive("tardis_notification_message", function()
-	notification.AddLegacy(net.ReadString(), NOTIFY_GENERIC, 5)
-end)
-net.Receive("tardis_notification_error", function()
-	notification.AddLegacy(net.ReadString(), NOTIFY_ERROR, 5)
-end)
+	util.AddNetworkString("tardis_message")
+else
+	net.Receive("tardis_message", function()
+		local error = net.ReadBool()
+		local message = net.ReadString()
+		TARDIS:Message(LocalPlayer(), message, error)
+	end)
 
-function TARDIS:Message(ply, message, error, style_override)
-	local style = style_override or self.msg_style
+	CreateConVar("tardis2_message_type", 3, {FCVAR_ARCHIVE}, "TARDIS - debug enabled")
+	cvars.AddChangeCallback("tardis2_message_type", function()
+		TARDIS.msg_style = GetConVar("tardis2_message_type"):GetInt()
+	end)
+	TARDIS.msg_style = GetConVar("tardis2_message_type"):GetInt()
+end
+
+function TARDIS:Message(ply, message, error)
+	if SERVER then 
+		net.Start("tardis_message")
+			net.WriteBool(error)
+			net.WriteString(message)
+		net.Send(ply)
+		return
+	end
+	local style = self.msg_style
 	local fullmessage = "[TARDIS] "..message
 	if style == 0 then
 		return
@@ -64,17 +70,17 @@ function TARDIS:Message(ply, message, error, style_override)
 		return
 	end
 	if style == 2 then
-		ply:ChatPrint(fullmessage)
+		LocalPlayer():ChatPrint(fullmessage)
 		return
 	end
 	if style == 3 then
+		local notifyType
 		if error then
-			net.Start("tardis_notification_error")
+			notifyType = NOTIFY_ERROR
 		else
-			net.Start("tardis_notification_message")
+			notifyType = NOTIFY_GENERIC
 		end
-			net.WriteString(fullmessage)
-		net.Send(ply)
+		notification.AddLegacy(fullmessage, notifyType, 5)
 		print(fullmessage)
 		return
 	end

@@ -138,9 +138,6 @@ if SERVER then
 				if state then
 					if callback then callback(false) end
 				else
-					for k,_ in pairs(self.occupants) do
-						TARDIS:Message(k, "Dematerialising")
-					end
 					pos=pos or self:GetData("demat-pos") or self:GetPos()
 					ang=ang or self:GetData("demat-ang") or self:GetAngles()
 					self:SetBodygroup(1,0)
@@ -184,9 +181,6 @@ if SERVER then
 				else
 					self:SendMessage("premat",function() net.WriteVector(self:GetData("demat-pos",Vector())) end)
 					self:SetData("teleport",true)
-					for k,_ in pairs(self.occupants) do
-						TARDIS:Message(k, "Materialising")
-					end
 					local timerdelay = (self:GetData("demat-fast",false) and 1.9 or 8.5)
 					timer.Simple(timerdelay,function()
 						if not IsValid(self) then return end
