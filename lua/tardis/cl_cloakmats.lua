@@ -1,5 +1,10 @@
 TARDIS.CloakMaterials = TARDIS.CloakMaterials or {}
 
+concommand.Add("tardis2_createcloakmats", function(ply)
+	if not ply == LocalPlayer() then return end
+	TARDIS:CreateCloakMaterials()
+end, nil, "Generate TARDIS cloak procedural materials")
+
 function TARDIS:CreateCloakMaterial(metadataid, refresh)
 	if not TARDIS:GetInteriors()[metadataid] or (not refresh and self.CloakMaterials[metadataid]) then return end
 	local metadata = TARDIS:GetInterior(metadataid)
@@ -31,12 +36,13 @@ function TARDIS:CreateCloakMaterial(metadataid, refresh)
 end
 
 function TARDIS:CreateCloakMaterials()
+	print("TARDIS - Generating procedural cloak materials")
 	local interiors = self:GetInteriors()
-
 	for k,v in pairs(interiors) do
 		if v.Exterior.PhaseMaterial then return end
 		self:CreateCloakMaterial(k)
 	end
+	print("TARDIS - Finished generating "..table.Count(self.CloakMaterials).." procedural materials.")
 end
 
 function TARDIS:GetCloakMaterial(id)

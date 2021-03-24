@@ -37,7 +37,7 @@ ENT:AddHook("Initialize", "cloak", function(self)
     self:SetData("cloak", false, true)
 
 	if CLIENT then
-		self.cloakmat = TARDIS:GetCloakMaterial(self.metadata.ID)
+		self:SetData("phasemat", TARDIS:GetCloakMaterial(self.metadata.ID))
 	end
 
     self:SetData("modelmins", self:OBBMins())
@@ -74,7 +74,6 @@ if SERVER then
 		end
 	end)
 else
-
     TARDIS:AddSetting({
         id = "cloaksound-enabled",
         name = "Cloak Sound",
@@ -125,7 +124,7 @@ else
         self:SetRenderClipPlane(normal, dist)
 
         render.PushCustomClipPlane(normal, dist)
-		render.MaterialOverride(self.cloakmat)
+		render.MaterialOverride(self:GetData("phasemat",restoreT))
 		
         render.PushCustomClipPlane(normal2, dist2)
 			self:DrawModel()
