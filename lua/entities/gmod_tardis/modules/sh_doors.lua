@@ -1,11 +1,27 @@
 -- Open door with E, go in with Alt-E
 
-TARDIS:AddControl("doorcontroller",{
-	func=function(self,ply)
-		self:ToggleDoor()
+TARDIS:AddControl({
+	id = "door",
+	ext_func=function(self,ply)
+		local oldstate = self:GetData("doorstate")
+		if self:ToggleDoor() then
+			TARDIS:StatusMessage(ply, "Door", not oldstate, "opened", "closed")
+		else
+			TARDIS:ErrorMessage(ply, "Failed to ".. (oldstate and "close" or "open").." door")
+		end
 	end,
-	exterior=true,
-	serveronly=true
+	serveronly=true,
+	screen_button = {
+		virt_console = true,
+		mmenu = false,
+		toggle = true,
+		frame_type = {0, 1},
+		text = "Door",
+		pressed_state_from_interior = false,
+		pressed_state_data = "doorstate",
+		order = 5,
+	},
+	tip_text = "Door Switch",
 })
 
 if SERVER then
@@ -23,7 +39,7 @@ if SERVER then
 	end
 	
 	function ENT:ToggleDoor(callback)
-		if not IsValid(self.interior) then return end
+		if not IsValid(self.interior) then return false end
 		if not self:GetData("doorchangecallback",false) then
 			self:SetData("doorchangecallback",{})
 		end
@@ -34,7 +50,7 @@ if SERVER then
 				callback(doorstate)
 			end
 			runcallbacks(callbacks,doorstate)
-			return
+			return false
 		end
 		doorstate=not doorstate
 		
@@ -57,6 +73,7 @@ if SERVER then
 			end
 			self:SetData("doorchange",CurTime()+self.metadata.Exterior.DoorAnimationTime)
 		end
+		return true
 	end
 	
 	function ENT:OpenDoor(callback)
@@ -223,19 +240,5 @@ else
 				end
 			end
 		end
-	end)
-
-	ENT:AddHook("SetupVirtualConsole", "doors", function(self,frame,screen)
-		local door = TardisScreenButton:new(frame,screen)
-		door:Setup({
-			id = "doorcontroller",
-			toggle = true,
-			frame_type = {0, 1},
-			text = "Toggle door",
-			control = "doorcontroller",
-			pressed_state_source = self,
-			pressed_state_data = "doorstate",
-			order = 5,
-		})
 	end)
 end

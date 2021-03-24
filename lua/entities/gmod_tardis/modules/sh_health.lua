@@ -33,21 +33,55 @@ TARDIS:AddSetting({
 	networked=true
 })
 
-TARDIS:AddControl("repair",{
-	func=function(self,ply)
-		self:ToggleRepair()
+TARDIS:AddControl({
+	id = "repair",
+	ext_func=function(self,ply)
+		if not self:ToggleRepair() then
+			TARDIS:ErrorMessage(ply, "Failed to toggle self-repair")
+		end
 	end,
-	exterior=true,
-	serveronly=true
+	serveronly=true,
+	screen_button = {
+		virt_console = true,
+		mmenu = false,
+		toggle = true,
+		frame_type = {0, 1},
+		text = "Self-Repair",
+		pressed_state_from_interior = false,
+		pressed_state_data = "repair-primed",
+		order = 3,
+	},
+	tip_text = "Self-Repair",
 })
 
-TARDIS:AddControl("redecorate",{
-	func=function(self,ply)
-		local on = self:GetData("redecorate",false)
-		self:SetData("redecorate", not on, true)
+TARDIS:AddControl({
+	id = "redecorate",
+	ext_func=function(self,ply)
+		local on = self:GetData("redecorate", false)
+		on = self:SetData("redecorate", not on, true)
+
+		local chosen_int = TARDIS:GetSetting("redecorate-interior","default",self:GetCreator())
+
+		if on and (chosen_int == self.metadata.ID) then
+			TARDIS:ErrorMessage(ply, "New interior has not been selected")
+		elseif on and not self:GetData("repair-primed") then
+			TARDIS:Message(ply, "Hint: enable self-repair to start redecoration")
+			-- We print this first for it to be lower in the list
+		end
+		TARDIS:StatusMessage(ply, "Redecoration", on)
 	end,
-	exterior=true,
-	serveronly=true
+	serveronly=true,
+	screen_button = {
+		virt_console = true,
+		mmenu = false,
+		toggle = true,
+		frame_type = {0, 1},
+		text = "Redecoration",
+		pressed_state_from_interior = false,
+		pressed_state_data = "redecorate",
+		order = 4,
+	},
+	tip_text = "Redecoration",
 })
 
 ENT:AddHook("Initialize","health-init",function(self)
@@ -124,17 +158,17 @@ if SERVER then
 
 	function ENT:ToggleRepair()
 		local on = not self:GetData("repair-primed",false)
-		self:SetRepair(on)
+		return self:SetRepair(on)
 	end
 	function ENT:SetRepair(on)
 		if not TARDIS:GetSetting("health-enabled") and self:GetHealth()~=TARDIS:GetSetting("health-max",1) then 
 			self:ChangeHealth(TARDIS:GetSetting("health-max"),1)
-			return 
+			return false
 		end
-		if self:CallHook("CanRepair")==false then return end
+		if self:CallHook("CanRepair")==false then return false end
 		if on==true then
 			for k,_ in pairs(self.occupants) do
-				k:ChatPrint("This TARDIS has been set to self-repair. Please vacate the interior.")
+				TARDIS:Message(k, "This TARDIS has been set to self-repair. Please vacate the interior.")
 			end
 			if self:GetPower() then self:SetPower(false) end
 			self:SetData("repair-primed",true,true)
@@ -149,9 +183,10 @@ if SERVER then
 			self:SetData("repair-primed",false,true)
 			self:SetPower(true)
 			for k,_ in pairs(self.occupants) do
-				k:ChatPrint("TARDIS self-repair has been cancelled.")
+				TARDIS:Message(k, "Self-repair has been cancelled.")
 			end
 		end
+		return true
 	end
 
 	function ENT:StartRepair()
@@ -282,13 +317,17 @@ if SERVER then
 	end)
 
 	ENT:AddHook("Think", "repair", function(self)
+		if self:GetData("repair-primed", false) and self:CallHook("CanRepair") == false then
+			self:SetData("repair-primed", false, true)
+			self:SetPower(true)
+			for k,_ in pairs(self.occupants) do
+				TARDIS:Message(k, "Self-repair has been cancelled.")
+			end
+		end
+
 		if self:GetData("repair-primed",false) and self:GetData("repair-shouldstart") and CurTime() > self:GetData("repair-delay") then
 			self:SetData("repair-shouldstart", false)
 			self:StartRepair()
-		end
-
-		if self:GetData("repair-primed", false) and self:CallHook("CanRepair") == false then
-			self:SetData("repair-primed", false, true)
 		end
 
 		if (self:GetData("repairing",false) and CurTime()>self:GetData("repair-time",0)) then
@@ -396,31 +435,5 @@ else
 	ENT:AddHook("Initialize", "redecorate-reset", function(self)
 		if not IsValid(self) or (not LocalPlayer() == self:GetCreator()) then return end
 		TARDIS:SetSetting("redecorate-interior",self.metadata.ID,true)
-	end)
-	
-	ENT:AddHook("SetupVirtualConsole", "health", function(self,frame,screen)
-		local repair = TardisScreenButton:new(frame,screen)
-		repair:Setup({
-			id = "repair",
-			toggle = true,
-			frame_type = {0, 1},
-			text = "Self-repair",
-			control = "repair",
-			pressed_state_source = self,
-			pressed_state_data = "repair-primed",
-			order = 3,
-		})
-
-		local redecorate = TardisScreenButton:new(frame,screen)
-		redecorate:Setup({
-			id = "redecorate",
-			toggle = true,
-			frame_type = {0, 1},
-			text = "Redecoration",
-			control = "redecorate",
-			pressed_state_source = self,
-			pressed_state_data = "redecorate",
-			order = 4,
-		})
 	end)
 end

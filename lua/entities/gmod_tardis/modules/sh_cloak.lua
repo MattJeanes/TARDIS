@@ -1,4 +1,4 @@
---Placeholder cloak module (currently only for E2, feel free to delete later)
+-- Placeholder cloak module (currently only for E2 and control presets, feel free to delete later)
 
 TARDIS:AddControl("cloak",{
 	func=function(self,ply)
@@ -169,3 +169,25 @@ else
         end
     end)
 end
+
+-- We add this earlier so that extension creators could add them
+TARDIS:AddControl({
+	id = "cloak",
+	ext_func=function(self,ply)
+		-- Code will be added here
+
+		TARDIS:ErrorMessage(ply, "Cloaking is not yet implemented")
+	end,
+	serveronly=true,
+	screen_button = {
+		virt_console = false, -- change to true to add
+		mmenu = false,
+		toggle = true,
+		frame_type = {0, 2},
+		text = "Cloaking",
+		pressed_state_from_interior = false,
+		pressed_state_data = "cloak", -- can be changed
+		order = 12,
+	},
+	tip_text = "Cloaking Device",
+})

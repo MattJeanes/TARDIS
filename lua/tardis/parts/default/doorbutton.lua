@@ -1,9 +1,9 @@
--- Default Interior - Screen Button
+-- Default Interior - Door button
 
 local PART = {}
-PART.ID = "default_screenbutton"
-PART.Name = "Default Screen Button"
-PART.Control = "toggle_screens"
+PART.ID = "default_doorbutton"
+PART.Name = "Default Door Button"
+PART.Control = "door"
 PART.Model = "models/drmatt/tardis/smallbutton.mdl"
 PART.AutoSetup = true
 PART.Collision = true

@@ -68,7 +68,11 @@ local overrides={
 			allowed, animate = self.interior:CallHook("CanUsePart",self,a)
 		end
 		if allowed~=false then
-			res=self.o.Use(self,a,...)
+			if SERVER and self.Control and (not self.HasUse) then
+				TARDIS:Control(self.Control,a)
+			else
+				res=self.o.Use(self,a,...)
+			end
 		end
 		
 		if SERVER and (animate~=false) and (res~=false) then
@@ -122,7 +126,8 @@ function TARDIS:AddPart(e)
 		error("Duplicate part ID registered: " .. e.ID .. " (exists in both " .. parts[e.ID].source .. " and " .. source .. ")")
 	end
 	e=table.Copy(e)
-	e.Base = "gmod_tardis_part"	
+	e.HasUse = e.Use ~= nil
+	e.Base = "gmod_tardis_part"
 	local class="gmod_tardis_part_"..e.ID
 	scripted_ents.Register(e,class)
 	if postinit then

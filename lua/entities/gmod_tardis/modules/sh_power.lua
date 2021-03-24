@@ -1,11 +1,26 @@
 -- Power Exterior
 
-TARDIS:AddControl("power",{
-	func=function(self,ply)
-		self:TogglePower()
+TARDIS:AddControl({
+	id = "power",
+	ext_func=function(self,ply)
+		if self:TogglePower() then
+			TARDIS:StatusMessage(ply, "Power", self:GetData("power-state"))
+		else
+			TARDIS:ErrorMessage(ply, "Failed to toggle power")
+		end
 	end,
-	interior=true,
-	serveronly=true
+	serveronly=true,
+	screen_button = {
+		virt_console = true,
+		mmenu = false,
+		toggle = true,
+		frame_type = {2, 1},
+		text = "Power",
+		pressed_state_from_interior = false,
+		pressed_state_data = "power-state",
+		order = 2,
+	},
+	tip_text = "Power Switch",
 })
 
 ENT:AddHook("Initialize","power-init", function(self)
@@ -48,19 +63,5 @@ else
 
 	ENT:AddHook("ShouldTurnOffLight", "power", function(self)
 		if not self:GetPower() then return true end
-	end)
-
-	ENT:AddHook("SetupVirtualConsole", "power", function(self,frame,screen)
-		local power = TardisScreenButton:new(frame,screen)
-		power:Setup({
-			id = "power",
-			toggle = true,
-			frame_type = {2, 1},
-			text = "Toggle power",
-			control = "power",
-			pressed_state_source = self,
-			pressed_state_data = "power-state",
-			order = 2,
-		})
 	end)
 end

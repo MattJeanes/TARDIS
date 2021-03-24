@@ -1,3 +1,17 @@
+-- Virtual console
+
+TARDIS:AddControl({
+	id = "virtualconsole",
+	ext_func=function(self,ply)
+		TARDIS:PopToScreen("Virtual Console", ply)
+	end,
+	serveronly = true,
+	screen_button = false, -- already added as a screen
+	tip_text = "Virtual Console",
+})
+
+if SERVER then return end
+
 local function new_virtual_console(self,ext,int,frame,screen)
 	frame:SetBackgroundColor(Color(0,0,0))
 
@@ -22,29 +36,50 @@ local function new_virtual_console(self,ext,int,frame,screen)
 	end
 	local layout = HexagonalLayout:new(frame, layout_rows, 0.2)
 
-	function TardisScreenButton:Setup(options)
-		if not options.id then error("id is required for TARDIS screen button") end
-		self:SetID(options.id)
-		if options.toggle ~= nil then self:SetIsToggle(options.toggle) end
-		if options.frame_type ~= nil then self:SetFrameType(options.frame_type[1], options.frame_type[2]) end
-		if options.text ~= nil then self:SetText(options.text) end
-		if options.control ~= nil then self:SetControl(options.control) end
-		if options.pressed_state_data ~= nil and options.pressed_state_source ~= nil then
-			self:SetPressedStateData(options.pressed_state_source, options.pressed_state_data)
-		end
-		if options.order ~= nil then self:SetOrder(options.order) end
-
-		layout:AddNewButton(self)
-	end
-
 	-- controls
 
-	if IsValid(ext) then
-		ext:CallHook("SetupVirtualConsole", frame, screen)
+	for k,control in pairs(TARDIS:GetControls()) do
+		local options = control.screen_button
+		if options and options.virt_console and not (screen.is3D2D and options.popup_only) then
+			local button = TardisScreenButton:new(frame, screen)
+
+			if not control.id and not options.id then
+				error("control id is required for TARDIS screen button")
+			end
+			if options.id then
+				button:SetID(options.id)
+			else
+				button:SetID(control.id)
+			end
+			button:SetControl(control.id)
+
+			if options.toggle ~= nil then
+				button:SetIsToggle(options.toggle)
+			end
+			if options.frame_type ~= nil then
+				button:SetFrameType(options.frame_type[1], options.frame_type[2])
+			end
+			if options.text ~= nil then
+				button:SetText(options.text)
+			end
+			if options.pressed_state_data ~= nil then
+				local src = options.pressed_state_from_interior and int or ext
+				button:SetPressedStateData(src, options.pressed_state_data)
+			end
+			if options.order ~= nil then
+				button:SetOrder(options.order)
+			end
+
+			layout:AddNewButton(button)
+		end
 	end
 
+	-- We keep these just in case someone needs custom buttons
+	if IsValid(ext) then
+		ext:CallHook("SetupVirtualConsole", screen, frame, layout)
+	end
 	if IsValid(int) then
-		int:CallHook("SetupVirtualConsole", frame, screen)
+		int:CallHook("SetupVirtualConsole", screen, frame, layout)
 	end
 
 	layout:DrawButtons()
@@ -91,16 +126,16 @@ local function old_virtual_console(self,ext,int,frame,screen)
 		TARDIS:Control("repair")
 	end
 
-	local fastremat=vgui.Create("DButton",frame)
-	fastremat:SetSize( frame:GetWide()*0.2, frame:GetTall()*0.2 )
-	fastremat:SetPos(frame:GetWide()*0.13 - fastremat:GetWide()*0.5,frame:GetTall()*0.4 - fastremat:GetTall()*0.5)
-	fastremat:SetText("Fast Remat "..(ext:GetData("demat-fast") and "on" or "off"))
-	fastremat:SetFont(TARDIS:GetScreenFont(screen, "Default"))
-	fastremat.DoClick = function(self)
-		TARDIS:Control("fastremat")
+	local vortex_flight=vgui.Create("DButton",frame)
+	vortex_flight:SetSize( frame:GetWide()*0.2, frame:GetTall()*0.2 )
+	vortex_flight:SetPos(frame:GetWide()*0.13 - vortex_flight:GetWide()*0.5,frame:GetTall()*0.4 - vortex_flight:GetTall()*0.5)
+	vortex_flight:SetText("Fast Remat "..(ext:GetData("demat-fast") and "on" or "off"))
+	vortex_flight:SetFont(TARDIS:GetScreenFont(screen, "Default"))
+	vortex_flight.DoClick = function(self)
+		TARDIS:Control("vortex_flight")
 	end
-	fastremat.oldon = ext:GetData("demat-fast")
-	function fastremat:Think()
+	vortex_flight.oldon = ext:GetData("demat-fast")
+	function vortex_flight:Think()
 		local on = ext:GetData("demat-fast")
 		if self.oldon == on then return end
 		if on then
@@ -174,11 +209,11 @@ local function old_virtual_console(self,ext,int,frame,screen)
 	doorlock:SetText(ext:Locked() and "Unlock door" or "Lock door")
 
 	doorswitch.DoClick = function(doorswitch)
-		TARDIS:Control("doorcontroller")
+		TARDIS:Control("door")
 	end
 
 	doorlock.DoClick = function()
-		TARDIS:Control("lockcontroller")
+		TARDIS:Control("doorlock")
 	end
 
 	function doorswitch:Think()
