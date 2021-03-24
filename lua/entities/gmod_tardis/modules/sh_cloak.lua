@@ -93,6 +93,12 @@ else
             self:SetData("phase-percent", math.Approach(percent, 1, 0.5 * timepassed))
         end
         self:SetData("phase-highPercent", math.Clamp(self:GetData("phase-percent",1) + 0.5, 0, 1))
+
+		local pos = self:GetPos() + self:GetUp() * (self:GetData("modelmaxs").z - (self:GetData("modelheight") * self:GetData("phase-highPercent",1)))
+		local pos2 = self:GetPos() + self:GetUp() * (self:GetData("modelmaxs").z - (self:GetData("modelheight") * self:GetData("phase-percent",1)))
+
+		self:SetData("phase-highPos", pos)
+		self:SetData("phase-pos", pos2)
 	end)
 
 	local oldClip
@@ -104,7 +110,7 @@ else
 
         -- Plane clipping, for animating the invisible effect
         local normal = self:GetUp()
-        local pos = self:GetPos() + self:GetUp() * (self:GetData("modelmaxs").z - (self:GetData("modelheight") * highPercent))
+        local pos = self:GetData("phase-highPos",Vector(0,0,0))
         local dist = normal:Dot(pos)
 		
         self:SetRenderClipPlaneEnabled(true)
@@ -124,7 +130,7 @@ else
 		
 
         local normal2 = self:GetUp() * -1
-		local pos2 = self:GetPos() + self:GetUp() * (self:GetData("modelmaxs").z - (self:GetData("modelheight") * percent))
+		local pos2 = self:GetData("phase-pos",Vector(0,0,0))
 		local dist2 = normal2:Dot(pos2)
 		
         render.PushCustomClipPlane(normal2, dist2)
@@ -142,6 +148,7 @@ else
 
 	ENT:AddHook("DrawPart", "cloak", function(self,part)
 		if part.ExteriorPart and self:GetData("cloak",false) then
+			part:SetRenderClipPlaneEnabled(true)
 
 		end
 	end)
