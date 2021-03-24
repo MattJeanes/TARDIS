@@ -104,10 +104,6 @@ else
 	local oldClip
 
     ENT:AddHook("Draw", "cloak", function(self)
-
-		percent = self:GetData("phase-percent",1)
-		local highPercent = self:GetData("phase-highPercent",1)
-
         -- Plane clipping, for animating the invisible effect
         local normal = self:GetUp()
         local pos = self:GetData("phase-highPos",Vector(0,0,0))
@@ -135,7 +131,6 @@ else
 		
         render.PushCustomClipPlane(normal2, dist2)
 			self:DrawModel()
-            --doors:DrawModel()
 		render.PopCustomClipPlane()
 		render.PopCustomClipPlane()
 		
@@ -146,11 +141,38 @@ else
 		render.EnableClipping(oldClip)
 	end)
 
-	ENT:AddHook("DrawPart", "cloak", function(self,part)
-		if part.ExteriorPart and self:GetData("cloak",false) then
-			part:SetRenderClipPlaneEnabled(true)
+	local oldClipPart
 
+	ENT:AddHook("DrawPart", "cloak", function(self,part)
+		if part.ExteriorPart and part.ID ~= "vortex" then
+			local normal = self:GetUp()
+			local pos = self:GetData("phase-highPos",Vector(0,0,0))
+			local dist = normal:Dot(pos)
+
+			part:SetRenderClipPlaneEnabled(true)
+			part:SetRenderClipPlane(normal, dist)
+
+			oldClipPart = render.EnableClipping(true)
+			local restoreT = part:GetMaterial()
+	
+			render.MaterialOverride(self.cloakmat)
+			render.PushCustomClipPlane(normal, dist)
+
+			local normal2 = self:GetUp() * -1
+			local pos2 = self:GetData("phase-pos",Vector(0,0,0))
+			local dist2 = normal2:Dot(pos2)
+			
+			render.PushCustomClipPlane(normal2, dist2)
+				part:DrawModel()
+			render.PopCustomClipPlane()
+			render.PopCustomClipPlane()
+			
+			render.MaterialOverride(restoreT)
 		end
+	end)
+
+	ENT:AddHook("PostDrawPart", "ID", function(self)
+		render.EnableClipping(oldClipPart)
 	end)
 
 	ENT:AddHook("ShouldTurnOffLight", "cloak", function(self)
