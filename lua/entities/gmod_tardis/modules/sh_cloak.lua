@@ -41,7 +41,9 @@ ENT:AddHook("Initialize", "cloak", function(self)
 	end
 
     self:SetData("modelmins", self:OBBMins())
-    self:SetData("modelmaxs", self:OBBMaxs())
+	local maxs = self:OBBMaxs()
+	maxs.z = maxs.z + 25
+    self:SetData("modelmaxs", maxs)
     self:SetData("modelheight", (self:GetData("modelmaxs").z - self:GetData("modelmins").z))
 
     self:SetData("phase-percent",1)
@@ -82,6 +84,10 @@ else
         type = "bool",
         option = true
     })
+
+	ENT:AddHook("ShouldThinkFast", "cloak", function(self)
+		if self:GetData("cloak",false) then return true end
+	end)
 
 	ENT:AddHook("Think", "cloak", function(self)
 	    local timepassed = CurTime() - self:GetData("phase-lastTick",CurTime())
