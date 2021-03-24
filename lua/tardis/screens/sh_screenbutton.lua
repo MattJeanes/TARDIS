@@ -279,14 +279,14 @@ function TardisScreenButton:SetControl(control)
 	end
 end
 
-function TardisScreenButton:SetPressedStateData(parent, data1, data2)
-	if data2 == nil then
+function TardisScreenButton:SetPressedStateData(parent, data)
+	if istable(data) then
 		self.Think = function()
-			self:SetPressed(parent:GetData(data1))
+			self:SetPressed(parent:GetData(data[1]) or parent:GetData(data[2]))
 		end
 	else
 		self.Think = function()
-			self:SetPressed(parent:GetData(data1) or parent:GetData(data2))
+			self:SetPressed(parent:GetData(data))
 		end
 	end
 end

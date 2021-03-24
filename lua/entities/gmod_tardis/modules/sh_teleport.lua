@@ -52,32 +52,83 @@ TARDIS:AddKeyBind("teleport-mat",{
 	exterior=true
 })
 
-TARDIS:AddControl("teleport",{
-	func=function(self,ply)
+TARDIS:AddControl({
+	id = "teleport",
+	ext_func=function(self,ply)
 		if (self:GetData("teleport") or self:GetData("vortex")) then
-			self:Mat()
+			self:Mat(function(result)
+				if not result then
+					TARDIS:ErrorMessage(ply, "Failed to materialise")
+				end
+			end)
 		else
-			self:Demat()
+			local pos = pos or self:GetData("demat-pos") or self:GetPos()
+			local ang = ang or self:GetData("demat-ang") or self:GetAngles()
+			self:Demat(pos, ang, function(result)
+				if not result then
+					TARDIS:ErrorMessage(ply, "Failed to dematerialise")
+				end
+			end)
 		end
 	end,
-	exterior=true,
-	serveronly=true
+	serveronly=true,
+	screen_button = {
+		virt_console = true,
+		mmenu = false,
+		toggle = true,
+		frame_type = {0, 1},
+		text = "Teleport",
+		pressed_state_from_interior = false,
+		pressed_state_data = {"teleport", "vortex"},
+		order = 7,
+	},
+	tip_text = "Space-Time Throttle",
 })
 
-TARDIS:AddControl("fastreturn",{
-	func=function(self,ply)
-		self:FastReturn()
+TARDIS:AddControl({
+	id = "fastreturn",
+	ext_func=function(self,ply)
+		self:FastReturn(function(result)
+			if result then
+				TARDIS:Message(ply, "Fast-return protocol initiated")
+			else
+				TARDIS:ErrorMessage(ply, "Failed to initiate fast-return protocol")
+			end
+		end)
 	end,
-	exterior=true,
-	serveronly=true
+	serveronly = true,
+	screen_button = {
+		virt_console = true,
+		mmenu = false,
+		toggle = false,
+		frame_type = {0, 1},
+		text = "Fast Return",
+		order = 8,
+	},
+	tip_text = "Fast Return Protocol",
 })
 
-TARDIS:AddControl("fastremat",{
-	func=function(self,ply)
-		self:ToggleFastRemat()
+TARDIS:AddControl({
+	id = "vortex_flight",
+	ext_func=function(self,ply)
+		if self:ToggleFastRemat() then
+			TARDIS:StatusMessage(ply, "Vortex flight", self:GetData("demat-fast"), "disabled", "enabled")
+		else
+			TARDIS:ErrorMessage(ply, "Failed to toggle vortex flight")
+		end
 	end,
-	exterior=true,
-	serveronly=true
+	serveronly=true,
+	screen_button = {
+		virt_console = true,
+		mmenu = false,
+		toggle = true,
+		frame_type = {1, 2},
+		text = "Vortex Flight",
+		pressed_state_from_interior = false,
+		pressed_state_data = "demat-fast",
+		order = 9,
+	},
+	tip_text = "Vortex Flight Toggler",
 })
 
 if SERVER then
@@ -144,7 +195,7 @@ if SERVER then
 						self:SetData("prevortex-flight",nil)
 						self:SetSolid(SOLID_VPHYSICS)
 						self:CallHook("MatStart")
-							
+
 						local pos=self:GetData("demat-pos",Vector())
 						local ang=self:GetData("demat-ang",Angle())
 						local attached=self:GetData("demat-attached")
@@ -537,42 +588,6 @@ else
 		if self:GetData("teleport-trace") then
 			self:SetData("teleport-trace",false)
 		end
-	end)
-
-	ENT:AddHook("SetupVirtualConsole", "teleport", function(self,frame,screen)
-		local throttle = TardisScreenButton:new(frame,screen)
-		throttle:Setup({
-			id = "teleport",
-			toggle = true,
-			frame_type = {0, 1},
-			text = "Throttle",
-			control = "teleport",
-			pressed_state_source = self,
-			pressed_state_data = "teleport", "vortex",
-			order = 7,
-		})
-
-		local fastreturn = TardisScreenButton:new(frame,screen)
-		fastreturn:Setup({
-			id = "fastreturn",
-			toggle = false,
-			frame_type = {0, 1},
-			text = "Fast Return",
-			control = "fastreturn",
-			order = 8,
-		})
-
-		local fastremat = TardisScreenButton:new(frame,screen)
-		fastremat:Setup({
-			id = "fastremat",
-			toggle = true,
-			frame_type = {0, 1},
-			text = "Vortex Flight",
-			control = "fastremat",
-			pressed_state_source = self,
-			pressed_state_data = "demat-fast",
-			order = 9,
-		})
 	end)
 end
 

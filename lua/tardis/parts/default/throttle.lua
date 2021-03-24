@@ -3,7 +3,7 @@
 local PART = {}
 PART.ID = "default_throttle"
 PART.Name = "Default Throttle"
-PART.Control = "throttle"
+PART.Control = "teleport"
 PART.Model = "models/drmatt/tardis/throttle.mdl"
 PART.AutoSetup = true
 PART.Collision = true
@@ -12,12 +12,12 @@ PART.Sound = "drmatt/tardis/default/control_throttle.wav"
 
 if SERVER then
 	function PART:Use(ply)
-		if self.exterior:GetData("teleport")==true or self.exterior:GetData("vortex")==true then
-			self.exterior:Mat()
-		end
-		if self.interior:GetSequencesEnabled() then return end
-		if self.exterior:GetData("teleport",false)==false or self.exterior:GetData("vortex",false)==false then
-			self.exterior:Demat()
+		if self.exterior:GetData("teleport") == true or self.exterior:GetData("vortex") == true
+			or not self.interior:GetSequencesEnabled()
+		then
+			TARDIS:Control("teleport", ply)
+		else
+			TARDIS:ErrorMessage(ply, "Control Sequences are enabled. You must use the sequence.")
 		end
 	end
 end
