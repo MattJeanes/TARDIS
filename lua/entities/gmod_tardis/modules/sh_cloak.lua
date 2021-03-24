@@ -104,9 +104,10 @@ else
 
 	local oldClip
 
-    ENT:AddHook("Draw", "cloak", function(self)
+	local function dodraw(self, ent)
+		ent = ent or self
 		oldClip = render.EnableClipping(true)
-        local restoreT = self:GetMaterial()
+        local restoreT = ent:GetMaterial()
 
         local normal = self:GetUp()
         local pos = self:GetData("phase-highPos",Vector(0,0,0))
@@ -116,57 +117,35 @@ else
 		local pos2 = self:GetData("phase-pos",Vector(0,0,0))
 		local dist2 = normal2:Dot(pos2)
 
-		self:SetRenderClipPlaneEnabled(true)
-        self:SetRenderClipPlane(normal, dist)
+		ent:SetRenderClipPlaneEnabled(true)
+        ent:SetRenderClipPlane(normal, dist)
 
         render.PushCustomClipPlane(normal, dist)
 		render.MaterialOverride(TARDIS:GetCloakMaterial(self.metadata.ID))
 		
         render.PushCustomClipPlane(normal2, dist2)
-			self:DrawModel()
+			ent:DrawModel()
 		render.PopCustomClipPlane()
 		render.PopCustomClipPlane()
 		
 		render.MaterialOverride(restoreT)
-    end)
+	end
 
-	ENT:AddHook("PostDraw", "cloak", function(self)
+	local function postdraw()
 		render.EnableClipping(oldClip)
-	end)
+	end
 
-	local oldClipPart
+    ENT:AddHook("Draw", "cloak", dodraw)
+
+	ENT:AddHook("PostDraw", "cloak", postdraw)
 
 	ENT:AddHook("DrawPart", "cloak", function(self,part)
 		if part.ExteriorPart and part.ID ~= "vortex" then
-			local normal = self:GetUp()
-			local pos = self:GetData("phase-highPos",Vector(0,0,0))
-			local dist = normal:Dot(pos)
-
-			part:SetRenderClipPlaneEnabled(true)
-			part:SetRenderClipPlane(normal, dist)
-
-			oldClipPart = render.EnableClipping(true)
-			local restoreT = part:GetMaterial()
-	
-			render.MaterialOverride(TARDIS:GetCloakMaterial(self.metadata.ID))
-			render.PushCustomClipPlane(normal, dist)
-
-			local normal2 = self:GetUp() * -1
-			local pos2 = self:GetData("phase-pos",Vector(0,0,0))
-			local dist2 = normal2:Dot(pos2)
-			
-			render.PushCustomClipPlane(normal2, dist2)
-				part:DrawModel()
-			render.PopCustomClipPlane()
-			render.PopCustomClipPlane()
-			
-			render.MaterialOverride(restoreT)
+			dodraw(self,part)
 		end
 	end)
 
-	ENT:AddHook("PostDrawPart", "ID", function(self)
-		render.EnableClipping(oldClipPart)
-	end)
+	ENT:AddHook("PostDrawPart", "ID", postdraw)
 
 	ENT:AddHook("ShouldTurnOffLight", "cloak", function(self)
 		if self:GetData("cloak",false) then return true end
