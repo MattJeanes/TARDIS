@@ -40,14 +40,11 @@ ENT:AddHook("Initialize", "cloak", function(self)
 		self.cloakmat = TARDIS:GetCloakMaterial(self.metadata.ID)
 	end
 
-    self.mins = self:OBBMins()
-    self.maxs = self:OBBMaxs()
-    self.height = (self.maxs.z - self.mins.z)
+    self:SetData("modelmins", self:OBBMins())
+    self:SetData("modelmaxs", self:OBBMaxs())
+    self:SetData("modelheight", (self:GetData("modelmaxs").z - self:GetData("modelmins").z))
 
-    self.phaseTimeCloak = CurTime() + 1
-    self.phaseTimeUncloak = CurTime() - 1
-
-    self.percent = 1
+    self:SetData("phase-percent",1)
 
     -- For animating with math.approach
     self.LastThink = 0
@@ -86,39 +83,35 @@ else
         option = true
     })
 
+	ENT:AddHook("Think", "cloak", function(self)
+	    local timepassed = CurTime() - self:GetData("phase-lastTick",CurTime())
+	    self:SetData("phase-lastTick", CurTime())
+		local percent = self:GetData("phase-percent",1)
+        if self:GetData("cloak",false) then
+            self:SetData("phase-percent", math.Approach(percent, -0.5, 0.5 * timepassed))
+        else
+            self:SetData("phase-percent", math.Approach(percent, 1, 0.5 * timepassed))
+        end
+        self:SetData("phase-highPercent", math.Clamp(self:GetData("phase-percent",1) + 0.5, 0, 1))
+	end)
+
 	local oldClip
 
     ENT:AddHook("Draw", "cloak", function(self)
-        local isCloaked = self:GetData("cloak", false)
-        local doors = self:GetPart("door")
 
-        local now = CurTime()
-	    local timepassed = now - self.LastThink
-	    self.LastThink = now
-
-        if isCloaked then
-            self.percent = math.Approach(self.percent, -0.5, 0.5 * timepassed)
-        else
-            self.percent = math.Approach(self.percent, 1, 0.5 * timepassed)
-        end
-        
-        self.highPercent = (self.percent + 0.5)
-
-        self.percent = math.Clamp(self.percent, -0.5, 1)
-        self.highPercent = math.Clamp(self.highPercent, 0, 1)
-
-		--print(self.percent, self.highPercent)
+		percent = self:GetData("phase-percent",1)
+		local highPercent = self:GetData("phase-highPercent",1)
 
         -- Plane clipping, for animating the invisible effect
         local normal = self:GetUp()
-        local pos = self:GetPos() + self:GetUp() * (self.maxs.z - (self.height * self.highPercent))
+        local pos = self:GetPos() + self:GetUp() * (self:GetData("modelmaxs").z - (self:GetData("modelheight") * highPercent))
         local dist = normal:Dot(pos)
 		
         self:SetRenderClipPlaneEnabled(true)
         self:SetRenderClipPlane(normal, dist)
 		
-        doors:SetRenderClipPlaneEnabled(true)
-        doors:SetRenderClipPlane(normal, dist)
+        --[[doors:SetRenderClipPlaneEnabled(true)
+        doors:SetRenderClipPlane(normal, dist)]]
 		
         oldClip = render.EnableClipping(true)
         local restoreT = self:GetMaterial()
@@ -131,12 +124,12 @@ else
 		
 
         local normal2 = self:GetUp() * -1
-		local pos2 = self:GetPos() + self:GetUp() * (self.maxs.z - (self.height * self.percent))
+		local pos2 = self:GetPos() + self:GetUp() * (self:GetData("modelmaxs").z - (self:GetData("modelheight") * percent))
 		local dist2 = normal2:Dot(pos2)
 		
         render.PushCustomClipPlane(normal2, dist2)
 			self:DrawModel()
-            doors:DrawModel()
+            --doors:DrawModel()
 		render.PopCustomClipPlane()
 		render.PopCustomClipPlane()
 		
@@ -145,6 +138,12 @@ else
 
 	ENT:AddHook("PostDraw", "cloak", function(self)
 		render.EnableClipping(oldClip)
+	end)
+
+	ENT:AddHook("DrawPart", "cloak", function(self,part)
+		if part.ExteriorPart and self:GetData("cloak",false) then
+
+		end
 	end)
 
 	ENT:AddHook("ShouldTurnOffLight", "cloak", function(self)
