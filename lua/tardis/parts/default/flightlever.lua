@@ -10,10 +10,4 @@ PART.Collision = true
 PART.Animate = true
 PART.Sound = "drmatt/tardis/default/control_handbrake.wav"
 
-if SERVER then
-	function PART:Use(ply)
-		self.exterior:ToggleFlight()
-	end
-end
-
 TARDIS:AddPart(PART)

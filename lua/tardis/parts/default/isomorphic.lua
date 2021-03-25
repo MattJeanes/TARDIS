@@ -10,13 +10,4 @@ PART.Collision = true
 PART.Animate = true
 PART.Sound = "drmatt/tardis/default/control_handbrake.wav"
 
-function PART:Use(ply)
-    if ply~=self.interior:GetCreator() then
-        ply:ChatPrint("This is not your TARDIS")
-        return
-    end
-    if self.interior:ToggleSecurity() then
-        ply:ChatPrint("Isomorphic ".. (self.interior:GetSecurity() and "engaged" or "disengaged"))
-    end
-end
 TARDIS:AddPart(PART)

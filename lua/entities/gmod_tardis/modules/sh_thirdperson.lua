@@ -13,12 +13,21 @@ TARDIS:AddKeyBind("tp-toggledoor",{
 	exterior=true
 })
 
-TARDIS:AddControl("flightcontrol",{
-	func=function(self,ply)
+TARDIS:AddControl({
+	id = "thirdperson",
+	ext_func=function(self,ply)
 		self:PlayerThirdPerson(ply, not ply:GetTardisData("thirdperson"))
 	end,
-	exterior=true,
-	serveronly=true
+	serveronly=true,
+	screen_button = {
+		virt_console = false,
+		mmenu = true,
+		toggle = false,
+		frame_type = {0, 1},
+		text = "Flight Control",
+		order = 5,
+	},
+	tip_text = "Manual Flight Control",
 })
 
 hook.Add("PlayerSwitchFlashlight", "tardis-thirdperson", function(ply,enabled)
@@ -73,16 +82,5 @@ else
 		if LocalPlayer():GetTardisData("thirdperson") then
 			return self:GetThirdPersonPos(ply, ang)
 		end
-	end)
-
-	ENT:AddHook("SetupScreenButtons", "thirdperson", function(self, screen, frame, layout)
-		local flightcontrol = TardisScreenButton:new(frame,screen)
-		flightcontrol:SetID("flightcontrol")
-		flightcontrol:SetIsToggle(false)
-		flightcontrol:SetFrameType(0, 1)
-		flightcontrol:SetText("Flight Control")
-		flightcontrol:SetControl("flightcontrol")
-		flightcontrol:SetOrder(5)
-		layout:AddNewButton(flightcontrol)
 	end)
 end

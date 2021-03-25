@@ -9,10 +9,4 @@ PART.AutoSetup = true
 PART.Collision = true
 PART.Animate = true
 
-if SERVER then
-	function PART:Use(ply)
-		TARDIS:Control("destination", ply)
-	end
-end
-
 TARDIS:AddPart(PART)
