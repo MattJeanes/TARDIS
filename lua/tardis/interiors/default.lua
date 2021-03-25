@@ -111,6 +111,7 @@ T.Interior={
 T.Exterior={
 	Parts={
 		door=true
-	}
+	},
+	PhaseMaterial = "models/drmatt/tardis/exterior/phase.vmt"
 }
 TARDIS:AddInterior(T)

@@ -17,9 +17,12 @@ function TARDIS:CreateCloakMaterial(metadataid, refresh)
 	local normalmap = basemat:GetString("$normalmap")
 	local bumpmap = basemat:GetString("$bumpmap")
 
+	if normalmap==nil and bumpmap==nil then return end
+
 	local mat = CreateMaterial("tardiscloak-"..metadataid, "Refract", {
 		["$model"] = 1,
 		["$refractamount"] = ".1",
+		["$refracttint"] = "{255 255 255}",
 		["$bluramount"] = 0,
 		["$normalmap"] = normalmap or bumpmap,
 		["$bumpframe"] = 0,
@@ -49,7 +52,5 @@ function TARDIS:GetCloakMaterial(id)
 	if TARDIS:GetInterior(id).Exterior.PhaseMaterial then
 		return Material(TARDIS:GetInterior(id).Exterior.PhaseMaterial)
 	end
-	return self.CloakMaterials[id] or self.CloakMaterials["default"]
+	return self.CloakMaterials[id] or Material("models/drmatt/tardis/exterior/phase_noise.vmt")
 end
-
-TARDIS:CreateCloakMaterial("default")
