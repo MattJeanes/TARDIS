@@ -43,18 +43,18 @@ ENT:AddHook("Initialize", "cloak", function(self)
     self:SetData("modelheight", (self:GetData("modelmaxs").z - self:GetData("modelmins").z))
 
     self:SetData("phase-percent",1)
-
-    -- For animating with math.approach
-    self.LastThink = 0
 end)
+
+function ENT:GetCloak()
+	return self:GetData("cloak",false)
+end
 
 if SERVER then
     function ENT:SetCloak(on)
         if on then
             self:SendMessage("cloaksound")
-        end
-
-        return self:SetData("cloak", on, true)
+		end
+		return self:SetData("cloak", on, true)
     end
     
     function ENT:ToggleCloak()
@@ -69,6 +69,12 @@ if SERVER then
 			return self:GetData("cloak",false) and 0 or 1
 		end
 	end)
+
+	ENT:AddHook("ShouldTurnOffRotorwash", "cloak", function(self)
+		if self:GetData("cloak") then
+			return true
+		end
+	end)
 else
     TARDIS:AddSetting({
         id = "cloaksound-enabled",
@@ -81,17 +87,24 @@ else
     })
 
 	ENT:AddHook("ShouldThinkFast", "cloak", function(self)
-		if self:GetData("cloak",false) then return true end
+		if self:GetData("cloak-animating",false) then return true end
 	end)
 
 	ENT:AddHook("Think", "cloak", function(self)
+		local target = self:GetData("cloak",false) and -0.5 or 1
+		local animating = self:GetData("cloak-animating",false)
+		local percent = self:GetData("phase-percent",1)
+		if percent == target and animating then
+			self:SetData("cloak-animating", false)
+		elseif percent ~= target and not animating then
+			self:SetData("cloak-animating", true)
+		end
 	    local timepassed = CurTime() - self:GetData("phase-lastTick",CurTime())
 	    self:SetData("phase-lastTick", CurTime())
-		local percent = self:GetData("phase-percent",1)
         if self:GetData("cloak",false) then
-            self:SetData("phase-percent", math.Approach(percent, -0.5, 0.5 * timepassed))
+            self:SetData("phase-percent", math.Approach(percent, target, 0.5 * timepassed))
         else
-            self:SetData("phase-percent", math.Approach(percent, 1, 0.5 * timepassed))
+            self:SetData("phase-percent", math.Approach(percent, target, 0.5 * timepassed))
         end
         self:SetData("phase-highPercent", math.Clamp(self:GetData("phase-percent",1) + 0.5, 0, 1))
 
@@ -106,6 +119,13 @@ else
 
 	local function dodraw(self, ent)
 		ent = ent or self
+		local animating = self:GetData("cloak-animating",false)
+		if animating then
+			ent:SetRenderClipPlaneEnabled(true)
+		else
+			ent:SetRenderClipPlaneEnabled(false)
+			return
+		end
 		oldClip = render.EnableClipping(true)
         local restoreT = ent:GetMaterial()
 
@@ -117,7 +137,6 @@ else
 		local pos2 = self:GetData("phase-pos",Vector(0,0,0))
 		local dist2 = normal2:Dot(pos2)
 
-		ent:SetRenderClipPlaneEnabled(true)
         ent:SetRenderClipPlane(normal, dist)
 
         render.PushCustomClipPlane(normal, dist)
@@ -132,6 +151,7 @@ else
 	end
 
 	local function postdraw()
+		if not self:GetData("cloak-animating",false) then return end
 		render.EnableClipping(oldClip)
 	end
 
@@ -140,12 +160,16 @@ else
 	ENT:AddHook("PostDraw", "cloak", postdraw)
 
 	ENT:AddHook("DrawPart", "cloak", function(self,part)
-		if part.ExteriorPart and part.ID ~= "vortex" then
+		if part.NoCloak~=true then
 			dodraw(self,part)
 		end
 	end)
 
-	ENT:AddHook("PostDrawPart", "ID", postdraw)
+	ENT:AddHook("PostDrawPart", "ID", function(self,part)
+		if part.NoCloak~=true then
+			dodraw(self,part)
+		end
+	end)
 
 	ENT:AddHook("ShouldTurnOffLight", "cloak", function(self)
 		if self:GetData("cloak",false) then return true end
@@ -153,6 +177,18 @@ else
 
 	ENT:AddHook("ShouldTurnOffFlightSound", "cloak", function(self)
 		if self:GetData("cloak",false) then return true end
+	end)
+
+	ENT:AddHook("ShouldPlayDematSound", "cloak", function(self,interior)
+		if self:GetData("cloak",false) and not interior then return false end
+	end)
+
+	ENT:AddHook("ShouldPlayMatSound", "cloak", function(self,interior)
+		if self:GetData("cloak",false) and not interior then return false end
+	end)
+
+	ENT:AddHook("ShouldDraw", "cloak", function(self)
+		if self:GetData("cloak",false) and not self:GetData("cloak-animating",false) then return false end
 	end)
 
     ENT:OnMessage("cloaksound", function(self)
