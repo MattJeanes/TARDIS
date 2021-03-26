@@ -65,16 +65,16 @@ TARDIS:AddControl({
 	id = "test",
 	ext_func = function(self,ply)
 		if CLIENT then
-			LocalPlayer():ChatPrint("CLIENT: "..tostring(self))
+            TARDIS:Message(LocalPlayer(), "CLIENT: "..tostring(self))
 		else
-			ply:ChatPrint("SERVER: "..tostring(self))
+            TARDIS:Message(ply, "SERVER: "..tostring(self))
 		end
 	end,
 	int_func = function(self,ply)
 		if CLIENT then
-			LocalPlayer():ChatPrint("CLIENT: "..tostring(self))
+            TARDIS:Message(LocalPlayer(), "CLIENT: "..tostring(self))
 		else
-			ply:ChatPrint("SERVER: "..tostring(self))
+            TARDIS:Message(ply, "SERVER: "..tostring(self))
 		end
 	end,
 	screen_button = false,

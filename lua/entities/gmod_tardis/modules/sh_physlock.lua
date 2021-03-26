@@ -7,7 +7,7 @@ TARDIS:AddKeyBind("physlock-toggle",{
 	func=function(self,down,ply)
 		if ply==self.pilot and down then
 			if self:TogglePhyslock() then
-				ply:ChatPrint("Physlock "..(self:GetData("physlock") and "en" or "dis").."abled")
+                TARDIS:Message(ply, "Physlock "..(self:GetData("physlock") and "en" or "dis").."abled")
 			end
 		end
 	end,

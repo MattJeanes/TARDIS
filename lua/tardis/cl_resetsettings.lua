@@ -9,7 +9,7 @@ TARDIS:AddGUISetting("Reset Settings", function(self,frame,screen)
 	button.DoClick = function(button)
 		Derma_Query("Reset all clientside settings? This cannot be undone.", "TARDIS Interface", "OK", function()
 			TARDIS:ResetSettings()
-			LocalPlayer():ChatPrint("TARDIS clientside settings have been reset. You may need to respawn the TARDIS for all changes to apply.")
+            TARDIS:Message(LocalPlayer(), "TARDIS clientside settings have been reset. You may need to respawn the TARDIS for all changes to apply.")
 		end, "Cancel", function() end):SetSkin("TARDIS")
 	end
 	

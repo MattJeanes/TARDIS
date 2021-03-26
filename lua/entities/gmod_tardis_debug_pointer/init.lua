@@ -33,8 +33,8 @@ function ENT:Use( activator, caller )
 		local text =   "  Vector("..math.Round(pos.x,decimals)..", "..math.Round(pos.y,decimals)..", "..math.Round(pos.z,decimals).."),"
 		text = text .. "  Angle("..math.Round(ang.p,decimals)..", "..math.Round(ang.y,decimals)..", "..math.Round(ang.r,decimals)..")"
 
-		activator:ChatPrint(" \nCurrent pointer position:")
-		activator:ChatPrint(text)
+        TARDIS:Message(activator, " \nCurrent pointer position:")
+        TARDIS:Message(activator, text)
 	end
     return
 end

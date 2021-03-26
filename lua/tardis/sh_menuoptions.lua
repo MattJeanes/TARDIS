@@ -53,7 +53,7 @@ if CLIENT then
 			end
 			interior_combobox.OnSelect = function(panel,index,value,data)
 				TARDIS:SetSetting("interior",data,true)
-				LocalPlayer():ChatPrint("TARDIS interior changed. Respawn or redecorate the TARDIS for changes to apply.")
+                TARDIS:Message(LocalPlayer(), "TARDIS interior changed. Respawn or redecorate the TARDIS for changes to apply.")
 			end
 			panel:AddItem(interior_combobox)
 
@@ -157,7 +157,7 @@ if CLIENT then
 			end
 			visgui_theme.OnSelect = function(panel, index, value, data)
 				TARDIS:SetSetting("visgui_theme", data)
-				LocalPlayer():ChatPrint("TARDIS visual GUI theme changed to "..value)
+                TARDIS:Message(LocalPlayer(), "TARDIS visual GUI theme changed to "..value)
 			end
 			panel:AddItem(visgui_theme)
 

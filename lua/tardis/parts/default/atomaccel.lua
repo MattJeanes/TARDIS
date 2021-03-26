@@ -21,7 +21,7 @@ if SERVER then
 			self.exterior.spindir=-1
 			dir="anti-clockwise"
 		end
-		ply:ChatPrint("Spin direction set to "..dir)
+        TARDIS:Message(ply, "Spin direction set to "..dir)
 	end
 end
 

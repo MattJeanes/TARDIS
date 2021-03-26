@@ -43,7 +43,7 @@ if SERVER then
 		if self.exterior:GetData("locked") then
 			if IsValid(a) and a:IsPlayer() then
 				if self.exterior:CallHook("LockedUse",a)==nil then
-					a:ChatPrint("The doors are locked.")
+                    TARDIS:Message(a, "The doors are locked.")
 				end
 				self:EmitSound(self.exterior.metadata.Exterior.Sounds.Door.locked)
 			end

@@ -61,8 +61,7 @@ end)
 ENT:AddHook("CanUsePart","security",function(self,part,ply)
 	if self:GetSecurity() and (ply~=self:GetCreator()) then
 		if part.BypassIsomorphic then return end
-		
-		ply:ChatPrint("This TARDIS uses Isomorphic Security. You may not use any controls.")
+        TARDIS:Message(ply, "This TARDIS uses Isomorphic Security. You may not use any controls.")
 		return false,false
 	end
 end)

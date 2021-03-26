@@ -89,7 +89,7 @@ TARDIS:AddKeyBind("flight-spindir",{
 				self.spindir=-1
 				dir="anti-clockwise"
 			end
-			ply:ChatPrint("Spin direction set to "..dir)
+            TARDIS:Message(ply, "Spin direction set to "..dir)
 		end
 	end,
 	key=MOUSE_RIGHT,
@@ -136,7 +136,7 @@ if SERVER then
 		if on and self:GetData("physlock",false)==true then
 			local pilot = self:GetData("pilot",nil)
 			if IsValid(pilot) and pilot:IsPlayer() then
-				pilot:ChatPrint("WARNING: Physical lock engaged")
+                TARDIS:Message(pilot, "WARNING: Physical lock engaged")
 			end
 		end
 		self:SetData("flight",on,true)
@@ -172,10 +172,10 @@ if SERVER then
 	ENT:AddHook("ThirdPerson", "flight", function(self,ply,enabled)
 		if enabled then
 			if IsValid(self.pilot) then
-				ply:ChatPrint(self.pilot:Nick().." is the pilot.")
+                TARDIS:Message(ply, self.pilot:Nick().." is the pilot.")
 			elseif self:CallHook("CanChangePilot",ply)~=false then
 				self.pilot=ply
-				ply:ChatPrint("You are now the pilot.")
+                TARDIS:Message(ply, "You are now the pilot.")
 				self:CallHook("PilotChanged",nil,ply)
 			end
 		else
@@ -185,19 +185,19 @@ if SERVER then
 				for k,v in pairs(self.occupants) do
 					if k:GetTardisData("thirdperson") then
 						if IsValid(self.pilot) then
-							k:ChatPrint(self.pilot:Nick().." is now the pilot.")
+                            TARDIS:Message(k, self.pilot:Nick().." is now the pilot.")
 						else
 							self.pilot=k
-							k:ChatPrint("You are now the pilot.")
+                            TARDIS:Message(k, "You are now the pilot.")
 						end
 					end
 				end
 			end
 			if waspilot then
 				if IsValid(self.pilot) then
-					ply:ChatPrint(self.pilot:Nick().." is now the pilot.")
+                    TARDIS:Message(ply, self.pilot:Nick().." is now the pilot.")
 				else
-					ply:ChatPrint("You are no longer the pilot.")
+                    TARDIS:Message(ply, "You are no longer the pilot.")
 				end
 				self:CallHook("PilotChanged",ply,self.pilot)
 			end
