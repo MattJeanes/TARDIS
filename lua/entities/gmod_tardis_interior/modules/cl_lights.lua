@@ -2,7 +2,7 @@
 
 function ENT:DrawLight(id,light)
 	if self:CallHook("ShouldDrawLight",id,light)==false then return end
-	local dlight = DynamicLight(id)
+	local dlight = DynamicLight(id, true)
 	if ( dlight ) then
 		local size=1024
 		local c=light.color
@@ -20,6 +20,7 @@ function ENT:DrawLight(id,light)
 end
 
 ENT:AddHook("Think", "lights", function(self)
+	if TARDIS:GetSetting("lightoverride-enabled",false) then return end
 	local light=self.metadata.Interior.Light
 	local lights=self.metadata.Interior.Lights
 	local index=self:EntIndex()
@@ -62,13 +63,5 @@ ENT:AddHook("Draw", "lights-roundthings", function(self)
 				render.DrawSprite(pos, size, size, Color(255,153,0, vis))
 			end
 		end
-	end
-end)
-
-ENT:AddHook("ShouldDrawLight", "lights", function(self,id,light)
-	local power = self.exterior:GetPower()
-	if power~=true then
-		if light==nil then return false end
-		return light.nopower or false
 	end
 end)
