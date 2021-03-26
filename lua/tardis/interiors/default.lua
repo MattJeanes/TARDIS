@@ -79,7 +79,7 @@ T.Interior={
 		default_atomaccel          = {pos = Vector(20, -37.669998, 1.75),             ang = Angle(0, 0, 0),                   tip = {pos = Vector(20, -38, 6), right = true},},
 		default_directionalpointer = {pos = Vector(12.5, -24.5, 23),                  ang = Angle(0, 30, 0),                  tip = {pos = Vector(12.5, -24.5, 23)},},
 		default_float              = {pos = Vector(-2.5, -45.5, 7.75),                ang = Angle(-56.714, -54.280, 148.819), tip = {pos = Vector(-2, -60, 1), right = true, down = true},},
-		default_blacksticks        = {pos = Vector(4.480469, -43.906372, 7),          ang = Angle(13, 0, 24.176),             --[[tip = {pos = Vector(4.48, -43.9, 7)},]]}, --cloak control which isn't ready yet
+		default_blacksticks        = {pos = Vector(4.480469, -43.906372, 7),          ang = Angle(13, 0, 24.176),             tip = {pos = Vector(4.48, -43.9, 7)}},
 		default_longflighttoggle   = {pos = Vector(-37.242310, -27.915344, 7.428223), ang = Angle(338, 28.721, 15),           tip = {pos = Vector(-37.24, -27.91, 7.42)},},
 		default_dematcircuit       = {pos = Vector(-43.168457, -31.015625, 4.7),      ang = Angle(22, 209.224, 348),          tip = {pos = Vector(-43.16, -31.01, 4.7), right = true, down = true},},
 		default_helmic = {

@@ -42,8 +42,9 @@ function TARDIS:CreateCloakMaterials()
 	print("TARDIS - Generating procedural cloak materials")
 	local interiors = self:GetInteriors()
 	for k,v in pairs(interiors) do
-		if v.Exterior.PhaseMaterial then return end
-		self:CreateCloakMaterial(k)
+		if not v.Exterior.PhaseMaterial then 
+			self:CreateCloakMaterial(k)
+		end
 	end
 	print("TARDIS - Finished generating "..table.Count(self.CloakMaterials).." procedural materials.")
 end

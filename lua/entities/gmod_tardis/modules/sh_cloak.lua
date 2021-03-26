@@ -1,4 +1,4 @@
--- Placeholder cloak module (currently only for E2 and control presets, feel free to delete later)
+-- Cloak
 
 TARDIS:AddControl({
 	id = "cloak",
@@ -7,13 +7,13 @@ TARDIS:AddControl({
 	end,
 	serveronly=true,
 	screen_button = {
-		virt_console = true, -- change to true to add
+		virt_console = true,
 		mmenu = false,
 		toggle = true,
-		frame_type = {0, 2},
+		frame_type = {0, 1},
 		text = "Cloaking",
 		pressed_state_from_interior = false,
-		pressed_state_data = "cloak", -- can be changed
+		pressed_state_data = "cloak",
 		order = 12,
 	},
 	tip_text = "Cloaking Device",
@@ -34,7 +34,7 @@ TARDIS:AddKeyBind("cloak-toggle",{
 })
 
 ENT:AddHook("Initialize", "cloak", function(self)
-    self:SetData("cloak", false, true)
+    self:SetData("cloak", false)
 
     self:SetData("modelmins", self:OBBMins())
 	local maxs = self:OBBMaxs()
@@ -51,10 +51,11 @@ end
 
 if SERVER then
     function ENT:SetCloak(on)
-        if on then
-            self:SendMessage("cloaksound")
-		end
-		return self:SetData("cloak", on, true)
+		self:SetData("cloak", on)
+		self:SendMessage("cloak", function()
+			net.WriteBool(on)
+		end)
+		return true
     end
     
     function ENT:ToggleCloak()
@@ -96,6 +97,7 @@ else
 		local percent = self:GetData("phase-percent",1)
 		if percent == target and animating then
 			self:SetData("cloak-animating", false)
+			return
 		elseif percent ~= target and not animating then
 			self:SetData("cloak-animating", true)
 		end
@@ -120,7 +122,7 @@ else
 	local function dodraw(self, ent)
 		ent = ent or self
 		local animating = self:GetData("cloak-animating",false)
-		if animating then
+		if animating and not wp.drawing then
 			ent:SetRenderClipPlaneEnabled(true)
 		else
 			ent:SetRenderClipPlaneEnabled(false)
@@ -191,10 +193,12 @@ else
 		if self:GetData("cloak",false) and not self:GetData("cloak-animating",false) then return false end
 	end)
 
-    ENT:OnMessage("cloaksound", function(self)
+    ENT:OnMessage("cloak", function(self)
+		local on = net.ReadBool()
+		self:SetData("cloak", on)
+		self:SetData("cloak-animating", true)
         local snd = self.metadata.Exterior.Sounds.Cloak
-
-        if TARDIS:GetSetting("cloaksound-enabled") && TARDIS:GetSetting("sound") then
+        if on and TARDIS:GetSetting("cloaksound-enabled") and TARDIS:GetSetting("sound") then
             self:EmitSound(snd)
 
             if IsValid(self.interior) then
