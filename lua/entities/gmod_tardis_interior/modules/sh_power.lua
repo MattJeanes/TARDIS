@@ -53,4 +53,10 @@ else
 			return true
 		end
 	end)
+
+	ENT:AddHook("ShouldDrawLight", "power", function(self,id,light)
+		if (not self:GetPower()) and ((not light) or (not light.nopower))  then
+			return false
+		end
+	end)
 end
