@@ -103,7 +103,7 @@ ENT:AddHook("Initialize", "tips", function(self)
 	end
 
 	if TARDIS:GetSetting("tips") and #self.alltips == 0 then
-        TARDIS:Message(LocalPlayer(), "WARNING: Tips are enabled but this interior does not support them!")
+        	TARDIS:Message(LocalPlayer(), "WARNING: Tips are enabled but this interior does not support them!")
 		return
 	end
 
