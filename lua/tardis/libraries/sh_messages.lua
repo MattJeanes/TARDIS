@@ -70,7 +70,7 @@ function TARDIS:Message(ply, message, error)
 		return
 	end
 	if style == 2 then
-		LocalPlayer():ChatPrint(fullmessage)
+		TARDIS:Message(LocalPlayer(), fullmessage)
 		return
 	end
 	if style == 3 then

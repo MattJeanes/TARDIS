@@ -32,7 +32,6 @@ function ENT:Use( activator, caller )
 		local decimals = 3
 		local text =   "  Vector("..math.Round(pos.x,decimals)..", "..math.Round(pos.y,decimals)..", "..math.Round(pos.z,decimals).."),"
 		text = text .. "  Angle("..math.Round(ang.p,decimals)..", "..math.Round(ang.y,decimals)..", "..math.Round(ang.r,decimals)..")"
-
 		activator:ChatPrint(" \nCurrent pointer position:")
 		activator:ChatPrint(text)
 	end
