@@ -14,9 +14,9 @@ function TARDIS:Debug(text, ply)
 	if TARDIS:IsDebugOn() then
 		local fulltext = "[TARDIS Debug] "..text
 		if CLIENT and LocalPlayer() then
-            TARDIS:Message(LocalPlayer(), fulltext)
+			LocalPlayer():ChatPrint(fulltext)
 		elseif ply ~= nil then
-            TARDIS:Message(ply, fulltext)
+			ply:ChatPrint(fulltext)
 		else
 			print(fulltext)
 		end
@@ -70,7 +70,7 @@ function TARDIS:Message(ply, message, error)
 		return
 	end
 	if style == 2 then
-        TARDIS:Message(LocalPlayer(), fullmessage)
+		TARDIS:Message(LocalPlayer(), fullmessage)
 		return
 	end
 	if style == 3 then

@@ -217,7 +217,7 @@ if SERVER then
 		self:CallHook("RepairFinished")
 		self:SetPower(true)
 		self:SetLocked(false, nil, true)
-        TARDIS:Message(self:GetCreator(), "Your TARDIS has finished self-repairing")
+		TARDIS:Message(self:GetCreator(), "Your TARDIS has finished self-repairing")
 		self:StopSmoke()
 		self:FlashLight(1.5)
 	end
@@ -311,7 +311,7 @@ if SERVER then
 
 	ENT:AddHook("LockedUse", "repair", function(self, a)
 		if self:GetData("repairing") then
-            TARDIS:Message(a, "This TARDIS is repairing. It will be done in "..math.floor(self:GetRepairTime()).." seconds.")
+			TARDIS:Message(a, "This TARDIS is repairing. It will be done in "..math.floor(self:GetRepairTime()).." seconds.")
 			return true
 		end
 	end)

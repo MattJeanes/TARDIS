@@ -77,7 +77,7 @@ if SERVER then
 	ENT:AddHook("Use", "lock", function(self,a,c)
 		if self:GetData("locked") and IsValid(a) and a:IsPlayer() then
 			if self:CallHook("LockedUse",a,c)==nil then
-                TARDIS:Message(a, "This TARDIS is locked.")
+				TARDIS:Message(a, "This TARDIS is locked.")
 			end
 			self:EmitSound(self.metadata.Exterior.Sounds.Door.locked)
 		end
