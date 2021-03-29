@@ -137,44 +137,39 @@ TARDIS:AddControl({
 
 if SERVER then
 	function ENT:Demat(pos,ang,callback)
-		if self:CallHook("CanDemat")~=false then
-			self:CloseDoor(function(state)
-				if state then
-					if callback then callback(false) end
-				else
-					pos=pos or self:GetData("demat-pos") or self:GetPos()
-					ang=ang or self:GetData("demat-ang") or self:GetAngles()
-					self:SetBodygroup(1,0)
-					self:SetData("demat-pos",pos,true)
-					self:SetData("demat-ang",ang,true)
-					self:SendMessage("demat", function() net.WriteVector(self:GetData("demat-pos",Vector())) end)
-					self:SetData("demat",true)
-					self:SetData("fastreturn-pos",self:GetPos())
-					self:SetData("fastreturn-ang",self:GetAngles())
-					self:SetData("step",1)
-					self:SetData("teleport",true)
-					self:SetCollisionGroup( COLLISION_GROUP_WORLD )
-					self:DrawShadow(false)
-					for k,v in pairs(self.parts) do
-						v:DrawShadow(false)
-					end
-					local constrained = constraint.GetAllConstrainedEntities(self)
-					local attached
-					if constrained then
-						for k,v in pairs(constrained) do
-							if not (k.TardisPart or k==self) then
-								local a=k:GetColor().a
-								if not attached then attached = {} end
-								attached[k] = a
-							end
-						end
-					end
-					self:SetData("demat-attached",attached,true)
-					if callback then callback(true) end
-				end
-			end)
-		else
+		if self:CallHook("CanDemat") == false then
+			self:SendMessage("failed-demat")
 			if callback then callback(false) end
+		else
+			pos=pos or self:GetData("demat-pos") or self:GetPos()
+			ang=ang or self:GetData("demat-ang") or self:GetAngles()
+			self:SetBodygroup(1,0)
+			self:SetData("demat-pos",pos,true)
+			self:SetData("demat-ang",ang,true)
+			self:SendMessage("demat", function() net.WriteVector(self:GetData("demat-pos",Vector())) end)
+			self:SetData("demat",true)
+			self:SetData("fastreturn-pos",self:GetPos())
+			self:SetData("fastreturn-ang",self:GetAngles())
+			self:SetData("step",1)
+			self:SetData("teleport",true)
+			self:SetCollisionGroup( COLLISION_GROUP_WORLD )
+			self:DrawShadow(false)
+			for k,v in pairs(self.parts) do
+				v:DrawShadow(false)
+			end
+			local constrained = constraint.GetAllConstrainedEntities(self)
+			local attached
+			if constrained then
+				for k,v in pairs(constrained) do
+					if not (k.TardisPart or k==self) then
+						local a=k:GetColor().a
+						if not attached then attached = {} end
+						attached[k] = a
+					end
+				end
+			end
+			self:SetData("demat-attached",attached,true)
+			if callback then callback(true) end
 		end
 	end
 	function ENT:Mat(callback)
@@ -408,6 +403,12 @@ if SERVER then
 		end
 	end)
 	
+	ENT:AddHook("CanDemat", "doors", function(self)
+		if self:GetData("doorstate") then
+			return false
+		end
+	end)
+
 	ENT:AddHook("CanMat", "teleport", function(self)
 		if self:GetData("teleport") or (not self:GetData("vortex")) then
 			return false
@@ -533,6 +534,12 @@ else
 				end
 			end
 		end
+	end)
+
+	ENT:OnMessage("failed-demat", function(self)
+		self:EmitSound( Sound( "doctorwho1200/coral/demat_fail.wav" ))
+		self.interior:EmitSound( Sound( "doctorwho1200/coral/demat_fail.wav" ))
+		util.ScreenShake(self.interior:GetPos(),5,100,5,700)
 	end)
 	
 	ENT:OnMessage("premat", function(self)
