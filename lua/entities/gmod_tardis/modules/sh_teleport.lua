@@ -138,6 +138,8 @@ TARDIS:AddControl({
 if SERVER then
 	function ENT:Demat(pos,ang,callback)
 		if self:CallHook("CanDemat") == false then
+			if callback then callback(false) end
+		elseif self:CallHook("FailDemat") == true then
 			self:SendMessage("failed-demat")
 			if callback then callback(false) end
 		else
@@ -398,14 +400,15 @@ if SERVER then
 	end)
 	
 	ENT:AddHook("CanDemat", "teleport", function(self)
-		if self:GetData("teleport") or self:GetData("vortex") or (not self:GetPower()) then
+		if self:GetData("teleport") or self:GetData("vortex") or (not self:GetPower())
+		then
 			return false
 		end
 	end)
 	
-	ENT:AddHook("CanDemat", "doors", function(self)
+	ENT:AddHook("FailDemat", "doors", function(self)
 		if self:GetData("doorstate") then
-			return false
+			return true
 		end
 	end)
 
@@ -537,9 +540,13 @@ else
 	end)
 
 	ENT:OnMessage("failed-demat", function(self)
-		self:EmitSound( Sound( "doctorwho1200/coral/demat_fail.wav" ))
-		self.interior:EmitSound( Sound( "doctorwho1200/coral/demat_fail.wav" ))
-		util.ScreenShake(self.interior:GetPos(),5,100,5,700)
+		local ext = self.metadata.Exterior.Sounds.Teleport
+		local int = self.metadata.Interior.Sounds.Teleport
+		self:EmitSound(ext.demat_fail)
+		self.interior:EmitSound(int.demat_fail or ext.demat_fail)
+		if LocalPlayer():GetTardisData("exterior")==self then
+			util.ScreenShake(self.interior:GetPos(),3.5,100,3,300)
+		end
 	end)
 	
 	ENT:OnMessage("premat", function(self)
