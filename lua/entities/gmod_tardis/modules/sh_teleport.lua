@@ -70,7 +70,13 @@ TARDIS:AddControl({
 				if result then
 					TARDIS:Message(ply, "Dematerialising")
 				else
-					TARDIS:ErrorMessage(ply, "Failed to dematerialise")
+					if self:GetData("doorstatereal", false) then
+						TARDIS:ErrorMessage(ply, "Can't dematerialise while doors are open")
+					elseif self:GetData("handbrake", false) then
+						TARDIS:ErrorMessage(ply, "Time Rotor Handbrake is engaged! Cannot dematerialise")
+					else
+						TARDIS:ErrorMessage(ply, "Failed to dematerialise")
+					end
 				end
 			end)
 		end
@@ -138,9 +144,9 @@ TARDIS:AddControl({
 if SERVER then
 	function ENT:Demat(pos,ang,callback)
 		if self:CallHook("CanDemat") == false then
-			if callback then callback(false) end
-		elseif self:CallHook("FailDemat") == true then
-			self:SendMessage("failed-demat")
+			if self:CallHook("FailDemat") == true then
+				self:SendMessage("failed-demat")
+			end
 			if callback then callback(false) end
 		else
 			pos=pos or self:GetData("demat-pos") or self:GetPos()
@@ -398,16 +404,19 @@ if SERVER then
 			return self:GetData("fastreturn-pos", Vector(0,0,0))
 		end
 	end)
-	
+
 	ENT:AddHook("CanDemat", "teleport", function(self)
 		if self:GetData("teleport") or self:GetData("vortex") or (not self:GetPower())
 		then
 			return false
 		end
+		if self:CallHook("FailDemat") == true then
+			return false
+		end
 	end)
-	
+
 	ENT:AddHook("FailDemat", "doors", function(self)
-		if self:GetData("doorstate") then
+		if self:GetData("doorstatereal") then
 			return true
 		end
 	end)
@@ -417,43 +426,43 @@ if SERVER then
 			return false
 		end
 	end)
-	
+
 	ENT:AddHook("CanToggleDoor","teleport",function(self,state)
 		if self:GetData("teleport") then
 			return false
 		end
 	end)
-	
+
 	ENT:AddHook("ShouldThinkFast","teleport",function(self)
 		if self:GetData("teleport") then
 			return true
 		end
 	end)
-	
+
 	ENT:AddHook("CanPlayerEnter","teleport",function(self)
 		if self:GetData("teleport") or self:GetData("vortex") then
 			return false, true
 		end
 	end)
-	
+
 	ENT:AddHook("CanPlayerEnterDoor","teleport",function(self)
 		if (self:GetData("teleport") or self:GetData("vortex")) then
 			return false
 		end
 	end)
-	
+
 	ENT:AddHook("CanPlayerExit","teleport",function(self)
 		if self:GetData("teleport") or self:GetData("vortex") then
 			return false
 		end
 	end)
-	
+
 	ENT:AddHook("ShouldTurnOnRotorwash", "teleport", function(self)
 		if self:GetData("teleport") then
 			return true
 		end
 	end)
-	
+
 	ENT:AddHook("ShouldTurnOffRotorwash", "teleport", function(self)
 		if self:GetData("vortex") then
 			return true

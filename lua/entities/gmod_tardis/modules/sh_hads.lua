@@ -30,10 +30,22 @@ if SERVER then
 	end
 
 	ENT:AddHook("OnTakeDamage", "hads", function(self)
-		if self:CallHook("CanTriggerHads")==false then return end
-		if (self:GetData("hads",false)==true and self:GetData("hads-triggered",false)==false) and (not self:GetData("teleport",false)) then
-			TARDIS:Message(self:GetCreator(), "Your TARDIS is under attack and the HADS has been triggered!")
-			self:SetData("hads-triggered",true,true)
+		if self:CallHook("CanTriggerHads") == false then return end
+		if (self:GetData("hads",false) == true and self:GetData("hads-triggered",false)==false) and (not self:GetData("teleport",false)) then
+			if self:GetData("doorstatereal") then
+				self:ToggleDoor()
+			end
+			if self:CallHook("CanDemat") == false then
+				if not self:GetData("hads-failed-time") or CurTime() > self:GetData("hads-failed-time") + 10 then
+					self:SetData("hads-failed-time", CurTime())
+					TARDIS:ErrorMessage(self:GetCreator(), "Something stopped H.A.D.S. from dematerialising the TARDIS!")
+					TARDIS:ErrorMessage(self:GetCreator(), "Your TARDIS is under attack!")
+				end
+				return
+			end
+			TARDIS:Message(self:GetCreator(), "H.A.D.S. has been triggered!")
+			TARDIS:ErrorMessage(self:GetCreator(), "Your TARDIS is under attack!")
+			self:SetData("hads-triggered", true)
 			self:SetFastRemat(false)
 			self:Demat()
 			self:CallHook("HADSTrigger")
