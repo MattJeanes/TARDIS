@@ -12,7 +12,7 @@ TARDIS:AddControl({
 	end,
 	serveronly=true,
 	screen_button = {
-		virt_console = false, -- change to true to add
+		virt_console = true,
 		mmenu = false,
 		toggle = true,
 		frame_type = {0, 2},
