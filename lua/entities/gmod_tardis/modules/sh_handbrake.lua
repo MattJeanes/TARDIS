@@ -1,6 +1,3 @@
--- Placeholder handbrake module (currently only for control presets, feel free to delete later)
-
--- We add this earlier so that extension creators could add them
 TARDIS:AddControl({
 	id = "handbrake",
 	ext_func=function(self, ply)
@@ -46,8 +43,10 @@ if SERVER then
 		return true
 	end
 
-	ENT:AddHook("FailDemat", "handbrake", function(self)
-		if self:GetData("handbrake") then return true end
+	ENT:AddHook("FailDemat", "handbrake", function(self, force)
+		if self:GetData("handbrake") and force ~= true then
+			return true
+		end
 	end)
 
 end

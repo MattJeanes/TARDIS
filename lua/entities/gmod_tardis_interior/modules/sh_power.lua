@@ -59,4 +59,11 @@ else
 			return false
 		end
 	end)
+
+	ENT:AddHook("ShouldDrawLight", "force-demat-blinking", function(self)
+		if self.exterior:GetData("force-demat-blinking") then
+			return (math.Round(7 * CurTime()) % 2 ~= 0)
+		end
+	end)
+
 end

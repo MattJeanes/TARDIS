@@ -141,14 +141,70 @@ TARDIS:AddControl({
 	tip_text = "Vortex Flight Toggler",
 })
 
+TARDIS:AddControl({
+	id = "enginerelease",
+	ext_func=function(self, ply)
+		local pos = pos or self:GetData("demat-pos") or self:GetPos()
+		local ang = ang or self:GetData("demat-ang") or self:GetAngles()
+		self:ForceDemat(pos, ang, function(result, not_required)
+			if result then
+				TARDIS:Message(ply, "Force dematerialisation triggered")
+			else
+				if not not_required then
+					TARDIS:ErrorMessage(ply, "Failed to dematerialise")
+				end
+			end
+		end)
+	end,
+	serveronly=true,
+	screen_button = {
+		virt_console = true,
+		mmenu = false,
+		toggle = false,
+		frame_type = {0, 1},
+		text = "Engine Release",
+		order = 13,
+	},
+	tip_text = "Engine Release",
+})
+
 if SERVER then
-	function ENT:Demat(pos,ang,callback)
-		if self:CallHook("CanDemat") == false then
-			if self:CallHook("FailDemat") == true then
+	function ENT:ForceDemat(pos, ang, callback)
+		if self:GetData("failing-demat", false) then
+			self:SetData("failing-demat", false, true)
+			self:SetData("force-demat", true, true)
+			self:SetData("force-demat-time", CurTime(), true)
+			self:SetData("force-demat-blinking", true, true)
+			self:Explode()
+			self:Explode()
+			self.interior:Explode()
+			self:Demat(pos, ang, callback, true)
+			self:SendMessage("force-demat")
+			self.interior:Explode()
+			self.interior:Explode()
+		else
+			if callback then callback(false, true) end
+		end
+	end
+
+	function ENT:Demat(pos, ang, callback, force)
+		if self:CallHook("CanDemat", force) == false then
+			if self:CallHook("FailDemat", force) == true then
+				self:SetData("failing-demat-time", CurTime(), true)
+				self:SetData("failing-demat", true, true)
 				self:SendMessage("failed-demat")
 			end
 			if callback then callback(false) end
 		else
+			if force then
+				if self:GetData("doorstatereal") then
+					self:CloseDoor()
+				end
+				if self:GetData("doorstatereal") then
+					if callback then callback(false) end
+					return
+				end
+			end
 			pos=pos or self:GetData("demat-pos") or self:GetPos()
 			ang=ang or self:GetData("demat-ang") or self:GetAngles()
 			self:SetBodygroup(1,0)
@@ -271,12 +327,13 @@ if SERVER then
 	end
 	function ENT:StopDemat()
 		self:SetData("demat",false)
+		self:SetData("force-demat", false, true)
 		self:SetData("step",1)
 		self:SetData("vortex",true)
 		self:SetData("teleport",false)
 		self:SetSolid(SOLID_NONE)
 		self:RemoveAllDecals()
-		
+
 		local flight = self:GetData("flight")
 		self:SetData("prevortex-flight",flight)
 		if not flight then
@@ -405,18 +462,18 @@ if SERVER then
 		end
 	end)
 
-	ENT:AddHook("CanDemat", "teleport", function(self)
+	ENT:AddHook("CanDemat", "teleport", function(self, force)
 		if self:GetData("teleport") or self:GetData("vortex") or (not self:GetPower())
 		then
 			return false
 		end
-		if self:CallHook("FailDemat") == true then
+		if self:CallHook("FailDemat", force) == true then
 			return false
 		end
 	end)
 
-	ENT:AddHook("FailDemat", "doors", function(self)
-		if self:GetData("doorstatereal") then
+	ENT:AddHook("FailDemat", "doors", function(self, force)
+		if self:GetData("doorstatereal") and force ~= true then
 			return true
 		end
 	end)
@@ -529,17 +586,26 @@ else
 		if TARDIS:GetSetting("teleport-sound") and TARDIS:GetSetting("sound") then
 			local ext = self.metadata.Exterior.Sounds.Teleport
 			local int = self.metadata.Interior.Sounds.Teleport
+
+			local sound_demat_ext = ext.demat
+			local sound_demat_int = int.demat or ext.demat
+
+			if self:GetData("force-demat", false) then
+				sound_demat_ext = ext.demat_force
+				sound_demat_int = int.demat_force or ext.demat_force
+			end
+
 			local pos = net.ReadVector()
 			if LocalPlayer():GetTardisData("exterior")==self then
 				if (self:GetData("demat-fast",false))==true then
 					self.interior:EmitSound(int.fullflight or ext.fullflight)
 					self:EmitSound(ext.fullflight)
 				else
-					self.interior:EmitSound(int.demat or ext.demat)
-					self:EmitSound(ext.demat)
+					self.interior:EmitSound(sound_demat_int)
+					self:EmitSound(sound_demat_ext)
 				end
 			else
-				sound.Play(ext.demat,self:GetPos())
+				sound.Play(sound_demat_ext,self:GetPos())
 				if pos and self:GetData("demat-fast",false) then
 					if not IsValid(self) then return end
 					sound.Play(ext.mat, pos)
@@ -554,7 +620,13 @@ else
 		self:EmitSound(ext.demat_fail)
 		self.interior:EmitSound(int.demat_fail or ext.demat_fail)
 		if LocalPlayer():GetTardisData("exterior")==self then
-			util.ScreenShake(self.interior:GetPos(),3.5,100,3,300)
+			util.ScreenShake(self.interior:GetPos(), 2.5, 100, 3, 300)
+		end
+	end)
+
+	ENT:OnMessage("force-demat", function(self)
+		if LocalPlayer():GetTardisData("exterior")==self then
+			util.ScreenShake(self.interior:GetPos(), 10, 500, 10, 300)
 		end
 	end)
 	
@@ -586,13 +658,13 @@ else
 		self:SetData("teleport",false)
 		self:CallHook("StopDemat")
 	end
-	
+
 	function ENT:StopMat()
 		self:SetData("mat",false)
 		self:SetData("step",1)
 		self:SetData("teleport",false)
 	end
-	
+
 	hook.Add("PostDrawTranslucentRenderables", "tardis-trace", function()
 		local ext=TARDIS:GetExteriorEnt()
 		if IsValid(ext) and ext:GetData("teleport-trace") then
@@ -670,6 +742,28 @@ ENT:AddHook("Think","teleport",function(self,delta)
 					end
 					k:SetColor(ColorAlpha(k:GetColor(),alpha))
 				end
+			end
+		end
+	end
+end)
+
+ENT:AddHook("Think","failed-demat",function(self)
+	if self:GetData("failing-demat", false) then
+		if CurTime() > self:GetData("failing-demat-time") + 4.5 then
+			self:SetData("failing-demat", false, true)
+		end
+	end
+end)
+
+ENT:AddHook("Think","force-demat",function(self)
+	if self:GetData("force-demat", false) then
+		if self:GetData("force-demat-blinking", false) and CurTime() > self:GetData("force-demat-time") + 1.5 then
+			self:SetData("force-demat-blinking", false, true)
+			if SERVER then
+				self:Explode()
+				self.interior:Explode()
+				self.interior:Explode()
+				self.interior:Explode()
 			end
 		end
 	end

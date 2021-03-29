@@ -14,7 +14,7 @@ TARDIS:AddControl({
 		text = "H.A.D.S.",
 		pressed_state_from_interior = false,
 		pressed_state_data = "hads",
-		order = 13,
+		order = 14,
 	},
 	tip_text = "H.A.D.S.",
 })
