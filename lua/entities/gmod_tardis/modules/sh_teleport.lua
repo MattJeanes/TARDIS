@@ -33,7 +33,7 @@ TARDIS:AddKeyBind("teleport-demat",{
 		end
 	end,
 	key=MOUSE_LEFT,
-	exterior=true	
+	exterior=true
 })
 
 TARDIS:AddKeyBind("teleport-mat",{
@@ -142,17 +142,15 @@ TARDIS:AddControl({
 })
 
 TARDIS:AddControl({
-	id = "enginerelease",
+	id = "engine_release",
 	ext_func=function(self, ply)
 		local pos = pos or self:GetData("demat-pos") or self:GetPos()
 		local ang = ang or self:GetData("demat-ang") or self:GetAngles()
-		self:ForceDemat(pos, ang, function(result, not_required)
+		self:EngineReleaseDemat(pos, ang, function(result)
 			if result then
 				TARDIS:Message(ply, "Force dematerialisation triggered")
-			else
-				if not not_required then
-					TARDIS:ErrorMessage(ply, "Failed to dematerialise")
-				end
+			elseif result == false then
+				TARDIS:ErrorMessage(ply, "Failed to dematerialise")
 			end
 		end)
 	end,
@@ -170,26 +168,34 @@ TARDIS:AddControl({
 
 if SERVER then
 	function ENT:ForceDemat(pos, ang, callback)
+		self:SetData("force-demat", true, true)
+		self:SetData("force-demat-time", CurTime(), true)
+		self:Explode(30)
+		self.interior:Explode(20)
+		self:Demat(pos, ang, callback, true)
+		self:SendMessage("force-demat")
+	end
+	function ENT:EngineReleaseDemat(pos, ang, callback)
 		if self:GetData("failing-demat", false) then
 			self:SetData("failing-demat", false, true)
-			self:SetData("force-demat", true, true)
-			self:SetData("force-demat-time", CurTime(), true)
-			self:SetData("force-demat-blinking", true, true)
-			self:Explode()
-			self:Explode()
-			self.interior:Explode()
-			self:Demat(pos, ang, callback, true)
-			self:SendMessage("force-demat")
-			self.interior:Explode()
-			self.interior:Explode()
+			self:ForceDemat(pos, ang, callback)
+		end
+	end
+	function ENT:AutoDemat(pos, ang, callback)
+		if self:CallHook("CanDemat", false) ~= false then
+			self:Demat(pos, ang, callback)
+		elseif self:CallHook("CanDemat", true)  ~= false then
+			self:ForceDemat(pos, ang, callback)
 		else
-			if callback then callback(false, true) end
+			if callback then callback(false) end
 		end
 	end
 
 	function ENT:Demat(pos, ang, callback, force)
-		if self:CallHook("CanDemat", force) == false then
-			if self:CallHook("FailDemat", force) == true then
+		if self:CallHook("CanDemat", force, false) == false then
+			if self:CallHook("FailDemat", force) == true
+				and self:CallHook("CanDemat", force, true) ~= false
+			then
 				self:SetData("failing-demat-time", CurTime(), true)
 				self:SetData("failing-demat", true, true)
 				self:SendMessage("failed-demat")
@@ -462,12 +468,15 @@ if SERVER then
 		end
 	end)
 
-	ENT:AddHook("CanDemat", "teleport", function(self, force)
+	ENT:AddHook("CanDemat", "teleport", function(self, force, ignore_fail_demat)
 		if self:GetData("teleport") or self:GetData("vortex") or (not self:GetPower())
 		then
 			return false
 		end
-		if self:CallHook("FailDemat", force) == true then
+	end)
+
+	ENT:AddHook("CanDemat", "failed", function(self, force, ignore_fail_demat)
+		if ignore_fail_demat ~= true and self:CallHook("FailDemat", force) == true then
 			return false
 		end
 	end)
@@ -626,7 +635,7 @@ else
 
 	ENT:OnMessage("force-demat", function(self)
 		if LocalPlayer():GetTardisData("exterior")==self then
-			util.ScreenShake(self.interior:GetPos(), 10, 500, 10, 300)
+			util.ScreenShake(self.interior:GetPos(), 15, 100, 8, 300)
 		end
 	end)
 	
@@ -749,7 +758,7 @@ end)
 
 ENT:AddHook("Think","failed-demat",function(self)
 	if self:GetData("failing-demat", false) then
-		if CurTime() > self:GetData("failing-demat-time") + 4.5 then
+		if CurTime() > self:GetData("failing-demat-time") + 2.5 then
 			self:SetData("failing-demat", false, true)
 		end
 	end
@@ -757,14 +766,59 @@ end)
 
 ENT:AddHook("Think","force-demat",function(self)
 	if self:GetData("force-demat", false) then
-		if self:GetData("force-demat-blinking", false) and CurTime() > self:GetData("force-demat-time") + 1.5 then
-			self:SetData("force-demat-blinking", false, true)
-			if SERVER then
-				self:Explode()
-				self.interior:Explode()
-				self.interior:Explode()
-				self.interior:Explode()
+		local timediff = CurTime() - self:GetData("force-demat-time")
+
+		if timediff > 1 and timediff < 1.2 then
+			self:SetData("force-demat-blinking", true, true)
+			self:SetData("force-demat-sparkling", true, true)
+		end
+
+		local effect_point = self.interior:GetPos()
+		local console = self.interior:GetPart("console")
+		if console and IsValid(console) then
+			effect_point = console:GetPos()
+		end
+
+		if self:GetData("force-demat-sparkling", false) then
+			if math.Round(1.5 * CurTime()) % 2 == 0 then
+				local sparks_effect_data = EffectData()
+				local strength = 1.2 + math.random(1, 5) * 0.1
+				strength = strength - math.max(0, timediff) * 0.1
+				strength = math.max(0, strength)
+				sparks_effect_data:SetScale(strength)
+				sparks_effect_data:SetMagnitude(strength)
+				sparks_effect_data:SetOrigin(effect_point + Vector(math.random(-30,30), math.random(-30,30), 40))
+				util.Effect("Sparks", sparks_effect_data)
+				if strength > 0.5 then util.Effect("cball_explode", sparks_effect_data) end
+				sparks_effect_data:SetOrigin(effect_point + Vector(math.random(-30,30), math.random(-30,30), 5))
+				util.Effect("Sparks", sparks_effect_data)
+				if strength > 0.5 then util.Effect("cball_explode", sparks_effect_data) end
 			end
+		end
+
+		if self:GetData("force-demat-blinking", false) and timediff > 4 then
+			if SERVER then
+				local newhealth = self:GetHealth() * math.random(75, 95) * 0.01
+				self:ChangeHealth(newhealth)
+			end
+
+			local expl_effect_data = EffectData()
+			expl_effect_data:SetScale(200)
+			expl_effect_data:SetOrigin(effect_point + Vector(math.random(-30,30), math.random(-30,30), 5))
+			util.Effect("Explosion", expl_effect_data)
+			expl_effect_data:SetOrigin(effect_point + Vector(math.random(-30,30), math.random(-30,30), 40))
+			util.Effect("Explosion", expl_effect_data)
+			self:SetData("force-demat-blinking", false, true)
+		end
+
+		if self:GetData("force-demat-sparkling", false) and timediff > 6 then
+			local expl_effect_data = EffectData()
+			expl_effect_data:SetScale(40)
+			expl_effect_data:SetOrigin(effect_point + Vector(math.random(-30,30), math.random(-30,30), 5))
+			util.Effect("Explosion", expl_effect_data)
+			expl_effect_data:SetOrigin(effect_point + Vector(math.random(-30,30), math.random(-30,30), 40))
+			util.Effect("Explosion", expl_effect_data)
+			self:SetData("force-demat-sparkling", false, true)
 		end
 	end
 end)
