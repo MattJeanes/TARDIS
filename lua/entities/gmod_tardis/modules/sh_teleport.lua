@@ -223,6 +223,7 @@ if SERVER then
 			self:SetData("step",1)
 			self:SetData("teleport",true)
 			self:SetCollisionGroup( COLLISION_GROUP_WORLD )
+			self:CallHook("DematStart")
 			self:DrawShadow(false)
 			for k,v in pairs(self.parts) do
 				v:DrawShadow(false)
@@ -624,21 +625,23 @@ else
 	end)
 
 	ENT:OnMessage("failed-demat", function(self)
-		local ext = self.metadata.Exterior.Sounds.Teleport
-		local int = self.metadata.Interior.Sounds.Teleport
-		self:EmitSound(ext.demat_fail)
-		self.interior:EmitSound(int.demat_fail or ext.demat_fail)
-		if LocalPlayer():GetTardisData("exterior")==self then
+		if TARDIS:GetSetting("teleport-sound") and TARDIS:GetSetting("sound") then
+			local ext = self.metadata.Exterior.Sounds.Teleport
+			local int = self.metadata.Interior.Sounds.Teleport
+			self:EmitSound(ext.demat_fail)
+			self.interior:EmitSound(int.demat_fail or ext.demat_fail)
+		end
+		if LocalPlayer():GetTardisData("exterior") == self then
 			util.ScreenShake(self.interior:GetPos(), 2.5, 100, 3, 300)
 		end
 	end)
 
 	ENT:OnMessage("force-demat", function(self)
-		if LocalPlayer():GetTardisData("exterior")==self then
+		if LocalPlayer():GetTardisData("exterior") == self then
 			util.ScreenShake(self.interior:GetPos(), 15, 100, 8, 300)
 		end
 	end)
-	
+
 	ENT:OnMessage("premat", function(self)
 		self:SetData("teleport",true)
 		if TARDIS:GetSetting("teleport-sound") and TARDIS:GetSetting("sound") then
@@ -653,13 +656,13 @@ else
 			end
 		end
 	end)
-	
+
 	ENT:OnMessage("mat", function(self)
 		self:SetData("mat",true)
 		self:SetData("step",1)
 		self:SetData("vortex",false)
 	end)
-	
+
 	function ENT:StopDemat()
 		self:SetData("demat",false)
 		self:SetData("step",1)
