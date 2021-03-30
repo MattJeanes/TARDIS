@@ -609,17 +609,21 @@ else
 
 			local sound_demat_ext = ext.demat
 			local sound_demat_int = int.demat or ext.demat
+			local sound_fullflight_ext = ext.fullflight
+			local sound_fullflight_int = int.fullflight or ext.fullflight
 
-			if self:GetData("force-demat", false) then
-				sound_demat_ext = ext.demat_force
-				sound_demat_int = int.demat_force or ext.demat_force
+			if self:GetData("health-warning", false) or self:GetData("force-demat", false) then
+				sound_demat_ext = ext.demat_damaged
+				sound_demat_int = int.demat_damaged or ext.demat_damaged
+				sound_fullflight_ext = ext.fullflight_damaged
+				sound_fullflight_int = int.fullflight_damaged or ext.fullflight_damaged
 			end
 
 			local pos = net.ReadVector()
 			if LocalPlayer():GetTardisData("exterior")==self then
 				if (self:GetData("demat-fast",false))==true then
-					self.interior:EmitSound(int.fullflight or ext.fullflight)
-					self:EmitSound(ext.fullflight)
+					self.interior:EmitSound(sound_fullflight_int)
+					self:EmitSound(sound_fullflight_ext)
 				else
 					self.interior:EmitSound(sound_demat_int)
 					self:EmitSound(sound_demat_ext)
@@ -628,7 +632,11 @@ else
 				sound.Play(sound_demat_ext,self:GetPos())
 				if pos and self:GetData("demat-fast",false) then
 					if not IsValid(self) then return end
-					sound.Play(ext.mat, pos)
+					if (self:GetData("demat-fast",false))==true then
+						sound.Play(ext.mat_damaged, pos)
+					else
+						sound.Play(ext.mat, pos)
+					end
 				end
 			end
 		end
@@ -653,10 +661,19 @@ else
 			local int = self.metadata.Interior.Sounds.Teleport
 			local pos=net.ReadVector()
 			if LocalPlayer():GetTardisData("exterior")==self and (not self:GetData("demat-fast",false)) then
-				self:EmitSound(ext.mat)
-				self.interior:EmitSound(int.mat or ext.mat)
+				if self:GetData("health-warning", false) then
+					self:EmitSound(ext.mat_damaged)
+					self.interior:EmitSound(int.mat_damaged or ext.mat_damaged)
+				else
+					self:EmitSound(ext.mat)
+					self.interior:EmitSound(int.mat or ext.mat)
+				end
 			elseif not self:GetData("demat-fast",false) then
-				sound.Play(ext.mat,pos)
+				if self:GetData("health-warning", false) then
+					sound.Play(ext.mat_damaged,pos)
+				else
+					sound.Play(ext.mat,pos)
+				end
 			end
 		end
 	end)

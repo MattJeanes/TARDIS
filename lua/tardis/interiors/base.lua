@@ -77,10 +77,12 @@ T.Exterior={
 	Sounds={
 		Teleport={
 			demat="drmatt/tardis/demat.wav",
-			mat="drmatt/tardis/mat.wav",
-			fullflight = "drmatt/tardis/full.wav",
+			demat_damaged="drmatt/tardis/demat_damaged.wav",
 			demat_fail="drmatt/tardis/demat_fail_ext.wav",
-			demat_force="drmatt/tardis/demat_force.wav"
+			mat="drmatt/tardis/mat.wav",
+			mat_damaged="drmatt/tardis/mat_damaged.wav",
+			fullflight = "drmatt/tardis/full.wav",
+			fullflight_damaged = "drmatt/tardis/full_damaged.wav",
 		},
 		RepairFinish="drmatt/tardis/repairfinish.wav",
 		Lock="drmatt/tardis/lock.wav",
