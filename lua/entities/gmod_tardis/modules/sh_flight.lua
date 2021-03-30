@@ -343,8 +343,8 @@ if SERVER then
 else
 	TARDIS:AddSetting({
 		id="flight-externalsound",
-		name="External Sound",
-		section="Flight",
+		name="Flightmode External Sound",
+		section="Sounds",
 		desc="Whether the flight sound can be heard on the outside or not",
 		value=true,
 		type="bool",
