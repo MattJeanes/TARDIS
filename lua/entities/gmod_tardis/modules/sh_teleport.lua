@@ -1,5 +1,16 @@
 -- Teleport
 
+TARDIS:AddSetting({
+	id="force-demat-effects",
+	name="Force Demat Effects",
+	desc="Should TARDIS force demat have sparkling and explosion effects?",
+	section="Misc",
+	value=true,
+	type="bool",
+	option=true,
+	networked=true
+})
+
 -- Binds
 TARDIS:AddKeyBind("teleport-demat",{
 	name="Demat",
@@ -173,7 +184,6 @@ if SERVER then
 		self:Explode(30)
 		self.interior:Explode(20)
 		self:Demat(pos, ang, callback, true)
-		self:SendMessage("force-demat")
 	end
 	function ENT:EngineReleaseDemat(pos, ang, callback)
 		if self:GetData("failing-demat", false) then
@@ -636,12 +646,6 @@ else
 		end
 	end)
 
-	ENT:OnMessage("force-demat", function(self)
-		if LocalPlayer():GetTardisData("exterior") == self then
-			util.ScreenShake(self.interior:GetPos(), 15, 100, 8, 300)
-		end
-	end)
-
 	ENT:OnMessage("premat", function(self)
 		self:SetData("teleport",true)
 		if TARDIS:GetSetting("teleport-sound") and TARDIS:GetSetting("sound") then
@@ -767,14 +771,12 @@ ENT:AddHook("Think","failed-demat",function(self)
 	end
 end)
 
-ENT:AddHook("Think","force-demat",function(self)
+ENT:AddHook("Think","force-demat-effects", function(self)
 	if self:GetData("force-demat", false) then
 		local timediff = CurTime() - self:GetData("force-demat-time")
 
-		if timediff > 1 and timediff < 1.2 then
-			self:SetData("force-demat-blinking", true, true)
-			self:SetData("force-demat-sparkling", true, true)
-		end
+		local showeffects = (CLIENT and LocalPlayer():GetTardisData("exterior") == self
+			and TARDIS:GetSetting("force-demat-effects", true, LocalPlayer()))
 
 		local effect_point = self.interior:GetPos()
 		local console = self.interior:GetPart("console")
@@ -782,46 +784,55 @@ ENT:AddHook("Think","force-demat",function(self)
 			effect_point = console:GetPos()
 		end
 
-		if self:GetData("force-demat-sparkling", false) then
-			if math.Round(1.5 * CurTime()) % 2 == 0 then
-				local sparks_effect_data = EffectData()
-				local strength = 1.2 + math.random(1, 5) * 0.1
-				strength = strength - math.max(0, timediff) * 0.1
-				strength = math.max(0, strength)
-				sparks_effect_data:SetScale(strength)
-				sparks_effect_data:SetMagnitude(strength)
-				sparks_effect_data:SetOrigin(effect_point + Vector(math.random(-30,30), math.random(-30,30), 40))
-				util.Effect("Sparks", sparks_effect_data)
-				if strength > 0.5 then util.Effect("cball_explode", sparks_effect_data) end
-				sparks_effect_data:SetOrigin(effect_point + Vector(math.random(-30,30), math.random(-30,30), 5))
-				util.Effect("Sparks", sparks_effect_data)
-				if strength > 0.5 then util.Effect("cball_explode", sparks_effect_data) end
+		local function CreateEffect(effect, power)
+			if showeffects then
+				local effect_data = EffectData()
+				effect_data:SetScale(power)
+				effect_data:SetMagnitude(power)
+				effect_data:SetOrigin(effect_point + Vector(math.random(-30,30), math.random(-30,30), 5))
+				util.Effect(effect, effect_data)
+				effect_data:SetOrigin(effect_point + Vector(math.random(-30,30), math.random(-30,30), 40))
+				util.Effect(effect, effect_data)
+			end
+		end
+
+		if showeffects then
+			if timediff > 0.5 and timediff < 0.6 then
+				util.ScreenShake(effect_point, 10, 100, 10, 300)
+				CreateEffect("Explosion", 40)
+				CreateEffect("Sparks", 2)
+				CreateEffect("cball_explode", 2)
+			end
+
+			if timediff > 1.2 and timediff < 1.3 then
+				CreateEffect("Explosion", 40)
+				CreateEffect("Sparks", 5)
+				CreateEffect("cball_explode", 5)
+				self:SetData("force-demat-blinking", true, true)
+				self:SetData("force-demat-sparkling", true, false)
+			end
+
+			if self:GetData("force-demat-sparkling", false) then
+				if math.Round(1.5 * CurTime()) % 2 == 0 then
+					local power = 1.2 + math.random(1, 5) * 0.1
+					power = power - math.max(0, timediff) * 0.1
+					power = math.max(0, power)
+					CreateEffect("Sparks", power)
+					if power > 0.5 then CreateEffect("cball_explode", power) end
+				end
+			end
+
+			if self:GetData("force-demat-sparkling", false) and timediff > 6 then
+				CreateEffect("Explosion", 60)
+				self:SetData("force-demat-sparkling", false, false)
 			end
 		end
 
 		if self:GetData("force-demat-blinking", false) and timediff > 4 then
-			if SERVER then
-				local newhealth = self:GetHealth() * math.random(75, 95) * 0.01
-				self:ChangeHealth(newhealth)
-			end
-
-			local expl_effect_data = EffectData()
-			expl_effect_data:SetScale(200)
-			expl_effect_data:SetOrigin(effect_point + Vector(math.random(-30,30), math.random(-30,30), 5))
-			util.Effect("Explosion", expl_effect_data)
-			expl_effect_data:SetOrigin(effect_point + Vector(math.random(-30,30), math.random(-30,30), 40))
-			util.Effect("Explosion", expl_effect_data)
+			local newhealth = self:GetHealth() * math.random(75, 95) * 0.01
+			self:ChangeHealth(newhealth)
+			CreateEffect("Explosion", 50)
 			self:SetData("force-demat-blinking", false, true)
-		end
-
-		if self:GetData("force-demat-sparkling", false) and timediff > 6 then
-			local expl_effect_data = EffectData()
-			expl_effect_data:SetScale(40)
-			expl_effect_data:SetOrigin(effect_point + Vector(math.random(-30,30), math.random(-30,30), 5))
-			util.Effect("Explosion", expl_effect_data)
-			expl_effect_data:SetOrigin(effect_point + Vector(math.random(-30,30), math.random(-30,30), 40))
-			util.Effect("Explosion", expl_effect_data)
-			self:SetData("force-demat-sparkling", false, true)
 		end
 	end
 end)
