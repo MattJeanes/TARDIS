@@ -2,12 +2,12 @@
 
 TARDIS:AddSetting({
 	id="security",
-	name="Isomorphic Security",
+	name="Isomorphic Security on by default",
 	value=false,
 	type="bool",
 	networked=true,
 	option=true,
-	desc="Whether or not people other than you can use your TARDIS' controls."
+	desc="Whether or not others can use your TARDIS' controls by default."
 })
 
 TARDIS:AddControl({

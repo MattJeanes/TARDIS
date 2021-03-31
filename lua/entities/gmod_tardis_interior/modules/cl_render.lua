@@ -4,7 +4,7 @@ TARDIS:AddSetting({
 	id="lightoverride-enabled",
 	name="[Experimental]\nLighting Override",
 	desc="Enable/Disable experimental interior lighting.\nMay cause unexpected issues, and performance drops on lower end systems.",
-	section="Misc",
+	section="Lights",
 	value=false,
 	type="bool",
 	option=true,
