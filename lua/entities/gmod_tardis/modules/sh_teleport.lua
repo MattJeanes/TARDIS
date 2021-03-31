@@ -188,6 +188,30 @@ TARDIS:AddControl({
 	tip_text = "Engine Release",
 })
 
+function ENT:GetRandomLocation(grounded)
+	local td = {}
+	td.mins = self:OBBMins()
+	td.maxs = self:OBBMaxs()
+	local max = 16384
+	local tries = 1000
+	local point
+	while tries > 0 do
+		tries = tries - 1
+		point=Vector(math.random(-max, max),math.random(-max, max),math.random(-max, max))
+		td.start=point
+		td.endpos=point
+		if not util.TraceHull(td).Hit
+		then
+			if grounded then
+				local down = util.QuickTrace(point + Vector(0, 0, 50), Vector(0, 0, -1) * 99999999).HitPos
+				return down, true
+			else
+				return point, false
+			end
+		end
+	end
+end
+
 if SERVER then
 	function ENT:ForceDemat(pos, ang, callback)
 		self:SetData("force-demat", true, true)
@@ -671,31 +695,6 @@ if SERVER then
 			return false
 		end
 	end)
-
-	function ENT:GetRandomLocation(grounded)
-		local td = {}
-		td.mins = self:OBBMins()
-		td.maxs = self:OBBMaxs()
-		local max = 16384
-		local tries = 1000
-		local point
-		while tries > 0 do
-			tries = tries - 1
-
-			point=Vector(math.random(-max, max),math.random(-max, max),math.random(-max, max))
-			td.start=point
-			td.endpos=point
-			if not util.TraceHull(td).Hit
-			then
-				if grounded then
-					local down = util.QuickTrace(point + Vector(0, 0, 50), Vector(0, 0, -1) * 99999999).HitPos
-					return down, true
-				else
-					return point, false
-				end
-			end
-		end
-	end
 else
 	TARDIS:AddSetting({
 		id="teleport-sound",
