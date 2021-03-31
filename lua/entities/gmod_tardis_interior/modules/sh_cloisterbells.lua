@@ -21,6 +21,12 @@ if CLIENT then
 		return self:GetData("cloisters")
 	end)
 
+	ENT:AddHook("ShouldTurnOffCloisters","power",function(self)
+		if not self.exterior:GetData("power-state") then
+			return true
+		end
+	end)
+
 	ENT:AddHook("Think", "cloistersound", function(self)
 		local shouldon=self:CallHook("ShouldTurnOnCloisters")
 		local shouldoff=self:CallHook("ShouldTurnOffCloisters")
