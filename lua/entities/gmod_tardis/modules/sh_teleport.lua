@@ -1,11 +1,22 @@
 -- Teleport
 
 TARDIS:AddSetting({
-	id="force-demat-effects",
-	name="Force Demat Effects",
-	desc="Should TARDIS force demat have sparkling and explosion effects?",
+	id="breakdown-effects",
+	name="Breakdown Effects",
+	desc="Should TARDIS have sparkling and explosion effects in emergency moments?",
 	section="Misc",
 	value=true,
+	type="bool",
+	option=true,
+	networked=true
+})
+
+TARDIS:AddSetting({
+	id="teleport-door-autoclose",
+	name="Auto-Close Doors at Demat",
+	desc="Should TARDIS close doors automatically before demat?",
+	section="Misc",
+	value=false,
 	type="bool",
 	option=true,
 	networked=true
@@ -212,7 +223,7 @@ if SERVER then
 			end
 			if callback then callback(false) end
 		else
-			if force then
+			if force or TARDIS:GetSetting("teleport-door-autoclose", false, self:GetCreator()) then
 				if self:GetData("doorstatereal") then
 					self:CloseDoor()
 				end
@@ -253,6 +264,109 @@ if SERVER then
 			if callback then callback(true) end
 		end
 	end
+
+	function ENT:InterruptTeleport(callback)
+		if not self:GetData("teleport", false) and not self:GetData("vortex", false) then return end
+		local pos, ang
+
+		ang = self:GetAngles()
+		if self:GetData("demat", false) then
+			pos = self:GetPos()
+		else
+			pos = self:GetRandomLocation(false)
+		end
+
+		local attached=self:GetData("demat-attached")
+		if attached then
+			for k,v in pairs(attached) do
+				if IsValid(k) then
+					k:SetColor(ColorAlpha(k:GetColor(),v))
+				end
+				if IsValid(k) and not IsValid(k:GetParent()) then
+					k.telepos=k:GetPos()-self:GetPos()
+					if k:GetClass()=="gmod_hoverball" then -- fixes hoverballs spazzing out
+						k:SetTargetZ( (pos-self:GetPos()).z+k:GetTargetZ() )
+					end
+				end
+			end
+		end
+		self:SetPos(pos)
+		self:SetAngles(ang)
+		if attached then
+			for k,v in pairs(attached) do
+				if IsValid(k) and not IsValid(k:GetParent()) then
+					if k:IsRagdoll() then
+						for i=0,k:GetPhysicsObjectCount() do
+							local bone=k:GetPhysicsObjectNum(i)
+							if IsValid(bone) then
+								bone:SetPos(self:GetPos()+k.telepos)
+							end
+						end
+					end
+					k:SetPos(self:GetPos()+k.telepos)
+					k.telepos=nil
+					local phys=k:GetPhysicsObject()
+					if phys and IsValid(phys) then
+						k:SetSolid(SOLID_VPHYSICS)
+						if k.gravity~=nil then
+							phys:EnableGravity(k.gravity)
+							k.gravity = nil
+						end
+					end
+					k.nocollide=nil
+				end
+			end
+		end
+
+		self:SetBodygroup(1,1)
+		self:SetData("demat-attached",nil,true)
+		self:SetData("fastreturn",false)
+
+		self:DrawShadow(true)
+		for k,v in pairs(self.parts) do
+			if not v.NoShadow then
+				v:DrawShadow(true)
+			end
+		end
+
+		local ext = self.metadata.Exterior.Sounds.Teleport
+		local int = self.metadata.Interior.Sounds.Teleport
+		self:EmitSound(ext.demat_fail)
+		self:EmitSound(ext.demat_fail)
+		self.interior:EmitSound(int.demat_fail or ext.demat_fail)
+		self.interior:EmitSound(int.demat_fail or ext.demat_fail)
+		self.interior:EmitSound(int.mat_damaged or ext.mat_damaged)
+
+		self:SetData("demat-pos",nil,true)
+		self:SetData("demat-ang",nil,true)
+		self:SetSolid(SOLID_VPHYSICS)
+		self:SetCollisionGroup(COLLISION_GROUP_NONE)
+
+		self:SetData("mat", false, true)
+		self:SetData("demat", false, true)
+		self:SetData("teleport", false, true)
+		self:SetData("vortex", false, true)
+		self:SetData("step", 1, true)
+		self:SetFlight(false)
+		self:SetFloat(false)
+
+		self:Explode()
+		self.interior:Explode(20)
+		self:ChangeHealth(self:GetHealth() * math.random(85, 95) * 0.01)
+		self:SetPower(false)
+		self:CallHook("InterruptTeleport")
+
+		self:SetData("teleport-interrupted", true, true)
+		self:SetData("teleport-interrupt-time", CurTime(), true)
+		self:SetData("teleport-interrupt-effects", true, true)
+	end
+
+	ENT:AddHook("OnHealthDepleted", "teleport", function(self)
+		if self:GetData("teleport", false) then
+			self:InterruptTeleport()
+		end
+	end)
+
 	function ENT:Mat(callback)
 		if self:CallHook("CanMat")~=false then
 			self:CloseDoor(function(state)
@@ -493,7 +607,9 @@ if SERVER then
 	end)
 
 	ENT:AddHook("FailDemat", "doors", function(self, force)
-		if self:GetData("doorstatereal") and force ~= true then
+		if self:GetData("doorstatereal") and force ~= true
+			and not TARDIS:GetSetting("teleport-door-autoclose", false, self:GetCreator())
+		then
 			return true
 		end
 	end)
@@ -555,6 +671,31 @@ if SERVER then
 			return false
 		end
 	end)
+
+	function ENT:GetRandomLocation(grounded)
+		local td = {}
+		td.mins = self:OBBMins()
+		td.maxs = self:OBBMaxs()
+		local max = 16384
+		local tries = 1000
+		local point
+		while tries > 0 do
+			tries = tries - 1
+
+			point=Vector(math.random(-max, max),math.random(-max, max),math.random(-max, max))
+			td.start=point
+			td.endpos=point
+			if not util.TraceHull(td).Hit
+			then
+				if grounded then
+					local down = util.QuickTrace(point + Vector(0, 0, 50), Vector(0, 0, -1) * 99999999).HitPos
+					return down, true
+				else
+					return point, false
+				end
+			end
+		end
+	end
 else
 	TARDIS:AddSetting({
 		id="teleport-sound",
@@ -715,10 +856,69 @@ else
 			render.DrawLine(pos,pos+(le*size),col)
 		end
 	end)
-	
+
 	ENT:AddHook("PilotChanged","teleport",function(self,old,new)
 		if self:GetData("teleport-trace") then
 			self:SetData("teleport-trace",false)
+		end
+	end)
+
+	local function rand_offset() return math.random(-35, 35) end
+
+	local function get_effect_pos(self)
+		local console = self.interior:GetPart("console")
+		if self.metadata.Interior.BreakdownEffectPos then
+			self.effect_pos = self.interior:GetPos() + self.metadata.Interior.BreakdownEffectPos
+		elseif console and IsValid(console) then
+			self.effect_pos = console:GetPos() + Vector(0, 0, 50)
+		else
+			self.effect_pos = self.interior:GetPos() + Vector(0, 0, 50)
+		end
+	end
+
+	function ENT:InteriorExplosion()
+		if self.effect_pos == nil then
+			get_effect_pos(self)
+		end
+
+		local function rand_offset() return math.random(-40, 40) end
+
+		local effect_data = EffectData()
+		effect_data:SetOrigin(self.effect_pos + Vector(rand_offset(), rand_offset(), 0))
+
+		util.Effect("Explosion", effect_data)
+		util.Effect("cball_explode", effect_data)
+
+		effect_data:SetScale(math.random(1,3))
+		effect_data:SetMagnitude(math.random(3, 13))
+		effect_data:SetRadius(math.random(1,5))
+		util.Effect("Sparks", effect_data)
+	end
+
+	function ENT:InteriorSparks(power)
+		if self.effect_pos == nil then
+			get_effect_pos(self)
+		end
+
+		local effect_data = EffectData()
+		effect_data:SetOrigin(self.effect_pos + Vector(rand_offset(), rand_offset(), 0))
+
+		effect_data:SetScale(math.random(1,3) * power)
+		effect_data:SetMagnitude(math.random(3, 15) * power)
+		effect_data:SetRadius(math.random(1,5) * power)
+		util.Effect("Sparks", effect_data)
+		if power > 0.5 then util.Effect("cball_explode", effect_data) end
+	end
+
+	ENT:OnMessage("failed-demat", function(self)
+		if TARDIS:GetSetting("teleport-sound") and TARDIS:GetSetting("sound") then
+			local ext = self.metadata.Exterior.Sounds.Teleport
+			local int = self.metadata.Interior.Sounds.Teleport
+			self:EmitSound(ext.demat_fail)
+			self.interior:EmitSound(int.demat_fail or ext.demat_fail)
+		end
+		if LocalPlayer():GetTardisData("exterior") == self then
+			util.ScreenShake(self.interior:GetPos(), 2.5, 100, 3, 300)
 		end
 	end)
 end
@@ -780,7 +980,7 @@ ENT:AddHook("Think","teleport",function(self,delta)
 	end
 end)
 
-ENT:AddHook("Think","failed-demat",function(self)
+ENT:AddHook("Think","failed-demat-stop",function(self)
 	if self:GetData("failing-demat", false) then
 		if CurTime() > self:GetData("failing-demat-time") + 2.5 then
 			self:SetData("failing-demat", false, true)
@@ -788,44 +988,24 @@ ENT:AddHook("Think","failed-demat",function(self)
 	end
 end)
 
-ENT:AddHook("Think","force-demat-effects", function(self)
+ENT:AddHook("Think","breakdown-effects", function(self)
 	if self:GetData("force-demat", false) then
 		local timediff = CurTime() - self:GetData("force-demat-time")
 
 		local showeffects = (CLIENT and LocalPlayer():GetTardisData("exterior") == self
-			and TARDIS:GetSetting("force-demat-effects", true, LocalPlayer()))
-
-		local effect_point = self.interior:GetPos()
-		local console = self.interior:GetPart("console")
-		if console and IsValid(console) then
-			effect_point = console:GetPos()
-		end
-
-		local function CreateEffect(effect, power)
-			if showeffects then
-				local effect_data = EffectData()
-				effect_data:SetScale(power)
-				effect_data:SetMagnitude(power)
-				effect_data:SetOrigin(effect_point + Vector(math.random(-30,30), math.random(-30,30), 5))
-				util.Effect(effect, effect_data)
-				effect_data:SetOrigin(effect_point + Vector(math.random(-30,30), math.random(-30,30), 40))
-				util.Effect(effect, effect_data)
-			end
-		end
+			and TARDIS:GetSetting("breakdown-effects", true, LocalPlayer()))
 
 		if showeffects then
+			local effpos
+
 			if timediff > 0.5 and timediff < 0.6 then
-				util.ScreenShake(effect_point, 10, 100, 10, 300)
-				CreateEffect("Explosion", 40)
-				CreateEffect("Sparks", 2)
-				CreateEffect("cball_explode", 2)
+				self:InteriorExplosion()
+				util.ScreenShake(self.effect_pos, 10, 100, 10, 300)
 			end
 
 			if timediff > 1.2 and timediff < 1.3 then
-				CreateEffect("Explosion", 40)
-				CreateEffect("Sparks", 5)
-				CreateEffect("cball_explode", 5)
-				self:SetData("force-demat-blinking", true, true)
+				self:InteriorExplosion()
+				self:SetData("interior-lights-blinking", true, true)
 				self:SetData("force-demat-sparkling", true, false)
 			end
 
@@ -834,22 +1014,56 @@ ENT:AddHook("Think","force-demat-effects", function(self)
 					local power = 1.2 + math.random(1, 5) * 0.1
 					power = power - math.max(0, timediff) * 0.1
 					power = math.max(0, power)
-					CreateEffect("Sparks", power)
-					if power > 0.5 then CreateEffect("cball_explode", power) end
+					self:InteriorSparks(power)
 				end
 			end
 
 			if self:GetData("force-demat-sparkling", false) and timediff > 6 then
-				CreateEffect("Explosion", 60)
+				self:InteriorExplosion()
 				self:SetData("force-demat-sparkling", false, false)
 			end
 		end
 
-		if self:GetData("force-demat-blinking", false) and timediff > 4 then
+		if self:GetData("interior-lights-blinking", false) and timediff > 4 then
 			local newhealth = self:GetHealth() * math.random(75, 95) * 0.01
 			self:ChangeHealth(newhealth)
-			CreateEffect("Explosion", 50)
-			self:SetData("force-demat-blinking", false, true)
+			if showeffects then self:InteriorExplosion() end
+			self:SetData("interior-lights-blinking", false, true)
 		end
+	end
+end)
+
+ENT:AddHook("Think","interrupted-teleport", function(self)
+	if self:GetData("teleport-interrupted", false) then
+		local timediff = CurTime() - self:GetData("teleport-interrupt-time")
+
+		if timediff > 6 and timediff < 6.2 and self:GetData("teleport-interrupt-effects", false) then
+			self:SetData("teleport-interrupt-effects", false, true)
+		end
+
+		local showeffects = (CLIENT and self:GetData("teleport-interrupt-effects", false)
+				and LocalPlayer():GetTardisData("exterior") == self
+				and TARDIS:GetSetting("breakdown-effects", true, LocalPlayer()))
+
+		if showeffects then
+			if math.Round(10 * CurTime()) % 2 == 0 then
+				self:InteriorSparks(1)
+			end
+			if timediff < 0.1 or (timediff > 2 and timediff < 2.1)
+				or (timediff > 2.6 and timediff < 2.7)
+			then
+				self:InteriorExplosion()
+			end
+		end
+
+		if timediff > 10 then
+			self:SetData("teleport-interrupted", false, true)
+		end
+	end
+end)
+
+ENT:AddHook("CanTogglePower","interrupted-teleport", function(self)
+	if self:GetData("teleport-interrupted", false) then
+		return false
 	end
 end)

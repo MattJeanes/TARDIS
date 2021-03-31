@@ -49,4 +49,11 @@ if SERVER then
 		end
 	end)
 
+	ENT:AddHook("HandbrakeToggled", "vortex", function(self, force)
+		if self:GetData("handbrake") then
+			if self:GetData("teleport") or self:GetData("vortex") then
+				self:InterruptTeleport()
+			end
+		end
+	end)
 end

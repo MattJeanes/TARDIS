@@ -107,7 +107,8 @@ T.Interior={
 			pos=Vector(125,55,-30),
 			ang=Angle(0,135,0)
 		}
-	}
+	},
+	BreakdownEffectPos = Vector(0, 0, 40)
 }
 T.Exterior={
 	Parts={
