@@ -369,7 +369,7 @@ if SERVER then
 			self:SetData("prevortex-flight", false)
 			self:Mat()
 		end
-		self:Explode(300)
+		self:Explode(175)
 	end)
 
 	ENT:AddHook("OnHealthChange", "warning", function(self)
