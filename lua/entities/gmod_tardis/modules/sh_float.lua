@@ -31,7 +31,7 @@ TARDIS:AddKeyBind("float-toggle",{
 	func=function(self,down,ply)
 		if ply==self.pilot and down then
 			if self:ToggleFloat() then
-				ply:ChatPrint("Float "..(self:GetData("floatfirst") and "en" or "dis").."abled")
+				TARDIS:Message(ply, "Float "..(self:GetData("floatfirst") and "en" or "dis").."abled")
 			end
 		end
 	end,

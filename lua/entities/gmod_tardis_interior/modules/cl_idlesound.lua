@@ -4,7 +4,7 @@ TARDIS:AddSetting({
 	id="idlesounds",
 	name="Idle Sounds",
 	desc="Whether the idle sounds can be heard on the inside or not",
-	section="Sound",
+	section="Sounds",
 	value=true,
 	type="bool",
 	option=true

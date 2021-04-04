@@ -2,12 +2,12 @@
 
 TARDIS:AddSetting({
 	id="security",
-	name="Isomorphic Security",
+	name="Isomorphic Security on by default",
 	value=false,
 	type="bool",
 	networked=true,
 	option=true,
-	desc="Whether or not people other than you can use your TARDIS' controls."
+	desc="Whether or not others can use your TARDIS' controls by default."
 })
 
 TARDIS:AddControl({
@@ -61,8 +61,7 @@ end)
 ENT:AddHook("CanUsePart","security",function(self,part,ply)
 	if self:GetSecurity() and (ply~=self:GetCreator()) then
 		if part.BypassIsomorphic then return end
-		
-		ply:ChatPrint("This TARDIS uses Isomorphic Security. You may not use any controls.")
+		TARDIS:Message(ply, "This TARDIS uses Isomorphic Security. You may not use any controls.")
 		return false,false
 	end
 end)
