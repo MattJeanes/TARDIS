@@ -48,6 +48,10 @@ local theme = {
 		right_arrow = "interface_right.png",
 		exit = "interface_exit.png",
 		popup = "interface_popup.png",
+
+		handbrake = "control_handbrake.png",
+		engine_release = "control_engine_release.png",
+		isomorphic = "control_isomorphic.png",
 	},
 	text_icons_on = {
 		subfolder = "on",
@@ -70,6 +74,10 @@ local theme = {
 		left_arrow = "interface_left.png",
 		right_arrow = "interface_right.png",
 		popup = "interface_popup.png",
+
+		handbrake = "control_handbrake.png",
+		engine_release = "control_engine_release.png",
+		isomorphic = "control_isomorphic.png",
 	},
 }
 TARDIS:AddGUITheme(theme)

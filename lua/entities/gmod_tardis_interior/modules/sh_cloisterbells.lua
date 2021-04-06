@@ -22,7 +22,7 @@ if CLIENT then
 	end)
 
 	ENT:AddHook("ShouldTurnOffCloisters","power",function(self)
-		if not self.exterior:GetData("power-state") then
+		if not self:GetPower() then
 			return true
 		end
 	end)

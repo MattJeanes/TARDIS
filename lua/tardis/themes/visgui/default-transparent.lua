@@ -29,6 +29,10 @@ local theme = {
 		scanner = "screen_scanner.png",
 		settings = "screen_settings.png",
 		["TARDIS Status"] = "screen_status.png",
+
+		handbrake = "control_handbrake.png",
+		engine_release = "control_engine_release.png",
+		isomorphic = "control_isomorphic.png",
 	},
 	text_icons_on = {
 		subfolder = "on",
@@ -40,6 +44,10 @@ local theme = {
 		teleport = "control_throttle.png",
 		flight = "control_flight.png",
 		hads = "control_hads.png",
+
+		handbrake = "control_handbrake.png",
+		engine_release = "control_engine_release.png",
+		isomorphic = "control_isomorphic.png",
 	},
 }
 TARDIS:AddGUITheme(theme)
