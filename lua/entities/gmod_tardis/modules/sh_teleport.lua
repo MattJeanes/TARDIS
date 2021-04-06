@@ -294,10 +294,10 @@ if SERVER then
 		local pos, ang
 
 		ang = self:GetAngles()
-		if self:GetData("demat", false) then
-			pos = self:GetPos()
-		else
+		if self:GetData("vortex", false) then
 			pos = self:GetRandomLocation(false)
+		else
+			pos = self:GetPos()
 		end
 
 		local attached=self:GetData("demat-attached")
@@ -366,23 +366,26 @@ if SERVER then
 		self:SetSolid(SOLID_VPHYSICS)
 		self:SetCollisionGroup(COLLISION_GROUP_NONE)
 
-		self:SetData("mat", false, true)
+		local was_demating = self:GetData("demat", false)
 		self:SetData("demat", false, true)
+		self:SetData("mat", false, true)
 		self:SetData("teleport", false, true)
 		self:SetData("vortex", false, true)
 		self:SetData("step", 1, true)
 		self:SetFlight(false)
 		self:SetFloat(false)
 
-		self:Explode()
-		self.interior:Explode(20)
-		self:ChangeHealth(self:GetHealth() * math.random(85, 95) * 0.01)
-		self:SetPower(false)
 		self:CallHook("InterruptTeleport")
 
-		self:SetData("teleport-interrupted", true, true)
-		self:SetData("teleport-interrupt-time", CurTime(), true)
-		self:SetData("teleport-interrupt-effects", true, true)
+		self:Explode()
+		self.interior:Explode(20)
+		if not was_demating then
+			self:ChangeHealth(self:GetHealth() * math.random(85, 95) * 0.01)
+			self:SetPower(false)
+			self:SetData("teleport-interrupted", true, true)
+			self:SetData("teleport-interrupt-time", CurTime(), true)
+			self:SetData("teleport-interrupt-effects", true, true)
+		end
 	end
 
 	ENT:AddHook("OnHealthDepleted", "teleport", function(self)
