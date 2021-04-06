@@ -16,7 +16,7 @@ TARDIS:AddControl({
 		text = "Time Rotor Handbrake",
 		pressed_state_from_interior = false,
 		pressed_state_data = "handbrake", -- can be changed
-		order = 12,
+		order = 7,
 	},
 	tip_text = "Time Rotor Handbrake",
 })

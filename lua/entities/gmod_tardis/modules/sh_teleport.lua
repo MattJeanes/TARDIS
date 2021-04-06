@@ -112,7 +112,7 @@ TARDIS:AddControl({
 		text = "Teleport",
 		pressed_state_from_interior = false,
 		pressed_state_data = {"teleport", "vortex"},
-		order = 7,
+		order = 6,
 	},
 	tip_text = "Space-Time Throttle",
 })
@@ -135,7 +135,7 @@ TARDIS:AddControl({
 		toggle = false,
 		frame_type = {0, 1},
 		text = "Fast Return",
-		order = 8,
+		order = 9,
 	},
 	tip_text = "Fast Return Protocol",
 })
@@ -158,7 +158,7 @@ TARDIS:AddControl({
 		text = "Vortex Flight",
 		pressed_state_from_interior = false,
 		pressed_state_data = "demat-fast",
-		order = 9,
+		order = 8,
 	},
 	tip_text = "Vortex Flight Toggler",
 })
@@ -183,7 +183,7 @@ TARDIS:AddControl({
 		toggle = false,
 		frame_type = {0, 1},
 		text = "Engine Release",
-		order = 13,
+		order = 8,
 	},
 	tip_text = "Engine Release",
 })
