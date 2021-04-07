@@ -368,10 +368,6 @@ if SERVER then
 
 	ENT:AddHook("OnHealthDepleted", "death", function(self)
 		self:SetPower(false)
-		if self:GetData("vortex",false) then
-			self:SetData("prevortex-flight", false)
-			self:Mat()
-		end
 		self:Explode(180)
 	end)
 

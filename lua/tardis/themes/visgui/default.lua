@@ -27,11 +27,14 @@ local theme = {
 		redecorate = "control_redecoration.png",
 		vortex_flight = "control_fastremat.png",
 		teleport = "control_throttle.png",
+		handbrake = "control_handbrake.png",
+		engine_release = "control_engine_release.png",
 		fastreturn = "control_fastreturn.png",
 		flight = "control_flight.png",
 		float = "control_float.png",
 		physlock = "control_physlock.png",
 		hads = "control_hads.png",
+		isomorphic = "control_isomorphic.png",
 
 		destination = "screen_destination.png",
 		thirdperson = "screen_thirdperson.png",
@@ -48,10 +51,6 @@ local theme = {
 		right_arrow = "interface_right.png",
 		exit = "interface_exit.png",
 		popup = "interface_popup.png",
-
-		handbrake = "control_handbrake.png",
-		engine_release = "control_engine_release.png",
-		isomorphic = "control_isomorphic.png",
 	},
 	text_icons_on = {
 		subfolder = "on",
@@ -64,20 +63,19 @@ local theme = {
 		redecorate = "control_redecoration.png",
 		vortex_flight = "control_fastremat.png",
 		teleport = "control_throttle.png",
+		handbrake = "control_handbrake.png",
+		engine_release = "control_engine_release.png",
 		flight = "control_flight.png",
 		float = "control_float.png",
 		physlock = "control_physlock.png",
 		hads = "control_hads.png",
+		isomorphic = "control_isomorphic.png",
 
 		menu = "interface_menu.png",
 		back = "interface_back.png",
 		left_arrow = "interface_left.png",
 		right_arrow = "interface_right.png",
 		popup = "interface_popup.png",
-
-		handbrake = "control_handbrake.png",
-		engine_release = "control_engine_release.png",
-		isomorphic = "control_isomorphic.png",
 	},
 }
 TARDIS:AddGUITheme(theme)

@@ -291,6 +291,18 @@ if SERVER then
 
 	function ENT:InterruptTeleport(callback)
 		if not self:GetData("teleport", false) and not self:GetData("vortex", false) then return end
+		local door_ok = true
+		self:CloseDoor(function(state)
+			if state then
+				door_ok = false
+			end
+		end)
+
+		if not door_ok then
+			if callback then callback(false) end
+			return
+		end
+
 		local pos, ang
 
 		ang = self:GetAngles()
@@ -389,7 +401,7 @@ if SERVER then
 	end
 
 	ENT:AddHook("OnHealthDepleted", "teleport", function(self)
-		if self:GetData("teleport", false) then
+		if self:GetData("teleport", false) or self:GetData("vortex", false) then
 			self:InterruptTeleport()
 		end
 	end)
