@@ -51,6 +51,7 @@ end
 
 if SERVER then
     function ENT:SetCloak(on)
+		if self:CallHook("CanToggleCloak")==false then return false end
 		self:SetData("cloak", on)
 		self:SendMessage("cloak", function()
 			net.WriteBool(on)
@@ -74,6 +75,12 @@ if SERVER then
 	ENT:AddHook("ShouldTurnOffRotorwash", "cloak", function(self)
 		if self:GetData("cloak") then
 			return true
+		end
+	end)
+
+	ENT:AddHook("OnHealthDepleted", "cloak", function(self)
+		if self:GetCloak() then
+			self:SetCloak(false)
 		end
 	end)
 else
