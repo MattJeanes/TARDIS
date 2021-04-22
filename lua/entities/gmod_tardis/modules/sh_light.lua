@@ -86,7 +86,7 @@ else
 				render.SetMaterial(mat)
 				local fallback=false
 				for k,v in pairs(wp.portals) do -- not ideal but does the job
-					if wp.shouldrender(v) and v:GetShouldDrawNextFrame() then
+					if wp.shouldrender(v) then
 						fallback=true
 						break
 					end
