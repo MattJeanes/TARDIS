@@ -9,8 +9,8 @@ if SERVER then
 else
 	TARDIS:AddSetting({
 		id="extlight-color",
-		name="External Light Color",
-		section="Misc",
+		name="Exterior Light Color",
+		section="Lights",
 		desc="The color of the exterior light, uses interior default if unchanged",
 		value=false,
 		type="color",
@@ -20,8 +20,8 @@ else
 
 	TARDIS:AddSetting({
 		id="extlight-alwayson",
-		name="Always On Light",
-		section="Misc",
+		name="Exterior Light Always On",
+		section="Lights",
 		desc="Should the exterior light always be lit?",
 		value=false,
 		type="bool",
@@ -30,8 +30,8 @@ else
 
 	TARDIS:AddSetting({
 		id="extlight-dynamic",
-		name="Dynamic Exterior Light",
-		section="Misc",
+		name="Exterior Light Dynamic",
+		section="Lights",
 		desc="Should the exterior emit dynamic lighting?",
 		value=true,
 		type="bool",
@@ -86,7 +86,7 @@ else
 				render.SetMaterial(mat)
 				local fallback=false
 				for k,v in pairs(wp.portals) do -- not ideal but does the job
-					if wp.shouldrender(v) and v:GetShouldDrawNextFrame() then
+					if wp.shouldrender(v) then
 						fallback=true
 						break
 					end

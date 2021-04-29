@@ -472,8 +472,8 @@ if SERVER then
 else
 	TARDIS:AddSetting({
 		id="teleport-sound",
-		name="Sound",
-		section="Teleport",
+		name="Teleport Sound",
+		section="Sounds",
 		value=true,
 		type="bool",
 		option=true

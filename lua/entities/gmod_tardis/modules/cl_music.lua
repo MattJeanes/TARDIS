@@ -42,21 +42,21 @@ function ENT:ResolveMusicURL(url)
 					local tbl=util.JSONToTable(body)
 					if tbl then
 						if tbl.success then
-							LocalPlayer():ChatPrint("Playing: "..tbl.title)
+							TARDIS:Message(LocalPlayer(), "Playing: " ..tbl.title)
 							self:PlayMusic(api.."play?id="..id,true)
 						else
-							LocalPlayer():ChatPrint("ERROR: Failed to load ("..(tbl.err and tbl.err or "Unknown reason")..")")
+							TARDIS:ErrorMessage(LocalPlayer(), "ERROR: Failed to load ("..(tbl.err and tbl.err or "Unknown reason")..")")
 						end
 					else
-						LocalPlayer():ChatPrint("ERROR: Failed to load API response")
+						TARDIS:ErrorMessage(LocalPlayer(), "ERROR: Failed to load API response")
 					end
 				end,
 				function(err)
-					LocalPlayer():ChatPrint("ERROR: Failed to resolve url ("..err..")")
+					TARDIS:ErrorMessage(LocalPlayer(), "ERROR: Failed to resolve url ("..err..")")
 				end
 			)
 		else
-			LocalPlayer():ChatPrint("ERROR: Couldn't find video ID inside url")
+			TARDIS:ErrorMessage(LocalPlayer(), "ERROR: Couldn't find video ID inside url")
 		end
 	else
 		return url
@@ -75,7 +75,7 @@ function ENT:PlayMusic(url,resolved)
 				station:Play()
 				self.music=station
 			else
-				LocalPlayer():ChatPrint("ERROR: Failed to load song (Error ID: "..errorid..", "..errorname..")")
+				TARDIS:ErrorMessage(LocalPlayer(), "ERROR: Failed to load song (Error ID: "..errorid..", "..errorname..")")
 			end
 		end)
 	end
