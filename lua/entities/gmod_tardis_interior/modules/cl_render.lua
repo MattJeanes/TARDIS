@@ -11,9 +11,10 @@ TARDIS:AddSetting({
 })
 
 local function predraw_o(self)
-	if not TARDIS:GetSetting("lightoverride-enabled",false) then return end
+	local isLightOverride = TARDIS:GetSetting("lightoverride-enabled",false)
+	if not isLightOverride then return end
 	if self.metadata.Interior.Light == nil then return end --because for some reason SOMEONE OUT THERE didn't define a light.
-	local light=self.metadata.Interior.Light
+	local light=self.metadata.Interior.Light.override or self.metadata.Interior.Light
 	local lights=self.metadata.Interior.Lights
 	local warning = self.exterior:GetData("health-warning", false)
 	
