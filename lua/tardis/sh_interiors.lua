@@ -21,6 +21,11 @@ function TARDIS:AddInterior(t)
 		end
 	end
 
+	local lightOverride = table.Copy(self.Metadata[t.ID].Interior.Light)
+	table.Merge(lightOverride,t.Interior.Light.override)
+	table.CopyFromTo(lightOverride, self.Metadata[t.ID].Interior.Light.override)
+	
+
 	if t.Base~=true then
 		local ent={}
 		ent.Category="Doctor Who - TARDIS"
