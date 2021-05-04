@@ -23,6 +23,7 @@ function TARDIS:AddInterior(t)
 
 	if t.Interior.Light and t.Interior.Light.override then 
 		local lightOverride = table.Copy(self.Metadata[t.ID].Interior.Light)
+		lightOverride.override = nil
 		table.Merge(lightOverride,t.Interior.Light.override)
 		table.CopyFromTo(lightOverride, self.Metadata[t.ID].Interior.Light.override)
 	end 
