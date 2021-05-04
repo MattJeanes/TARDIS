@@ -7,17 +7,17 @@ if SERVER then
         end
 	end)
 else
-    ENT:AddHook("ShouldRenderPortal", "portals", function(self,portal,exit)
-        local dont,black = self:CallHook("ShouldNotRenderPortal",self,portal,exit)
+    ENT:AddHook("ShouldRenderPortal", "portals", function(self,portal,exit,origin)
+        local dont,black = self:CallHook("ShouldNotRenderPortal",self,portal,exit,origin)
         if dont==nil then
             local other = self.interior
             if IsValid(other) then
-                dont,black = other:CallHook("ShouldNotRenderPortal",self,portal,exit)
+                dont,black = other:CallHook("ShouldNotRenderPortal",self,portal,exit,origin)
             end
         end
         if dont then
             return false, black
-        elseif (not (self.DoorOpen and self:DoorOpen(true))) then
+        elseif (not (self.DoorOpen and self:DoorOpen(true) and origin:Distance(self:GetPos())<TARDIS:GetSetting("portals-closedist"))) then
             return false
         elseif (not TARDIS:GetSetting("portals-enabled")) then
             return false
