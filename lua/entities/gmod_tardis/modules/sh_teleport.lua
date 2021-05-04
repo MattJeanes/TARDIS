@@ -759,6 +759,9 @@ else
 		self:SetData("step",1)
 		self:SetData("teleport",true)
 		if TARDIS:GetSetting("teleport-sound") and TARDIS:GetSetting("sound") then
+			local shouldPlayExterior = self:CallHook("ShouldPlayDematSound", false)~=false
+			local shouldPlayInterior = self:CallHook("ShouldPlayDematSound", true)~=false
+			if not (shouldPlayExterior or shouldPlayInterior) then return end
 			local ext = self.metadata.Exterior.Sounds.Teleport
 			local int = self.metadata.Interior.Sounds.Teleport
 
@@ -775,15 +778,26 @@ else
 			end
 
 			local pos = net.ReadVector()
+			
 			if LocalPlayer():GetTardisData("exterior")==self then
+				local intsound = int.demat or ext.demat
+				local extsound = ext.demat
 				if (self:GetData("demat-fast",false))==true then
-					self.interior:EmitSound(sound_fullflight_int)
-					self:EmitSound(sound_fullflight_ext)
+					if shouldPlayInterior then
+						self.interior:EmitSound(sound_fullflight_int)
+					end
+					if shouldPlayExterior then
+						self:EmitSound(sound_fullflight_ext)
+					end
 				else
-					self.interior:EmitSound(sound_demat_int)
-					self:EmitSound(sound_demat_ext)
+					if shouldPlayInterior then
+						self.interior:EmitSound(sound_demat_int)
+					end
+					if shouldPlayExterior then
+						self:EmitSound(sound_demat_ext)
+					end
 				end
-			else
+			elseif shouldPlayExterior then
 				sound.Play(sound_demat_ext,self:GetPos())
 				if pos and self:GetData("demat-fast",false) then
 					if not IsValid(self) then return end
@@ -812,18 +826,29 @@ else
 	ENT:OnMessage("premat", function(self)
 		self:SetData("teleport",true)
 		if TARDIS:GetSetting("teleport-sound") and TARDIS:GetSetting("sound") then
+			local shouldPlayExterior = self:CallHook("ShouldPlayMatSound", false)~=false
+			local shouldPlayInterior = self:CallHook("ShouldPlayMatSound", true)~=false
+			if not (shouldPlayExterior or shouldPlayInterior) then return end
 			local ext = self.metadata.Exterior.Sounds.Teleport
 			local int = self.metadata.Interior.Sounds.Teleport
 			local pos=net.ReadVector()
 			if LocalPlayer():GetTardisData("exterior")==self and (not self:GetData("demat-fast",false)) then
 				if self:GetData("health-warning", false) then
-					self:EmitSound(ext.mat_damaged)
-					self.interior:EmitSound(int.mat_damaged or ext.mat_damaged)
+					if shouldPlayExterior then
+						self:EmitSound(ext.mat_damaged)
+					end
+					if shouldPlayInterior then
+						self.interior:EmitSound(int.mat_damaged or ext.mat_damaged)
+					end
 				else
-					self:EmitSound(ext.mat)
-					self.interior:EmitSound(int.mat or ext.mat)
+					if shouldPlayExterior then
+						self:EmitSound(ext.mat)
+					end
+					if shouldPlayInterior then
+						self.interior:EmitSound(int.mat or ext.mat)
+					end
 				end
-			elseif not self:GetData("demat-fast",false) then
+			elseif not self:GetData("demat-fast",false) and shouldPlayExterior then
 				if self:GetData("health-warning", false) then
 					sound.Play(ext.mat_damaged,pos)
 				else

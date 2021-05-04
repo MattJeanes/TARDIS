@@ -6,7 +6,7 @@ ENT:AddHook("ShouldDraw", "scanner", function(self)
 	end
 end)
 
-ENT:AddHook("ShouldNotRenderPortal","scanner",function(self,parent,portal)
+ENT:AddHook("ShouldNotRenderPortal","scanner",function(self,parent,portal,exit)
 	if self.scannerrender and portal==self.portals.interior then
 		return true
 	end

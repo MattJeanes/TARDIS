@@ -194,7 +194,7 @@ if SERVER then
 
 	function ENT:StartRepair()
 		if not IsValid(self) then return end
-		self:SetLocked(true)
+		self:SetLocked(true,nil,true)
 		local time = CurTime()+(math.Clamp((TARDIS:GetSetting("health-max")-self:GetData("health-val"))*0.1, 1, 60))
 		self:SetData("repair-time", time, true)
 		self:SetData("repairing", true, true)
