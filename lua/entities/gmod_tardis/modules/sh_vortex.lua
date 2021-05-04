@@ -172,7 +172,7 @@ else
 	ENT:AddHook("PreDrawPortal","vortex",dopredraw)
 	ENT:AddHook("PostDrawPortal","vortex",dodraw)
 	
-	ENT:AddHook("ShouldNotRenderPortal","vortex",function(self,parent)
+	ENT:AddHook("ShouldNotRenderPortal","vortex",function(self,parent,portal,exit)
 		if self:GetData("vortex") and (TARDIS:GetExteriorEnt()~=self or (not self:IsVortexEnabled())) then
 			return true, self~=parent
 		end

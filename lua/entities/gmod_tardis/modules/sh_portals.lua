@@ -7,12 +7,12 @@ if SERVER then
         end
 	end)
 else
-    ENT:AddHook("ShouldRenderPortal", "portals", function(self,portal,exit,origin)
-        local dont,black = self:CallHook("ShouldNotRenderPortal",self,portal,exit,origin)
+    ENT:AddHook("ShouldRenderPortal", "portals", function(self,portal,exit)
+        local dont,black = self:CallHook("ShouldNotRenderPortal",self,portal,exit)
         if dont==nil then
             local other = self.interior
             if IsValid(other) then
-                dont,black = other:CallHook("ShouldNotRenderPortal",self,portal,exit,origin)
+                dont,black = other:CallHook("ShouldNotRenderPortal",self,portal,exit)
             end
         end
         if dont then
