@@ -514,18 +514,27 @@ else
 		self:SetData("step",1)
 		self:SetData("teleport",true)
 		if TARDIS:GetSetting("teleport-sound") and TARDIS:GetSetting("sound") then
+			local shouldPlayExterior = self:CallHook("ShouldPlayDematSound", false)~=false
+			local shouldPlayInterior = self:CallHook("ShouldPlayDematSound", true)~=false
+			if not (shouldPlayExterior or shouldPlayInterior) then return end
 			local ext = self.metadata.Exterior.Sounds.Teleport
 			local int = self.metadata.Interior.Sounds.Teleport
 			local pos = net.ReadVector()
+			
 			if LocalPlayer():GetTardisData("exterior")==self then
+				local intsound = int.demat or ext.demat
+				local extsound = ext.demat
 				if (self:GetData("demat-fast",false))==true then
-					self.interior:EmitSound(int.fullflight or ext.fullflight)
-					self:EmitSound(ext.fullflight)
-				else
-					self.interior:EmitSound(int.demat or ext.demat)
-					self:EmitSound(ext.demat)
+					intsound = int.fullflight or ext.fullflight
+					extsound = ext.fullflight
 				end
-			else
+				if shouldPlayInterior then
+					self.interior:EmitSound(intsound)
+				end
+				if shouldPlayExterior then
+					self:EmitSound(extsound)
+				end
+			elseif shouldPlayExterior then
 				sound.Play(ext.demat,self:GetPos())
 				if pos and self:GetData("demat-fast",false) then
 					if not IsValid(self) then return end
@@ -538,13 +547,20 @@ else
 	ENT:OnMessage("premat", function(self)
 		self:SetData("teleport",true)
 		if TARDIS:GetSetting("teleport-sound") and TARDIS:GetSetting("sound") then
+			local shouldPlayExterior = self:CallHook("ShouldPlayMatSound", false)~=false
+			local shouldPlayInterior = self:CallHook("ShouldPlayMatSound", true)~=false
+			if not (shouldPlayExterior or shouldPlayInterior) then return end
 			local ext = self.metadata.Exterior.Sounds.Teleport
 			local int = self.metadata.Interior.Sounds.Teleport
 			local pos=net.ReadVector()
 			if LocalPlayer():GetTardisData("exterior")==self and (not self:GetData("demat-fast",false)) then
-				self:EmitSound(ext.mat)
-				self.interior:EmitSound(int.mat or ext.mat)
-			elseif not self:GetData("demat-fast",false) then
+				if shouldPlayExterior then
+					self:EmitSound(ext.mat)
+				end
+				if shouldPlayInterior then
+					self.interior:EmitSound(int.mat or ext.mat)
+				end
+			elseif (not self:GetData("demat-fast",false)) and shouldPlayExterior then
 				sound.Play(ext.mat,pos)
 			end
 		end

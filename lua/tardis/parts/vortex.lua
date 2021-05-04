@@ -14,6 +14,7 @@ PART.NoStrictUse = true
 PART.CustomAlpha = true
 PART.NoShadow = true
 PART.NoShadowCopy = true
+PART.NoCloak = true
 if SERVER then
 	function PART:Initialize()	
 		self:SetSolid(SOLID_NONE)

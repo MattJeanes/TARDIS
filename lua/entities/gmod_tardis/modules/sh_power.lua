@@ -56,6 +56,12 @@ if SERVER then
 			return self:GetPower() and 1 or 0
 		end
 	end)
+
+	ENT:AddHook("CanToggleCloak", "power", function(self)
+		if not self:GetPower() and not self:GetCloak() then 
+			return false 
+		end
+	end)
 else
 	ENT:AddHook("ShouldNotDrawProjectedLight", "power", function(self)
 		if not self:GetPower() then return true end
