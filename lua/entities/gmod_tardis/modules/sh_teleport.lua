@@ -710,7 +710,7 @@ if SERVER then
 			return false
 		end
 	end)
-else
+else -- client
 	TARDIS:AddSetting({
 		id="teleport-sound",
 		name="Teleport Sound",
@@ -926,12 +926,11 @@ else
 		effect_data:SetOrigin(self.effect_pos + Vector(rand_offset(), rand_offset(), 0))
 
 		util.Effect("Explosion", effect_data)
-		util.Effect("cball_explode", effect_data)
 
-		effect_data:SetScale(math.random(1,3))
-		effect_data:SetMagnitude(math.random(3, 13))
+		effect_data:SetScale(0.5)
+		effect_data:SetMagnitude(math.random(3, 5))
 		effect_data:SetRadius(math.random(1,5))
-		util.Effect("Sparks", effect_data)
+		util.Effect("ElectricSpark", effect_data)
 	end
 
 	function ENT:InteriorSparks(power)
@@ -942,11 +941,10 @@ else
 		local effect_data = EffectData()
 		effect_data:SetOrigin(self.effect_pos + Vector(rand_offset(), rand_offset(), 0))
 
-		effect_data:SetScale(math.random(1,3) * power)
-		effect_data:SetMagnitude(math.random(3, 15) * power)
+		effect_data:SetScale(power)
+		effect_data:SetMagnitude(math.random(3, 5) * power)
 		effect_data:SetRadius(math.random(1,5) * power)
-		util.Effect("Sparks", effect_data)
-		if power > 0.5 then util.Effect("cball_explode", effect_data) end
+		util.Effect("ElectricSpark", effect_data)
 	end
 
 	ENT:OnMessage("failed-demat", function(self)
