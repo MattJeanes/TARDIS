@@ -1030,6 +1030,7 @@ ENT:AddHook("Think","breakdown-effects", function(self)
 		local timediff = CurTime() - self:GetData("force-demat-time")
 
 		local showeffects = (CLIENT and LocalPlayer():GetTardisData("exterior") == self
+			and (not LocalPlayer():GetTardisData("thirdperson"))
 			and TARDIS:GetSetting("breakdown-effects", true, LocalPlayer()))
 
 		if showeffects then
@@ -1080,6 +1081,7 @@ ENT:AddHook("Think","interrupted-teleport", function(self)
 
 		local showeffects = (CLIENT and self:GetData("teleport-interrupt-effects", false)
 				and LocalPlayer():GetTardisData("exterior") == self
+				and (not LocalPlayer():GetTardisData("thirdperson"))
 				and TARDIS:GetSetting("breakdown-effects", true, LocalPlayer()))
 
 		if showeffects then
