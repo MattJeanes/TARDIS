@@ -19,7 +19,7 @@ TARDIS:AddControl({
 		text = "Door",
 		pressed_state_from_interior = false,
 		pressed_state_data = "doorstate",
-		order = 5,
+		order = 10,
 	},
 	tip_text = "Door Switch",
 })

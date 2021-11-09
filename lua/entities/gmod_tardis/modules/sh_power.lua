@@ -45,6 +45,12 @@ if SERVER then
 		return true
 	end
 
+	ENT:AddHook("CanTogglePower", "vortex", function(self)
+		if self:GetData("teleport") or self:GetData("vortex") then
+			return false
+		end
+	end)
+
 	ENT:AddHook("CanTriggerHads","power",function(self)
 		if not self:GetPower() then return false end
 	end)
