@@ -358,8 +358,20 @@ else
 		end
 	end)
 	
+	local function ChooseFlightSound(ent)
+		if ent:GetData("health-warning", false) then
+			ent.flightsound = CreateSound(ent, ent.metadata.Exterior.Sounds.FlightLoopDamaged)
+			ent.flightsounddamaged = true
+		else
+			ent.flightsound = CreateSound(ent, ent.metadata.Exterior.Sounds.FlightLoop)
+			ent.flightsounddamaged = false
+		end
+	end
+
 	ENT:AddHook("Think", "flight", function(self)
-		if self:GetData("flight") and TARDIS:GetSetting("flight-externalsound") and TARDIS:GetSetting("sound") and (not self:CallHook("ShouldTurnOffFlightSound")) then
+		if self:GetData("flight") and TARDIS:GetSetting("flight-externalsound")
+			and TARDIS:GetSetting("sound") and (not self:CallHook("ShouldTurnOffFlightSound"))
+		then
 			if self.flightsound and self.flightsound:IsPlaying() then
 				local p=math.Clamp(self:GetVelocity():Length()/250,0,15)
 				local ply=LocalPlayer()
@@ -382,8 +394,16 @@ else
 					self.flightsound:ChangePitch(math.Clamp(95+p+doppler,80,120),0.1)
 				end
 				self.flightsound:ChangeVolume(0.75)
+
+				if self.flightsounddamaged ~= self:GetData("health-warning",false)
+				then
+					self.flightsound:Stop()
+					ChooseFlightSound(self)
+					self.flightsound:SetSoundLevel(90)
+					self.flightsound:Play()
+				end
 			else
-				self.flightsound=CreateSound(self, self.metadata.Exterior.Sounds.FlightLoop)
+				ChooseFlightSound(self)
 				self.flightsound:SetSoundLevel(90)
 				self.flightsound:Play()
 			end
@@ -392,7 +412,7 @@ else
 			self.flightsound=nil
 		end
 	end)
-	
+
 	ENT:OnMessage("PilotChanged",function(self)
 		local old=net.ReadEntity()
 		local new=net.ReadEntity()

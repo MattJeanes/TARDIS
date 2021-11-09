@@ -216,11 +216,13 @@ if SERVER then
 		end
 		if data and data.Parts then
 			for k,v in pairs(data.Parts) do
-				local part=parts[k]
-				if part then
-					tempparts[k]=part.class
-				else
-					ErrorNoHaltWithStack("Attempted to create invalid part: " .. k)
+				if v then
+					local part=parts[k]
+					if part then
+						tempparts[k]=part.class
+					else
+						ErrorNoHaltWithStack("Attempted to create invalid part: " .. k)
+					end
 				end
 			end
 		end

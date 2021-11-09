@@ -93,6 +93,7 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Coordinates", menu=fals
 	list:SetSize( frame:GetWide()*0.7, frame:GetTall()*0.95 )
 	list:SetPos( frame:GetWide()*0.26 - list:GetWide()*0.35, frame:GetTall()*0.5 - list:GetTall()*0.5 )
 	list:AddColumn("Name")
+
 	local map = game.GetMap()
 	local function updatelist()
 		list:Clear()
@@ -101,12 +102,30 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Coordinates", menu=fals
 				list:AddLine(v.name)
 			end
 		end
+		list:AddLine("Random (ground)")
+		list:AddLine("Random")
 	end
 	updatelist()
 	function list:OnRowSelected(i,row)
-		pos = TARDIS.Locations[map][i].pos
-		ang = TARDIS.Locations[map][i].ang
-		name = TARDIS.Locations[map][i].name
+		local locations_num = 0
+		if TARDIS.Locations[map] ~= nil then
+			locations_num = #TARDIS.Locations[map]
+		end
+		if i > locations_num then
+			local ground = (i == locations_num + 1)
+			local ext = LocalPlayer():GetTardisData("exterior")
+			pos = ext:GetRandomLocation(ground)
+			ang = {p = 0, y = 0, r = 0}
+			if ground then
+				name = "Random location on the ground"
+			else
+				name = "Random location"
+			end
+		else
+			pos = TARDIS.Locations[map][i].pos
+			ang = TARDIS.Locations[map][i].ang
+			name = TARDIS.Locations[map][i].name
+		end
 		updatetextinputs(pos,ang,name)
 		namebox:SetEnabled(true)
 	end
