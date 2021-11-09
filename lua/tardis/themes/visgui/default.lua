@@ -35,6 +35,7 @@ local theme = {
 		physlock = "control_physlock.png",
 		hads = "control_hads.png",
 		isomorphic = "control_isomorphic.png",
+		cloak = "control_cloak.png",
 
 		destination = "screen_destination.png",
 		thirdperson = "screen_thirdperson.png",
@@ -70,6 +71,7 @@ local theme = {
 		physlock = "control_physlock.png",
 		hads = "control_hads.png",
 		isomorphic = "control_isomorphic.png",
+		cloak = "control_cloak.png",
 
 		menu = "interface_menu.png",
 		back = "interface_back.png",
