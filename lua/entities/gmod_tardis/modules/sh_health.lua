@@ -147,7 +147,10 @@ if SERVER then
 	ENT:AddWireOutput("Health", "TARDIS Health")
 	
 	function ENT:Explode(f)
-		local force = tostring(f) or "60"
+		local force = 60
+		if f ~= nil then
+			force = tostring(f)
+		end
 		local explode = ents.Create("env_explosion")
 		explode:SetPos( self:LocalToWorld(Vector(0,0,50)) )
 		explode:SetOwner( self )
@@ -365,11 +368,7 @@ if SERVER then
 
 	ENT:AddHook("OnHealthDepleted", "death", function(self)
 		self:SetPower(false)
-		if self:GetData("vortex",false) then
-			self:SetData("prevortex-flight", false)
-			self:Mat()
-		end
-		self:Explode(175)
+		self:Explode(180)
 	end)
 
 	ENT:AddHook("OnHealthChange", "warning", function(self)

@@ -19,6 +19,8 @@ local theme = {
 		power = "control_power.png",
 		redecorate = "control_redecoration.png",
 		teleport = "control_throttle.png",
+		handbrake = "control_handbrake.png",
+		engine_release = "control_engine_release.png",
 		fastreturn = "control_fastreturn.png",
 		flight = "control_flight.png",
 		hads = "control_hads.png",
@@ -28,6 +30,7 @@ local theme = {
 		music = "screen_music.png",
 		scanner = "screen_scanner.png",
 		settings = "screen_settings.png",
+		isomorphic = "control_isomorphic.png",
 		["TARDIS Status"] = "screen_status.png",
 	},
 	text_icons_on = {
@@ -38,8 +41,11 @@ local theme = {
 		power = "control_power.png",
 		redecorate = "control_redecoration.png",
 		teleport = "control_throttle.png",
+		handbrake = "control_handbrake.png",
+		engine_release = "control_engine_release.png",
 		flight = "control_flight.png",
 		hads = "control_hads.png",
+		isomorphic = "control_isomorphic.png",
 	},
 }
 TARDIS:AddGUITheme(theme)

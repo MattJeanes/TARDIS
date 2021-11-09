@@ -32,7 +32,7 @@ TARDIS:AddControl({
 		text = "Isomorphic Security",
 		pressed_state_from_interior = true,
 		pressed_state_data = "security",
-		order = 14,
+		order = 15,
 	},
 	tip_text = "Isomorphic Security System",
 })
