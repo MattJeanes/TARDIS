@@ -54,8 +54,9 @@ end
 function ENT:ToggleScreens()
 	if self:CallHook("CanToggleScreens") ~= false then
 		self:SetScreensOn(not self:GetScreensOn())
+		return true
 	end
-	return true
+	return false
 end
 
 if SERVER then

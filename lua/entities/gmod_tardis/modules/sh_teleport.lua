@@ -478,7 +478,8 @@ if SERVER then
 		end
 	end
 	function ENT:FastReturn(callback)
-		if self:CallHook("CanDemat")~=false and self:GetData("fastreturn-pos") then
+		if self:CallHook("CanDemat") ~= false and self:GetData("fastreturn-pos") then
+			self:SetData("demat-fast-prev", self:GetData("demat-fast", false));
 			self:SetFastRemat(true)
 			self:SetData("fastreturn",true)
 			self:Demat(self:GetData("fastreturn-pos"),self:GetData("fastreturn-ang"))
@@ -488,8 +489,10 @@ if SERVER then
 		end
 	end
 	function ENT:ToggleFastRemat()
-		local on = not self:GetData("demat-fast",false)
-		return self:SetFastRemat(on)
+		if self:CallHook("CanToggleFastRemat") ~= false then
+			local on = not self:GetData("demat-fast",false)
+			return self:SetFastRemat(on)
+		end
 	end
 	function ENT:SetFastRemat(on)
 		self:SetData("demat-fast",on,true)
@@ -525,6 +528,12 @@ if SERVER then
 		self:CallHook("StopDemat")
 	end
 
+	ENT:AddHook("CanToggleFastRemat", "vortex", function(self)
+		if self:GetData("vortex",false) then
+			return false
+		end
+	end)
+
 	ENT:AddHook("StopDemat", "teleport-fast", function(self)
 		if self:GetData("demat-fast",false) then
 			timer.Simple(0.3, function()
@@ -556,7 +565,7 @@ if SERVER then
 		end
 		self:SetData("demat-attached",nil,true)
 		if self:GetData("fastreturn",false) then
-			self:SetFastRemat(false)
+			self:SetFastRemat(self:GetData("demat-fast-prev", false))
 			self:SetData("fastreturn",false)
 		end
 		self:CallHook("StopMat")

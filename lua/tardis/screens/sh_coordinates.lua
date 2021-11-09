@@ -254,7 +254,7 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Coordinates", menu=fals
 	confirm:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 	function confirm:DoClick()
 		local pos,ang = fetchtextinputs()
-		if pos ~= nil then
+		if pos ~= nil and pos ~= 0 then
 			ext:SendMessage("destination-demat", function()
 				net.WriteVector(pos)
 				net.WriteAngle(ang)
@@ -265,7 +265,7 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Coordinates", menu=fals
 				end
 			end)
 		else
-			TARDIS:Message(LocalPlayer(), "No destination set")
+			TARDIS:ErrorMessage(LocalPlayer(), "No destination set")
 		end
 	end
 
