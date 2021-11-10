@@ -93,10 +93,10 @@ T.Interior={
 				view_range_min = 50
 			},
 		},
-		default_doorframe = {
+		/*default_doorframe = {
 			pos = Vector(317,334,-89),
 			ang = Angle(0,-40,0)
-		}
+		}*/
 	},
 	Tips={
 		view_range_min=70,
