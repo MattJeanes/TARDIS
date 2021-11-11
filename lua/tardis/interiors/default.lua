@@ -1,7 +1,7 @@
 -- Default
 
-local function IsSonicInstalled()
-	if SonicSD and file.Exists("autorun/sonicsd.lua", "LUA") then
+local function SonicModelExists()
+	if SonicSD and file.Exists("models/weapons/c_sonicsd.mdl", "GAME") then
 		return true
 	end
 	return false
@@ -90,9 +90,8 @@ T.Interior={
 		default_blacksticks        = {pos = Vector(4.480469, -43.906372, 7),          ang = Angle(13, 0, 24.176),             tip = {pos = Vector(4.48, -43.9, 7)}},
 		default_longflighttoggle   = {pos = Vector(-37.242310, -27.915344, 7.428223), ang = Angle(338, 28.721, 15),           tip = {pos = Vector(-37.24, -27.91, 7.42)},},
 		default_dematcircuit       = {pos = Vector(-43.168457, -31.015625, 4.7),      ang = Angle(22, 209.224, 348),          tip = {pos = Vector(-43.16, -31.01, 4.7), right = true, down = true},},
-		default_sonicdispenser     = IsSonicInstalled() and
-		                             {pos = Vector(-26.048, 42.31, 1.45),             ang = Angle(9.445, 46.482, -21.861),    tip = {pos = Vector(-26.048, 42.31, 3.15), right = true, down = false}, },
-		default_sonic_inserted     = IsSonicInstalled() and
+		default_sonicdispenser     = {pos = Vector(-26.048, 42.31, 1.45),             ang = Angle(9.445, 46.482, -21.861),    tip = {pos = Vector(-26.048, 42.31, 3.15), right = true, down = false}, },
+		default_sonic_inserted     = SonicModelExists() and
 	                                 {pos = Vector(-29.748, 40.71, -20.15),           ang = Angle(-100, -90, 90),             tip = {pos = Vector(-26.048, 42.31, 3.15), right = true, down = false}, },
 		default_helmic = {
 			pos = Vector(-26, -41, 4),
