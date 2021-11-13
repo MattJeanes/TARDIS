@@ -188,7 +188,6 @@ local function AutoSetup(self,e,id)
 	end
 	if not e.Collision then
 		if e.CollisionUse == false then
-			print(e)
 			e:SetCollisionGroup( COLLISION_GROUP_IN_VEHICLE )
 		else
 			e:SetCollisionGroup( COLLISION_GROUP_WORLD ) -- Still works with USE, TODO: Find better way if possible (for performance reasons)
