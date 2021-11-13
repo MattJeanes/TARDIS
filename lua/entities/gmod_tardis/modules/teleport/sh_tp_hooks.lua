@@ -44,6 +44,10 @@ if SERVER then
 		end
 	end)
 
+	ENT:AddHook("ShouldStopSmoke", "vortex", function(self)
+		if self:GetData("vortex") then return true end
+	end)
+
 	ENT:AddHook("ShouldTakeDamage", "vortex", function(self)
 		if self:GetData("vortex",false) then return false end
 	end)
