@@ -32,6 +32,7 @@ local theme = {
 		settings = "screen_settings.png",
 		isomorphic = "control_isomorphic.png",
 		["TARDIS Status"] = "screen_status.png",
+		cloak = "control_cloak.png",
 	},
 	text_icons_on = {
 		subfolder = "on",
@@ -46,6 +47,7 @@ local theme = {
 		flight = "control_flight.png",
 		hads = "control_hads.png",
 		isomorphic = "control_isomorphic.png",
+		cloak = "control_cloak.png",
 	},
 }
 TARDIS:AddGUITheme(theme)

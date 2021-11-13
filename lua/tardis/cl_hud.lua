@@ -38,3 +38,12 @@ hook.Add("HUDPaint", "TARDIS-HUD", function()
 	draw.DrawText( "TARDIS", "TARDIS-HUD-Small", x+10, y+10, textcolor, TEXT_ALIGN_LEFT )
 	draw.DrawText( tostring(health) .. "%", healthfont, x+10, y+45, textcolor, TEXT_ALIGN_LEFT )
 end)
+
+list.Set("DesktopWindows", "TardisHUD", {
+	title = "TARDIS",
+	icon = "materials/vgui/entities/tardis/default.png",
+	init = function()
+		TARDIS:HUDScreen()
+	end
+})
+
