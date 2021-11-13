@@ -10,13 +10,20 @@ TARDIS:AddControl({
 	id = "sonic_dispenser",
 	int_func=function(self,ply)
 		if TARDIS:IsSonicInstalled() then
-			if ply:GetWeapon("swep_sonicsd") == NULL then
-				ply:Give("swep_sonicsd")
+			local currentWeapon = ply:GetActiveWeapon()
+			if IsValid(currentWeapon) and currentWeapon:GetClass() == "swep_sonicsd" then
+				TARDIS:ErrorMessage(ply, "You are already holding a Sonic Screwdriver.")
+				return
 			end
-			TARDIS:Message(ply, "Sonic Screwdriver has been dispensed.")
+			if IsValid(ply:GetWeapon("swep_sonicsd")) then
+				TARDIS:Message(ply, "Sonic Screwdriver has been equipped.")
+			else
+				ply:Give("swep_sonicsd")
+				TARDIS:Message(ply, "Sonic Screwdriver has been dispensed.")
+			end
 			ply:SelectWeapon("swep_sonicsd")
 		else
-			TARDIS:ErrorMessage(ply, "You do not have Sonic Screwdriver addon installed. Install it for this part to work.")
+			TARDIS:ErrorMessage(ply, "You do not have the Sonic Screwdriver addon installed. Install it for this part to work.")
 		end
 	end,
 	serveronly = true,
