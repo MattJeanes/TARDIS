@@ -70,7 +70,6 @@ function TARDIS:Message(ply, message, error)
 			print("ERROR: "..fullmessage)
 		else
 			print(fullmessage)
-
 		end
 		return
 	end
