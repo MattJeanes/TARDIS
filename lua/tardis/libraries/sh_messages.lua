@@ -66,11 +66,20 @@ function TARDIS:Message(ply, message, error)
 		return
 	end
 	if style == 1 then
-		print(fullmessage)
+		if error then
+			print("ERROR: "..fullmessage)
+		else
+			print(fullmessage)
+
+		end
 		return
 	end
 	if style == 2 then
-		LocalPlayer():ChatPrint(fullmessage)
+		if error then
+			LocalPlayer():ChatPrint("ERROR: "..fullmessage)
+		else
+			LocalPlayer():ChatPrint(fullmessage)
+		end
 		return
 	end
 	if style == 3 then
