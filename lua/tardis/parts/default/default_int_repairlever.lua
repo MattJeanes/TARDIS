@@ -3,7 +3,6 @@
 local PART = {}
 PART.ID = "default_repairlever"
 PART.Name = "Default Repair Lever"
-PART.Control = "repair"
 PART.Model = "models/drmatt/tardis/repairlever.mdl"
 PART.AutoSetup = true
 PART.Collision = true

@@ -208,6 +208,19 @@ local function AutoSetup(self,e,id)
 	end
 end
 
+local function SetupPartMetadataControl(e)
+	if (e.parent == e.interior) then
+		controls_metadata = e.parent.metadata.Interior.Controls
+	else
+		controls_metadata = e.parent.metadata.Exterior.Controls
+	end
+	if controls_metadata ~= nil then
+		if controls_metadata[e.ID] ~= nil then
+			e.Control = controls_metadata[e.ID]
+		end
+	end
+end
+
 if SERVER then
 	function TARDIS:SetupParts(ent)
 		ent.parts={}
@@ -257,6 +270,9 @@ if SERVER then
 			if type(data)=="table" then
 				table.Merge(e,data)
 			end
+
+			SetupPartMetadataControl(e)
+
 			if e.enabled==false then
 				e:Remove()
 			else
@@ -295,6 +311,9 @@ else
 			if type(data)=="table" then
 				table.Merge(e,data)
 			end
+
+			SetupPartMetadataControl(e)
+
 			if not parent.parts then parent.parts={} end
 			parent.parts[name]=e
 			if e.matrixScale then

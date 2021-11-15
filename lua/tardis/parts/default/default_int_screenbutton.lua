@@ -3,7 +3,6 @@
 local PART = {}
 PART.ID = "default_screenbutton"
 PART.Name = "Default Screen Button"
-PART.Control = "toggle_screens"
 PART.Model = "models/drmatt/tardis/smallbutton.mdl"
 PART.AutoSetup = true
 PART.Collision = true
