@@ -3,7 +3,6 @@
 local PART = {}
 PART.ID = "default_wibblylever"
 PART.Name = "Default Wibbly lever"
-PART.Control = "doorlock"
 PART.Text = "Wibbly Lever"
 PART.Model = "models/drmatt/tardis/wibblylever.mdl"
 PART.AutoSetup = true

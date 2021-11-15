@@ -3,7 +3,6 @@
 local PART = {}
 PART.ID = "default_redecoratebutton"
 PART.Name = "Default Redecotate Button"
-PART.Control = "redecorate"
 PART.Model = "models/drmatt/tardis/smallbutton.mdl"
 PART.AutoSetup = true
 PART.Collision = true
