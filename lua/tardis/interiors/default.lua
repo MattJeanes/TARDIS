@@ -7,47 +7,47 @@ local function SonicModelExists()
 	return false
 end
 
-local T={}
-T.Base="base"
-T.Name="Default"
-T.ID="default"
-T.Interior={
-	Model="models/drmatt/tardis/interior.mdl",
-	IdleSound={
+local T = {}
+T.Base = "base"
+T.Name = "Default"
+T.ID = "default"
+T.Interior = {
+	Model = "models/drmatt/tardis/interior.mdl",
+	IdleSound = {
 		{
-			path="drmatt/tardis/default/interior_idle_loop.wav",
-			volume=0.5
+			path = "drmatt/tardis/default/interior_idle_loop.wav",
+			volume = 0.5
 		},
 		{
-			path="drmatt/tardis/default/interior_idle2_loop.wav",
-			volume=0.5
+			path = "drmatt/tardis/default/interior_idle2_loop.wav",
+			volume = 0.5
 		}
 	},
-	Light={
-		color=Color(255,50,0),
-		warncolor=Color(255,0,0),
-		pos=Vector(0,0,120),
-		brightness=5
+	Light = {
+		color = Color(255, 50, 0),
+		warncolor = Color(255, 0, 0),
+		pos = Vector(0, 0, 120),
+		brightness = 5
 	},
-	Lights={
+	Lights = {
 		{
-			color=Color(0,255,0),
-			pos=Vector(0,0,-50),
-			brightness=2,
-			nopower=true
+			color = Color(0, 255, 0),
+			pos = Vector(0, 0, -50),
+			brightness = 2,
+			nopower = true
 		}
 	},
-	Portal={
-		pos=Vector(316.7,334.9,-36.5),
-		ang=Angle(0,230,0),
-		width=45,
-		height=91
+	Portal = {
+		pos = Vector(316.7, 334.9, -36.5),
+		ang = Angle(0, 230, 0),
+		width = 45,
+		height = 91
 	},
-	Fallback={
-		pos=Vector(291,305,-75),
-		ang=Angle(0,230,0)
+	Fallback = {
+		pos = Vector(291, 305, -75),
+		ang = Angle(0, 230, 0)
 	},
-	Screens={
+	Screens = {
 		{
 			pos = Vector(44.5, -6.5, 39),
 			ang = Angle(0, 84.5, 91),
@@ -60,16 +60,16 @@ T.Interior={
 	Sequences = "default_sequences",
 	Parts = {
 		door = {
-			pos = Vector(300,315,-88.1),
-			ang = Angle(0,50,0),
+			pos = Vector(300, 315, -88.1),
+			ang = Angle(0, 50, 0),
 			width = 443,
 			height = 335
 		},
 		default_rails = true,
-		default_throttle           = {pos = Vector(-8.87,-50,5.5),                    ang = Angle(-12,-5,24),                 },
+		default_throttle           = {pos = Vector(-8.87, -50, 5.5),                    ang = Angle(-12, -5, 24),                 },
 		default_flightlever        = {pos = Vector(-0.431641, 44.75, 6.4),            ang = Angle(-63.913, 137.035, 136.118), },
-		default_screen             = {pos = Vector(42,0.75,27.1),                     ang = Angle(0,-5,0),                    },
-		default_screenbutton       = {pos = Vector(44.5,9.75,38.2),                   ang = Angle(215,85,90),                 },
+		default_screen             = {pos = Vector(42, 0.75, 27.1),                     ang = Angle(0, -5, 0),                    },
+		default_screenbutton       = {pos = Vector(44.5, 9.75, 38.2),                   ang = Angle(215, 85, 90),                 },
 		default_wibblylever        = {pos = Vector(-48, 18, 5.4),                     ang = Angle(335, 347, 6),               },
 		default_enginerelease      = {pos = Vector(-61.229, 21.622, -4.514),          ang = Angle(90, 90.911, -90),           },
 		default_doorbutton         = {pos = Vector(-60.782, -25.129, -6.108),         ang = Angle(0, 65.911, -81.515),        },
@@ -95,13 +95,13 @@ T.Interior={
 		default_sonic_inserted     = SonicModelExists() and
 	                                 {pos = Vector(-29.748, 40.71, -20.15),           ang = Angle(-100, -90, 90),             },
 		default_doorframe = {
-			pos = Vector(317,336.3,-80),
-			ang = Angle(0,-40,0),
+			pos = Vector(317, 336.3, -80),
+			ang = Angle(0, -40, 0),
 			scale = 0.764,
 			matrixScale = Vector(1, 1, 1.083)
 		}
 	},
-	Controls={
+	Controls = {
 		default_throttle           = "teleport",
 		default_flightlever        = "flight",
 		default_screen             = nil,
@@ -132,14 +132,14 @@ T.Interior={
 
 
 	},
-	TipSettings={
-		view_range_min=70,
-		view_range_max=90,
+	TipSettings = {
+		view_range_min = 70,
+		view_range_max = 90,
 	},
-	CustomTips={
-		--{ text="Example", pos = Vector(0, 0, 0) },
+	CustomTips = {
+		--{ text = "Example", pos = Vector(0, 0, 0) },
 	},
-	Tips={},
+	Tips = {},
 	-- Interior.Tips are deprecated; should be deleted when the extensions update and
 	-- replace with Interior.CustomTips, Interior.PartTips and Interior.TipSettings
 	PartTips = {
@@ -178,21 +178,21 @@ T.Interior={
 			view_range_min = 50,
 		},
 	},
-	Seats={
+	Seats = {
 		{
-			pos=Vector(130,-96,-30),
-			ang=Angle(0,40,0)
+			pos = Vector(130, -96, -30),
+			ang = Angle(0, 40, 0)
 		},
 		{
-			pos=Vector(125,55,-30),
-			ang=Angle(0,135,0)
+			pos = Vector(125, 55, -30),
+			ang = Angle(0, 135, 0)
 		}
 	},
 	BreakdownEffectPos = Vector(0, 0, 40)
 }
-T.Exterior={
-	Parts={
-		door=true
+T.Exterior = {
+	Parts = {
+		door = true
 	},
 	PhaseMaterial = "models/drmatt/tardis/exterior/phase.vmt"
 }
