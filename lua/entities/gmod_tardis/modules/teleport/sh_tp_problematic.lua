@@ -196,6 +196,17 @@ if SERVER then
 		end
 	end
 
+	ENT:AddHook("ToggleDoor", "failing-demat", function(self,open)
+		if self:GetData("failing-demat", false) then
+			if not open then
+				self:SetData("failing-demat", false, true)
+				local pos = pos or self:GetData("demat-pos") or self:GetPos()
+				local ang = ang or self:GetData("demat-ang") or self:GetAngles()
+				self:Demat(pos, ang, nil, false)
+			end
+		end
+	end)
+
 else
 	ENT:OnMessage("failed-demat", function(self)
 		if TARDIS:GetSetting("teleport-sound") and TARDIS:GetSetting("sound") then
