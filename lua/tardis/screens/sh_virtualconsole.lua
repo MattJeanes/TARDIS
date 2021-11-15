@@ -1,15 +1,5 @@
 -- Virtual console
 
-TARDIS:AddControl({
-	id = "virtualconsole",
-	ext_func=function(self,ply)
-		TARDIS:PopToScreen("Virtual Console", ply)
-	end,
-	serveronly = true,
-	screen_button = false, -- already added as a screen
-	tip_text = "Virtual Console",
-})
-
 if SERVER then return end
 
 local function new_virtual_console(self,ext,int,frame,screen)

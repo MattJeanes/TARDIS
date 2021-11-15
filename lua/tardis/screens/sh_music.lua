@@ -1,15 +1,5 @@
 -- Music
 
-TARDIS:AddControl({
-	id = "music",
-	ext_func=function(self,ply)
-		TARDIS:PopToScreen("Music", ply)
-	end,
-	serveronly = true,
-	screen_button = false, -- already added as a screen
-	tip_text = "Music",
-})
-
 if SERVER then return end
 
 TARDIS:AddScreen("Music", {id="music", menu=false, order=10}, function(self,ext,int,frame,screen)
