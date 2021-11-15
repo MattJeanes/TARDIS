@@ -7,9 +7,7 @@ TARDIS:AddKeyBind("float-toggle",{
 	desc="Lets the TARDIS fly as if there is no gravity",
 	func=function(self,down,ply)
 		if ply==self.pilot and down then
-			if self:ToggleFloat() then
-				TARDIS:StatusMessage(ply, "Anti-Gravs", self:GetData("floatfirst"))
-			end
+			TARDIS:Control("float", ply)
 		end
 	end,
 	key=KEY_T,

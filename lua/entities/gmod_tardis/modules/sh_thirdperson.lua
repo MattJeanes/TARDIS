@@ -5,7 +5,7 @@ TARDIS:AddKeyBind("tp-toggledoor",{
 	section="Third Person",
 	func=function(self,down,ply)
 		if ply==self.pilot and down then
-			self:ToggleDoor()
+			TARDIS:Control("door", ply)
 		end
 	end,
 	key=KEY_F,

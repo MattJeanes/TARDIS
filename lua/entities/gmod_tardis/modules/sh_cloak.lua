@@ -6,12 +6,12 @@ TARDIS:AddKeyBind("cloak-toggle",{
 	section="Cloak",
 	func=function(self,down,ply)
 		if ply == self.pilot and down then
-			self:ToggleCloak()
+			TARDIS:Control("cloak", ply)
 		end
 	end,
 	key=KEY_L,
 	serveronly=true,
-	exterior=true	
+	exterior=true
 })
 
 ENT:AddHook("Initialize", "cloak", function(self)
