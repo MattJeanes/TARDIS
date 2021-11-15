@@ -6,9 +6,7 @@ TARDIS:AddKeyBind("physlock-toggle",{
 	desc="Make the TARDIS constant and unmovable in space",
 	func=function(self,down,ply)
 		if ply==self.pilot and down then
-			if self:TogglePhyslock() then
-				TARDIS:Message(ply, "Physlock "..(self:GetData("physlock") and "en" or "dis").."abled")
-			end
+			TARDIS:Control("physlock", ply)
 		end
 	end,
 	key=KEY_G,
