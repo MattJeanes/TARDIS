@@ -29,7 +29,7 @@ T.Interior={
 		SequenceFail = "drmatt/tardis/seq_bad.wav",
 		Cloister = "drmatt/tardis/cloisterbell_loop.wav"
 	},
-	Tips={
+	TipSettings={
 		style="white_on_grey",
 		view_range_min=70,
 		view_range_max=100,
