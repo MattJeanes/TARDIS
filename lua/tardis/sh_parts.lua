@@ -187,7 +187,11 @@ local function AutoSetup(self,e,id)
 		e.phys:EnableMotion(e.Motion or false)
 	end
 	if not e.Collision then
-		e:SetCollisionGroup( COLLISION_GROUP_WORLD ) -- Still works with USE, TODO: Find better way if possible (for performance reasons)
+		if e.CollisionUse == false then
+			e:SetCollisionGroup( COLLISION_GROUP_IN_VEHICLE )
+		else
+			e:SetCollisionGroup( COLLISION_GROUP_WORLD ) -- Still works with USE, TODO: Find better way if possible (for performance reasons)
+		end
 	end
 	if e.AutoPosition ~= false then
 		e:SetPos(self:LocalToWorld(e.pos or e.Pos or Vector(0,0,0)))
@@ -293,6 +297,11 @@ else
 			end
 			if not parent.parts then parent.parts={} end
 			parent.parts[name]=e
+			if e.matrixScale then
+				local matrix = Matrix()
+				matrix:Scale(e.matrixScale)
+				e:EnableMatrix("RenderMultiply",matrix)
+			end
 			if e.o.Initialize then
 				e.o.Initialize(e)
 			end

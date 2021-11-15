@@ -22,32 +22,6 @@ TARDIS:AddSetting({
 	networked=true
 })
 
-TARDIS:AddControl({
-	id = "engine_release",
-	ext_func=function(self, ply)
-		local pos = pos or self:GetData("demat-pos") or self:GetPos()
-		local ang = ang or self:GetData("demat-ang") or self:GetAngles()
-		self:EngineReleaseDemat(pos, ang, function(result)
-			if result then
-				TARDIS:Message(ply, "Force dematerialisation triggered")
-			elseif result == false then
-				TARDIS:ErrorMessage(ply, "Failed to dematerialise")
-			end
-		end)
-	end,
-	serveronly=true,
-	screen_button = {
-		virt_console = true,
-		mmenu = false,
-		toggle = false,
-		frame_type = {0, 1},
-		text = "Engine Release",
-		order = 8,
-	},
-	tip_text = "Engine Release",
-})
-
-
 if SERVER then
 
 	ENT:AddHook("FailDemat", "doors", function(self, force)
@@ -195,6 +169,17 @@ if SERVER then
 			self:ForceDemat(pos, ang, callback)
 		end
 	end
+
+	ENT:AddHook("ToggleDoor", "failing-demat", function(self,open)
+		if self:GetData("failing-demat", false) then
+			if not open then
+				self:SetData("failing-demat", false, true)
+				local pos = pos or self:GetData("demat-pos") or self:GetPos()
+				local ang = ang or self:GetData("demat-ang") or self:GetAngles()
+				self:Demat(pos, ang, nil, false)
+			end
+		end
+	end)
 
 else
 	ENT:OnMessage("failed-demat", function(self)

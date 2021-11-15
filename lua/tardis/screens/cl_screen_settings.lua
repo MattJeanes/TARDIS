@@ -1,17 +1,5 @@
 -- Settings
 
-TARDIS:AddControl({
-	id = "settings",
-	ext_func=function(self,ply)
-		TARDIS:PopToScreen("Settings", ply)
-	end,
-	serveronly = true,
-	screen_button = false, -- already added as a screen
-	tip_text = "Settings",
-})
-
-if SERVER then return end
-
 TARDIS:AddScreen("Settings", {id="settings", order=20}, function(self,ext,int,frame,screen)	
 	local settings={}
 	for k,v in pairs(self.GUISettings) do
