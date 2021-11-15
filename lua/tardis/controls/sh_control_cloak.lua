@@ -1,7 +1,11 @@
 TARDIS:AddControl({
 	id = "cloak",
 	ext_func=function(self,ply)
-		self:ToggleCloak()
+		if self:ToggleCloak() then
+			TARDIS:StatusMessage(ply, "Cloaking", self:GetCloak())
+		else
+			TARDIS:ErrorMessage(ply, "Failed to toggle cloaking")
+		end
 	end,
 	serveronly=true,
 	screen_button = {

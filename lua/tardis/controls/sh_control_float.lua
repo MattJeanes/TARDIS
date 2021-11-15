@@ -1,8 +1,8 @@
 TARDIS:AddControl({
 	id = "float",
 	ext_func=function(self,ply)
-		if self:ToggleFloat() then
-			TARDIS:StatusMessage(ply, "Anti-gravs", self:GetData("float"))
+		if self:ToggleFloat() or self:GetData("flight") then
+			TARDIS:StatusMessage(ply, "Anti-gravs", self:GetData("floatfirst"))
 		else
 			TARDIS:ErrorMessage(ply, "Failed to toggle anti-gravs")
 		end

@@ -8,7 +8,7 @@ TARDIS:AddKeyBind("destination-open",{
 	desc="Enter destination select state",
 	func=function(self,down,ply)
 		if down and ply == self.pilot then
-			self:SelectDestination(ply, true)
+			TARDIS:Control("destination", ply)
 		end
 	end,
 	key=KEY_H,

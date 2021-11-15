@@ -6,7 +6,7 @@ TARDIS:AddKeyBind("flight-toggle",{
 	section="Third Person",
 	func=function(self,down,ply)
 		if ply==self.pilot and down then
-			self:ToggleFlight()
+			TARDIS:Control("flight", ply)
 		end
 	end,
 	key=KEY_R,
