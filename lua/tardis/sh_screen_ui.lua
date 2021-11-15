@@ -22,6 +22,7 @@ function TARDIS:PopToScreen(name, ply)
 end
 
 if SERVER then
+	TARDIS:LoadFolder("screens")
 	util.AddNetworkString("TARDIS-HUDScreen")
 	util.AddNetworkString("TARDIS-PopToScreen")
 	net.Receive("TARDIS-HUDScreen",function(len,ply)
