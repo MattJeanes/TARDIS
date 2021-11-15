@@ -29,6 +29,9 @@ T.Interior={
 		SequenceFail = "drmatt/tardis/seq_bad.wav",
 		Cloister = "drmatt/tardis/cloisterbell_loop.wav"
 	},
+	Tips = {},
+	CustomTips = {},
+	PartTips = {},
 	TipSettings={
 		style="white_on_grey",
 		view_range_min=70,
