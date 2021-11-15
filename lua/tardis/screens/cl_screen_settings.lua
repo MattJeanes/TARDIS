@@ -1,7 +1,5 @@
 -- Settings
 
-if SERVER then return end
-
 TARDIS:AddScreen("Settings", {id="settings", order=20}, function(self,ext,int,frame,screen)	
 	local settings={}
 	for k,v in pairs(self.GUISettings) do

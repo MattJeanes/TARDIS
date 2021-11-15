@@ -1,7 +1,5 @@
 -- Scanner
 
-if SERVER then return end
-
 local mat = CreateMaterial(
 	"UnlitGeneric",
 	"GMODScreenspace",

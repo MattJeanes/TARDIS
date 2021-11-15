@@ -1,7 +1,5 @@
 -- Virtual console
 
-if SERVER then return end
-
 local function new_virtual_console(self,ext,int,frame,screen)
 	frame:SetBackgroundColor(Color(0,0,0))
 
