@@ -3,7 +3,6 @@
 local PART = {}
 PART.ID = "default_float"
 PART.Name = "Default Float"
-PART.Control = "float"
 PART.Model = "models/drmatt/tardis/handbrake.mdl"
 PART.AutoSetup = true
 PART.Collision = true

@@ -3,7 +3,6 @@
 local PART = {}
 PART.ID = "default_biglever"
 PART.Name = "Default Fast Return Lever"
-PART.Control = "fastreturn"
 PART.Model = "models/drmatt/tardis/biglever.mdl"
 PART.AutoSetup = true
 PART.Collision = true

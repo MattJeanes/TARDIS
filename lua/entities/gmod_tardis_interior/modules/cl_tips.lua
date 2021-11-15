@@ -22,8 +22,12 @@ TARDIS:AddSetting({
 })
 
 function ENT:InitializeTips(style_name)
+	local int_metadata = self.metadata.Interior
+
 	if style_name == "default" then
-		style_name = self.metadata.Interior.Tips.style
+		style_name = int_metadata.TipSettings.style or int_metadata.Tips.style
+		-- Interior.Tips are deprecated; should be deleted when the extensions update and
+		-- replace with Interior.CustomTips, Interior.PartTips and Interior.TipSettings
 	end
 	self.tip_style_name = style_name
 	local style = TARDIS:GetTipStyle(style_name)
@@ -31,8 +35,13 @@ function ENT:InitializeTips(style_name)
 
 	for k,interior_tip in ipairs(self.alltips) do
 		local tip = table.Copy(style)
-		tip.view_range_min = self.metadata.Interior.Tips.view_range_min
-		tip.view_range_max = self.metadata.Interior.Tips.view_range_max
+
+		tip.view_range_min = int_metadata.TipSettings.view_range_min or int_metadata.Tips.view_range_min
+		tip.view_range_max = int_metadata.TipSettings.view_range_max or int_metadata.Tips.view_range_max
+
+		-- Interior.Tips are deprecated; should be deleted when the extensions update and
+		-- replace with Interior.CustomTips, Interior.PartTips and Interior.TipSettings
+
 		for setting,value in pairs(interior_tip) do
 			tip[setting]=value
 		end
@@ -40,6 +49,14 @@ function ENT:InitializeTips(style_name)
 			if tip.part then
 				local part = TARDIS:GetRegisteredPart(tip.part)
 				if part then
+
+					local controls_metadata = int_metadata.Controls
+					if controls_metadata then
+						if controls_metadata[part.ID] ~= nil then
+							part.Control = controls_metadata[part.ID]
+						end
+					end
+
 					if part.Control then
 						local control = TARDIS:GetControl(part.Control)
 						if control and control.tip_text then
@@ -91,7 +108,21 @@ ENT:AddHook("Initialize", "tips", function(self)
 	self.alltips = {}
 	if #self.metadata.Interior.Tips ~= 0 then
 		for inttip_id, inttip in ipairs(self.metadata.Interior.Tips) do
+			-- Interior.Tips are deprecated; should be deleted when the extensions update and
+			-- replace with Interior.CustomTips, Interior.PartTips and Interior.TipSettings
 			table.insert(self.alltips, inttip)
+		end
+	end
+	if #self.metadata.Interior.CustomTips ~= 0 then
+		for inttip_id, inttip in ipairs(self.metadata.Interior.CustomTips) do
+			table.insert(self.alltips, inttip)
+		end
+	end
+	if self.metadata.Interior.PartTips ~= nil then
+		for part_id, part_tip in pairs(self.metadata.Interior.PartTips) do
+			local tip = table.Copy(part_tip)
+			tip.part = part_id
+			table.insert(self.alltips, tip)
 		end
 	end
 	for part_id,part in pairs(self.metadata.Interior.Parts) do
@@ -103,7 +134,7 @@ ENT:AddHook("Initialize", "tips", function(self)
 	end
 
 	if TARDIS:GetSetting("tips") and #self.alltips == 0 then
-        	TARDIS:Message(LocalPlayer(), "WARNING: Tips are enabled but this interior does not support them!")
+			TARDIS:Message(LocalPlayer(), "WARNING: Tips are enabled but this interior does not support them!")
 		return
 	end
 
