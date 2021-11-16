@@ -167,7 +167,7 @@ if SERVER then
 		if self:GetData("failing-demat", false) then
 			self:SetData("failing-demat", false, true)
 			if self:CallHook("FailDemat", false) == true then
-				if self:GetHealth() > 40 then
+				if not self:GetData("health-warning", false) then
 					self:ForceDemat(pos, ang, callback)
 				else
 					self:SendMessage("engine-release-explode")
