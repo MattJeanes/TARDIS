@@ -1,4 +1,5 @@
 ENT:AddHook("OnTakeDamage", "Health", function(self, dmginfo)
+	if dmginfo:GetDamage() <= 0 then return end
 	local newhealth = self.exterior:GetHealth() - (dmginfo:GetDamage()/2)
 	self.exterior:ChangeHealth(newhealth)
 end)

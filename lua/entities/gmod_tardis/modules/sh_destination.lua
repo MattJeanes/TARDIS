@@ -66,7 +66,7 @@ TARDIS:AddKeyBind("destination-boost",{
 	exterior=true
 })
 TARDIS:AddKeyBind("destination-slow",{
-	name="Rotate",
+	name="Slow",
 	section="Destination",
 	desc="Hold this key to slow movement",
 	key=KEY_LALT,

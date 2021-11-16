@@ -37,6 +37,7 @@ if SERVER then
 		self:SendMessage("cloak", function()
 			net.WriteBool(on)
 		end)
+		self:DrawShadow(not on)
 		return true
     end
     

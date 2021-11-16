@@ -66,10 +66,10 @@ T.Interior = {
 			height = 335
 		},
 		default_rails = true,
-		default_throttle           = {pos = Vector(-8.87, -50, 5.5),                    ang = Angle(-12, -5, 24),                 },
+		default_throttle           = {pos = Vector(-8.87, -50, 5.5),                  ang = Angle(-12, -5, 24),               },
 		default_flightlever        = {pos = Vector(-0.431641, 44.75, 6.4),            ang = Angle(-63.913, 137.035, 136.118), },
-		default_screen             = {pos = Vector(42, 0.75, 27.1),                     ang = Angle(0, -5, 0),                    },
-		default_screenbutton       = {pos = Vector(44.5, 9.75, 38.2),                   ang = Angle(215, 85, 90),                 },
+		default_screen             = {pos = Vector(42, 0.75, 27.1),                   ang = Angle(0, -5, 0),                  },
+		default_screenbutton       = {pos = Vector(44.5, 9.75, 38.2),                 ang = Angle(215, 85, 90),               },
 		default_wibblylever        = {pos = Vector(-48, 18, 5.4),                     ang = Angle(335, 347, 6),               },
 		default_enginerelease      = {pos = Vector(-61.229, 21.622, -4.514),          ang = Angle(90, 90.911, -90),           },
 		default_doorbutton         = {pos = Vector(-60.782, -25.129, -6.108),         ang = Angle(0, 65.911, -81.515),        },
@@ -132,6 +132,9 @@ T.Interior = {
 
 
 	},
+	Tips = {},
+	-- Interior.Tips are deprecated; should be deleted when the extensions update and
+	-- replace with Interior.CustomTips, Interior.PartTips and Interior.TipSettings
 	TipSettings = {
 		view_range_min = 70,
 		view_range_max = 90,
@@ -139,9 +142,6 @@ T.Interior = {
 	CustomTips = {
 		--{ text = "Example", pos = Vector(0, 0, 0) },
 	},
-	Tips = {},
-	-- Interior.Tips are deprecated; should be deleted when the extensions update and
-	-- replace with Interior.CustomTips, Interior.PartTips and Interior.TipSettings
 	PartTips = {
 
 		default_throttle           = {pos = Vector(-8.87, -50, 5.5),            down = true},
@@ -169,8 +169,6 @@ T.Interior = {
 		default_longflighttoggle   = {pos = Vector(-37.24, -27.91, 7.42)        },
 		default_dematcircuit       = {pos = Vector(-43.16, -31.01, 4.7),        right = true, down = true},
 		default_sonicdispenser     = {pos = Vector(-26.048, 42.31, 3.15),       right = true, down = false},
-		default_sonic_inserted     = SonicModelExists() and
-		                             {pos = Vector(-26.048, 42.31, 3.15),       right = true, down = false},
 		default_helmic = {
 			pos = Vector(-26, -41, 4),
 			right = true,
