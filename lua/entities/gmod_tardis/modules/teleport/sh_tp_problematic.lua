@@ -166,7 +166,11 @@ if SERVER then
 	function ENT:EngineReleaseDemat(pos, ang, callback)
 		if self:GetData("failing-demat", false) then
 			self:SetData("failing-demat", false, true)
-			self:ForceDemat(pos, ang, callback)
+			if self:CallHook("FailDemat", false) == true then
+				self:ForceDemat(pos, ang, callback)
+			else
+				self:Demat(pos, ang, callback, false)
+			end
 		end
 	end
 
