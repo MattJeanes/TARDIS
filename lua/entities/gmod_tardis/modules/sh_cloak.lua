@@ -56,7 +56,7 @@ if SERVER then
 		self:SendMessage("cloak", function()
 			net.WriteBool(on)
 		end)
-		self:DrawShadow(not on) -- Disable/Enable shadow rendering depending on cloaking state
+		self:DrawShadow(not on)
 		return true
     end
     
