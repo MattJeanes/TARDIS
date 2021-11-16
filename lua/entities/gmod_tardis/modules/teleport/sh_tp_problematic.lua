@@ -167,7 +167,12 @@ if SERVER then
 		if self:GetData("failing-demat", false) then
 			self:SetData("failing-demat", false, true)
 			if self:CallHook("FailDemat", false) == true then
-				self:ForceDemat(pos, ang, callback)
+				if self:GetHealth() > 40 then
+					self:ForceDemat(pos, ang, callback)
+				else
+					self:SendMessage("engine-release-explode")
+					self:TogglePower()
+				end
 			else
 				self:Demat(pos, ang, callback, false)
 			end
@@ -197,6 +202,11 @@ else
 			util.ScreenShake(self.interior:GetPos(), 2.5, 100, 3, 300)
 		end
 	end)
+
+	ENT:OnMessage("engine-release-explode", function(self)
+		self:InteriorExplosion()
+	end)
+
 
 	local function rand_offset() return math.random(-35, 35) end
 
