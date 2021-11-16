@@ -321,6 +321,7 @@ if SERVER then
 
 	ENT:AddHook("OnTakeDamage", "Health", function(self, dmginfo)
 		if dmginfo:GetInflictor():GetClass() == "env_fire" then return end
+		if dmginfo:GetDamage() <= 0 then return end
 		local newhealth = self:GetHealth() - (dmginfo:GetDamage()/2)
 		self:ChangeHealth(newhealth)
 	end)
@@ -328,15 +329,8 @@ if SERVER then
 	ENT:AddHook("PhysicsCollide", "Health", function(self, data, collider)
 		if not TARDIS:GetSetting("health-enabled") then return end
 		if (data.Speed < 300) then return end
-		local newhealth = self:GetHealth() - data.Speed / 23
+		local newhealth = self:GetHealth() - (data.Speed / 23)
 		self:ChangeHealth(newhealth)
-	end)
-
-	ENT:AddHook("OnHealthChange", "FallbackNetwork", function(self)
-		local health = self:GetData("health-val")
-		self:SendMessage("health-networking", function()
-			net.WriteInt(health, 32)
-		end)
 	end)
 
 	ENT:AddHook("OnHealthChange", "wiremod", function (self)
@@ -387,12 +381,6 @@ if SERVER then
 		end
 	end)
 else
-	ENT:OnMessage("health-networking", function(self, ply)
-		local newhealth = net.ReadInt(32)
-		self:ChangeHealth(newhealth)
-		self:SetData("UpdateHealthScreen", true, true)
-	end)
-
 	ENT:AddHook("Initialize", "redecorate-reset", function(self)
 		if not IsValid(self) or (not LocalPlayer() == self:GetCreator()) then return end
 		TARDIS:SetSetting("redecorate-interior",self.metadata.ID,true)
