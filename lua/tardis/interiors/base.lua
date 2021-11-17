@@ -19,6 +19,7 @@ T.Interior={
 	},
 	Sounds={
 		Teleport={
+			demat_fail="drmatt/tardis/demat_fail_int.wav"
 		}, -- uses exterior sounds if not specified
 		Power={
 			On="drmatt/tardis/power_on.wav",
@@ -28,7 +29,10 @@ T.Interior={
 		SequenceFail = "drmatt/tardis/seq_bad.wav",
 		Cloister = "drmatt/tardis/cloisterbell_loop.wav"
 	},
-	Tips={
+	Tips = {},
+	CustomTips = {},
+	PartTips = {},
+	TipSettings={
 		style="white_on_grey",
 		view_range_min=70,
 		view_range_max=100,
@@ -76,8 +80,12 @@ T.Exterior={
 	Sounds={
 		Teleport={
 			demat="drmatt/tardis/demat.wav",
+			demat_damaged="drmatt/tardis/demat_damaged.wav",
+			demat_fail="drmatt/tardis/demat_fail_ext.wav",
 			mat="drmatt/tardis/mat.wav",
-			fullflight = "drmatt/tardis/full.wav"
+			mat_damaged="drmatt/tardis/mat_damaged.wav",
+			fullflight = "drmatt/tardis/full.wav",
+			fullflight_damaged = "drmatt/tardis/full_damaged.wav",
 		},
 		RepairFinish="drmatt/tardis/repairfinish.wav",
 		Lock="drmatt/tardis/lock.wav",
@@ -88,6 +96,8 @@ T.Exterior={
 			locked="drmatt/tardis/door_locked.wav"
 		},
 		FlightLoop="drmatt/tardis/flight_loop.wav",
+		FlightLoopDamaged="drmatt/tardis/flight_loop_damaged.wav",
+		Cloak = "drmatt/tardis/phase_enable.wav",
 	},
 	Parts={
 		vortex={

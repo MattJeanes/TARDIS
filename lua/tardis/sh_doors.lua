@@ -21,7 +21,7 @@ if CLIENT then
 		local x,y = DoorsFrame:GetSize()
 		h:SetSize(x*0.99,y*0.96)
 		h:SetAllowLua(true)
-		h:OpenURL('http://mattjeanes.com/abyss/doors-warning.html')
+		h:OpenURL('https://mattjeanes.com/abyss/doors-warning.html')
 		TARDIS.DoorsFrame=DoorsFrame
 	end
 end

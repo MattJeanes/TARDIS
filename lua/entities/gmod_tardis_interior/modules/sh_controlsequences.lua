@@ -53,13 +53,27 @@ TARDIS:AddSetting({
 })
 
 function ENT:GetSequencesEnabled()
-	return self:GetData("cseq-enabled", false)
+	return TARDIS:GetSetting("csequences-enabled",false,self:GetCreator())
 end
 
+ENT:AddHook("CanStartControlSequence", "conditions", function(self,id)
+	local cseqs = TARDIS:GetControlSequence(self.metadata.Interior.Sequences)
+	local seq = cseqs[id]
+	if not seq then return end
+	if not seq.Condition then return end
+	
+	if not seq.Condition(self) then
+		return false
+	end
+end)
+
+ENT:AddHook("CanStartControlSequence", "power", function(self,id)
+	if not self:GetPower() then
+		return false
+	end
+end)
+
 if SERVER then
-	ENT:AddHook("Initialize", "csequence", function(self)
-		self:SetData("cseq-enabled", TARDIS:GetSetting("csequences-enabled", false, self:GetCreator()), true)
-	end)
 
 	ENT:AddHook("PartUsed","HandleControlSequence",function(self,part,a)
 		local sequences = TARDIS:GetControlSequence(self.metadata.Interior.Sequences)
@@ -67,19 +81,23 @@ if SERVER then
 		local id = part.ID
 		local active = self:GetData("cseq-active",false)
 		local step = self:GetData("cseq-step")
+
 		if active==false and sequences[id] then
-			local allowed = self:CallHook("CanStartControlSequence")
+			local allowed = self:CallHook("CanStartControlSequence",id)
 			if allowed==false then return end
 			self:EmitSound(self.metadata.Interior.Sounds.SequenceOK)
+
 			self:SetData("cseq-active", true, true)
 			self:SetData("cseq-step", 1, true)
 			self:SetData("cseq-curseq", id, true)
+
 			for _,v in pairs(sequences[id].Controls) do
 				local p = TARDIS:GetPart(self,v)
 				p.InSequence = true
 			end
 		elseif active==true then
 			local curseq = self:GetData("cseq-curseq","none")
+
 			if sequences[curseq].Controls[step] == id then
 				self:EmitSound(self.metadata.Interior.Sounds.SequenceOK)
 				self:SetData("cseq-step", step + 1, true)
@@ -99,6 +117,7 @@ if SERVER then
 			end
 		end
 	end)
+
 	ENT:AddHook("CanStartControlSequence", "settingquery", function(self)
 		if not self:GetSequencesEnabled() then
 			return false

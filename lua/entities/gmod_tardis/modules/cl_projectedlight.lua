@@ -4,8 +4,8 @@
 
 TARDIS:AddSetting({
 	id="extprojlight-enabled",
-	name="Enabled",
-	section="Door Light",
+	name="Light Enabled",
+	section="Exterior Door",
 	desc="Should light shine out through the doors when they're open?",
 	value=true,
 	type="bool",
@@ -14,8 +14,8 @@ TARDIS:AddSetting({
 
 TARDIS:AddSetting({
 	id="extprojlight-brightness-override",
-	name="Brightness Override",
-	section="Door Light",
+	name="Light Brightness Override",
+	section="Exterior Door",
 	desc="Override brightness of light, reset for default",
 	value=false,
 	type="number",
@@ -26,8 +26,8 @@ TARDIS:AddSetting({
 
 TARDIS:AddSetting({
 	id="extprojlight-distance-override",
-	name="Distance Override",
-	section="Door Light",
+	name="Light Distance Override",
+	section="Exterior Door",
 	desc="Override distance of light, reset for default",
 	value=false,
 	min=0,
@@ -38,8 +38,8 @@ TARDIS:AddSetting({
 
 TARDIS:AddSetting({
 	id="extprojlight-color-override",
-	name="Color Override",
-	section="Door Light",
+	name="Light Color Override",
+	section="Exterior Door",
 	desc="Override color of light, reset for default",
 	value=false,
 	type="color",

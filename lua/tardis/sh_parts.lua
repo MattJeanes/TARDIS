@@ -67,24 +67,36 @@ local overrides={
 		else
 			allowed, animate = self.interior:CallHook("CanUsePart",self,a)
 		end
-		if allowed~=false then
-			res=self.o.Use(self,a,...)
-		end
-		
-		if SERVER and (animate~=false) and (res~=false) then
-			local on = self:GetOn()
-			if self.SoundOff and on then
-				self:EmitSound(self.SoundOff)
-			elseif self.SoundOn and (not on) then
-				self:EmitSound(self.SoundOn)
-			elseif self.Sound then
-				self:EmitSound(self.Sound)
+
+		if self.PowerOffUse == false and not self.interior:GetPower() then
+			TARDIS:ErrorMessage(a, "Power is disabled. This control is blocked.")
+		else
+			if allowed~=false then
+				if SERVER and self.Control and (not self.HasUse) then
+					TARDIS:Control(self.Control,a)
+				else
+					res=self.o.Use(self,a,...)
+				end
 			end
-			self:SetOn(not on)
-			if self.ExteriorPart then
-				self.exterior:CallHook("PartUsed",self,a)
-			elseif self.interior then
-				self.interior:CallHook("PartUsed",self,a)
+
+			if SERVER and (animate~=false) and (res~=false) then
+				local on = self:GetOn()
+
+				if self.PowerOffSound ~= false or self.interior:GetPower() then
+					if self.SoundOff and on then
+						self:EmitSound(self.SoundOff)
+					elseif self.SoundOn and (not on) then
+						self:EmitSound(self.SoundOn)
+					elseif self.Sound then
+						self:EmitSound(self.Sound)
+					end
+				end
+				self:SetOn(not on)
+				if self.ExteriorPart then
+					self.exterior:CallHook("PartUsed",self,a)
+				elseif self.interior then
+					self.interior:CallHook("PartUsed",self,a)
+				end
 			end
 		end
 		return res
@@ -122,7 +134,8 @@ function TARDIS:AddPart(e)
 		error("Duplicate part ID registered: " .. e.ID .. " (exists in both " .. parts[e.ID].source .. " and " .. source .. ")")
 	end
 	e=table.Copy(e)
-	e.Base = "gmod_tardis_part"	
+	e.HasUse = e.Use ~= nil
+	e.Base = "gmod_tardis_part"
 	local class="gmod_tardis_part_"..e.ID
 	scripted_ents.Register(e,class)
 	if postinit then
@@ -182,7 +195,11 @@ local function AutoSetup(self,e,id)
 		e.phys:EnableMotion(e.Motion or false)
 	end
 	if not e.Collision then
-		e:SetCollisionGroup( COLLISION_GROUP_WORLD ) -- Still works with USE, TODO: Find better way if possible (for performance reasons)
+		if e.CollisionUse == false then
+			e:SetCollisionGroup( COLLISION_GROUP_IN_VEHICLE )
+		else
+			e:SetCollisionGroup( COLLISION_GROUP_WORLD ) -- Still works with USE, TODO: Find better way if possible (for performance reasons)
+		end
 	end
 	if e.AutoPosition ~= false then
 		e:SetPos(self:LocalToWorld(e.pos or e.Pos or Vector(0,0,0)))
@@ -199,6 +216,19 @@ local function AutoSetup(self,e,id)
 	end
 end
 
+local function SetupPartMetadataControl(e)
+	if (e.parent == e.interior) then
+		controls_metadata = e.parent.metadata.Interior.Controls
+	else
+		controls_metadata = e.parent.metadata.Exterior.Controls
+	end
+	if controls_metadata ~= nil then
+		if controls_metadata[e.ID] ~= nil then
+			e.Control = controls_metadata[e.ID]
+		end
+	end
+end
+
 if SERVER then
 	function TARDIS:SetupParts(ent)
 		ent.parts={}
@@ -211,11 +241,13 @@ if SERVER then
 		end
 		if data and data.Parts then
 			for k,v in pairs(data.Parts) do
-				local part=parts[k]
-				if part then
-					tempparts[k]=part.class
-				else
-					ErrorNoHaltWithStack("Attempted to create invalid part: " .. k)
+				if v then
+					local part=parts[k]
+					if part then
+						tempparts[k]=part.class
+					else
+						ErrorNoHaltWithStack("Attempted to create invalid part: " .. k)
+					end
 				end
 			end
 		end
@@ -234,7 +266,6 @@ if SERVER then
 			end
 		end
 		for k,v in pairs(tempparts) do
-			
 			local e=ents.Create(v)
 			Doors:SetupOwner(e,ent:GetCreator())
 			e.exterior=(ent.TardisExterior and ent or ent.exterior)
@@ -246,6 +277,9 @@ if SERVER then
 			if type(data)=="table" then
 				table.Merge(e,data)
 			end
+
+			SetupPartMetadataControl(e)
+
 			if e.enabled==false then
 				e:Remove()
 			else
@@ -284,8 +318,16 @@ else
 			if type(data)=="table" then
 				table.Merge(e,data)
 			end
+
+			SetupPartMetadataControl(e)
+
 			if not parent.parts then parent.parts={} end
 			parent.parts[name]=e
+			if e.matrixScale then
+				local matrix = Matrix()
+				matrix:Scale(e.matrixScale)
+				e:EnableMatrix("RenderMultiply",matrix)
+			end
 			if e.o.Initialize then
 				e.o.Initialize(e)
 			end

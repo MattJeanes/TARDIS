@@ -4,7 +4,7 @@ if CLIENT then
 		id="cloistersound",
 		name="Cloister bells",
 		desc="Whether the warning bells can be heard on the interior or not",
-		section="Sound",
+		section="Sounds",
 		value=true,
 		type="bool",
 		option=true
@@ -19,6 +19,12 @@ if CLIENT then
 
 	ENT:AddHook("ShouldTurnOnCloisters","cloisters",function(self)
 		return self:GetData("cloisters")
+	end)
+
+	ENT:AddHook("ShouldTurnOffCloisters","power",function(self)
+		if not self:GetPower() then
+			return true
+		end
 	end)
 
 	ENT:AddHook("Think", "cloistersound", function(self)

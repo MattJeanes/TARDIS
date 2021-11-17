@@ -6,7 +6,7 @@ TARDIS:AddKeyBind("flight-toggle",{
 	section="Third Person",
 	func=function(self,down,ply)
 		if ply==self.pilot and down then
-			self:ToggleFlight()
+			TARDIS:Control("flight", ply)
 		end
 	end,
 	key=KEY_R,
@@ -89,13 +89,14 @@ TARDIS:AddKeyBind("flight-spindir",{
 				self.spindir=-1
 				dir="anti-clockwise"
 			end
-			ply:ChatPrint("Spin direction set to "..dir)
+			TARDIS:Message(ply, "Spin direction set to "..dir)
 		end
 	end,
 	key=MOUSE_RIGHT,
 	serveronly=true,
 	exterior=true
 })
+
 
 if SERVER then	
 	function ENT:ToggleFlight()
@@ -113,7 +114,7 @@ if SERVER then
 		if on and self:GetData("physlock",false)==true then
 			local pilot = self:GetData("pilot",nil)
 			if IsValid(pilot) and pilot:IsPlayer() then
-				pilot:ChatPrint("WARNING: Physical lock engaged")
+				TARDIS:Message(pilot, "WARNING: Physical lock engaged")
 			end
 		end
 		self:SetData("flight",on,true)
@@ -149,10 +150,10 @@ if SERVER then
 	ENT:AddHook("ThirdPerson", "flight", function(self,ply,enabled)
 		if enabled then
 			if IsValid(self.pilot) then
-				ply:ChatPrint(self.pilot:Nick().." is the pilot.")
+				TARDIS:Message(ply, self.pilot:Nick().." is the pilot.")
 			elseif self:CallHook("CanChangePilot",ply)~=false then
 				self.pilot=ply
-				ply:ChatPrint("You are now the pilot.")
+				TARDIS:Message(ply, "You are now the pilot.")
 				self:CallHook("PilotChanged",nil,ply)
 			end
 		else
@@ -162,19 +163,19 @@ if SERVER then
 				for k,v in pairs(self.occupants) do
 					if k:GetTardisData("thirdperson") then
 						if IsValid(self.pilot) then
-							k:ChatPrint(self.pilot:Nick().." is now the pilot.")
+							TARDIS:Message(k, self.pilot:Nick().." is now the pilot.")
 						else
 							self.pilot=k
-							k:ChatPrint("You are now the pilot.")
+							TARDIS:Message(k, "You are now the pilot.")
 						end
 					end
 				end
 			end
 			if waspilot then
 				if IsValid(self.pilot) then
-					ply:ChatPrint(self.pilot:Nick().." is now the pilot.")
+					TARDIS:Message(ply, self.pilot:Nick().." is now the pilot.")
 				else
-					ply:ChatPrint("You are no longer the pilot.")
+					TARDIS:Message(ply, "You are no longer the pilot.")
 				end
 				self:CallHook("PilotChanged",ply,self.pilot)
 			end
@@ -320,8 +321,8 @@ if SERVER then
 else
 	TARDIS:AddSetting({
 		id="flight-externalsound",
-		name="External Sound",
-		section="Flight",
+		name="Flightmode External Sound",
+		section="Sounds",
 		desc="Whether the flight sound can be heard on the outside or not",
 		value=true,
 		type="bool",
@@ -335,8 +336,20 @@ else
 		end
 	end)
 	
+	local function ChooseFlightSound(ent)
+		if ent:GetData("health-warning", false) then
+			ent.flightsound = CreateSound(ent, ent.metadata.Exterior.Sounds.FlightLoopDamaged)
+			ent.flightsounddamaged = true
+		else
+			ent.flightsound = CreateSound(ent, ent.metadata.Exterior.Sounds.FlightLoop)
+			ent.flightsounddamaged = false
+		end
+	end
+
 	ENT:AddHook("Think", "flight", function(self)
-		if self:GetData("flight") and TARDIS:GetSetting("flight-externalsound") and TARDIS:GetSetting("sound") and (not self:CallHook("ShouldTurnOffFlightSound")) then
+		if self:GetData("flight") and TARDIS:GetSetting("flight-externalsound")
+			and TARDIS:GetSetting("sound") and (not self:CallHook("ShouldTurnOffFlightSound"))
+		then
 			if self.flightsound and self.flightsound:IsPlaying() then
 				local p=math.Clamp(self:GetVelocity():Length()/250,0,15)
 				local ply=LocalPlayer()
@@ -359,8 +372,16 @@ else
 					self.flightsound:ChangePitch(math.Clamp(95+p+doppler,80,120),0.1)
 				end
 				self.flightsound:ChangeVolume(0.75)
+
+				if self.flightsounddamaged ~= self:GetData("health-warning",false)
+				then
+					self.flightsound:Stop()
+					ChooseFlightSound(self)
+					self.flightsound:SetSoundLevel(90)
+					self.flightsound:Play()
+				end
 			else
-				self.flightsound=CreateSound(self, self.metadata.Exterior.Sounds.FlightLoop)
+				ChooseFlightSound(self)
 				self.flightsound:SetSoundLevel(90)
 				self.flightsound:Play()
 			end
@@ -369,7 +390,7 @@ else
 			self.flightsound=nil
 		end
 	end)
-	
+
 	ENT:OnMessage("PilotChanged",function(self)
 		local old=net.ReadEntity()
 		local new=net.ReadEntity()

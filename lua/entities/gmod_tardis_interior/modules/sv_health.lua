@@ -1,12 +1,23 @@
 ENT:AddHook("OnTakeDamage", "Health", function(self, dmginfo)
+	if dmginfo:GetDamage() <= 0 then return end
 	local newhealth = self.exterior:GetHealth() - (dmginfo:GetDamage()/2)
 	self.exterior:ChangeHealth(newhealth)
 end)
 
 function ENT:Explode(f)
-	local force = tostring(f) or "60"
+	local force = 60
+	if f ~= nil then
+		force = tostring(f)
+	end
 	local explode = ents.Create("env_explosion")
-	explode:SetPos( self:LocalToWorld(Vector(0,0,0)) )
+
+	local console = self:GetPart("console")
+	if console and IsValid(console) then
+		explode:SetPos(console:GetPos())
+	else
+		explode:SetPos( self:LocalToWorld(Vector(0,0,0)) )
+	end
+
 	explode:SetOwner( self )
 	explode:Spawn()
 	explode:SetKeyValue("iMagnitude", force)
@@ -25,7 +36,7 @@ end)
 
 ENT:AddHook("OnHealthDepleted", "interior-death", function(self)
 	util.ScreenShake(self:GetPos(), 10, 10, 1, 10)
-	self:Explode()
+	self:Explode(80)
 end)
 
 ENT:AddHook("ShouldTakeDamage", "DamageOff", function(self, dmginfo)

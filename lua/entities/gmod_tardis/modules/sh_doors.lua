@@ -1,6 +1,5 @@
 -- Open door with E, go in with Alt-E
 
-
 if SERVER then
 	local function runcallbacks(callbacks,state)
 		for k,v in pairs(callbacks) do
@@ -16,7 +15,7 @@ if SERVER then
 	end
 	
 	function ENT:ToggleDoor(callback)
-		if not IsValid(self.interior) then return end
+		if not IsValid(self.interior) then return false end
 		if not self:GetData("doorchangecallback",false) then
 			self:SetData("doorchangecallback",{})
 		end
@@ -27,7 +26,7 @@ if SERVER then
 				callback(doorstate)
 			end
 			runcallbacks(callbacks,doorstate)
-			return
+			return false
 		end
 		doorstate=not doorstate
 		
@@ -50,6 +49,7 @@ if SERVER then
 			end
 			self:SetData("doorchange",CurTime()+self.metadata.Exterior.DoorAnimationTime)
 		end
+		return true
 	end
 	
 	function ENT:OpenDoor(callback)
@@ -173,7 +173,7 @@ else
 		id="doorsounds-enabled",
 		name="Door Sound",
 		desc="Whether a sound is made when toggling the door or not",
-		section="Sound",
+		section="Sounds",
 		value=true,
 		type="bool",
 		option=true

@@ -21,30 +21,14 @@ TARDIS:AddSetting({
 	networked=false
 })
 
-local tip_control_texts = {
-	coords = "Coordinates",
-	destination = "Destination",
-	hads = "H.A.D.S.",
-	monitor = "Monitor",
-	scanner = "Scanner", -- for the future updates
-	screen_toggle = "Toggle Screen",
-	power = "Power Switch",
-	physlock = "Physlock",
-	cloak = "Cloaking Device", -- partially exists in some interiors
-	throttle = "Space-Time Throttle",
-	fast_return = "Fast-Return Protocol",
-	long_flight = "Vortex Flight Toggler",
-	handbrake = "Time-Rotor Handbrake", -- for the future updates
-	music = "Music",
-	isomorphic = "Isomorphic Security System",
-	repair = "Self-Repair",
-	flight = "Flight Mode",
-	float = "Anti-Gravs",
-}
-
 function ENT:InitializeTips(style_name)
+	local int_metadata = self.metadata.Interior
+
 	if style_name == "default" then
-		style_name = self.metadata.Interior.Tips.style
+		style_name = int_metadata.Tips.style or int_metadata.TipSettings.style
+		-- Interior.Tips are deprecated; should be deleted when the extensions update and
+		-- replace with Interior.CustomTips, Interior.PartTips and Interior.TipSettings
+		-- Old version has more priority, since extensions get overriden by base.lua
 	end
 	self.tip_style_name = style_name
 	local style = TARDIS:GetTipStyle(style_name)
@@ -52,8 +36,14 @@ function ENT:InitializeTips(style_name)
 
 	for k,interior_tip in ipairs(self.alltips) do
 		local tip = table.Copy(style)
-		tip.view_range_min = self.metadata.Interior.Tips.view_range_min
-		tip.view_range_max = self.metadata.Interior.Tips.view_range_max
+
+		tip.view_range_min = int_metadata.Tips.view_range_min or int_metadata.TipSettings.view_range_min
+		tip.view_range_max = int_metadata.Tips.view_range_max or int_metadata.TipSettings.view_range_max
+
+		-- Interior.Tips are deprecated; should be deleted when the extensions update and
+		-- replace with Interior.CustomTips, Interior.PartTips and Interior.TipSettings
+		-- Old version has more priority, since extensions get overriden by base.lua
+
 		for setting,value in pairs(interior_tip) do
 			tip[setting]=value
 		end
@@ -61,11 +51,20 @@ function ENT:InitializeTips(style_name)
 			if tip.part then
 				local part = TARDIS:GetRegisteredPart(tip.part)
 				if part then
+
+					local controls_metadata = int_metadata.Controls
+					if controls_metadata then
+						if controls_metadata[part.ID] ~= nil then
+							part.Control = controls_metadata[part.ID]
+						end
+					end
+
 					if part.Control then
-						if tip_control_texts[part.Control] then
-							tip.text = tip_control_texts[part.Control]
+						local control = TARDIS:GetControl(part.Control)
+						if control and control.tip_text then
+							tip.text = control.tip_text
 						else
-							error("Control \""..part.Control.."\" does not exist")
+							error("Control \""..part.Control.."\" either does not exist or has no tip text specified")
 						end
 					end
 					if part.Text then
@@ -76,10 +75,11 @@ function ENT:InitializeTips(style_name)
 				end
 			end
 			if tip.control then
-				if tip_control_texts[tip.control] then
-					tip.text = tip_control_texts[tip.control]
+				local control = TARDIS:GetControl(tip.control)
+				if control and control.tip_text then
+					tip.text = control.tip_text
 				else
-					error("Control \""..tip.control.."\" does not exist")
+					error("Control \""..tip.control.."\" either does not exist or has no tip text specified")
 				end
 			end
 		end
@@ -110,7 +110,23 @@ ENT:AddHook("Initialize", "tips", function(self)
 	self.alltips = {}
 	if #self.metadata.Interior.Tips ~= 0 then
 		for inttip_id, inttip in ipairs(self.metadata.Interior.Tips) do
+			-- Interior.Tips are deprecated; should be deleted when the extensions update and
+			-- replace with Interior.CustomTips, Interior.PartTips and Interior.TipSettings
 			table.insert(self.alltips, inttip)
+		end
+	end
+	if #self.metadata.Interior.CustomTips ~= 0 then
+		for inttip_id, inttip in ipairs(self.metadata.Interior.CustomTips) do
+			table.insert(self.alltips, inttip)
+		end
+	end
+	if self.metadata.Interior.PartTips ~= nil then
+		for part_id, part_tip in pairs(self.metadata.Interior.PartTips) do
+			if istable(part_tip) then
+				local tip = table.Copy(part_tip)
+				tip.part = part_id
+				table.insert(self.alltips, tip)
+			end
 		end
 	end
 	for part_id,part in pairs(self.metadata.Interior.Parts) do
@@ -122,11 +138,11 @@ ENT:AddHook("Initialize", "tips", function(self)
 	end
 
 	if TARDIS:GetSetting("tips") and #self.alltips == 0 then
-		LocalPlayer():ChatPrint("WARNING: Tips are enabled but this interior does not support them")
+		TARDIS:Message(LocalPlayer(), "WARNING: Tips are enabled but this interior does not support them!")
 		return
 	end
 
-	local style_name = TARDIS:GetSetting("tips_style", "default", false)
+	local style_name = TARDIS:GetSetting("tips_style", "default")
 	self:InitializeTips(style_name)
 end)
 
@@ -140,7 +156,7 @@ hook.Add("HUDPaint", "TARDIS-DrawTips", function()
 	local interior = TARDIS:GetInteriorEnt(LocalPlayer())
 	if not (interior and interior.tips and TARDIS:GetSetting("tips") and (interior:CallHook("ShouldDrawTips")~=false)) then return end
 
-	local selected_tip_style = TARDIS:GetSetting("tips_style", "default", false)
+	local selected_tip_style = TARDIS:GetSetting("tips_style", "default")
 	if interior.tip_style_name ~= selected_tip_style then
 		interior:InitializeTips(selected_tip_style)
 	end
@@ -165,8 +181,10 @@ hook.Add("HUDPaint", "TARDIS-DrawTips", function()
 		local view_range_min = tip.view_range_min
 		local view_range_max = tip.view_range_max
 
+		local cseq_canstart = cseq_enabled and interior:CallHook("CanStartControlSequence",tip.part)~=false
+
 		if not cseq_active then
-			tip:SetHighlight(cseq_enabled and cseq_sequences[tip.part] ~= nil)
+			tip:SetHighlight(cseq_enabled and cseq_sequences[tip.part] ~= nil and cseq_canstart)
 		else
 			tip:SetHighlight(cseq_enabled and tip.part == cseq_next)
 		end

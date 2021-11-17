@@ -1,6 +1,20 @@
 -- Destination
 
 -- Binds
+
+TARDIS:AddKeyBind("destination-open",{
+	name="Destination",
+	section="Third Person",
+	desc="Enter destination select state",
+	func=function(self,down,ply)
+		if down and ply == self.pilot then
+			TARDIS:Control("destination", ply)
+		end
+	end,
+	key=KEY_H,
+	serveronly=true,
+	exterior=true
+})
 TARDIS:AddKeyBind("destination-forward",{
 	name="Forward",
 	section="Destination",
@@ -52,7 +66,7 @@ TARDIS:AddKeyBind("destination-boost",{
 	exterior=true
 })
 TARDIS:AddKeyBind("destination-slow",{
-	name="Rotate",
+	name="Slow",
 	section="Destination",
 	desc="Hold this key to slow movement",
 	key=KEY_LALT,
@@ -84,7 +98,7 @@ TARDIS:AddKeyBind("destination-demat",{
 	end,
 	key=MOUSE_LEFT,
 	clientonly=true,
-	exterior=true	
+	exterior=true
 })
 TARDIS:AddKeyBind("destination-snaptofloor",{
 	name="Snap To Floor",
@@ -153,24 +167,24 @@ if SERVER then
 		end
 		if self:GetData("vortex") or self:GetData("teleport") then
 			if self:SetDestination(pos,ang) then
-				ply:ChatPrint("Destination locked, ready to materialise")
+				TARDIS:Message(ply, "Destination locked, ready to materialise")
 			else
-				ply:ChatPrint("Failed to set destination, may be transitioning")
+				TARDIS:Message(ply, "Failed to set destination, may be transitioning")
 			end
 		else
 			if TARDIS:GetSetting("dest-onsetdemat",false,ply) then
 				self:Demat(pos,ang,function(success)
 					if success then
-						ply:ChatPrint("Destination locked, dematerialising...")
+						TARDIS:Message(ply, "Destination locked, dematerialising...")
 					else
-						ply:ChatPrint("Failed to dematerialise")
+						TARDIS:Message(ply, "Failed to dematerialise")
 					end
 				end)
 			else
 				if self:SetDestination(pos,ang) then
-					ply:ChatPrint("Destination locked, ready to dematerialise")
+					TARDIS:Message(ply, "Destination locked, ready to dematerialise")
 				else
-					ply:ChatPrint("Failed to set destination")
+					TARDIS:Message(ply, "Failed to set destination")
 				end
 			end
 		end
@@ -283,8 +297,8 @@ else
 				eye=angle_zero
 			end
 			local force = 15
-			local angforce = 1.5
-			local boostmul = 2
+			local angforce = 6
+			local boostmul = 15
 			local slowmul = 0.1
 			local angslowmul = 0.5
 			local fwd=eye:Forward()

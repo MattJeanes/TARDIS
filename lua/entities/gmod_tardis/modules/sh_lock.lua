@@ -52,7 +52,7 @@ if SERVER then
 	ENT:AddHook("Use", "lock", function(self,a,c)
 		if self:GetData("locked") and IsValid(a) and a:IsPlayer() then
 			if self:CallHook("LockedUse",a,c)==nil then
-				a:ChatPrint("This TARDIS is locked.")
+				TARDIS:Message(a, "This TARDIS is locked.")
 			end
 			self:EmitSound(self.metadata.Exterior.Sounds.Door.locked)
 		end
@@ -75,11 +75,12 @@ else
 		id="locksound-enabled",
 		name="Lock Sound",
 		desc="Whether a sound is made when toggling the lock or not",
-		section="Sound",
+		section="Sounds",
 		value=true,
 		type="bool",
 		option=true
 	})
+
 	ENT:OnMessage("locksound",function(self)
 		local snd = self.metadata.Exterior.Sounds.Lock
 		if TARDIS:GetSetting("locksound-enabled") and TARDIS:GetSetting("sound") then

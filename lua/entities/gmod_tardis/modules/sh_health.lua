@@ -26,6 +26,13 @@ TARDIS:AddSetting({
 	networked=true
 })
 
+TARDIS:AddSetting({
+	id="redecorate-interior",
+	name="Redecoration interior",
+	value="default",
+	networked=true
+})
+
 ENT:AddHook("Initialize","health-init",function(self)
 	self:SetData("health-val", TARDIS:GetSetting("health-max"), true)
 	if SERVER and WireLib then
@@ -89,7 +96,10 @@ if SERVER then
 	ENT:AddWireOutput("Health", "TARDIS Health")
 	
 	function ENT:Explode(f)
-		local force = tostring(f) or "60"
+		local force = 60
+		if f ~= nil then
+			force = tostring(f)
+		end
 		local explode = ents.Create("env_explosion")
 		explode:SetPos( self:LocalToWorld(Vector(0,0,50)) )
 		explode:SetOwner( self )
@@ -100,17 +110,17 @@ if SERVER then
 
 	function ENT:ToggleRepair()
 		local on = not self:GetData("repair-primed",false)
-		self:SetRepair(on)
+		return self:SetRepair(on)
 	end
 	function ENT:SetRepair(on)
 		if not TARDIS:GetSetting("health-enabled") and self:GetHealth()~=TARDIS:GetSetting("health-max",1) then 
 			self:ChangeHealth(TARDIS:GetSetting("health-max"),1)
-			return 
+			return false
 		end
-		if self:CallHook("CanRepair")==false then return end
+		if self:CallHook("CanRepair")==false then return false end
 		if on==true then
 			for k,_ in pairs(self.occupants) do
-				k:ChatPrint("This TARDIS has been set to self-repair. Please vacate the interior.")
+				TARDIS:Message(k, "This TARDIS has been set to self-repair. Please vacate the interior.")
 			end
 			if self:GetPower() then self:SetPower(false) end
 			self:SetData("repair-primed",true,true)
@@ -125,14 +135,15 @@ if SERVER then
 			self:SetData("repair-primed",false,true)
 			self:SetPower(true)
 			for k,_ in pairs(self.occupants) do
-				k:ChatPrint("TARDIS self-repair has been cancelled.")
+				TARDIS:Message(k, "Self-repair has been cancelled.")
 			end
 		end
+		return true
 	end
 
 	function ENT:StartRepair()
 		if not IsValid(self) then return end
-		self:SetLocked(true)
+		self:SetLocked(true,nil,true)
 		local time = CurTime()+(math.Clamp((TARDIS:GetSetting("health-max")-self:GetData("health-val"))*0.1, 1, 60))
 		self:SetData("repair-time", time, true)
 		self:SetData("repairing", true, true)
@@ -140,33 +151,16 @@ if SERVER then
 		self:CallHook("RepairStarted")
 	end
 
-	ENT:AddHook("ShouldRedecorate", "health", function(self)
-		return self:GetData("redecorate",false) and true or nil
-	end)
-
 	function ENT:FinishRepair()
 		if self:CallHook("ShouldRedecorate") then
-			local pos = self:GetPos()
-			local ang = self:GetAngles()
-			local creator = self:GetCreator()
-			local ent = ents.Create("gmod_tardis")
-			ent:SetCreator(creator)
-			ent:SetPos(pos+Vector(0,0,2))
-			ent:SetAngles(ang)
+			local ent = TARDIS:SpawnTARDIS(self:GetCreator(),{
+				metadataID = TARDIS:GetSetting("redecorate-interior","default",self:GetCreator()),
+				finishrepair = true,
+				pos = self:GetPos()+Vector(0,0,2),
+				ang = self:GetAngles()
+			})
 			self:Remove()
-
-			ent:Spawn()
 			ent:GetPhysicsObject():Sleep()
-			undo.Create("TARDIS")
-				undo.AddEntity(ent)
-				undo.SetPlayer(creator)
-			undo.Finish()
-			timer.Simple(0.5, function()
-				if not IsValid(ent) then return end
-				ent:GetPhysicsObject():Wake()
-				ent:EmitSound(ent.metadata.Exterior.Sounds.RepairFinish)
-				ent:FlashLight(1.5)
-			end)
 			return
 		end
 		self:EmitSound(self.metadata.Exterior.Sounds.RepairFinish)
@@ -175,7 +169,7 @@ if SERVER then
 		self:CallHook("RepairFinished")
 		self:SetPower(true)
 		self:SetLocked(false, nil, true)
-		self:GetCreator():ChatPrint("Your TARDIS has finished self-repairing")
+		TARDIS:Message(self:GetCreator(), "Your TARDIS has finished self-repairing")
 		self:StopSmoke()
 		self:FlashLight(1.5)
 	end
@@ -206,20 +200,44 @@ if SERVER then
 	end
 
 	function ENT:StopSmoke()
-		if self.smoke and IsValid(self.smoke) then
-			self.smoke:Remove()
-			self.smoke=nil
+		if self.smoke and IsValid(self.smoke) and self:GetData("smoke-killdelay")==nil then
+			self.smoke:Fire("TurnOff")
+			local jetlength = self.smoke:GetInternalVariable("JetLength")
+			local speed = self.smoke:GetInternalVariable("Speed")
+			self:SetData("smoke-killdelay",CurTime()+(speed/jetlength)*5)
 		end
 	end
 
 	ENT:AddHook("CanRepair", "health", function(self)
 		if self:GetData("vortex", false) then return false end
-		local intsetting = TARDIS:GetSetting("interior","default",self:GetCreator())
 		if (self:GetHealth() >= TARDIS:GetSetting("health-max", 1))
-			and not self:GetData("redecorate", false) or not TARDIS:GetInterior(intsetting)
+			and not self:CallHook("ShouldRedecorate")
 		then
 			return false
 		end
+	end)
+
+	ENT:AddHook("ShouldRedecorate", "health", function(self)
+		return (self:GetData("redecorate",false) and TARDIS:GetSetting("redecorate-interior","default",self:GetCreator()) ~= self.metadata.ID) and true or nil
+	end)
+
+	ENT:AddHook("CustomData", "health-redecorate", function(self, customdata)
+		if customdata.finishrepair then
+			self:SetPos(customdata.pos)
+			self:SetAngles(customdata.ang)
+			self:SetData("finishrepair",true)
+		end
+	end)
+
+	ENT:AddHook("Initialize", "health-redecorate", function(self)
+		if not self:GetData("finishrepair",false) then return end
+		timer.Simple(0.5, function()
+			if not IsValid(self) then return end
+			self:GetPhysicsObject():Wake()
+			self:EmitSound(self.metadata.Exterior.Sounds.RepairFinish)
+			self:FlashLight(1.5)
+		end)
+		self:SetData("finishrepair",nil)
 	end)
 
 	ENT:AddHook("CanTogglePower", "health", function(self)
@@ -247,19 +265,23 @@ if SERVER then
 
 	ENT:AddHook("LockedUse", "repair", function(self, a)
 		if self:GetData("repairing") then
-			a:ChatPrint("This TARDIS is repairing. It will be done in "..math.floor(self:GetRepairTime()).." seconds.")
+			TARDIS:Message(a, "This TARDIS is repairing. It will be done in "..math.floor(self:GetRepairTime()).." seconds.")
 			return true
 		end
 	end)
 
 	ENT:AddHook("Think", "repair", function(self)
+		if self:GetData("repair-primed", false) and self:CallHook("CanRepair") == false then
+			self:SetData("repair-primed", false, true)
+			self:SetPower(true)
+			for k,_ in pairs(self.occupants) do
+				TARDIS:Message(k, "Self-repair has been cancelled.")
+			end
+		end
+
 		if self:GetData("repair-primed",false) and self:GetData("repair-shouldstart") and CurTime() > self:GetData("repair-delay") then
 			self:SetData("repair-shouldstart", false)
 			self:StartRepair()
-		end
-
-		if self:GetData("repair-primed", false) and self:CallHook("CanRepair") == false then
-			self:SetData("repair-primed", false, true)
 		end
 
 		if (self:GetData("repairing",false) and CurTime()>self:GetData("repair-time",0)) then
@@ -267,12 +289,39 @@ if SERVER then
 		end
 	end)
 
-	ENT:AddHook("ShouldTakeDamage", "DamageOff", function(self, dmginfo)
+	ENT:AddHook("Think", "health-warning", function(self)
+		if self:CallHook("ShouldStartSmoke") and self:CallHook("ShouldStopSmoke")~=true then
+			if self.smoke then return end
+			self:StartSmoke()
+		else
+			self:StopSmoke()
+		end
+	end)
+
+	ENT:AddHook("Think", "RemoveSmoke", function(self)
+		local smokedelay = self:GetData("smoke-killdelay")
+		if smokedelay ~= nil and CurTime() >= smokedelay then
+			if IsValid(self.smoke) then
+				self.smoke:Remove()
+				self.smoke = nil
+				self:SetData("smoke-killdelay",nil)
+			end
+		end
+	end)
+
+	ENT:AddHook("ShouldStartSmoke", "health-warning", function(self)
+		if self:GetData("health-warning",false) then
+			return true
+		end
+	end)
+
+	ENT:AddHook("ShouldTakeDamage", "Health", function(self, dmginfo)
 		if not TARDIS:GetSetting("health-enabled") then return false end
 	end)
 
 	ENT:AddHook("OnTakeDamage", "Health", function(self, dmginfo)
 		if dmginfo:GetInflictor():GetClass() == "env_fire" then return end
+		if dmginfo:GetDamage() <= 0 then return end
 		local newhealth = self:GetHealth() - (dmginfo:GetDamage()/2)
 		self:ChangeHealth(newhealth)
 	end)
@@ -280,15 +329,8 @@ if SERVER then
 	ENT:AddHook("PhysicsCollide", "Health", function(self, data, collider)
 		if not TARDIS:GetSetting("health-enabled") then return end
 		if (data.Speed < 300) then return end
-		local newhealth = self:GetHealth() - data.Speed / 23
+		local newhealth = self:GetHealth() - (data.Speed / 23)
 		self:ChangeHealth(newhealth)
-	end)
-
-	ENT:AddHook("OnHealthChange", "FallbackNetwork", function(self)
-		local health = self:GetData("health-val")
-		self:SendMessage("health-networking", function()
-			net.WriteInt(health, 32)
-		end)
 	end)
 
 	ENT:AddHook("OnHealthChange", "wiremod", function (self)
@@ -297,17 +339,12 @@ if SERVER then
 
 	ENT:AddHook("OnHealthDepleted", "death", function(self)
 		self:SetPower(false)
-		if self:GetData("vortex",false) then
-			self:SetData("prevortex-flight", false)
-			self:Mat()
-		end
-		self:Explode(300)
+		self:Explode(180)
 	end)
 
 	ENT:AddHook("OnHealthChange", "warning", function(self)
 		if self:GetHealthPercent() <= 20 and (not self:GetData("health-warning",false)) then
 			self:SetData("health-warning", true, true)
-			self:StartSmoke()
 			self:CallHook("HealthWarningToggled",true)
 			if self.interior then
 				self.interior:CallHook("HealthWarningToggled",true)
@@ -318,7 +355,6 @@ if SERVER then
 	ENT:AddHook("OnHealthChange", "warning-stop", function(self)
 		if self:GetHealthPercent() > 20 and (self:GetData("health-warning",false)) then
 			self:SetData("health-warning", false, true)
-			self:StopSmoke()
 			self:CallHook("HealthWarningToggled",false)
 			if self.interior then
 				self.interior:CallHook("HealthWarningToggled",false)
@@ -344,23 +380,9 @@ if SERVER then
 			end
 		end
 	end)
-
-	ENT:AddHook("StopDemat", "warning", function(self)
-		if self.smoke then
-			self:StopSmoke()
-		end
-	end)
-
-	ENT:AddHook("MatStart", "warning", function(self)
-		if self:GetData("health-warning",false) then
-			self:StartSmoke()
-		end
-	end)
-
 else
-	ENT:OnMessage("health-networking", function(self, ply)
-		local newhealth = net.ReadInt(32)
-		self:ChangeHealth(newhealth)
-		self:SetData("UpdateHealthScreen", true, true)
+	ENT:AddHook("Initialize", "redecorate-reset", function(self)
+		if not IsValid(self) or (not LocalPlayer() == self:GetCreator()) then return end
+		TARDIS:SetSetting("redecorate-interior",self.metadata.ID,true)
 	end)
 end

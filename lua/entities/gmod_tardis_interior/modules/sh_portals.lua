@@ -15,8 +15,8 @@ if SERVER then
 else
 	TARDIS:AddSetting({
 		id="portals-enabled",
-		name="Enabled",
-		section="Portals",
+		name=" Portal Enabled ",
+		section="Exterior Door",
 		desc="Whether portals will render or not, turn this off if they impact framerate significantly",
 		value=true,
 		type="bool",
@@ -25,7 +25,7 @@ else
 	TARDIS:AddSetting({
 		id="portals-closedist",
 		name="Close Distance",
-		section="Portals",
+		section="Exterior Door",
 		desc="The distance at which the door automatically closes",
 		value=1000,
 		type="number",
@@ -35,11 +35,11 @@ else
 	})
 	
 	ENT:AddHook("ShouldRenderPortal", "portals", function(self,portal,exit,origin)
-		local dont,black = self:CallHook("ShouldNotRenderPortal",portal,exit,origin)
+		local dont,black = self:CallHook("ShouldNotRenderPortal",self,portal,exit,origin)
 		if dont==nil then
 			local other = self.exterior
 			if IsValid(other) then
-				dont,black = other:CallHook("ShouldNotRenderPortal",portal,exit,origin)
+				dont,black = other:CallHook("ShouldNotRenderPortal",self,portal,exit,origin)
 			end
 		end
 		if dont then
@@ -51,7 +51,7 @@ else
 		end
 	end)
 
-	ENT:AddHook("ShouldNotRenderPortal", "portals", function(self,parent,portal)
+	ENT:AddHook("ShouldNotRenderPortal", "portals", function(self,parent,portal,exit)
 		if portal:GetCustomLink() then
 			local part = self:GetPart(portal:GetCustomLink())
 			if IsValid(part) and ((part.Animate and part.posepos==0) or ((not part.Animate) and part:GetOn()==false)) then
