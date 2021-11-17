@@ -40,29 +40,20 @@ local function predraw_o(self)
 	end
 	if lights then
 		for _,l in pairs(lights) do
-			if self:CallHook("ShouldDrawLight",nil,l) ~= false then
-				local c=l.color
+			local tab2 = {
+				type = MATERIAL_LIGHT_POINT,
+				pos = self:LocalToWorld(l.pos),
+				quadraticFalloff = l.falloff or 10,
+			}
+			if self:CallHook("ShouldDrawLight",nil,l) == false then
+				tab2.color = Vector(0,0,0)
+			else
+				local c = l.color
 				local warnc = l.warncolor or c
 				local lcolor = warning and warnc:ToVector() or c:ToVector()
-				local tab2 = {
-					type=MATERIAL_LIGHT_POINT,
-					color=lcolor*l.brightness,
-					pos = self:LocalToWorld(l.pos),
-					quadraticFalloff=l.falloff or 10,
-				}
-				table.insert(tab, tab2)
+				tab2.color=lcolor*l.brightness
 			end
-		end
-		for _,l in pairs(lights) do
-			if self:CallHook("ShouldDrawLight",nil,l) == false then
-				local tab2 = {
-					type=MATERIAL_LIGHT_POINT,
-					color= Color(0,0,0),
-					pos = self:LocalToWorld(l.pos),
-					quadraticFalloff=l.falloff or 10,
-				}
-				table.insert(tab, tab2)
-			end
+			table.insert(tab, tab2)
 		end
 	end
 	if #tab==0 then
