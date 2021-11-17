@@ -37,7 +37,9 @@ if SERVER then
 		self:SendMessage("cloak", function()
 			net.WriteBool(on)
 		end)
-		self:DrawShadow(not on)
+		if (not self:GetData("teleport")) and (not self:GetData("vortex")) then
+			self:DrawShadow(not on)
+		end
 		return true
     end
     
