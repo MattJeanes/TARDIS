@@ -5,6 +5,9 @@ TARDIS:AddControl({
 			TARDIS:ErrorMessage(ply, "This is not your TARDIS")
 			return
 		end
+		if game.SinglePlayer() then
+			TARDIS:ErrorMessage(ply, "WARNING: Isomorphic security has no use in singleplayer")
+		end
 		if self:ToggleSecurity() then
 			TARDIS:StatusMessage(ply, "Isomorphic security", self:GetData("security"))
 		else
@@ -12,6 +15,7 @@ TARDIS:AddControl({
 		end
 	end,
 	serveronly = true,
+	power_independent = false,
 	screen_button = {
 		virt_console = true,
 		mmenu = false,

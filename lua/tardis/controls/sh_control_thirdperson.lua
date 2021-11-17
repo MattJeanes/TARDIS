@@ -4,6 +4,7 @@ TARDIS:AddControl({
 		self:PlayerThirdPerson(ply, not ply:GetTardisData("thirdperson"))
 	end,
 	serveronly=true,
+	power_independent = true,
 	screen_button = {
 		virt_console = false,
 		mmenu = true,

@@ -26,6 +26,7 @@ TARDIS:AddControl({
 			TARDIS:ErrorMessage(ply, "You do not have the Sonic Screwdriver addon installed. Install it for this part to work.")
 		end
 	end,
+	power_independent = true,
 	serveronly = true,
 	screen_button = false,
 	tip_text = "Sonic Charger",
