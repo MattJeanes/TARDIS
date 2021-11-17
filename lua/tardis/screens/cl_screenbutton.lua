@@ -275,7 +275,7 @@ end
 
 function TardisScreenButton:SetControl(control)
 	self.DoClick = function()
-		TARDIS:Control(control)
+		TARDIS:Control(control, LocalPlayer())
 	end
 end
 

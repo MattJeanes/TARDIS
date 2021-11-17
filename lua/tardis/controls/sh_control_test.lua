@@ -15,5 +15,6 @@ TARDIS:AddControl({
 		end
 	end,
 	screen_button = false,
+	power_independent = false,
 	tip_text = "Test",
 })

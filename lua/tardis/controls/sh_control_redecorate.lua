@@ -15,6 +15,7 @@ TARDIS:AddControl({
 		TARDIS:StatusMessage(ply, "Redecoration", on)
 	end,
 	serveronly=true,
+	power_independent = true,
 	screen_button = {
 		virt_console = true,
 		mmenu = false,

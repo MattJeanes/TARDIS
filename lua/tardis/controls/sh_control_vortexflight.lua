@@ -7,6 +7,7 @@ TARDIS:AddControl({ id = "vortex_flight",
 		end
 	end,
 	serveronly=true,
+	power_independent = false,
 	screen_button = {
 		virt_console = true,
 		mmenu = false,

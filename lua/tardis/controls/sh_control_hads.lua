@@ -4,6 +4,7 @@ TARDIS:AddControl({
 		TARDIS:StatusMessage(ply, "Hostile Action Displacement System", self:ToggleHADS())
 	end,
 	serveronly=true,
+	power_independent = false,
 	screen_button = {
 		virt_console = true,
 		mmenu = false,

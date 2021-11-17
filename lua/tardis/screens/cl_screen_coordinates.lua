@@ -7,8 +7,8 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Coordinates", menu=fals
 	button:SetText("Select Manually")
 	button:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 	button.DoClick = function()
-		TARDIS:Control("destination")
-		if TARDIS:HUDScreenOpen(ply) then TARDIS:RemoveHUDScreen() end
+		TARDIS:Control("destination", LocalPlayer())
+		if TARDIS:HUDScreenOpen(LocalPlayer()) then TARDIS:RemoveHUDScreen() end
 	end
 
 	local btnx,btny = button:GetPos()
@@ -247,7 +247,7 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Coordinates", menu=fals
 				net.WriteVector(pos)
 				net.WriteAngle(ang)
 				if TARDIS:GetSetting("dest-onsetdemat") then
-					if TARDIS:HUDScreenOpen(ply) then
+					if TARDIS:HUDScreenOpen(LocalPlayer()) then
 						TARDIS:RemoveHUDScreen()
 					end
 				end
