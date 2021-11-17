@@ -73,7 +73,6 @@ else
 	end)
 
 	ENT:AddHook("ShouldTurnOffFlightSound", "teleport", function(self)
-		print(TARDIS:GetExteriorEnt())
 		if self:GetData("teleport") or (self:GetData("vortex") and TARDIS:GetExteriorEnt() ~= self) then
 			return true
 		end
