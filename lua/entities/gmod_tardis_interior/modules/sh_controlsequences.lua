@@ -67,6 +67,12 @@ ENT:AddHook("CanStartControlSequence", "conditions", function(self,id)
 	end
 end)
 
+ENT:AddHook("CanStartControlSequence", "power", function(self,id)
+	if not self:GetPower() then
+		return false
+	end
+end)
+
 if SERVER then
 
 	ENT:AddHook("PartUsed","HandleControlSequence",function(self,part,a)

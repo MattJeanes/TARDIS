@@ -7,6 +7,7 @@ TARDIS:AddControl({
 			TARDIS:ErrorMessage(ply, "Failed to toggle interior screens")
 		end
 	end,
+	power_independent = false,
 	screen_button = {
 		virt_console = true,
 		mmenu = false,

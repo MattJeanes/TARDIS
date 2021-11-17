@@ -67,28 +67,36 @@ local overrides={
 		else
 			allowed, animate = self.interior:CallHook("CanUsePart",self,a)
 		end
-		if allowed~=false then
-			if SERVER and self.Control and (not self.HasUse) then
-				TARDIS:Control(self.Control,a)
-			else
-				res=self.o.Use(self,a,...)
+
+		if self.PowerOffUse == false and not self.interior:GetPower() then
+			TARDIS:ErrorMessage(a, "Power is disabled. This control is blocked.")
+		else
+			if allowed~=false then
+				if SERVER and self.Control and (not self.HasUse) then
+					TARDIS:Control(self.Control,a)
+				else
+					res=self.o.Use(self,a,...)
+				end
 			end
-		end
-		
-		if SERVER and (animate~=false) and (res~=false) then
-			local on = self:GetOn()
-			if self.SoundOff and on then
-				self:EmitSound(self.SoundOff)
-			elseif self.SoundOn and (not on) then
-				self:EmitSound(self.SoundOn)
-			elseif self.Sound then
-				self:EmitSound(self.Sound)
-			end
-			self:SetOn(not on)
-			if self.ExteriorPart then
-				self.exterior:CallHook("PartUsed",self,a)
-			elseif self.interior then
-				self.interior:CallHook("PartUsed",self,a)
+
+			if SERVER and (animate~=false) and (res~=false) then
+				local on = self:GetOn()
+
+				if self.PowerOffSound ~= false or self.interior:GetPower() then
+					if self.SoundOff and on then
+						self:EmitSound(self.SoundOff)
+					elseif self.SoundOn and (not on) then
+						self:EmitSound(self.SoundOn)
+					elseif self.Sound then
+						self:EmitSound(self.Sound)
+					end
+				end
+				self:SetOn(not on)
+				if self.ExteriorPart then
+					self.exterior:CallHook("PartUsed",self,a)
+				elseif self.interior then
+					self.interior:CallHook("PartUsed",self,a)
+				end
 			end
 		end
 		return res
@@ -258,7 +266,6 @@ if SERVER then
 			end
 		end
 		for k,v in pairs(tempparts) do
-			
 			local e=ents.Create(v)
 			Doors:SetupOwner(e,ent:GetCreator())
 			e.exterior=(ent.TardisExterior and ent or ent.exterior)

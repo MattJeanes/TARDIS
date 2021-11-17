@@ -4,6 +4,13 @@ function ENT:GetPower()
 	return self.exterior:GetPower()
 end
 
+ENT:AddHook("CanUseTardisControl", "power", function(self, control_id, ply)
+	if not self:GetPower() and not TARDIS:GetControl(control_id).power_independent then
+		TARDIS:ErrorMessage(ply, "Power is disabled. This doesn't work.")
+		return false
+	end
+end)
+
 if SERVER then
 	function ENT:TogglePower()
 		self.exterior:TogglePower()

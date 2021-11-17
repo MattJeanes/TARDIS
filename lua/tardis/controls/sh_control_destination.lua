@@ -4,6 +4,7 @@ TARDIS:AddControl({
 		self:SelectDestination(ply, true)
 	end,
 	serveronly=true,
+	power_independent = false,
 	screen_button = {
 		virt_console = false,
 		mmenu = true,

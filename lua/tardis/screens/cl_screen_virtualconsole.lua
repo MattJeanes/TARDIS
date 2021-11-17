@@ -102,7 +102,7 @@ local function old_virtual_console(self,ext,int,frame,screen)
 	power:SetText("Toggle Power")
 	power:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 	power.DoClick = function()
-		TARDIS:Control("power")
+		TARDIS:Control("power", LocalPlayer())
 	end
 
 	local repair=vgui.Create("DButton",frame)
@@ -111,7 +111,7 @@ local function old_virtual_console(self,ext,int,frame,screen)
 	repair:SetText("Repair TARDIS")
 	repair:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 	repair.DoClick = function()
-		TARDIS:Control("repair")
+		TARDIS:Control("repair", LocalPlayer())
 	end
 
 	local vortex_flight=vgui.Create("DButton",frame)
@@ -120,7 +120,7 @@ local function old_virtual_console(self,ext,int,frame,screen)
 	vortex_flight:SetText("Fast Remat "..(ext:GetData("demat-fast") and "on" or "off"))
 	vortex_flight:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 	vortex_flight.DoClick = function(self)
-		TARDIS:Control("vortex_flight")
+		TARDIS:Control("vortex_flight", LocalPlayer())
 	end
 	vortex_flight.oldon = ext:GetData("demat-fast")
 	function vortex_flight:Think()
@@ -140,7 +140,7 @@ local function old_virtual_console(self,ext,int,frame,screen)
 	physlock:SetPos((frame:GetWide()*0.35)-(physlock:GetWide()*0.5),(frame:GetTall()*0.4)-(physlock:GetTall()*0.5))
 	physlock:SetText("Physlock "..(ext:GetData("physlock") and "on" or "off"))
 	physlock.DoClick = function()
-		TARDIS:Control("physlock")
+		TARDIS:Control("physlock", LocalPlayer())
 	end
 	physlock.oldon = ext:GetData("physlock")
 	function physlock:Think()
@@ -160,7 +160,7 @@ local function old_virtual_console(self,ext,int,frame,screen)
 	fastreturn:SetText("Fast Return")
 	fastreturn:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 	fastreturn.DoClick = function()
-		TARDIS:Control("fastreturn")
+		TARDIS:Control("fastreturn", LocalPlayer())
 	end
 
 	local hads=vgui.Create("DButton",frame)
@@ -169,7 +169,7 @@ local function old_virtual_console(self,ext,int,frame,screen)
 	hads:SetText("HADS "..(ext:GetData("hads") and "on" or "off"))
 	hads:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 	hads.DoClick = function()
-		TARDIS:Control("hads")
+		TARDIS:Control("hads", LocalPlayer())
 	end
 	hads.oldon = ext:GetData("hads")
 	function hads:Think()
@@ -197,11 +197,11 @@ local function old_virtual_console(self,ext,int,frame,screen)
 	doorlock:SetText(ext:Locked() and "Unlock door" or "Lock door")
 
 	doorswitch.DoClick = function(doorswitch)
-		TARDIS:Control("door")
+		TARDIS:Control("door", LocalPlayer())
 	end
 
 	doorlock.DoClick = function()
-		TARDIS:Control("doorlock")
+		TARDIS:Control("doorlock", LocalPlayer())
 	end
 
 	function doorswitch:Think()
