@@ -1,5 +1,11 @@
 -- Options
 
+local value
+
+hook.Add("TARDIS-UpdateCustomOption", "custom_option_value_change", function(newData)
+	value = newData
+end)
+
 function TARDIS:ChangeOption(id,data)
 	local frame = vgui.Create("DFrame")
 	frame:SetSkin("TARDIS")
@@ -17,7 +23,7 @@ function TARDIS:ChangeOption(id,data)
 	text:SetPos(10,30)
 	text:SetTextColor(color_white)
 	
-	local value=TARDIS:GetSetting(id,data.value,data.networked and LocalPlayer() or nil)
+	value=TARDIS:GetSetting(id,data.value,data.networked and LocalPlayer() or nil)
 	
 	local update
 	if data.type=="number" then
@@ -75,6 +81,13 @@ function TARDIS:ChangeOption(id,data)
 			else
 				mixer:SetColor(Color(0,0,0))
 			end
+		end
+	elseif data.type == "custom" then
+		--print("Custom button has been called!")
+		local customUpdate = hook.Run("TARDIS-CustomOption", frame, value)
+		
+		function update(v)
+			customUpdate(v)
 		end
 	end
 	
