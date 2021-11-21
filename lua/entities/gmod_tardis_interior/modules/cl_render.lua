@@ -53,17 +53,6 @@ local function predraw_o(self)
 				table.insert(tab, tab2)
 			end
 		end
-		for _,l in pairs(lights) do
-			if self:CallHook("ShouldDrawLight",nil,l) == false then
-				local tab2 = {
-					type=MATERIAL_LIGHT_POINT,
-					color= Color(0,0,0),
-					pos = self:LocalToWorld(l.pos),
-					quadraticFalloff=l.falloff or 10,
-				}
-				table.insert(tab, tab2)
-			end
-		end
 	end
 	if #tab==0 then
 		render.SetLocalModelLights()
