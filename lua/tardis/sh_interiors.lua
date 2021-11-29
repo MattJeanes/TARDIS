@@ -25,7 +25,7 @@ function TARDIS:AddInterior(t)
 		local ent={}
 
 		-- this is for developer debugging purposes only
-		local spm_overrides = TARDIS_SPAWNMENU_OVERRIDES
+		local spm_overrides = TARDIS_SPAWNMENU_CATEGORY_OVERRIDES
 
 		if spm_overrides and spm_overrides[t.ID] then
 			ent.Category = spm_overrides[t.ID]
@@ -33,7 +33,14 @@ function TARDIS:AddInterior(t)
 			ent.Category = "Doctor Who - TARDIS"
 		end
 
-		ent.PrintName=t.Name
+		local nm_overrides = TARDIS_SPAWNMENU_NAME_OVERRIDES
+
+		if nm_overrides and nm_overrides[t.Name] then
+			ent.PrintName = nm_overrides[t.Name]
+		else
+			ent.PrintName = t.Name
+		end
+
 		if file.Exists("materials/vgui/entities/tardis/"..t.ID..".vtf", "GAME")
 		then
 			ent.IconOverride="vgui/entities/tardis/"..t.ID..".vtf"
