@@ -28,8 +28,12 @@ function TARDIS:AddInterior(t)
 		if file.Exists("materials/vgui/entities/tardis/"..t.ID..".vtf", "GAME")
 		then
 			ent.IconOverride="vgui/entities/tardis/"..t.ID..".vtf"
-		else
+		elseif file.Exists("materials/vgui/entities/tardis/"..t.ID..".png", "GAME")
+		then
 			ent.IconOverride="vgui/entities/tardis/"..t.ID..".png"
+		else
+			print(t.ID)
+			ent.IconOverride="vgui/entities/tardis/default/"..t.ID..".png"
 		end
 		ent.ScriptedEntityType="tardis"
 		list.Set("SpawnableEntities", t.ID, ent)
