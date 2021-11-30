@@ -25,7 +25,7 @@ function TARDIS:AddInterior(t)
 		local ent={}
 
 		-- this is for developer debugging purposes only
-		local spm_overrides = TARDIS_SPAWNMENU_CATEGORY_OVERRIDES
+		local spm_overrides = DEBUG_TARDIS_SPAWNMENU_CATEGORY_OVERRIDES
 
 		if spm_overrides and (spm_overrides[t.ID] or spm_overrides[t.Name]) then
 			if spm_overrides[t.ID] then
@@ -33,11 +33,13 @@ function TARDIS:AddInterior(t)
 			else
 				ent.Category = spm_overrides[t.Name]
 			end
+		elseif spm_overrides["all"] then
+			ent.Category = spm_overrides["all"]
 		else
 			ent.Category = "Doctor Who - TARDIS"
 		end
 
-		local nm_overrides = TARDIS_SPAWNMENU_NAME_OVERRIDES
+		local nm_overrides = DEBUG_TARDIS_SPAWNMENU_NAME_OVERRIDES
 
 		if nm_overrides and (nm_overrides[t.ID] or nm_overrides[t.Name]) then
 			if nm_overrides[t.ID] then
