@@ -10,7 +10,7 @@ ENT.Interior="gmod_tardis_interior"
 
 -- this is for developer debugging purposes only
 local spm_overrides = DEBUG_TARDIS_SPAWNMENU_CATEGORY_OVERRIDES
-if spm_overrides["all"] then
+if spm_overrides ~= nil and spm_overrides["all"] then
 	ENT.Category = spm_overrides["all"]
 end
 
