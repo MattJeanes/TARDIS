@@ -27,7 +27,8 @@ T.Interior={
 		},
 		SequenceOK = "drmatt/tardis/seq_ok.wav",
 		SequenceFail = "drmatt/tardis/seq_bad.wav",
-		Cloister = "drmatt/tardis/cloisterbell_loop.wav"
+		Cloister = "drmatt/tardis/cloisterbell_loop.wav",
+		Lock="drmatt/tardis/lock_int.wav",
 	},
 	Tips = {},
 	CustomTips = {},
@@ -98,6 +99,7 @@ T.Exterior={
 		FlightLoop="drmatt/tardis/flight_loop.wav",
 		FlightLoopDamaged="drmatt/tardis/flight_loop_damaged.wav",
 		Cloak = "drmatt/tardis/phase_enable.wav",
+		CloakOff = "drmatt/tardis/phase_disable.wav",
 	},
 	Parts={
 		vortex={

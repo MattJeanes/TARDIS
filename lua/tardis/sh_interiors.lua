@@ -23,13 +23,42 @@ function TARDIS:AddInterior(t)
 
 	if t.Base~=true then
 		local ent={}
-		ent.Category="Doctor Who - TARDIS"
-		ent.PrintName=t.Name
+
+		-- this is for developer debugging purposes only
+		local spm_overrides = DEBUG_TARDIS_SPAWNMENU_CATEGORY_OVERRIDES
+
+		if spm_overrides ~= nil and (spm_overrides[t.ID] or spm_overrides[t.Name]) then
+			if spm_overrides[t.ID] then
+				ent.Category = spm_overrides[t.ID]
+			else
+				ent.Category = spm_overrides[t.Name]
+			end
+		elseif spm_overrides ~= nil and spm_overrides["all"] then
+			ent.Category = spm_overrides["all"]
+		else
+			ent.Category = "Doctor Who - TARDIS"
+		end
+
+		local nm_overrides = DEBUG_TARDIS_SPAWNMENU_NAME_OVERRIDES
+
+		if nm_overrides ~= nil and (nm_overrides[t.ID] or nm_overrides[t.Name]) then
+			if nm_overrides[t.ID] then
+				ent.PrintName = nm_overrides[t.ID]
+			else
+				ent.PrintName = nm_overrides[t.Name]
+			end
+		else
+			ent.PrintName = t.Name
+		end
+
 		if file.Exists("materials/vgui/entities/tardis/"..t.ID..".vtf", "GAME")
 		then
 			ent.IconOverride="vgui/entities/tardis/"..t.ID..".vtf"
-		else
+		elseif file.Exists("materials/vgui/entities/tardis/"..t.ID..".png", "GAME")
+		then
 			ent.IconOverride="vgui/entities/tardis/"..t.ID..".png"
+		else
+			ent.IconOverride="vgui/entities/tardis/default/"..t.ID..".png"
 		end
 		ent.ScriptedEntityType="tardis"
 		list.Set("SpawnableEntities", t.ID, ent)
