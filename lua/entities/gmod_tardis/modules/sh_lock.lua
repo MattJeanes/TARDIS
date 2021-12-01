@@ -82,11 +82,13 @@ else
 	})
 
 	ENT:OnMessage("locksound",function(self)
-		local snd = self.metadata.Exterior.Sounds.Lock
+		local extsound = self.metadata.Exterior.Sounds.Lock
+		local intsound = self.metadata.Interior.Sounds.Lock or extsound
+
 		if TARDIS:GetSetting("locksound-enabled") and TARDIS:GetSetting("sound") then
-			self:EmitSound(snd)
+			self:EmitSound(extsound)
 			if IsValid(self.interior) then
-				self.interior:EmitSound(snd)
+				self.interior:EmitSound(intsound)
 			end
 		end
 	end)
