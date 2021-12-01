@@ -40,8 +40,6 @@ if SERVER then
 	end
 
 	function PART:Use(a)
-		if self.exterior.metadata.EnableClassicDoors == true and not self.ExteriorPart then return end
-
 		if self.exterior:GetData("locked") then
 			if IsValid(a) and a:IsPlayer() then
 				if self.exterior:CallHook("LockedUse",a)==nil then
@@ -57,6 +55,7 @@ if SERVER then
 					self.exterior:PlayerExit(a)
 				end
 			else
+				if self.exterior.metadata.EnableClassicDoors == true and not self.ExteriorPart then return end
 				if (self.exterior:GetData("repair-primed",false) or self.exterior:GetData("repairing",false)) and self.ExteriorPart then return end
 				self.exterior:ToggleDoor()
 			end
