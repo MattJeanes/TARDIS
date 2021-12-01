@@ -61,24 +61,21 @@ function TARDIS:Message(ply, message, error)
 		return
 	end
 	local style = self.msg_style
-	local fullmessage = "[TARDIS] "..message
+	local fullmessage
+	if error and style ~= 3 then
+		fullmessage = "[TARDIS] ERROR: "..message
+	else
+		fullmessage = "[TARDIS] "..message
+	end
 	if style == 0 then
 		return
 	end
 	if style == 1 then
-		if error then
-			print("ERROR: "..fullmessage)
-		else
-			print(fullmessage)
-		end
+		print(fullmessage)
 		return
 	end
 	if style == 2 then
-		if error then
-			LocalPlayer():ChatPrint("ERROR: "..fullmessage)
-		else
-			LocalPlayer():ChatPrint(fullmessage)
-		end
+		LocalPlayer():ChatPrint(fullmessage)
 		return
 	end
 	if style == 3 then
