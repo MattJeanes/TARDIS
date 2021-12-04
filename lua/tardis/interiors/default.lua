@@ -129,6 +129,7 @@ T.Interior = {
 		default_sonicdispenser     = "sonic_dispenser",
 		default_sonic_inserted     = SonicModelExists() and "sonic_dispenser",
 		default_helmic             = "thirdperson",
+		default_atomaccel          = "spin_cycle",
 
 
 	},

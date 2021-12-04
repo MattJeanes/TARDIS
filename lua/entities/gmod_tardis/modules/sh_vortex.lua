@@ -56,8 +56,8 @@ if SERVER then
 					elseif TARDIS:IsBindDown(self.pilot,"flight-right") then
 						ph:AddAngleVelocity(Vector(0,0,-rforce))
 					end
-				elseif not (self.spindir==0) then
-					local twist=Vector(0,0,vel*mul*-self.spindir)
+				elseif not (self:GetSpinDir() == 0) then
+					local twist=Vector(0, 0, vel * mul * - self:GetSpinDir())
 					ph:AddAngleVelocity(twist)
 					ph:ApplyForceOffset( up*-ang.p,cen-fwd2*lev)
 					ph:ApplyForceOffset(-up*-ang.p,cen+fwd2*lev)

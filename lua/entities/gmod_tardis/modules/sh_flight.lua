@@ -78,18 +78,7 @@ TARDIS:AddKeyBind("flight-spindir",{
 	func=function(self,down,ply)
 		if TARDIS:HUDScreenOpen(ply) then return end
 		if down and ply==self.pilot then
-			local dir
-			if self.spindir==-1 then
-				self.spindir=0
-				dir="none"
-			elseif self.spindir==0 then
-				self.spindir=1
-				dir="clockwise"
-			elseif self.spindir==1 then
-				self.spindir=-1
-				dir="anti-clockwise"
-			end
-			TARDIS:Message(ply, "Spin direction set to "..dir)
+			TARDIS:Control("spin_cycle", ply)
 		end
 	end,
 	key=MOUSE_RIGHT,
@@ -190,10 +179,6 @@ if SERVER then
 		end)
 	end)
 	
-	ENT:AddHook("Initialize", "flight", function(self)
-		self.spindir=-1
-	end)
-	
 	ENT:AddHook("Think", "flight", function(self)
 		if self:GetData("flight") then
 			self.phys:Wake()
@@ -269,9 +254,10 @@ if SERVER then
 				end
 			end
 			
-			if self.spindir==0 then
+			local spindir = self:GetSpinDir()
+			if spindir==0 then
 				tilt=0
-			elseif self.spindir==1 then
+			elseif spindir == 1 then
 				tforce=-tforce
 			end
 			
@@ -280,7 +266,7 @@ if SERVER then
 			ph:ApplyForceOffset( up*-(ang.r-tilt),cen-ri2*lev)
 			ph:ApplyForceOffset(-up*-(ang.r-tilt),cen+ri2*lev)
 			
-			if not (self.spindir==0) then
+			if spindir ~= 0 then
 				local twist=Vector(0,0,vell/tforce)
 				ph:AddAngleVelocity(twist)
 			end
@@ -302,8 +288,8 @@ if SERVER then
 			end
 		elseif name == "Spinmode" and TARDIS:CheckPP(e2.player, self) then
 			local spindir = args[1]
-			self.spindir = spindir
-			return self.spindir
+			self:SetSpinDir(spindir)
+			return self:GetSpinDir()
 		elseif name == "Track" and TARDIS:CheckPP(e2.player, self) then
 			return 0 -- Not yet implemented
 		end
