@@ -72,7 +72,6 @@ ENT:AddHook("ToggleDoor", "spin-dir", function(self,open)
 		self:SetData("spindir", 0)
 	elseif not open and self:GetSpinDir() == 0 then
 		local prev = self:GetData("spindir_before_door", nil)
-		TARDIS:Debug(prev)
 		if prev ~= nil then
 			self:SetData("spindir_before_door", nil)
 			self:SetData("spindir", prev)
