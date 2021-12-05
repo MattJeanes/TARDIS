@@ -11,7 +11,7 @@ TARDIS:AddControl({
 		mmenu = false,
 		toggle = false,
 		frame_type = {0, 1},
-		text = "Spinning",
+		text = "Spin direction",
 		pressed_state_from_interior = false,
 		pressed_state_data = nil,
 		order = 16,
