@@ -297,6 +297,8 @@ if SERVER then
 				tforce=-tforce
 			end
 
+			ph:ApplyForceOffset( vel * 0.005,            cen + up * lev)
+			ph:ApplyForceOffset(-vel * 0.005,            cen - up * lev)
 			ph:ApplyForceOffset( up * -ang.p,          cen - fwd2 * lev)
 			ph:ApplyForceOffset(-up * -ang.p,          cen + fwd2 * lev)
 			ph:ApplyForceOffset( up * -(ang.r - tilt), cen - ri2 * lev)
