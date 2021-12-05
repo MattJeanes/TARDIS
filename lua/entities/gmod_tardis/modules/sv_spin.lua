@@ -65,16 +65,31 @@ function ENT:GetSpinDirText(old)
 	end
 end
 
+
+
+TARDIS:AddSetting({
+	id="opened-door-no-spin",
+	name="Stop spinning when opened door",
+	desc="Should the TARDIS stop spinning when doors are opened in flight?",
+	section="Misc",
+	value=false,
+	type="bool",
+	option=true,
+	networked=true
+})
+
 ENT:AddHook("ToggleDoor", "spin-dir", function(self,open)
-	if open and self:GetSpinDir() ~= 0 then
-		local current = self:GetData("spindir", -1)
-		self:SetData("spindir_before_door", current)
-		self:SetData("spindir", 0)
-	elseif not open and self:GetSpinDir() == 0 then
-		local prev = self:GetData("spindir_before_door", nil)
-		if prev ~= nil then
-			self:SetData("spindir_before_door", nil)
-			self:SetData("spindir", prev)
+	if TARDIS:GetSetting("opened-door-no-spin", false) then
+		if open and self:GetSpinDir() ~= 0 then
+			local current = self:GetData("spindir", -1)
+			self:SetData("spindir_before_door", current)
+			self:SetData("spindir", 0)
+		elseif not open and self:GetSpinDir() == 0 then
+			local prev = self:GetData("spindir_before_door", nil)
+			if prev ~= nil then
+				self:SetData("spindir_before_door", nil)
+				self:SetData("spindir", prev)
+			end
 		end
 	end
 end)
