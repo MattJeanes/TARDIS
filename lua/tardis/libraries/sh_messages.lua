@@ -61,21 +61,19 @@ function TARDIS:Message(ply, message, error)
 		return
 	end
 	local style = self.msg_style
-	local fullmessage
-	if error and style ~= 3 then
-		fullmessage = "[TARDIS] ERROR: "..message
-	else
-		fullmessage = "[TARDIS] "..message
-	end
+
+	local prefix = "[TARDIS] "
+	local err = error and "ERROR: " or ""
+
 	if style == 0 then
 		return
 	end
 	if style == 1 then
-		print(fullmessage)
+		print(prefix .. err .. message)
 		return
 	end
 	if style == 2 then
-		LocalPlayer():ChatPrint(fullmessage)
+		LocalPlayer():ChatPrint(prefix .. err .. message)
 		return
 	end
 	if style == 3 then
@@ -85,8 +83,8 @@ function TARDIS:Message(ply, message, error)
 		else
 			notifyType = NOTIFY_GENERIC
 		end
-		notification.AddLegacy(fullmessage, notifyType, 5)
-		print(fullmessage)
+		notification.AddLegacy(prefix .. message, notifyType, 5)
+		print(prefix .. err .. message)
 		return
 	end
 end
