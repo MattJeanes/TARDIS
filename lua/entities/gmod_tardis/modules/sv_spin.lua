@@ -80,7 +80,7 @@ TARDIS:AddSetting({
 
 ENT:AddHook("ToggleDoor", "spin-dir", function(self,open)
 	if TARDIS:GetSetting("opened-door-no-spin", false) then
-		if open and self:GetSpinDir() ~= 0 then
+		if open and self:GetData("flight") and self:GetSpinDir() ~= 0 then
 			local current = self:GetData("spindir", -1)
 			self:SetData("spindir_before_door", current)
 			self:SetData("spindir", 0)
