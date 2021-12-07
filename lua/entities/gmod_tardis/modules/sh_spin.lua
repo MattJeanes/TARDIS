@@ -5,7 +5,7 @@ TARDIS:AddSetting({
 	name="Stop spinning with opened door",
 	desc="Should the TARDIS stop spinning when doors are opened in flight?",
 	section="Misc",
-	value=false,
+	value=true,
 	type="bool",
 	option=true,
 	networked=true
