@@ -8,8 +8,6 @@ ENT:AddHook("ShouldDrawPart", "classic_doors_support", function(self, part)
 		and not ply:GetTardisData("thirdperson")
 		and not ply:GetTardisData("destination"))
 
-	--TARDIS:Debug("A")
-
 	if inside and part == TARDIS:GetPart(self, "door") then
 		return false
 	end
