@@ -251,7 +251,7 @@ if SERVER then
 						force_mult = spin and 3 or 2
 					end
 
-					tilt = 5
+					tilt = 3
 					force = force * force_mult
 					vforce = vforce * force_mult
 					rforce = rforce * force_mult
