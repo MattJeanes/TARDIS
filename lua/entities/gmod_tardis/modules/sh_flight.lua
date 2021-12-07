@@ -221,6 +221,7 @@ if SERVER then
 			local control=self:CallHook("FlightControl")~=false
 
 			local spindir = self:GetSpinDir()
+			local brakes = false
 
 			if self.pilot and IsValid(self.pilot) and control then
 				local p=self.pilot
@@ -239,6 +240,7 @@ if SERVER then
 
 					if door and TARDIS:GetSetting("opened-door-no-boost", true, self:GetCreator()) then
 						force_mult = 0.25
+						brakes = true
 						local lastmsg = self.bad_flight_boost_msg
 						if lastmsg == nil or (lastmsg ~= nil and CurTime() - lastmsg > 5.5) then
 							self.bad_flight_boost_msg = CurTime()
@@ -255,7 +257,7 @@ if SERVER then
 					force = force * force_mult
 					vforce = vforce * force_mult
 					rforce = rforce * force_mult
-					tforce = tforce * force_mult
+					tforce = tforce * math.max(force_mult, 2) -- avoid increased spinning
 				elseif self.bad_flight_boost_msg ~= nil then
 					self.bad_flight_boost_msg = nil
 				end
@@ -291,7 +293,7 @@ if SERVER then
 				end
 			end
 
-			if spindir==0 then
+			if spindir==0 or brakes then
 				tilt=0
 			elseif spindir == 1 then
 				tforce=-tforce
