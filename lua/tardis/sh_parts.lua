@@ -11,12 +11,10 @@ function TARDIS.DrawOverride(self,override)
 
 	if IsValid(ext) then
 
-		local dist_to_ext = LocalPlayer():GetPos():Distance(ext:GetPos())
-
 		if (self.InteriorPart and IsValid(int)
 			and ((int:CallHook("ShouldDraw")~=false)
 				or (ext:DoorOpen()
-						and (self.ClientDrawOverride and dist_to_ext < TARDIS:GetSetting("portals-closedist"))
+						and (self.ClientDrawOverride and LocalPlayer():GetPos():Distance(ext:GetPos()) < TARDIS:GetSetting("portals-closedist"))
 						or (self.DrawThroughPortal and (int.scannerrender or (IsValid(wp.drawingent) and wp.drawingent:GetParent()==int)))
 					)
 				)
