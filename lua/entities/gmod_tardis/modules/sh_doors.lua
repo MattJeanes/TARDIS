@@ -13,7 +13,7 @@ if SERVER then
 			callback(state)
 		end)
 	end
-	
+
 	function ENT:ToggleDoor(callback)
 		if not IsValid(self.interior) then return false end
 		if not self:GetData("doorchangecallback",false) then
@@ -29,12 +29,12 @@ if SERVER then
 			return false
 		end
 		doorstate=not doorstate
-		
+
 		self:SetData("doorstatereal",doorstate,true)
 		self:SetData("doorchangewait",not doorstate)
-		
+
 		self:CallHook("ToggleDoorReal",doorstate)
-		
+
 		if doorstate then
 			self:SetData("doorstate",true,true)
 			self:SetData("doorchange",CurTime())
@@ -47,11 +47,15 @@ if SERVER then
 			if callback then
 				callbacks[callback]=true
 			end
-			self:SetData("doorchange",CurTime()+self.metadata.Exterior.DoorAnimationTime)
+			local dooranimtime = self.metadata.Exterior.DoorAnimationTime
+			if self.metadata.EnableClassicDoors == true then
+				dooranimtime = math.max(dooranimtime, self.metadata.Interior.IntDoorAnimationTime)
+			end
+			self:SetData("doorchange",CurTime() + dooranimtime)
 		end
 		return true
 	end
-	
+
 	function ENT:OpenDoor(callback)
 		if self:GetData("doorstate",false) then
 			delay(callback,true)
@@ -59,7 +63,7 @@ if SERVER then
 			self:ToggleDoor(callback)
 		end
 	end
-	
+
 	function ENT:CloseDoor(callback)
 		if self:GetData("doorstate",false) ~= self:GetData("doorstatereal",false) then
 			local callbacks=self:GetData("doorchangecallback")
@@ -70,7 +74,7 @@ if SERVER then
 			self:ToggleDoor(callback)
 		end
 	end
-	
+
 	function ENT:DoorOpen(real)
 		if real then
 			return self:GetData("doorstatereal",false)
@@ -78,11 +82,11 @@ if SERVER then
 			return self:GetData("doorstate",false)
 		end
 	end
-	
+
 	ENT:AddHook("Initialize", "doors", function(self)
 		self:SetBodygroup(1,1)
 	end)
-	
+
 	ENT:AddHook("ToggleDoor", "intdoors", function(self,open)
 		local intdoor=TARDIS:GetPart(self.interior,"door")
 		if IsValid(intdoor) then
@@ -121,7 +125,7 @@ if SERVER then
 			net.WriteBool(open)
 		end)
 	end)
-	
+
 	ENT:AddHook("Think", "doors", function(self)
 		if self:GetData("doorchangewait",false) and CurTime()>self:GetData("doorchange",0) then
 			self:SetData("doorchangewait",nil)
@@ -140,13 +144,13 @@ if SERVER then
 			end
 		end
 	end)
-	
+
 	ENT:AddHook("ShouldThinkFast","doors",function(self)
 		if self:GetData("doorchangewait") then
 			return true
 		end
 	end)
-	
+
 	ENT:AddHook("SkinChanged","doors",function(self,i)
 		local door=TARDIS:GetPart(self,"door")
 		local intdoor=TARDIS:GetPart(self.interior,"door")
@@ -157,7 +161,7 @@ if SERVER then
 			intdoor:SetSkin(i)
 		end
 	end)
-	
+
 	ENT:AddHook("BodygroupChanged","doors",function(self,bodygroup,value)
 		local door=TARDIS:GetPart(self,"door")
 		local intdoor=TARDIS:GetPart(self.interior,"door")
@@ -178,7 +182,7 @@ else
 		type="bool",
 		option=true
 	})
-	
+
 	function ENT:DoorOpen(real)
 		local door=self:GetPart("door")
 		if real and IsValid(door) then
@@ -187,7 +191,7 @@ else
 			return self:GetData("doorstate",false)
 		end
 	end
-	
+
 	function ENT:DoorMoving()
 		local door=self:GetPart("door")
 		if IsValid(door) then
@@ -196,23 +200,28 @@ else
 			return false
 		end
 	end
-	
+
 	ENT:OnMessage("ToggleDoorReal",function(self)
 		self:CallHook("ToggleDoorReal",net.ReadBool())
 	end)
-	
+
 	ENT:AddHook("ToggleDoorReal","doorsounds",function(self,open)
-		local snds = self.metadata.Exterior.Sounds.Door
-		if snds.enabled and TARDIS:GetSetting("doorsounds-enabled") and TARDIS:GetSetting("sound") then
-			local extpart = self:GetPart("door")
-			local snd = open and snds.open or snds.close
-			if IsValid(extpart) and extpart.exterior:CallHook("ShouldEmitDoorSound")~=false then
-				extpart:EmitSound(snd)
+		local extsnds = self.metadata.Exterior.Sounds.Door
+		local intsnds = self.metadata.Interior.Sounds.Door or extsnds
+
+		if TARDIS:GetSetting("doorsounds-enabled") and TARDIS:GetSetting("sound") then
+			if extsnds.enabled then
+				local extpart = self:GetPart("door")
+				local extsnd = open and extsnds.open or extsnds.close
+				if IsValid(extpart) and extpart.exterior:CallHook("ShouldEmitDoorSound")~=false then
+					extpart:EmitSound(extsnd)
+				end
 			end
-			if IsValid(self.interior) then
+			if intsnds.enabled and IsValid(self.interior) then
 				local intpart = self.interior:GetPart("door")
+				local intsnd = open and intsnds.open or intsnds.close
 				if IsValid(intpart) then
-					intpart:EmitSound(snd)
+					intpart:EmitSound(intsnd)
 				end
 			end
 		end

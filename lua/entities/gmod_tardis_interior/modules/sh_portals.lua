@@ -44,7 +44,7 @@ else
 		end
 		if dont then
 			return false, black
-		elseif (not (self.DoorOpen and self:DoorOpen(true))) and portal==self.portals.interior then
+		elseif (not (self.DoorOpen and self:DoorOpen(false))) and portal==self.portals.interior then
 			return false
 		elseif (not TARDIS:GetSetting("portals-enabled")) then
 			return false, self.portals.interior==portal or portal.black

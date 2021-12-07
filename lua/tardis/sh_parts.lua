@@ -8,15 +8,24 @@ function TARDIS.DrawOverride(self,override)
 	if self.NoDraw then return end
 	local int=self.interior
 	local ext=self.exterior
+
 	if IsValid(ext) then
-		if (self.InteriorPart and IsValid(int) and ((int:CallHook("ShouldDraw")~=false)
-		or (ext:DoorOpen()
-			and (self.ClientDrawOverride and LocalPlayer():GetPos():Distance(ext:GetPos())<TARDIS:GetSetting("portals-closedist"))
-			or (self.DrawThroughPortal and (int.scannerrender or (IsValid(wp.drawingent) and wp.drawingent:GetParent()==int)))
-		))) or (self.ExteriorPart
-			and (ext:CallHook("ShouldDraw")~=false)
-			or self.ShouldDrawOverride
-		) then
+
+		local dist_to_ext = LocalPlayer():GetPos():Distance(ext:GetPos())
+
+		if (self.InteriorPart and IsValid(int)
+			and ((int:CallHook("ShouldDraw")~=false)
+				or (ext:DoorOpen()
+						and (self.ClientDrawOverride and dist_to_ext < TARDIS:GetSetting("portals-closedist"))
+						or (self.DrawThroughPortal and (int.scannerrender or (IsValid(wp.drawingent) and wp.drawingent:GetParent()==int)))
+					)
+				)
+			) or (self.ExteriorPart
+				and (ext:CallHook("ShouldDraw")~=false)
+				or self.ShouldDrawOverride
+			)
+		then
+			if self.parent:CallHook("ShouldDrawPart", self) == false then return end
 			self.parent:CallHook("PreDrawPart",self)
 			if self.PreDraw then self:PreDraw() end
 			if self.UseTransparencyFix and (not override) then
