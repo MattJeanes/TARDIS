@@ -5,7 +5,7 @@ TARDIS:AddSetting({
 	name="Stop spinning with opened door",
 	desc="Should the TARDIS stop spinning when doors are opened in flight?",
 	section="Misc",
-	value=false,
+	value=true,
 	type="bool",
 	option=true,
 	networked=true
@@ -15,45 +15,32 @@ if CLIENT then return end
 
 
 ENT:AddHook("Initialize", "spin", function(self)
-	self:SetSpinDir(-1)
+	self:SetData("spindir", -1)
+	self:SetData("spindir_prev", 0)
 end)
 
 function ENT:ToggleSpin()
 	local current = self:GetData("spindir", -1)
-	if current == 0 then
-		local prev = self:GetData("spindir_old", -1)
-		self:SetData("spindir", prev)
-	else
-		self:SetData("spindir_old", current)
-		self:SetData("spindir", 0)
-	end
+	local prev = self:GetData("spindir_prev", 0)
+
+	self:SetData("spindir_prev", current)
+	self:SetData("spindir", prev)
 end
 
 function ENT:CycleSpinDir()
 	local current = self:GetData("spindir", -1)
-	if current == -1 then
-		self:SetData("spindir", 0)
-	elseif current == 0 then
-		self:SetData("spindir", 1)
-	elseif current == 1 then
-		self:SetData("spindir", -1)
-	end
+	local prev = self:GetData("spindir_prev", 0)
+
+	self:SetData("spindir_prev", current)
+	self:SetData("spindir", -prev)
 end
 
 function ENT:SwitchSpinDir()
 	local current = self:GetData("spindir", -1)
-	if current == 0 then
-		local prev = self:GetData("spindir_old", -1)
-		if prev == -1 then
-			self:SetData("spindir_old", 1)
-		elseif prev == 1 then
-			self:SetData("spindir_old", -1)
-		end
-	elseif current == -1 then
-		self:SetData("spindir", 1)
-	elseif current == 1 then
-		self:SetData("spindir", -1)
-	end
+	local prev = self:GetData("spindir_prev", 0)
+
+	self:SetData("spindir_prev", -prev)
+	self:SetData("spindir", -current)
 end
 
 function ENT:GetSpinDir()
@@ -64,10 +51,10 @@ function ENT:SetSpinDir(dir)
 	return self:SetData("spindir", dir)
 end
 
-function ENT:GetSpinDirText(old)
+function ENT:GetSpinDirText(show_next)
 	local current = self:GetData("spindir", -1)
-	if old == true then
-		current = self:GetData("spindir_old", -1)
+	if show_next == true then
+		current = self:GetData("spindir_prev", 0)
 	end
 
 	if current == -1 then
@@ -81,16 +68,17 @@ end
 
 ENT:AddHook("ToggleDoor", "spin-dir", function(self,open)
 	if TARDIS:GetSetting("opened-door-no-spin", false, self:GetCreator()) then
+		local current = self:GetData("spindir", -1)
+		local before = self:GetData("spindir_before_door", nil)
+
 		if open and self:GetData("flight") and self:GetSpinDir() ~= 0 then
-			local current = self:GetData("spindir", -1)
 			self:SetData("spindir_before_door", current)
+			self:SetData("spindir_prev", current)
 			self:SetData("spindir", 0)
-		elseif not open and self:GetSpinDir() == 0 then
-			local prev = self:GetData("spindir_before_door", nil)
-			if prev ~= nil then
-				self:SetData("spindir_before_door", nil)
-				self:SetData("spindir", prev)
-			end
+		elseif not open and self:GetSpinDir() == 0 and before ~= nil then
+			self:SetData("spindir_before_door", nil)
+			self:SetData("spindir_prev", current)
+			self:SetData("spindir", before)
 		end
 	end
 end)
