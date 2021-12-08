@@ -1,19 +1,17 @@
-ENT:AddHook("ShouldDrawPart", "classic_doors_support", function(self, part)
-	if self.metadata.EnableClassicDoors ~= true then return end
-	if part == nil then return end
-
-	local ply = LocalPlayer()
-
-	local inside = (ply:GetTardisData("interior") == self
-		and not ply:GetTardisData("thirdperson")
-		and not ply:GetTardisData("destination"))
-
-	--TARDIS:Debug("A")
-
-	if inside and part == TARDIS:GetPart(self, "door") then
+ENT:AddHook("ShouldDrawPart", "classic_doors_intdoor", function(self, part)
+	if self.metadata.EnableClassicDoors == true and part ~= nil
+		and wp.drawing and wp.drawingent == self.portals.exterior
+		and part == TARDIS:GetPart(self, "intdoor")
+	then
 		return false
 	end
-	if not inside and part == TARDIS:GetPart(self, "intdoor") then
+end)
+
+ENT:AddHook("ShouldDrawPart", "classic_doors_door_mirror", function(self, part)
+	if self.metadata.EnableClassicDoors == true and part ~= nil
+		and part == TARDIS:GetPart(self, "door")
+		and not (wp.drawing and wp.drawingent == self.portals.exterior)
+	then
 		return false
 	end
 
