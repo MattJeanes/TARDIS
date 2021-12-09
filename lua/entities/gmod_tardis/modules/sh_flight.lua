@@ -7,7 +7,7 @@ TARDIS:AddSetting({
 	name="Disable boost with opened doors",
 	desc="Should the TARDIS boost stop working when doors are opened in flight?",
 	section="Misc",
-	value=true,
+	value=false,
 	type="bool",
 	option=true,
 	networked=true
