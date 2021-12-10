@@ -3,9 +3,19 @@ TARDIS:AddControl({
 	ext_func=function(self,ply)
 		local oldstate = self:GetData("doorstate")
 
-		if not self:GetPower() and not self.metadata.EnableClassicDoors then
-			TARDIS:ErrorMessage(ply, "Power is disabled. The door switch doesn't work.")
+		if self:GetData("locked", false) then
+			TARDIS:ErrorMessage(ply, "The doors are locked.")
 			return
+		end
+
+		if not self:GetPower() then
+			if not self.metadata.EnableClassicDoors or oldstate then
+				TARDIS:ErrorMessage(ply, "The door switch doesn't work.")
+				TARDIS:ErrorMessage(ply, "Power is disabled.")
+				return
+			end
+			TARDIS:Message(ply, "Using emergency power to open the door...")
+			TARDIS:ErrorMessage(ply, "Power is disabled.")
 		end
 
 		if self:ToggleDoor() then
