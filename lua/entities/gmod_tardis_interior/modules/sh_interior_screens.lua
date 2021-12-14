@@ -24,6 +24,7 @@ end
 function ENT:SetScreensOn(on)
 	if not on or self:CallHook("CanEnableScreens") ~= false then
 		self:SetData("screens_on", on, true)
+		self:CallHook("ScreensToggled", on)
 	end
 	return true
 end
