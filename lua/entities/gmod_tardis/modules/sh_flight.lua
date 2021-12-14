@@ -7,7 +7,7 @@ TARDIS:AddSetting({
 	name="Disable boost with opened doors",
 	desc="Should the TARDIS boost stop working when doors are opened in flight?",
 	section="Misc",
-	value=true,
+	value=false,
 	type="bool",
 	option=true,
 	networked=true
@@ -279,16 +279,13 @@ if SERVER then
 						end
 						force_mult = TARDIS:GetSetting("boost-speed")
 						if not spin then
-							force_mult = math.max(1, force_mult * 0.6) -- from 2.5 to 1.5
+							force_mult = math.max(1, force_mult * 0.6)
 						end
 					end
 
 					force = force * force_mult
 					vforce = vforce * force_mult
 					rforce = rforce * force_mult
-					tilt = -4 -- has to be less to work together with tilt towards the speed direction
-					          -- when moving with boost, -4 compensates +5 to make less tilt towards the sides
-							  -- when not moving, and adds a small tilt to the side
 				elseif self.bad_flight_boost_msg ~= nil then
 					self.bad_flight_boost_msg = nil
 				end
@@ -342,9 +339,7 @@ if SERVER then
 			ph:ApplyForceOffset(-up * -(ang.r - tilt), cen + ri2 * lev)
 
 			if spin and not brakes then
-				local twist = Vector(0, 0, -spindir * (0.008 + math.sqrt(vell / tforce)))
-				-- 0.008 adds an almost unnoticable rotation while staying at one point
-				-- adds some difference between flying and anti-gravs
+				local twist = Vector(0, 0, -spindir * math.sqrt(vell / tforce))
 				ph:AddAngleVelocity(twist)
 			end
 			local angbrake=angvel*-0.015
