@@ -247,7 +247,7 @@ if SERVER then
 							TARDIS:ErrorMessage(self.pilot, "Boost doesn't work with doors open")
 						end
 					else
-						force_mult = 2.5
+						force_mult = spin and 2.5 or 1.75
 						if self.bad_flight_boost_msg ~= nil then
 							self.bad_flight_boost_msg = nil
 						end
@@ -295,7 +295,7 @@ if SERVER then
 			if spindir == 0 or brakes then
 				tilt=0
 			end
-			
+
 			if spindir == 1 then
 				tforce=-tforce
 			end
