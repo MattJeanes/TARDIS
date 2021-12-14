@@ -247,17 +247,16 @@ if SERVER then
 							TARDIS:ErrorMessage(self.pilot, "Boost doesn't work with doors open")
 						end
 					else
+						force_mult = 2.5
 						if self.bad_flight_boost_msg ~= nil then
 							self.bad_flight_boost_msg = nil
 						end
-						force_mult = spin and 3 or 2
 					end
 
-					tilt = 3
 					force = force * force_mult
 					vforce = vforce * force_mult
 					rforce = rforce * force_mult
-					tforce = tforce * math.max(force_mult, 2) -- avoid increased spinning
+					tilt = 5
 				elseif self.bad_flight_boost_msg ~= nil then
 					self.bad_flight_boost_msg = nil
 				end
@@ -293,16 +292,23 @@ if SERVER then
 				end
 			end
 
-			if spindir==0 or brakes then
+			if spindir == 0 or brakes then
 				tilt=0
-			elseif spindir == 1 then
+			end
+			
+			if spindir == 1 then
 				tforce=-tforce
 			end
 
+			-- lean into the flight
 			ph:ApplyForceOffset( vel * 0.005,            cen + up * lev)
 			ph:ApplyForceOffset(-vel * 0.005,            cen - up * lev)
+
+			-- stabilise pitch
 			ph:ApplyForceOffset( up * -ang.p,          cen - fwd2 * lev)
 			ph:ApplyForceOffset(-up * -ang.p,          cen + fwd2 * lev)
+
+			-- stabilise roll and apply tilt
 			ph:ApplyForceOffset( up * -(ang.r - tilt), cen - ri2 * lev)
 			ph:ApplyForceOffset(-up * -(ang.r - tilt), cen + ri2 * lev)
 

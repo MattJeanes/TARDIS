@@ -71,7 +71,7 @@ ENT:AddHook("ToggleDoor", "spin-dir", function(self,open)
 		local current = self:GetData("spindir", -1)
 		local before = self:GetData("spindir_before_door", nil)
 
-		if open and self:GetData("flight") and self:GetSpinDir() ~= 0 then
+		if open and self:GetSpinDir() ~= 0 then
 			self:SetData("spindir_before_door", current)
 			self:SetData("spindir_prev", current)
 			self:SetData("spindir", 0)
