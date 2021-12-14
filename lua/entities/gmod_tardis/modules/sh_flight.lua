@@ -33,7 +33,9 @@ if SERVER then
 		if nvnum < 1.0 or nvnum > 4.0 then
 			nvnum = math.max(1.0, math.min(4.0, nvnum))
 			GetConVar("tardis2_boost_speed"):SetFloat(nvnum)
+			return
 		end
+		print("TARDIS boost speed has been set to "..nvnum)
 		TARDIS:SetSetting("boost-speed", nvnum, true)
 	end, "UpdateOnChange")
 end
