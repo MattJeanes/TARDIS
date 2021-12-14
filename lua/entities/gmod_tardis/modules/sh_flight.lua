@@ -1,5 +1,45 @@
 -- Flight
 
+-- Settings
+
+TARDIS:AddSetting({
+	id="opened-door-no-boost",
+	name="Disable boost with opened doors",
+	desc="Should the TARDIS boost stop working when doors are opened in flight?",
+	section="Misc",
+	value=false,
+	type="bool",
+	option=true,
+	networked=true
+})
+
+TARDIS:AddSetting({
+	id="boost-speed",
+	name="Boost Speed",
+	desc="The increase of speed the TARDIS gets with the boost key enabled",
+	section="Misc",
+	type="number",
+	value=2.5,
+	min=1.0,
+	max=4.0,
+	networked=true
+})
+
+CreateConVar("tardis2_boost_speed", 2.5, {FCVAR_ARCHIVE, FCVAR_REPLICATED}, "TARDIS - Boost Speed")
+
+if SERVER then
+	cvars.AddChangeCallback("tardis2_boost_speed", function(cvname, oldvalue, newvalue)
+		local nvnum = tonumber(newvalue)
+		if nvnum < 1.0 or nvnum > 4.0 then
+			nvnum = math.max(1.0, math.min(4.0, nvnum))
+			GetConVar("tardis2_boost_speed"):SetFloat(nvnum)
+			return
+		end
+		print("TARDIS boost speed has been set to "..nvnum)
+		TARDIS:SetSetting("boost-speed", nvnum, true)
+	end, "UpdateOnChange")
+end
+
 -- Binds
 TARDIS:AddKeyBind("flight-toggle",{
 	name="Toggle Flight",
@@ -78,18 +118,7 @@ TARDIS:AddKeyBind("flight-spindir",{
 	func=function(self,down,ply)
 		if TARDIS:HUDScreenOpen(ply) then return end
 		if down and ply==self.pilot then
-			local dir
-			if self.spindir==-1 then
-				self.spindir=0
-				dir="none"
-			elseif self.spindir==0 then
-				self.spindir=1
-				dir="clockwise"
-			elseif self.spindir==1 then
-				self.spindir=-1
-				dir="anti-clockwise"
-			end
-			TARDIS:Message(ply, "Spin direction set to "..dir)
+			TARDIS:Control("spin_cycle", ply)
 		end
 	end,
 	key=MOUSE_RIGHT,
@@ -98,12 +127,12 @@ TARDIS:AddKeyBind("flight-spindir",{
 })
 
 
-if SERVER then	
+if SERVER then
 	function ENT:ToggleFlight()
 		local on = not self:GetData("flight",false)
 		return self:SetFlight(on)
 	end
-	
+
 	function ENT:SetFlight(on)
 		if not on and self:CallHook("CanTurnOffFlight")==false then
 			return false
@@ -121,7 +150,7 @@ if SERVER then
 		self:SetFloat(on)
 		return true
 	end
-	
+
 	ENT:AddHook("PowerToggled", "flight", function(self,on)
 		if on and self:GetData("power-lastflight",false)==true then
 			self:SetFlight(true)
@@ -136,7 +165,7 @@ if SERVER then
 			return true
 		end
 	end)
-	
+
 	ENT:AddHook("CanTurnOffFloat", "flight", function(self)
 		if self:GetData("flight") then return false end
 	end)
@@ -146,7 +175,7 @@ if SERVER then
 			return false
 		end
 	end)
-	
+
 	ENT:AddHook("ThirdPerson", "flight", function(self,ply,enabled)
 		if enabled then
 			if IsValid(self.pilot) then
@@ -181,7 +210,7 @@ if SERVER then
 			end
 		end
 	end)
-	
+
 	ENT:AddHook("PilotChanged","flight",function(self,old,new)
 		self:SetData("pilot",new,true)
 		self:SendMessage("PilotChanged",function()
@@ -189,21 +218,17 @@ if SERVER then
 			net.WriteEntity(new)
 		end)
 	end)
-	
-	ENT:AddHook("Initialize", "flight", function(self)
-		self.spindir=-1
-	end)
-	
+
 	ENT:AddHook("Think", "flight", function(self)
 		if self:GetData("flight") then
 			self.phys:Wake()
 		end
 	end)
-	
+
 	ENT:AddHook("PhysicsUpdate", "flight", function(self,ph)
 		if self:GetData("flight") then
 			local phm=FrameTime()*66
-			
+
 			local up=self:GetUp()
 			local ri2=self:GetRight()
 			local left=ri2*-1
@@ -218,10 +243,14 @@ if SERVER then
 			local force=15
 			local vforce=5
 			local rforce=2
-			local tforce=400
+			local tforce=200
 			local tilt=0
 			local control=self:CallHook("FlightControl")~=false
-			
+
+			local spindir = self:GetSpinDir()
+			local spin = (spindir ~= 0)
+			local brakes = false
+
 			if self.pilot and IsValid(self.pilot) and control then
 				local p=self.pilot
 				local eye=p:GetTardisData("viewang")
@@ -230,12 +259,35 @@ if SERVER then
 				end
 				local fwd=eye:Forward()
 				local ri=eye:Right()
-				
+
 				if TARDIS:IsBindDown(self.pilot,"flight-boost") then
-					force=force*2.5
-					vforce=vforce*2.5
-					rforce=rforce*2.5
-					tilt=5
+
+					local force_mult
+					local door = self:DoorOpen()
+
+					if door and TARDIS:GetSetting("opened-door-no-boost", true, self:GetCreator()) then
+						force_mult = 0.25
+						brakes = true -- no spin, no tilt
+						local lastmsg = self.bad_flight_boost_msg
+						if lastmsg == nil or (lastmsg ~= nil and CurTime() - lastmsg > 5.5) then
+							self.bad_flight_boost_msg = CurTime()
+							TARDIS:ErrorMessage(self.pilot, "Boost doesn't work with doors open")
+						end
+					else
+						if self.bad_flight_boost_msg ~= nil then
+							self.bad_flight_boost_msg = nil
+						end
+						force_mult = TARDIS:GetSetting("boost-speed")
+						if not spin then
+							force_mult = math.max(1, force_mult * 0.6)
+						end
+					end
+
+					force = force * force_mult
+					vforce = vforce * force_mult
+					rforce = rforce * force_mult
+				elseif self.bad_flight_boost_msg ~= nil then
+					self.bad_flight_boost_msg = nil
 				end
 				if TARDIS:IsBindDown(self.pilot,"flight-forward") then
 					ph:AddVelocity(fwd*force*phm)
@@ -261,27 +313,33 @@ if SERVER then
 						tilt=tilt+5
 					end
 				end
-				
+
 				if TARDIS:IsBindDown(self.pilot,"flight-down") then
 					ph:AddVelocity(-up*vforce*phm)
 				elseif TARDIS:IsBindDown(self.pilot,"flight-up") then
 					ph:AddVelocity(up*vforce*phm)
 				end
 			end
-			
-			if self.spindir==0 then
-				tilt=0
-			elseif self.spindir==1 then
-				tforce=-tforce
+
+			if not spin or brakes then
+				tilt = 0
 			end
-			
-			ph:ApplyForceOffset( up*-ang.p,cen-fwd2*lev)
-			ph:ApplyForceOffset(-up*-ang.p,cen+fwd2*lev)
-			ph:ApplyForceOffset( up*-(ang.r-tilt),cen-ri2*lev)
-			ph:ApplyForceOffset(-up*-(ang.r-tilt),cen+ri2*lev)
-			
-			if not (self.spindir==0) then
-				local twist=Vector(0,0,vell/tforce)
+
+
+			-- lean into the flight
+			ph:ApplyForceOffset( vel * 0.005,            cen + up * lev)
+			ph:ApplyForceOffset(-vel * 0.005,            cen - up * lev)
+
+			-- stabilise pitch
+			ph:ApplyForceOffset( up * -ang.p,          cen - fwd2 * lev)
+			ph:ApplyForceOffset(-up * -ang.p,          cen + fwd2 * lev)
+
+			-- stabilise roll and apply tilt
+			ph:ApplyForceOffset( up * -(ang.r - tilt), cen - ri2 * lev)
+			ph:ApplyForceOffset(-up * -(ang.r - tilt), cen + ri2 * lev)
+
+			if spin and not brakes then
+				local twist = Vector(0, 0, -spindir * math.sqrt(vell / tforce))
 				ph:AddAngleVelocity(twist)
 			end
 			local angbrake=angvel*-0.015
@@ -302,8 +360,8 @@ if SERVER then
 			end
 		elseif name == "Spinmode" and TARDIS:CheckPP(e2.player, self) then
 			local spindir = args[1]
-			self.spindir = spindir
-			return self.spindir
+			self:SetSpinDir(spindir)
+			return self:GetSpinDir()
 		elseif name == "Track" and TARDIS:CheckPP(e2.player, self) then
 			return 0 -- Not yet implemented
 		end
@@ -328,14 +386,14 @@ else
 		type="bool",
 		option=true
 	})
-	
+
 	ENT:AddHook("OnRemove", "flight", function(self)
 		if self.flightsound then
 			self.flightsound:Stop()
 			self.flightsound=nil
 		end
 	end)
-	
+
 	local function ChooseFlightSound(ent)
 		if ent:GetData("health-warning", false) then
 			ent.flightsound = CreateSound(ent, ent.metadata.Exterior.Sounds.FlightLoopDamaged)

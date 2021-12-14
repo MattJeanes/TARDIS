@@ -120,8 +120,6 @@ T.Interior = {
 		default_biglever           = "fastreturn",
 		default_physlock           = "physlock",
 		default_isomorphic         = "isomorphic",
-		default_atomaccel          = nil,
-		default_directionalpointer = nil,
 		default_float              = "float",
 		default_blacksticks        = "cloak",
 		default_longflighttoggle   = "vortex_flight",
@@ -129,6 +127,8 @@ T.Interior = {
 		default_sonicdispenser     = "sonic_dispenser",
 		default_sonic_inserted     = SonicModelExists() and "sonic_dispenser",
 		default_helmic             = "thirdperson",
+		default_atomaccel          = "spin_toggle",
+		default_directionalpointer = "spin_switch",
 
 
 	},
