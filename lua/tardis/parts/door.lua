@@ -16,7 +16,7 @@ if SERVER then
 	function PART:Initialize()	
 		self:SetBodygroup(1,1) -- Sticker
 		self:SetBodygroup(2,1) -- Lit sign
-		
+
 		if self.ExteriorPart then
 			self.ClientDrawOverride = true
 			self:SetSolid(SOLID_VPHYSICS)
@@ -26,7 +26,7 @@ if SERVER then
 			self:SetBodygroup(3,1) -- 3D sign
 			table.insert(self.interior.stuckfilter, self)
 		end
-		
+
 		local metadata=self.exterior.metadata
 		local portal=self.ExteriorPart and metadata.Exterior.Portal or metadata.Interior.Portal
 		if portal then
@@ -38,7 +38,7 @@ if SERVER then
 			self:SetParent(self.parent)
 		end
 	end
-	
+
 	function PART:Use(a)
 		if self.exterior:GetData("locked") then
 			if IsValid(a) and a:IsPlayer() then
@@ -55,12 +55,13 @@ if SERVER then
 					self.exterior:PlayerExit(a)
 				end
 			else
+				if self.exterior.metadata.EnableClassicDoors == true and not self.ExteriorPart then return end
 				if (self.exterior:GetData("repair-primed",false) or self.exterior:GetData("repairing",false)) and self.ExteriorPart then return end
 				self.exterior:ToggleDoor()
 			end
 		end
 	end
-	
+
 	hook.Add("SkinChanged", "tardisi-door", function(ent,i)
 		if ent.TardisExterior then
 			local door=ent:GetPart("door")
@@ -80,14 +81,17 @@ else
 		self.DoorPos=0
 		self.DoorTarget=0
 	end
-	
+
 	function PART:Think()
 		if self.ExteriorPart then
 			self.DoorTarget=self.exterior.DoorOverride or (self.exterior:GetData("doorstatereal",false) and 1 or 0)
-			
+
+			local animtime = self.exterior.metadata.Exterior.DoorAnimationTime
+
 			-- Have to spam it otherwise it glitches out (http://facepunch.com/showthread.php?t=1414695)
-			self.DoorPos=self.exterior.DoorOverride or math.Approach(self.DoorPos,self.DoorTarget,FrameTime()*(1/self.exterior.metadata.Exterior.DoorAnimationTime))
-			
+			self.DoorPos = self.exterior.DoorOverride or
+				math.Approach(self.DoorPos, self.DoorTarget, FrameTime() * (1 / animtime))
+
 			self:SetPoseParameter("switch", self.DoorPos)
 			self:InvalidateBoneCache()
 		elseif self.InteriorPart then -- copy exterior, no need to redo the calculation
