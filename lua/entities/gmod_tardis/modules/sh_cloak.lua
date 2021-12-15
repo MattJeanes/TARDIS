@@ -188,17 +188,23 @@ else
 		if self:GetData("cloak",false) and not self:GetData("cloak-animating",false) then return false end
 	end)
 
-    ENT:OnMessage("cloak", function(self)
+	ENT:OnMessage("cloak", function(self)
 		local on = net.ReadBool()
 		self:SetData("cloak", on)
 		self:SetData("cloak-animating", true)
-        local snd = self.metadata.Exterior.Sounds.Cloak
-        if on and TARDIS:GetSetting("cloaksound-enabled") and TARDIS:GetSetting("sound") then
-            self:EmitSound(snd)
+		local snd
+		if on then
+			snd = self.metadata.Exterior.Sounds.Cloak
+		else
+			snd = self.metadata.Exterior.Sounds.CloakOff
+		end
 
-            if IsValid(self.interior) then
-                self.interior:EmitSound(snd)
-            end
-        end
-    end)
+		if TARDIS:GetSetting("cloaksound-enabled") and TARDIS:GetSetting("sound") then
+			self:EmitSound(snd)
+
+			if IsValid(self.interior) then
+				self.interior:EmitSound(snd)
+			end
+		end
+	end)
 end

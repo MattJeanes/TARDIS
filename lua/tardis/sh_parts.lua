@@ -8,15 +8,22 @@ function TARDIS.DrawOverride(self,override)
 	if self.NoDraw then return end
 	local int=self.interior
 	local ext=self.exterior
+
 	if IsValid(ext) then
-		if (self.InteriorPart and IsValid(int) and ((int:CallHook("ShouldDraw")~=false)
-		or (ext:DoorOpen()
-			and (self.ClientDrawOverride and LocalPlayer():GetPos():Distance(ext:GetPos())<TARDIS:GetSetting("portals-closedist"))
-			or (self.DrawThroughPortal and (int.scannerrender or (IsValid(wp.drawingent) and wp.drawingent:GetParent()==int)))
-		))) or (self.ExteriorPart
-			and (ext:CallHook("ShouldDraw")~=false)
-			or self.ShouldDrawOverride
-		) then
+
+		if (self.InteriorPart and IsValid(int)
+			and ((int:CallHook("ShouldDraw")~=false)
+				or (ext:DoorOpen()
+						and (self.ClientDrawOverride and LocalPlayer():GetPos():Distance(ext:GetPos()) < TARDIS:GetSetting("portals-closedist"))
+						or (self.DrawThroughPortal and (int.scannerrender or (IsValid(wp.drawingent) and wp.drawingent:GetParent()==int)))
+					)
+				)
+			) or (self.ExteriorPart
+				and (ext:CallHook("ShouldDraw")~=false)
+				or self.ShouldDrawOverride
+			)
+		then
+			if self.parent:CallHook("ShouldDrawPart", self) == false then return end
 			self.parent:CallHook("PreDrawPart",self)
 			if self.PreDraw then self:PreDraw() end
 			if self.UseTransparencyFix and (not override) then
@@ -72,6 +79,9 @@ local overrides={
 			TARDIS:ErrorMessage(a, "Power is disabled. This control is blocked.")
 		else
 			if allowed~=false then
+				if self.HasUseBasic then
+					self.UseBasic(self,a,...)
+				end
 				if SERVER and self.Control and (not self.HasUse) then
 					TARDIS:Control(self.Control,a)
 				else
@@ -83,12 +93,20 @@ local overrides={
 				local on = self:GetOn()
 
 				if self.PowerOffSound ~= false or self.interior:GetPower() then
+					local part_sound = nil
+
 					if self.SoundOff and on then
-						self:EmitSound(self.SoundOff)
+						part_sound = self.SoundOff
 					elseif self.SoundOn and (not on) then
-						self:EmitSound(self.SoundOn)
+						part_sound = self.SoundOn
 					elseif self.Sound then
-						self:EmitSound(self.Sound)
+						part_sound = self.Sound
+					end
+
+					if part_sound and self.SoundPos then
+						sound.Play(part_sound, self:LocalToWorld(self.SoundPos))
+					elseif part_sound then
+						self:EmitSound(part_sound)
 					end
 				end
 				self:SetOn(not on)
@@ -134,6 +152,7 @@ function TARDIS:AddPart(e)
 		error("Duplicate part ID registered: " .. e.ID .. " (exists in both " .. parts[e.ID].source .. " and " .. source .. ")")
 	end
 	e=table.Copy(e)
+	e.HasUseBasic = e.UseBasic ~= nil
 	e.HasUse = e.Use ~= nil
 	e.Base = "gmod_tardis_part"
 	local class="gmod_tardis_part_"..e.ID

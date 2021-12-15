@@ -18,5 +18,5 @@ TARDIS:AddControl({ id = "vortex_flight",
 		pressed_state_data = "demat-fast",
 		order = 8,
 	},
-	tip_text = "Vortex Flight Toggler",
+	tip_text = "Vortex Flight",
 })
