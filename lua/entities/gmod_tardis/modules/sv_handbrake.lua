@@ -1,8 +1,8 @@
+-- Handbrake
+
 ENT:AddHook("Initialize","handbrake-init", function(self)
 	self:SetData("handbrake", false, true)
 end)
-
-if CLIENT then return end
 
 function ENT:ToggleHandbrake()
 	return self:SetHandbrake(not self:GetData("handbrake"))
