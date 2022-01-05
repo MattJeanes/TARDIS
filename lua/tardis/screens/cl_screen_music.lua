@@ -23,7 +23,7 @@ TARDIS:AddScreen("Music", {id="music", menu=false, order=10}, function(self,ext,
 
 	local playbutt=vgui.Create("DButton",frame)
 	playbutt:SetSize( frame:GetWide()*0.2, text_bar:GetTall())
-	playbutt:SetPos(text_bar:GetX() + text_bar:GetWide()*1.02, text_bar:GetY())
+	playbutt:SetPos(text_bar:GetX() + text_bar:GetWide()*1.02, text_bar:GetY() + text_bar:GetTall()*-0.6)
 	playbutt:SetText("Play")
 	playbutt:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 	playbutt.DoClick = function()
@@ -58,22 +58,14 @@ TARDIS:AddScreen("Music", {id="music", menu=false, order=10}, function(self,ext,
 	end
 
 	local stop=vgui.Create("DButton",frame)
-	stop:SetVisible(false)
-	stop:SetSize( frame:GetWide()*0.2, frame:GetTall()*0.15 )
-	stop:SetPos(frame:GetWide()*0.5 - stop:GetWide()*0.5,frame:GetTall()*0.13 - stop:GetTall()*0.5)
+
+	stop:SetSize( frame:GetWide()*0.2, text_bar:GetTall())
+	stop:SetPos(text_bar:GetX() + text_bar:GetWide()*1.02, text_bar:GetY()*1.2 + text_bar:GetTall()*-0.4)
 	stop:SetText("Stop")
 	stop:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 	stop.DoClick = function()
 		ext:StopMusic()
 	end
 
-	frame.Think = function()
-		if IsValid(ext.music) and ext.music:GetState()==GMOD_CHANNEL_PLAYING then
-			if not stop:IsVisible() then
-				stop:SetVisible(true)
-			end
-		elseif stop:IsVisible() then
-			stop:SetVisible(false)
-		end
-	end
+
 end)
