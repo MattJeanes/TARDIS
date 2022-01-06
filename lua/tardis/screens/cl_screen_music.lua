@@ -73,7 +73,7 @@ TARDIS:AddScreen("Music", {id="music", menu=false, order=10}, function(self,ext,
 		list:AddLine(v[1])
 	end
 	function list:OnRowSelected(rowIndex, row)
-		text_bar:SetText("http://mattjeanes.com/data/tardis/" .. sounds[rowIndex][2] ..".mp3")
+		text_bar:SetText("https://mattjeanes.com/data/tardis/" .. sounds[rowIndex][2] ..".mp3")
 	end
 
 	local stop=vgui.Create("DButton",frame)
