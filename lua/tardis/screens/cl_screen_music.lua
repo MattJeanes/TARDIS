@@ -4,7 +4,7 @@ local sounds={
     {"Main Theme (2005-2008)", "theme1"},
     {"Main Theme (2009)", "theme2"},
     {"Main Theme (2010-2012)", "theme3"},
-    {"Main Theme (2013-Present)", "theme4"},
+    {"Main Theme (2013-2014)", "theme4"},
     {"Ninth Doctor", "nine"},
     {"Tenth Doctor", "ten"},
     {"Eleventh Doctor", "eleven"},
