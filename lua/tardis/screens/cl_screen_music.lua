@@ -54,12 +54,12 @@ TARDIS:AddScreen("Music", {id="music", menu=false, order=10}, function(self,ext,
 		ext:PlayMusic(text_bar:GetValue())
 	end
 
-	local playbutt=vgui.Create("DButton",frame)
-	playbutt:SetSize(frame:GetWide()*0.2, text_bar:GetTall())
-	playbutt:SetPos(text_bar:GetX() + text_bar:GetWide()*1.02, text_bar:GetY())
-	playbutt:SetText("Play")
-	playbutt:SetFont(TARDIS:GetScreenFont(screen, "Default"))
-	playbutt.DoClick = function()
+	local playbutton=vgui.Create("DButton",frame)
+	playbutton:SetSize(frame:GetWide()*0.2, text_bar:GetTall())
+	playbutton:SetPos(text_bar:GetX() + text_bar:GetWide()*1.02, text_bar:GetY())
+	playbutton:SetText("Play")
+	playbutton:SetFont(TARDIS:GetScreenFont(screen, "Default"))
+	playbutton.DoClick = function()
 		ext:PlayMusic(text_bar:GetValue())
 	end
 
