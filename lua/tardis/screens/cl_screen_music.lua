@@ -55,7 +55,7 @@ TARDIS:AddScreen("Music", {id="music", menu=false, order=10}, function(self,ext,
 	end
 
 	local playbutt=vgui.Create("DButton",frame)
-	playbutt:SetSize( frame:GetWide()*0.2, text_bar:GetTall())
+	playbutt:SetSize(frame:GetWide()*0.2, text_bar:GetTall())
 	playbutt:SetPos(text_bar:GetX() + text_bar:GetWide()*1.02, text_bar:GetY())
 	playbutt:SetText("Play")
 	playbutt:SetFont(TARDIS:GetScreenFont(screen, "Default"))
@@ -63,12 +63,12 @@ TARDIS:AddScreen("Music", {id="music", menu=false, order=10}, function(self,ext,
 		ext:PlayMusic(text_bar:GetValue())
 	end
 
-	--Pre-Loaded legacy Music
+	--Pre-loaded legacy music
 
 	local list = vgui.Create("DListView",frame)
 	list:SetSize(frame:GetWide()*0.5, frame:GetTall()*0.4)
 	list:SetPos(text_bar:GetX(), frame:GetTall()*0.78 + list:GetTall()*-0.5)
-	list:AddColumn("Pre-Loaded Music")
+	list:AddColumn("Pre-loaded music")
 	for k,v in pairs(sounds) do
 		list:AddLine(v[1])
 	end
