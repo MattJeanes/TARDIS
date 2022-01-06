@@ -1,5 +1,38 @@
 -- Music
 
+local sounds={
+    {"Main Theme (2005-2008)", "theme1"},
+    {"Main Theme (2009)", "theme2"},
+    {"Main Theme (2010-2012)", "theme3"},
+    {"Main Theme (2013-Present)", "theme4"},
+    {"Ninth Doctor", "nine"},
+    {"Tenth Doctor", "ten"},
+    {"Eleventh Doctor", "eleven"},
+    {"Rose Tyler", "rose"},
+    {"Martha Jones", "martha"},
+    {"Donna Noble", "donna"},
+    {"Amy Pond", "amy"},
+    {"River Song", "river"},
+    {"Clara Oswald", "clara"},
+    {"Abigail's Song", "abigail"},
+    {"This is Gallifrey", "thisisgallifrey"},
+    {"Gallifrey", "gallifrey"},
+    {"Vale Decem", "valedecem"},
+    {"The Majestic Tale", "majestictale"},
+    {"Forgiven", "forgiven"},
+    {"The Wedding of River Song", "weddingofriversong"},
+    {"All the Strange Creatures", "allthestrangecreatures"},
+    {"You're Fired", "yourefired"},
+    {"Whose Enigma", "whoseenigma"},
+    {"The Long Song", "thelongsong"},
+    {"Infinite Potential", "infinitepotential"},
+    {"The New Doctor", "thenewdoctor"},
+    {"My Husband's Home", "myhusbandshome"},
+    {"Doomsday", "doomsday"},
+    {"Dark and Endless Dalek Night", "darkandendlessdaleknight"},
+    {"The Greatest Story Never Told", "greateststorynevertold"},
+}
+
 TARDIS:AddScreen("Music", {id="music", menu=false, order=10}, function(self,ext,int,frame,screen)
 	local label = vgui.Create("DLabel",frame)
 	label:SetTextColor(Color(0,0,0))
@@ -23,44 +56,30 @@ TARDIS:AddScreen("Music", {id="music", menu=false, order=10}, function(self,ext,
 
 	local playbutt=vgui.Create("DButton",frame)
 	playbutt:SetSize( frame:GetWide()*0.2, text_bar:GetTall())
-	playbutt:SetPos(text_bar:GetX() + text_bar:GetWide()*1.02, text_bar:GetY() + text_bar:GetTall()*-0.6)
+	playbutt:SetPos(text_bar:GetX() + text_bar:GetWide()*1.02, text_bar:GetY())
 	playbutt:SetText("Play")
 	playbutt:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 	playbutt.DoClick = function()
 		ext:PlayMusic(text_bar:GetValue())
 	end
 
-	local button11=vgui.Create("DButton",frame)
-	button11:SetSize( frame:GetWide()*0.2, frame:GetTall()*0.15 )
-	button11:SetPos(frame:GetWide()*0.8 - button11:GetWide()*0.5,frame:GetTall()*0.7 - button11:GetTall()*0.5)
-	button11:SetText("11th Doctor's Theme")
-	button11:SetFont(TARDIS:GetScreenFont(screen, "Default"))
-	button11.DoClick = function()
-		text_bar:SetText("http://mattjeanes.com/data/tardis/eleven.mp3")
-	end
+	--Pre-Loaded legacy Music
 
-	local button9=vgui.Create("DButton",frame)
-	button9:SetSize( frame:GetWide()*0.2, frame:GetTall()*0.15 )
-	button9:SetPos(frame:GetWide()*0.2 - button9:GetWide()*0.5,frame:GetTall()*0.7 - button9:GetTall()*0.5)
-	button9:SetText("9th Doctor's Theme")
-	button9:SetFont(TARDIS:GetScreenFont(screen, "Default"))
-	button9.DoClick = function()
-		text_bar:SetText("http://mattjeanes.com/data/tardis/nine.mp3")
+	local list = vgui.Create("DListView",frame)
+	list:SetSize(frame:GetWide()*0.5, frame:GetTall()*0.4)
+	list:SetPos(text_bar:GetX(), frame:GetTall()*0.78 + list:GetTall()*-0.5)
+	list:AddColumn("Pre-Loaded Music")
+	for k,v in pairs(sounds) do
+		list:AddLine(v[1])
 	end
-
-	local button10=vgui.Create("DButton",frame)
-	button10:SetSize( frame:GetWide()*0.2, frame:GetTall()*0.15 )
-	button10:SetPos(frame:GetWide()*0.5 - button10:GetWide()*0.5,frame:GetTall()*0.7 - button10:GetTall()*0.5)
-	button10:SetText("10th Doctor's Theme")
-	button10:SetFont(TARDIS:GetScreenFont(screen, "Default"))
-	button10.DoClick = function()
-		text_bar:SetText("http://mattjeanes.com/data/tardis/ten.mp3")
+	function list:OnRowSelected(rowIndex, row)
+		text_bar:SetText("http://mattjeanes.com/data/tardis/" .. sounds[rowIndex][2] ..".mp3")
 	end
 
 	local stop=vgui.Create("DButton",frame)
 
 	stop:SetSize( frame:GetWide()*0.2, text_bar:GetTall())
-	stop:SetPos(text_bar:GetX() + text_bar:GetWide()*1.02, text_bar:GetY()*1.2 + text_bar:GetTall()*-0.4)
+	stop:SetPos(text_bar:GetX() + text_bar:GetWide()*1.02, text_bar:GetY() + text_bar:GetTall()*1.1)
 	stop:SetText("Stop")
 	stop:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 	stop.DoClick = function()
