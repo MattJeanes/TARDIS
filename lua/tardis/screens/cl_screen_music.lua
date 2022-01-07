@@ -33,7 +33,8 @@ local sounds={
     {"The Greatest Story Never Told", "greateststorynevertold"},
 }
 
-TARDIS:AddScreen("Music", {id="music", menu=false, order=10}, function(self,ext,int,frame,screen)
+TARDIS:AddScreen("Music", {id="music", menu=false, order=10}, popuponly=true},
+	function(self,ext,int,frame,screen)
 	local label = vgui.Create("DLabel",frame)
 	label:SetTextColor(Color(0,0,0))
 	label:SetFont(TARDIS:GetScreenFont(screen, "Med"))
@@ -73,7 +74,7 @@ TARDIS:AddScreen("Music", {id="music", menu=false, order=10}, function(self,ext,
 		list:AddLine(v[1])
 	end
 	function list:OnRowSelected(rowIndex, row)
-		text_bar:SetText("https://mattjeanes.com/data/tardis/" .. sounds[rowIndex][2] ..".mp3")
+		ext:PlayMusic("https://mattjeanes.com/data/tardis/" .. sounds[rowIndex][2] ..".mp3")
 	end
 
 	local stop=vgui.Create("DButton",frame)
