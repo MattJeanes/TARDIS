@@ -33,8 +33,7 @@ local sounds={
     {"The Greatest Story Never Told", "greateststorynevertold"},
 }
 
-TARDIS:AddScreen("Music", {id="music", menu=false, order=10}, popuponly=true},
-	function(self,ext,int,frame,screen)
+TARDIS:AddScreen("Music", {id="music", menu=false, order=10, popuponly=true}, function(self,ext,int,frame,screen)
 	local label = vgui.Create("DLabel",frame)
 	label:SetTextColor(Color(0,0,0))
 	label:SetFont(TARDIS:GetScreenFont(screen, "Med"))
@@ -78,7 +77,6 @@ TARDIS:AddScreen("Music", {id="music", menu=false, order=10}, popuponly=true},
 	end
 
 	local stop=vgui.Create("DButton",frame)
-
 	stop:SetSize( frame:GetWide()*0.2, text_bar:GetTall())
 	stop:SetPos(text_bar:GetX() + text_bar:GetWide()*1.02, text_bar:GetY() + text_bar:GetTall()*1.1)
 	stop:SetText("Stop")
