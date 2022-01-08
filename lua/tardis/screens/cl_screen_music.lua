@@ -33,41 +33,69 @@ local sounds={
     {"The Greatest Story Never Told", "greateststorynevertold"},
 }
 
-TARDIS:AddScreen("Music", {id="music", menu=false, order=10, popuponly=true}, function(self,ext,int,frame,screen)
-	local label = vgui.Create("DLabel",frame)
-	label:SetTextColor(Color(0,0,0))
-	label:SetFont(TARDIS:GetScreenFont(screen, "Med"))
-	label.DoLayout = function(self)
-		label:SizeToContents()
-		label:SetPos((frame:GetWide()*0.5)-(label:GetWide()*0.5),(frame:GetTall()*0.3)-(label:GetTall()*0.5))
-	end
-	label:SetText("Enter song URL (clientside only currently)")
-	label:DoLayout()
+--Custom music
 
-	local text_bar = vgui.Create( "DTextEntry3D2D", frame )
-	text_bar.is3D2D = screen.is3D2D
-	text_bar.sub3D2D = label:GetText()
+local custom_sounds={
+
+}
+
+TARDIS:AddScreen("Music", {id="music", menu=false, order=10, popuponly=true}, function(self,ext,int,frame,screen)
+
+	local text_bar = vgui.Create( "DTextEntry", frame )
+	text_bar:SetPlaceholderText("Enter song URL (Clientside Only)")
 	text_bar:SetFont(TARDIS:GetScreenFont(screen, "Default"))
-	text_bar:SetSize( frame:GetWide()*0.5, frame:GetTall()*0.1 )
-	text_bar:SetPos(frame:GetWide()*0.5 - text_bar:GetWide()*0.5,frame:GetTall()*0.5 - text_bar:GetTall()*0.5)
+	text_bar:SetSize( frame:GetWide()*0.4, frame:GetTall()*0.1 )
+	text_bar:SetPos(frame:GetWide()*0.765 - text_bar:GetWide()*0.5, frame:GetTall()*0.2 - text_bar:GetTall()*0.5)
 	text_bar.OnEnter = function()
 		ext:PlayMusic(text_bar:GetValue())
 	end
 
+	local name_bar = vgui.Create( "DTextEntry", frame )
+	name_bar:SetPlaceholderText("Enter custom song name")
+	name_bar:SetFont(TARDIS:GetScreenFont(screen, "Default"))
+	name_bar:SetSize( frame:GetWide()*0.2, frame:GetTall()*0.1 )
+	name_bar:SetPos(frame:GetWide()*0.87 - text_bar:GetWide()*0.5, frame:GetTall()*0.35 - text_bar:GetTall()*0.5)
+
+	local x = frame:GetWide()*0.55 - text_bar:GetWide()*0.5
+	local y = frame:GetTall()*0.6 - text_bar:GetTall()*0.5
+
+	--Buttons
+
 	local playbutton=vgui.Create("DButton",frame)
 	playbutton:SetSize(frame:GetWide()*0.2, text_bar:GetTall())
-	playbutton:SetPos(text_bar:GetX() + text_bar:GetWide()*1.02, text_bar:GetY())
+	playbutton:SetPos(x + text_bar:GetWide()*1.02, y)
 	playbutton:SetText("Play")
 	playbutton:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 	playbutton.DoClick = function()
 		ext:PlayMusic(text_bar:GetValue())
 	end
 
-	--Pre-loaded legacy music
+	local savemus=vgui.Create("DButton",frame)
+	savemus:SetSize(frame:GetWide()*0.2, text_bar:GetTall())
+	savemus:SetPos(x + text_bar:GetWide()*0.5, y)
+	savemus:SetText("Save")
+	savemus:SetFont(TARDIS:GetScreenFont(screen, "Default"))
+
+	local removemus=vgui.Create("DButton",frame)
+	removemus:SetSize(frame:GetWide()*0.2, text_bar:GetTall())
+	removemus:SetPos(x + text_bar:GetWide()*0.5, y + text_bar:GetTall()*2)
+	removemus:SetText("Remove")
+	removemus:SetFont(TARDIS:GetScreenFont(screen, "Default"))
+
+	local stop=vgui.Create("DButton",frame)
+	stop:SetSize( frame:GetWide()*0.2, text_bar:GetTall())
+	stop:SetPos(x + text_bar:GetWide()*1.02, y + text_bar:GetTall()*2)
+	stop:SetText("Stop")
+	stop:SetFont(TARDIS:GetScreenFont(screen, "Default"))
+	stop.DoClick = function()
+		ext:StopMusic()
+	end
+
+	--Pre-loaded legacy music select
 
 	local list = vgui.Create("DListView",frame)
-	list:SetSize(frame:GetWide()*0.5, frame:GetTall()*0.4)
-	list:SetPos(text_bar:GetX(), frame:GetTall()*0.78 + list:GetTall()*-0.5)
+	list:SetSize(frame:GetWide()*0.23, frame:GetTall()*0.9)
+	list:SetPos(frame:GetWide()*-0.08 + list:GetWide()*0.5, frame:GetTall()*0.5 + list:GetTall()*-0.5)
 	list:AddColumn("Pre-loaded music")
 	for k,v in pairs(sounds) do
 		list:AddLine(v[1])
@@ -76,14 +104,12 @@ TARDIS:AddScreen("Music", {id="music", menu=false, order=10, popuponly=true}, fu
 		ext:PlayMusic("https://mattjeanes.com/data/tardis/" .. sounds[rowIndex][2] ..".mp3")
 	end
 
-	local stop=vgui.Create("DButton",frame)
-	stop:SetSize( frame:GetWide()*0.2, text_bar:GetTall())
-	stop:SetPos(text_bar:GetX() + text_bar:GetWide()*1.02, text_bar:GetY() + text_bar:GetTall()*1.1)
-	stop:SetText("Stop")
-	stop:SetFont(TARDIS:GetScreenFont(screen, "Default"))
-	stop.DoClick = function()
-		ext:StopMusic()
-	end
+	--Custom music select
+
+	local list = vgui.Create("DListView",frame)
+	list:SetSize(frame:GetWide()*0.23, frame:GetTall()*0.9)
+	list:SetPos(frame:GetWide()*0.18 + list:GetWide()*0.5, frame:GetTall()*0.5 + list:GetTall()*-0.5)
+	list:AddColumn("Custom Music")
 
 
 end)
