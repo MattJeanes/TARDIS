@@ -1,41 +1,64 @@
 -- Music
 
-local sounds={
-    {"Main Theme (2005)", "theme1"},
-    {"Main Theme (2009)", "theme2"},
-    {"Main Theme (2010)", "theme3"},
-    {"Main Theme (2013)", "theme4"},
-    {"Ninth Doctor", "nine"},
-    {"Tenth Doctor", "ten"},
-    {"Eleventh Doctor", "eleven"},
-    {"Rose Tyler", "rose"},
-    {"Martha Jones", "martha"},
-    {"Donna Noble", "donna"},
-    {"Amy Pond", "amy"},
-    {"River Song", "river"},
-    {"Clara Oswald", "clara"},
-    {"Abigail's Song", "abigail"},
-    {"This is Gallifrey", "thisisgallifrey"},
-    {"Gallifrey", "gallifrey"},
-    {"Vale Decem", "valedecem"},
-    {"The Majestic Tale", "majestictale"},
-    {"Forgiven", "forgiven"},
-    {"The Wedding of River Song", "weddingofriversong"},
-    {"All the Strange Creatures", "allthestrangecreatures"},
-    {"You're Fired", "yourefired"},
-    {"Whose Enigma", "whoseenigma"},
-    {"The Long Song", "thelongsong"},
-    {"Infinite Potential", "infinitepotential"},
-    {"The New Doctor", "thenewdoctor"},
-    {"My Husband's Home", "myhusbandshome"},
-    {"Doomsday", "doomsday"},
-    {"Dark and Endless Dalek Night", "darkandendlessdaleknight"},
-    {"The Greatest Story Never Told", "greateststorynevertold"},
+local default_music={
+	{"Main Theme (2005)", "theme1"},
+	{"Main Theme (2009)", "theme2"},
+	{"Main Theme (2010)", "theme3"},
+	{"Main Theme (2013)", "theme4"},
+	{"Ninth Doctor", "nine"},
+	{"Tenth Doctor", "ten"},
+	{"Eleventh Doctor", "eleven"},
+	{"Rose Tyler", "rose"},
+	{"Martha Jones", "martha"},
+	{"Donna Noble", "donna"},
+	{"Amy Pond", "amy"},
+	{"River Song", "river"},
+	{"Clara Oswald", "clara"},
+	{"Abigail's Song", "abigail"},
+	{"This is Gallifrey", "thisisgallifrey"},
+	{"Gallifrey", "gallifrey"},
+	{"Vale Decem", "valedecem"},
+	{"The Majestic Tale", "majestictale"},
+	{"Forgiven", "forgiven"},
+	{"The Wedding of River Song", "weddingofriversong"},
+	{"All the Strange Creatures", "allthestrangecreatures"},
+	{"You're Fired", "yourefired"},
+	{"Whose Enigma", "whoseenigma"},
+	{"The Long Song", "thelongsong"},
+	{"Infinite Potential", "infinitepotential"},
+	{"The New Doctor", "thenewdoctor"},
+	{"My Husband's Home", "myhusbandshome"},
+	{"Doomsday", "doomsday"},
+	{"Dark and Endless Dalek Night", "darkandendlessdaleknight"},
+	{"The Greatest Story Never Told", "greateststorynevertold"},
 }
 
 --Custom music
 
-local custom_music = custom_music or {}
+local custom_music
+
+local filename = "tardis2_custom_music.txt"
+if file.Exists(filename,"DATA") then
+	custom_music = TARDIS.von.deserialize(file.Read(filename,"DATA"))
+else
+	custom_music = {}
+end
+
+function TARDIS:SaveCustomMusic()
+	file.Write(filename, TARDIS.von.serialize(custom_music))
+end
+
+function TARDIS:AddCustomMusic(name, url)
+	local next = table.Count(custom_music) + 1
+	custom_music[next] = {name, url}
+	TARDIS:SaveCustomMusic()
+end
+
+function TARDIS:RemoveCustomMusic(index)
+	table.remove(custom_music, index)
+	TARDIS:SaveCustomMusic()
+end
+
 
 	--Music GUI
 
@@ -46,7 +69,7 @@ TARDIS:AddScreen("Music", {id="music", menu=false, order=10, popuponly=true}, fu
 
 	local bT = frT * 0.1
 
-	local listW = frW * 0.23
+	local listW = frW * 0.3
 	local listT = frT - 2 * gap
 
 	local tbW = frW - 4 * gap - 2 * listW
@@ -90,7 +113,8 @@ TARDIS:AddScreen("Music", {id="music", menu=false, order=10, popuponly=true}, fu
 	name_bar:SetSize(tbW, tbT)
 	name_bar:SetPos(midX, 2 * gap + tbT)
 	function name_bar:OnEnter()
-		frame.savetolist()
+		TARDIS:AddCustomMusic(name_bar:GetText(), text_bar:GetText())
+		frame.updatelist()
 	end
 
 	function name_bar:OnGetFocus()
@@ -139,13 +163,13 @@ TARDIS:AddScreen("Music", {id="music", menu=false, order=10, popuponly=true}, fu
 	list_premade:SetPos(gap, gap)
 	list_premade:AddColumn("Pre-loaded music")
 	list_premade:SetMultiSelect(false)
-	for k,v in pairs(sounds) do
+	for k,v in pairs(default_music) do
 		list_premade:AddLine(v[1])
 	end
 
 	function list_premade:OnRowSelected(rowIndex, row)
 		list_custom:ClearSelection()
-		url = ("https://mattjeanes.com/data/tardis/" .. sounds[rowIndex][2] ..".mp3")
+		url = ("https://mattjeanes.com/data/tardis/" .. default_music[rowIndex][2] ..".mp3")
 		text_bar:SetTextColor(Color(139,139,139))
 		name_bar:SetTextColor(Color(139,139,139))
 	end
@@ -172,22 +196,27 @@ TARDIS:AddScreen("Music", {id="music", menu=false, order=10, popuponly=true}, fu
 	savemus:SetText("Save")
 	savemus:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 	function savemus:DoClick()
-		frame.savetolist()
+		TARDIS:AddCustomMusic(name_bar:GetText(), text_bar:GetText())
+		frame.updatelist()
 	end
 
 	function removemus:DoClick()
 		local line = list_custom:GetSelectedLine()
 		if not line then
-			TARDIS:ErrorMessage(LocalPlayer(), "There is nothing to remove.")
+			TARDIS:ErrorMessage(LocalPlayer(), "Nothing has been chosen for removal.")
 			return
 		end
-		table.remove(custom_music, line)
-		frame.updatelist()
-	end
 
-	function frame.savetolist()
-		custom_music[table.Count(custom_music) + 1] = {name_bar:GetText(), text_bar:GetText()}
-		frame.updatelist()
+		Derma_Query("Are you sure you want to remove " .. custom_music[line][1] .. " from the music list? This cannot be undone.",
+					"TARDIS Interface",
+					"Yes",
+					function()
+						TARDIS:RemoveCustomMusic(line)
+						frame.updatelist()
+					end,
+					"No",
+					function()
+					end):SetSkin("TARDIS")
 	end
 
 	function frame.updatelist()

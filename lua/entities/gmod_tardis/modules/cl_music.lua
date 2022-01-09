@@ -25,6 +25,7 @@ function ENT:StopMusic()
 	if IsValid(self.music) then
 		self.music:Stop()
 		self.music=nil
+		TARDIS:Message(LocalPlayer(), "Music stopped.")
 	end
 end
 
@@ -65,6 +66,7 @@ end
 
 function ENT:PlayMusic(url,resolved)
 	if not resolved then
+		TARDIS:Message(LocalPlayer(), "Loading music...")
 		url=self:ResolveMusicURL(url)
 	end
 	if url and TARDIS:GetSetting("music-enabled") and TARDIS:GetSetting("sound") then
