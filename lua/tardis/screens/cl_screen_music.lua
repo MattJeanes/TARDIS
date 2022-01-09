@@ -35,11 +35,12 @@ local sounds={
 
 --Custom music
 
-local custom_sounds={
+local custom_music = custom_music or {}
 
-}
+	--Music GUI
 
 TARDIS:AddScreen("Music", {id="music", menu=false, order=10, popuponly=true}, function(self,ext,int,frame,screen)
+	local url
 
 	local text_bar = vgui.Create( "DTextEntry", frame )
 	text_bar:SetPlaceholderText("Enter song URL (Clientside Only)")
@@ -58,13 +59,6 @@ TARDIS:AddScreen("Music", {id="music", menu=false, order=10, popuponly=true}, fu
 
 	local x = frame:GetWide()*0.55 - text_bar:GetWide()*0.5
 	local y = frame:GetTall()*0.6 - text_bar:GetTall()*0.5
-
-	local url_bar = vgui.Create( "DTextEntry", frame )
-	url_bar:SetPlaceholderText("You should not see this")
-	url_bar:SetVisible(false)
-	url_bar:SetFont(TARDIS:GetScreenFont(screen, "Default"))
-	url_bar:SetSize( frame:GetWide()*0.4, frame:GetTall()*0.1 )
-	url_bar:SetPos(frame:GetWide()*0.765 - url_bar:GetWide()*0.5, frame:GetTall()*0.4 - url_bar:GetTall()*0.5)
 
 	--Buttons
 
@@ -85,16 +79,7 @@ TARDIS:AddScreen("Music", {id="music", menu=false, order=10, popuponly=true}, fu
 	playselect:SetText("Play")
 	playselect:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 	playselect.DoClick = function()
-		ext:PlayMusic(url_bar:GetValue())
-	end
-
-	local savemus=vgui.Create("DButton",frame)
-	savemus:SetSize(frame:GetWide()*0.2, text_bar:GetTall())
-	savemus:SetPos(x + text_bar:GetWide()*0.5, y)
-	savemus:SetText("Save")
-	savemus:SetFont(TARDIS:GetScreenFont(screen, "Default"))
-	savemus.DoClick = function()
-		print("Save")
+		ext:PlayMusic(url)
 	end
 
 	local removemus=vgui.Create("DButton",frame)
@@ -122,28 +107,38 @@ TARDIS:AddScreen("Music", {id="music", menu=false, order=10, popuponly=true}, fu
 		list:AddLine(v[1])
 	end
 	function list:OnRowSelected(rowIndex, row)
-		url_bar:SetText("https://mattjeanes.com/data/tardis/" .. sounds[rowIndex][2] ..".mp3")
+		url = ("https://mattjeanes.com/data/tardis/" .. sounds[rowIndex][2] ..".mp3")
 	end
 
 	--Custom music select
 
-	local list = vgui.Create("DListView",frame)
-	list:SetSize(frame:GetWide()*0.23, frame:GetTall()*0.85)
-	list:SetPos(frame:GetWide()*0.18 + list:GetWide()*0.5, frame:GetTall()*0.475 + list:GetTall()*-0.5)
-	list:AddColumn("Custom Music")
+	local list2 = vgui.Create("DListView",frame)
+	list2:SetSize(frame:GetWide()*0.23, frame:GetTall()*0.85)
+	list2:SetPos(frame:GetWide()*0.18 + list2:GetWide()*0.5, frame:GetTall()*0.475 + list2:GetTall()*-0.5)
+	list2:AddColumn("Custom Music")
 
-	local map = game.GetMap()
-	local function updatelist(custom_sounds)
-		list:Clear()
+	local function updatelist()
+		list2:Clear()
 		if text_bar ~= nil then
-			for k,v in pairs(custom_sounds) do
-				list:AddLine(v.name)
+			for k,v in pairs(custom_music) do
+				list2:AddLine(v[1])
 			end
 		end
 	end
-	updatelist(custom_sounds)
-	function list:OnRowSelected(i,row)
-		text_bar:SetText(custom_sounds[rowIndex][2])
+	updatelist()
+	function list2:OnRowSelected(rowIndex,row)
+		text_bar:SetText(custom_music[rowIndex][2])
+		name_bar:SetText(custom_music[rowIndex][1])
+	end
+
+	local savemus=vgui.Create("DButton",frame)
+	savemus:SetSize(frame:GetWide()*0.2, text_bar:GetTall())
+	savemus:SetPos(x + text_bar:GetWide()*0.5, y)
+	savemus:SetText("Save")
+	savemus:SetFont(TARDIS:GetScreenFont(screen, "Default"))
+	function savemus:DoClick()
+		custom_music[table.Count(custom_music) + 1] = {name_bar:GetText(), text_bar:GetText()}
+		updatelist()
 	end
 
 end)
