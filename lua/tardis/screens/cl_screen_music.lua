@@ -222,7 +222,10 @@ TARDIS:AddScreen("Music", {id="music", menu=false, order=10, popuponly=true}, fu
 --------------------------------------------------------------------------------
 
 	function url_bar:OnEnter()
+		if play_stop_button.disabled_time then return end
 		ext:PlayMusic(url_bar:GetValue())
+		play_stop_button:SetEnabled(false)
+		play_stop_button.disabled_time = CurTime()
 	end
 
 	function play_stop_button:DoClick()
@@ -234,6 +237,14 @@ TARDIS:AddScreen("Music", {id="music", menu=false, order=10, popuponly=true}, fu
 			else
 				ext:PlayMusic(url_bar:GetValue())
 			end
+			self:SetEnabled(false)
+			self.disabled_time = CurTime()
+		end
+	end
+	function play_stop_button:Think()
+		if self.disabled_time and CurTime() - self.disabled_time > 3 then
+			self.disabled_time = nil
+			self:SetEnabled(true)
 		end
 	end
 
