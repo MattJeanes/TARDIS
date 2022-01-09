@@ -40,100 +40,139 @@ local custom_music = custom_music or {}
 	--Music GUI
 
 TARDIS:AddScreen("Music", {id="music", menu=false, order=10, popuponly=true}, function(self,ext,int,frame,screen)
+	local frW = frame:GetWide()
+	local frT = frame:GetTall()
+	local gap = math.min(frT, frW) * 0.05 * 1.2
+
+	local bT = frT * 0.1
+
+	local listW = frW * 0.23
+	local listT = frT - 2 * gap
+
+	local tbW = frW - 4 * gap - 2 * listW
+	local tbT = frT * 0.1
+	local bW = 0.5 * (tbW - gap)
+
+	local midX = 3 * gap + 2 * listW
+
 	local url
+	local name_bar
+	local list_premade
+	local list_custom
 
 	local text_bar = vgui.Create( "DTextEntry", frame )
 	text_bar:SetPlaceholderText("Enter song URL (Clientside Only)")
 	text_bar:SetFont(TARDIS:GetScreenFont(screen, "Default"))
-	text_bar:SetSize( frame:GetWide()*0.4, frame:GetTall()*0.1 )
-	text_bar:SetPos(frame:GetWide()*0.765 - text_bar:GetWide()*0.5, frame:GetTall()*0.2 - text_bar:GetTall()*0.5)
-	text_bar.OnEnter = function()
+	text_bar:SetSize(tbW, tbT)
+	text_bar:SetPos(midX, gap)
+	function text_bar:OnEnter()
 		ext:PlayMusic(text_bar:GetValue())
 	end
 
-	local name_bar = vgui.Create( "DTextEntry", frame )
+	function text_bar:OnGetFocus()
+		text_bar:SetTextColor(Color(0,0,0))
+		name_bar:SetTextColor(Color(0,0,0))
+		list_premade:ClearSelection()
+		list_custom:ClearSelection()
+	end
+
+
+	function text_bar:OnValueChange()
+		text_bar:SetTextColor(Color(0,0,0))
+		name_bar:SetTextColor(Color(0,0,0))
+		list_premade:ClearSelection()
+		list_custom:ClearSelection()
+	end
+
+	name_bar = vgui.Create( "DTextEntry", frame )
 	name_bar:SetPlaceholderText("Enter custom song name")
 	name_bar:SetFont(TARDIS:GetScreenFont(screen, "Default"))
-	name_bar:SetSize( frame:GetWide()*0.2, frame:GetTall()*0.1 )
-	name_bar:SetPos(frame:GetWide()*0.87 - text_bar:GetWide()*0.5, frame:GetTall()*0.35 - text_bar:GetTall()*0.5)
+	name_bar:SetSize(tbW, tbT)
+	name_bar:SetPos(midX, 2 * gap + tbT)
 
-	local x = frame:GetWide()*0.55 - text_bar:GetWide()*0.5
-	local y = frame:GetTall()*0.6 - text_bar:GetTall()*0.5
+	function name_bar:OnGetFocus()
+		text_bar:SetTextColor(Color(0,0,0))
+		name_bar:SetTextColor(Color(0,0,0))
+		list_premade:ClearSelection()
+		list_custom:ClearSelection()
+	end
+
+	function name_bar:OnValueChange()
+		text_bar:SetTextColor(Color(0,0,0))
+		name_bar:SetTextColor(Color(0,0,0))
+		list_premade:ClearSelection()
+		list_custom:ClearSelection()
+	end
 
 	--Buttons
 
 	local playbutton=vgui.Create("DButton",frame)
-	playbutton:SetSize(frame:GetWide()*0.2, text_bar:GetTall())
-	playbutton:SetPos(x + text_bar:GetWide()*1.02, y)
-	playbutton:SetText("Play")
+	playbutton:SetSize(tbW, bT * 1.3)
+	playbutton:SetPos(midX, gap + listT - bT * 1.3)
+	playbutton:SetText("Play / Stop")
 	playbutton:SetFont(TARDIS:GetScreenFont(screen, "Default"))
-	playbutton.DoClick = function()
-		ext:PlayMusic(text_bar:GetValue())
-	end
-
-	//playselect is the play button for the pre-loaded music
-
-	local playselect=vgui.Create("DButton",frame)
-	playselect:SetSize(frame:GetWide()*0.2, text_bar:GetTall())
-	playselect:SetPos(frame:GetWide()*-0.05 + playselect:GetWide()*0.5, frame:GetTall()*0.85 + playselect:GetTall()*-0.5)
-	playselect:SetText("Play")
-	playselect:SetFont(TARDIS:GetScreenFont(screen, "Default"))
-	playselect.DoClick = function()
-		ext:PlayMusic(url)
+	function playbutton:DoClick()
+		if IsValid(ext.music) and ext.music:GetState()==GMOD_CHANNEL_PLAYING then
+			ext:StopMusic()
+		else
+			if list_premade:GetSelectedLine() then
+				ext:PlayMusic(url)
+			else
+				ext:PlayMusic(text_bar:GetValue())
+			end
+		end
 	end
 
 	local removemus=vgui.Create("DButton",frame)
-	removemus:SetSize(frame:GetWide()*0.2, text_bar:GetTall())
-	removemus:SetPos(x + text_bar:GetWide()*0.5, y + text_bar:GetTall()*2)
+	removemus:SetSize(bW, bT)
+	removemus:SetPos(midX + gap + bW, 3 * gap + 2 * tbT)
 	removemus:SetText("Remove")
 	removemus:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 
-	local stop=vgui.Create("DButton",frame)
-	stop:SetSize( frame:GetWide()*0.2, text_bar:GetTall())
-	stop:SetPos(x + text_bar:GetWide()*1.02, y + text_bar:GetTall()*2)
-	stop:SetText("Stop")
-	stop:SetFont(TARDIS:GetScreenFont(screen, "Default"))
-	stop.DoClick = function()
-		ext:StopMusic()
-	end
-
 	--Pre-loaded legacy music select
 
-	local list = vgui.Create("DListView",frame)
-	list:SetSize(frame:GetWide()*0.23, frame:GetTall()*0.7)
-	list:SetPos(frame:GetWide()*-0.08 + list:GetWide()*0.5, frame:GetTall()*0.4 + list:GetTall()*-0.5)
-	list:AddColumn("Pre-loaded music")
+	list_premade = vgui.Create("DListView",frame)
+	list_premade:SetSize(listW, listT)
+	list_premade:SetPos(gap, gap)
+	list_premade:AddColumn("Pre-loaded music")
 	for k,v in pairs(sounds) do
-		list:AddLine(v[1])
+		list_premade:AddLine(v[1])
 	end
-	function list:OnRowSelected(rowIndex, row)
+
+	function list_premade:OnRowSelected(rowIndex, row)
+		list_custom:ClearSelection()
 		url = ("https://mattjeanes.com/data/tardis/" .. sounds[rowIndex][2] ..".mp3")
+		text_bar:SetTextColor(Color(139,139,139))
+		name_bar:SetTextColor(Color(139,139,139))
 	end
 
 	--Custom music select
 
-	local list2 = vgui.Create("DListView",frame)
-	list2:SetSize(frame:GetWide()*0.23, frame:GetTall()*0.85)
-	list2:SetPos(frame:GetWide()*0.18 + list2:GetWide()*0.5, frame:GetTall()*0.475 + list2:GetTall()*-0.5)
-	list2:AddColumn("Custom Music")
+	list_custom = vgui.Create("DListView",frame)
+	list_custom:SetSize(listW, listT)
+	list_custom:SetPos(2 * gap + listW, gap)
+	list_custom:AddColumn("Custom Music")
 
 	local function updatelist()
-		list2:Clear()
+		list_custom:Clear()
 		if text_bar ~= nil then
 			for k,v in pairs(custom_music) do
-				list2:AddLine(v[1])
+				list_custom:AddLine(v[1])
 			end
 		end
 	end
 	updatelist()
-	function list2:OnRowSelected(rowIndex,row)
+	function list_custom:OnRowSelected(rowIndex,row)
+		list_premade:ClearSelection()
 		text_bar:SetText(custom_music[rowIndex][2])
 		name_bar:SetText(custom_music[rowIndex][1])
+		text_bar:SetTextColor(Color(0,0,0))
+		name_bar:SetTextColor(Color(0,0,0))
 	end
 
 	local savemus=vgui.Create("DButton",frame)
-	savemus:SetSize(frame:GetWide()*0.2, text_bar:GetTall())
-	savemus:SetPos(x + text_bar:GetWide()*0.5, y)
+	savemus:SetSize(bW, bT)
+	savemus:SetPos(midX, 3 * gap + 2 * tbT)
 	savemus:SetText("Save")
 	savemus:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 	function savemus:DoClick()
