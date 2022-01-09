@@ -89,6 +89,9 @@ TARDIS:AddScreen("Music", {id="music", menu=false, order=10, popuponly=true}, fu
 	name_bar:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 	name_bar:SetSize(tbW, tbT)
 	name_bar:SetPos(midX, 2 * gap + tbT)
+	function name_bar:OnEnter()
+		frame.savetolist()
+	end
 
 	function name_bar:OnGetFocus()
 		text_bar:SetTextColor(Color(0,0,0))
@@ -135,6 +138,7 @@ TARDIS:AddScreen("Music", {id="music", menu=false, order=10, popuponly=true}, fu
 	list_premade:SetSize(listW, listT)
 	list_premade:SetPos(gap, gap)
 	list_premade:AddColumn("Pre-loaded music")
+	list_premade:SetMultiSelect(false)
 	for k,v in pairs(sounds) do
 		list_premade:AddLine(v[1])
 	end
@@ -152,16 +156,8 @@ TARDIS:AddScreen("Music", {id="music", menu=false, order=10, popuponly=true}, fu
 	list_custom:SetSize(listW, listT)
 	list_custom:SetPos(2 * gap + listW, gap)
 	list_custom:AddColumn("Custom Music")
+	list_custom:SetMultiSelect(false)
 
-	local function updatelist()
-		list_custom:Clear()
-		if text_bar ~= nil then
-			for k,v in pairs(custom_music) do
-				list_custom:AddLine(v[1])
-			end
-		end
-	end
-	updatelist()
 	function list_custom:OnRowSelected(rowIndex,row)
 		list_premade:ClearSelection()
 		text_bar:SetText(custom_music[rowIndex][2])
@@ -176,8 +172,32 @@ TARDIS:AddScreen("Music", {id="music", menu=false, order=10, popuponly=true}, fu
 	savemus:SetText("Save")
 	savemus:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 	function savemus:DoClick()
-		custom_music[table.Count(custom_music) + 1] = {name_bar:GetText(), text_bar:GetText()}
-		updatelist()
+		frame.savetolist()
 	end
+
+	function removemus:DoClick()
+		local line = list_custom:GetSelectedLine()
+		if not line then
+			TARDIS:ErrorMessage(LocalPlayer(), "There is nothing to remove.")
+			return
+		end
+		table.remove(custom_music, line)
+		frame.updatelist()
+	end
+
+	function frame.savetolist()
+		custom_music[table.Count(custom_music) + 1] = {name_bar:GetText(), text_bar:GetText()}
+		frame.updatelist()
+	end
+
+	function frame.updatelist()
+		list_custom:Clear()
+		if text_bar ~= nil then
+			for k,v in pairs(custom_music) do
+				list_custom:AddLine(v[1])
+			end
+		end
+	end
+	frame.updatelist()
 
 end)
