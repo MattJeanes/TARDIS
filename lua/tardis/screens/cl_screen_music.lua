@@ -215,7 +215,7 @@ TARDIS:AddScreen("Music", {id="music", menu=false, order=10, popuponly=true}, fu
 	function remove_custom_button:DoClick()
 		local line = list_custom:GetSelectedLine()
 		if not line then
-			TARDIS:ErrorMessage(LocalPlayer(), "Nothing has been chosen for removal.")
+			TARDIS:ErrorMessage(LocalPlayer(), "Nothing has been chosen for removal")
 			return
 		end
 
