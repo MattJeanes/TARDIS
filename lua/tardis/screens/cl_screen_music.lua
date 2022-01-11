@@ -31,7 +31,7 @@ local default_music={
 	{"Together Or Not At All", "togetherornotatall"},
 	{"All the Strange Creatures", "allthestrangecreatures"},
 	{"You're Fired", "yourefired"},
-	{"Shepard's Boy", "shepherdsboy"},
+	{"Shepherd's Boy", "shepherdsboy"},
 	{"My beautiful Ghost Monument", "mybeautifulghostmonument"},
 	{"Whose Enigma", "whoseenigma"},
 	{"The Long Song", "thelongsong"},
