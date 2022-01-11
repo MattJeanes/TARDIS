@@ -22,12 +22,12 @@ TARDIS:AddSetting({
 })
 
 function ENT:StopMusic()
-    if IsValid(self.music) then
-        if self.music:GetState() == GMOD_CHANNEL_PLAYING then
+	if IsValid(self.music) then
+		if self.music:GetState() == GMOD_CHANNEL_PLAYING then
 			TARDIS:Message(LocalPlayer(), "Music stopped")
 		end
 		self.music:Stop()
-    end
+	end
 end
 
 local patterns={
