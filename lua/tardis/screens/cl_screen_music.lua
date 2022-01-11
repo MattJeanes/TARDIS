@@ -32,7 +32,7 @@ local default_music={
 	{"All the Strange Creatures", "allthestrangecreatures"},
 	{"You're Fired", "yourefired"},
 	{"Shepherd's Boy", "shepherdsboy"},
-	{"My beautiful Ghost Monument", "mybeautifulghostmonument"},
+	{"My Beautiful Ghost Monument", "mybeautifulghostmonument"},
 	{"Whose Enigma", "whoseenigma"},
 	{"The Long Song", "thelongsong"},
 	{"Infinite Potential", "infinitepotential"},
