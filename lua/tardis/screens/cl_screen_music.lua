@@ -28,7 +28,7 @@ local default_music={
 	{"Forgiven", "forgiven"},
 	{"I need to know", "ineedtoknow"},
 	{"The Wedding of River Song", "weddingofriversong"},
-	{"Together or not at all", "togetherornotatall"},
+	{"Together Or Not At All", "togetherornotatall"},
 	{"All the Strange Creatures", "allthestrangecreatures"},
 	{"You're Fired", "yourefired"},
 	{"Shepard's Boy", "shepherdsboy"},
