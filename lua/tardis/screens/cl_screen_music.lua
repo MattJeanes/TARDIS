@@ -26,7 +26,7 @@ local default_music={
 	{"Vale Decem", "valedecem"},
 	{"The Majestic Tale", "majestictale"},
 	{"Forgiven", "forgiven"},
-	{"I need to know", "ineedtoknow"},
+	{"I Need To Know", "ineedtoknow"},
 	{"The Wedding of River Song", "weddingofriversong"},
 	{"Together Or Not At All", "togetherornotatall"},
 	{"All the Strange Creatures", "allthestrangecreatures"},
