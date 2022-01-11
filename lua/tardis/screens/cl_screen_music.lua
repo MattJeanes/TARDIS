@@ -22,7 +22,7 @@ local default_music={
 	{"Not a war", "notawar"},
 	{"This is Gallifrey", "thisisgallifrey"},
 	{"Gallifrey", "gallifrey"},
-	{"Life among the distant stars", "lifeamongthedistantstars"},
+	{"Life Among the Distant Stars", "lifeamongthedistantstars"},
 	{"Vale Decem", "valedecem"},
 	{"The Majestic Tale", "majestictale"},
 	{"Forgiven", "forgiven"},
