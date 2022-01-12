@@ -63,8 +63,7 @@ function TARDIS:SaveCustomMusic()
 end
 
 function TARDIS:AddCustomMusic(name, url)
-	local next = table.Count(custom_music) + 1
-	custom_music[next] = {name, url}
+	local next = table.insert(custom_music,{name, url})
 	TARDIS:SaveCustomMusic()
 end
 
@@ -208,6 +207,7 @@ TARDIS:AddScreen("Music", {id="music", menu=false, order=10, popuponly=true}, fu
 	end
 
 	function save_custom_button:DoClick()
+		print("Music Saved (" .. name_bar:GetText() .. ")")
 		TARDIS:AddCustomMusic(name_bar:GetText(), url_bar:GetText())
 		list_custom:UpdateAll()
 	end
