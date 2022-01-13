@@ -17,3 +17,17 @@ function ENT:SetCollide(collide, notrace)
 		self:SetCollisionGroup(COLLISION_GROUP_WORLD)
 	end
 end
+
+function ENT:SetVisible(visible)
+	if visible then
+		if self.pre_invis_color then
+			self:SetColor(self.pre_invis_color)
+			self.pre_invis_color = nil
+		else
+			self:SetColor(Color(255,255,255,255))
+		end
+	else
+		self.pre_invis_color = self:GetColor()
+		self:SetColor(Color(0,0,0,0))
+	end
+end
