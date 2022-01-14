@@ -3,6 +3,16 @@
 TARDIS.Metadata={}
 TARDIS.MetadataRaw={}
 
+TARDIS:AddSetting({
+	id="randomize_skins",
+	name="Randomize TARDIS skins at spawn",
+	value=true,
+	type="bool",
+	networked=true,
+	option=true,
+	desc="Whether or not TARDIS skin will be randomized when it's spawned"
+})
+
 local function merge(base,t)
 	local copy=table.Copy(TARDIS.Metadata[base])
 	table.Merge(copy,t)
@@ -180,10 +190,23 @@ if SERVER then
 		ply:AddCleanup("sents", entity)
 		entity:SetVar("Player", ply)
 
-		local total_skins = entity:SkinCount()
-		if total_skins then
-			local chosen_skin = math.random(total_skins)
-			entity:SetSkin(chosen_skin)
+		if TARDIS:GetSetting("randomize_skins", true, entity:GetCreator()) then
+			local total_skins = entity:SkinCount()
+			if total_skins then
+				local chosen_skin = math.random(total_skins)
+
+				local excluded = entity.metadata.Exterior.ExcludedSkins
+				if excluded then
+					local attempts = 1
+					while table.HasValue(excluded, chosen_skin) and attempts < 20 do
+						chosen_skin = math.random(total_skins)
+						attempts = attempts + 1
+					end
+				end
+				if not excluded or not table.HasValue(excluded, chosen_skin) then
+					entity:SetSkin(chosen_skin)
+				end
+			end
 		end
 
 		return entity
