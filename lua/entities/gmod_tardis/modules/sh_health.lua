@@ -151,6 +151,19 @@ if SERVER then
 		self:CallHook("RepairStarted")
 	end
 
+	local migrated_data_names = {
+		"floatfirst",
+		"hads",
+		"spindir",
+		"spindir_prev",
+		"spindir_before_door",
+		"handbrake",
+		"physlock",
+		"demat-fast",
+		"fastreturn-pos",
+		"fastreturn-ang"
+	}
+
 	function ENT:FinishRepair()
 		if self:CallHook("ShouldRedecorate") then
 			local pos = self:GetPos() + Vector(0,0,0.02)
@@ -164,27 +177,55 @@ if SERVER then
 				parent = self,
 			})
 			ent:SetBodygroup(1,0)
+
+			-- let them know each other
+			self:SetData("redecorate_next", ent)
+
+			-- make it dematerialised
 			ent:SetData("demat",true)
 			ent:SetData("vortex", 1)
 			ent:SetData("vortexalpha", 1)
 			ent:SetData("teleport",true)
 			ent:SetData("alpha", 0)
+			ent:DrawShadow(false)
+			for k,v in pairs(ent.parts) do
+				v:DrawShadow(false)
+			end
+
+			ent:StopDemat()
+			ent:SetCollisionGroup(COLLISION_GROUP_IN_VEHICLE)
+
+			-- position
 			ent:SetPos(pos)
 			ent:SetAngles(ang)
 			ent:SetData("demat-pos",pos,true)
 			ent:SetData("demat-ang",ang,true)
 			ent:SetData("fastreturn-pos",pos)
 			ent:SetData("fastreturn-ang",ang)
-			ent:StopDemat()
-			ent:SetCollisionGroup(COLLISION_GROUP_IN_VEHICLE)
-			ent:DrawShadow(false)
-			for k,v in pairs(ent.parts) do
-				v:DrawShadow(false)
-			end
-			ent:GetPhysicsObject():Sleep()
 			ent:SetDestination(pos, ang)
-			ent:SetFastRemat(true)
 
+			ent:GetPhysicsObject():Sleep()
+
+			-- make it alive again
+			self:SetData("repairing", false, true)
+			self:ChangeHealth(TARDIS:GetSetting("health-max"))
+			self:SetPower(true)
+
+
+			-- migrate data
+			local saved_data = {}
+
+			for k,v in ipairs(migrated_data_names) do
+				saved_data[v] = self:GetData(v)
+			end
+
+			ent:SetData("cloak", self:GetData("cloak"), true)
+
+			ent:SetData("parent-saved-data", saved_data, true)
+			ent:SetData("parent-security", self.interior:GetData("security", false), true)
+			ent:SetData("prevortex-flight", self:GetData("flight", false), true)
+
+			-- sonic (if exists)
 			local owner = self:GetCreator()
 			if owner and owner.linked_tardis == self then
 				owner.linked_tardis = ent
@@ -193,17 +234,14 @@ if SERVER then
 				net.Send(owner)
 			end
 
-			self:SetData("redecorate_next", ent)
-			self:SetFastRemat(true)
-			self:SetData("repairing", false, true)
-			self:ChangeHealth(TARDIS:GetSetting("health-max"))
-			self:SetPower(true)
-			self:DrawShadow(false)
 
+			-- fly away
 			self:SetData("redecorate-demattime", CurTime())
-			self:Demat(pos, ang, function()
-
-			end, true)
+			self:SetFastRemat(true)
+			self:SetPhyslock(true) -- should not move
+			ent:SetPhyslock(true)
+			constraint.RemoveAll(self) -- dropped everything attached
+			self:Demat(pos, ang, nil, true)
 
 			return
 		end
@@ -236,6 +274,7 @@ if SERVER then
 				self:SetCollisionGroup(COLLISION_GROUP_IN_VEHICLE)
 				-- you can't interact with both at once
 
+				ent:SetFastRemat(true)
 				ent:Mat()
 			end
 		end
@@ -244,6 +283,21 @@ if SERVER then
 	ENT:AddHook("StopDemat", "redecorate-dissapear", function(self)
 		if self:GetData("redecorate") then
 			self:Remove()
+		end
+	end)
+
+	ENT:AddHook("StopMat", "redecorate_restore_data", function(self)
+		if self:GetData("parent-saved-data") then
+
+			local saved_data = self:GetData("parent-saved-data")
+
+			for k,v in ipairs(migrated_data_names) do
+				self:SetData(v, saved_data[v], true)
+			end
+			if IsValid(self.interior) then
+				self.interior:SetData("security", self:GetData("parent-security", false), true)
+			end
+			self:SetData("parent-saved-data", nil, true)
 		end
 	end)
 
