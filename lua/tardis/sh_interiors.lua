@@ -100,12 +100,19 @@ hook.Add("PostGamemodeLoaded", "tardis-interiors", function()
 			local dmenu = DermaMenu()
 			dmenu:AddOption("Set as preferred", function()
 				TARDIS:SetSetting("interior",obj.spawnname,true)
-				TARDIS:Message(LocalPlayer(), "TARDIS interior changed. Respawn or redecorate the TARDIS for changes to apply.")
+				TARDIS:Message(LocalPlayer(), "TARDIS interior changed. Respawn the TARDIS for changes to apply.")
 			end):SetIcon("icon16/star.png")
-			
+
 			dmenu:AddOption("Redecorate into this interior", function()
 				TARDIS:SetSetting("redecorate-interior",obj.spawnname,true)
-				TARDIS:Message(LocalPlayer(), "TARDIS interior decor selected. Enable redecoration and repair your TARDIS to apply.")
+				local current_tardis = LocalPlayer():GetTardisData("exterior")
+
+				if not current_tardis or not current_tardis:GetData("redecorate") then
+					TARDIS:Message(LocalPlayer(), "TARDIS interior decor selected. Enable redecoration in your TARDIS to apply.")
+				else
+					TARDIS:Message(LocalPlayer(), "TARDIS interior decor selected. Restart the redecoration to apply.")
+				end
+
 			end):SetIcon("icon16/color_wheel.png")
 			dmenu:Open()
 		end

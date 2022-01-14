@@ -81,12 +81,12 @@ if SERVER then
 		if nvnum < 0 then
 			nvnum = 1
 		end
-	   TARDIS:SetSetting("health-max", nvnum, true)
-	   for k,v in pairs(ents.FindByClass("gmod_tardis")) do
+		TARDIS:SetSetting("health-max", nvnum, true)
+		for k,v in pairs(ents.FindByClass("gmod_tardis")) do
 			if v:GetHealth() > nvnum then
 				v:ChangeHealth(nvnum)
 			end
-	   end
+		end
 	end, "UpdateOnChange")
 
 	cvars.AddChangeCallback("tardis2_damage", function(cvname, oldvalue, newvalue)
@@ -94,7 +94,7 @@ if SERVER then
 	end, "UpdateOnChange")
 
 	ENT:AddWireOutput("Health", "TARDIS Health")
-	
+
 	function ENT:Explode(f)
 		local force = 60
 		if f ~= nil then
@@ -154,7 +154,7 @@ if SERVER then
 	function ENT:FinishRepair()
 		if self:CallHook("ShouldRedecorate") then
 			local ent = TARDIS:SpawnTARDIS(self:GetCreator(),{
-				metadataID = TARDIS:GetSetting("redecorate-interior","default",self:GetCreator()),
+				metadataID = self:GetData("redecorate-interior"),
 				finishrepair = true,
 				pos = self:GetPos()+Vector(0,0,2),
 				ang = self:GetAngles()
@@ -218,7 +218,7 @@ if SERVER then
 	end)
 
 	ENT:AddHook("ShouldRedecorate", "health", function(self)
-		return (self:GetData("redecorate",false) and TARDIS:GetSetting("redecorate-interior","default",self:GetCreator()) ~= self.metadata.ID) and true or nil
+		return (self:GetData("redecorate",false) and self:GetData("redecorate-interior") ~= self.metadata.ID) and true or nil
 	end)
 
 	ENT:AddHook("CustomData", "health-redecorate", function(self, customdata)
