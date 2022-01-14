@@ -180,6 +180,12 @@ if SERVER then
 		ply:AddCleanup("sents", entity)
 		entity:SetVar("Player", ply)
 
+		local total_skins = entity:SkinCount()
+		if total_skins then
+			local chosen_skin = math.random(total_skins)
+			entity:SetSkin(chosen_skin)
+		end
+
 		return entity
 	end
 	concommand.Add("tardis2_spawn", function(ply, cmd, args)
