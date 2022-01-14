@@ -24,13 +24,15 @@ TARDIS:AddSetting({
 function ENT:InitializeTips(style_name)
 	local int_metadata = self.metadata.Interior
 
+	self.tip_style_name = style_name
+
 	if style_name == "default" then
 		style_name = int_metadata.Tips.style or int_metadata.TipSettings.style
 		-- Interior.Tips are deprecated; should be deleted when the extensions update and
 		-- replace with Interior.CustomTips, Interior.PartTips and Interior.TipSettings
 		-- Old version has more priority, since extensions get overriden by base.lua
 	end
-	self.tip_style_name = style_name
+
 	local style = TARDIS:GetTipStyle(style_name)
 	local tips = {}
 
@@ -64,7 +66,7 @@ function ENT:InitializeTips(style_name)
 						if control and control.tip_text then
 							tip.text = control.tip_text
 						else
-							error("Control \""..part.Control.."\" either does not exist or has no tip text specified")
+							print("[TARDIS] WARNING: Control \""..part.Control.."\" either does not exist or has no tip text specified")
 						end
 					end
 					if part.Text then
@@ -79,29 +81,29 @@ function ENT:InitializeTips(style_name)
 				if control and control.tip_text then
 					tip.text = control.tip_text
 				else
-					error("Control \""..tip.control.."\" either does not exist or has no tip text specified")
+					print("[TARDIS] WARNING: Control \""..tip.control.."\" either does not exist or has no tip text specified")
 				end
 			end
 		end
 		if not tip.text then
-			error("Tip at position "..tostring(tip.pos).." has no text set")
-		end
-		tip.colors.current = tip.colors.normal
-		tip.highlighted = false
+			print("[TARDIS] WARNING: Tip at position "..tostring(tip.pos).." has no text set")
+		else
+			tip.colors.current = tip.colors.normal
+			tip.highlighted = false
 
-		tip.SetHighlight = function(self, on)
-			self.highlighted = on
-			if on then
-				self.colors.current = self.colors.highlighted
-			else
-				self.colors.current = self.colors.normal
+			tip.SetHighlight = function(self, on)
+				self.highlighted = on
+				if on then
+					self.colors.current = self.colors.highlighted
+				else
+					self.colors.current = self.colors.normal
+				end
 			end
+			tip.ToggleHighlight = function(self)
+				self:SetHighlight(not tip.highlighted)
+			end
+			table.insert(tips, tip)
 		end
-		tip.ToggleHighlight = function(self)
-			self:SetHighlight(not tip.highlighted)
-		end
-
-		table.insert(tips, tip)
 	end
 	self.tips = tips
 end
