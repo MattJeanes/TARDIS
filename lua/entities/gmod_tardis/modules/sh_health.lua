@@ -153,14 +153,49 @@ if SERVER then
 
 	function ENT:FinishRepair()
 		if self:CallHook("ShouldRedecorate") then
-			local ent = TARDIS:SpawnTARDIS(self:GetCreator(),{
+			local pos = self:GetPos() + Vector(0,0,0.02)
+			local ang = self:GetAngles()
+
+			local ent = TARDIS:SpawnTARDIS(self:GetCreator(), {
 				metadataID = self:GetData("redecorate-interior"),
 				finishrepair = true,
-				pos = self:GetPos()+Vector(0,0,2),
-				ang = self:GetAngles()
+				pos = pos,
+				ang = ang,
 			})
-			self:Remove()
+			ent:SetBodygroup(1,0)
+			ent:SetData("demat",true)
+			ent:SetData("vortex", 1)
+			ent:SetData("vortexalpha", 1)
+			ent:SetData("teleport",true)
+			ent:SetData("alpha", 0)
+			ent:SetPos(pos)
+			ent:SetAngles(ang)
+			ent:SetData("demat-pos",pos,true)
+			ent:SetData("demat-ang",ang,true)
+			ent:SetData("fastreturn-pos",pos)
+			ent:SetData("fastreturn-ang",ang)
+			ent:StopDemat()
+			ent:SetCollisionGroup(COLLISION_GROUP_IN_VEHICLE)
+			ent:DrawShadow(false)
+			for k,v in pairs(ent.parts) do
+				v:DrawShadow(false)
+			end
 			ent:GetPhysicsObject():Sleep()
+			ent:SetDestination(pos, ang)
+			ent:SetFastRemat(true)
+
+			self:SetData("redecorate_next", ent)
+			self:SetFastRemat(true)
+			self:SetData("repairing", false, true)
+			self:ChangeHealth(TARDIS:GetSetting("health-max"))
+			self:SetPower(true)
+			self:DrawShadow(false)
+
+			self:SetData("redecorate-demattime", CurTime())
+			self:Demat(pos, ang, function()
+
+			end, true)
+
 			return
 		end
 		self:EmitSound(self.metadata.Exterior.Sounds.RepairFinish)
@@ -173,6 +208,41 @@ if SERVER then
 		self:StopSmoke()
 		self:FlashLight(1.5)
 	end
+
+	ENT:AddHook("Think", "redecorate-matnew", function(self)
+		local demattime = self:GetData("redecorate-demattime")
+		if demattime and CurTime() - demattime > 0.5 then
+			self:SetData("redecorate-demattime", nil)
+
+			local ent = self:GetData("redecorate_next")
+			if IsValid(ent) then
+				local pos = self:GetPos() + Vector(0,0,0.02)
+				local ang = self:GetAngles()
+				ent:SetPos(pos)
+				ent:SetAngles(ang)
+				-- this is repeated in case it was moved at first second
+
+				ent:SetCollisionGroup(COLLISION_GROUP_WORLD)
+				self:SetParent(ent)
+				self:SetCollisionGroup(COLLISION_GROUP_IN_VEHICLE)
+				-- you can't interact with both at once
+
+				ent:Mat()
+			end
+		end
+	end)
+
+	ENT:AddHook("StopDemat", "redecorate-dissapear", function(self)
+		if self:GetData("redecorate") then
+			self:Remove()
+		end
+	end)
+
+	ENT:AddHook("ShouldTeleportPortal", "redecoration", function(self,portal,ent)
+		if self:GetData("redecorate") or ent == self:GetData("redecorate_next") then
+			return false
+		end
+	end)
 
 	function ENT:StartSmoke()
 		local smoke = ents.Create("env_smokestack")
