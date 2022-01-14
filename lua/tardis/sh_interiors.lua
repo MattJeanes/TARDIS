@@ -33,6 +33,8 @@ function TARDIS:AddInterior(t)
 			else
 				ent.Category = spm_overrides[t.Name]
 			end
+		elseif t.Category ~= nil then
+			ent.Category = t.Category
 		elseif spm_overrides ~= nil and spm_overrides["all"] then
 			ent.Category = spm_overrides["all"]
 		else
