@@ -169,6 +169,11 @@ if SERVER then
 		undo.Create("SENT")
 		undo.SetPlayer(ply)
 		undo.AddEntity(entity)
+
+		if customData.parent then
+			undo.AddEntity(customData.parent)
+		end
+
 		undo.SetCustomUndoText("Undone " .. printName)
 		undo.Finish(printName)
 

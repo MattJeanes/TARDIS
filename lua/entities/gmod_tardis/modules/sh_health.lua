@@ -161,6 +161,7 @@ if SERVER then
 				finishrepair = true,
 				pos = pos,
 				ang = ang,
+				parent = self,
 			})
 			ent:SetBodygroup(1,0)
 			ent:SetData("demat",true)
