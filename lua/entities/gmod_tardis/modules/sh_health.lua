@@ -200,8 +200,6 @@ if SERVER then
 			ent:SetAngles(ang)
 			ent:SetData("demat-pos",pos,true)
 			ent:SetData("demat-ang",ang,true)
-			ent:SetData("fastreturn-pos",pos)
-			ent:SetData("fastreturn-ang",ang)
 			ent:SetDestination(pos, ang)
 
 			ent:GetPhysicsObject():Sleep()
