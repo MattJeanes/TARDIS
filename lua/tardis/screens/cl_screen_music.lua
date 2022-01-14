@@ -80,7 +80,7 @@ function TARDIS:AddCustomMusic(name, url)
 	end
 
 	local next = table.insert(custom_music,{name, url})
-	print("[TARDIS] Cursom music added (" .. name ..", " .. url .. ")")
+	print("[TARDIS] Custom music added (" .. name ..", " .. url .. ")")
 	TARDIS:SaveCustomMusic()
 end
 
