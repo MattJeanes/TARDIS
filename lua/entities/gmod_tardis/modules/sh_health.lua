@@ -185,6 +185,14 @@ if SERVER then
 			ent:SetDestination(pos, ang)
 			ent:SetFastRemat(true)
 
+			local owner = self:GetCreator()
+			if owner and owner.linked_tardis == self then
+				owner.linked_tardis = ent
+				net.Start("Sonic-SetLinkedTARDIS")
+					net.WriteEntity(ent)
+				net.Send(owner)
+			end
+
 			self:SetData("redecorate_next", ent)
 			self:SetFastRemat(true)
 			self:SetData("repairing", false, true)
