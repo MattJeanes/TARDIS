@@ -205,6 +205,7 @@ if SERVER then
 				end
 				if not excluded or not table.HasValue(excluded, chosen_skin) then
 					entity:SetSkin(chosen_skin)
+					entity:SetData("intdoor_skin_needs_update", true, true)
 				end
 			end
 		end
