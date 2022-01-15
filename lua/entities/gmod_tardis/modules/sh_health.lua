@@ -295,20 +295,23 @@ if SERVER then
 	end)
 
 	ENT:AddHook("StopMat", "redecorate_restore_data", function(self)
-		if self:GetData("parent-saved-data") then
-
+		if self:GetData("parent-saved-ext-data") then
 			local ext_saved_data = self:GetData("parent-saved-ext-data")
-			local int_saved_data = self:GetData("parent-saved-int-data")
 
 			for k,v in ipairs(ext_migrated_data) do
 				self:SetData(v, ext_saved_data[v], true)
 			end
+			self:SetData("parent-saved-ext-data", nil, true)
+		end
+		if self:GetData("parent-saved-int-data") then
 			if IsValid(self.interior) then
+				local int_saved_data = self:GetData("parent-saved-int-data")
+
 				for k,v in ipairs(int_migrated_data) do
 					self.interior:SetData(v, int_saved_data[v], true)
 				end
 			end
-			self:SetData("parent-saved-data", nil, true)
+			self:SetData("parent-saved-int-data", nil, true)
 		end
 	end)
 
