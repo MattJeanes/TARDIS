@@ -23,8 +23,10 @@ TARDIS:AddSetting({
 
 function ENT:StopMusic()
 	if IsValid(self.music) then
+		if self.music:GetState() == GMOD_CHANNEL_PLAYING then
+			TARDIS:Message(LocalPlayer(), "Music stopped")
+		end
 		self.music:Stop()
-		self.music=nil
 	end
 end
 
@@ -65,6 +67,7 @@ end
 
 function ENT:PlayMusic(url,resolved)
 	if not resolved then
+		TARDIS:Message(LocalPlayer(), "Loading music...")
 		url=self:ResolveMusicURL(url)
 	end
 	if url and TARDIS:GetSetting("music-enabled") and TARDIS:GetSetting("sound") then
