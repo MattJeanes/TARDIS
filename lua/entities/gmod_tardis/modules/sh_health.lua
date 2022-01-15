@@ -296,6 +296,7 @@ if SERVER then
 
 	ENT:AddHook("StopMat", "redecorate_restore_data", function(self)
 		if self:GetData("parent-saved-ext-data") then
+			self:SetPhyslock(false)
 			local ext_saved_data = self:GetData("parent-saved-ext-data")
 
 			for k,v in ipairs(ext_migrated_data) do
