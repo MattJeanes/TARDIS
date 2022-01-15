@@ -151,7 +151,7 @@ if SERVER then
 		self:CallHook("RepairStarted")
 	end
 
-	local migrated_data_names = {
+	local ext_migrated_data = {
 		"floatfirst",
 		"hads",
 		"spindir",
@@ -162,6 +162,9 @@ if SERVER then
 		"demat-fast",
 		"fastreturn-pos",
 		"fastreturn-ang"
+	}
+	local int_migrated_data = {
+		"security"
 	}
 
 	function ENT:FinishRepair()
@@ -178,7 +181,6 @@ if SERVER then
 			})
 			ent:SetBodygroup(1,0)
 
-			-- let them know each other
 			self:SetData("redecorate_next", ent)
 
 			-- make it dematerialised
@@ -208,19 +210,28 @@ if SERVER then
 			self:SetData("repairing", false, true)
 			self:ChangeHealth(TARDIS:GetSetting("health-max"))
 			self:SetPower(true)
+			self:SetPhyslock(true)
+			 -- this is requried to prevent falling through the textures
+			 -- with COLLISION_GROUP_IN_VEHICLE set
+			 -- and to prevent bouncing up when power gets on
 
 
 			-- migrate data
-			local saved_data = {}
+			local ext_saved_data = {}
+			for k,v in ipairs(ext_migrated_data) do
+				ext_saved_data[v] = self:GetData(v)
+			end
+			ent:SetData("parent-saved-ext-data", ext_saved_data, true)
 
-			for k,v in ipairs(migrated_data_names) do
-				saved_data[v] = self:GetData(v)
+			if IsValid(self.interior) then
+				local int_saved_data = {}
+				for k,v in ipairs(int_migrated_data) do
+					int_saved_data[v] = self.interior:GetData(v)
+				end
+				ent:SetData("parent-saved-int-data", int_saved_data, true)
 			end
 
-			ent:SetData("cloak", self:GetData("cloak"), true)
-
-			ent:SetData("parent-saved-data", saved_data, true)
-			ent:SetData("parent-security", self.interior:GetData("security", false), true)
+			ent:SetData("cloak", self:GetData("cloak"), true) -- this one is separate since it needs to start from the beginning
 			ent:SetData("prevortex-flight", self:GetData("flight", false), true)
 
 			-- sonic (if exists)
@@ -236,7 +247,6 @@ if SERVER then
 			-- fly away
 			self:SetData("redecorate-demattime", CurTime())
 			self:SetFastRemat(true)
-			self:SetPhyslock(true) -- should not move
 			ent:SetPhyslock(true)
 			constraint.RemoveAll(self) -- dropped everything attached
 			self:Demat(pos, ang, nil, true)
@@ -287,13 +297,16 @@ if SERVER then
 	ENT:AddHook("StopMat", "redecorate_restore_data", function(self)
 		if self:GetData("parent-saved-data") then
 
-			local saved_data = self:GetData("parent-saved-data")
+			local ext_saved_data = self:GetData("parent-saved-ext-data")
+			local int_saved_data = self:GetData("parent-saved-int-data")
 
-			for k,v in ipairs(migrated_data_names) do
-				self:SetData(v, saved_data[v], true)
+			for k,v in ipairs(ext_migrated_data) do
+				self:SetData(v, ext_saved_data[v], true)
 			end
 			if IsValid(self.interior) then
-				self.interior:SetData("security", self:GetData("parent-security", false), true)
+				for k,v in ipairs(int_migrated_data) do
+					self.interior:SetData(v, int_saved_data[v], true)
+				end
 			end
 			self:SetData("parent-saved-data", nil, true)
 		end

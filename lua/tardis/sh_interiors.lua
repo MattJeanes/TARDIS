@@ -108,12 +108,12 @@ hook.Add("PostGamemodeLoaded", "tardis-interiors", function()
 
 		icon.OpenMenu = function(self)
 			local dmenu = DermaMenu()
-			dmenu:AddOption("Set as preferred", function()
+			dmenu:AddOption("Select as default", function()
 				TARDIS:SetSetting("interior",obj.spawnname,true)
-				TARDIS:Message(LocalPlayer(), "TARDIS interior changed. Respawn the TARDIS for changes to apply.")
+				TARDIS:Message(LocalPlayer(), "TARDIS default interior changed. Respawn the TARDIS for changes to apply.")
 			end):SetIcon("icon16/star.png")
 
-			dmenu:AddOption("Redecorate into this interior", function()
+			dmenu:AddOption("Select for redecoration", function()
 				TARDIS:SetSetting("redecorate-interior",obj.spawnname,true)
 				local current_tardis = LocalPlayer():GetTardisData("exterior")
 
