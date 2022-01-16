@@ -263,6 +263,20 @@ if SERVER then
 		end
 	end)
 
+	ENT:AddHook("PlayerEnter", "npchostile", function(self,ply,forced,notp)
+		for k,v in pairs(ents.FindInSphere(self:GetPos(), 1000)) do
+			if v:IsNPC() then
+				print(v)
+				v:AddEntityRelationship( self, D_HT, 99 )
+				v:AddRelationship( "gmod_tardis D_HT 99" )
+				v:SetEnemy( self )
+				v:SetTarget( self )
+				print(self)
+				print(v:GetTarget())
+			end
+		end
+	end)
+
 	ENT:AddHook("LockedUse", "repair", function(self, a)
 		if self:GetData("repairing") then
 			TARDIS:Message(a, "This TARDIS is repairing. It will be done in "..math.floor(self:GetRepairTime()).." seconds.")
