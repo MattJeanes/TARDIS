@@ -210,7 +210,6 @@ if SERVER then
 			self:SetData("repairing", false, true)
 			self:ChangeHealth(TARDIS:GetSetting("health-max"))
 			self:SetPower(true)
-			self:SetPhyslock(true) -- this is required to prevent falling through the textures with COLLISION_GROUP_IN_VEHICLE set and to prevent bouncing up when power gets on
 
 
 			-- migrate data
@@ -242,6 +241,7 @@ if SERVER then
 
 
 			-- fly away
+			self:SetPhyslock(true) -- required to prevent falling through the textures and bouncing up when power gets on
 			self:SetData("redecorate-demattime", CurTime())
 			self:SetFastRemat(true)
 			ent:SetPhyslock(true)
