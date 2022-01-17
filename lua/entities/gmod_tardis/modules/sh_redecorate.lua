@@ -59,10 +59,7 @@ if SERVER then
 			end
 		end
 
-		local p_phys = self:GetPhysicsObject()
-		local vel = { p_phys:GetVelocity(), p_phys:GetAngleVelocity() }
 		self:SetPhyslock(true)
-		--p_phys:EnableMotion(false)
 
 		local child = TARDIS:SpawnTARDIS(ply, {
 			pos = self:GetPos(),
@@ -70,30 +67,17 @@ if SERVER then
 			redecorate_parent = self,
 			ext_data = ext_saved_data,
 			int_data = int_saved_data,
-			velocity = vel,
 		})
 
 		if not IsValid(child) then
 			error("Redecoration failed: failed to spawn the replacement")
 		end
-		-- if gone wrong, finish repair
-		return IsValid(child)
+		return IsValid(child) -- if gone wrong, finish repair
 	end
 
 	ENT:AddHook("StopDemat", "redecorate_remove_parent", function(self)
 		if self:GetData("redecorate") then
 			self:Remove()
-		end
-	end)
-
-	ENT:AddHook("StopMat", "redecorate_continue_movement", function(self)
-		local velocity = self:GetData("redecorate_parent_velocity")
-		if velocity then
-			self:SetData("redecorate_parent_velocity", nil, true)
-			self:SetPhyslock(false)
-			local phys = self:GetPhysicsObject()
-			phys:SetVelocity(velocity[1] * 0.5)
-			phys:SetAngleVelocity(velocity[2] * 0.5)
 		end
 	end)
 
@@ -108,7 +92,6 @@ if SERVER then
 
 			parent:ForcePlayerDrop()
 
-			self:SetData("redecorate_parent_velocity", customdata.velocity, true)
 			self:SetData("redecorate_parent_int_data", customdata.int_data, true)
 			self:SetData("redecorate_parent_ext_data", customdata.ext_data, true)
 		end
