@@ -59,8 +59,6 @@ if SERVER then
 			end
 		end
 
-		self:SetPhyslock(true)
-
 		local child = TARDIS:SpawnTARDIS(ply, {
 			pos = self:GetPos(),
 			metadataID = self:GetData("redecorate-interior") or "default",
@@ -77,8 +75,19 @@ if SERVER then
 
 	ENT:AddHook("StopDemat", "redecorate_remove_parent", function(self)
 		if self:GetData("redecorate") then
+			self:GetData("redecorate_child"):SetData("redecorate_parent", nil, true)
 			self:Remove()
 		end
+	end)
+
+	ENT:AddHook("MatStart", "redecorate_sync", function(self)
+		local parent = self:GetData("redecorate_parent")
+		if not parent then return end
+
+		self:SetCollisionGroup(COLLISION_GROUP_WORLD)
+		self:SetPos(parent:GetPos())
+		self:SetAngles(parent:GetAngles())
+		parent:SetParent(self)
 	end)
 
 	ENT:AddHook("CustomData", "redecorate_child", function(self, customdata)
@@ -90,8 +99,6 @@ if SERVER then
 			self:SetPos(parent:GetPos())
 			self:SetAngles(parent:GetAngles())
 
-			parent:ForcePlayerDrop()
-
 			self:SetData("redecorate_parent_int_data", customdata.int_data, true)
 			self:SetData("redecorate_parent_ext_data", customdata.ext_data, true)
 		end
@@ -101,11 +108,8 @@ if SERVER then
 		local parent = self:GetData("redecorate_parent")
 		if not parent then return end
 
-		--local phys = self:GetPhysicsObject()
-
-		--self:SetParent(parent)
-		--parent:ForcePlayerDrop()
-		parent:SetParent(self)
+		local phys = self:GetPhysicsObject()
+		phys:Sleep()
 
 		self:SetCollisionGroup(COLLISION_GROUP_IN_VEHICLE)
 	end)
@@ -118,45 +122,38 @@ if SERVER then
 
 		local ext_saved_data = self:GetData("redecorate_parent_ext_data")
 		local int_saved_data = self:GetData("redecorate_parent_int_data")
-		--local phys = self:GetPhysicsObject()
+		local phys = self:GetPhysicsObject()
 
 		apply_saved_data(self, ext_saved_data, ext_saved_data_names)
 		apply_saved_data(self.interior, int_saved_data, ext_saved_data_names)
 
 		self:SetData("redecorate_parent_ext_data", nil, true)
 		self:SetData("redecorate_parent_int_data", nil, true)
-		self:SetData("redecorate_parent", nil)
-
-		self:SetPhyslock(true)
 
 		constraint.RemoveAll(parent) -- drop everything attached
 		parent:SetFastRemat(true)
 		parent:ForcePlayerDrop()
+		parent:SetPhyslock(true)
 		parent:Demat()
 
 		self:Timer("redecorate_materialise", 1, function()
 			parent:ForcePlayerDrop()
-			--phys:Wake()
-			--self:SetParent(nil)
-			--parent:SetParent(self)
+			parent:SetData("redecorate_mat_started", true)
 
-			self:SetCollisionGroup(COLLISION_GROUP_WORLD)
-
-			self:SetPos(parent:GetPos())
-			self:SetAngles(parent:GetAngles())
+			phys:Wake()
 			self:SetFastRemat(true)
 			self:Mat()
 
-			if ply and ply.linked_tardis == self then
-				ply.linked_tardis = child
+			local ply = self:GetCreator()
+			if ply and ply.linked_tardis == parent then
+				ply.linked_tardis = self
 				net.Start("Sonic-SetLinkedTARDIS")
-					net.WriteEntity(child)
+					net.WriteEntity(self)
 				net.Send(ply)
 			end
 		end)
 
 	end)
-
 
 	ENT:AddHook("ShouldTeleportPortal", "redecorate", function(self,portal,ent)
 		if self:GetData("redecorate") or ent == self:GetData("redecorate_next") then
@@ -164,12 +161,11 @@ if SERVER then
 		end
 	end)
 
-	--[[hook.Add("OnPhysgunPickup", "tardis_redecorate", function(ply, ent)
-		if ent.TardisExterior and ent:GetData("redecorate_parent") then
-			ent:SetPhyslock(false)
+	hook.Add("AllowPlayerPickup", "tardis_redecorate", function(ply, ent)
+		if ent.TardisExterior and (ent:GetData("redecorate_parent") or ent:GetData("redecorate_mat_started")) then
+			return false
 		end
-	end)]]
-
+	end)
 
 else
 	ENT:AddHook("Initialize", "redecorate-reset", function(self)
