@@ -185,32 +185,12 @@ if SERVER then
 				ang = ang,
 				parent = self,
 			})
-			ent:SetBodygroup(1,0)
-			
+
 			ent:SetData("redecorate_from", self)
 			self:SetData("redecorate_next", ent)
 
-			-- make it dematerialised
-			ent:SetData("demat",true)
-			ent:SetData("vortex", 1)
-			ent:SetData("vortexalpha", 1)
-			ent:SetData("teleport",true)
-			ent:SetData("alpha", 0)
-			ent:DrawShadow(false)
-			for k,v in pairs(ent.parts) do
-				v:DrawShadow(false)
-			end
-
-			ent:StopDemat()
+			ent:ForceDematState(pos, ang)
 			ent:SetCollisionGroup(COLLISION_GROUP_IN_VEHICLE)
-
-			-- position
-			ent:SetPos(pos)
-			ent:SetAngles(ang)
-			ent:SetData("demat-pos",pos,true)
-			ent:SetData("demat-ang",ang,true)
-			ent:SetDestination(pos, ang)
-
 			ent:GetPhysicsObject():Sleep()
 
 			-- make it alive again

@@ -59,6 +59,25 @@ if SERVER then
 		return true
 	end
 
+	function ENT:ForceDematState(pos, ang)
+		self:SetPos(pos)
+		self:SetAngles(ang)
+		self:SetDestination(pos, ang)
+
+		self:SetData("demat",true)
+		self:SetData("vortexalpha", 1)
+		self:SetData("teleport",true)
+		self:SetData("alpha", 0)
+
+		self:SetBodygroup(1,0)
+		self:DrawShadow(false)
+		for k,v in pairs(self.parts) do
+			v:DrawShadow(false)
+		end
+
+		self:StopDemat()
+	end
+
 	function ENT:Demat(pos, ang, callback, force)
 		if self:CallHook("CanDemat", force, false) == false then
 			if self:CallHook("FailDemat", force) == true
@@ -82,8 +101,7 @@ if SERVER then
 			pos=pos or self:GetData("demat-pos") or self:GetPos()
 			ang=ang or self:GetData("demat-ang") or self:GetAngles()
 			self:SetBodygroup(1,0)
-			self:SetData("demat-pos",pos,true)
-			self:SetData("demat-ang",ang,true)
+			self:SetDestination(pos, ang)
 			self:SendMessage("demat", function() net.WriteVector(self:GetData("demat-pos",Vector())) end)
 			self:SetData("demat",true)
 			self:SetData("fastreturn-pos",self:GetPos())
@@ -175,8 +193,7 @@ if SERVER then
 								end
 							end
 						end
-						self:SetData("demat-pos",nil,true)
-						self:SetData("demat-ang",nil,true)
+						self:SetDestination(nil, nil)
 					end)
 					if callback then callback(true) end
 				end
