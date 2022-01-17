@@ -26,13 +26,6 @@ TARDIS:AddSetting({
 	networked=true
 })
 
-TARDIS:AddSetting({
-	id="redecorate-interior",
-	name="Redecoration interior",
-	value="default",
-	networked=true
-})
-
 ENT:AddHook("Initialize","health-init",function(self)
 	self:SetData("health-val", TARDIS:GetSetting("health-max"), true)
 	if SERVER and WireLib then
@@ -93,12 +86,6 @@ if SERVER then
 	   TARDIS:SetSetting("health-enabled", tobool(newvalue), true)
 	end, "UpdateOnChange")
 
-	hook.Add("OnPhysgunPickup", "tardis-health", function(ply, ent)
-		if ent.TardisExterior and ent:GetData("redecorate_from") then
-			ent:SetPhyslock(false)
-		end
-	end)
-
 	ENT:AddWireOutput("Health", "TARDIS Health")
 
 	function ENT:Explode(f)
@@ -157,84 +144,9 @@ if SERVER then
 		self:CallHook("RepairStarted")
 	end
 
-	local ext_migrated_data = {
-		"floatfirst",
-		"hads",
-		"spindir",
-		"spindir_prev",
-		"spindir_before_door",
-		"handbrake",
-		"physlock",
-		"demat-fast",
-		"fastreturn-pos",
-		"fastreturn-ang"
-	}
-	local int_migrated_data = {
-		"security"
-	}
-
 	function ENT:FinishRepair()
-		if self:CallHook("ShouldRedecorate") then
-			local pos = self:GetPos() + Vector(0,0,0.02)
-			local ang = self:GetAngles()
-
-			local ent = TARDIS:SpawnTARDIS(self:GetCreator(), {
-				metadataID = self:GetData("redecorate-interior"),
-				finishrepair = true,
-				pos = pos,
-				ang = ang,
-				parent = self,
-			})
-
-			ent:SetData("redecorate_from", self)
-			self:SetData("redecorate_next", ent)
-
-			ent:ForceDematState(pos, ang)
-			ent:SetCollisionGroup(COLLISION_GROUP_IN_VEHICLE)
-			ent:GetPhysicsObject():Sleep()
-
-			-- make it alive again
-			self:SetData("repairing", false, true)
-			self:ChangeHealth(TARDIS:GetSetting("health-max"))
-			self:SetPower(true)
-
-
-			-- migrate data
-			local ext_saved_data = {}
-			for k,v in ipairs(ext_migrated_data) do
-				ext_saved_data[v] = self:GetData(v)
-			end
-			ent:SetData("parent-saved-ext-data", ext_saved_data, true)
-
-			if IsValid(self.interior) then
-				local int_saved_data = {}
-				for k,v in ipairs(int_migrated_data) do
-					int_saved_data[v] = self.interior:GetData(v)
-				end
-				ent:SetData("parent-saved-int-data", int_saved_data, true)
-			end
-
-			ent:SetData("cloak", self:GetData("cloak"), true) -- this one is separate since it needs to start from the beginning
-			ent:SetData("prevortex-flight", self:GetData("flight", false), true)
-
-			-- sonic (if exists)
-			local owner = self:GetCreator()
-			if owner and owner.linked_tardis == self then
-				owner.linked_tardis = ent
-				net.Start("Sonic-SetLinkedTARDIS")
-					net.WriteEntity(ent)
-				net.Send(owner)
-			end
-
-
-			-- fly away
-			self:SetPhyslock(true) -- required to prevent falling through the world and bouncing up when power gets on
-			self:SetData("redecorate-demattime", CurTime())
-			self:SetFastRemat(true)
-			ent:SetPhyslock(true)
-			constraint.RemoveAll(self) -- dropped everything attached
-			self:Demat(pos, ang, nil, true)
-
+		if self:CallHook("ShouldRedecorate") and self:Redecorate() then
+			
 			return
 		end
 		self:EmitSound(self.metadata.Exterior.Sounds.RepairFinish)
@@ -247,66 +159,6 @@ if SERVER then
 		self:StopSmoke()
 		self:FlashLight(1.5)
 	end
-
-	ENT:AddHook("Think", "redecorate-matnew", function(self)
-		local demattime = self:GetData("redecorate-demattime")
-		if demattime and CurTime() - demattime > 0.5 then
-			self:SetData("redecorate-demattime", nil)
-
-			local ent = self:GetData("redecorate_next")
-			if IsValid(ent) then
-				local pos = self:GetPos() + Vector(0,0,0.02)
-				local ang = self:GetAngles()
-				ent:SetPos(pos)
-				ent:SetAngles(ang)
-				-- this is repeated in case it was moved at first second
-
-				ent:SetCollisionGroup(COLLISION_GROUP_WORLD)
-				self:SetParent(ent)
-				self:SetCollisionGroup(COLLISION_GROUP_IN_VEHICLE)
-				self:ForcePlayerDrop()
-				-- you can't interact with both at once
-
-				ent:SetFastRemat(true)
-				ent:Mat()
-			end
-		end
-	end)
-
-	ENT:AddHook("StopDemat", "redecorate-dissapear", function(self)
-		if self:GetData("redecorate") then
-			self:Remove()
-		end
-	end)
-
-	ENT:AddHook("StopMat", "redecorate_restore_data", function(self)
-		if self:GetData("parent-saved-ext-data") then
-			self:SetPhyslock(false)
-			local ext_saved_data = self:GetData("parent-saved-ext-data")
-
-			for k,v in ipairs(ext_migrated_data) do
-				self:SetData(v, ext_saved_data[v], true)
-			end
-			self:SetData("parent-saved-ext-data", nil, true)
-		end
-		if self:GetData("parent-saved-int-data") then
-			if IsValid(self.interior) then
-				local int_saved_data = self:GetData("parent-saved-int-data")
-
-				for k,v in ipairs(int_migrated_data) do
-					self.interior:SetData(v, int_saved_data[v], true)
-				end
-			end
-			self:SetData("parent-saved-int-data", nil, true)
-		end
-		self:SetData("redecorate_from", nil)
-	end)
-
-	ENT:AddHook("ShouldTeleportPortal", "redecoration", function(self,portal,ent)
-		if self:GetData("redecorate") or ent == self:GetData("redecorate_next") then
-			return false
-		end
-	end)
 
 	function ENT:StartSmoke()
 		local smoke = ents.Create("env_smokestack")
@@ -349,29 +201,6 @@ if SERVER then
 		then
 			return false
 		end
-	end)
-
-	ENT:AddHook("ShouldRedecorate", "health", function(self)
-		return (self:GetData("redecorate",false) and self:GetData("redecorate-interior") ~= self.metadata.ID) and true or nil
-	end)
-
-	ENT:AddHook("CustomData", "health-redecorate", function(self, customdata)
-		if customdata.finishrepair then
-			self:SetPos(customdata.pos)
-			self:SetAngles(customdata.ang)
-			self:SetData("finishrepair",true)
-		end
-	end)
-
-	ENT:AddHook("Initialize", "health-redecorate", function(self)
-		if not self:GetData("finishrepair",false) then return end
-		timer.Simple(0.5, function()
-			if not IsValid(self) then return end
-			self:GetPhysicsObject():Wake()
-			self:EmitSound(self.metadata.Exterior.Sounds.RepairFinish)
-			self:FlashLight(1.5)
-		end)
-		self:SetData("finishrepair",nil)
 	end)
 
 	ENT:AddHook("CanTogglePower", "health", function(self)
@@ -514,9 +343,5 @@ if SERVER then
 			end
 		end
 	end)
-else
-	ENT:AddHook("Initialize", "redecorate-reset", function(self)
-		if not IsValid(self) or (not LocalPlayer() == self:GetCreator()) then return end
-		TARDIS:SetSetting("redecorate-interior",self.metadata.ID,true)
-	end)
+
 end

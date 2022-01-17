@@ -146,12 +146,15 @@ if SERVER then
 		local vStart = ply:EyePos()
 		local vForward = ply:GetAimVector()
 
-		local trace = {}
-		trace.start = vStart
-		trace.endpos = vStart + (vForward * 4096)
-		trace.filter = ply
+		local tr
+		if not customData.pos then
+			local trace = {}
+			trace.start = vStart
+			trace.endpos = vStart + (vForward * 4096)
+			trace.filter = ply
 
-		local tr = util.TraceLine(trace)
+			tr = util.TraceLine(trace)
+		end
 
 		local sent = scripted_ents.GetStored(entityName).t
 		ClassName = entityName
@@ -179,11 +182,9 @@ if SERVER then
 		undo.Create("SENT")
 		undo.SetPlayer(ply)
 		undo.AddEntity(entity)
-
-		if customData.parent then
-			undo.AddEntity(customData.parent)
+		if customData.redecorate_parent then
+			undo.AddEntity(customData.redecorate_parent)
 		end
-
 		undo.SetCustomUndoText("Undone " .. printName)
 		undo.Finish(printName)
 

@@ -5,7 +5,8 @@ TARDIS:AddSetting({
 	networked=true
 })
 
-local ext_migrated_data = {
+local ext_saved_data_names = {
+	"cloak",
 	"floatfirst",
 	"hads",
 	"spindir",
@@ -17,151 +18,175 @@ local ext_migrated_data = {
 	"fastreturn-pos",
 	"fastreturn-ang"
 }
-local int_migrated_data = {
+local int_saved_data_names = {
 	"security"
 }
 
+local function apply_saved_data(object, data, names)
+	if not IsValid(object) or not data then return end
+
+	for i,name in ipairs(names) do
+		if data[name] then
+			object:SetData(name, data[name], true)
+		end
+	end
+end
+
+
 if SERVER then
 
+	ENT:AddHook("ShouldRedecorate", "redecorate_toggled", function(self)
+		return (self:GetData("redecorate",false) and self:GetData("redecorate-interior") ~= self.metadata.ID) and true or nil
+	end)
+
 	function ENT:Redecorate()
-		local pos = self:GetPos() + Vector(0,0,0.02)
-		local ang = self:GetAngles()
 
-		local ent = TARDIS:SpawnTARDIS(self:GetCreator(), {
-			metadataID = self:GetData("redecorate-interior"),
-			finishrepair = true,
-			pos = pos,
-			ang = ang,
-			parent = self,
-		})
+		local ply = self:GetCreator()
 
-		self:SetData("redecorate_next", ent)
-
-		-- make it dematerialised
-		ent:SetData("demat",true)
-		ent:SetData("vortex", 1)
-		ent:SetData("vortexalpha", 1)
-		ent:SetData("teleport",true)
-		ent:SetData("alpha", 0)
-		ent:SetBodygroup(1,0)
-		ent:DrawShadow(false)
-		for k,v in pairs(ent.parts) do
-			v:DrawShadow(false)
-		end
-
-		ent:StopDemat()
-		ent:SetCollisionGroup(COLLISION_GROUP_IN_VEHICLE)
-
-		-- position
-		ent:SetPos(pos)
-		ent:SetAngles(ang)
-		ent:SetData("demat-pos",pos,true)
-		ent:SetData("demat-ang",ang,true)
-		ent:SetDestination(pos, ang)
-
-		ent:GetPhysicsObject():Sleep()
-
-		-- make it alive again
 		self:SetData("repairing", false, true)
 		self:ChangeHealth(TARDIS:GetSetting("health-max"))
 		self:SetPower(true)
 
-
-		-- migrate data
+		-- save tardis state
 		local ext_saved_data = {}
-		for k,v in ipairs(ext_migrated_data) do
+		local int_saved_data = {}
+		for k,v in ipairs(ext_saved_data_names) do
 			ext_saved_data[v] = self:GetData(v)
 		end
-		ent:SetData("parent-saved-ext-data", ext_saved_data, true)
-
 		if IsValid(self.interior) then
-			local int_saved_data = {}
-			for k,v in ipairs(int_migrated_data) do
+			for k,v in ipairs(int_saved_data_names) do
 				int_saved_data[v] = self.interior:GetData(v)
 			end
-			ent:SetData("parent-saved-int-data", int_saved_data, true)
 		end
 
-		ent:SetData("cloak", self:GetData("cloak"), true) -- this one is separate since it needs to start from the beginning
-		ent:SetData("prevortex-flight", self:GetData("flight", false), true)
+		local p_phys = self:GetPhysicsObject()
+		local vel = { p_phys:GetVelocity(), p_phys:GetAngleVelocity() }
+		self:SetPhyslock(true)
+		--p_phys:EnableMotion(false)
 
-		-- sonic (if exists)
-		local owner = self:GetCreator()
-		if owner and owner.linked_tardis == self then
-			owner.linked_tardis = ent
-			net.Start("Sonic-SetLinkedTARDIS")
-				net.WriteEntity(ent)
-			net.Send(owner)
+		local child = TARDIS:SpawnTARDIS(ply, {
+			pos = self:GetPos(),
+			metadataID = self:GetData("redecorate-interior") or "default",
+			redecorate_parent = self,
+			ext_data = ext_saved_data,
+			int_data = int_saved_data,
+			velocity = vel,
+		})
+
+		if not IsValid(child) then
+			error("Redecoration failed: failed to spawn the replacement")
 		end
-
-
-		-- fly away
-		self:SetData("redecorate-demattime", CurTime())
-		self:SetFastRemat(true)
-		constraint.RemoveAll(self) -- dropped everything attached
-
-		-- sync positions just in case
-		self:SetCollisionGroup(COLLISION_GROUP_IN_VEHICLE)
-		ent:SetCollisionGroup(COLLISION_GROUP_WORLD)
-		ent:SetPos(pos)
-		ent:SetAngles(ang)
-		self:SetParent(ent)
-		-- you can't interact with both at once
-
-		self:Demat(pos, ang, nil, true)
+		-- if gone wrong, finish repair
+		return IsValid(child)
 	end
 
-	ENT:AddHook("ShouldRedecorate", "health", function(self)
-		return (self:GetData("redecorate",false) and self:GetData("redecorate-interior") ~= self.metadata.ID) and true or nil
-	end)
-
-	ENT:AddHook("ShouldTeleportPortal", "redecoration", function(self,portal,ent)
-		if self:GetData("redecorate") or ent == self:GetData("redecorate_next") then
-			return false
-		end
-	end)
-
-	ENT:AddHook("Think", "redecorate_matnew", function(self)
-		local demattime = self:GetData("redecorate-demattime")
-		if demattime and CurTime() - demattime > 0.5 then
-			self:SetData("redecorate-demattime", nil)
-
-			local ent = self:GetData("redecorate_next")
-			if IsValid(ent) then
-				ent:SetFastRemat(true)
-				ent:Mat()
-			end
-		end
-	end)
-
-	ENT:AddHook("StopDemat", "redecorate_dissapear", function(self)
+	ENT:AddHook("StopDemat", "redecorate_remove_parent", function(self)
 		if self:GetData("redecorate") then
 			self:Remove()
 		end
 	end)
 
-	ENT:AddHook("StopMat", "redecorate_restore_data", function(self)
-		if self:GetData("parent-saved-ext-data") then
-			local ext_saved_data = self:GetData("parent-saved-ext-data")
-
-			TARDIS:DebugPrintTable(ext_saved_data)
-
-			for k,v in ipairs(ext_migrated_data) do
-				self:SetData(v, ext_saved_data[v], true)
-			end
-			self:SetData("parent-saved-ext-data", nil, true)
-		end
-		if self:GetData("parent-saved-int-data") then
-			if IsValid(self.interior) then
-				local int_saved_data = self:GetData("parent-saved-int-data")
-
-				for k,v in ipairs(int_migrated_data) do
-					self.interior:SetData(v, int_saved_data[v], true)
-				end
-			end
-			self:SetData("parent-saved-int-data", nil, true)
+	ENT:AddHook("StopMat", "redecorate_continue_movement", function(self)
+		local velocity = self:GetData("redecorate_parent_velocity")
+		if velocity then
+			self:SetData("redecorate_parent_velocity", nil, true)
+			self:SetPhyslock(false)
+			local phys = self:GetPhysicsObject()
+			phys:SetVelocity(velocity[1] * 0.5)
+			phys:SetAngleVelocity(velocity[2] * 0.5)
 		end
 	end)
+
+	ENT:AddHook("CustomData", "redecorate_child", function(self, customdata)
+		local parent = customdata.redecorate_parent
+		if parent then
+			self:SetData("redecorate_parent", parent)
+			parent:SetData("redecorate_child", self)
+
+			self:SetPos(parent:GetPos())
+			self:SetAngles(parent:GetAngles())
+
+			parent:ForcePlayerDrop()
+
+			self:SetData("redecorate_parent_velocity", customdata.velocity, true)
+			self:SetData("redecorate_parent_int_data", customdata.int_data, true)
+			self:SetData("redecorate_parent_ext_data", customdata.ext_data, true)
+		end
+	end)
+
+	ENT:AddHook("Initialize", "redecorate_child", function(self)
+		local parent = self:GetData("redecorate_parent")
+		if not parent then return end
+
+		--local phys = self:GetPhysicsObject()
+
+		--self:SetParent(parent)
+		--parent:ForcePlayerDrop()
+		parent:SetParent(self)
+
+		self:SetCollisionGroup(COLLISION_GROUP_IN_VEHICLE)
+	end)
+
+	ENT:AddHook("PostInitialize", "redecorate_child", function(self)
+		local parent = self:GetData("redecorate_parent")
+		if not parent then return end
+
+		self:ForceDematState()
+
+		local ext_saved_data = self:GetData("redecorate_parent_ext_data")
+		local int_saved_data = self:GetData("redecorate_parent_int_data")
+		--local phys = self:GetPhysicsObject()
+
+		apply_saved_data(self, ext_saved_data, ext_saved_data_names)
+		apply_saved_data(self.interior, int_saved_data, ext_saved_data_names)
+
+		self:SetData("redecorate_parent_ext_data", nil, true)
+		self:SetData("redecorate_parent_int_data", nil, true)
+		self:SetData("redecorate_parent", nil)
+
+		self:SetPhyslock(true)
+
+		constraint.RemoveAll(parent) -- drop everything attached
+		parent:SetFastRemat(true)
+		parent:ForcePlayerDrop()
+		parent:Demat()
+
+		self:Timer("redecorate_materialise", 1, function()
+			parent:ForcePlayerDrop()
+			--phys:Wake()
+			--self:SetParent(nil)
+			--parent:SetParent(self)
+
+			self:SetCollisionGroup(COLLISION_GROUP_WORLD)
+
+			self:SetPos(parent:GetPos())
+			self:SetAngles(parent:GetAngles())
+			self:SetFastRemat(true)
+			self:Mat()
+
+			if ply and ply.linked_tardis == self then
+				ply.linked_tardis = child
+				net.Start("Sonic-SetLinkedTARDIS")
+					net.WriteEntity(child)
+				net.Send(ply)
+			end
+		end)
+
+	end)
+
+
+	ENT:AddHook("ShouldTeleportPortal", "redecorate", function(self,portal,ent)
+		if self:GetData("redecorate") or ent == self:GetData("redecorate_next") then
+			return false
+		end
+	end)
+
+	--[[hook.Add("OnPhysgunPickup", "tardis_redecorate", function(ply, ent)
+		if ent.TardisExterior and ent:GetData("redecorate_parent") then
+			ent:SetPhyslock(false)
+		end
+	end)]]
+
 
 else
 	ENT:AddHook("Initialize", "redecorate-reset", function(self)
