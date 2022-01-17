@@ -59,10 +59,8 @@ if SERVER then
 		return true
 	end
 
-	function ENT:ForceDematState(pos, ang)
-		self:SetPos(pos)
-		self:SetAngles(ang)
-		self:SetDestination(pos, ang)
+	function ENT:ForceDematState()
+		self:SetDestination(self:GetPos(), self:GetAngles())
 
 		self:SetData("demat",true)
 		self:SetData("vortexalpha", 1)
