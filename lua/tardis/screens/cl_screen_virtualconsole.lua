@@ -138,13 +138,13 @@ local function old_virtual_console(self,ext,int,frame,screen)
 	physlock:SetSize( frame:GetWide()*0.2, frame:GetTall()*0.2)
 	physlock:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 	physlock:SetPos((frame:GetWide()*0.35)-(physlock:GetWide()*0.5),(frame:GetTall()*0.4)-(physlock:GetTall()*0.5))
-	physlock:SetText("Physlock "..(ext:GetData("physlock") and "on" or "off"))
+	physlock:SetText("Physlock "..(ext:GetPhyslock() and "on" or "off"))
 	physlock.DoClick = function()
 		TARDIS:Control("physlock", LocalPlayer())
 	end
-	physlock.oldon = ext:GetData("physlock")
+	physlock.oldon = ext:GetPhyslock()
 	function physlock:Think()
-		local on = ext:GetData("physlock", false)
+		local on = ext:GetPhyslock()
 		if self.oldon == on then return end
 		if on then
 			self:SetText("Physlock on")

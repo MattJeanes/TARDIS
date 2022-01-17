@@ -93,6 +93,12 @@ if SERVER then
 	   TARDIS:SetSetting("health-enabled", tobool(newvalue), true)
 	end, "UpdateOnChange")
 
+	hook.Add("OnPhysgunPickup", "tardis-health", function(ply, ent)
+		if ent.TardisExterior and ent:GetData("redecorate_from") then
+			ent:SetPhyslock(false)
+		end
+	end)
+
 	ENT:AddWireOutput("Health", "TARDIS Health")
 
 	function ENT:Explode(f)
@@ -180,7 +186,8 @@ if SERVER then
 				parent = self,
 			})
 			ent:SetBodygroup(1,0)
-
+			
+			ent:SetData("redecorate_from", self)
 			self:SetData("redecorate_next", ent)
 
 			-- make it dematerialised
@@ -241,7 +248,7 @@ if SERVER then
 
 
 			-- fly away
-			self:SetPhyslock(true) -- required to prevent falling through the textures and bouncing up when power gets on
+			self:SetPhyslock(true) -- required to prevent falling through the world and bouncing up when power gets on
 			self:SetData("redecorate-demattime", CurTime())
 			self:SetFastRemat(true)
 			ent:SetPhyslock(true)
@@ -277,6 +284,7 @@ if SERVER then
 				ent:SetCollisionGroup(COLLISION_GROUP_WORLD)
 				self:SetParent(ent)
 				self:SetCollisionGroup(COLLISION_GROUP_IN_VEHICLE)
+				self:ForcePlayerDrop()
 				-- you can't interact with both at once
 
 				ent:SetFastRemat(true)
@@ -311,6 +319,7 @@ if SERVER then
 			end
 			self:SetData("parent-saved-int-data", nil, true)
 		end
+		self:SetData("redecorate_from", nil)
 	end)
 
 	ENT:AddHook("ShouldTeleportPortal", "redecoration", function(self,portal,ent)
