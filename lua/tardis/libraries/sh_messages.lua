@@ -35,6 +35,14 @@ function TARDIS:Debug(...)
 	if not TARDIS:IsDebugOn() then return end
 
 	local args = {...}
+
+	-- nil values are being ignored, so we add them as strings
+	for i = 1,table.maxn(args) do
+		if args[i] == nil then
+			args[i] = "<nil>"
+		end
+	end
+
 	if args == nil then print("nil") end
 
 	local debug_prefix = "[TARDIS DEBUG " .. (SERVER and "SERVER" or "CLIENT") .. "]    "
