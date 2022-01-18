@@ -68,7 +68,7 @@ if SERVER then
 		})
 
 		if not IsValid(child) then
-			error("Redecoration failed: failed to spawn the replacement")
+			ErrorNoHalt("Redecoration failed: failed to spawn the replacement")
 		end
 		return IsValid(child) -- if gone wrong, finish repair
 	end
