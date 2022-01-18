@@ -10,28 +10,56 @@ function TARDIS:IsDebugOn()
 	return TARDIS.debug
 end
 
-function TARDIS:Debug(text, ply)
-	if TARDIS:IsDebugOn() then
-		local fulltext = "[TARDIS Debug] "..text
-		if CLIENT and LocalPlayer() then
-			LocalPlayer():ChatPrint(fulltext)
-		elseif ply ~= nil then
-			ply:ChatPrint(fulltext)
-		else
-			print(fulltext)
-		end
+if SERVER then
+	util.AddNetworkString("TARDIS-Debug")
+end
+
+local function chat_print(text)
+	if SERVER then
+		net.Start("TARDIS-Debug")
+			net.WriteString(text)
+		net.Broadcast()
+	else
+		LocalPlayer():ChatPrint(text)
 	end
 end
 
-function TARDIS:DebugPrintTable(table, name)
-	if TARDIS:IsDebugOn() then
-		if table.name then
-			print("\n[TARDIS Debug] Printing table "..name)
+if CLIENT then
+	net.Receive("TARDIS-Debug", function()
+		local text=net.ReadString()
+		chat_print(text)
+	end)
+end
+
+function TARDIS:Debug(...)
+	if not TARDIS:IsDebugOn() then return end
+
+	local args = {...}
+	if args == nil then print("A") end
+
+	local debug_prefix = "[TARDIS DEBUG " .. (SERVER and "SERVER" or "CLIENT") .. "]    "
+
+	local full_text = debug_prefix
+	local table_num = 1
+
+	for k,arg in pairs(args) do
+		local text
+		if istable(arg) then
+			print("\n" .. debug_prefix .. "Table #" .. table_num .. ":")
+			print("---------------------------------------------------")
+			PrintTable(arg, 1)
+			print("---------------------------------------------------")
+			print("\n")
+
+			full_text = full_text .. "<table #" .. table_num .. ">  "
+			table_num = table_num + 1
+		else
+			full_text = full_text .. tostring(arg) .. "  "
 		end
-		print("\n")
-		PrintTable(table)
-		print("\n")
 	end
+	if SERVER then print(full_text) end
+	print("\n")
+	chat_print(full_text)
 end
 
 -- Notification messages
