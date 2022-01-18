@@ -19,6 +19,7 @@ function ENT:GetTimer(id)
 end
 
 ENT:AddHook("Think", "timers", function(self)
+	if not self.timers then return end
 	for k,v in pairs(self.timers)
 	do
 		if CurTime() > v[1] then
