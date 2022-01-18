@@ -1,23 +1,24 @@
-local timers = {}
+ENT.timers = {}
 
 function ENT:Timer(id, delay, action)
-	timers[id] = { CurTime() + delay, action }
+	self.timers[id] = { CurTime() + delay, action }
 end
 
 function ENT:CancelTimer(id)
-	timers[id] = nil
+	self.timers[id] = nil
 end
 
 function ENT:GetTimers()
-	return timers
+	return self.timers
 end
 
 function ENT:GetTimer(id)
-	return timers[id]
+	return self.timers[id]
 end
 
 ENT:AddHook("Think", "timers", function(self)
-	for k,v in pairs(timers)
+	if not self.timers then return end
+	for k,v in pairs(self.timers)
 	do
 		if CurTime() > v[1] then
 			self:CancelTimer(k)
