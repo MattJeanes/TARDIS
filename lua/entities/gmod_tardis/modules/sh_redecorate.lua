@@ -22,13 +22,6 @@ local int_saved_data_names = {
 	"security"
 }
 
-function TARDIS:apply_redecoration_data(object, data)
-	if not IsValid(object) or not data then return end
-	for name,value in pairs(data) do
-		object:SetData(name, value, true)
-	end
-end
-
 if SERVER then
 
 	ENT:AddHook("ShouldRedecorate", "redecorate_toggled", function(self)
@@ -72,7 +65,7 @@ if SERVER then
 	ENT:AddHook("StopDemat", "redecorate_remove_parent", function(self)
 		if self:GetData("redecorate") then
 			local child = self:GetData("redecorate_child")
-			if child then
+			if IsValid(child) then
 				child:SetData("redecorate_parent", nil, true)
 			end
 			self:Remove()
@@ -133,7 +126,11 @@ if SERVER then
 		self:ForceDematState()
 
 		local ext_saved_data = self:GetData("redecorate_parent_ext_data")
-		TARDIS:apply_redecoration_data(self, ext_saved_data)
+		if ext_saved_data then
+			for name,value in pairs(ext_saved_data) do
+				self:SetData(name, value, true)
+			end
+		end
 		self:SetData("redecorate_parent_ext_data", nil, true)
 
 		local phys = self:GetPhysicsObject()

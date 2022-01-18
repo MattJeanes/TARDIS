@@ -1,4 +1,6 @@
-ENT.timers = {}
+ENT:AddHook("Initialize", "timers", function(self)
+	self.timers = {}
+end)
 
 function ENT:Timer(id, delay, action)
 	self.timers[id] = { CurTime() + delay, action }
