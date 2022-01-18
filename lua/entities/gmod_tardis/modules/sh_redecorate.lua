@@ -87,6 +87,7 @@ if SERVER then
 		local parent = self:GetData("redecorate_parent")
 		if not parent then return end
 
+		parent:ForcePlayerDrop()
 		self:SetCollisionGroup(COLLISION_GROUP_WORLD)
 		self:SetPos(parent:GetPos())
 		self:SetAngles(parent:GetAngles())
@@ -135,9 +136,11 @@ if SERVER then
 
 		constraint.RemoveAll(parent) -- drop everything attached
 		parent:SetFastRemat(true)
-		parent:ForcePlayerDrop()
+
 		parent:SetPhyslock(true)
+		parent:ForcePlayerDrop()
 		parent:Demat()
+		parent:SetCollisionGroup(COLLISION_GROUP_IN_VEHICLE)
 
 		self:Timer("redecorate_materialise", 1, function()
 			parent:ForcePlayerDrop()
