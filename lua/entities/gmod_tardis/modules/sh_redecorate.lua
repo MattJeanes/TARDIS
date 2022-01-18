@@ -90,6 +90,15 @@ if SERVER then
 		parent:SetParent(self)
 	end)
 
+	ENT:AddHook("StopMat", "redecorate_sync", function(self)
+		local parent_vortex = self:GetData("redecorate_parent_vortex")
+
+		if parent_vortex then
+			self:SetFastRemat(false)
+			self:SetData("redecorate_parent_vortex", nil, true)
+		end
+	end)
+
 	ENT:AddHook("CustomData", "redecorate_child", function(self, customdata)
 		local parent = customdata.redecorate_parent
 		if parent then
@@ -101,6 +110,9 @@ if SERVER then
 
 			self:SetData("redecorate_parent_int_data", customdata.int_data, true)
 			self:SetData("redecorate_parent_ext_data", customdata.ext_data, true)
+
+			local vortex = (not parent:GetData("demat-fast"))
+			self:SetData("redecorate_parent_vortex", vortex, true)
 		end
 	end)
 
