@@ -75,7 +75,10 @@ if SERVER then
 
 	ENT:AddHook("StopDemat", "redecorate_remove_parent", function(self)
 		if self:GetData("redecorate") then
-			self:GetData("redecorate_child"):SetData("redecorate_parent", nil, true)
+			local child = self:GetData("redecorate_child")
+			if child then
+				child:SetData("redecorate_parent", nil, true)
+			end
 			self:Remove()
 		end
 	end)
