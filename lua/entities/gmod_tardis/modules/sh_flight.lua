@@ -140,7 +140,7 @@ if SERVER then
 		if on and self:CallHook("CanTurnOnFlight")==false then
 			return false
 		end
-		if on and self:GetData("physlock",false)==true then
+		if on and self:GetPhyslock()==true then
 			local pilot = self:GetData("pilot",nil)
 			if IsValid(pilot) and pilot:IsPlayer() then
 				TARDIS:Message(pilot, "WARNING: Physical lock engaged")
