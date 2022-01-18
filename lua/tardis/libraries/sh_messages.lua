@@ -35,7 +35,7 @@ function TARDIS:Debug(...)
 	if not TARDIS:IsDebugOn() then return end
 
 	local args = {...}
-	if args == nil then print("A") end
+	if args == nil then print("nil") end
 
 	local debug_prefix = "[TARDIS DEBUG " .. (SERVER and "SERVER" or "CLIENT") .. "]    "
 
