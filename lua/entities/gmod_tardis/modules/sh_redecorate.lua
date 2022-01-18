@@ -125,7 +125,7 @@ if SERVER then
 		local phys = self:GetPhysicsObject()
 
 		apply_saved_data(self, ext_saved_data, ext_saved_data_names)
-		apply_saved_data(self.interior, int_saved_data, ext_saved_data_names)
+		apply_saved_data(self.interior, int_saved_data, int_saved_data_names)
 
 		self:SetData("redecorate_parent_ext_data", nil, true)
 		self:SetData("redecorate_parent_int_data", nil, true)
