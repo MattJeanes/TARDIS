@@ -45,7 +45,7 @@ function TARDIS:Debug(...)
 
 	if args == nil then print("nil") end
 
-	local debug_prefix = "[TARDIS DEBUG " .. (SERVER and "SERVER" or "CLIENT") .. "]    "
+	local debug_prefix = "[TARDIS DEBUG] (" .. (SERVER and "SERVER" or "CLIENT") .. ")  :  "
 
 	local full_text = debug_prefix
 	local table_num = 1
@@ -69,6 +69,9 @@ function TARDIS:Debug(...)
 	print("\n")
 	chat_print(full_text)
 end
+
+-- shortcut alias
+function tardisdebug(...) TARDIS:Debug(...) end
 
 -- Notification messages
 
