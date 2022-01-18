@@ -5,7 +5,13 @@ cvars.AddChangeCallback("tardis2_debug", function()
 	TARDIS.debug = GetConVar("tardis2_debug"):GetBool()
 end)
 
+CreateConVar("tardis2_debug_chat", 0, {FCVAR_ARCHIVE, FCVAR_REPLICATED}, "TARDIS - print debug to chat as well")
+cvars.AddChangeCallback("tardis2_debug_chat", function()
+	TARDIS.debug_chat = GetConVar("tardis2_debug_chat"):GetBool()
+end)
+
 TARDIS.debug = GetConVar("tardis2_debug"):GetBool()
+TARDIS.debug_chat = GetConVar("tardis2_debug_chat"):GetBool()
 function TARDIS:IsDebugOn()
 	return TARDIS.debug
 end
@@ -57,7 +63,6 @@ function TARDIS:Debug(...)
 			print("---------------------------------------------------")
 			PrintTable(arg, 1)
 			print("---------------------------------------------------")
-			print("\n")
 
 			full_text = full_text .. "<table #" .. table_num .. ">  "
 			table_num = table_num + 1
@@ -65,9 +70,14 @@ function TARDIS:Debug(...)
 			full_text = full_text .. tostring(arg) .. "  "
 		end
 	end
-	if SERVER then print(full_text) end
 	print("\n")
-	chat_print(full_text)
+	if self.debug_chat then
+		if SERVER then print(full_text) end
+		chat_print(full_text)
+	else
+		print(full_text)
+	end
+
 end
 
 -- shortcut alias
