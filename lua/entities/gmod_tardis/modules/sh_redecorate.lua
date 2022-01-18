@@ -22,16 +22,12 @@ local int_saved_data_names = {
 	"security"
 }
 
-local function apply_saved_data(object, data, names)
+function TARDIS:apply_redecoration_data(object, data)
 	if not IsValid(object) or not data then return end
-
-	for i,name in ipairs(names) do
-		if data[name] then
-			object:SetData(name, data[name], true)
-		end
+	for name,value in pairs(data) do
+		object:SetData(name, value, true)
 	end
 end
-
 
 if SERVER then
 
@@ -125,21 +121,17 @@ if SERVER then
 		self:ForceDematState()
 
 		local ext_saved_data = self:GetData("redecorate_parent_ext_data")
-		local int_saved_data = self:GetData("redecorate_parent_int_data")
-		local phys = self:GetPhysicsObject()
-
-		apply_saved_data(self, ext_saved_data, ext_saved_data_names)
-		apply_saved_data(self.interior, int_saved_data, int_saved_data_names)
-
+		TARDIS:apply_redecoration_data(self, ext_saved_data)
 		self:SetData("redecorate_parent_ext_data", nil, true)
-		self:SetData("redecorate_parent_int_data", nil, true)
+
+		local phys = self:GetPhysicsObject()
 
 		constraint.RemoveAll(parent) -- drop everything attached
 		parent:SetFastRemat(true)
 
 		parent:SetPhyslock(true)
 		parent:ForcePlayerDrop()
-		parent:Demat()
+		parent:Demat(nil, nil, nil, true)
 		parent:SetCollisionGroup(COLLISION_GROUP_IN_VEHICLE)
 
 		self:Timer("redecorate_materialise", 1, function()
