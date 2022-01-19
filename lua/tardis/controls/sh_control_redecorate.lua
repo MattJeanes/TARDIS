@@ -3,6 +3,7 @@ TARDIS:AddControl({
 	ext_func=function(self,ply)
 		if ply ~= self:GetCreator() then
 			TARDIS:ErrorMessage(ply, "You cannot redecorate someone else's TARDIS")
+			return
 		end
 
 		local on = not self:GetData("redecorate", false)
