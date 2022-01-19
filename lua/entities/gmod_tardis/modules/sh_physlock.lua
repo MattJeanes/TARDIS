@@ -14,6 +14,10 @@ TARDIS:AddKeyBind("physlock-toggle",{
 	exterior=true
 })
 
+function ENT:GetPhyslock()
+	return self:GetData("physlock",false)
+end
+
 if CLIENT then return end
 
 function ENT:SetPhyslock(on)
@@ -46,24 +50,24 @@ function ENT:SetPhyslock(on)
 end
 
 function ENT:TogglePhyslock()
-	local on = not self:GetData("physlock", false)
+	local on = not self:GetPhyslock()
 	return self:SetPhyslock(on)
 end
 
 hook.Add("PlayerUnfrozeObject", "tardis-physlock", function(ply,ent,phys)
-	if ent:GetClass()=="gmod_tardis" and ent:GetData("physlock",false)==true then 
+	if ent:GetClass()=="gmod_tardis" and ent:GetPhyslock()==true then 
 		phys:EnableMotion(false) 
 	end
 end)
 
 hook.Add("PhysgunDrop", "tardis-physlock", function(ply,ent)
-	if ent:GetClass()=="gmod_tardis" and ent:GetData("physlock",false)==true then
+	if ent:GetClass()=="gmod_tardis" and ent:GetPhyslock()==true then
 		ent:GetPhysicsObject():EnableMotion(false)
 	end
 end)
 
 ENT:AddHook("MatStart", "physlock", function(self)
-	if not self:GetData("physlock",false) then
+	if not self:GetPhyslock() then
 		self.phys:EnableMotion(true)
 		self.phys:Wake()
 	end
@@ -73,7 +77,7 @@ ENT:AddHook("PowerToggled", "physlock", function(self,on)
 	if on and self:GetData("power-lastphyslock", false) == true then
 		self:SetPhyslock(true)
 	else
-		self:SetData("power-lastphyslock", self:GetData("physlock", false))
+		self:SetData("power-lastphyslock", self:GetPhyslock())
 		self:SetPhyslock(false)
 	end
 end)
@@ -86,7 +90,7 @@ end)
 
 ENT:AddHook("HandleE2", "physlock", function(self, name, e2)
 	if name == "GetPhyslocked" then
-		return self:GetData("physlock",false) and 1 or 0
+		return self:GetPhyslock() and 1 or 0
 	elseif name == "Physlock" and TARDIS:CheckPP(e2.player, self) then
 		return self:TogglePhyslock() and 1 or 0
 	end

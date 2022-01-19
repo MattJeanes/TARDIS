@@ -47,6 +47,7 @@ T.Interior = {
 }
 T.Exterior = {
 	Model = "models/drmatt/tardis/exterior/exterior.mdl",
+	ExcludedSkins = {},
 	Mass = 5000,
 	DoorAnimationTime = 0.5,
 	ScannerOffset = Vector(22,0,50),
