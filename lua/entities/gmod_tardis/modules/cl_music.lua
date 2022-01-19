@@ -94,5 +94,7 @@ ENT:AddHook("Think", "music", function(self)
 end)
 
 ENT:AddHook("OnRemove", "music", function(self)
-	self:StopMusic()
+	if not self:GetData("redecorate", false) then
+		self:StopMusic()
+	end
 end)
