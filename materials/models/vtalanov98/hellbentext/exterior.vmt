@@ -1,0 +1,8 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/doctorwho1200/hellbent/exterior"
+	"$envmap" "models/doctorwho1200/hellbent/environment"
+	"$envmaptint" "[0.4 0.4 0.4]"
+	"$nodecal" "1"
+	"$surfaceprop" "Glass"
+}
