@@ -13,6 +13,17 @@ TARDIS:AddKeyBind("tp-toggledoor",{
 	exterior=true
 })
 
+TARDIS:AddSetting({
+	id="thirdperson_careful_enabled",
+	name="Use walk key to enter third person",
+	desc="Should the WALK ('ALT' by default) key be pressed to enter third person when pressing USE ('E' by default) key on the console?",
+	section="Misc",
+	value=true,
+	type="bool",
+	option=true,
+	networked=true
+})
+
 hook.Add("PlayerSwitchFlashlight", "tardis-thirdperson", function(ply,enabled)
 	if ply:GetTardisData("thirdperson") then
 		return false
@@ -41,7 +52,13 @@ function ENT:GetThirdPersonTrace(ply,ang)
 end
 
 if SERVER then
-	function ENT:PlayerThirdPerson(ply, enabled)
+	function ENT:PlayerThirdPerson(ply, enabled, careful)
+
+		if careful and TARDIS:GetSetting("thirdperson_careful_enabled", true, ply) and not ply:KeyDown(IN_WALK) then
+			self:SendMessage("thirdperson-careful-hint", nil, ply)
+			return
+		end
+
 		if IsValid(ply) and ply:IsPlayer() and self.occupants[ply] then
 			if self:SetOutsideView(ply, enabled) then
 				ply:SetTardisData("thirdperson", enabled, true)
@@ -65,5 +82,11 @@ else
 		if LocalPlayer():GetTardisData("thirdperson") then
 			return self:GetThirdPersonPos(ply, ang)
 		end
+	end)
+
+	ENT:OnMessage("thirdperson-careful-hint", function(self)
+		local use = string.upper(input.LookupBinding("+use", true)) or "USE"
+		local walk = string.upper(input.LookupBinding("+walk", true)) or "WALK"
+		TARDIS:Message(ply, "HINT: Use \'" .. walk .. " + " .. use .. "\' keys to enter third person")
 	end)
 end
