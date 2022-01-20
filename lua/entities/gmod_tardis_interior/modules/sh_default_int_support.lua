@@ -21,7 +21,7 @@ if SERVER then
 			local pos2=self:WorldToLocal(a:GetPos())
 			local distance=pos:Distance(pos2)
 			if distance < 110 and playerlookingat(self,a,pos,10,10) then
-				TARDIS:Control("thirdperson", a)
+				TARDIS:Control("thirdperson_careful", a)
 			end
 		end
 	end)
