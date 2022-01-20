@@ -16,7 +16,7 @@ TARDIS:AddKeyBind("tp-toggledoor",{
 TARDIS:AddSetting({
 	id="thirdperson_careful_enabled",
 	name="Use walk key to open third person",
-	desc="Should the WALK ('ALT' by default) key be pressed to enter third person by clicking the console?",
+	desc="Should the WALK ('ALT' by default) key be pressed to enter third person when pressing USE ('E' by default) key on the console?",
 	section="Misc",
 	value=true,
 	type="bool",
