@@ -151,6 +151,18 @@ if SERVER then
 		end
 	end)
 
+	ENT:AddHook("Think", "int_door_skin", function(self)
+		-- this fixes interior door skin if it's chosen at spawn
+		-- we can not do it at the beginning because the interior doesn't exist yet
+		if self:GetData("intdoor_skin_needs_update", false) and IsValid(self.interior) then
+			local intdoor=TARDIS:GetPart(self.interior,"door")
+			if IsValid(intdoor) then
+				self:SetData("intdoor_skin_needs_update", false, true)
+				intdoor:SetSkin(self:GetSkin())
+			end
+		end
+	end)
+
 	ENT:AddHook("SkinChanged","doors",function(self,i)
 		local door=TARDIS:GetPart(self,"door")
 		local intdoor=TARDIS:GetPart(self.interior,"door")

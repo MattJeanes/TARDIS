@@ -1,18 +1,30 @@
 TARDIS:AddControl({
 	id = "redecorate",
 	ext_func=function(self,ply)
-		local on = self:GetData("redecorate", false)
-		on = self:SetData("redecorate", not on, true)
-
-		local chosen_int = TARDIS:GetSetting("redecorate-interior","default",self:GetCreator())
-
-		if on and (chosen_int == self.metadata.ID) then
-			TARDIS:ErrorMessage(ply, "New interior has not been selected")
-		elseif on and not self:GetData("repair-primed") then
-			TARDIS:Message(ply, "Hint: enable self-repair to start redecoration")
-			-- We print this first for it to be lower in the list
+		if ply ~= self:GetCreator() then
+			TARDIS:ErrorMessage(ply, "You cannot redecorate someone else's TARDIS")
 		end
+
+		local on = not self:GetData("redecorate", false)
+		self:SetData("redecorate", on, true)
 		TARDIS:StatusMessage(ply, "Redecoration", on)
+
+		if not self:GetData("redecorate", false) then
+			return
+		end
+
+		local chosen_int = TARDIS:GetSetting("redecorate-interior", "default", ply)
+		if chosen_int == self.metadata.ID then
+			TARDIS:Message(ply, "WARNING: New interior has been selected randomly. Right click in spawnmenu to choose")
+			while chosen_int == self.metadata.ID or TARDIS.Metadata[chosen_int].Base == true do
+				chosen_int = table.Random(TARDIS.Metadata).ID
+			end
+		end
+		self:SetData("redecorate-interior", chosen_int)
+
+		if not self:GetData("repair-primed") and not self:SetRepair(true) then
+			TARDIS:ErrorMessage(ply, "Failed to toggle redecoration")
+		end
 	end,
 	serveronly=true,
 	power_independent = true,

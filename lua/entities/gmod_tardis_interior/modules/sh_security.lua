@@ -28,7 +28,9 @@ end
 -- Hooks
 
 ENT:AddHook("Initialize","security", function(self)
-	self:SetData("security", TARDIS:GetSetting("security",false,self:GetCreator()), true)
+	if not self:GetData("security") then
+		self:SetData("security", TARDIS:GetSetting("security",false,self:GetCreator()), true)
+	end
 end)
 
 ENT:AddHook("CanUsePart","security",function(self,part,ply)

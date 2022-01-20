@@ -63,11 +63,29 @@ function TARDIS:SaveCustomMusic()
 end
 
 function TARDIS:AddCustomMusic(name, url)
+	if name == nil or name == "" then
+		TARDIS:ErrorMessage(LocalPlayer(), "You need to specify the name of the custom track to add it")
+		return
+	end
+	if url == nil or url == "" then
+		TARDIS:ErrorMessage(LocalPlayer(), "You need to specify the URL of the custom track to add it")
+		return
+	end
+
+	for k,v in pairs(custom_music) do
+		if v[1] == name then
+			TARDIS:ErrorMessage(LocalPlayer(), "A music track with such name already exists")
+			return
+		end
+	end
+
 	local next = table.insert(custom_music,{name, url})
+	print("[TARDIS] Custom music added (" .. name ..", " .. url .. ")")
 	TARDIS:SaveCustomMusic()
 end
 
 function TARDIS:RemoveCustomMusic(index)
+	print("[TARDIS] Custom music removed (" .. custom_music[index][1] ..", " .. custom_music[index][2] .. ")")
 	table.remove(custom_music, index)
 	TARDIS:SaveCustomMusic()
 end
@@ -105,7 +123,7 @@ TARDIS:AddScreen("Music", {id="music", menu=false, order=10, popuponly=true}, fu
 	local list_custom = vgui.Create("DListView",frame)
 	list_custom:SetSize(listW, listT)
 	list_custom:SetPos(2 * gap + listW, gap)
-	list_custom:AddColumn("Custom Music")
+	list_custom:AddColumn("Custom music")
 	list_custom:SetMultiSelect(false)
 
 	local url_bar = vgui.Create( "DTextEntry", frame )
@@ -207,7 +225,6 @@ TARDIS:AddScreen("Music", {id="music", menu=false, order=10, popuponly=true}, fu
 	end
 
 	function save_custom_button:DoClick()
-		print("Music Saved (" .. name_bar:GetText() .. ")")
 		TARDIS:AddCustomMusic(name_bar:GetText(), url_bar:GetText())
 		list_custom:UpdateAll()
 	end
@@ -215,11 +232,15 @@ TARDIS:AddScreen("Music", {id="music", menu=false, order=10, popuponly=true}, fu
 	function remove_custom_button:DoClick()
 		local line = list_custom:GetSelectedLine()
 		if not line then
-			TARDIS:ErrorMessage(LocalPlayer(), "Nothing has been chosen for removal")
+			if list_premade:GetSelectedLine() then
+				TARDIS:ErrorMessage(LocalPlayer(), "You cannot delete pre-loaded music")
+			else
+				TARDIS:ErrorMessage(LocalPlayer(), "Nothing has been chosen for removal")
+			end
 			return
 		end
 
-		Derma_Query("Are you sure you want to remove " .. custom_music[line][1] .. " from the music list? This cannot be undone.",
+		Derma_Query("Are you sure you want to remove \"" .. custom_music[line][1] .. "\" from the music list? This cannot be undone.",
 					"TARDIS Interface",
 					"Yes",
 					function()
@@ -243,7 +264,9 @@ TARDIS:AddScreen("Music", {id="music", menu=false, order=10, popuponly=true}, fu
 	end
 
 	function play_stop_button:DoClick()
-		if IsValid(ext.music) and ext.music:GetState()==GMOD_CHANNEL_PLAYING then
+		if IsValid(ext.music) and ext.music:GetState()==GMOD_CHANNEL_PLAYING
+			and not (list_premade:GetSelectedLine() or list_custom:GetSelectedLine())
+		then
 			ext:StopMusic()
 		else
 			if list_premade:GetSelectedLine() then
@@ -251,6 +274,8 @@ TARDIS:AddScreen("Music", {id="music", menu=false, order=10, popuponly=true}, fu
 			else
 				ext:PlayMusic(url_bar:GetValue())
 			end
+			list_premade:ClearSelection()
+			list_custom:ClearSelection()
 			self:SetEnabled(false)
 			self.disabled_time = CurTime()
 		end
