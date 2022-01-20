@@ -119,8 +119,6 @@ if SERVER then
 		self:SetCollisionGroup(COLLISION_GROUP_IN_VEHICLE)
 	end)
 
-	util.AddNetworkString("TARDIS-Migrate-music")
-
 	ENT:AddHook("PostInitialize", "redecorate_child", function(self)
 		local parent = self:GetData("redecorate_parent")
 		if not parent then return end
@@ -134,10 +132,11 @@ if SERVER then
 			end
 		end
 		self:SetData("redecorate_parent_ext_data", nil, true)
-		net.Start("TARDIS-Migrate-music")
+
+		self:SendMessage("migrate-music", function()
 			net.WriteEntity(self)
 			net.WriteEntity(parent)
-		net.Broadcast()
+		end)
 
 		local phys = self:GetPhysicsObject()
 
@@ -181,7 +180,7 @@ if SERVER then
 	end)
 
 else
-	net.Receive("TARDIS-Migrate-music", function()
+	ENT:OnMessage("migrate-music", function()
 		local child=net.ReadEntity()
 		local parent=net.ReadEntity()
 		child.music = parent.music
