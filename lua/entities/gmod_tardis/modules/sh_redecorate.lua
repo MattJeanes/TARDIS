@@ -133,6 +133,11 @@ if SERVER then
 		end
 		self:SetData("redecorate_parent_ext_data", nil, true)
 
+		self:SendMessage("migrate-music", function()
+			net.WriteEntity(self)
+			net.WriteEntity(parent)
+		end)
+
 		local phys = self:GetPhysicsObject()
 
 		constraint.RemoveAll(parent) -- drop everything attached
@@ -175,6 +180,12 @@ if SERVER then
 	end)
 
 else
+	ENT:OnMessage("migrate-music", function()
+		local child=net.ReadEntity()
+		local parent=net.ReadEntity()
+		child.music = parent.music
+	end)
+
 	ENT:AddHook("Initialize", "redecorate-reset", function(self)
 		if not IsValid(self) or (not LocalPlayer() == self:GetCreator()) then return end
 		TARDIS:SetSetting("redecorate-interior",self.metadata.ID,true)
