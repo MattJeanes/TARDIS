@@ -132,11 +132,7 @@ if SERVER then
 			end
 		end
 		self:SetData("redecorate_parent_ext_data", nil, true)
-
-		self:SendMessage("migrate-music", function()
-			net.WriteEntity(self)
-			net.WriteEntity(parent)
-		end)
+		self:CallHook("MigrateData", parent)
 
 		local phys = self:GetPhysicsObject()
 
@@ -179,11 +175,21 @@ if SERVER then
 		end
 	end)
 
+	ENT:AddHook("MigrateData", "networking", function(self, parent)
+		self:SendMessage("MigrateData", function()
+			net.WriteEntity(parent)
+		end)
+	end)
+
 else
-	ENT:OnMessage("migrate-music", function()
-		local child=net.ReadEntity()
+	ENT:OnMessage("MigrateData", function(self)
 		local parent=net.ReadEntity()
-		child.music = parent.music
+		self:CallHook("MigrateData", parent)
+	end)
+
+	ENT:AddHook("MigrateData", "music", function(self, parent)
+		TARDIS:Debug("migrated", self, parent)
+		self.music = parent.music
 	end)
 
 	ENT:AddHook("Initialize", "redecorate-reset", function(self)
