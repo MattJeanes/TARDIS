@@ -99,7 +99,19 @@ T.Interior = {
 			ang = Angle(0, -40, 0),
 			scale = 0.764,
 			matrixScale = Vector(1, 1, 1.083)
-		}
+		},
+		default_doorframe_bottom = {
+			pos = Vector(317, 335.8, -93.5),
+			ang = Angle(0, 50, 0),
+			scale = 1.14,
+			matrixScale = Vector(0.53, 1.02, 1)
+		},
+		default_doorframe_bottom2 = {
+			pos = Vector(317, 335.8, -93.5),
+			ang = Angle(0, 230, 0),
+			scale = 1.14,
+			matrixScale = Vector(0.54, 1.02, 1)
+		},
 	},
 	Controls = {
 		default_throttle           = "teleport",
