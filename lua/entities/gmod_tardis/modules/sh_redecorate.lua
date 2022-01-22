@@ -134,6 +134,10 @@ if SERVER then
 		self:SetData("redecorate_parent_ext_data", nil, true)
 		self:CallHook("MigrateData", parent)
 
+		self:SendMessage("MigrateData", function()
+			net.WriteEntity(parent)
+		end)
+
 		local phys = self:GetPhysicsObject()
 
 		constraint.RemoveAll(parent) -- drop everything attached
@@ -175,20 +179,13 @@ if SERVER then
 		end
 	end)
 
-	ENT:AddHook("MigrateData", "networking", function(self, parent)
-		self:SendMessage("MigrateData", function()
-			net.WriteEntity(parent)
-		end)
-	end)
-
-else
+else -- CLIENT
 	ENT:OnMessage("MigrateData", function(self)
 		local parent=net.ReadEntity()
 		self:CallHook("MigrateData", parent)
 	end)
 
 	ENT:AddHook("MigrateData", "music", function(self, parent)
-		TARDIS:Debug("migrated", self, parent)
 		self.music = parent.music
 	end)
 
