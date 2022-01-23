@@ -185,10 +185,6 @@ else -- CLIENT
 		self:CallHook("MigrateData", parent)
 	end)
 
-	ENT:AddHook("MigrateData", "music", function(self, parent)
-		self.music = parent.music
-	end)
-
 	ENT:AddHook("Initialize", "redecorate-reset", function(self)
 		if not IsValid(self) or (not LocalPlayer() == self:GetCreator()) then return end
 		TARDIS:SetSetting("redecorate-interior",self.metadata.ID,true)

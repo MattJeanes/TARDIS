@@ -98,3 +98,7 @@ ENT:AddHook("OnRemove", "music", function(self)
 		self:StopMusic()
 	end
 end)
+
+ENT:AddHook("MigrateData", "music", function(self, parent)
+	self.music = parent.music
+end)
