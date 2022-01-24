@@ -95,7 +95,7 @@ if SERVER then
 	ENT:AddHook("CustomData", "redecorate_child", function(self, customdata)
 		local parent = customdata.redecorate_parent
 		if parent then
-			self:SetData("redecorate_parent", parent)
+			self:SetData("redecorate_parent", parent, true)
 			parent:SetData("redecorate_child", self)
 
 			self:SetPos(parent:GetPos())
@@ -133,10 +133,6 @@ if SERVER then
 		end
 		self:SetData("redecorate_parent_ext_data", nil, true)
 		self:CallHook("MigrateData", parent)
-
-		self:SendMessage("MigrateData", function()
-			net.WriteEntity(parent)
-		end)
 
 		local phys = self:GetPhysicsObject()
 
@@ -180,9 +176,11 @@ if SERVER then
 	end)
 
 else -- CLIENT
-	ENT:OnMessage("MigrateData", function(self)
-		local parent=net.ReadEntity()
-		self:CallHook("MigrateData", parent)
+	ENT:AddHook("DataLoaded", "redecorate", function(self)
+		local parent = self:GetData("redecorate_parent")
+		if parent then
+			self:CallHook("MigrateData", parent)			
+		end
 	end)
 
 	ENT:AddHook("Initialize", "redecorate-reset", function(self)
