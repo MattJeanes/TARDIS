@@ -71,7 +71,6 @@ function ENT:PlayMusic(url,resolved)
 		url=self:ResolveMusicURL(url)
 	end
 	if url and TARDIS:GetSetting("music-enabled") and TARDIS:GetSetting("sound") then
-		self:StopMusic()
 		--[[sound.PlayURL(url, "", function(station,errorid,errorname)
 			if station then
 				station:SetVolume(1)
@@ -102,7 +101,7 @@ ENT:OnMessage("play-music", function(self)
 end)
 
 ENT:OnMessage("stop-music", function(self)
-	--self:StopMusic(url)
+	self:StopMusic()
 	self.music:Stop()
 	self.music=nil
 end)
@@ -121,7 +120,6 @@ ENT:AddHook("OnRemove", "music", function(self)
 end)
 
 ENT:AddHook("PlayerExit", "stop-music-on-exit", function(self)
-	--self:StopMusic()
 	if self.music then
 		self:StopMusic()
 	end
