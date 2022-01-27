@@ -26,10 +26,7 @@ function ENT:StopMusic()
 		if self.music:GetState() == GMOD_CHANNEL_PLAYING then
 			TARDIS:Message(LocalPlayer(), "Music stopped")
 		end
-		self.music:Stop()
-		self.music=nil
-
-		TARDIS:Message(LocalPlayer(), "Stopping music...")
+		self:SendMessage("stop-music", function() end)
 	end
 end
 
@@ -75,7 +72,7 @@ function ENT:PlayMusic(url,resolved)
 	end
 	if url and TARDIS:GetSetting("music-enabled") and TARDIS:GetSetting("sound") then
 		self:StopMusic()
-		sound.PlayURL(url, "", function(station,errorid,errorname)
+		--[[sound.PlayURL(url, "", function(station,errorid,errorname)
 			if station then
 				station:SetVolume(1)
 				station:Play()
@@ -83,17 +80,31 @@ function ENT:PlayMusic(url,resolved)
 			else
 				TARDIS:ErrorMessage(LocalPlayer(), "ERROR: Failed to load song (Error ID: "..errorid..", "..errorname..")")
 			end
+		end)--]]
+		self:SendMessage("play-music", function() 
+			net.WriteString(url)
 		end)
 	end
 end
 
 ENT:OnMessage("play-music", function(self)
 	local url = net.ReadString()
-	self:PlayMusic(url)
+	
+	sound.PlayURL(url, "", function(station,errorid,errorname)
+		if station then
+			station:SetVolume(1)
+			station:Play()
+			self.music=station
+		else
+			TARDIS:ErrorMessage(LocalPlayer(), "ERROR: Failed to load song (Error ID: "..errorid..", "..errorname..")")
+		end
+	end)
 end)
 
 ENT:OnMessage("stop-music", function(self)
-	self:StopMusic(url)
+	--self:StopMusic(url)
+	self.music:Stop()
+	self.music=nil
 end)
 
 ENT:AddHook("Think", "music", function(self)

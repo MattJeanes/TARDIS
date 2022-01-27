@@ -127,7 +127,7 @@ TARDIS:AddScreen("Music", {id="music", menu=false, order=10, popuponly=true}, fu
 	list_custom:SetMultiSelect(false)
 
 	local url_bar = vgui.Create( "DTextEntry", frame )
-	url_bar:SetPlaceholderText("Enter song URL (Clientside Only)")
+	url_bar:SetPlaceholderText("Enter song URL")
 	url_bar:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 	url_bar:SetSize(tbW, tbT)
 	url_bar:SetPos(midX, gap)

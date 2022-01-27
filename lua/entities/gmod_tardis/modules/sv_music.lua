@@ -1,7 +1,7 @@
 function ENT:PlayMusic(url)
     --PrintTable(self.occupants)
     
-    if url --[[and TARDIS:GetSetting("music-enabled") and TARDIS:GetSetting("sound")--]] then
+    if url then
         for ply, _ in pairs(self.occupants) do
             self:SendMessage("play-music", function() 
                 net.WriteString(url)
@@ -21,7 +21,7 @@ function ENT:StopMusic()
         end
         self.music = nil
 
-       -- print("STOPPED MUSIC FOR ALL PLAYERS!")
+        --print("STOPPED MUSIC FOR ALL PLAYERS!")
     end
 end
 
