@@ -11,6 +11,10 @@ ENT.AdminSpawnable	= false
 ENT.RenderGroup 	= RENDERGROUP_BOTH
 ENT.Category		= "Doctor Who"
 ENT.TardisPart		= true
+ENT.AllowedProperties = {
+	["skin"] = true,
+	["bodygroups"] = true
+}
 
 function ENT:Initialize() end
 
@@ -19,18 +23,18 @@ function ENT:SetupDataTables()
 	self:SetOn(false)
 end
 
-hook.Add("PhysgunPickup", "tardis-part-freeze", function(ply,ent)
+hook.Add("PhysgunPickup", "tardis-part", function(ply,ent)
 	if ent.TardisPart then return false end
 end)
 
-hook.Add("PlayerUnfrozeObject", "tardis-part-freeze", function(ply,ent,phys)
+hook.Add("PlayerUnfrozeObject", "tardis-part", function(ply,ent,phys)
 	if ent.TardisPart then phys:EnableMotion(false) end
 end)
 
-hook.Add("CanProperty", "tardis-part-freeze", function(ply,prop,ent)
-	if ent.TardisPart then return false end
+hook.Add("CanProperty", "tardis-part", function(ply,prop,ent)
+	if ent.TardisPart and (not ent.AllowedProperties[prop]) then return false end
 end)
 
-hook.Add("CanDrive", "tardis-part-freeze", function(ply,ent)
+hook.Add("CanDrive", "tardis-part", function(ply,ent)
 	if ent.TardisPart then return false end
 end)
