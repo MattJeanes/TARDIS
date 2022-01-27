@@ -101,7 +101,6 @@ ENT:OnMessage("play-music", function(self)
 end)
 
 ENT:OnMessage("stop-music", function(self)
-	self:StopMusic()
 	self.music:Stop()
 	self.music=nil
 end)
