@@ -25,24 +25,25 @@ if SERVER then
 	end)
 else
 	net.Receive("TARDIS-Data", function()
-		local ext=net.ReadEntity()
+		local ent=net.ReadEntity()
 		local mode=net.ReadBool()
 		if mode then
-			if IsValid(ext) then
-				ext.data=TARDIS.von.deserialize(net.ReadString())
+			if IsValid(ent) then
+				ent.data=TARDIS.von.deserialize(net.ReadString())
+				ent:CallHook("DataLoaded")
 			end
 		else
 			local k=net.ReadType()
 			local v=net.ReadType()
-			if IsValid(ext) and ext.SetData then
-				ext:SetData(k,v)
+			if IsValid(ent) and ent.SetData then
+				ent:SetData(k,v)
 			end
 		end
 	end)
 
 	net.Receive("TARDIS-DataClear", function()
-		local ext=net.ReadEntity()
-		ext:ClearData()
+		local ent=net.ReadEntity()
+		ent:ClearData()
 	end)
 end
 
