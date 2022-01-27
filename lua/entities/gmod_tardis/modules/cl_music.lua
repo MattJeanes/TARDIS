@@ -27,6 +27,9 @@ function ENT:StopMusic()
 			TARDIS:Message(LocalPlayer(), "Music stopped")
 		end
 		self.music:Stop()
+		self.music=nil
+
+		TARDIS:Message(LocalPlayer(), "Stopping music...")
 	end
 end
 
@@ -84,6 +87,15 @@ function ENT:PlayMusic(url,resolved)
 	end
 end
 
+ENT:OnMessage("play-music", function(self)
+	local url = net.ReadString()
+	self:PlayMusic(url)
+end)
+
+ENT:OnMessage("stop-music", function(self)
+	self:StopMusic(url)
+end)
+
 ENT:AddHook("Think", "music", function(self)
 	if IsValid(self.music) then
 		self.music:SetVolume(TARDIS:GetSetting("music-volume")/100)
@@ -95,4 +107,17 @@ end)
 
 ENT:AddHook("OnRemove", "music", function(self)
 	self:StopMusic()
+end)
+
+ENT:AddHook("PlayerExit", "stop-music-on-exit", function(self)
+	--self:StopMusic()
+	if self.music then
+		self:StopMusic()
+	end
+end)
+
+ENT:AddHook("PlayerEnter", "start-music", function(self)
+	if self.music then
+		self.music:SetVolume(TARDIS:GetSetting("music-volume")/100)
+	end
 end)
