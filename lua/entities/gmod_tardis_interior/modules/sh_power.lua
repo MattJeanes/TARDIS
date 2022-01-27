@@ -4,6 +4,13 @@ function ENT:GetPower()
 	return self.exterior:GetPower()
 end
 
+ENT:AddHook("CanUseTardisControl", "power", function(self, control_id, ply)
+	if not self:GetPower() and not TARDIS:GetControl(control_id).power_independent then
+		TARDIS:ErrorMessage(ply, "Power is disabled. This doesn't work.")
+		return false
+	end
+end)
+
 if SERVER then
 	function ENT:TogglePower()
 		self.exterior:TogglePower()
@@ -59,4 +66,11 @@ else
 			return false
 		end
 	end)
+
+	ENT:AddHook("ShouldDrawLight", "interior-lights-blinking", function(self)
+		if self.exterior:GetData("interior-lights-blinking") then
+			return (math.Round(8 * CurTime()) % 2 ~= 0)
+		end
+	end)
+
 end

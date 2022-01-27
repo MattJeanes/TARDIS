@@ -119,7 +119,7 @@ else
 			local dlight = DynamicLight( self:EntIndex() )
 			if ( dlight ) then
 				local c=Color(col.r,col.g,col.b)
-				dlight.Pos = self:GetPos() + light.dynamicpos
+				dlight.Pos = self:LocalToWorld(light.dynamicpos)
 				dlight.r = c.r
 				dlight.g = c.g
 				dlight.b = c.b

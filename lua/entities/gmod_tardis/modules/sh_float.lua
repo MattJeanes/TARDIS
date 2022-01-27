@@ -1,28 +1,5 @@
 -- Float
 
-TARDIS:AddControl({
-	id = "float",
-	ext_func=function(self,ply)
-		if self:ToggleFloat() then
-			TARDIS:StatusMessage(ply, "Anti-gravs", self:GetData("float"))
-		else
-			TARDIS:ErrorMessage(ply, "Failed to toggle anti-gravs")
-		end
-	end,
-	serveronly=true,
-	screen_button = {
-		virt_console = true,
-		mmenu = false,
-		toggle = true,
-		frame_type = {2, 1},
-		text = "Anti-Gravs",
-		pressed_state_from_interior = false,
-		pressed_state_data = "float",
-		order = 11,
-	},
-	tip_text = "Anti-Gravs",
-})
-
 -- Binds
 TARDIS:AddKeyBind("float-toggle",{
 	name="Float Toggle",
@@ -30,9 +7,7 @@ TARDIS:AddKeyBind("float-toggle",{
 	desc="Lets the TARDIS fly as if there is no gravity",
 	func=function(self,down,ply)
 		if ply==self.pilot and down then
-			if self:ToggleFloat() then
-				TARDIS:Message(ply, "Float "..(self:GetData("floatfirst") and "en" or "dis").."abled")
-			end
+			TARDIS:Control("float", ply)
 		end
 	end,
 	key=KEY_T,

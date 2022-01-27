@@ -3,6 +3,16 @@
 TARDIS.Metadata={}
 TARDIS.MetadataRaw={}
 
+TARDIS:AddSetting({
+	id="randomize_skins",
+	name="Randomize TARDIS skins at spawn",
+	value=true,
+	type="bool",
+	networked=true,
+	option=true,
+	desc="Whether or not TARDIS skin will be randomized when it's spawned"
+})
+
 local function merge(base,t)
 	local copy=table.Copy(TARDIS.Metadata[base])
 	table.Merge(copy,t)
@@ -31,13 +41,44 @@ function TARDIS:AddInterior(t)
 
 	if t.Base~=true then
 		local ent={}
-		ent.Category="Doctor Who - TARDIS"
-		ent.PrintName=t.Name
+
+		-- this is for developer debugging purposes only
+		local spm_overrides = DEBUG_TARDIS_SPAWNMENU_CATEGORY_OVERRIDES
+
+		if spm_overrides ~= nil and (spm_overrides[t.ID] or spm_overrides[t.Name]) then
+			if spm_overrides[t.ID] then
+				ent.Category = spm_overrides[t.ID]
+			else
+				ent.Category = spm_overrides[t.Name]
+			end
+		elseif t.Category ~= nil then
+			ent.Category = t.Category
+		elseif spm_overrides ~= nil and spm_overrides["all"] then
+			ent.Category = spm_overrides["all"]
+		else
+			ent.Category = "Doctor Who - TARDIS"
+		end
+
+		local nm_overrides = DEBUG_TARDIS_SPAWNMENU_NAME_OVERRIDES
+
+		if nm_overrides ~= nil and (nm_overrides[t.ID] or nm_overrides[t.Name]) then
+			if nm_overrides[t.ID] then
+				ent.PrintName = nm_overrides[t.ID]
+			else
+				ent.PrintName = nm_overrides[t.Name]
+			end
+		else
+			ent.PrintName = t.Name
+		end
+
 		if file.Exists("materials/vgui/entities/tardis/"..t.ID..".vtf", "GAME")
 		then
 			ent.IconOverride="vgui/entities/tardis/"..t.ID..".vtf"
-		else
+		elseif file.Exists("materials/vgui/entities/tardis/"..t.ID..".png", "GAME")
+		then
 			ent.IconOverride="vgui/entities/tardis/"..t.ID..".png"
+		else
+			ent.IconOverride="vgui/entities/tardis/default/"..t.ID..".png"
 		end
 		ent.ScriptedEntityType="tardis"
 		list.Set("SpawnableEntities", t.ID, ent)
@@ -75,14 +116,21 @@ hook.Add("PostGamemodeLoaded", "tardis-interiors", function()
 
 		icon.OpenMenu = function(self)
 			local dmenu = DermaMenu()
-			dmenu:AddOption("Set as preferred", function()
+			dmenu:AddOption("Select as default", function()
 				TARDIS:SetSetting("interior",obj.spawnname,true)
-				TARDIS:Message(LocalPlayer(), "TARDIS interior changed. Respawn or redecorate the TARDIS for changes to apply.")
+				TARDIS:Message(LocalPlayer(), "TARDIS default interior changed. Respawn the TARDIS for changes to apply.")
 			end):SetIcon("icon16/star.png")
-			
-			dmenu:AddOption("Redecorate into this interior", function()
+
+			dmenu:AddOption("Select for redecoration", function()
 				TARDIS:SetSetting("redecorate-interior",obj.spawnname,true)
-				TARDIS:Message(LocalPlayer(), "TARDIS interior decor selected. Enable redecoration and repair your TARDIS to apply.")
+				local current_tardis = LocalPlayer():GetTardisData("exterior")
+
+				if not current_tardis or not current_tardis:GetData("redecorate") then
+					TARDIS:Message(LocalPlayer(), "TARDIS interior decor selected. Enable redecoration in your TARDIS to apply.")
+				else
+					TARDIS:Message(LocalPlayer(), "TARDIS interior decor selected. Restart the redecoration to apply.")
+				end
+
 			end):SetIcon("icon16/color_wheel.png")
 			dmenu:Open()
 		end
@@ -106,12 +154,15 @@ if SERVER then
 		local vStart = ply:EyePos()
 		local vForward = ply:GetAimVector()
 
-		local trace = {}
-		trace.start = vStart
-		trace.endpos = vStart + (vForward * 4096)
-		trace.filter = ply
+		local tr
+		if not customData.pos then
+			local trace = {}
+			trace.start = vStart
+			trace.endpos = vStart + (vForward * 4096)
+			trace.filter = ply
 
-		local tr = util.TraceLine(trace)
+			tr = util.TraceLine(trace)
+		end
 
 		local sent = scripted_ents.GetStored(entityName).t
 		ClassName = entityName
@@ -139,11 +190,34 @@ if SERVER then
 		undo.Create("SENT")
 		undo.SetPlayer(ply)
 		undo.AddEntity(entity)
+		if customData.redecorate_parent then
+			undo.AddEntity(customData.redecorate_parent)
+		end
 		undo.SetCustomUndoText("Undone " .. printName)
 		undo.Finish(printName)
 
 		ply:AddCleanup("sents", entity)
 		entity:SetVar("Player", ply)
+
+		if TARDIS:GetSetting("randomize_skins", true, entity:GetCreator()) then
+			local total_skins = entity:SkinCount()
+			if total_skins then
+				local chosen_skin = math.random(total_skins)
+
+				local excluded = entity.metadata.Exterior.ExcludedSkins
+				if excluded then
+					local attempts = 1
+					while table.HasValue(excluded, chosen_skin) and attempts < 20 do
+						chosen_skin = math.random(total_skins)
+						attempts = attempts + 1
+					end
+				end
+				if not excluded or not table.HasValue(excluded, chosen_skin) then
+					entity:SetSkin(chosen_skin)
+					entity:SetData("intdoor_skin_needs_update", true, true)
+				end
+			end
+		end
 
 		return entity
 	end

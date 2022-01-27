@@ -1,48 +1,29 @@
 -- Cloak
 
-TARDIS:AddControl({
-	id = "cloak",
-	ext_func=function(self,ply)
-		self:ToggleCloak()
-	end,
-	serveronly=true,
-	screen_button = {
-		virt_console = true,
-		mmenu = false,
-		toggle = true,
-		frame_type = {0, 1},
-		text = "Cloaking",
-		pressed_state_from_interior = false,
-		pressed_state_data = "cloak",
-		order = 12,
-	},
-	tip_text = "Cloaking Device",
-})
-
 
 TARDIS:AddKeyBind("cloak-toggle",{
 	name="Toggle",
 	section="Cloak",
 	func=function(self,down,ply)
 		if ply == self.pilot and down then
-			self:ToggleCloak()
+			TARDIS:Control("cloak", ply)
 		end
 	end,
 	key=KEY_L,
 	serveronly=true,
-	exterior=true	
+	exterior=true
 })
 
 ENT:AddHook("Initialize", "cloak", function(self)
-    self:SetData("cloak", false)
+	self:SetData("cloak", false)
 
-    self:SetData("modelmins", self:OBBMins())
+	self:SetData("modelmins", self:OBBMins())
 	local maxs = self:OBBMaxs()
 	maxs.z = maxs.z + 25
-    self:SetData("modelmaxs", maxs)
-    self:SetData("modelheight", (self:GetData("modelmaxs").z - self:GetData("modelmins").z))
+	self:SetData("modelmaxs", maxs)
+	self:SetData("modelheight", (self:GetData("modelmaxs").z - self:GetData("modelmins").z))
 
-    self:SetData("phase-percent",1)
+	self:SetData("phase-percent",1)
 end)
 
 function ENT:GetCloak()
@@ -50,19 +31,22 @@ function ENT:GetCloak()
 end
 
 if SERVER then
-    function ENT:SetCloak(on)
+	function ENT:SetCloak(on)
 		if self:CallHook("CanToggleCloak")==false then return false end
 		self:SetData("cloak", on)
 		self:SendMessage("cloak", function()
 			net.WriteBool(on)
 		end)
+		if (not self:GetData("teleport")) and (not self:GetData("vortex")) then
+			self:DrawShadow(not on)
+		end
 		return true
-    end
-    
-    function ENT:ToggleCloak()
-        local on = not self:GetData("cloak", false)
-        return self:SetCloak(on)
-    end
+	end
+	
+	function ENT:ToggleCloak()
+		local on = not self:GetData("cloak", false)
+		return self:SetCloak(on)
+	end
 
 	ENT:AddHook("HandleE2", "cloak", function(self,name,e2)
 		if name == "Phase" and TARDIS:CheckPP(e2.player, self) then
@@ -84,15 +68,15 @@ if SERVER then
 		end
 	end)
 else
-    TARDIS:AddSetting({
-        id = "cloaksound-enabled",
-        name = "Cloak Sound",
-        desc = "Toggles whether or not sounds play when TARDIS cloaking is toggled",
-        section = "Sound",
-        value = true,
-        type = "bool",
-        option = true
-    })
+	TARDIS:AddSetting({
+		id = "cloaksound-enabled",
+		name = "Cloak Sound",
+		desc = "Toggles whether or not sounds play when TARDIS cloaking is toggled",
+		section = "Sound",
+		value = true,
+		type = "bool",
+		option = true
+	})
 
 	ENT:AddHook("Initialize", "cloak-material", function(self)
 		self.PhaseMaterial = Material(self.metadata.Exterior.PhaseMaterial or "models/drmatt/tardis/exterior/phase_noise.vmt")
@@ -106,20 +90,23 @@ else
 		local target = self:GetData("cloak",false) and -0.5 or 1
 		local animating = self:GetData("cloak-animating",false)
 		local percent = self:GetData("phase-percent",1)
-		if percent == target and animating then
-			self:SetData("cloak-animating", false)
+		if percent == target then
+			if animating then
+				self:SetData("cloak-animating", false)
+			end
 			return
-		elseif percent ~= target and not animating then
+		elseif not animating then
 			self:SetData("cloak-animating", true)
 		end
-	    local timepassed = CurTime() - self:GetData("phase-lastTick",CurTime())
-	    self:SetData("phase-lastTick", CurTime())
-        if self:GetData("cloak",false) then
-            self:SetData("phase-percent", math.Approach(percent, target, 0.5 * timepassed))
-        else
-            self:SetData("phase-percent", math.Approach(percent, target, 0.5 * timepassed))
-        end
-        self:SetData("phase-highPercent", math.Clamp(self:GetData("phase-percent",1) + 0.5, 0, 1))
+
+		local timepassed = CurTime() - self:GetData("phase-lastTick",CurTime())
+		self:SetData("phase-lastTick", CurTime())
+		if self:GetData("cloak",false) then
+			self:SetData("phase-percent", math.Approach(percent, target, 0.5 * timepassed))
+		else
+			self:SetData("phase-percent", math.Approach(percent, target, 0.5 * timepassed))
+		end
+		self:SetData("phase-highPercent", math.Clamp(self:GetData("phase-percent",1) + 0.5, 0, 1))
 
 		local pos = self:GetPos() + self:GetUp() * (self:GetData("modelmaxs").z - (self:GetData("modelheight") * self:GetData("phase-highPercent",1)))
 		local pos2 = self:GetPos() + self:GetUp() * (self:GetData("modelmaxs").z - (self:GetData("modelheight") * self:GetData("phase-percent",1)))
@@ -140,22 +127,22 @@ else
 			return
 		end
 		oldClip = render.EnableClipping(true)
-        local restoreT = ent:GetMaterial()
+		local restoreT = ent:GetMaterial()
 
-        local normal = self:GetUp()
-        local pos = self:GetData("phase-highPos",Vector(0,0,0))
-        local dist = normal:Dot(pos)
+		local normal = self:GetUp()
+		local pos = self:GetData("phase-highPos",Vector(0,0,0))
+		local dist = normal:Dot(pos)
 
-        local normal2 = self:GetUp() * -1
+		local normal2 = self:GetUp() * -1
 		local pos2 = self:GetData("phase-pos",Vector(0,0,0))
 		local dist2 = normal2:Dot(pos2)
 
-        ent:SetRenderClipPlane(normal, dist)
+		ent:SetRenderClipPlane(normal, dist)
 
-        render.PushCustomClipPlane(normal, dist)
+		render.PushCustomClipPlane(normal, dist)
 		render.MaterialOverride(self.PhaseMaterial)
 		
-        render.PushCustomClipPlane(normal2, dist2)
+		render.PushCustomClipPlane(normal2, dist2)
 			ent:DrawModel()
 		render.PopCustomClipPlane()
 		render.PopCustomClipPlane()
@@ -168,7 +155,7 @@ else
 		render.EnableClipping(oldClip)
 	end
 
-    ENT:AddHook("Draw", "cloak", dodraw)
+	ENT:AddHook("Draw", "cloak", dodraw)
 
 	ENT:AddHook("PostDraw", "cloak", postdraw)
 
@@ -204,17 +191,23 @@ else
 		if self:GetData("cloak",false) and not self:GetData("cloak-animating",false) then return false end
 	end)
 
-    ENT:OnMessage("cloak", function(self)
+	ENT:OnMessage("cloak", function(self)
 		local on = net.ReadBool()
 		self:SetData("cloak", on)
 		self:SetData("cloak-animating", true)
-        local snd = self.metadata.Exterior.Sounds.Cloak
-        if on and TARDIS:GetSetting("cloaksound-enabled") and TARDIS:GetSetting("sound") then
-            self:EmitSound(snd)
+		local snd
+		if on then
+			snd = self.metadata.Exterior.Sounds.Cloak
+		else
+			snd = self.metadata.Exterior.Sounds.CloakOff
+		end
 
-            if IsValid(self.interior) then
-                self.interior:EmitSound(snd)
-            end
-        end
-    end)
+		if TARDIS:GetSetting("cloaksound-enabled") and TARDIS:GetSetting("sound") then
+			self:EmitSound(snd)
+
+			if IsValid(self.interior) then
+				self.interior:EmitSound(snd)
+			end
+		end
+	end)
 end

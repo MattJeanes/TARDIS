@@ -1,23 +1,20 @@
 -- Destination
 
-TARDIS:AddControl({
-	id = "destination",
-	ext_func=function(self,ply)
-		self:SelectDestination(ply, true)
-	end,
-	serveronly=true,
-	screen_button = {
-		virt_console = false,
-		mmenu = true,
-		toggle = false,
-		frame_type = {0, 1},
-		text = "Destination",
-		order = 4,
-	},
-	tip_text = "Destination Select",
-})
-
 -- Binds
+
+TARDIS:AddKeyBind("destination-open",{
+	name="Destination",
+	section="Third Person",
+	desc="Enter destination select state",
+	func=function(self,down,ply)
+		if down and ply == self.pilot then
+			TARDIS:Control("destination", ply)
+		end
+	end,
+	key=KEY_H,
+	serveronly=true,
+	exterior=true
+})
 TARDIS:AddKeyBind("destination-forward",{
 	name="Forward",
 	section="Destination",
@@ -69,7 +66,7 @@ TARDIS:AddKeyBind("destination-boost",{
 	exterior=true
 })
 TARDIS:AddKeyBind("destination-slow",{
-	name="Rotate",
+	name="Slow",
 	section="Destination",
 	desc="Hold this key to slow movement",
 	key=KEY_LALT,
@@ -101,7 +98,7 @@ TARDIS:AddKeyBind("destination-demat",{
 	end,
 	key=MOUSE_LEFT,
 	clientonly=true,
-	exterior=true	
+	exterior=true
 })
 TARDIS:AddKeyBind("destination-snaptofloor",{
 	name="Snap To Floor",
@@ -300,8 +297,8 @@ else
 				eye=angle_zero
 			end
 			local force = 15
-			local angforce = 1.5
-			local boostmul = 2
+			local angforce = 6
+			local boostmul = 15
 			local slowmul = 0.1
 			local angslowmul = 0.5
 			local fwd=eye:Forward()

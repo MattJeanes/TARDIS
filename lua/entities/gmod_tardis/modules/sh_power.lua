@@ -1,28 +1,5 @@
 -- Power Exterior
 
-TARDIS:AddControl({
-	id = "power",
-	ext_func=function(self,ply)
-		if self:TogglePower() then
-			TARDIS:StatusMessage(ply, "Power", self:GetData("power-state"))
-		else
-			TARDIS:ErrorMessage(ply, "Failed to toggle power")
-		end
-	end,
-	serveronly=true,
-	screen_button = {
-		virt_console = true,
-		mmenu = false,
-		toggle = true,
-		frame_type = {2, 1},
-		text = "Power",
-		pressed_state_from_interior = false,
-		pressed_state_data = "power-state",
-		order = 2,
-	},
-	tip_text = "Power Switch",
-})
-
 ENT:AddHook("Initialize","power-init", function(self)
 	self:SetData("power-state",true,true)
 end)
@@ -30,6 +7,13 @@ end)
 function ENT:GetPower()
 	return self:GetData("power-state", false)
 end
+
+ENT:AddHook("CanUseTardisControl", "power", function(self, control_id, ply)
+	if not self:GetPower() and not TARDIS:GetControl(control_id).power_independent then
+		TARDIS:ErrorMessage(ply, "Power is disabled. This doesn't work.")
+		return false
+	end
+end)
 
 if SERVER then
 	function ENT:TogglePower()
@@ -44,6 +28,12 @@ if SERVER then
 		end
 		return true
 	end
+
+	ENT:AddHook("CanTogglePower", "vortex", function(self)
+		if self:GetData("teleport") or self:GetData("vortex") then
+			return false
+		end
+	end)
 
 	ENT:AddHook("CanTriggerHads","power",function(self)
 		if not self:GetPower() then return false end

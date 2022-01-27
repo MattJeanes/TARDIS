@@ -26,64 +26,6 @@ TARDIS:AddSetting({
 	networked=true
 })
 
-TARDIS:AddSetting({
-	id="redecorate-interior",
-	name="Redecoration interior",
-	value="default",
-	networked=true
-})
-
-TARDIS:AddControl({
-	id = "repair",
-	ext_func=function(self,ply)
-		if not self:ToggleRepair() then
-			TARDIS:ErrorMessage(ply, "Failed to toggle self-repair")
-		end
-	end,
-	serveronly=true,
-	screen_button = {
-		virt_console = true,
-		mmenu = false,
-		toggle = true,
-		frame_type = {0, 1},
-		text = "Self-Repair",
-		pressed_state_from_interior = false,
-		pressed_state_data = "repair-primed",
-		order = 3,
-	},
-	tip_text = "Self-Repair",
-})
-
-TARDIS:AddControl({
-	id = "redecorate",
-	ext_func=function(self,ply)
-		local on = self:GetData("redecorate", false)
-		on = self:SetData("redecorate", not on, true)
-
-		local chosen_int = TARDIS:GetSetting("redecorate-interior","default",self:GetCreator())
-
-		if on and (chosen_int == self.metadata.ID) then
-			TARDIS:ErrorMessage(ply, "New interior has not been selected")
-		elseif on and not self:GetData("repair-primed") then
-			TARDIS:Message(ply, "Hint: enable self-repair to start redecoration")
-			-- We print this first for it to be lower in the list
-		end
-		TARDIS:StatusMessage(ply, "Redecoration", on)
-	end,
-	serveronly=true,
-	screen_button = {
-		virt_console = true,
-		mmenu = false,
-		toggle = true,
-		frame_type = {0, 1},
-		text = "Redecoration",
-		pressed_state_from_interior = false,
-		pressed_state_data = "redecorate",
-		order = 4,
-	},
-	tip_text = "Redecoration",
-})
-
 ENT:AddHook("Initialize","health-init",function(self)
 	self:SetData("health-val", TARDIS:GetSetting("health-max"), true)
 	if SERVER and WireLib then
@@ -132,12 +74,12 @@ if SERVER then
 		if nvnum < 0 then
 			nvnum = 1
 		end
-	   TARDIS:SetSetting("health-max", nvnum, true)
-	   for k,v in pairs(ents.FindByClass("gmod_tardis")) do
+		TARDIS:SetSetting("health-max", nvnum, true)
+		for k,v in pairs(ents.FindByClass("gmod_tardis")) do
 			if v:GetHealth() > nvnum then
 				v:ChangeHealth(nvnum)
 			end
-	   end
+		end
 	end, "UpdateOnChange")
 
 	cvars.AddChangeCallback("tardis2_damage", function(cvname, oldvalue, newvalue)
@@ -145,9 +87,12 @@ if SERVER then
 	end, "UpdateOnChange")
 
 	ENT:AddWireOutput("Health", "TARDIS Health")
-	
+
 	function ENT:Explode(f)
-		local force = tostring(f) or "60"
+		local force = 60
+		if f ~= nil then
+			force = tostring(f)
+		end
 		local explode = ents.Create("env_explosion")
 		explode:SetPos( self:LocalToWorld(Vector(0,0,50)) )
 		explode:SetOwner( self )
@@ -200,15 +145,8 @@ if SERVER then
 	end
 
 	function ENT:FinishRepair()
-		if self:CallHook("ShouldRedecorate") then
-			local ent = TARDIS:SpawnTARDIS(self:GetCreator(),{
-				metadataID = TARDIS:GetSetting("redecorate-interior","default",self:GetCreator()),
-				finishrepair = true,
-				pos = self:GetPos()+Vector(0,0,2),
-				ang = self:GetAngles()
-			})
-			self:Remove()
-			ent:GetPhysicsObject():Sleep()
+		if self:CallHook("ShouldRedecorate") and self:Redecorate() then
+			
 			return
 		end
 		self:EmitSound(self.metadata.Exterior.Sounds.RepairFinish)
@@ -248,9 +186,11 @@ if SERVER then
 	end
 
 	function ENT:StopSmoke()
-		if self.smoke and IsValid(self.smoke) then
-			self.smoke:Remove()
-			self.smoke=nil
+		if self.smoke and IsValid(self.smoke) and self:GetData("smoke-killdelay")==nil then
+			self.smoke:Fire("TurnOff")
+			local jetlength = self.smoke:GetInternalVariable("JetLength")
+			local speed = self.smoke:GetInternalVariable("Speed")
+			self:SetData("smoke-killdelay",CurTime()+(speed/jetlength)*5)
 		end
 	end
 
@@ -261,29 +201,6 @@ if SERVER then
 		then
 			return false
 		end
-	end)
-
-	ENT:AddHook("ShouldRedecorate", "health", function(self)
-		return (self:GetData("redecorate",false) and TARDIS:GetSetting("redecorate-interior","default",self:GetCreator()) ~= self.metadata.ID) and true or nil
-	end)
-
-	ENT:AddHook("CustomData", "health-redecorate", function(self, customdata)
-		if customdata.finishrepair then
-			self:SetPos(customdata.pos)
-			self:SetAngles(customdata.ang)
-			self:SetData("finishrepair",true)
-		end
-	end)
-
-	ENT:AddHook("Initialize", "health-redecorate", function(self)
-		if not self:GetData("finishrepair",false) then return end
-		timer.Simple(0.5, function()
-			if not IsValid(self) then return end
-			self:GetPhysicsObject():Wake()
-			self:EmitSound(self.metadata.Exterior.Sounds.RepairFinish)
-			self:FlashLight(1.5)
-		end)
-		self:SetData("finishrepair",nil)
 	end)
 
 	ENT:AddHook("CanTogglePower", "health", function(self)
@@ -335,12 +252,39 @@ if SERVER then
 		end
 	end)
 
+	ENT:AddHook("Think", "health-warning", function(self)
+		if self:CallHook("ShouldStartSmoke") and self:CallHook("ShouldStopSmoke")~=true then
+			if self.smoke then return end
+			self:StartSmoke()
+		else
+			self:StopSmoke()
+		end
+	end)
+
+	ENT:AddHook("Think", "RemoveSmoke", function(self)
+		local smokedelay = self:GetData("smoke-killdelay")
+		if smokedelay ~= nil and CurTime() >= smokedelay then
+			if IsValid(self.smoke) then
+				self.smoke:Remove()
+				self.smoke = nil
+				self:SetData("smoke-killdelay",nil)
+			end
+		end
+	end)
+
+	ENT:AddHook("ShouldStartSmoke", "health-warning", function(self)
+		if self:GetData("health-warning",false) then
+			return true
+		end
+	end)
+
 	ENT:AddHook("ShouldTakeDamage", "Health", function(self, dmginfo)
 		if not TARDIS:GetSetting("health-enabled") then return false end
 	end)
 
 	ENT:AddHook("OnTakeDamage", "Health", function(self, dmginfo)
 		if dmginfo:GetInflictor():GetClass() == "env_fire" then return end
+		if dmginfo:GetDamage() <= 0 then return end
 		local newhealth = self:GetHealth() - (dmginfo:GetDamage()/2)
 		self:ChangeHealth(newhealth)
 	end)
@@ -348,15 +292,8 @@ if SERVER then
 	ENT:AddHook("PhysicsCollide", "Health", function(self, data, collider)
 		if not TARDIS:GetSetting("health-enabled") then return end
 		if (data.Speed < 300) then return end
-		local newhealth = self:GetHealth() - data.Speed / 23
+		local newhealth = self:GetHealth() - (data.Speed / 23)
 		self:ChangeHealth(newhealth)
-	end)
-
-	ENT:AddHook("OnHealthChange", "FallbackNetwork", function(self)
-		local health = self:GetData("health-val")
-		self:SendMessage("health-networking", function()
-			net.WriteInt(health, 32)
-		end)
 	end)
 
 	ENT:AddHook("OnHealthChange", "wiremod", function (self)
@@ -365,17 +302,12 @@ if SERVER then
 
 	ENT:AddHook("OnHealthDepleted", "death", function(self)
 		self:SetPower(false)
-		if self:GetData("vortex",false) then
-			self:SetData("prevortex-flight", false)
-			self:Mat()
-		end
-		self:Explode(175)
+		self:Explode(180)
 	end)
 
 	ENT:AddHook("OnHealthChange", "warning", function(self)
 		if self:GetHealthPercent() <= 20 and (not self:GetData("health-warning",false)) then
 			self:SetData("health-warning", true, true)
-			self:StartSmoke()
 			self:CallHook("HealthWarningToggled",true)
 			if self.interior then
 				self.interior:CallHook("HealthWarningToggled",true)
@@ -386,7 +318,6 @@ if SERVER then
 	ENT:AddHook("OnHealthChange", "warning-stop", function(self)
 		if self:GetHealthPercent() > 20 and (self:GetData("health-warning",false)) then
 			self:SetData("health-warning", false, true)
-			self:StopSmoke()
 			self:CallHook("HealthWarningToggled",false)
 			if self.interior then
 				self.interior:CallHook("HealthWarningToggled",false)
@@ -413,27 +344,4 @@ if SERVER then
 		end
 	end)
 
-	ENT:AddHook("StopDemat", "warning", function(self)
-		if self.smoke then
-			self:StopSmoke()
-		end
-	end)
-
-	ENT:AddHook("MatStart", "warning", function(self)
-		if self:GetData("health-warning",false) then
-			self:StartSmoke()
-		end
-	end)
-
-else
-	ENT:OnMessage("health-networking", function(self, ply)
-		local newhealth = net.ReadInt(32)
-		self:ChangeHealth(newhealth)
-		self:SetData("UpdateHealthScreen", true, true)
-	end)
-
-	ENT:AddHook("Initialize", "redecorate-reset", function(self)
-		if not IsValid(self) or (not LocalPlayer() == self:GetCreator()) then return end
-		TARDIS:SetSetting("redecorate-interior",self.metadata.ID,true)
-	end)
 end
