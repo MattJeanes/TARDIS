@@ -65,14 +65,19 @@ if SERVER then
 	hook.Add("SkinChanged", "tardisi-door", function(ent,i)
 		if ent.TardisExterior then
 			local door=ent:GetPart("door")
-			if IsValid(door) then
+			if IsValid(door) and door:GetSkin() ~= i then
 				door:SetSkin(i)
 			end
 			if IsValid(ent.interior) then
 				local door=ent.interior:GetPart("door")
-				if IsValid(door) then
+				if IsValid(door) and door:GetSkin() ~= i then
 					door:SetSkin(i)
 				end
+			end
+		end
+		if ent.TardisPart then
+			if ent.ID == "door" and ent.exterior:GetSkin()~=i then
+				ent.exterior:SetSkin(i)
 			end
 		end
 	end)
