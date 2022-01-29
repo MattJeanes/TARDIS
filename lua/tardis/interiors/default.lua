@@ -71,7 +71,7 @@ T.Interior = {
 		default_screen             = {pos = Vector(42, 0.75, 27.1),                   ang = Angle(0, -5, 0),                  },
 		default_screenbutton       = {pos = Vector(44.5, 9.75, 38.2),                 ang = Angle(215, 85, 90),               },
 		default_wibblylever        = {pos = Vector(-48, 18, 5.4),                     ang = Angle(335, 347, 6),               },
-		default_enginerelease      = {pos = Vector(-61.229, 21.622, -4.514),          ang = Angle(90, 90.911, -90),           },
+		default_enginerelease      = {pos = Vector(-61.229, 21.622, -4.514),          ang = Angle(180, 90.911, -90),           },
 		default_doorbutton         = {pos = Vector(-60.782, -25.129, -6.108),         ang = Angle(0, 65.911, -81.515),        },
 		default_powerlever         = {pos = Vector(44, -18, 5.5),                     ang = Angle(22, 328, 347.5),            },
 		default_keyboard           = {pos = Vector(29, -53, -8),                      ang = Angle(0, 30, 50),                 },
@@ -93,7 +93,7 @@ T.Interior = {
 		default_sonicdispenser     = {pos = Vector(-26.048, 42.31, 1.45),             ang = Angle(9.445, 46.482, -21.861),    },
 		default_helmic             = {pos = Vector(-26, -41, 4),                      ang = Angle(0, 330, 24.5),              },
 		default_sonic_inserted     = SonicModelExists() and
-	                                 {pos = Vector(-29.748, 40.71, -20.15),           ang = Angle(-100, -90, 90),             },
+									 {pos = Vector(-29.748, 40.71, -20.15),           ang = Angle(-100, -90, 90),             },
 		default_doorframe = {
 			pos = Vector(317, 336.3, -80),
 			ang = Angle(0, -40, 0),
