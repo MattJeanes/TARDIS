@@ -88,6 +88,7 @@ T.Exterior = {
 			mat_damaged = "drmatt/tardis/mat_damaged.wav",
 			fullflight = "drmatt/tardis/full.wav",
 			fullflight_damaged = "drmatt/tardis/full_damaged.wav",
+			interrupt = "drmatt/tardis/repairfinish.wav",
 		},
 		RepairFinish = "drmatt/tardis/repairfinish.wav",
 		Lock = "drmatt/tardis/lock.wav",
