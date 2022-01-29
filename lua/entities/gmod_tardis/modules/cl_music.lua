@@ -26,7 +26,9 @@ function ENT:StopMusic()
 		if self.music:GetState() == GMOD_CHANNEL_PLAYING then
 			TARDIS:Message(LocalPlayer(), "Music stopped")
 		end
-		self:SendMessage("stop-music", function() end)
+		self.music:Stop()
+		self.music = nil
+		self:SendMessage("stop-music", function() end) 
 	end
 end
 
@@ -71,6 +73,7 @@ function ENT:PlayMusic(url,resolved)
 		url=self:ResolveMusicURL(url)
 	end
 	if url and TARDIS:GetSetting("music-enabled") and TARDIS:GetSetting("sound") then
+		self:StopMusic()
 		--[[sound.PlayURL(url, "", function(station,errorid,errorname)
 			if station then
 				station:SetVolume(1)
@@ -101,8 +104,10 @@ ENT:OnMessage("play-music", function(self)
 end)
 
 ENT:OnMessage("stop-music", function(self)
-	self.music:Stop()
-	self.music=nil
+	if self.music then
+		self.music:Stop()
+		self.music=nil
+	end
 end)
 
 ENT:AddHook("Think", "music", function(self)
