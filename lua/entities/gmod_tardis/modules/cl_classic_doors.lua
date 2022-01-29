@@ -31,6 +31,6 @@ ENT:AddHook("PlayerEnter", "classic_doors_intdoor_sound", function(self,ply,notp
 	if not door_sound then return end
 
 	if intdoor.IntDoorPos ~= nil and intdoor.IntDoorPos ~= 0 and intdoor.IntDoorPos ~= 1 then
-		sound.Play(door_sound, self.interior:GetPos())
+		sound.Play(door_sound, self.interior:LocalToWorld( self.metadata.Interior.Fallback.pos ))
 	end
 end)
