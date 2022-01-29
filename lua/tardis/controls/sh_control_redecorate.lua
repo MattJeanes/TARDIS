@@ -11,6 +11,9 @@ TARDIS:AddControl({
 		TARDIS:StatusMessage(ply, "Redecoration", on)
 
 		if not self:GetData("redecorate", false) then
+			if self:GetData("repair-primed") then
+				self:SetRepair(false)
+			end
 			return
 		end
 

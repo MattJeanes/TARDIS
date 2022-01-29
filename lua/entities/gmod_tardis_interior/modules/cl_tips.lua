@@ -206,6 +206,10 @@ hook.Add("HUDPaint", "TARDIS-DrawTips", function()
 			local offset = tip.offset or 30
 			local fr_width = tip.fr_width or 2
 
+			padding = padding * 0.5
+			fr_width = fr_width * 0.5
+			offset = offset * 0.75
+
 			local x, y, t
 			local trX = {}
 			local trY = {}
