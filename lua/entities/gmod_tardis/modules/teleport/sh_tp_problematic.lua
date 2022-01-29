@@ -122,13 +122,36 @@ if SERVER then
 			end
 		end
 
+
 		local ext = self.metadata.Exterior.Sounds.Teleport
 		local int = self.metadata.Interior.Sounds.Teleport
-		self:EmitSound(ext.demat_fail)
-		self:EmitSound(ext.demat_fail)
-		self.interior:EmitSound(int.demat_fail or ext.demat_fail)
-		self.interior:EmitSound(int.demat_fail or ext.demat_fail)
-		self.interior:EmitSound(int.mat_damaged or ext.mat_damaged)
+
+		self:StopSound(ext.demat_damaged)
+		self:StopSound(ext.demat)
+		self:StopSound(ext.demat_fail)
+		self:StopSound(ext.mat_damaged)
+		self:StopSound(ext.mat)
+		self:StopSound(ext.fullflight)
+		self:StopSound(ext.fullflight_damaged)
+
+		self.interior:StopSound(int.demat_damaged or ext.demat_damaged)
+		self.interior:StopSound(int.demat or ext.demat)
+		self.interior:StopSound(int.demat_fail or ext.demat_fail)
+		self.interior:StopSound(int.mat_damaged or ext.mat_damaged)
+		self.interior:StopSound(int.mat or ext.mat)
+		self.interior:StopSound(int.fullflight or ext.fullflight)
+		self.interior:StopSound(int.fullflight_damaged or ext.fullflight_damaged)
+
+		self:Explode()
+		self.interior:Explode(20)
+
+		self:Timer("interrupt_teleport", 1, function()
+			self:Explode()
+			self.interior:Explode(20)
+		end)
+
+		self:EmitSound(ext.interrupt)
+		self.interior:EmitSound(int.interrupt or ext.interrupt)
 
 		self:SetData("demat-pos",nil,true)
 		self:SetData("demat-ang",nil,true)
@@ -146,8 +169,6 @@ if SERVER then
 
 		self:CallHook("InterruptTeleport")
 
-		self:Explode()
-		self.interior:Explode(20)
 		if not was_demating then
 			self:ChangeHealth(self:GetHealth() * math.random(85, 95) * 0.01)
 			self:SetPower(false)
@@ -269,7 +290,7 @@ end
 
 ENT:AddHook("Think","failed-demat-stop",function(self)
 	if self:GetData("failing-demat", false) then
-		if CurTime() > self:GetData("failing-demat-time") + 2.5 then
+		if CurTime() > self:GetData("failing-demat-time") + 4 then
 			self:SetData("failing-demat", false, true)
 		end
 	end

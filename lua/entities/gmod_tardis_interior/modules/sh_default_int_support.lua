@@ -39,15 +39,16 @@ ENT:AddHook("Think", "interior-default", function(self)
 	if self.metadata.ID=="default" then
 		local moving = self.exterior:GetData("teleport",false)
 		local flightmode = self.exterior:GetData("flight",false)
+		local active = (moving or flightmode)
 		if not CLIENT then return end
-		if (self.timerotor.pos>0 and not moving or flightmode) or (moving or flightmode) then
-		if self.timerotor.pos==1 then
-			self.timerotor.mode=0
-		elseif self.timerotor.pos==0 and (moving or flightmode) then
-			self.timerotor.mode=1
-		end
-		self.timerotor.pos=math.Approach( self.timerotor.pos, self.timerotor.mode, FrameTime()*1.1 )
-		self:SetPoseParameter( "glass", self.timerotor.pos )
+		if active or self.timerotor.pos > 0 then
+			if self.timerotor.pos==1 then
+				self.timerotor.mode=0
+			elseif active and self.timerotor.pos==0 then
+				self.timerotor.mode=1
+			end
+			self.timerotor.pos=math.Approach( self.timerotor.pos, self.timerotor.mode, FrameTime()*1.1 )
+			self:SetPoseParameter( "glass", self.timerotor.pos )
 		end
 	end
 end)

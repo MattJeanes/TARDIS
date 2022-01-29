@@ -99,6 +99,15 @@ if SERVER then
 		end
 	end)
 
+	ENT:AddHook("ToggleDoorReal", "classic_doors_collision", function(self,open)
+		if self.metadata.EnableClassicDoors ~= true then return end
+
+		local int_classic_door=TARDIS:GetPart(self.interior,"intdoor")
+		if IsValid(int_classic_door) then
+			int_classic_door:SetCollide(not open, true)
+		end
+	end)
+
 	ENT:AddHook("ToggleDoor", "extcollision",function(self,open)
 		local door = TARDIS:GetPart(self,"door")
 		if IsValid(door) then

@@ -124,13 +124,18 @@ ENT:AddHook("OnRemove", "music", function(self)
 end)
 
 ENT:AddHook("PlayerExit", "stop-music-on-exit", function(self)
-	if self.music then
+	if self.music and not self:GetData("redecorate", false) then
 		self:StopMusic()
 	end
 end)
+
 
 ENT:AddHook("PlayerEnter", "start-music", function(self)
 	if self.music then
 		self.music:SetVolume(TARDIS:GetSetting("music-volume")/100)
 	end
+end)
+
+ENT:AddHook("MigrateData", "music", function(self, parent)
+	self.music = parent.music
 end)
