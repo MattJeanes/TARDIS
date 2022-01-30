@@ -99,110 +99,114 @@ if SERVER then
 				self:SendMessage("failed-demat")
 			end
 			if callback then callback(false) end
-		else
-			if not self:DematDoorCheck(force) then return end
+			return
+		end
 
-			pos=pos or self:GetData("demat-pos") or self:GetPos()
-			ang=ang or self:GetData("demat-ang") or self:GetAngles()
-			self:SetBodygroup(1,0)
-			self:SetDestination(pos, ang)
-			self:SendMessage("demat", function() net.WriteVector(self:GetData("demat-pos",Vector())) end)
-			self:SetData("demat",true)
-			self:SetData("fastreturn-pos",self:GetPos())
-			self:SetData("fastreturn-ang",self:GetAngles())
-			self:SetData("step",1)
-			self:SetData("teleport",true)
-			self:SetCollisionGroup( COLLISION_GROUP_WORLD )
-			self:CallHook("DematStart")
-			self:DrawShadow(false)
-			for k,v in pairs(self.parts) do
-				v:DrawShadow(false)
-			end
-			local constrained = constraint.GetAllConstrainedEntities(self)
-			local attached
-			if constrained then
-				for k,v in pairs(constrained) do
-					if not (k.TardisPart or k==self) then
-						local a=k:GetColor().a
-						if not attached then attached = {} end
-						attached[k] = a
-					end
+		if not self:DematDoorCheck(force, callback) then return end
+
+		pos=pos or self:GetData("demat-pos") or self:GetPos()
+		ang=ang or self:GetData("demat-ang") or self:GetAngles()
+		self:SetBodygroup(1,0)
+		self:SetDestination(pos, ang)
+		self:SendMessage("demat", function() net.WriteVector(self:GetData("demat-pos",Vector())) end)
+		self:SetData("demat",true)
+		self:SetData("fastreturn-pos",self:GetPos())
+		self:SetData("fastreturn-ang",self:GetAngles())
+		self:SetData("step",1)
+		self:SetData("teleport",true)
+		self:SetCollisionGroup( COLLISION_GROUP_WORLD )
+		self:CallHook("DematStart")
+		self:DrawShadow(false)
+		for k,v in pairs(self.parts) do
+			v:DrawShadow(false)
+		end
+		local constrained = constraint.GetAllConstrainedEntities(self)
+		local attached
+		if constrained then
+			for k,v in pairs(constrained) do
+				if not (k.TardisPart or k==self) then
+					local a=k:GetColor().a
+					if not attached then attached = {} end
+					attached[k] = a
 				end
 			end
-			self:SetData("demat-attached",attached,true)
-			if callback then callback(true) end
 		end
+		self:SetData("demat-attached",attached,true)
+		if callback then callback(true) end
 	end
 
 	function ENT:Mat(callback)
-		if self:CallHook("CanMat")~=false then
-			self:CloseDoor(function(state)
-				if state then
-					if callback then callback(false) end
-				else
-					self:SendMessage("premat",function() net.WriteVector(self:GetData("demat-pos",Vector())) end)
-					self:SetData("teleport",true)
-					local timerdelay = (self:GetData("demat-fast",false) and 1.9 or 8.5)
-					timer.Simple(timerdelay,function()
-						if not IsValid(self) then return end
-						self:SendMessage("mat")
-						self:SetData("mat",true)
-						self:SetData("step",1)
-						self:SetData("vortex",false)
-						local flight=self:GetData("prevortex-flight")
-						if self:GetData("flight")~=flight then
-							self:SetFlight(flight)
-						end
-						self:SetData("prevortex-flight",nil)
-						self:SetSolid(SOLID_VPHYSICS)
-						self:CallHook("MatStart")
-
-						local pos=self:GetData("demat-pos",Vector())
-						local ang=self:GetData("demat-ang",Angle())
-						local attached=self:GetData("demat-attached")
-						if attached then
-							for k,v in pairs(attached) do
-								if IsValid(k) and not IsValid(k:GetParent()) then
-									k.telepos=k:GetPos()-self:GetPos()
-									if k:GetClass()=="gmod_hoverball" then -- fixes hoverballs spazzing out
-										k:SetTargetZ( (pos-self:GetPos()).z+k:GetTargetZ() )
-									end
-								end
-							end
-						end
-						self:SetPos(pos)
-						self:SetAngles(ang)
-						if attached then
-							for k,v in pairs(attached) do
-								if IsValid(k) and not IsValid(k:GetParent()) then
-									if k:IsRagdoll() then
-										for i=0,k:GetPhysicsObjectCount() do
-											local bone=k:GetPhysicsObjectNum(i)
-											if IsValid(bone) then
-												bone:SetPos(self:GetPos()+k.telepos)
-											end
-										end
-									end
-									k:SetPos(self:GetPos()+k.telepos)
-									k.telepos=nil
-									local phys=k:GetPhysicsObject()
-									if phys and IsValid(phys) then
-										k:SetSolid(SOLID_VPHYSICS)
-										if k.gravity~=nil then
-											phys:EnableGravity(k.gravity)
-											k.gravity = nil
-										end
-									end
-									k.nocollide=nil
-								end
-							end
-						end
-						self:SetDestination(nil, nil)
-					end)
-					if callback then callback(true) end
-				end
-			end)
+		if self:CallHook("CanMat") == false then
+			return
 		end
+		self:CloseDoor(function(state)
+			if state then
+				if callback then callback(false) end
+				return
+			end
+
+			self:SendMessage("premat",function() net.WriteVector(self:GetData("demat-pos",Vector())) end)
+			self:SetData("teleport",true)
+
+			local timerdelay = (self:GetData("demat-fast",false) and 1.9 or 8.5)
+			timer.Simple(timerdelay,function()
+				if not IsValid(self) then return end
+				self:SendMessage("mat")
+				self:SetData("mat",true)
+				self:SetData("step",1)
+				self:SetData("vortex",false)
+				local flight=self:GetData("prevortex-flight")
+				if self:GetData("flight")~=flight then
+					self:SetFlight(flight)
+				end
+				self:SetData("prevortex-flight",nil)
+				self:SetSolid(SOLID_VPHYSICS)
+				self:CallHook("MatStart")
+
+				local pos=self:GetData("demat-pos",Vector())
+				local ang=self:GetData("demat-ang",Angle())
+				local attached=self:GetData("demat-attached")
+				if attached then
+					for k,v in pairs(attached) do
+						if IsValid(k) and not IsValid(k:GetParent()) then
+							k.telepos=k:GetPos()-self:GetPos()
+							if k:GetClass()=="gmod_hoverball" then -- fixes hoverballs spazzing out
+								k:SetTargetZ( (pos-self:GetPos()).z+k:GetTargetZ() )
+							end
+						end
+					end
+				end
+				self:SetPos(pos)
+				self:SetAngles(ang)
+				if attached then
+					for k,v in pairs(attached) do
+						if IsValid(k) and not IsValid(k:GetParent()) then
+							if k:IsRagdoll() then
+								for i=0,k:GetPhysicsObjectCount() do
+									local bone=k:GetPhysicsObjectNum(i)
+									if IsValid(bone) then
+										bone:SetPos(self:GetPos()+k.telepos)
+									end
+								end
+							end
+							k:SetPos(self:GetPos()+k.telepos)
+							k.telepos=nil
+							local phys=k:GetPhysicsObject()
+							if phys and IsValid(phys) then
+								k:SetSolid(SOLID_VPHYSICS)
+								if k.gravity~=nil then
+									phys:EnableGravity(k.gravity)
+									k.gravity = nil
+								end
+							end
+							k.nocollide=nil
+						end
+					end
+				end
+				self:SetDestination(nil, nil)
+			end)
+			if callback then callback(true) end
+		end)
 	end
 
 	function ENT:StopDemat()
