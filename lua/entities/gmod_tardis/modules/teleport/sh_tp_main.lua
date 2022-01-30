@@ -76,6 +76,19 @@ if SERVER then
 		self:StopDemat()
 	end
 
+	function ENT:DematDoorCheck(force, callback)
+		if force or TARDIS:GetSetting("teleport-door-autoclose", false, self:GetCreator()) then
+			if self:GetData("doorstatereal") then
+				self:CloseDoor()
+			end
+			if self:GetData("doorstatereal") then
+				if callback then callback(false) end
+				return false
+			end
+			return true
+		end
+	end
+
 	function ENT:Demat(pos, ang, callback, force)
 		if self:CallHook("CanDemat", force, false) == false then
 			if self:CallHook("FailDemat", force) == true
@@ -87,15 +100,8 @@ if SERVER then
 			end
 			if callback then callback(false) end
 		else
-			if force or TARDIS:GetSetting("teleport-door-autoclose", false, self:GetCreator()) then
-				if self:GetData("doorstatereal") then
-					self:CloseDoor()
-				end
-				if self:GetData("doorstatereal") then
-					if callback then callback(false) end
-					return
-				end
-			end
+			if not self:DematDoorCheck(force) then return end
+
 			pos=pos or self:GetData("demat-pos") or self:GetPos()
 			ang=ang or self:GetData("demat-ang") or self:GetAngles()
 			self:SetBodygroup(1,0)
