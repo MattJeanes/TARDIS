@@ -273,18 +273,6 @@ else
 		effect_data:SetRadius(math.random(1,5) * power)
 		util.Effect("ElectricSpark", effect_data)
 	end
-
-	ENT:OnMessage("failed-demat", function(self)
-		if TARDIS:GetSetting("teleport-sound") and TARDIS:GetSetting("sound") then
-			local ext = self.metadata.Exterior.Sounds.Teleport
-			local int = self.metadata.Interior.Sounds.Teleport
-			self:EmitSound(ext.demat_fail)
-			self.interior:EmitSound(int.demat_fail or ext.demat_fail)
-		end
-		if LocalPlayer():GetTardisData("exterior") == self then
-			util.ScreenShake(self.interior:GetPos(), 2.5, 100, 3, 300)
-		end
-	end)
 end
 
 
