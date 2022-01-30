@@ -270,29 +270,6 @@ if SERVER then
 		end
 	end)
 
-	function ENT:FastReturn(callback)
-		if self:CallHook("CanDemat") ~= false and self:GetData("fastreturn-pos") then
-			self:SetData("demat-fast-prev", self:GetData("demat-fast", false));
-			self:SetFastRemat(true)
-			self:SetData("fastreturn",true)
-			self:Demat(self:GetData("fastreturn-pos"),self:GetData("fastreturn-ang"))
-			if callback then callback(true) end
-		else
-			if callback then callback(false) end
-		end
-	end
-
-	function ENT:AutoDemat(pos, ang, callback)
-		if self:CallHook("CanDemat", false) ~= false then
-			self:Demat(pos, ang, callback)
-		elseif self:CallHook("CanDemat", true)  ~= false then
-			self:ForceDemat(pos, ang, callback)
-		else
-			if callback then callback(false) end
-		end
-	end
-
-
 else
 
 	TARDIS:AddSetting({ id="teleport-sound",
