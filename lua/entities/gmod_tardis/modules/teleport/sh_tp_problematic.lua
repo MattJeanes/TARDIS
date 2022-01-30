@@ -57,6 +57,9 @@ if SERVER then
 			self:SetData("failed-mat-destination-ang", ang)
 
 			self:SetDestination(self:GetPos(), self:GetAngles())
+
+			self:SendMessage("failed-mat")
+
 			self:Mat(callback)
 			return
 		end
@@ -206,10 +209,12 @@ if SERVER then
 			self.interior:Explode(20)
 		end)
 
-		local ext = self.metadata.Exterior.Sounds.Teleport
-		local int = self.metadata.Interior.Sounds.Teleport
-		self:EmitSound(ext.interrupt)
-		self.interior:EmitSound(int.interrupt or ext.interrupt)
+		if TARDIS:GetSetting("teleport-sound") and TARDIS:GetSetting("sound") then
+			local ext = self.metadata.Exterior.Sounds.Teleport
+			local int = self.metadata.Interior.Sounds.Teleport
+			self:EmitSound(ext.interrupt)
+			self.interior:EmitSound(int.interrupt or ext.interrupt)
+		end
 
 		self:SetData("demat-pos",nil,true)
 		self:SetData("demat-ang",nil,true)
