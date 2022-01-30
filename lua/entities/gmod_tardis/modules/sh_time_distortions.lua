@@ -30,8 +30,7 @@ ENT:AddHook("FailDemat", "time_distortions_inside", function(self, force)
 	end
 end)
 
-ENT:AddHook("FailMat", "time_distortions_destination", function(self)
-	local dest_pos, dest_ang = self:GetDestination()
+ENT:AddHook("FailMat", "time_distortions_destination", function(self, dest_pos, dest_ang)
 	if dest_pos ~= nil and TimeDistortionsPresent(dest_pos, 1000)
 	then
 		return true

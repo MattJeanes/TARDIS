@@ -94,16 +94,7 @@ if SERVER then
 
 	function ENT:Demat(pos, ang, callback, force)
 		if self:CallHook("CanDemat", force, false) == false then
-			if self:CallHook("FailDemat", force) == true
-				and self:CallHook("CanDemat", force, true) ~= false
-			then
-				self:SetData("failing-demat", true, true)
-				self:SendMessage("failed-demat")
-				self:Timer("failed-demat-stop", 4, function()
-					self:SetData("failing-demat", false, true)
-				end)
-			end
-			if callback then callback(false) end
+			self:HandleNoDemat(pos, ang, callback, force)
 			return
 		end
 
@@ -151,17 +142,11 @@ if SERVER then
 	end
 
 	function ENT:Mat(callback)
-		if self:CallHook("CanMat") == false then
-			if self:CallHook("FailMat") == true
-				and self:CallHook("CanMat", true) ~= false
-			then
-				self:SetData("failing-mat", true, true)
-				self:SendMessage("failed-mat")
-				self:Timer("failed-mat-stop", 4, function()
-					self:SetData("failing-mat", false, true)
-				end)
-			end
-			if callback then callback(false) end
+		local pos = self:GetData("demat-pos", self:GetPos())
+		local ang = self:GetData("demat-ang", self:GetAngles())
+
+		if self:CallHook("CanMat", pos, ang) == false then
+			self:HandleNoMat(pos, ang, callback)
 			return
 		end
 		self:CloseDoor(function(state)
@@ -188,8 +173,6 @@ if SERVER then
 				self:SetSolid(SOLID_VPHYSICS)
 				self:CallHook("MatStart")
 
-				local pos=self:GetData("demat-pos",Vector())
-				local ang=self:GetData("demat-ang",Angle())
 				local attached=self:GetData("demat-attached")
 				if attached then
 					for k,v in pairs(attached) do
@@ -299,7 +282,7 @@ if SERVER then
 		end
 	end)
 
-	ENT:AddHook("CanMat", "teleport", function(self)
+	ENT:AddHook("CanMat", "teleport", function(self, dest_pos, dest_ang, ignore_fail_mat)
 		if self:GetData("teleport") or (not self:GetData("vortex")) then
 			return false
 		end
@@ -451,6 +434,12 @@ function ENT:GetRandomLocation(grounded)
 			end
 		end
 	end
+end
+
+function ENT:SetRandomDestination(grounded)
+	local pos = self:GetRandomLocation(grounded)
+	local ang = Angle(0,0,0)
+	self:SetDestination(pos, ang)
 end
 
 function ENT:GetTargetAlpha()
