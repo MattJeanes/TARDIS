@@ -28,6 +28,10 @@ if SERVER then
 		local fail = self:CallHook("FailDemat", force)
 		local possible = self:CallHook("CanDemat", force, true)
 
+		if self:CallHook("HandleNoDemat", pos, ang, callback, force) == true then
+			return -- when the behaviour is overriden, the hook will return true
+		end
+
 		if fail == true and possible ~= false then
 			self:SetData("failing-demat", true, true)
 			self:SendMessage("failed-demat")
@@ -41,6 +45,10 @@ if SERVER then
 	function ENT:HandleNoMat(pos, ang, callback)
 		local fail = self:CallHook("FailMat", pos, ang)
 		local possible = self:CallHook("CanMat", pos, ang, true)
+
+		if self:CallHook("HandleNoMat", pos, ang, callback) == true then
+			return -- when the behaviour is overriden, the hook will return true
+		end
 
 		if fail ~= true or possible == false then
 			if callback then callback(false) end

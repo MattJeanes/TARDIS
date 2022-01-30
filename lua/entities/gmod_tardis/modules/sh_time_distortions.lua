@@ -9,6 +9,15 @@ local function TimeDistortionsPresent(pos, radius)
 	return false
 end
 
+local function AreDistortionsInside(ent)
+	local int_radius = ent.metadata.Interior.ExitDistance
+	return TimeDistortionsPresent(ent.interior:GetPos(), int_radius)
+end
+
+local function AreDistortionsOutside(ent)
+	return TimeDistortionsPresent(ent:GetPos(), 1000)
+end
+
 ENT:AddHook("ForceDematStart", "time_distortion_generators_outside", function(self)
 	for i,v in ipairs(ents.FindInSphere(self:GetPos(), 300)) do
 		if v:GetClass() == "gmod_time_distortion_generator" and v:GetEnabled() then
@@ -17,16 +26,21 @@ ENT:AddHook("ForceDematStart", "time_distortion_generators_outside", function(se
 	end
 end)
 
-ENT:AddHook("FailDemat", "time_distortions_outside", function(self, force)
-	if not force and TimeDistortionsPresent(self:GetPos(), 1000) then
+ENT:AddHook("FailDemat", "time_distortions", function(self, force)
+	if AreDistortionsOutside(self) and (AreDistortionsInside(self) or not force) then
 		return true
 	end
 end)
 
-ENT:AddHook("FailDemat", "time_distortions_inside", function(self, force)
-	local int_radius = self.metadata.Interior.ExitDistance
-	if TimeDistortionsPresent(self.interior:GetPos(), int_radius) then
-		return true
+ENT:AddHook("CanDemat", "time_distortions_only_inside", function(self, force)
+	if not force and AreDistortionsInside(self) and not AreDistortionsOutside(self) then
+		return false
+	end
+end)
+
+ENT:AddHook("HandleNoDemat", "time_distortions", function(self, pos, ang, callback, force)
+	if not force and AreDistortionsInside(self) and not AreDistortionsOutside(self) then
+		self:ForceDemat(pos, ang, callback)
 	end
 end)
 
@@ -34,5 +48,11 @@ ENT:AddHook("FailMat", "time_distortions_destination", function(self, dest_pos, 
 	if dest_pos ~= nil and dest_pos ~= self:GetPos() and TimeDistortionsPresent(dest_pos, 1000)
 	then
 		return true
+	end
+end)
+
+ENT:AddHook("StopDemat", "time_distortions_inside", function(self, force)
+	if AreDistortionsInside(self) then
+		self:SetRandomDestination(self:GetData("flight", false))
 	end
 end)

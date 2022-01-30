@@ -59,6 +59,12 @@ if SERVER then
 		return true
 	end
 
+	function ENT:SetRandomDestination(grounded)
+		local pos = self:GetRandomLocation(grounded)
+		local ang = Angle(0,0,0)
+		self:SetDestination(pos, ang)
+	end
+
 	function ENT:GetDestination()
 		return self:GetData("demat-pos"), self:GetData("demat-ang")
 	end
@@ -434,12 +440,6 @@ function ENT:GetRandomLocation(grounded)
 			end
 		end
 	end
-end
-
-function ENT:SetRandomDestination(grounded)
-	local pos = self:GetRandomLocation(grounded)
-	local ang = Angle(0,0,0)
-	self:SetDestination(pos, ang)
 end
 
 function ENT:GetTargetAlpha()
