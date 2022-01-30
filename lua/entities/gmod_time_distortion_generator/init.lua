@@ -76,20 +76,22 @@ function ENT:Think()
 	end
 end
 
+function ENT:Break()
+	self.on = false
+	self.FlyTime = nil
+	self.broken = true
+	self:SetEnabled(false)
+	self:SetColor(Color(100, 100, 100, 255))
+	self:GetPhysicsObject():EnableGravity(true)
+
+	local effect_data = EffectData()
+	effect_data:SetOrigin(self:GetPos())
+	effect_data:SetMagnitude(10)
+	util.Effect("Explosion", effect_data)
+end
 
 function ENT:OnTakeDamage(dmg)
-
 	if self.on or self.FlyTime ~= nil then
-		self.on = false
-		self.FlyTime = nil
-		self.broken = true
-		self:SetEnabled(false)
-		self:SetColor(Color(100, 100, 100, 255))
-		self:GetPhysicsObject():EnableGravity(true)
-
-		local effect_data = EffectData()
-		effect_data:SetOrigin(self:GetPos())
-		effect_data:SetMagnitude(10)
-		util.Effect("Explosion", effect_data)
+		self:Break()
 	end
 end
