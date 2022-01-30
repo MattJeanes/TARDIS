@@ -4,7 +4,7 @@ if CLIENT then return end
 
 ENT:AddHook("StopDemat", "teleport-fast", function(self)
 	if self:GetData("demat-fast",false) then
-		timer.Simple(0.3, function()
+		self:Timer("fastremat", 0.3, function()
 			if not IsValid(self) then return end
 			self:Mat()
 		end)
