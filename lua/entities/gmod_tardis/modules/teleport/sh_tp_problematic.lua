@@ -33,10 +33,6 @@ if SERVER then
 	end)
 
 	function ENT:ForceDemat(pos, ang, callback)
-		self:SetData("force-demat", true, true)
-		self:SetData("force-demat-time", CurTime(), true)
-		self:Explode(30)
-		self.interior:Explode(20)
 		self:Demat(pos, ang, callback, true)
 	end
 
@@ -184,6 +180,12 @@ if SERVER then
 		end
 	end)
 
+	ENT:AddHook("CanMat", "failed", function(self, ignore_fail_mat)
+		if ignore_fail_mat ~= true and self:CallHook("FailMat") == true then
+			return false
+		end
+	end)
+
 	function ENT:EngineReleaseDemat(pos, ang, callback)
 		if self:GetData("failing-demat", false) then
 			self:SetData("failing-demat", false, true)
@@ -275,14 +277,6 @@ else
 	end
 end
 
-
-ENT:AddHook("Think","failed-demat-stop",function(self)
-	if self:GetData("failing-demat", false) then
-		if CurTime() > self:GetData("failing-demat-time") + 4 then
-			self:SetData("failing-demat", false, true)
-		end
-	end
-end)
 
 ENT:AddHook("Think","breakdown-effects", function(self)
 	if self:GetData("force-demat", false) then

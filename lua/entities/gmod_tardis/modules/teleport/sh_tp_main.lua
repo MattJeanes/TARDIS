@@ -59,6 +59,10 @@ if SERVER then
 		return true
 	end
 
+	function ENT:GetDestination()
+		return self:GetData("demat-pos"), self:GetData("demat-ang")
+	end
+
 	function ENT:ForceDematState()
 		self:SetDestination(self:GetPos(), self:GetAngles())
 
@@ -77,16 +81,15 @@ if SERVER then
 	end
 
 	function ENT:DematDoorCheck(force, callback)
-		if force or TARDIS:GetSetting("teleport-door-autoclose", false, self:GetCreator()) then
-			if self:GetData("doorstatereal") then
-				self:CloseDoor()
-			end
-			if self:GetData("doorstatereal") then
-				if callback then callback(false) end
-				return false
-			end
-			return true
+		local autoclose = TARDIS:GetSetting("teleport-door-autoclose", false, self:GetCreator())
+		if (force or autoclose) and self:GetData("doorstatereal") then
+			self:CloseDoor()
 		end
+		if self:GetData("doorstatereal") then
+			if callback then callback(false) end
+			return false
+		end
+		return true
 	end
 
 	function ENT:Demat(pos, ang, callback, force)
@@ -94,15 +97,24 @@ if SERVER then
 			if self:CallHook("FailDemat", force) == true
 				and self:CallHook("CanDemat", force, true) ~= false
 			then
-				self:SetData("failing-demat-time", CurTime(), true)
 				self:SetData("failing-demat", true, true)
 				self:SendMessage("failed-demat")
+				self:Timer("failed-demat-stop", 4, function()
+					self:SetData("failing-demat", false, true)
+				end)
 			end
 			if callback then callback(false) end
 			return
 		end
 
 		if not self:DematDoorCheck(force, callback) then return end
+
+		if force then
+			self:SetData("force-demat", true, true)
+			self:SetData("force-demat-time", CurTime(), true)
+			self:Explode(30)
+			self.interior:Explode(20)
+		end
 
 		pos=pos or self:GetData("demat-pos") or self:GetPos()
 		ang=ang or self:GetData("demat-ang") or self:GetAngles()
@@ -115,7 +127,10 @@ if SERVER then
 		self:SetData("step",1)
 		self:SetData("teleport",true)
 		self:SetCollisionGroup( COLLISION_GROUP_WORLD )
+
 		self:CallHook("DematStart")
+		if force then self:CallHook("ForceDematStart") end
+
 		self:DrawShadow(false)
 		for k,v in pairs(self.parts) do
 			v:DrawShadow(false)
@@ -137,6 +152,16 @@ if SERVER then
 
 	function ENT:Mat(callback)
 		if self:CallHook("CanMat") == false then
+			if self:CallHook("FailMat") == true
+				and self:CallHook("CanMat", true) ~= false
+			then
+				self:SetData("failing-mat", true, true)
+				self:SendMessage("failed-mat")
+				self:Timer("failed-mat-stop", 4, function()
+					self:SetData("failing-mat", false, true)
+				end)
+			end
+			if callback then callback(false) end
 			return
 		end
 		self:CloseDoor(function(state)

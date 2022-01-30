@@ -9,22 +9,31 @@ local function TimeDistortionsPresent(pos, radius)
 	return false
 end
 
-ENT:AddHook("FailDemat", "time_distortions", function(self, force)
-
-	if force then return end
-
-	if TimeDistortionsPresent(self:GetPos(), 500) or
-		TimeDistortionsPresent(self.interior:GetPos(), self.metadata.Interior.ExitDistance)
-	then
-		return true
+ENT:AddHook("ForceDematStart", "time_distortion_generators_outside", function(self)
+	for i,v in ipairs(ents.FindInSphere(self:GetPos(), 300)) do
+		if v:GetClass() == "gmod_time_distortion_generator" and v:GetEnabled() then
+			v:Break()
+		end
 	end
-
 end)
 
+ENT:AddHook("FailDemat", "time_distortions_outside", function(self, force)
+	if not force and TimeDistortionsPresent(self:GetPos(), 1000) then
+		return true
+	end
+end)
 
-ENT:AddHook("CanMat", "time_distortions", function(self)
-	if TimeDistortionsPresent(self.interior:GetPos(), self.metadata.Interior.ExitDistance)
+ENT:AddHook("FailDemat", "time_distortions_inside", function(self, force)
+	local int_radius = self.metadata.Interior.ExitDistance
+	if TimeDistortionsPresent(self.interior:GetPos(), int_radius) then
+		return true
+	end
+end)
+
+ENT:AddHook("FailMat", "time_distortions_destination", function(self)
+	local dest_pos, dest_ang = self:GetDestination()
+	if dest_pos ~= nil and TimeDistortionsPresent(dest_pos, 1000)
 	then
-		return false
+		return true
 	end
 end)
