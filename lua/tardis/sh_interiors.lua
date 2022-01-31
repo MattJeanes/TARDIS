@@ -126,10 +126,14 @@ end
 ----------------------------------------------------------------------------------------------------
 -- Adding interiors, interior versions and overrides
 
-local function merge(base,t)
-	local copy=table.Copy(TARDIS.Metadata[base])
+local function create_merge_table(base, t)
+	local copy=table.Copy(base)
 	table.Merge(copy,t)
 	return copy
+end
+
+local function merge_interior(base,t)
+	return create_merge_table(TARDIS.Metadata[base], t)
 end
 
 TARDIS_OVERRIDES = TARDIS_OVERRIDES or {}
@@ -138,17 +142,31 @@ local name_overrides = TARDIS_OVERRIDES.Names or {}
 
 local default_category = TARDIS_OVERRIDES.MainCategory or "Doctor Who - TARDIS"
 
+TARDIS.MetadataTemplates = TARDIS.MetadataTemplates or {}
+
 function TARDIS:AddInterior(t)
 	self.Metadata[t.ID] = t
 	self.MetadataRaw[t.ID] = t
 	if t.Base and self.Metadata[t.Base] then
-		self.Metadata[t.ID] = merge(t.Base,t)
+		self.Metadata[t.ID] = merge_interior(t.Base,t)
 		self.Metadata[t.ID].Versions = self.MetadataRaw[t.ID].Versions
 	end
 	for k,v in pairs(self.MetadataRaw) do
-		if t.ID==v.Base then
-			self.Metadata[k] = merge(v.Base,v)
+		if t.ID == v.Base then
+			self.Metadata[k] = merge_interior(v.Base,v)
 			self.Metadata[k].Versions = self.MetadataRaw[k].Versions
+		end
+	end
+
+	if t.Templates then
+		for i,template_body in ipairs(t.Templates) do
+			local template = self.MetadataTemplates[template_body.id]
+
+			if template then
+				self.Metadata[t.ID] = create_merge_table(template, self.Metadata[t.ID])
+			elseif template_body.fail then
+				template_body.fail()
+			end
 		end
 	end
 
@@ -206,6 +224,11 @@ function TARDIS:AddInterior(t)
 		ent.ScriptedEntityType="tardis"
 		list.Set("SpawnableEntities", t.ID, ent)
 	end
+end
+
+function TARDIS:AddInteriorTemplate(id, template)
+	if not id or not template then return end
+	self.MetadataTemplates[id] = template
 end
 
 function TARDIS:AddCustomVersion(main_id, version_id, version)
@@ -483,5 +506,6 @@ if SERVER then
 	end)
 end
 
+TARDIS:LoadFolder("interiors/templates", nil, true)
 TARDIS:LoadFolder("interiors", nil, true)
 TARDIS:LoadFolder("interiors/versions", nil, true)
