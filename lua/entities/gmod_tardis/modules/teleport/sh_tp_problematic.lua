@@ -25,7 +25,7 @@ TARDIS:AddSetting({
 if SERVER then
 
 	function ENT:HandleNoDemat(pos, ang, callback, force)
-		local fail = self:CallHook("FailDemat", force)
+		local fail = self:CallHook("ShouldFailDemat", force)
 		local possible = self:CallHook("CanDemat", force, true)
 
 		if self:CallHook("HandleNoDemat", pos, ang, callback, force) == true then
@@ -43,7 +43,7 @@ if SERVER then
 	end
 
 	function ENT:HandleNoMat(pos, ang, callback)
-		local fail = self:CallHook("FailMat", pos, ang)
+		local fail = self:CallHook("ShouldFailMat", pos, ang)
 		local possible = self:CallHook("CanMat", pos, ang, true)
 
 		if self:CallHook("HandleNoMat", pos, ang, callback) == true then
@@ -113,7 +113,7 @@ if SERVER then
 		self.interior:StopSound(int.fullflight_damaged or ext.fullflight_damaged)
 	end
 
-	ENT:AddHook("FailDemat", "doors", function(self, force)
+	ENT:AddHook("ShouldFailDemat", "doors", function(self, force)
 		if self:GetData("doorstatereal") and force ~= true
 			and not TARDIS:GetSetting("teleport-door-autoclose", false, self:GetCreator())
 		then
@@ -250,13 +250,13 @@ if SERVER then
 	end
 
 	ENT:AddHook("CanDemat", "failed", function(self, force, ignore_fail_demat)
-		if ignore_fail_demat ~= true and self:CallHook("FailDemat", force) == true then
+		if ignore_fail_demat ~= true and self:CallHook("ShouldFailDemat", force) == true then
 			return false
 		end
 	end)
 
 	ENT:AddHook("CanMat", "failed", function(self, dest_pos, dest_ang, ignore_fail_mat)
-		if ignore_fail_mat ~= true and self:CallHook("FailMat", dest_pos, dest_ang) == true then
+		if ignore_fail_mat ~= true and self:CallHook("ShouldFailMat", dest_pos, dest_ang) == true then
 			return false
 		end
 	end)
@@ -264,7 +264,7 @@ if SERVER then
 	function ENT:EngineReleaseDemat(pos, ang, callback)
 		if self:GetData("failing-demat", false) then
 			self:SetData("failing-demat", false, true)
-			if self:CallHook("FailDemat", false) == true then
+			if self:CallHook("ShouldFailDemat", false) == true then
 				if not self:GetData("health-warning", false) then
 					self:ForceDemat(pos, ang, callback)
 				else

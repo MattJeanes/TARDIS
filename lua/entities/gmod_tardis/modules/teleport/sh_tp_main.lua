@@ -99,7 +99,9 @@ if SERVER then
 	end
 
 	function ENT:Demat(pos, ang, callback, force)
-		if self:CallHook("CanDemat", force, false) == false then
+		local ignore_failed_demat = self:GetData("redecorate")
+
+		if self:CallHook("CanDemat", force, ignore_failed_demat) == false then
 			self:HandleNoDemat(pos, ang, callback, force)
 			return
 		end
@@ -320,7 +322,9 @@ else
 			local sound_fullflight_ext = ext.fullflight
 			local sound_fullflight_int = int.fullflight or ext.fullflight
 
-			if self:GetData("health-warning", false) or self:GetData("force-demat", false) then
+			if (self:GetData("health-warning", false) or self:GetData("force-demat", false))
+				and not self:GetData("redecorate")
+			then
 				sound_demat_ext = ext.demat_damaged
 				sound_demat_int = int.demat_damaged or ext.demat_damaged
 				sound_fullflight_ext = ext.fullflight_damaged

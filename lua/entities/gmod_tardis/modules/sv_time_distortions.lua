@@ -9,12 +9,12 @@ local function TimeDistortionsPresent(pos, radius)
 	return false
 end
 
-local function AreDistortionsInside(ent)
+local function DistortionsInside(ent)
 	local int_radius = ent.metadata.Interior.ExitDistance
 	return TimeDistortionsPresent(ent.interior:GetPos(), int_radius)
 end
 
-local function AreDistortionsOutside(ent)
+local function DistortionsOutside(ent)
 	return TimeDistortionsPresent(ent:GetPos(), 1000)
 end
 
@@ -26,25 +26,25 @@ ENT:AddHook("ForceDematStart", "time_distortion_generators_outside", function(se
 	end
 end)
 
-ENT:AddHook("FailDemat", "time_distortions", function(self, force)
-	if AreDistortionsOutside(self) and (AreDistortionsInside(self) or not force) then
+ENT:AddHook("ShouldFailDemat", "time_distortions", function(self, force)
+	if DistortionsOutside(self) and (DistortionsInside(self) or not force) then
 		return true
 	end
 end)
 
 ENT:AddHook("CanDemat", "time_distortions_only_inside", function(self, force)
-	if not force and AreDistortionsInside(self) and not AreDistortionsOutside(self) then
+	if not force and not self:GetData("redecorate") and DistortionsInside(self) and not DistortionsOutside(self) then
 		return false
 	end
 end)
 
 ENT:AddHook("HandleNoDemat", "time_distortions", function(self, pos, ang, callback, force)
-	if not force and AreDistortionsInside(self) and not AreDistortionsOutside(self) then
+	if not force and DistortionsInside(self) and not DistortionsOutside(self) then
 		self:ForceDemat(pos, ang, callback)
 	end
 end)
 
-ENT:AddHook("FailMat", "time_distortions_destination", function(self, dest_pos, dest_ang)
+ENT:AddHook("ShouldFailMat", "time_distortions_destination", function(self, dest_pos, dest_ang)
 	if dest_pos ~= nil and dest_pos ~= self:GetPos() and TimeDistortionsPresent(dest_pos, 1000)
 	then
 		return true
@@ -52,7 +52,7 @@ ENT:AddHook("FailMat", "time_distortions_destination", function(self, dest_pos, 
 end)
 
 ENT:AddHook("StopDemat", "time_distortions_inside", function(self, force)
-	if AreDistortionsInside(self) then
+	if DistortionsInside(self) then
 		self:SetRandomDestination(self:GetData("flight", false))
 	end
 end)
