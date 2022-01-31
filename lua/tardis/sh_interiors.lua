@@ -31,32 +31,36 @@ local function merge(base,t)
 end
 
 function TARDIS:AddInterior(t)
-	self.Metadata[t.ID]=t
-	self.MetadataRaw[t.ID]=t
+	self.Metadata[t.ID] = t
+	self.MetadataRaw[t.ID] = t
 	if t.Base and self.Metadata[t.Base] then
-		self.Metadata[t.ID]=merge(t.Base,t)
+		self.Metadata[t.ID] = merge(t.Base,t)
+		self.Metadata[t.ID].Versions = self.MetadataRaw[t.ID].Versions
 	end
 	for k,v in pairs(self.MetadataRaw) do
 		if t.ID==v.Base then
-			self.Metadata[k]=merge(v.Base,v)
+			self.Metadata[k] = merge(v.Base,v)
+			self.Metadata[k].Versions = self.MetadataRaw[k].Versions
 		end
 	end
 
-	if not self.Metadata[t.ID].Versions then self.Metadata[t.ID].Versions = {} end
-	local versions = self.Metadata[t.ID].Versions
-
-	if not versions.other then versions.other = {} end
-	if not versions.custom then versions.custom = {} end
-
-	if not versions.main then
-		versions.main = { id = t.ID, }
-	end
-	if versions.randomize then
-		versions.random_list = table.Copy(versions.other) or {}
-		versions.random_list.main = versions.main
-	end
-
 	if t.Base ~= true and not t.Hidden and not t.IsVersionOf then
+
+		if not self.Metadata[t.ID].Versions then self.Metadata[t.ID].Versions = {} end
+		local versions = self.Metadata[t.ID].Versions
+
+		if not versions.other then versions.other = {} end
+		if not versions.custom then versions.custom = {} end
+
+		if not versions.main then
+			versions.main = { id = t.ID, }
+		end
+		if versions.randomize then
+			versions.random_list = table.Copy(versions.other) or {}
+			versions.random_list.main = versions.main
+		end
+
+
 		local ent={}
 
 		-- this is for developer debugging purposes only
