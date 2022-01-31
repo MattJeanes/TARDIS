@@ -24,11 +24,69 @@ TARDIS:AddSetting({
 	desc="Whether classic (big) door versions of interiors will spawn by default"
 })
 
+
+local empty_int_preferences = {
+	favorites = {},
+	unwanted = {},
+}
+
+TARDIS:AddSetting({
+	id = "interior_preferences",
+	name = "Interior preferences",
+	value = empty_int_preferences,
+	option = false,
+	networked = true
+})
+
+function TARDIS:GetIntPreferences(ply)
+	return TARDIS:GetSetting("interior_preferences", empty_int_preferences, ply)
+end
+
+function TARDIS:SaveIntPreferences(preferences)
+	TARDIS:SetSetting("interior_preferences", preferences, true)
+end
+
+function TARDIS:IsFavoriteInt(id, ply)
+	return TARDIS:GetIntPreferences(ply).favorites[id]
+end
+
+function TARDIS:IsUnwantedInt(id, ply)
+	return TARDIS:GetIntPreferences(ply).unwanted[id]
+end
+
+function TARDIS:SetFavoriteInt(id, favorite, ply)
+	local interior_preferences = TARDIS:GetIntPreferences(ply)
+	interior_preferences.favorites[id] = favorite
+	self:SaveIntPreferences(interior_preferences)
+end
+
+function TARDIS:SetUnwantedInt(id, unwanted, ply)
+	local interior_preferences = TARDIS:GetIntPreferences(ply)
+	interior_preferences.unwanted[id] = unwanted
+	self:SaveIntPreferences(interior_preferences)
+end
+
+function TARDIS:ToggleFavoriteInt(id, ply)
+	TARDIS:SetFavoriteInt(id, not TARDIS:IsFavoriteInt(id, ply), ply)
+end
+
+function TARDIS:ToggleUnwantedInt(id, ply)
+	TARDIS:SetUnwantedInt(id, not TARDIS:IsUnwantedInt(id, ply), ply)
+end
+
+
+
 local function merge(base,t)
 	local copy=table.Copy(TARDIS.Metadata[base])
 	table.Merge(copy,t)
 	return copy
 end
+
+TARDIS_OVERRIDES = TARDIS_OVERRIDES or {}
+local cat_overrides = TARDIS_OVERRIDES.Categories or {}
+local name_overrides = TARDIS_OVERRIDES.Names or {}
+
+local default_category = TARDIS_OVERRIDES.MainCategory or "Doctor Who - TARDIS"
 
 function TARDIS:AddInterior(t)
 	self.Metadata[t.ID] = t
@@ -63,49 +121,38 @@ function TARDIS:AddInterior(t)
 
 		local ent={}
 
-		-- this is for developer debugging purposes only
-		local spm_overrides = DEBUG_TARDIS_SPAWNMENU_CATEGORY_OVERRIDES
-
-		if spm_overrides ~= nil and (spm_overrides[t.ID] or spm_overrides[t.Name]) then
-			if spm_overrides[t.ID] then
-				ent.Category = spm_overrides[t.ID]
-			else
-				ent.Category = spm_overrides[t.Name]
+		local cat_override
+		if cat_overrides then
+			for category,cat_interiors in pairs(cat_overrides) do
+				if table.HasValue(cat_interiors, t.ID) or table.HasValue(cat_interiors, t.Name) then
+					cat_override = category
+					break
+				end
 			end
-		elseif t.Category ~= nil then
-			ent.Category = t.Category
-		elseif spm_overrides ~= nil and spm_overrides["all"] then
-			ent.Category = spm_overrides["all"]
-		else
-			ent.Category = "Doctor Who - TARDIS"
 		end
 
-		local nm_overrides = DEBUG_TARDIS_SPAWNMENU_NAME_OVERRIDES
+		local name_override = (name_overrides ~= nil) and (name_overrides[t.ID] or name_overrides[t.Name]) or nil
 
-		if nm_overrides ~= nil and (nm_overrides[t.ID] or nm_overrides[t.Name]) then
-			if nm_overrides[t.ID] then
-				ent.PrintName = nm_overrides[t.ID]
-			else
-				ent.PrintName = nm_overrides[t.Name]
+		ent.Category = cat_override or t.Category or default_category
+		ent.PrintName = name_override or t.Name
+
+		if CLIENT and TARDIS:IsFavoriteInt(t.ID, LocalPlayer()) then
+			ent.PrintName = "  " .. ent.PrintName -- move to the top
+		end
+
+		local function try_icon(filename)
+			if ent.IconOverride ~= nil then return end
+			if file.Exists("materials/vgui/entities/" .. filename, "GAME") then
+				ent.IconOverride="vgui/entities/" .. filename
 			end
-		else
-			ent.PrintName = t.Name
 		end
 
-		if file.Exists("materials/vgui/entities/tardis/"..t.ID..".vmt", "GAME")
-		then
-			ent.IconOverride="vgui/entities/tardis/"..t.ID..".vmt"
+		try_icon("tardis/" .. t.ID .. ".vmt")
+		try_icon("tardis/" .. t.ID .. ".vtf")
+		try_icon("tardis/" .. t.ID .. ".png")
+		try_icon("tardis/default/" .. t.ID .. ".png")
+		try_icon("tardis/gmod_tardis.vmt")
 
-		elseif file.Exists("materials/vgui/entities/tardis/"..t.ID..".vtf", "GAME")
-		then
-			ent.IconOverride="vgui/entities/tardis/"..t.ID..".vtf"
-
-		elseif file.Exists("materials/vgui/entities/tardis/"..t.ID..".png", "GAME")
-		then
-			ent.IconOverride="vgui/entities/tardis/"..t.ID..".png"
-		else
-			ent.IconOverride="vgui/entities/tardis/default/"..t.ID..".png"
-		end
 		ent.ScriptedEntityType="tardis"
 		list.Set("SpawnableEntities", t.ID, ent)
 	end
@@ -171,17 +218,20 @@ local function AddMenuLabel(dmenu, text)
 end
 
 local function AddMenuSingleVersion(dmenu, id)
-	dmenu:AddOption("Spawn", function()
+	local spawn = dmenu:AddOption("Spawn", function()
 		SpawnTARDISById(id)
-	end):SetIcon("icon16/add.png")
+	end)
+	spawn:SetIcon("icon16/add.png")
 
-	dmenu:AddOption("Select as default interior", function()
+	local select_default = dmenu:AddOption("Select as default interior", function()
 		SetDefaultInterior(id)
-	end):SetIcon("icon16/star.png")
+	end)
+	select_default:SetIcon("icon16/star.png")
 
-	dmenu:AddOption("Select for redecoration", function()
+	local select_redecoration = dmenu:AddOption("Select for redecoration", function()
 		SelectForRedecoration(id)
-	end):SetIcon("icon16/color_wheel.png")
+	end)
+	select_redecoration:SetIcon("icon16/color_wheel.png")
 end
 
 local function AddMenuDoubleVersion(dmenu, classic_doors_id, double_doors_id)
@@ -194,12 +244,26 @@ local function AddMenuDoubleVersion(dmenu, classic_doors_id, double_doors_id)
 	AddMenuSingleVersion(dmenu, double_doors_id)
 end
 
-local function AddMenuVersion(dmenu, version)
+local function AddMenuVersion(dmenu, version, parent_int)
 	if version.classic_doors_id then
 		AddMenuDoubleVersion(dmenu, version.classic_doors_id, version.double_doors_id)
 	else
 		AddMenuSingleVersion(dmenu, version.id)
 	end
+
+	dmenu:AddSpacer()
+
+	local unwanted = dmenu:AddOption("Use in random redecoration", function(self)
+		TARDIS:ToggleUnwantedInt(parent_int, LocalPlayer())
+	end)
+	function unwanted:Think()
+		local use = not TARDIS:IsUnwantedInt(parent_int, LocalPlayer())
+		if self:GetChecked() ~= use then
+			self:SetChecked(use)
+		end
+	end
+	unwanted:SetIsCheckable(true)
+
 end
 
 local function SpawnVersion(version)
@@ -209,18 +273,18 @@ local function SpawnVersion(version)
 	if version and version.classic_doors_id then
 		id = prefer_classic_doors and version.classic_doors_id or version.double_doors_id
 	else
-		id = version.id or obj.spawnname
+		id = version.id
 	end
 	SpawnTARDISById(id)
 end
 
-local function AddVersionSubMenu(dmenu, version)
+local function AddVersionSubMenu(dmenu, version, parent_int)
 	if not version or not version.name then return end
 
 	local submenu = dmenu:AddSubMenu(version.name, function()
 		SpawnVersion(version)
 	end)
-	AddMenuVersion(submenu, version)
+	AddMenuVersion(submenu, version, parent_int)
 
 	return submenu
 end
@@ -259,16 +323,30 @@ hook.Add("PostGamemodeLoaded", "tardis-interiors", function()
 			local dmenu = DermaMenu()
 			local versions = TARDIS:GetInterior(obj.spawnname).Versions
 
-			AddMenuVersion(dmenu, versions.main)
+			AddMenuVersion(dmenu, versions.main, obj.spawnname)
 			dmenu:AddSpacer()
 
 			for k,v in pairs(versions.other) do
-				AddVersionSubMenu(dmenu, v)
+				AddVersionSubMenu(dmenu, v, obj.spawnname)
 			end
 			dmenu:AddSpacer()
 
 			for k,v in pairs(versions.custom) do
-				AddVersionSubMenu(dmenu, v)
+				AddVersionSubMenu(dmenu, v, obj.spawnname)
+			end
+			dmenu:AddSpacer()
+
+			local favorite = dmenu:AddOption("Add to favorites (reload required)", function(self)
+				TARDIS:ToggleFavoriteInt(obj.spawnname, LocalPlayer())
+				TARDIS:Message(LocalPlayer(), "Reload the game for changes to apply")
+				TARDIS:Message(LocalPlayer(), "Favorites have been updated")
+			end)
+			favorite:SetIsCheckable(true)
+			function favorite:Think()
+				local fav = TARDIS:IsFavoriteInt(obj.spawnname, LocalPlayer())
+				if self:GetChecked() ~= fav then
+					self:SetChecked(fav)
+				end
 			end
 
 			dmenu:Open()

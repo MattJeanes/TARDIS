@@ -8,17 +8,15 @@ ENT.Author="Dr. Matt"
 ENT.TardisExterior=true
 ENT.Interior="gmod_tardis_interior"
 
--- this is for developer debugging purposes only
-local spm_overrides = DEBUG_TARDIS_SPAWNMENU_CATEGORY_OVERRIDES
-if spm_overrides ~= nil and spm_overrides["all"] then
-	ENT.Category = spm_overrides["all"]
+if TARDIS_OVERRIDES and TARDIS_OVERRIDES.MainCategory then
+	ENT.Category = TARDIS_OVERRIDES.MainCategory
 end
 
 if SERVER then
 	ENT.Spawnable = true
 else
 	local spawnEntity = table.Copy(ENT)
-	spawnEntity.PrintName = " TARDIS " -- Spaces used for ordering
+	spawnEntity.PrintName = "    TARDIS    " -- Spaces used for ordering
 	spawnEntity.Spawnable = true
 	list.Set("SpawnableEntities", "gmod_tardis", spawnEntity)
 end
