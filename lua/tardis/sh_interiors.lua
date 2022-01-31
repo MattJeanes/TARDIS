@@ -13,6 +13,17 @@ TARDIS:AddSetting({
 	desc="Whether or not TARDIS skin will be randomized when it's spawned"
 })
 
+TARDIS:AddSetting({
+	id="use_classic_door_interiors",
+	name="Use classic door interiors by default",
+	value=true,
+	type="bool",
+	networked=true,
+	option=true,
+	section="Misc",
+	desc="Whether classic (big) door versions of interiors will spawn by default"
+})
+
 local function merge(base,t)
 	local copy=table.Copy(TARDIS.Metadata[base])
 	table.Merge(copy,t)
@@ -31,7 +42,9 @@ function TARDIS:AddInterior(t)
 		end
 	end
 
-	if t.Base~=true then
+	local is_additional = (t.Versions and not t.Versions.main == t.ID)
+
+	if t.Base ~= true and not is_additional then
 		local ent={}
 
 		-- this is for developer debugging purposes only
@@ -92,6 +105,49 @@ function TARDIS:GetInteriors()
 	return self.Metadata
 end
 
+local function SetDefaultInterior(id)
+	TARDIS:SetSetting("interior", id, true)
+	TARDIS:Message(LocalPlayer(), "TARDIS default interior changed. Respawn the TARDIS for changes to apply.")
+end
+
+local function SelectForRedecoration(id)
+	TARDIS:SetSetting("redecorate-interior", id, true)
+	local current_tardis = LocalPlayer():GetTardisData("exterior")
+
+	if not current_tardis or not current_tardis:GetData("redecorate") then
+		TARDIS:Message(LocalPlayer(), "TARDIS interior decor selected. Enable redecoration in your TARDIS to apply.")
+	else
+		TARDIS:Message(LocalPlayer(), "TARDIS interior decor selected. Restart the redecoration to apply.")
+	end
+end
+
+local function SpawnTARDISById(id)
+	RunConsoleCommand("tardis2_spawn", id)
+	surface.PlaySound("ui/buttonclickrelease.wav")
+end
+
+local function AddMenuVersion(dmenu, id)
+	dmenu:AddOption("Spawn", function()
+		SpawnTARDISById(id)
+	end):SetIcon("icon16/add.png")
+
+	dmenu:AddOption("Select as default interior", function()
+		SetDefaultInterior(id)
+	end):SetIcon("icon16/star.png")
+
+	dmenu:AddOption("Select for redecoration", function()
+		SelectForRedecoration(id)
+	end):SetIcon("icon16/color_wheel.png")
+end
+
+local function AddVersionSubMenu(dmenu, name, id)
+	local submenu = dmenu:AddSubMenu(name, function()
+		SpawnTARDISById(id)
+	end)
+	AddMenuVersion(submenu, id)
+	return submenu
+end
+
 hook.Add("PostGamemodeLoaded", "tardis-interiors", function()
 	if not spawnmenu then return end
 	spawnmenu.AddContentType("tardis", function(container, obj)
@@ -106,29 +162,87 @@ hook.Add("PostGamemodeLoaded", "tardis-interiors", function()
 		icon:SetMaterial(obj.material)
 		icon:SetAdminOnly(obj.admin)
 		icon:SetColor(Color(205, 92, 92, 255))
-		icon.DoClick = function()
-			RunConsoleCommand("tardis2_spawn", obj.spawnname)
-			surface.PlaySound("ui/buttonclickrelease.wav")
+
+		local versions = TARDIS:GetInterior(obj.spawnname).Versions
+
+		if versions then
+			versions.custom = versions.custom or {}
+			for k,v in pairs(TARDIS.MetadataRaw) do
+				if v.Versions and v.Versions.main == obj.spawnname and v.Versions.custom then
+					table.Merge(versions.custom, v.Versions.custom)
+				end
+			end
+
+			local function spawn_one_of_versions()
+				local default_is_selected = true
+				local selected_version
+				local id
+
+				if versions.custom and versions.randomize then
+					local r = math.random(0, table.Count(versions.custom))
+					default_is_selected = (r == 0)
+				end
+
+				if default_is_selected then
+					selected_version = versions
+				else
+					selected_version = table.Random(versions.custom)
+				end
+
+				if selected_version.classic_doors_id then
+					if TARDIS:GetSetting("use_classic_door_interiors", true, LocalPlayer()) then
+						id = selected_version.classic_doors_id
+					else
+						id = selected_version.double_doors_id
+					end
+				elseif default_is_selected then
+					id = obj.spawnname
+				else
+					id = selected_version.id
+				end
+
+				SpawnTARDISById(id)
+			end
+
+			icon.DoClick = spawn_one_of_versions
+		else
+			icon.DoClick = function()
+				SpawnTARDISById(obj.spawnname)
+			end
 		end
 
 		icon.OpenMenu = function(self)
 			local dmenu = DermaMenu()
-			dmenu:AddOption("Select as default", function()
-				TARDIS:SetSetting("interior",obj.spawnname,true)
-				TARDIS:Message(LocalPlayer(), "TARDIS default interior changed. Respawn the TARDIS for changes to apply.")
-			end):SetIcon("icon16/star.png")
 
-			dmenu:AddOption("Select for redecoration", function()
-				TARDIS:SetSetting("redecorate-interior",obj.spawnname,true)
-				local current_tardis = LocalPlayer():GetTardisData("exterior")
-
-				if not current_tardis or not current_tardis:GetData("redecorate") then
-					TARDIS:Message(LocalPlayer(), "TARDIS interior decor selected. Enable redecoration in your TARDIS to apply.")
+			if not versions or not versions.classic_doors_id then
+				AddMenuVersion(dmenu, obj.spawnname)
+			else
+				local id
+				if TARDIS:GetSetting("use_classic_door_interiors", true, LocalPlayer()) then
+					id = versions.classic_doors_id
 				else
-					TARDIS:Message(LocalPlayer(), "TARDIS interior decor selected. Restart the redecoration to apply.")
+					id = versions.double_doors_id
 				end
 
-			end):SetIcon("icon16/color_wheel.png")
+				AddMenuVersion(dmenu, id)
+
+				dmenu:AddSpacer()
+				AddVersionSubMenu(dmenu, "Classic doors version", versions.classic_doors_id)
+				AddVersionSubMenu(dmenu, "Double doors version", versions.double_doors_id)
+			end
+
+			dmenu:AddSpacer()
+			if versions and versions.custom then
+				for k,v in pairs(versions.custom) do
+					if v.classic_doors_id then
+						AddVersionSubMenu(dmenu, v.name .. " (classic doors)", v.classic_doors_id)
+						AddVersionSubMenu(dmenu, v.name .. " (double doors)", v.double_doors_id)
+					else
+						AddVersionSubMenu(dmenu, v.name, v.id)
+					end
+				end
+			end
+
 			dmenu:Open()
 		end
 
