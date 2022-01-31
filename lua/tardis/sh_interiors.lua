@@ -42,9 +42,21 @@ function TARDIS:AddInterior(t)
 		end
 	end
 
-	local is_additional = (t.Versions and not t.Versions.main == t.ID)
+	if not self.Metadata[t.ID].Versions then self.Metadata[t.ID].Versions = {} end
+	local versions = self.Metadata[t.ID].Versions
 
-	if t.Base ~= true and not is_additional then
+	if not versions.other then versions.other = {} end
+	if not versions.custom then versions.custom = {} end
+
+	if not versions.main then
+		versions.main = { id = t.ID, }
+	end
+	if versions.randomize then
+		versions.random_list = table.Copy(versions.other) or {}
+		versions.random_list.main = versions.main
+	end
+
+	if t.Base ~= true and not t.Hidden and not t.IsVersionOf then
 		local ent={}
 
 		-- this is for developer debugging purposes only
@@ -95,8 +107,24 @@ function TARDIS:AddInterior(t)
 	end
 end
 
+function TARDIS:AddInteriorVersion(main_id, version_id, version)
+	if not self.Metadata[main_id] then return end
+
+	local versions = self.Metadata[main_id].Versions
+
+	if versions.allow_custom == false then return end
+	if version_id == "main" then return end
+	if versions.other[version_id] or versions.custom[version_id] then return end
+
+	versions.custom[version_id] = version
+
+	if versions.randomize and versions.randomize_custom then
+		versions.random_list[version_id] = version
+	end
+end
+
 function TARDIS:GetInterior(id)
-	if self.Metadata[id]~= nil then
+	if self.Metadata[id] ~= nil then
 		return self.Metadata[id]
 	end
 end
@@ -104,6 +132,11 @@ end
 function TARDIS:GetInteriors()
 	return self.Metadata
 end
+
+
+
+----------------------------------------------------------------------------------------------------
+-- Menu-related helper functions
 
 local function SetDefaultInterior(id)
 	TARDIS:SetSetting("interior", id, true)
@@ -126,7 +159,14 @@ local function SpawnTARDISById(id)
 	surface.PlaySound("ui/buttonclickrelease.wav")
 end
 
-local function AddMenuVersion(dmenu, id)
+local function AddMenuLabel(dmenu, text)
+	local label = vgui.Create("DLabel", dmenu)
+	label:SetText("  " .. text)
+	label:SetTextColor(Color(0,0,0))
+	dmenu:AddPanel(label)
+end
+
+local function AddMenuSingleVersion(dmenu, id)
 	dmenu:AddOption("Spawn", function()
 		SpawnTARDISById(id)
 	end):SetIcon("icon16/add.png")
@@ -140,13 +180,50 @@ local function AddMenuVersion(dmenu, id)
 	end):SetIcon("icon16/color_wheel.png")
 end
 
-local function AddVersionSubMenu(dmenu, name, id)
-	local submenu = dmenu:AddSubMenu(name, function()
-		SpawnTARDISById(id)
+local function AddMenuDoubleVersion(dmenu, classic_doors_id, double_doors_id)
+	AddMenuLabel(dmenu, "Classic doors version:")
+	AddMenuSingleVersion(dmenu, classic_doors_id)
+
+	dmenu:AddSpacer()
+
+	AddMenuLabel(dmenu, "Double doors version:")
+	AddMenuSingleVersion(dmenu, double_doors_id)
+end
+
+local function AddMenuVersion(dmenu, version)
+	if version.classic_doors_id then
+		AddMenuDoubleVersion(dmenu, version.classic_doors_id, version.double_doors_id)
+	else
+		AddMenuSingleVersion(dmenu, version.id)
+	end
+end
+
+local function SpawnVersion(version)
+	local id
+	local prefer_classic_doors = TARDIS:GetSetting("use_classic_door_interiors", true, LocalPlayer())
+
+	if version and version.classic_doors_id then
+		id = prefer_classic_doors and version.classic_doors_id or version.double_doors_id
+	else
+		id = version.id or obj.spawnname
+	end
+	SpawnTARDISById(id)
+end
+
+local function AddVersionSubMenu(dmenu, version)
+	if not version or not version.name then return end
+
+	local submenu = dmenu:AddSubMenu(version.name, function()
+		SpawnVersion(version)
 	end)
-	AddMenuVersion(submenu, id)
+	AddMenuVersion(submenu, version)
+
 	return submenu
 end
+
+
+----------------------------------------------------------------------------------------------------
+-- Adding the spawnmenu options
 
 hook.Add("PostGamemodeLoaded", "tardis-interiors", function()
 	if not spawnmenu then return end
@@ -163,84 +240,31 @@ hook.Add("PostGamemodeLoaded", "tardis-interiors", function()
 		icon:SetAdminOnly(obj.admin)
 		icon:SetColor(Color(205, 92, 92, 255))
 
-		local versions = TARDIS:GetInterior(obj.spawnname).Versions
+		icon.DoClick = function()
+			local versions = TARDIS:GetInterior(obj.spawnname).Versions
 
-		if versions then
-			versions.custom = versions.custom or {}
-			for k,v in pairs(TARDIS.MetadataRaw) do
-				if v.Versions and v.Versions.main == obj.spawnname and v.Versions.custom then
-					table.Merge(versions.custom, v.Versions.custom)
-				end
+			local version = versions.main
+			if versions.randomize and versions.random_list then
+				version = table.Random(versions.random_list)
 			end
 
-			local function spawn_one_of_versions()
-				local default_is_selected = true
-				local selected_version
-				local id
-
-				if versions.custom and versions.randomize then
-					local r = math.random(0, table.Count(versions.custom))
-					default_is_selected = (r == 0)
-				end
-
-				if default_is_selected then
-					selected_version = versions
-				else
-					selected_version = table.Random(versions.custom)
-				end
-
-				if selected_version.classic_doors_id then
-					if TARDIS:GetSetting("use_classic_door_interiors", true, LocalPlayer()) then
-						id = selected_version.classic_doors_id
-					else
-						id = selected_version.double_doors_id
-					end
-				elseif default_is_selected then
-					id = obj.spawnname
-				else
-					id = selected_version.id
-				end
-
-				SpawnTARDISById(id)
-			end
-
-			icon.DoClick = spawn_one_of_versions
-		else
-			icon.DoClick = function()
-				SpawnTARDISById(obj.spawnname)
-			end
+			SpawnVersion(version)
 		end
 
 		icon.OpenMenu = function(self)
 			local dmenu = DermaMenu()
+			local versions = TARDIS:GetInterior(obj.spawnname).Versions
 
-			if not versions or not versions.classic_doors_id then
-				AddMenuVersion(dmenu, obj.spawnname)
-			else
-				local id
-				if TARDIS:GetSetting("use_classic_door_interiors", true, LocalPlayer()) then
-					id = versions.classic_doors_id
-				else
-					id = versions.double_doors_id
-				end
-
-				AddMenuVersion(dmenu, id)
-
-				dmenu:AddSpacer()
-				AddVersionSubMenu(dmenu, "Classic doors version", versions.classic_doors_id)
-				AddVersionSubMenu(dmenu, "Double doors version", versions.double_doors_id)
-			end
-
+			AddMenuVersion(dmenu, versions.main)
 			dmenu:AddSpacer()
-			if versions and versions.custom then
-				for k,v in pairs(versions.custom) do
-					if v.classic_doors_id then
-						AddVersionSubMenu(dmenu, v.name .. " (classic doors)", v.classic_doors_id)
-						AddVersionSubMenu(dmenu, v.name .. " (double doors)", v.double_doors_id)
-					else
-						AddVersionSubMenu(dmenu, v.name, v.id)
-					end
-				end
+
+			for k,v in pairs(versions.other) do
+				AddVersionSubMenu(dmenu, v)
+			end
+			dmenu:AddSpacer()
+
+			for k,v in pairs(versions.custom) do
+				AddVersionSubMenu(dmenu, v)
 			end
 
 			dmenu:Open()
@@ -338,3 +362,4 @@ if SERVER then
 end
 
 TARDIS:LoadFolder("interiors", nil, true)
+TARDIS:LoadFolder("interiors/versions", nil, true)
