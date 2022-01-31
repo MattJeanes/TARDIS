@@ -24,6 +24,24 @@ TARDIS:AddSetting({
 	desc="Whether classic (big) door versions of interiors will spawn by default"
 })
 
+function TARDIS:ShouldUseClassicDoors(ply)
+	return TARDIS:GetSetting("use_classic_door_interiors", true, ply)
+end
+
+function TARDIS:SelectDoorVersionID(x, ply)
+	local version = (istable(x) and x) or TARDIS:GetInterior(x).Versions.main
+	if not version then return end
+
+	if not version.classic_doors_id then return version.id end
+
+	return (TARDIS:ShouldUseClassicDoors(ply) and version.classic_doors_id) or version.double_doors_id
+
+end
+
+
+
+----------------------------------------------------------------------------------------------------
+-- Interior preferences (favorites and excluded from redecoration)
 
 local empty_int_preferences = {
 	favorites = {},
@@ -55,12 +73,16 @@ function TARDIS:IsUnwantedInt(id, ply)
 end
 
 function TARDIS:SetFavoriteInt(id, favorite, ply)
+	if favorite == false then favorite = nil end -- clean up (mainly for debugging purposes)
+
 	local interior_preferences = TARDIS:GetIntPreferences(ply)
 	interior_preferences.favorites[id] = favorite
 	self:SaveIntPreferences(interior_preferences)
 end
 
 function TARDIS:SetUnwantedInt(id, unwanted, ply)
+	if unwanted == false then unwanted = nil end -- clean up (mainly for debugging purposes)
+
 	local interior_preferences = TARDIS:GetIntPreferences(ply)
 	interior_preferences.unwanted[id] = unwanted
 	self:SaveIntPreferences(interior_preferences)
@@ -70,11 +92,39 @@ function TARDIS:ToggleFavoriteInt(id, ply)
 	TARDIS:SetFavoriteInt(id, not TARDIS:IsFavoriteInt(id, ply), ply)
 end
 
-function TARDIS:ToggleUnwantedInt(id, ply)
-	TARDIS:SetUnwantedInt(id, not TARDIS:IsUnwantedInt(id, ply), ply)
+function TARDIS:ToggleUnwantedInt(id, ply, sync_id)
+	value = not TARDIS:IsUnwantedInt(id, ply)
+	TARDIS:SetUnwantedInt(id, value, ply)
+	if sync_id then TARDIS:SetUnwantedInt(sync_id, value, ply) end
+end
+
+function TARDIS:SelectNewRandomInterior(current, ply)
+	local chosen_int
+	local attempts = 300
+
+	while not chosen_int or chosen_int == current
+		or TARDIS.Metadata[chosen_int].Base == true
+		or TARDIS:IsUnwantedInt(chosen_int, ply)
+	do
+		chosen_int = table.Random(TARDIS.Metadata).ID
+		attempts = attempts - 1
+		if attempts < 1 then
+			return "default"
+		end
+	end
+
+	if chosen_int.IsVersionOf then
+		chosen_int = chosen_int.IsVersionOf
+	end
+	chosen_int = TARDIS:SelectDoorVersionID(chosen_int, ply)
+
+	return chosen_int
 end
 
 
+
+----------------------------------------------------------------------------------------------------
+-- Adding interiors, interior versions and overrides
 
 local function merge(base,t)
 	local copy=table.Copy(TARDIS.Metadata[base])
@@ -158,7 +208,7 @@ function TARDIS:AddInterior(t)
 	end
 end
 
-function TARDIS:AddInteriorVersion(main_id, version_id, version)
+function TARDIS:AddCustomVersion(main_id, version_id, version)
 	if not self.Metadata[main_id] then return end
 
 	local versions = self.Metadata[main_id].Versions
@@ -184,6 +234,11 @@ function TARDIS:GetInteriors()
 	return self.Metadata
 end
 
+function TARDIS:SpawnByID(id)
+	RunConsoleCommand("tardis2_spawn", id)
+	surface.PlaySound("ui/buttonclickrelease.wav")
+end
+
 
 
 ----------------------------------------------------------------------------------------------------
@@ -205,11 +260,6 @@ local function SelectForRedecoration(id)
 	end
 end
 
-local function SpawnTARDISById(id)
-	RunConsoleCommand("tardis2_spawn", id)
-	surface.PlaySound("ui/buttonclickrelease.wav")
-end
-
 local function AddMenuLabel(dmenu, text)
 	local label = vgui.Create("DLabel", dmenu)
 	label:SetText("  " .. text)
@@ -219,7 +269,7 @@ end
 
 local function AddMenuSingleVersion(dmenu, id)
 	local spawn = dmenu:AddOption("Spawn", function()
-		SpawnTARDISById(id)
+		TARDIS:SpawnByID(id)
 	end)
 	spawn:SetIcon("icon16/add.png")
 
@@ -244,7 +294,7 @@ local function AddMenuDoubleVersion(dmenu, classic_doors_id, double_doors_id)
 	AddMenuSingleVersion(dmenu, double_doors_id)
 end
 
-local function AddMenuVersion(dmenu, version, parent_int)
+local function AddMenuVersion(dmenu, version)
 	if version.classic_doors_id then
 		AddMenuDoubleVersion(dmenu, version.classic_doors_id, version.double_doors_id)
 	else
@@ -253,11 +303,13 @@ local function AddMenuVersion(dmenu, version, parent_int)
 
 	dmenu:AddSpacer()
 
+	local id = (version.classic_doors_id or version.id)
+
 	local unwanted = dmenu:AddOption("Use in random redecoration", function(self)
-		TARDIS:ToggleUnwantedInt(parent_int, LocalPlayer())
+		TARDIS:ToggleUnwantedInt(id , LocalPlayer(), version.double_doors_id)
 	end)
 	function unwanted:Think()
-		local use = not TARDIS:IsUnwantedInt(parent_int, LocalPlayer())
+		local use = not TARDIS:IsUnwantedInt(id, LocalPlayer())
 		if self:GetChecked() ~= use then
 			self:SetChecked(use)
 		end
@@ -266,25 +318,13 @@ local function AddMenuVersion(dmenu, version, parent_int)
 
 end
 
-local function SpawnVersion(version)
-	local id
-	local prefer_classic_doors = TARDIS:GetSetting("use_classic_door_interiors", true, LocalPlayer())
-
-	if version and version.classic_doors_id then
-		id = prefer_classic_doors and version.classic_doors_id or version.double_doors_id
-	else
-		id = version.id
-	end
-	SpawnTARDISById(id)
-end
-
-local function AddVersionSubMenu(dmenu, version, parent_int)
+local function AddVersionSubMenu(dmenu, version)
 	if not version or not version.name then return end
 
 	local submenu = dmenu:AddSubMenu(version.name, function()
-		SpawnVersion(version)
+		TARDIS:SpawnByID( TARDIS:SelectDoorVersionID(version, LocalPlayer()) )
 	end)
-	AddMenuVersion(submenu, version, parent_int)
+	AddMenuVersion(submenu, version)
 
 	return submenu
 end
@@ -316,23 +356,23 @@ hook.Add("PostGamemodeLoaded", "tardis-interiors", function()
 				version = table.Random(versions.random_list)
 			end
 
-			SpawnVersion(version)
+			TARDIS:SpawnByID( TARDIS:SelectDoorVersionID(version, LocalPlayer()) )
 		end
 
 		icon.OpenMenu = function(self)
 			local dmenu = DermaMenu()
 			local versions = TARDIS:GetInterior(obj.spawnname).Versions
 
-			AddMenuVersion(dmenu, versions.main, obj.spawnname)
+			AddMenuVersion(dmenu, versions.main)
 			dmenu:AddSpacer()
 
 			for k,v in pairs(versions.other) do
-				AddVersionSubMenu(dmenu, v, obj.spawnname)
+				AddVersionSubMenu(dmenu, v)
 			end
 			dmenu:AddSpacer()
 
 			for k,v in pairs(versions.custom) do
-				AddVersionSubMenu(dmenu, v, obj.spawnname)
+				AddVersionSubMenu(dmenu, v)
 			end
 			dmenu:AddSpacer()
 
