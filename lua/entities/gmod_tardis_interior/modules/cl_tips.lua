@@ -23,6 +23,7 @@ TARDIS:AddSetting({
 
 function ENT:InitializeTips(style_name)
 	local int_metadata = self.metadata.Interior
+	local text_overrides = int_metadata.TipSettings.TextOverrides
 
 	self.tip_style_name = style_name
 
@@ -102,6 +103,11 @@ function ENT:InitializeTips(style_name)
 			tip.ToggleHighlight = function(self)
 				self:SetHighlight(not tip.highlighted)
 			end
+
+			if text_overrides and text_overrides[tip.text] then
+				tip.text = text_overrides[tip.text]
+			end
+
 			table.insert(tips, tip)
 		end
 	end
