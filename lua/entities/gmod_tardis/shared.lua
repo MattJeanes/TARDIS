@@ -66,9 +66,9 @@ function ENT:CallHook(name,...)
 		end
 	end
 	if self.metadata and self.metadata.Exterior and self.metadata.Exterior.CustomHooks then
-		for hook_id,hook_body in pairs(self.metadata.Exterior.CustomHooks) do
-			if hook_body and hook_body[1] == name then
-				local func = hook_body[2]
+		for hook_id,body in pairs(self.metadata.Exterior.CustomHooks) do
+			if body and (body[1] == name) or (istable(body[1]) and body[1][name]) then
+				local func = body[2]
 				a,b,c,d,e,f = func(self, ...)
 				if a~=nil then
 					return a,b,c,d,e,f
