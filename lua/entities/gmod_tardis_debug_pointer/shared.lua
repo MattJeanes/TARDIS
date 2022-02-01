@@ -41,6 +41,8 @@ concommand.Add("tardis2_debug_pointer", function(ply,cmd,args)
 		elseif v == "part" then
 			local part = TARDIS:GetRegisteredPart(args[i + 1])
 			if part then ent.model = part.Model end
+		elseif v == "scale" then
+			ent.scale = args[i + 1]
 		elseif v == "pos" or v == "ang" then
 			a = tonumber(args[i + 1])
 			b = tonumber(args[i + 2])

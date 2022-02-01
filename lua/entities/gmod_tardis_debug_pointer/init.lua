@@ -9,6 +9,7 @@ include('shared.lua')
 function ENT:Initialize()
  
 	self:SetModel(self.model or "models/brundoob/precision.mdl" )
+	self:SetModelScale(self.scale or 1)
 
 	self:PhysicsInit( MOVETYPE_VPHYSICS )
 	self:SetMoveType( MOVETYPE_NONE )
