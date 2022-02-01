@@ -10,10 +10,12 @@ function ENT:ApplyTextureSet(set_id)
 		local ent = (v[1] == "self") and self or self:GetPart(v[1])
 
 		if IsValid(ent) then
-			if isnumber(v[2]) then
+			if isnumber(v[2]) and v[3] ~= nil then
 				ent:SetSubMaterial(v[2], prefix .. v[3])
 			elseif isstring(v[2]) then
 				ent:SetMaterial(prefix .. v[2])
+			elseif isnumber(v[2]) then
+				ent:SetSkin(v[2])
 			else
 				ErrorNoHaltWithStack("Wrong texture set parameter format: " .. v[2])
 			end
