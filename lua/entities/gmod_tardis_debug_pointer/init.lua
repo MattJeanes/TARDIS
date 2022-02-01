@@ -8,7 +8,8 @@ include('shared.lua')
  
 function ENT:Initialize()
  
-	self:SetModel( "models/brundoob/precision.mdl" )
+	self:SetModel(self.model or "models/brundoob/precision.mdl" )
+
 	self:PhysicsInit( MOVETYPE_VPHYSICS )
 	self:SetMoveType( MOVETYPE_NONE )
 	self:SetSolid( SOLID_VPHYSICS )
@@ -35,7 +36,7 @@ function ENT:Use( activator, caller )
 		activator:ChatPrint(" \nCurrent pointer position:")
 		activator:ChatPrint(text)
 	end
-    return
+	return
 end
  
 function ENT:Think()
