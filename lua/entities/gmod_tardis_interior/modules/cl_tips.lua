@@ -194,7 +194,8 @@ hook.Add("HUDPaint", "TARDIS-DrawTips", function()
 
         local pos = interior:LocalToWorld(tip.pos)
         local dist = pos:Distance(player_pos)
-        if dist <= view_range_max then
+
+        if dist <= view_range_max and (not tip.part or IsValid(interior:GetPart(tip.part)) )then
             surface.SetFont(tip.font)
             local alpha = tip.colors.current.background.a
             if dist > view_range_min then
