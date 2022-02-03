@@ -2,5 +2,5 @@
 
 TARDIS.GUISettings={}
 function TARDIS:AddGUISetting(name,func)
-	self.GUISettings[name]=func
+    self.GUISettings[name]=func
 end

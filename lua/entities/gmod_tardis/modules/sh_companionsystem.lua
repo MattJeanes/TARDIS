@@ -13,10 +13,10 @@ TARDIS:AddSetting({
 
 local function DrawAddPlayerSubMenu(frame, lst)
     local addMenuBtn = vgui.Create("DButton", frame)
-	addMenuBtn:Dock(TOP)
-	addMenuBtn:SetText("Add")
+    addMenuBtn:Dock(TOP)
+    addMenuBtn:SetText("Add")
 
-	addMenuBtn.DoClick = function(me)
+    addMenuBtn.DoClick = function(me)
         local addMenu = vgui.Create("DFrame", frame)
         addMenu:SetSkin("TARDIS")
         addMenu:SetTitle("Add To Companions")
@@ -87,13 +87,13 @@ end
 
 hook.Add("TARDIS-CustomOption", "companions_menu", function(frame, savedData)
     frame:SetTall(frame:GetTall() + 200) -- Create more space for list
-	local companionsList = vgui.Create("DListView", frame)
-	companionsList:Dock(TOP)
-	companionsList:DockMargin(0, 50, 0, 0)
-	companionsList:SetTall(frame:GetTall() * 0.4)
-	companionsList:SetMultiSelect(true)
-	companionsList:AddColumn("Name")
-	companionsList:AddColumn("SteamID")
+    local companionsList = vgui.Create("DListView", frame)
+    companionsList:Dock(TOP)
+    companionsList:DockMargin(0, 50, 0, 0)
+    companionsList:SetTall(frame:GetTall() * 0.4)
+    companionsList:SetMultiSelect(true)
+    companionsList:AddColumn("Name")
+    companionsList:AddColumn("SteamID")
     companionsList.Players = {}
 
     companionsList.AddPlayer = function(me, v)
@@ -126,9 +126,9 @@ hook.Add("TARDIS-CustomOption", "companions_menu", function(frame, savedData)
 
     DrawAddPlayerSubMenu(frame, companionsList)
 
-	local removeBtn = vgui.Create("DButton", frame)
-	removeBtn:Dock(TOP)
-	removeBtn:SetText("Remove")
+    local removeBtn = vgui.Create("DButton", frame)
+    removeBtn:Dock(TOP)
+    removeBtn:SetText("Remove")
 
     removeBtn.DoClick = function(me)
         local selectionID, selectionLineInfo = companionsList:GetSelectedLine()
