@@ -24,7 +24,96 @@ TARDIS:AddSetting({
 
 if SERVER then
 
-	ENT:AddHook("FailDemat", "doors", function(self, force)
+	function ENT:HandleNoDemat(pos, ang, callback, force)
+		local fail = self:CallHook("ShouldFailDemat", force)
+		local possible = self:CallHook("CanDemat", force, true)
+
+		if self:CallHook("HandleNoDemat", pos, ang, callback, force) == true then
+			return -- when the behaviour is overriden, the hook will return true
+		end
+
+		if fail == true and possible ~= false then
+			self:SetData("failing-demat", true, true)
+			self:SendMessage("failed-demat")
+			self:Timer("failed-demat-stop", 4, function()
+				self:SetData("failing-demat", false, true)
+			end)
+		end
+		if callback then callback(false) end
+	end
+
+	function ENT:HandleNoMat(pos, ang, callback)
+		local fail = self:CallHook("ShouldFailMat", pos, ang)
+		local possible = self:CallHook("CanMat", pos, ang, true)
+
+		if self:CallHook("HandleNoMat", pos, ang, callback) == true then
+			return -- when the behaviour is overriden, the hook will return true
+		end
+
+		if fail ~= true or possible == false then
+			if callback then callback(false) end
+			return
+		end
+
+		if self:GetData("demat-fast", false) then
+			if pos == self:GetPos() or pos == nil then
+				if callback then callback(false) end
+				return
+			end
+
+			self:SetData("failed-mat-destination-pos", pos)
+			self:SetData("failed-mat-destination-ang", ang)
+
+			self:SetDestination(self:GetPos(), self:GetAngles())
+
+			self:SendMessage("failed-mat")
+
+			self:Mat(callback)
+			return
+		end
+
+		self:SetData("failing-mat", true, true)
+		self:SendMessage("failed-mat")
+		self:Timer("failed-mat-stop", 4, function()
+			self:SetData("failing-mat", false, true)
+		end)
+		if callback then callback(false) end
+	end
+
+	ENT:AddHook("StopMat", "failed-mat-destination-restore", function(self)
+		local pos = self:GetData("failed-mat-destination-pos")
+		local ang = self:GetData("failed-mat-destination-ang", Angle(0,0,0))
+
+		if pos then
+			self:SetDestination(pos, ang)
+		end
+
+		self:SetData("failed-mat-destination-pos", nil)
+		self:SetData("failed-mat-destination-ang", nil)
+	end)
+
+	function ENT:StopTeleportSounds()
+		local ext = self.metadata.Exterior.Sounds.Teleport
+		local int = self.metadata.Interior.Sounds.Teleport
+
+		self:StopSound(ext.demat_damaged)
+		self:StopSound(ext.demat)
+		self:StopSound(ext.demat_fail)
+		self:StopSound(ext.mat_damaged)
+		self:StopSound(ext.mat)
+		self:StopSound(ext.fullflight)
+		self:StopSound(ext.fullflight_damaged)
+
+		self.interior:StopSound(int.demat_damaged or ext.demat_damaged)
+		self.interior:StopSound(int.demat or ext.demat)
+		self.interior:StopSound(int.demat_fail or ext.demat_fail)
+		self.interior:StopSound(int.mat_damaged or ext.mat_damaged)
+		self.interior:StopSound(int.mat or ext.mat)
+		self.interior:StopSound(int.fullflight or ext.fullflight)
+		self.interior:StopSound(int.fullflight_damaged or ext.fullflight_damaged)
+	end
+
+	ENT:AddHook("ShouldFailDemat", "doors", function(self, force)
 		if self:GetData("doorstatereal") and force ~= true
 			and not TARDIS:GetSetting("teleport-door-autoclose", false, self:GetCreator())
 		then
@@ -33,10 +122,6 @@ if SERVER then
 	end)
 
 	function ENT:ForceDemat(pos, ang, callback)
-		self:SetData("force-demat", true, true)
-		self:SetData("force-demat-time", CurTime(), true)
-		self:Explode(30)
-		self.interior:Explode(20)
 		self:Demat(pos, ang, callback, true)
 	end
 
@@ -122,13 +207,22 @@ if SERVER then
 			end
 		end
 
-		local ext = self.metadata.Exterior.Sounds.Teleport
-		local int = self.metadata.Interior.Sounds.Teleport
-		self:EmitSound(ext.demat_fail)
-		self:EmitSound(ext.demat_fail)
-		self.interior:EmitSound(int.demat_fail or ext.demat_fail)
-		self.interior:EmitSound(int.demat_fail or ext.demat_fail)
-		self.interior:EmitSound(int.mat_damaged or ext.mat_damaged)
+		self:StopTeleportSounds()
+
+		self:Explode()
+		self.interior:Explode(20)
+
+		self:Timer("interrupt_teleport", 1, function()
+			self:Explode()
+			self.interior:Explode(20)
+		end)
+
+		if TARDIS:GetSetting("teleport-sound") and TARDIS:GetSetting("sound") then
+			local ext = self.metadata.Exterior.Sounds.Teleport
+			local int = self.metadata.Interior.Sounds.Teleport
+			self:EmitSound(ext.interrupt)
+			self.interior:EmitSound(int.interrupt or ext.interrupt)
+		end
 
 		self:SetData("demat-pos",nil,true)
 		self:SetData("demat-ang",nil,true)
@@ -146,8 +240,6 @@ if SERVER then
 
 		self:CallHook("InterruptTeleport")
 
-		self:Explode()
-		self.interior:Explode(20)
 		if not was_demating then
 			self:ChangeHealth(self:GetHealth() * math.random(85, 95) * 0.01)
 			self:SetPower(false)
@@ -158,7 +250,13 @@ if SERVER then
 	end
 
 	ENT:AddHook("CanDemat", "failed", function(self, force, ignore_fail_demat)
-		if ignore_fail_demat ~= true and self:CallHook("FailDemat", force) == true then
+		if ignore_fail_demat ~= true and self:CallHook("ShouldFailDemat", force) == true then
+			return false
+		end
+	end)
+
+	ENT:AddHook("CanMat", "failed", function(self, dest_pos, dest_ang, ignore_fail_mat)
+		if ignore_fail_mat ~= true and self:CallHook("ShouldFailMat", dest_pos, dest_ang) == true then
 			return false
 		end
 	end)
@@ -166,7 +264,7 @@ if SERVER then
 	function ENT:EngineReleaseDemat(pos, ang, callback)
 		if self:GetData("failing-demat", false) then
 			self:SetData("failing-demat", false, true)
-			if self:CallHook("FailDemat", false) == true then
+			if self:CallHook("ShouldFailDemat", false) == true then
 				if not self:GetData("health-warning", false) then
 					self:ForceDemat(pos, ang, callback)
 				else
@@ -190,13 +288,25 @@ if SERVER then
 		end
 	end)
 
-else
+else -- CLIENT
 	ENT:OnMessage("failed-demat", function(self)
 		if TARDIS:GetSetting("teleport-sound") and TARDIS:GetSetting("sound") then
 			local ext = self.metadata.Exterior.Sounds.Teleport
 			local int = self.metadata.Interior.Sounds.Teleport
 			self:EmitSound(ext.demat_fail)
 			self.interior:EmitSound(int.demat_fail or ext.demat_fail)
+		end
+		if LocalPlayer():GetTardisData("exterior") == self then
+			util.ScreenShake(self.interior:GetPos(), 2.5, 100, 3, 300)
+		end
+	end)
+
+	ENT:OnMessage("failed-mat", function(self)
+		if TARDIS:GetSetting("teleport-sound") and TARDIS:GetSetting("sound") then
+			local ext = self.metadata.Exterior.Sounds.Teleport
+			local int = self.metadata.Interior.Sounds.Teleport
+			self:EmitSound(ext.mat_fail)
+			self.interior:EmitSound(int.mat_fail or ext.mat_fail)
 		end
 		if LocalPlayer():GetTardisData("exterior") == self then
 			util.ScreenShake(self.interior:GetPos(), 2.5, 100, 3, 300)
@@ -252,28 +362,8 @@ else
 		effect_data:SetRadius(math.random(1,5) * power)
 		util.Effect("ElectricSpark", effect_data)
 	end
-
-	ENT:OnMessage("failed-demat", function(self)
-		if TARDIS:GetSetting("teleport-sound") and TARDIS:GetSetting("sound") then
-			local ext = self.metadata.Exterior.Sounds.Teleport
-			local int = self.metadata.Interior.Sounds.Teleport
-			self:EmitSound(ext.demat_fail)
-			self.interior:EmitSound(int.demat_fail or ext.demat_fail)
-		end
-		if LocalPlayer():GetTardisData("exterior") == self then
-			util.ScreenShake(self.interior:GetPos(), 2.5, 100, 3, 300)
-		end
-	end)
 end
 
-
-ENT:AddHook("Think","failed-demat-stop",function(self)
-	if self:GetData("failing-demat", false) then
-		if CurTime() > self:GetData("failing-demat-time") + 2.5 then
-			self:SetData("failing-demat", false, true)
-		end
-	end
-end)
 
 ENT:AddHook("Think","breakdown-effects", function(self)
 	if self:GetData("force-demat", false) then

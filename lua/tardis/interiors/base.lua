@@ -18,9 +18,7 @@ T.Interior = {
 		ang = Angle(0,90,0)
 	},
 	Sounds = {
-		Teleport = {
-			demat_fail = "drmatt/tardis/demat_fail_int.wav"
-		}, -- uses exterior sounds if not specified
+		Teleport = {}, -- uses exterior sounds if not specified
 		Power = {
 			On = "drmatt/tardis/power_on.wav",
 			Off = "drmatt/tardis/power_off.wav"
@@ -83,11 +81,13 @@ T.Exterior = {
 		Teleport = {
 			demat = "drmatt/tardis/demat.wav",
 			demat_damaged = "drmatt/tardis/demat_damaged.wav",
-			demat_fail = "drmatt/tardis/demat_fail_ext.wav",
+			demat_fail = "drmatt/tardis/demat_fail.wav",
 			mat = "drmatt/tardis/mat.wav",
 			mat_damaged = "drmatt/tardis/mat_damaged.wav",
+			mat_fail = "drmatt/tardis/mat_fail.wav",
 			fullflight = "drmatt/tardis/full.wav",
 			fullflight_damaged = "drmatt/tardis/full_damaged.wav",
+			interrupt = "drmatt/tardis/repairfinish.wav",
 		},
 		RepairFinish = "drmatt/tardis/repairfinish.wav",
 		Lock = "drmatt/tardis/lock.wav",
