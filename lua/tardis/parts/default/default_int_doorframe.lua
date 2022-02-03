@@ -23,7 +23,7 @@ PART.CollisionUse = false
 PART.Animate = true
 
 function PART:Initialize()
-	self:SetMaterial("models/drmatt/tardis/tardisfloor")
+    self:SetMaterial("models/drmatt/tardis/tardisfloor")
 end
 
 TARDIS:AddPart(PART)

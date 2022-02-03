@@ -27,12 +27,12 @@ SWEP.Secondary.Automatic = true
 SWEP.Secondary.Ammo = "none"
 
 function SWEP:DrawWorldModel()
-	return false
+    return false
 end
 
 function SWEP:Initialize()
-	self:SetWeaponHoldType(self.HoldType)
-	self.Weapon:DrawShadow(false)
+    self:SetWeaponHoldType(self.HoldType)
+    self.Weapon:DrawShadow(false)
 end
 
 
