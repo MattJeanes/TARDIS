@@ -7,91 +7,91 @@ include("shared.lua")
 
 
 function ENT:Initialize()
-	self:SetModel("models/props_lab/reciever01b.mdl")
-	self:PhysicsInit(SOLID_VPHYSICS)
-	self:SetMoveType(MOVETYPE_VPHYSICS) 
-	self:SetSolid(SOLID_VPHYSICS)
+    self:SetModel("models/props_lab/reciever01b.mdl")
+    self:PhysicsInit(SOLID_VPHYSICS)
+    self:SetMoveType(MOVETYPE_VPHYSICS) 
+    self:SetSolid(SOLID_VPHYSICS)
 
-	self:SetName("TimeDistortionGenerator")
-	self:SetColor(Color(255, 255, 255, 255))
-	self:SetUseType(SIMPLE_USE)
+    self:SetName("TimeDistortionGenerator")
+    self:SetColor(Color(255, 255, 255, 255))
+    self:SetUseType(SIMPLE_USE)
 
-	local phys = self:GetPhysicsObject()
+    local phys = self:GetPhysicsObject()
 
-	if (phys:IsValid()) then
-		phys:Wake()
-	end
+    if (phys:IsValid()) then
+        phys:Wake()
+    end
 end
 
 function ENT:Use(ply)
-	if self.broken then return end
+    if self.broken then return end
 
-	local on = not self:GetEnabled()
-	local phys = self:GetPhysicsObject()
-	self.on = false
+    local on = not self:GetEnabled()
+    local phys = self:GetPhysicsObject()
+    self.on = false
 
-	if on and self.FlyTime == nil then
-		TARDIS:Message(ply, "Starting the time distortion generator...")
-		self:SetColor(Color(255, 166, 0))
-		phys:SetAngleVelocity(Vector(20, -20, -10))
-		phys:EnableGravity(false)
-		phys:SetVelocity(Vector(0, 0, 15))
+    if on and self.FlyTime == nil then
+        TARDIS:Message(ply, "Starting the time distortion generator...")
+        self:SetColor(Color(255, 166, 0))
+        phys:SetAngleVelocity(Vector(20, -20, -10))
+        phys:EnableGravity(false)
+        phys:SetVelocity(Vector(0, 0, 15))
 
-		sound.Play("drmatt/tardis/seq_ok.wav", self:GetPos())
+        sound.Play("drmatt/tardis/seq_ok.wav", self:GetPos())
 
-		self.FlyTime = CurTime()
-		self.LastActivator = ply
-	else
-		self.FlyTime = nil
-		self:SetEnabled(false)
-		TARDIS:Message(ply, "Time distortion generator disabled.")
-		self:SetColor(Color(255, 255, 255, 255))
-		phys:EnableGravity(true)
+        self.FlyTime = CurTime()
+        self.LastActivator = ply
+    else
+        self.FlyTime = nil
+        self:SetEnabled(false)
+        TARDIS:Message(ply, "Time distortion generator disabled.")
+        self:SetColor(Color(255, 255, 255, 255))
+        phys:EnableGravity(true)
 
-		sound.Play("drmatt/tardis/seq_bad.wav", self:GetPos())
+        sound.Play("drmatt/tardis/seq_bad.wav", self:GetPos())
 
-		local effect_data = EffectData()
-		effect_data:SetOrigin(self:GetPos())
-		util.Effect("cball_explode", effect_data)
+        local effect_data = EffectData()
+        effect_data:SetOrigin(self:GetPos())
+        util.Effect("cball_explode", effect_data)
 
-	end
+    end
 end
 
 function ENT:Think()
-	if self.broken then return end
-	if self.on then
-		local phys = self:GetPhysicsObject()
-		phys:SetAngleVelocity(Vector(180, -200, -190))
-		phys:AddVelocity(-0.2 * phys:GetVelocity())
-	end
-	if self.FlyTime ~= nil and CurTime() - self.FlyTime > 3 then
-		self.FlyTime = nil
-		self.on = true
-		self:SetEnabled(true)
-		TARDIS:Message(self.LastActivator, "Time distortion generator enabled.")
-		self:GetPhysicsObject():SetVelocity(Vector(0, 0, 0))
-		self:SetColor(Color(164, 90, 250))
+    if self.broken then return end
+    if self.on then
+        local phys = self:GetPhysicsObject()
+        phys:SetAngleVelocity(Vector(180, -200, -190))
+        phys:AddVelocity(-0.2 * phys:GetVelocity())
+    end
+    if self.FlyTime ~= nil and CurTime() - self.FlyTime > 3 then
+        self.FlyTime = nil
+        self.on = true
+        self:SetEnabled(true)
+        TARDIS:Message(self.LastActivator, "Time distortion generator enabled.")
+        self:GetPhysicsObject():SetVelocity(Vector(0, 0, 0))
+        self:SetColor(Color(164, 90, 250))
 
-		sound.Play("drmatt/tardis/power_on.wav", self:GetPos())
-	end
+        sound.Play("drmatt/tardis/power_on.wav", self:GetPos())
+    end
 end
 
 function ENT:Break()
-	self.on = false
-	self.FlyTime = nil
-	self.broken = true
-	self:SetEnabled(false)
-	self:SetColor(Color(100, 100, 100, 255))
-	self:GetPhysicsObject():EnableGravity(true)
+    self.on = false
+    self.FlyTime = nil
+    self.broken = true
+    self:SetEnabled(false)
+    self:SetColor(Color(100, 100, 100, 255))
+    self:GetPhysicsObject():EnableGravity(true)
 
-	local effect_data = EffectData()
-	effect_data:SetOrigin(self:GetPos())
-	effect_data:SetMagnitude(10)
-	util.Effect("Explosion", effect_data)
+    local effect_data = EffectData()
+    effect_data:SetOrigin(self:GetPos())
+    effect_data:SetMagnitude(10)
+    util.Effect("Explosion", effect_data)
 end
 
 function ENT:OnTakeDamage(dmg)
-	if self.on or self.FlyTime ~= nil then
-		self:Break()
-	end
+    if self.on or self.FlyTime ~= nil then
+        self:Break()
+    end
 end

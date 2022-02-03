@@ -13,5 +13,5 @@ ENT.IconOverride = "materials/entities/time_distortion_generator.png"
 
 
 function ENT:SetupDataTables()
-	self:NetworkVar( "Bool", 1, "Enabled" )
+    self:NetworkVar( "Bool", 1, "Enabled" )
 end
