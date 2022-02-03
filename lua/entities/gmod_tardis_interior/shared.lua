@@ -40,11 +40,23 @@ function ENT:CallHook(name,...)
 	if a~=nil then
 		return a,b,c,d,e,f
 	end
-	if not hooks[name] then return end
-	for k,v in pairs(hooks[name]) do
-		a,b,c,d,e,f = v(self,...)
-		if a~=nil then
-			return a,b,c,d,e,f
+	if hooks[name] then
+		for k,v in pairs(hooks[name]) do
+			a,b,c,d,e,f = v(self,...)
+			if a~=nil then
+				return a,b,c,d,e,f
+			end
+		end
+	end
+	if self.metadata and self.metadata.Interior and self.metadata.Interior.CustomHooks then
+		for hook_id,body in pairs(self.metadata.Interior.CustomHooks) do
+			if body and (body[1] == name) or (istable(body[1]) and body[1][name]) then
+				local func = body[2]
+				a,b,c,d,e,f = func(self, ...)
+				if a~=nil then
+					return a,b,c,d,e,f
+				end
+			end
 		end
 	end
 end

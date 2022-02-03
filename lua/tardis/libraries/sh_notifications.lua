@@ -26,7 +26,12 @@ local function chat_print(text)
 			net.WriteString(text)
 		net.Broadcast()
 	else
-		LocalPlayer():ChatPrint(text)
+		if LocalPlayer() and LocalPlayer().ChatPrint then
+			-- this function doesn't exist yet when the game is loading
+			LocalPlayer():ChatPrint(text)
+		else
+			print(text)
+		end
 	end
 end
 
