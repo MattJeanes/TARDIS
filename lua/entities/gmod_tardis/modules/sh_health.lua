@@ -119,7 +119,7 @@ if SERVER then
 			self:SetData("repair-primed",true,true)
 
 			if table.IsEmpty(self.occupants) then
-				timer.Simple(0, function() 
+				self:Timer("repair-nooccupants", 0, function() 
 					self:SetData("repair-shouldstart", true)
 					self:SetData("repair-delay", CurTime()+0.3)
 				end)

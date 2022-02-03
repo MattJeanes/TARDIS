@@ -66,7 +66,7 @@ function ENT:GetSpinDirText(show_next)
 	end
 end
 
-ENT:AddHook("ToggleDoor", "spin-dir", function(self,open)
+ENT:AddHook("ToggleDoorReal", "spin-dir", function(self,open)
 	if TARDIS:GetSetting("opened-door-no-spin", false, self:GetCreator()) then
 		local current = self:GetData("spindir", -1)
 		local before = self:GetData("spindir_before_door", nil)
