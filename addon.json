@@ -1,14 +1,14 @@
 {
-	"title"		:	"TARDIS",
-	"type"		:	"vehicle",
-	"tags"		:	[ "roleplay", "fun" ],
-	"ignore"	:
-	[
-		"*.md",
-		"*.txt",
-		"*.git*",
-		"*.fgd",
-		"*.psd",
-		"CODEOWNERS"
-	]
+    "title": "TARDIS",
+    "type": "vehicle",
+    "tags": [ "roleplay", "fun" ],
+    "ignore":
+    [
+        "*.md",
+        "*.txt",
+        "*.git*",
+        "*.fgd",
+        "*.psd",
+        "CODEOWNERS"
+    ]
 }
