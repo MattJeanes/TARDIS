@@ -10,7 +10,19 @@ TARDIS:AddSetting({
     type="bool",
     networked=true,
     option=true,
+    section="Misc",
     desc="Whether or not TARDIS skin will be randomized when it's spawned"
+})
+
+TARDIS:AddSetting({
+    id="winter_skins",
+    name="Use winter skins while randomizing TARDIS skins at spawn",
+    value=false,
+    type="bool",
+    networked=true,
+    option=true,
+    section="Misc",
+    desc="Whether or not winter TARDIS skins will be used while it's randomized"
 })
 
 TARDIS:AddSetting({
@@ -485,9 +497,17 @@ if SERVER then
                 local chosen_skin = math.random(total_skins)
 
                 local excluded = entity.metadata.Exterior.ExcludedSkins
+                local winter = entity.metadata.Exterior.WinterSkins
+                local winter_ok = TARDIS:GetSetting("winter_skins", false, entity:GetCreator())
+
+                local function cannot_use_skin(chosen_skin)
+                    local is_excluded = table.HasValue(excluded, chosen_skin)
+                    return is_excluded or (not winter_ok and table.HasValue(winter, chosen_skin) )
+                end
+
                 if excluded then
                     local attempts = 1
-                    while table.HasValue(excluded, chosen_skin) and attempts < 20 do
+                    while cannot_use_skin(chosen_skin) and attempts < 30 do
                         chosen_skin = math.random(total_skins)
                         attempts = attempts + 1
                     end
