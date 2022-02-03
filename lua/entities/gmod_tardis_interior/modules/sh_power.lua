@@ -69,7 +69,7 @@ else
 
 	ENT:AddHook("ShouldDrawLight", "interior-lights-blinking", function(self)
 		if self.exterior:GetData("interior-lights-blinking") then
-			return (math.Round(8 * CurTime()) % 2 ~= 0)
+			return (math.Round(3 * CurTime()) % 2 ~= 0)
 		end
 	end)
 

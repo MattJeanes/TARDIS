@@ -95,7 +95,7 @@ if SERVER then
 	ENT:AddHook("CustomData", "redecorate_child", function(self, customdata)
 		local parent = customdata.redecorate_parent
 		if parent then
-			self:SetData("redecorate_parent", parent)
+			self:SetData("redecorate_parent", parent, true)
 			parent:SetData("redecorate_child", self)
 
 			self:SetPos(parent:GetPos())
@@ -132,6 +132,7 @@ if SERVER then
 			end
 		end
 		self:SetData("redecorate_parent_ext_data", nil, true)
+		self:CallHook("MigrateData", parent)
 
 		local phys = self:GetPhysicsObject()
 
@@ -140,7 +141,7 @@ if SERVER then
 
 		parent:SetPhyslock(true)
 		parent:ForcePlayerDrop()
-		parent:Demat(nil, nil, nil, true)
+		parent:Demat(nil, nil, nil, false)
 		parent:SetCollisionGroup(COLLISION_GROUP_IN_VEHICLE)
 
 		self:Timer("redecorate_materialise", 1, function()
@@ -174,7 +175,14 @@ if SERVER then
 		end
 	end)
 
-else
+else -- CLIENT
+	ENT:AddHook("DataLoaded", "redecorate", function(self)
+		local parent = self:GetData("redecorate_parent")
+		if parent then
+			self:CallHook("MigrateData", parent)
+		end
+	end)
+
 	ENT:AddHook("Initialize", "redecorate-reset", function(self)
 		if not IsValid(self) or (not LocalPlayer() == self:GetCreator()) then return end
 		TARDIS:SetSetting("redecorate-interior",self.metadata.ID,true)

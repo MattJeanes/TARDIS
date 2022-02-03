@@ -9,4 +9,6 @@ PART.AutoSetup = true
 PART.Collision = true
 PART.Animate = true
 
+PART.Sound = "drmatt/tardis/seq_ok.wav"
+
 TARDIS:AddPart(PART)

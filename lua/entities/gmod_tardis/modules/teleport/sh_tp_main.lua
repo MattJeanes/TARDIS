@@ -59,6 +59,16 @@ if SERVER then
 		return true
 	end
 
+	function ENT:SetRandomDestination(grounded)
+		local pos = self:GetRandomLocation(grounded)
+		local ang = Angle(0,0,0)
+		self:SetDestination(pos, ang)
+	end
+
+	function ENT:GetDestination()
+		return self:GetData("demat-pos"), self:GetData("demat-ang")
+	end
+
 	function ENT:ForceDematState()
 		self:SetDestination(self:GetPos(), self:GetAngles())
 
@@ -76,127 +86,143 @@ if SERVER then
 		self:StopDemat()
 	end
 
-	function ENT:Demat(pos, ang, callback, force)
-		if self:CallHook("CanDemat", force, false) == false then
-			if self:CallHook("FailDemat", force) == true
-				and self:CallHook("CanDemat", force, true) ~= false
-			then
-				self:SetData("failing-demat-time", CurTime(), true)
-				self:SetData("failing-demat", true, true)
-				self:SendMessage("failed-demat")
-			end
-			if callback then callback(false) end
-		else
-			if force or TARDIS:GetSetting("teleport-door-autoclose", false, self:GetCreator()) then
-				if self:GetData("doorstatereal") then
-					self:CloseDoor()
-				end
-				if self:GetData("doorstatereal") then
-					if callback then callback(false) end
-					return
-				end
-			end
-			pos=pos or self:GetData("demat-pos") or self:GetPos()
-			ang=ang or self:GetData("demat-ang") or self:GetAngles()
-			self:SetBodygroup(1,0)
-			self:SetDestination(pos, ang)
-			self:SendMessage("demat", function() net.WriteVector(self:GetData("demat-pos",Vector())) end)
-			self:SetData("demat",true)
-			self:SetData("fastreturn-pos",self:GetPos())
-			self:SetData("fastreturn-ang",self:GetAngles())
-			self:SetData("step",1)
-			self:SetData("teleport",true)
-			self:SetCollisionGroup( COLLISION_GROUP_WORLD )
-			self:CallHook("DematStart")
-			self:DrawShadow(false)
-			for k,v in pairs(self.parts) do
-				v:DrawShadow(false)
-			end
-			local constrained = constraint.GetAllConstrainedEntities(self)
-			local attached
-			if constrained then
-				for k,v in pairs(constrained) do
-					if not (k.TardisPart or k==self) then
-						local a=k:GetColor().a
-						if not attached then attached = {} end
-						attached[k] = a
-					end
-				end
-			end
-			self:SetData("demat-attached",attached,true)
-			if callback then callback(true) end
+	function ENT:DematDoorCheck(force, callback)
+		local autoclose = TARDIS:GetSetting("teleport-door-autoclose", false, self:GetCreator())
+		if (force or autoclose) and self:GetData("doorstatereal") then
+			self:CloseDoor()
 		end
+		if self:GetData("doorstatereal") then
+			if callback then callback(false) end
+			return false
+		end
+		return true
+	end
+
+	function ENT:Demat(pos, ang, callback, force)
+		local ignore_failed_demat = self:GetData("redecorate")
+
+		if self:CallHook("CanDemat", force, ignore_failed_demat) == false then
+			self:HandleNoDemat(pos, ang, callback, force)
+			return
+		end
+
+		if not self:DematDoorCheck(force, callback) then return end
+
+		if force then
+			self:SetData("force-demat", true, true)
+			self:SetData("force-demat-time", CurTime(), true)
+			self:Explode(30)
+			self.interior:Explode(20)
+		end
+
+		pos=pos or self:GetData("demat-pos") or self:GetPos()
+		ang=ang or self:GetData("demat-ang") or self:GetAngles()
+		self:SetBodygroup(1,0)
+		self:SetDestination(pos, ang)
+		self:SendMessage("demat", function() net.WriteVector(self:GetData("demat-pos",Vector())) end)
+		self:SetData("demat",true)
+		self:SetData("fastreturn-pos",self:GetPos())
+		self:SetData("fastreturn-ang",self:GetAngles())
+		self:SetData("step",1)
+		self:SetData("teleport",true)
+		self:SetCollisionGroup( COLLISION_GROUP_WORLD )
+
+		self:CallHook("DematStart")
+		if force then self:CallHook("ForceDematStart") end
+
+		self:DrawShadow(false)
+		for k,v in pairs(self.parts) do
+			v:DrawShadow(false)
+		end
+		local constrained = constraint.GetAllConstrainedEntities(self)
+		local attached
+		if constrained then
+			for k,v in pairs(constrained) do
+				if not (k.TardisPart or k==self) then
+					local a=k:GetColor().a
+					if not attached then attached = {} end
+					attached[k] = a
+				end
+			end
+		end
+		self:SetData("demat-attached",attached,true)
+		if callback then callback(true) end
 	end
 
 	function ENT:Mat(callback)
-		if self:CallHook("CanMat")~=false then
-			self:CloseDoor(function(state)
-				if state then
-					if callback then callback(false) end
-				else
-					self:SendMessage("premat",function() net.WriteVector(self:GetData("demat-pos",Vector())) end)
-					self:SetData("teleport",true)
-					local timerdelay = (self:GetData("demat-fast",false) and 1.9 or 8.5)
-					timer.Simple(timerdelay,function()
-						if not IsValid(self) then return end
-						self:SendMessage("mat")
-						self:SetData("mat",true)
-						self:SetData("step",1)
-						self:SetData("vortex",false)
-						local flight=self:GetData("prevortex-flight")
-						if self:GetData("flight")~=flight then
-							self:SetFlight(flight)
-						end
-						self:SetData("prevortex-flight",nil)
-						self:SetSolid(SOLID_VPHYSICS)
-						self:CallHook("MatStart")
+		local pos = self:GetData("demat-pos", self:GetPos())
+		local ang = self:GetData("demat-ang", self:GetAngles())
 
-						local pos=self:GetData("demat-pos",Vector())
-						local ang=self:GetData("demat-ang",Angle())
-						local attached=self:GetData("demat-attached")
-						if attached then
-							for k,v in pairs(attached) do
-								if IsValid(k) and not IsValid(k:GetParent()) then
-									k.telepos=k:GetPos()-self:GetPos()
-									if k:GetClass()=="gmod_hoverball" then -- fixes hoverballs spazzing out
-										k:SetTargetZ( (pos-self:GetPos()).z+k:GetTargetZ() )
-									end
-								end
-							end
-						end
-						self:SetPos(pos)
-						self:SetAngles(ang)
-						if attached then
-							for k,v in pairs(attached) do
-								if IsValid(k) and not IsValid(k:GetParent()) then
-									if k:IsRagdoll() then
-										for i=0,k:GetPhysicsObjectCount() do
-											local bone=k:GetPhysicsObjectNum(i)
-											if IsValid(bone) then
-												bone:SetPos(self:GetPos()+k.telepos)
-											end
-										end
-									end
-									k:SetPos(self:GetPos()+k.telepos)
-									k.telepos=nil
-									local phys=k:GetPhysicsObject()
-									if phys and IsValid(phys) then
-										k:SetSolid(SOLID_VPHYSICS)
-										if k.gravity~=nil then
-											phys:EnableGravity(k.gravity)
-											k.gravity = nil
-										end
-									end
-									k.nocollide=nil
-								end
-							end
-						end
-						self:SetDestination(nil, nil)
-					end)
-					if callback then callback(true) end
-				end
-			end)
+		if self:CallHook("CanMat", pos, ang) == false then
+			self:HandleNoMat(pos, ang, callback)
+			return
 		end
+		self:CloseDoor(function(state)
+			if state then
+				if callback then callback(false) end
+				return
+			end
+
+			self:SendMessage("premat",function() net.WriteVector(self:GetData("demat-pos",Vector())) end)
+			self:SetData("teleport",true)
+
+			local timerdelay = (self:GetData("demat-fast",false) and 1.9 or 8.5)
+			self:Timer("matdelay", timerdelay, function()
+				if not IsValid(self) then return end
+				self:SendMessage("mat")
+				self:SetData("mat",true)
+				self:SetData("step",1)
+				self:SetData("vortex",false)
+				local flight=self:GetData("prevortex-flight")
+				if self:GetData("flight")~=flight then
+					self:SetFlight(flight)
+				end
+				self:SetData("prevortex-flight",nil)
+				self:SetSolid(SOLID_VPHYSICS)
+				self:CallHook("MatStart")
+
+				local attached=self:GetData("demat-attached")
+				if attached then
+					for k,v in pairs(attached) do
+						if IsValid(k) and not IsValid(k:GetParent()) then
+							k.telepos=k:GetPos()-self:GetPos()
+							if k:GetClass()=="gmod_hoverball" then -- fixes hoverballs spazzing out
+								k:SetTargetZ( (pos-self:GetPos()).z+k:GetTargetZ() )
+							end
+						end
+					end
+				end
+				self:SetPos(pos)
+				self:SetAngles(ang)
+				if attached then
+					for k,v in pairs(attached) do
+						if IsValid(k) and not IsValid(k:GetParent()) then
+							if k:IsRagdoll() then
+								for i=0,k:GetPhysicsObjectCount() do
+									local bone=k:GetPhysicsObjectNum(i)
+									if IsValid(bone) then
+										bone:SetPos(self:GetPos()+k.telepos)
+									end
+								end
+							end
+							k:SetPos(self:GetPos()+k.telepos)
+							k.telepos=nil
+							local phys=k:GetPhysicsObject()
+							if phys and IsValid(phys) then
+								k:SetSolid(SOLID_VPHYSICS)
+								if k.gravity~=nil then
+									phys:EnableGravity(k.gravity)
+									k.gravity = nil
+								end
+							end
+							k.nocollide=nil
+						end
+					end
+				end
+				self:SetDestination(nil, nil)
+			end)
+			if callback then callback(true) end
+		end)
 	end
 
 	function ENT:StopDemat()
@@ -264,34 +290,11 @@ if SERVER then
 		end
 	end)
 
-	ENT:AddHook("CanMat", "teleport", function(self)
+	ENT:AddHook("CanMat", "teleport", function(self, dest_pos, dest_ang, ignore_fail_mat)
 		if self:GetData("teleport") or (not self:GetData("vortex")) then
 			return false
 		end
 	end)
-
-	function ENT:FastReturn(callback)
-		if self:CallHook("CanDemat") ~= false and self:GetData("fastreturn-pos") then
-			self:SetData("demat-fast-prev", self:GetData("demat-fast", false));
-			self:SetFastRemat(true)
-			self:SetData("fastreturn",true)
-			self:Demat(self:GetData("fastreturn-pos"),self:GetData("fastreturn-ang"))
-			if callback then callback(true) end
-		else
-			if callback then callback(false) end
-		end
-	end
-
-	function ENT:AutoDemat(pos, ang, callback)
-		if self:CallHook("CanDemat", false) ~= false then
-			self:Demat(pos, ang, callback)
-		elseif self:CallHook("CanDemat", true)  ~= false then
-			self:ForceDemat(pos, ang, callback)
-		else
-			if callback then callback(false) end
-		end
-	end
-
 
 else
 
@@ -319,7 +322,9 @@ else
 			local sound_fullflight_ext = ext.fullflight
 			local sound_fullflight_int = int.fullflight or ext.fullflight
 
-			if self:GetData("health-warning", false) or self:GetData("force-demat", false) then
+			if (self:GetData("health-warning", false) or self:GetData("force-demat", false))
+				and not self:GetData("redecorate")
+			then
 				sound_demat_ext = ext.demat_damaged
 				sound_demat_int = int.demat_damaged or ext.demat_damaged
 				sound_fullflight_ext = ext.fullflight_damaged
