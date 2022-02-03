@@ -207,7 +207,21 @@ hook.Add("HUDPaint", "TARDIS-DrawTips", function()
             local frame_color = ColorAlpha(tip.colors.current.frame, alpha)
             local text_color = ColorAlpha(tip.colors.current.text, alpha)
 
-            local w, h = surface.GetTextSize( tip.text )
+            local should_randomize = (interior.exterior:CallHook("RandomizeTips") == true)
+
+            if should_randomize and not tip.randtext then
+                local should = (math.random(1,3) == 3)
+                local another = table.Random(interior.tips)
+                if another and another.text then
+                    tip.randtext = should and another.text or tip.text
+                end
+            elseif not should_randomize and tip.randtext then
+                tip.randtext = nil
+            end
+
+            local printtext = tip.randtext or tip.text
+
+            local w, h = surface.GetTextSize( printtext )
             local pos = pos:ToScreen()
             local padding = tip.padding or 10
             local offset = tip.offset or 30
@@ -267,7 +281,7 @@ hook.Add("HUDPaint", "TARDIS-DrawTips", function()
             draw.NoTexture()
             surface.DrawPoly( verts )
 
-            draw.DrawText( tip.text, tip.font, x + w/2, y, text_color, TEXT_ALIGN_CENTER )
+            draw.DrawText( printtext, tip.font, x + w/2, y, text_color, TEXT_ALIGN_CENTER )
         end
     end
 end)
