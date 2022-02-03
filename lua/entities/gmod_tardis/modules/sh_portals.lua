@@ -5,7 +5,7 @@ if SERVER then
         if not self:DoorOpen() or ent.TardisPart then
             return false
         end
-	end)
+    end)
 else
     ENT:AddHook("ShouldRenderPortal", "portals", function(self,portal,exit,origin)
         local dont,black = self:CallHook("ShouldNotRenderPortal",self,portal,exit,origin)
