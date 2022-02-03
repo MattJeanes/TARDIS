@@ -174,7 +174,9 @@ function TARDIS:AddInterior(t)
         for i,template_body in ipairs(t.Templates) do
             local template = self.MetadataTemplates[template_body.id]
 
-            if template then
+            if template and template_body.override then
+                self.Metadata[t.ID] = create_merge_table(self.Metadata[t.ID], template)
+            elseif template and template_body then
                 self.Metadata[t.ID] = create_merge_table(template, self.Metadata[t.ID])
             elseif template_body.fail then
                 template_body.fail()
@@ -502,7 +504,7 @@ if SERVER then
 
                 local function cannot_use_skin(chosen_skin)
                     local is_excluded = table.HasValue(excluded, chosen_skin)
-                    return is_excluded or (not winter_ok and table.HasValue(winter, chosen_skin) )
+                    return is_excluded or (not winter_ok and winter and table.HasValue(winter, chosen_skin) )
                 end
 
                 if excluded then
