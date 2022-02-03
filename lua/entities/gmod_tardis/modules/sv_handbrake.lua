@@ -21,7 +21,7 @@ function ENT:SetHandbrake(on)
 	return true
 end
 
-ENT:AddHook("FailDemat", "handbrake", function(self, force)
+ENT:AddHook("ShouldFailDemat", "handbrake", function(self, force)
 	if self:GetData("handbrake") and force ~= true then
 		return true
 	end

@@ -141,7 +141,7 @@ if SERVER then
 
 		parent:SetPhyslock(true)
 		parent:ForcePlayerDrop()
-		parent:Demat(nil, nil, nil, true)
+		parent:Demat(nil, nil, nil, false)
 		parent:SetCollisionGroup(COLLISION_GROUP_IN_VEHICLE)
 
 		self:Timer("redecorate_materialise", 1, function()
@@ -179,7 +179,7 @@ else -- CLIENT
 	ENT:AddHook("DataLoaded", "redecorate", function(self)
 		local parent = self:GetData("redecorate_parent")
 		if parent then
-			self:CallHook("MigrateData", parent)			
+			self:CallHook("MigrateData", parent)
 		end
 	end)
 

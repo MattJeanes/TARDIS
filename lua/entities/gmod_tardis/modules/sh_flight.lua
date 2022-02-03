@@ -263,7 +263,7 @@ if SERVER then
 				if TARDIS:IsBindDown(self.pilot,"flight-boost") then
 
 					local force_mult
-					local door = self:DoorOpen()
+					local door = self:GetData("doorstatereal", false)
 
 					if door and TARDIS:GetSetting("opened-door-no-boost", true, self:GetCreator()) then
 						force_mult = 0.25
