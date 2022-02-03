@@ -8,17 +8,15 @@ ENT.Author="Dr. Matt"
 ENT.TardisExterior=true
 ENT.Interior="gmod_tardis_interior"
 
--- this is for developer debugging purposes only
-local spm_overrides = DEBUG_TARDIS_SPAWNMENU_CATEGORY_OVERRIDES
-if spm_overrides ~= nil and spm_overrides["all"] then
-	ENT.Category = spm_overrides["all"]
+if TARDIS_OVERRIDES and TARDIS_OVERRIDES.MainCategory then
+	ENT.Category = TARDIS_OVERRIDES.MainCategory
 end
 
 if SERVER then
 	ENT.Spawnable = true
 else
 	local spawnEntity = table.Copy(ENT)
-	spawnEntity.PrintName = " TARDIS " -- Spaces used for ordering
+	spawnEntity.PrintName = "    TARDIS    " -- Spaces used for ordering
 	spawnEntity.Spawnable = true
 	list.Set("SpawnableEntities", "gmod_tardis", spawnEntity)
 end
@@ -59,11 +57,23 @@ function ENT:CallHook(name,...)
 	if a~=nil then
 		return a,b,c,d,e,f
 	end
-	if not hooks[name] then return end
-	for k,v in pairs(hooks[name]) do
-		a,b,c,d,e,f = v(self,...)
-		if a~=nil then
-			return a,b,c,d,e,f
+	if hooks[name] then
+		for k,v in pairs(hooks[name]) do
+			a,b,c,d,e,f = v(self,...)
+			if a~=nil then
+				return a,b,c,d,e,f
+			end
+		end
+	end
+	if self.metadata and self.metadata.Exterior and self.metadata.Exterior.CustomHooks then
+		for hook_id,body in pairs(self.metadata.Exterior.CustomHooks) do
+			if body and (body[1] == name) or (istable(body[1]) and body[1][name]) then
+				local func = body[2]
+				a,b,c,d,e,f = func(self, ...)
+				if a~=nil then
+					return a,b,c,d,e,f
+				end
+			end
 		end
 	end
 end
