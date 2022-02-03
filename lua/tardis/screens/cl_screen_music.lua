@@ -267,12 +267,15 @@ TARDIS:AddScreen("Music", {id="music", menu=false, order=10, popuponly=true}, fu
 		if IsValid(ext.music) and ext.music:GetState()==GMOD_CHANNEL_PLAYING
 			and not (list_premade:GetSelectedLine() or list_custom:GetSelectedLine())
 		then
-			ext:StopMusic()
+			ext:StopMusic(true)
 		else
 			if list_premade:GetSelectedLine() then
 				ext:PlayMusic(url)
-			else
+            elseif string.len(url_bar:GetValue())>0 then
 				ext:PlayMusic(url_bar:GetValue())
+            else
+                TARDIS:ErrorMessage(LocalPlayer(), "No music has been chosen")
+                return
 			end
 			list_premade:ClearSelection()
 			list_custom:ClearSelection()
