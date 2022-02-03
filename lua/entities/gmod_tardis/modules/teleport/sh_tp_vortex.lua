@@ -44,7 +44,7 @@ end
 function ENT:AutoDemat(pos, ang, callback)
     if self:CallHook("CanDemat", false) ~= false then
         self:Demat(pos, ang, callback)
-    elseif self:CallHook("CanDemat", true)  ~= false then
+    elseif self:CallHook("CanDemat", true) ~= false then
         self:ForceDemat(pos, ang, callback)
     else
         if callback then callback(false) end

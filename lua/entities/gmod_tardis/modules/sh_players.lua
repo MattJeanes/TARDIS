@@ -41,7 +41,7 @@ if SERVER then
     end
 else
     local meta=FindMetaTable("Player")
-    function meta:SetTardisData(k,v)        
+    function meta:SetTardisData(k,v)
         if not self.tardis then self.tardis = {} end
         self.tardis[k]=v
     end

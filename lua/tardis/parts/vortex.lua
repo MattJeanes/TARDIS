@@ -16,7 +16,7 @@ PART.NoShadow = true
 PART.NoShadowCopy = true
 PART.NoCloak = true
 if SERVER then
-    function PART:Initialize()  
+    function PART:Initialize()
         self:SetSolid(SOLID_NONE)
         self:SetPos(self.exterior:LocalToWorld(self.pos))
         self:SetAngles(self.exterior:LocalToWorldAngles(self.ang))

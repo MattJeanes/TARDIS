@@ -13,7 +13,7 @@ PART.ShouldTakeDamage = true
 PART.BypassIsomorphic = true
 
 if SERVER then
-    function PART:Initialize()  
+    function PART:Initialize()
         self:SetBodygroup(1,1) -- Sticker
         self:SetBodygroup(2,1) -- Lit sign
 
