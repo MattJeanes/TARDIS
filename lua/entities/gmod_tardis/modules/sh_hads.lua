@@ -10,7 +10,7 @@ if SERVER then
         return self:SetHADS(on)
     end
 
-    ENT:AddHook("OnTakeDamage", "hads", function(self)
+    function ENT:TryTriggerHADS()
         if self:CallHook("CanTriggerHads") == false then return end
         if (self:GetData("hads",false) == true and self:GetData("hads-triggered",false)==false) and (not self:GetData("teleport",false)) then
             if self:GetData("doorstatereal") then
@@ -33,6 +33,19 @@ if SERVER then
             self:SetFastRemat(false)
             self:AutoDemat()
             self:CallHook("HADSTrigger")
+        end
+    end 
+
+    ENT:AddHook("OnTakeDamage", "hads", function(self)
+        self:TryTriggerHADS()  
+    end)
+
+    hook.Add("OnPhysgunPickup", "tardis-hads", function(ply,ent)
+        if ent:GetClass()=="gmod_tardis" then
+            ent:TryTriggerHADS()
+            if ent:GetData("hads-triggered",false) then
+                ent:ForcePlayerDrop()
+            end                         
         end
     end)
 
