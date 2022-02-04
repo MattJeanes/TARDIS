@@ -1,5 +1,8 @@
 -- Support for time distortion generator by parar020100 and JEREDEK
 
+local search_radius = 1000
+local explode_radius = 300
+
 local function TimeDistortionsPresent(pos, radius)
     for i,v in ipairs(ents.FindInSphere(pos, radius)) do
         if v:GetClass() == "gmod_time_distortion_generator" and v:GetEnabled() then
@@ -15,13 +18,29 @@ local function DistortionsInside(ent)
 end
 
 local function DistortionsOutside(ent)
-    return TimeDistortionsPresent(ent:GetPos(), 1000)
+    return TimeDistortionsPresent(ent:GetPos(), search_radius)
 end
+
+local function IsPlayerInside(ent, ply)
+    local dist = ply:GetPos():Distance(ent:GetPos())
+    return (dist <= ent.metadata.Interior.ExitDistance)
+end
+
 
 if SERVER then
 
+    ENT:AddHook("PlayerEnter", "time_fistortions_inside", function(self, ply, notp)
+        if DistortionsInside(self) then
+            self:Timer("time_dist_inside_warning", 0, function() -- fix for the hook working when player exits
+                if IsPlayerInside(self.interior, ply) then
+                    TARDIS:ErrorMessage(ply, "WARNING: Something is causing time distortions inside this TARDIS")
+                end
+            end)
+        end
+    end)
+
     ENT:AddHook("ForceDematStart", "time_distortion_generators_outside", function(self)
-        for i,v in ipairs(ents.FindInSphere(self:GetPos(), 300)) do
+        for i,v in ipairs(ents.FindInSphere(self:GetPos(), explode_radius)) do
             if v:GetClass() == "gmod_time_distortion_generator" and v:GetEnabled() then
                 v:Break()
             end
@@ -47,7 +66,7 @@ if SERVER then
     end)
 
     ENT:AddHook("ShouldFailMat", "time_distortions_destination", function(self, dest_pos, dest_ang)
-        if dest_pos ~= nil and dest_pos ~= self:GetPos() and TimeDistortionsPresent(dest_pos, 1000)
+        if dest_pos ~= nil and dest_pos ~= self:GetPos() and TimeDistortionsPresent(dest_pos, search_radius)
         then
             return true
         end

@@ -73,6 +73,15 @@ function ENT:Think()
         self:SetColor(Color(164, 90, 250))
 
         sound.Play("drmatt/tardis/power_on.wav", self:GetPos())
+
+        for i,v in ipairs(ents.FindByClass("gmod_tardis_interior")) do
+            if v:GetPos():Distance(self:GetPos()) <= v.metadata.Interior.ExitDistance then
+                for occ,_ in pairs(v.occupants) do
+                    TARDIS:ErrorMessage(occ, "WARNING: Something is causing time distortions inside this TARDIS")
+                end
+                break
+            end
+        end
     end
 end
 
