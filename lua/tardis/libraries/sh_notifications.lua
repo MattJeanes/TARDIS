@@ -54,25 +54,27 @@ function TARDIS:Debug(...)
         end
     end
 
-    if args == nil then print("nil") end
-
     local debug_prefix = "[TARDIS DEBUG] (" .. (SERVER and "SERVER" or "CLIENT") .. ")  :  "
 
     local full_text = debug_prefix
     local table_num = 1
 
-    for k,arg in pairs(args) do
-        local text
-        if istable(arg) then
-            print("\n" .. debug_prefix .. "Table #" .. table_num .. ":")
-            print("---------------------------------------------------")
-            PrintTable(arg, 1)
-            print("---------------------------------------------------")
+    if ... == nil or args == nil then
+        full_text = "<nil>"
+    else
+        for k,arg in pairs(args) do
+            local text
+            if istable(arg) then
+                print("\n" .. debug_prefix .. "Table #" .. table_num .. ":")
+                print("---------------------------------------------------")
+                PrintTable(arg, 1)
+                print("---------------------------------------------------")
 
-            full_text = full_text .. "<table #" .. table_num .. ">  "
-            table_num = table_num + 1
-        else
-            full_text = full_text .. tostring(arg) .. "  "
+                full_text = full_text .. "<table #" .. table_num .. ">  "
+                table_num = table_num + 1
+            else
+                full_text = full_text .. tostring(arg) .. "  "
+            end
         end
     end
     print("\n")
