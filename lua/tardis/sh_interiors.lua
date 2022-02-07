@@ -170,20 +170,6 @@ function TARDIS:AddInterior(t)
         end
     end
 
-    if t.Templates then
-        for i,template_body in ipairs(t.Templates) do
-            local template = self.MetadataTemplates[template_body.id]
-
-            if template and template_body.override then
-                self.Metadata[t.ID] = create_merge_table(self.Metadata[t.ID], template)
-            elseif template and template_body then
-                self.Metadata[t.ID] = create_merge_table(template, self.Metadata[t.ID])
-            elseif template_body.fail then
-                template_body.fail()
-            end
-        end
-    end
-
     if t.Base ~= true and not t.Hidden and not t.IsVersionOf then
 
         if not self.Metadata[t.ID].Versions then self.Metadata[t.ID].Versions = {} end
@@ -237,6 +223,31 @@ function TARDIS:AddInterior(t)
 
         ent.ScriptedEntityType="tardis"
         list.Set("SpawnableEntities", t.ID, ent)
+    end
+end
+
+function TARDIS:MergeTemplates()
+    if not self.Metadata then return end
+
+    for int_id, interior in pairs(self.Metadata) do
+        if interior.Templates then
+            for template_id, template in pairs(interior.Templates) do
+                if template then
+
+                    local template_metadata = self.MetadataTemplates[template_id]
+
+                    if template_metadata then
+                        if template.override then
+                            self.Metadata[int_id] = create_merge_table(self.Metadata[int_id], template_metadata)
+                        else
+                            self.Metadata[int_id] = create_merge_table(template_metadata, self.Metadata[int_id])
+                        end
+                    elseif template.fail then
+                        template.fail()
+                    end
+                end
+            end
+        end
     end
 end
 
@@ -521,3 +532,5 @@ end
 TARDIS:LoadFolder("interiors/templates", nil, true)
 TARDIS:LoadFolder("interiors", nil, true)
 TARDIS:LoadFolder("interiors/versions", nil, true)
+
+TARDIS:MergeTemplates()
