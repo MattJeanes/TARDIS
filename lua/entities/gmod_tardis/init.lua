@@ -27,10 +27,8 @@ ENT:AddHook("CustomData", "metadata", function(self, customData)
 end)
 
 function ENT:Initialize()
-    if not self.metadataID then
-        self.metadataID = "default"
-    end
     self.metadata=TARDIS:GetInterior(self.metadataID)
+    -- if metadataID == nil, GetInterior will return nil
     if not self.metadata then
         self.metadata=TARDIS:GetInterior("default")
     end
