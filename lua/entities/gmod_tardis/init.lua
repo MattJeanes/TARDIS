@@ -28,7 +28,6 @@ end)
 
 function ENT:Initialize()
     self.metadata=TARDIS:GetInterior(self.metadataID)
-    -- if metadataID == nil, GetInterior will return nil
     if not self.metadata then
         self.metadata=TARDIS:GetInterior("default")
     end

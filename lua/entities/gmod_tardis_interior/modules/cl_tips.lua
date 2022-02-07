@@ -179,6 +179,7 @@ hook.Add("HUDPaint", "TARDIS-DrawTips", function()
     end
 
     local player_pos = LocalPlayer():EyePos()
+    local should_randomize = (interior.exterior:CallHook("RandomizeTips") == true)
     for k,tip in ipairs(interior.tips)
     do
         local view_range_min = tip.view_range_min
@@ -195,7 +196,7 @@ hook.Add("HUDPaint", "TARDIS-DrawTips", function()
         local pos = interior:LocalToWorld(tip.pos)
         local dist = pos:Distance(player_pos)
 
-        if dist <= view_range_max and (not tip.part or IsValid(interior:GetPart(tip.part)) )then
+        if dist <= view_range_max and (not tip.part or IsValid(interior:GetPart(tip.part))) then
             surface.SetFont(tip.font)
             local alpha = tip.colors.current.background.a
             if dist > view_range_min then
@@ -206,8 +207,6 @@ hook.Add("HUDPaint", "TARDIS-DrawTips", function()
             local background_color = ColorAlpha(tip.colors.current.background, alpha)
             local frame_color = ColorAlpha(tip.colors.current.frame, alpha)
             local text_color = ColorAlpha(tip.colors.current.text, alpha)
-
-            local should_randomize = (interior.exterior:CallHook("RandomizeTips") == true)
 
             if should_randomize and not tip.randtext then
                 local should = (math.random(1,3) == 3)
