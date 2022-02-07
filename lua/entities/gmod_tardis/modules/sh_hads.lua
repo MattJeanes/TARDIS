@@ -10,9 +10,14 @@ if SERVER then
         return self:SetHADS(on)
     end
 
-    ENT:AddHook("OnTakeDamage", "hads", function(self)
-        if self:CallHook("CanTriggerHads") == false then return end
-        if (self:GetData("hads",false) == true and self:GetData("hads-triggered",false)==false) and (not self:GetData("teleport",false)) then
+    function ENT:TriggerHADS()
+        if self:CallHook("CanTriggerHads") == false then 
+            return false 
+        end
+        if (self:GetData("hads",false) == true
+            and self:GetData("hads-triggered",false)==false)  
+            and (not self:GetData("teleport",false)) 
+        then
             if self:GetData("doorstatereal") then
                 self:ToggleDoor()
             end
@@ -25,7 +30,7 @@ if SERVER then
                     TARDIS:ErrorMessage(self:GetCreator(), "Something stopped H.A.D.S. from dematerialising the TARDIS!")
                     TARDIS:ErrorMessage(self:GetCreator(), "Your TARDIS is under attack!")
                 end
-                return
+                return false
             end
             TARDIS:Message(self:GetCreator(), "H.A.D.S. has been triggered!")
             TARDIS:Message(self:GetCreator(), "Your TARDIS is under attack!")
@@ -33,6 +38,17 @@ if SERVER then
             self:SetFastRemat(false)
             self:AutoDemat()
             self:CallHook("HADSTrigger")
+            return true
+        end
+    end 
+
+    ENT:AddHook("OnTakeDamage", "hads", function(self)
+        self:TriggerHADS()  
+    end)
+
+    hook.Add("OnPhysgunPickup", "tardis-hads", function(ply,ent)
+        if ent:GetClass()=="gmod_tardis" and ent:TriggerHADS() then
+            ent:ForcePlayerDrop()                                                      
         end
     end)
 
