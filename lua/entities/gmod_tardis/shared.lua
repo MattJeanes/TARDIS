@@ -12,14 +12,6 @@ if TARDIS_OVERRIDES and TARDIS_OVERRIDES.MainCategory then
     ENT.Category = TARDIS_OVERRIDES.MainCategory
 end
 
-if SERVER then
-    ENT.Spawnable = true
-else
-    local spawnEntity = table.Copy(ENT)
-    spawnEntity.PrintName = "    TARDIS    " -- Spaces used for ordering
-    spawnEntity.Spawnable = true
-    list.Set("SpawnableEntities", "gmod_tardis", spawnEntity)
-end
 
 local class=string.sub(ENT.Folder,string.find(ENT.Folder, "/[^/]*$")+1) -- only works if in a folder
 

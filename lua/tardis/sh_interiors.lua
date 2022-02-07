@@ -281,11 +281,6 @@ end
 ----------------------------------------------------------------------------------------------------
 -- Menu-related helper functions
 
-local function SetDefaultInterior(id)
-    TARDIS:SetSetting("interior", id, true)
-    TARDIS:Message(LocalPlayer(), "TARDIS default interior changed. Respawn the TARDIS for changes to apply.")
-end
-
 local function SelectForRedecoration(id)
     TARDIS:SetSetting("redecorate-interior", id, true)
     local current_tardis = LocalPlayer():GetTardisData("exterior")
@@ -309,11 +304,6 @@ local function AddMenuSingleVersion(dmenu, id)
         TARDIS:SpawnByID(id)
     end)
     spawn:SetIcon("icon16/add.png")
-
-    local select_default = dmenu:AddOption("Select as default interior", function()
-        SetDefaultInterior(id)
-    end)
-    select_default:SetIcon("icon16/star.png")
 
     local select_redecoration = dmenu:AddOption("Select for redecoration", function()
         SelectForRedecoration(id)

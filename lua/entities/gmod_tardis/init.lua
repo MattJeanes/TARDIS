@@ -28,7 +28,7 @@ end)
 
 function ENT:Initialize()
     if not self.metadataID then
-        self.metadataID = TARDIS:GetSetting("interior","default",self:GetCreator())
+        self.metadataID = "default"
     end
     self.metadata=TARDIS:GetInterior(self.metadataID)
     if not self.metadata then
