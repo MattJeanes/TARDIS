@@ -161,8 +161,10 @@ if SERVER then
                 end
             end
         end
-        self:SetPos(pos)
-        self:SetAngles(ang)
+        self:Timer("VortexChangePositionTime", 3, function()
+            self:SetPos(pos)
+            self:SetAngles(ang)
+        end)
         if attached then
             for k,v in pairs(attached) do
                 if IsValid(k) and not IsValid(k:GetParent()) then
