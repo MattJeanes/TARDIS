@@ -53,7 +53,7 @@ end
 
 
 ----------------------------------------------------------------------------------------------------
--- Interior preferences (favorites and excluded from redecoration)
+-- Interior preferences (custom settings, favorites and excluded from redecoration)
 
 local empty_int_preferences = {
     favorites = {},
@@ -76,39 +76,113 @@ function TARDIS:SaveIntPreferences(preferences)
     TARDIS:SetSetting("interior_preferences", preferences, true)
 end
 
-function TARDIS:IsFavoriteInt(id, ply)
-    return TARDIS:GetIntPreferences(ply).favorites[id]
+
+----------------------------------------------------------------------------------------------------
+-- Interior custom settings
+
+function TARDIS:GetMainVersionId(int_id)
+    return (self.Metadata[int_id] and self.Metadata[int_id].IsVersionOf) or int_id
 end
 
-function TARDIS:IsUnwantedInt(id, ply)
-    return TARDIS:GetIntPreferences(ply).unwanted[id]
+function TARDIS:GetIntCustomSetting(int_id, setting_id, ply, default_val)
+    local int_id = TARDIS:GetMainVersionId(int_id)
+    local metadata = self.Metadata[int_id]
+
+    local int_pref = TARDIS:GetIntPreferences(ply)
+    if not int_pref or not int_pref.custom_settings then return end
+
+    local settings = int_pref.custom_settings[int_id]
+    if settings and settings[setting_id] then
+        return settings[setting_id]
+    end
+
+    if setting_id == "preferred_spawn" then
+        return TARDIS:SetupPreferredSpawn(int_id, ply)
+    end
+
+    local md_settings = metadata.CustomSettings
+    if md_settings and md_settings[setting_id] and md_settings[setting_id].value then
+        return md_settings[setting_id].value
+    end
+
+    return default_val
+end
+
+function TARDIS:SetIntCustomSetting(int_id, setting_id, value, ply)
+    local int_id = TARDIS:GetMainVersionId(int_id)
+
+    local int_pref = TARDIS:GetIntPreferences(ply)
+    int_pref.custom_settings = int_pref.custom_settings or {}
+    int_pref.custom_settings[int_id] = int_pref.custom_settings[int_id] or {}
+    int_pref.custom_settings[int_id][setting_id] = value
+    self:SaveIntPreferences(int_pref)
+end
+
+function TARDIS:ResetIntCustomSettings(ply, int_id)
+    local int_id = TARDIS:GetMainVersionId(int_id)
+
+    local int_pref = TARDIS:GetIntPreferences(ply)
+    if not int_pref then return end
+
+    if int_id then
+        int_pref.custom_settings = int_pref.custom_settings or {}
+        int_pref.custom_settings[int_id] = {}
+    else
+        int_pref.custom_settings = {}
+    end
+
+    self:SaveIntPreferences(int_pref)
+end
+
+function TARDIS:ToggleIntCustomSetting(int_id, setting_id, ply)
+    local int_id = TARDIS:GetMainVersionId(int_id)
+
+    local value = TARDIS:GetIntCustomSetting(int_id, setting_id, ply)
+    TARDIS:SetIntCustomSetting(int_id, setting_id, (not value), ply)
+end
+
+function TARDIS:SetupPreferredSpawn(int_id, ply)
+    local int_id = TARDIS:GetMainVersionId(int_id)
+    local metadata = self.Metadata[int_id]
+    local versions = metadata and metadata.Versions
+
+    if versions and versions.randomize and versions.randomize_custom
+        and not table.IsEmpty(versions.custom)
+    then
+        preferred_spawn = "random_custom"
+    elseif versions and versions.randomize
+        and not table.IsEmpty(versions.other)
+    then
+        preferred_spawn = "random"
+    else
+        preferred_spawn = "main"
+    end
+
+    TARDIS:SetIntCustomSetting(int_id, "preferred_spawn", preferred_spawn, ply)
+    return preferred_spawn
+end
+
+----------------------------------------------------------------------------------------------------
+-- Favorites
+
+function TARDIS:IsFavoriteInt(id, ply)
+    return TARDIS:GetIntPreferences(ply).favorites[id]
 end
 
 function TARDIS:SetFavoriteInt(id, favorite, ply)
     if favorite == false then favorite = nil end -- clean up (mainly for debugging purposes)
 
-    local interior_preferences = TARDIS:GetIntPreferences(ply)
-    interior_preferences.favorites[id] = favorite
-    self:SaveIntPreferences(interior_preferences)
-end
-
-function TARDIS:SetUnwantedInt(id, unwanted, ply)
-    if unwanted == false then unwanted = nil end -- clean up (mainly for debugging purposes)
-
-    local interior_preferences = TARDIS:GetIntPreferences(ply)
-    interior_preferences.unwanted[id] = unwanted
-    self:SaveIntPreferences(interior_preferences)
+    local int_pref = TARDIS:GetIntPreferences(ply)
+    int_pref.favorites[id] = favorite
+    self:SaveIntPreferences(int_pref)
 end
 
 function TARDIS:ToggleFavoriteInt(id, ply)
     TARDIS:SetFavoriteInt(id, not TARDIS:IsFavoriteInt(id, ply), ply)
 end
 
-function TARDIS:ToggleUnwantedInt(id, ply, sync_id)
-    value = not TARDIS:IsUnwantedInt(id, ply)
-    TARDIS:SetUnwantedInt(id, value, ply)
-    if sync_id then TARDIS:SetUnwantedInt(sync_id, value, ply) end
-end
+----------------------------------------------------------------------------------------------------
+-- Excluded from redecoration
 
 function TARDIS:SelectNewRandomInterior(current, ply)
     local chosen_int
@@ -133,7 +207,23 @@ function TARDIS:SelectNewRandomInterior(current, ply)
     return chosen_int
 end
 
+function TARDIS:IsUnwantedInt(id, ply)
+    return TARDIS:GetIntPreferences(ply).unwanted[id]
+end
 
+function TARDIS:SetUnwantedInt(id, unwanted, ply)
+    if unwanted == false then unwanted = nil end -- clean up (mainly for debugging purposes)
+
+    local int_pref = TARDIS:GetIntPreferences(ply)
+    int_pref.unwanted[id] = unwanted
+    self:SaveIntPreferences(int_pref)
+end
+
+function TARDIS:ToggleUnwantedInt(id, ply, sync_id)
+    value = not TARDIS:IsUnwantedInt(id, ply)
+    TARDIS:SetUnwantedInt(id, value, ply)
+    if sync_id then TARDIS:SetUnwantedInt(sync_id, value, ply) end
+end
 
 ----------------------------------------------------------------------------------------------------
 -- Adding interiors, interior versions and overrides
@@ -181,10 +271,11 @@ function TARDIS:AddInterior(t)
         if not versions.main then
             versions.main = { id = t.ID, }
         end
-        if versions.randomize then
-            versions.random_list = table.Copy(versions.other) or {}
-            versions.random_list.main = versions.main
-        end
+
+        versions.random_list = table.Copy(versions.other) or {}
+        versions.random_list_custom = table.Copy(versions.other) or {}
+        versions.random_list.main = versions.main
+        versions.random_list_custom.main = versions.main
 
 
         local ent={}
@@ -267,9 +358,7 @@ function TARDIS:AddCustomVersion(main_id, version_id, version)
 
     versions.custom[version_id] = version
 
-    if versions.randomize and versions.randomize_custom then
-        versions.random_list[version_id] = version
-    end
+    versions.random_list_custom[version_id] = version
 end
 
 function TARDIS:GetInterior(id)
@@ -367,6 +456,145 @@ local function AddVersionSubMenu(dmenu, version)
     return submenu
 end
 
+local function AddMenuBoolSetting(dmenu, int_id, setting_id, name)
+    local ply = LocalPlayer()
+
+    local setting_button = dmenu:AddOption(name, function(self)
+        TARDIS:ToggleIntCustomSetting(int_id, setting_id, ply)
+    end)
+    setting_button:SetIsCheckable(true)
+
+    function setting_button:Think()
+        local value = TARDIS:GetIntCustomSetting(int_id, setting_id, ply, false)
+        if self:GetChecked() ~= value then
+            self:SetChecked(value)
+        end
+    end
+
+    return setting_button
+end
+
+local function AddMenuListSetting(dmenu, int_id, setting_id, name, options)
+    local ply = LocalPlayer()
+
+    local submenu = dmenu:AddSubMenu(name, nil)
+
+    local option_buttons = {}
+
+    if not options then return end
+    for option_value, option_text in SortedPairsByValue(options) do
+
+        local option_button = submenu:AddOption(option_text, function(self)
+            TARDIS:SetIntCustomSetting(int_id, setting_id, option_value, ply)
+        end)
+        option_button:SetIsCheckable(true)
+
+        table.insert(option_buttons, {option_value, option_button})
+    end
+
+    function submenu:Think()
+        local value = TARDIS:GetIntCustomSetting(int_id, setting_id, ply)
+        for i,v in ipairs(option_buttons) do
+            v[2]:SetChecked(value == v[1])
+        end
+    end
+
+end
+
+local function AddSettingsSubmenu(parent, int_id)
+    local int_id = TARDIS:GetMainVersionId(int_id)
+
+    local metadata = TARDIS:GetInterior(int_id)
+    if not metadata then return end
+    local versions = metadata.Versions
+    local custom_settings = metadata.CustomSettings
+    local ply = LocalPlayer()
+
+    local other_versions_exist = not table.IsEmpty(versions.other)
+    local custom_versions_exist = not table.IsEmpty(versions.custom)
+    local main_version_double = (versions.main.classic_doors_id ~= nil)
+
+    local versions_exist = other_versions_exist or custom_versions_exist or main_version_double
+    if not versions_exist and (custom_settings == nil) then return end
+    local dmenu = parent:AddSubMenu("Settings", nil)
+
+
+    if versions_exist then
+
+        local option_versions = {
+            ["main"] = "  Default", -- spaces are intentional (sorting)
+        }
+
+        if not table.IsEmpty(versions.custom) then
+            option_versions["random_custom"] = "  Random (original & custom versions)"
+            option_versions["random"] = "  Random (original versions only)"
+        elseif not table.IsEmpty(versions.other) then
+            option_versions["random"] = "  Random"
+        end
+
+        local function add_version_option(option_id, option_name)
+            if not option_versions[option_id] then
+                option_versions[option_id] = option_name
+            end
+        end
+
+        if versions.main.classic_doors_id then
+            add_version_option(versions.main.classic_doors_id, "  Classic doors version") -- spaces are intentional (sorting)
+            add_version_option(versions.main.double_doors_id, "  Double doors version")
+        end
+
+        for k,v in SortedPairs(versions.other) do
+            if v.classic_doors_id then
+                add_version_option(v.classic_doors_id, "  " .. v.name .. " (classic doors)")
+                add_version_option(v.double_doors_id, "  " .. v.name .. " (double doors)")
+            else
+                add_version_option(v.id, "  " .. v.name)
+            end
+        end
+
+        if not table.IsEmpty(versions.custom) then
+            for k,v in SortedPairs(versions.custom) do
+                if v.classic_doors_id then
+                    add_version_option(v.classic_doors_id, "  " .. v.name .. " (classic doors)")
+                    add_version_option(v.double_doors_id, "  " .. v.name .. " (double doors)")
+                else
+                    add_version_option(v.id, "  " .. v.name)
+                end
+            end
+        end
+
+        AddMenuListSetting(dmenu, int_id, "preferred_spawn", "Preferred version", option_versions)
+    end
+
+    if custom_settings then
+        local custom_categories = {}
+
+        for cust_setting_id, custom_setting in SortedPairs(custom_settings) do
+            local custom_dmenu = dmenu
+
+            if custom_setting.category then
+                if not custom_categories[custom_setting.category] then
+                    local submenu = dmenu:AddSubMenu(custom_setting.category, nil)
+                    custom_categories[custom_setting.category] = submenu
+                end
+                custom_dmenu = custom_categories[custom_setting.category]
+            end
+
+            if custom_setting.value_type == "bool" then
+                AddMenuBoolSetting(custom_dmenu, int_id, cust_setting_id, custom_setting.text)
+            elseif custom_setting.value_type == "list" then
+                AddMenuListSetting(custom_dmenu, int_id, cust_setting_id, custom_setting.text, custom_setting.options)
+            end
+        end
+
+    end
+
+    local reset_button = dmenu:AddOption("Reset settings", function(self)
+        TARDIS:ResetIntCustomSettings(LocalPlayer(), int_id)
+    end)
+
+end
+
 
 ----------------------------------------------------------------------------------------------------
 -- Adding the spawnmenu options
@@ -389,9 +617,19 @@ hook.Add("PostGamemodeLoaded", "tardis-interiors", function()
         icon.DoClick = function()
             local versions = TARDIS:GetInterior(obj.spawnname).Versions
 
+            local preferred_spawn = TARDIS:GetIntCustomSetting(obj.spawnname, "preferred_spawn", LocalPlayer(), "main")
+
             local version = versions.main
-            if versions.randomize and versions.random_list then
+
+            if preferred_spawn == "random_custom" and versions.random_list_custom then
+                version = table.Random(versions.random_list_custom)
+            elseif preferred_spawn == "random" and versions.random_list then
                 version = table.Random(versions.random_list)
+            elseif preferred_spawn == "main" then
+                version = versions.main
+            else
+                TARDIS:SpawnByID(preferred_spawn)
+                return
             end
 
             TARDIS:SpawnByID( TARDIS:SelectDoorVersionID(version, LocalPlayer()) )
@@ -404,28 +642,37 @@ hook.Add("PostGamemodeLoaded", "tardis-interiors", function()
             AddMenuVersion(dmenu, versions.main)
             dmenu:AddSpacer()
 
-            for k,v in pairs(versions.other) do
-                AddVersionSubMenu(dmenu, v)
+            if not table.IsEmpty(versions.custom) then
+                AddMenuLabel(dmenu, "Alternative versions:")
+                for k,v in SortedPairs(versions.other) do
+                    AddVersionSubMenu(dmenu, v)
+                end
+                dmenu:AddSpacer()
             end
-            dmenu:AddSpacer()
 
-            for k,v in pairs(versions.custom) do
-                AddVersionSubMenu(dmenu, v)
+            if not table.IsEmpty(versions.custom) then
+                AddMenuLabel(dmenu, "Custom versions:")
+                for k,v in SortedPairs(versions.custom) do
+                    AddVersionSubMenu(dmenu, v)
+                end
+                dmenu:AddSpacer()
             end
-            dmenu:AddSpacer()
 
             local favorite = dmenu:AddOption("Add to favorites (reload required)", function(self)
                 TARDIS:ToggleFavoriteInt(obj.spawnname, LocalPlayer())
                 TARDIS:Message(LocalPlayer(), "Reload the game for changes to apply")
                 TARDIS:Message(LocalPlayer(), "Favorites have been updated")
             end)
-            favorite:SetIsCheckable(true)
+            favorite:SetIcon("icon16/heart_add.png")
             function favorite:Think()
                 local fav = TARDIS:IsFavoriteInt(obj.spawnname, LocalPlayer())
-                if self:GetChecked() ~= fav then
-                    self:SetChecked(fav)
-                end
+                local fav_icon = fav and "heart_delete.png" or "heart_add.png"
+                local fav_text = fav and "Remove from" or "Add to"
+                self:SetIcon("icon16/" .. fav_icon)
+                self:SetText(fav_text .. " favorites (reload required)")
             end
+
+            AddSettingsSubmenu(dmenu, obj.spawnname)
 
             dmenu:Open()
         end
