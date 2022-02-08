@@ -10,7 +10,19 @@ TARDIS:AddSetting({
     type="bool",
     networked=true,
     option=true,
+    section="Misc",
     desc="Whether or not TARDIS skin will be randomized when it's spawned"
+})
+
+TARDIS:AddSetting({
+    id="winter_skins",
+    name="Use winter skins while randomizing TARDIS skins at spawn",
+    value=false,
+    type="bool",
+    networked=true,
+    option=true,
+    section="Misc",
+    desc="Whether or not winter TARDIS skins will be used while it's randomized"
 })
 
 TARDIS:AddSetting({
@@ -158,18 +170,6 @@ function TARDIS:AddInterior(t)
         end
     end
 
-    if t.Templates then
-        for i,template_body in ipairs(t.Templates) do
-            local template = self.MetadataTemplates[template_body.id]
-
-            if template then
-                self.Metadata[t.ID] = create_merge_table(template, self.Metadata[t.ID])
-            elseif template_body.fail then
-                template_body.fail()
-            end
-        end
-    end
-
     if t.Base ~= true and not t.Hidden and not t.IsVersionOf then
 
         if not self.Metadata[t.ID].Versions then self.Metadata[t.ID].Versions = {} end
@@ -226,6 +226,31 @@ function TARDIS:AddInterior(t)
     end
 end
 
+function TARDIS:MergeTemplates()
+    if not self.Metadata then return end
+
+    for int_id, interior in pairs(self.Metadata) do
+        if interior.Templates then
+            for template_id, template in pairs(interior.Templates) do
+                if template then
+
+                    local template_metadata = self.MetadataTemplates[template_id]
+
+                    if template_metadata then
+                        if template.override then
+                            self.Metadata[int_id] = create_merge_table(self.Metadata[int_id], template_metadata)
+                        else
+                            self.Metadata[int_id] = create_merge_table(template_metadata, self.Metadata[int_id])
+                        end
+                    elseif template.fail then
+                        template.fail()
+                    end
+                end
+            end
+        end
+    end
+end
+
 function TARDIS:AddInteriorTemplate(id, template)
     if not id or not template then return end
     self.MetadataTemplates[id] = template
@@ -267,11 +292,6 @@ end
 ----------------------------------------------------------------------------------------------------
 -- Menu-related helper functions
 
-local function SetDefaultInterior(id)
-    TARDIS:SetSetting("interior", id, true)
-    TARDIS:Message(LocalPlayer(), "TARDIS default interior changed. Respawn the TARDIS for changes to apply.")
-end
-
 local function SelectForRedecoration(id)
     TARDIS:SetSetting("redecorate-interior", id, true)
     local current_tardis = LocalPlayer():GetTardisData("exterior")
@@ -295,11 +315,6 @@ local function AddMenuSingleVersion(dmenu, id)
         TARDIS:SpawnByID(id)
     end)
     spawn:SetIcon("icon16/add.png")
-
-    local select_default = dmenu:AddOption("Select as default interior", function()
-        SetDefaultInterior(id)
-    end)
-    select_default:SetIcon("icon16/star.png")
 
     local select_redecoration = dmenu:AddOption("Select for redecoration", function()
         SelectForRedecoration(id)
@@ -485,9 +500,17 @@ if SERVER then
                 local chosen_skin = math.random(total_skins)
 
                 local excluded = entity.metadata.Exterior.ExcludedSkins
+                local winter = entity.metadata.Exterior.WinterSkins
+                local winter_ok = TARDIS:GetSetting("winter_skins", false, entity:GetCreator())
+
+                local function cannot_use_skin(chosen_skin)
+                    local is_excluded = table.HasValue(excluded, chosen_skin)
+                    return is_excluded or (not winter_ok and winter and table.HasValue(winter, chosen_skin) )
+                end
+
                 if excluded then
                     local attempts = 1
-                    while table.HasValue(excluded, chosen_skin) and attempts < 20 do
+                    while cannot_use_skin(chosen_skin) and attempts < 30 do
                         chosen_skin = math.random(total_skins)
                         attempts = attempts + 1
                     end
@@ -509,3 +532,5 @@ end
 TARDIS:LoadFolder("interiors/templates", nil, true)
 TARDIS:LoadFolder("interiors", nil, true)
 TARDIS:LoadFolder("interiors/versions", nil, true)
+
+TARDIS:MergeTemplates()

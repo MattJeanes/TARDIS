@@ -8,6 +8,24 @@ local function SonicModelExists()
 end
 
 local T = {}
+
+T.Versions = {
+    randomize = false,
+    allow_custom = false,
+    randomize_custom = false,
+
+    main = {
+        id = "default",
+    },
+    other = {
+        {
+            name = "TT Capsule Version",
+            id = "default_tt_capsule",
+        },
+    },
+}
+
+
 T.Base = "base"
 T.Name = "Default"
 T.ID = "default"
@@ -198,12 +216,70 @@ T.Interior = {
             ang = Angle(0, 135, 0)
         }
     },
-    BreakdownEffectPos = Vector(0, 0, 40)
+    BreakdownEffectPos = Vector(0, 0, 40),
 }
+
 T.Exterior = {
     Parts = {
         door = true
     },
     PhaseMaterial = "models/drmatt/tardis/exterior/phase.vmt"
 }
+
+local function playerlookingat(self,ply,vec,fov,width)
+    local disp = vec - self:WorldToLocal(ply:GetPos()+Vector(0,0,64))
+    local dist = disp:Length()
+
+    local maxcos = math.abs( math.cos( math.acos( dist / math.sqrt( dist * dist + width * width ) ) + fov * ( math.pi / 180 ) ) )
+    disp:Normalize()
+
+    if disp:Dot( ply:EyeAngles():Forward() ) > maxcos then
+        return true
+    end
+
+    return false
+end
+
+T.Interior.CustomHooks = {
+    init_rotor = {
+        "Initialize",
+        function(self)
+            self.timerotor={}
+            self.timerotor.pos=0
+            self.timerotor.mode=1
+        end
+    },
+    think_rotor = {
+        "Think",
+        function(self)
+            local moving = self.exterior:GetData("teleport",false)
+            local flightmode = self.exterior:GetData("flight",false)
+            local active = (moving or flightmode)
+            if not CLIENT then return end
+            if active or self.timerotor.pos > 0 then
+                if self.timerotor.pos==1 then
+                    self.timerotor.mode=0
+                elseif active and self.timerotor.pos==0 then
+                    self.timerotor.mode=1
+                end
+                self.timerotor.pos=math.Approach( self.timerotor.pos, self.timerotor.mode, FrameTime()*1.1 )
+                self:SetPoseParameter( "glass", self.timerotor.pos )
+            end
+        end,
+    },
+    use_console = {
+        "Use",
+        function(self,a,c)
+            if SERVER and a:IsPlayer() and (not a:GetTardisData("outside")) and CurTime() > a:GetTardisData("outsidecool",0) then
+                local pos=Vector(0,0,0)
+                local pos2=self:WorldToLocal(a:GetPos())
+                local distance=pos:Distance(pos2)
+                if distance < 110 and playerlookingat(self,a,pos,10,10) then
+                    TARDIS:Control("thirdperson_careful", a)
+                end
+            end
+        end,
+    },
+}
+
 TARDIS:AddInterior(T)

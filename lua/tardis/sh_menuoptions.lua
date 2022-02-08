@@ -37,26 +37,6 @@ if CLIENT then
             DLabel2:SetText("TARDIS Interior:")
             panel:AddItem(DLabel2)
 
-            local interior_combobox = vgui.Create("DComboBox")
-            interior_combobox:SetText("Interior")
-            for k,v in pairs(TARDIS:GetInteriors()) do
-                if v.Base ~= true then
-                    v.OptionID=interior_combobox:AddChoice(v.Name,v.ID)
-                end
-            end
-            local selectedinterior=TARDIS:GetSetting("interior","default")
-            for k,v in pairs(TARDIS:GetInteriors()) do
-                if selectedinterior==v.ID then
-                    interior_combobox:ChooseOption(v.OptionID)
-                    interior_combobox:SetText(v.Name)
-                end
-            end
-            interior_combobox.OnSelect = function(panel,index,value,data)
-                TARDIS:SetSetting("interior",data,true)
-                TARDIS:Message(LocalPlayer(), "TARDIS interior changed. Respawn or redecorate the TARDIS for changes to apply.")
-            end
-            panel:AddItem(interior_combobox)
-
             local tips_toggle = vgui.Create("DCheckBoxLabel")
             tips_toggle:SetText("Enable tips")
             tips_toggle:SetValue(TARDIS:GetSetting("tips"))
