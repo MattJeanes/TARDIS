@@ -161,10 +161,8 @@ if SERVER then
                 end
             end
         end
-        self:Timer("VortexChangePositionTime", 3, function()
-            self:SetPos(pos)
-            self:SetAngles(ang)
-        end)
+        self:SetPos(pos)
+        self:SetAngles(ang)
         if attached then
             for k,v in pairs(attached) do
                 if IsValid(k) and not IsValid(k:GetParent()) then
@@ -306,7 +304,9 @@ if SERVER then
 
     ENT:AddHook("StopDemat", "vortex-random-pos", function(self)
         if not self:GetData("demat-fast", false) then
-            self:ChangePosition(self:GetRandomLocation(false), self:GetAngles(), false)      
+            self:Timer("VortexChangePositionTime", 3, function()
+                self:ChangePosition(self:GetRandomLocation(false), self:GetAngles(), false)
+            end)      
         end
     end)
 
