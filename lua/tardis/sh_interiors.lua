@@ -77,7 +77,7 @@ end
 
 local empty_int_preferences = {
     favorites = {},
-    unwanted = {},
+    custom_settings = {},
 }
 
 TARDIS:AddSetting({
@@ -109,7 +109,7 @@ function TARDIS:GetIntCustomSetting(int_id, setting_id, ply, default_val)
     local metadata = self.Metadata[int_id]
 
     local int_pref = TARDIS:GetIntPreferences(ply)
-    if not int_pref or not int_pref.custom_settings then return end
+    if not int_pref or not int_pref.custom_settings then return default_val end
 
     local settings = int_pref.custom_settings[int_id]
     if settings and settings[setting_id] then
