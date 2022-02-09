@@ -166,6 +166,8 @@ function TARDIS:SetupPreferredSpawn(int_id, ply)
     local metadata = self.Metadata[int_id]
     local versions = metadata and metadata.Versions
 
+    local preferred_spawn = "main"
+
     if versions and versions.randomize and versions.randomize_custom
         and not table.IsEmpty(versions.custom)
     then
@@ -174,8 +176,6 @@ function TARDIS:SetupPreferredSpawn(int_id, ply)
         and not table.IsEmpty(versions.other)
     then
         preferred_spawn = "random"
-    else
-        preferred_spawn = "main"
     end
 
     TARDIS:SetIntCustomSetting(int_id, "preferred_spawn", preferred_spawn, ply)
