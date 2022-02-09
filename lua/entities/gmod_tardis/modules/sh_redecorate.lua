@@ -1,7 +1,7 @@
 TARDIS:AddSetting({
     id="redecorate-interior",
     name="Redecoration interior",
-    value="default",
+    value=false,
     networked=true
 })
 
@@ -183,8 +183,8 @@ else -- CLIENT
         end
     end)
 
-    ENT:AddHook("Initialize", "redecorate-reset", function(self)
+    ENT:OnMessage("redecorate-reset", function(self)
         if not IsValid(self) or (not LocalPlayer() == self:GetCreator()) then return end
-        TARDIS:SetSetting("redecorate-interior",self.metadata.ID,true)
+        TARDIS:SetSetting("redecorate-interior",false,true)
     end)
 end
