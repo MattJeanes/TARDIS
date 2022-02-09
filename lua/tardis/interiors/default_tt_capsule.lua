@@ -18,13 +18,7 @@ T.Interior = {
         door = {
             model="models/vtalanov98/hellbentext/doors.mdl",
             posoffset=Vector(0,0,0),
-            angoffset=Angle(0,180,0),
-            --matrixScale = Vector(1.0, 1.7, 1.0),
-
---            pos = Vector(300, 315, -88.1),
---            ang = Angle(0, 50, 0),
---            width = 443,
---            height = 335
+            angoffset=Angle(0,180,0)
         },
         default_doorframe = {
             pos = Vector(317, 336.3, -80),

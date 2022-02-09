@@ -59,7 +59,7 @@ function ENT:CallHook(name,...)
     end
     if self.metadata and self.metadata.Exterior and self.metadata.Exterior.CustomHooks then
         for hook_id,body in pairs(self.metadata.Exterior.CustomHooks) do
-            if body and istable(body) and ( (body[1] == name) or (istable(body[1]) and body[1][name]) ) then
+            if body and istable(body) and ((body[1] == name) or (istable(body[1]) and body[1][name])) then
                 local func = body[2]
                 a,b,c,d,e,f = func(self, ...)
                 if a~=nil then
