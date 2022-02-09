@@ -217,7 +217,7 @@ function TARDIS:SelectNewRandomInterior(current, ply)
         or TARDIS.Metadata[chosen_int].Base == true
         or not TARDIS:ShouldRedecorateInto(chosen_int, ply)
     do
-        chosen_int = table.Random(TARDIS.Metadata).ID
+        chosen_int = TARDIS:GetMainVersionId(table.Random(TARDIS.Metadata).ID)
         attempts = attempts - 1
         if attempts < 1 then
             return "default"
