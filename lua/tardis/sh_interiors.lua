@@ -614,7 +614,7 @@ hook.Add("PostGamemodeLoaded", "tardis-interiors", function()
             AddMenuVersion(dmenu, versions.main)
             dmenu:AddSpacer()
 
-            if not table.IsEmpty(versions.custom) then
+            if not table.IsEmpty(versions.other) then
                 AddMenuLabel(dmenu, "Alternative versions:")
                 for k,v in SortedPairs(versions.other) do
                     AddVersionSubMenu(dmenu, v)
