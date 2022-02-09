@@ -66,7 +66,7 @@ function TARDIS:SelectSpawnID(id, ply)
     elseif preferred_spawn == "main" then
         version = versions.main
     else
-        return preferred_spawn
+        return preferred_spawn or id
     end
 
     return TARDIS:SelectDoorVersionID(version, ply)
