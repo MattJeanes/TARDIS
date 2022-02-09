@@ -50,7 +50,27 @@ function TARDIS:SelectDoorVersionID(x, ply)
 
 end
 
+function TARDIS:SelectSpawnID(id, ply)
+    local metadata = TARDIS:GetInterior(id)
+    local versions = metadata and metadata.Versions
+    if not versions then return id end
 
+    local preferred_spawn = TARDIS:GetIntCustomSetting(id, "preferred_spawn", ply, "main")
+
+    local version = versions.main
+
+    if preferred_spawn == "random_custom" and versions.random_list_custom then
+        version = table.Random(versions.random_list_custom)
+    elseif preferred_spawn == "random" and versions.random_list then
+        version = table.Random(versions.random_list)
+    elseif preferred_spawn == "main" then
+        version = versions.main
+    else
+        return preferred_spawn
+    end
+
+    return TARDIS:SelectDoorVersionID(version, ply)
+end
 
 ----------------------------------------------------------------------------------------------------
 -- Interior preferences (custom settings, favorites and excluded from redecoration)
@@ -182,15 +202,20 @@ function TARDIS:ToggleFavoriteInt(id, ply)
 end
 
 ----------------------------------------------------------------------------------------------------
--- Excluded from redecoration
+-- Exclude interiors from redecoration
+
+function TARDIS:ShouldRedecorateInto(int_id, ply)
+    local int_id = TARDIS:GetMainVersionId(int_id)
+    return not TARDIS:GetIntCustomSetting(int_id, "redecoration_exclude", ply)
+end
 
 function TARDIS:SelectNewRandomInterior(current, ply)
     local chosen_int
-    local attempts = 300
+    local attempts = 1000
 
     while not chosen_int or chosen_int == current
         or TARDIS.Metadata[chosen_int].Base == true
-        or TARDIS:IsUnwantedInt(chosen_int, ply)
+        or not TARDIS:ShouldRedecorateInto(chosen_int, ply)
     do
         chosen_int = table.Random(TARDIS.Metadata).ID
         attempts = attempts - 1
@@ -199,31 +224,9 @@ function TARDIS:SelectNewRandomInterior(current, ply)
         end
     end
 
-    if chosen_int.IsVersionOf then
-        chosen_int = chosen_int.IsVersionOf
-    end
-    chosen_int = TARDIS:SelectDoorVersionID(chosen_int, ply)
-
-    return chosen_int
+    return TARDIS:SelectSpawnID(TARDIS:GetMainVersionId(chosen_int), ply)
 end
 
-function TARDIS:IsUnwantedInt(id, ply)
-    return TARDIS:GetIntPreferences(ply).unwanted[id]
-end
-
-function TARDIS:SetUnwantedInt(id, unwanted, ply)
-    if unwanted == false then unwanted = nil end -- clean up (mainly for debugging purposes)
-
-    local int_pref = TARDIS:GetIntPreferences(ply)
-    int_pref.unwanted[id] = unwanted
-    self:SaveIntPreferences(int_pref)
-end
-
-function TARDIS:ToggleUnwantedInt(id, ply, sync_id)
-    value = not TARDIS:IsUnwantedInt(id, ply)
-    TARDIS:SetUnwantedInt(id, value, ply)
-    if sync_id then TARDIS:SetUnwantedInt(sync_id, value, ply) end
-end
 
 ----------------------------------------------------------------------------------------------------
 -- Adding interiors, interior versions and overrides
@@ -427,22 +430,7 @@ local function AddMenuVersion(dmenu, version)
     else
         AddMenuSingleVersion(dmenu, version.id)
     end
-
     dmenu:AddSpacer()
-
-    local id = (version.classic_doors_id or version.id)
-
-    local unwanted = dmenu:AddOption("Use in random redecoration", function(self)
-        TARDIS:ToggleUnwantedInt(id , LocalPlayer(), version.double_doors_id)
-    end)
-    function unwanted:Think()
-        local use = not TARDIS:IsUnwantedInt(id, LocalPlayer())
-        if self:GetChecked() ~= use then
-            self:SetChecked(use)
-        end
-    end
-    unwanted:SetIsCheckable(true)
-
 end
 
 local function AddVersionSubMenu(dmenu, version)
@@ -515,9 +503,7 @@ local function AddSettingsSubmenu(parent, int_id)
     local main_version_double = (versions.main.classic_doors_id ~= nil)
 
     local versions_exist = other_versions_exist or custom_versions_exist or main_version_double
-    if not versions_exist and (custom_settings == nil) then return end
     local dmenu = parent:AddSubMenu("Settings", nil)
-
 
     if versions_exist then
 
@@ -565,6 +551,8 @@ local function AddSettingsSubmenu(parent, int_id)
 
         AddMenuListSetting(dmenu, int_id, "preferred_spawn", "Preferred version", option_versions)
     end
+
+    AddMenuBoolSetting(dmenu, int_id, "redecoration_exclude", "Exclude from random redecoration")
 
     if custom_settings then
         local custom_categories = {}
@@ -615,24 +603,8 @@ hook.Add("PostGamemodeLoaded", "tardis-interiors", function()
         icon:SetColor(Color(205, 92, 92, 255))
 
         icon.DoClick = function()
-            local versions = TARDIS:GetInterior(obj.spawnname).Versions
-
-            local preferred_spawn = TARDIS:GetIntCustomSetting(obj.spawnname, "preferred_spawn", LocalPlayer(), "main")
-
-            local version = versions.main
-
-            if preferred_spawn == "random_custom" and versions.random_list_custom then
-                version = table.Random(versions.random_list_custom)
-            elseif preferred_spawn == "random" and versions.random_list then
-                version = table.Random(versions.random_list)
-            elseif preferred_spawn == "main" then
-                version = versions.main
-            else
-                TARDIS:SpawnByID(preferred_spawn)
-                return
-            end
-
-            TARDIS:SpawnByID( TARDIS:SelectDoorVersionID(version, LocalPlayer()) )
+            local id = TARDIS:SelectSpawnID(obj.spawnname, LocalPlayer())
+            TARDIS:SpawnByID(id)
         end
 
         icon.OpenMenu = function(self)
