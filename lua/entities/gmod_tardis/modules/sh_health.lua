@@ -304,10 +304,10 @@ if SERVER then
         self:ChangeHealth(newhealth)
         local phys = self:GetPhysicsObject()
         local vel = phys:GetVelocity():Length()
-        if self:GetHealth() ~= 0 and vel < 1500 then
+        if self:GetHealth() ~= 0 and vel < 900 then
             int = self.metadata.Interior.Sounds.Damage
             self.interior:EmitSound(int.Crash)
-        elseif self:GetHealth() ~= 0 and vel > 1500 then
+        elseif self:GetHealth() ~= 0 and vel > 900 then
             int = self.metadata.Interior.Sounds.Damage
             self.interior:EmitSound(int.BigCrash)
         end
