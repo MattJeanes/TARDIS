@@ -252,6 +252,8 @@ local default_category = TARDIS_OVERRIDES.MainCategory or "Doctor Who - TARDIS"
 TARDIS.MetadataTemplates = TARDIS.MetadataTemplates or {}
 
 function TARDIS:AddInterior(t)
+    local should_reload_templates = (self.Metadata[t.ID] ~= nil and self.MetadataRaw[t.ID] ~= nil)
+
     self.Metadata[t.ID] = t
     self.MetadataRaw[t.ID] = t
     if t.Base and self.Metadata[t.Base] then
@@ -263,6 +265,10 @@ function TARDIS:AddInterior(t)
             self.Metadata[k] = merge_interior(v.Base,v)
             self.Metadata[k].Versions = self.MetadataRaw[k].Versions
         end
+    end
+
+    if should_reload_templates then
+        TARDIS:MergeTemplates()
     end
 
     if t.Base ~= true and not t.Hidden and not t.IsVersionOf then
@@ -322,10 +328,59 @@ function TARDIS:AddInterior(t)
     end
 end
 
-function TARDIS:MergeTemplates()
+local function AddInteriorPartsOffset(template, offset)
+    local moved = table.Copy(template)
+
+    for k,v in pairs(moved.Interior.Parts) do
+        local new_pos = Vector(0,0,0)
+        if v.pos then new_pos:Add(v.pos) end
+        new_pos:Add(offset)
+        v.pos = new_pos
+    end
+
+    for k,v in pairs(moved.Interior.PartTips) do
+        local new_pos = Vector(0,0,0)
+        if v.pos then new_pos:Add(v.pos) end
+        new_pos:Add(offset)
+        v.pos = (new_pos == Vector(0,0,0)) and nil or new_pos
+        -- sometimes tip.pos needs to be nil
+    end
+
+    return moved
+end
+
+local function AddInteriorPartsRotation(template, rotate_ang)
+    local rotated = table.Copy(template)
+
+    for k,v in pairs(rotated.Interior.Parts) do
+        local new_ang = Angle(0,0,0)
+        local new_pos = Vector(0,0,0)
+
+        if v.ang then new_ang:Add(v.ang) end
+        if v.pos then new_pos:Add(v.pos) end
+
+        new_ang:Add(rotate_ang)
+        new_pos:Rotate(rotate_ang)
+
+        v.pos = new_pos
+        v.ang = new_ang
+    end
+
+    for k,v in pairs(rotated.Interior.PartTips) do
+        local new_pos = Vector(0,0,0)
+        if v.pos then new_pos:Add(v.pos) end
+        new_pos:Rotate(rotate_ang)
+        v.pos = (new_pos == Vector(0,0,0)) and nil or new_pos
+        -- sometimes tip.pos needs to stay nil
+    end
+
+    return rotated
+end
+
+function TARDIS:MergeTemplates(id)
     if not self.Metadata then return end
 
-    for int_id, interior in pairs(self.Metadata) do
+    local function MergeInteriorTemplates(int_id, interior)
         if interior.Templates then
             for template_id, template in pairs(interior.Templates) do
                 if template then
@@ -333,23 +388,57 @@ function TARDIS:MergeTemplates()
                     local template_metadata = self.MetadataTemplates[template_id]
 
                     if template_metadata then
+
+                        if template.parts_rotation then
+                            template_metadata = AddInteriorPartsRotation(template_metadata, template.parts_rotation)
+                        end
+                        if template.parts_offset then
+                            template_metadata = AddInteriorPartsOffset(template_metadata, template.parts_offset)
+                        end
+
                         if template.override then
                             self.Metadata[int_id] = create_merge_table(self.Metadata[int_id], template_metadata)
                         else
                             self.Metadata[int_id] = create_merge_table(template_metadata, self.Metadata[int_id])
                         end
-                    elseif template.fail then
-                        template.fail()
+                    else
+                        if not template.ignore_missing then
+                            ErrorNoHalt("Failed to find template " .. template_id .. " required for interior " .. int_id)
+                        end
+                        if template.fail_msg then
+                            print(template.fail_msg)
+                        end
+                        if template.fail then
+                            template.fail()
+                        end
                     end
                 end
             end
+        end
+    end
+
+    if id then
+        MergeInteriorTemplates(id, self.Metadata[id])
+    else
+        for int_id, interior in pairs(self.Metadata) do
+            MergeInteriorTemplates(int_id, interior)
         end
     end
 end
 
 function TARDIS:AddInteriorTemplate(id, template)
     if not id or not template then return end
+    local should_reload_templates = (self.MetadataTemplates[id] ~= nil)
+
     self.MetadataTemplates[id] = template
+
+    if should_reload_templates then
+        for int_id,int in pairs(self.Metadata) do
+            if int.Templates and int.Templates[id] then
+                TARDIS:AddInterior(self.MetadataRaw[int_id])
+            end
+        end
+    end
 end
 
 function TARDIS:AddCustomVersion(main_id, version_id, version)
