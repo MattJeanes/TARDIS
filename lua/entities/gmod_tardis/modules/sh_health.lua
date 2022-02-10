@@ -3,6 +3,20 @@
 CreateConVar("tardis2_maxhealth", 1000, {FCVAR_ARCHIVE, FCVAR_REPLICATED}, "TARDIS - Maximum health")
 CreateConVar("tardis2_damage", 1, {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, "TARDIS - Damage enabled (1 enables, 0 disables)", 0, 1)
 
+concommand.Add("tardis2_debug_warning", function(ply,cmd,args)
+    local ext = ply:GetTardisData("exterior")
+    if not ext or not ply:IsAdmin() then return end
+
+    local oldval = ext:GetData("health-val", 0)
+
+    local val = TARDIS:GetSetting("health-max")
+    if not ext:GetData("health-warning", false) then
+        val = val / 10
+    end
+    ext:SetData("health-val", val, true)
+    ext:CallHook("OnHealthChange", val, oldval)
+end)
+
 TARDIS:AddSetting({
     id="health-enabled",
     name="Enable Health",
