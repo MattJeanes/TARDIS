@@ -251,8 +251,21 @@ local default_category = TARDIS_OVERRIDES.MainCategory or "Doctor Who - TARDIS"
 
 TARDIS.MetadataTemplates = TARDIS.MetadataTemplates or {}
 
+function TARDIS:FullReloadInteriors()
+    self.Metadata = {}
+    self.MetadataRaw = {}
+    self.MetadataTemplates = {}
+    TARDIS:LoadFolder("interiors/templates", nil, true)
+    TARDIS:LoadFolder("interiors", nil, true)
+    TARDIS:LoadFolder("interiors/versions", nil, true)
+    TARDIS:MergeTemplates()
+end
+
 function TARDIS:AddInterior(t)
-    local should_reload_templates = (self.Metadata[t.ID] ~= nil and self.MetadataRaw[t.ID] ~= nil)
+    if self.Metadata[t.ID] ~= nil and self.MetadataRaw[t.ID] ~= nil then
+        TARDIS:FullReloadInteriors()
+        return
+    end
 
     self.Metadata[t.ID] = t
     self.MetadataRaw[t.ID] = t
@@ -265,10 +278,6 @@ function TARDIS:AddInterior(t)
             self.Metadata[k] = merge_interior(v.Base,v)
             self.Metadata[k].Versions = self.MetadataRaw[k].Versions
         end
-    end
-
-    if should_reload_templates then
-        TARDIS:MergeTemplates()
     end
 
     if t.Base ~= true and not t.Hidden and not t.IsVersionOf then
@@ -428,17 +437,13 @@ end
 
 function TARDIS:AddInteriorTemplate(id, template)
     if not id or not template then return end
-    local should_reload_templates = (self.MetadataTemplates[id] ~= nil)
+
+    if self.MetadataTemplates[id] ~= nil then
+        TARDIS:FullReloadInteriors()
+        return
+    end
 
     self.MetadataTemplates[id] = template
-
-    if should_reload_templates then
-        for int_id,int in pairs(self.Metadata) do
-            if int.Templates and int.Templates[id] then
-                TARDIS:AddInterior(self.MetadataRaw[int_id])
-            end
-        end
-    end
 end
 
 function TARDIS:AddCustomVersion(main_id, version_id, version)
