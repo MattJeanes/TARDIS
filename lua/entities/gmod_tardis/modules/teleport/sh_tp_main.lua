@@ -149,6 +149,50 @@ if SERVER then
         if callback then callback(true) end
     end
 
+    function ENT:ChangePosition(pos, ang, phys_enable)
+        local attached=self:GetData("demat-attached")
+        if attached then
+            for k,v in pairs(attached) do
+                if IsValid(k) and not IsValid(k:GetParent()) then
+                    k.telepos=k:GetPos()-self:GetPos()
+                    if k:GetClass()=="gmod_hoverball" then -- fixes hoverballs spazzing out
+                        k:SetTargetZ( (pos-self:GetPos()).z+k:GetTargetZ() )
+                    end
+                end
+            end
+        end
+        self:SetPos(pos)
+        self:SetAngles(ang)
+        if attached then
+            for k,v in pairs(attached) do
+                if IsValid(k) and not IsValid(k:GetParent()) then
+                    if k:IsRagdoll() then
+                        for i=0,k:GetPhysicsObjectCount() do
+                            local bone=k:GetPhysicsObjectNum(i)
+                            if IsValid(bone) then
+                                bone:SetPos(self:GetPos()+k.telepos)
+                            end
+                        end
+                    end
+                    k:SetPos(self:GetPos()+k.telepos)
+                    k.telepos=nil
+                    if phys_enable == true then
+                        local phys=k:GetPhysicsObject()
+                        if phys and IsValid(phys) then
+                            k:SetSolid(SOLID_VPHYSICS)
+                            if k.gravity~=nil then
+                                phys:EnableGravity(k.gravity)
+                                k.gravity = nil                               
+                            end
+                        end
+                        k.nocollide=nil
+                    end
+                end
+            end
+        end
+    end
+
+
     function ENT:Mat(callback)
         local pos = self:GetData("demat-pos", self:GetPos())
         local ang = self:GetData("demat-ang", self:GetAngles())
@@ -180,45 +224,7 @@ if SERVER then
                 self:SetData("prevortex-flight",nil)
                 self:SetSolid(SOLID_VPHYSICS)
                 self:CallHook("MatStart")
-
-                local attached=self:GetData("demat-attached")
-                if attached then
-                    for k,v in pairs(attached) do
-                        if IsValid(k) and not IsValid(k:GetParent()) then
-                            k.telepos=k:GetPos()-self:GetPos()
-                            if k:GetClass()=="gmod_hoverball" then -- fixes hoverballs spazzing out
-                                k:SetTargetZ( (pos-self:GetPos()).z+k:GetTargetZ() )
-                            end
-                        end
-                    end
-                end
-                self:SetPos(pos)
-                self:SetAngles(ang)
-                if attached then
-                    for k,v in pairs(attached) do
-                        if IsValid(k) and not IsValid(k:GetParent()) then
-                            if k:IsRagdoll() then
-                                for i=0,k:GetPhysicsObjectCount() do
-                                    local bone=k:GetPhysicsObjectNum(i)
-                                    if IsValid(bone) then
-                                        bone:SetPos(self:GetPos()+k.telepos)
-                                    end
-                                end
-                            end
-                            k:SetPos(self:GetPos()+k.telepos)
-                            k.telepos=nil
-                            local phys=k:GetPhysicsObject()
-                            if phys and IsValid(phys) then
-                                k:SetSolid(SOLID_VPHYSICS)
-                                if k.gravity~=nil then
-                                    phys:EnableGravity(k.gravity)
-                                    k.gravity = nil
-                                end
-                            end
-                            k.nocollide=nil
-                        end
-                    end
-                end
+                self:ChangePosition(pos, ang, true)
                 self:SetDestination(nil, nil)
             end)
             if callback then callback(true) end
@@ -293,6 +299,14 @@ if SERVER then
     ENT:AddHook("CanMat", "teleport", function(self, dest_pos, dest_ang, ignore_fail_mat)
         if self:GetData("teleport") or (not self:GetData("vortex")) then
             return false
+        end
+    end)
+
+    ENT:AddHook("StopDemat", "vortex-random-pos", function(self)
+        if not self:GetData("demat-fast", false) then
+            self:Timer("VortexChangePositionTime", 3, function()
+                self:ChangePosition(self:GetRandomLocation(false), self:GetAngles(), false)
+            end)      
         end
     end)
 
