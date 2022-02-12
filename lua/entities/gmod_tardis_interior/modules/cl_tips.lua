@@ -193,7 +193,7 @@ hook.Add("HUDPaint", "TARDIS-DrawTips", function()
             tip:SetHighlight(cseq_enabled and tip.part == cseq_next)
         end
 
-        local pos = interior:LocalToWorld(tip.pos)
+        local pos = interior:LocalToWorld(tip.pos or Vector(0,0,0))
         local dist = pos:Distance(player_pos)
 
         if dist <= view_range_max and (not tip.part or IsValid(interior:GetPart(tip.part))) then
