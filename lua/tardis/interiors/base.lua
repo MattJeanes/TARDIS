@@ -18,6 +18,12 @@ T.Interior = {
         ang = Angle(0,90,0)
     },
     Sounds = {
+        Damage = {
+            Crash = "jeredek/tardis/damage_collision.wav",
+            BigCrash = "jeredek/tardis/damage_bigcollision.wav",
+            Explosion = "jeredek/tardis/damage_explode.wav",
+            Death = "jeredek/tardis/damage_death.wav",
+        },
         Teleport = {}, -- uses exterior sounds if not specified
         Power = {
             On = "drmatt/tardis/power_on.wav",
