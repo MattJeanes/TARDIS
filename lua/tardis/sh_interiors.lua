@@ -398,6 +398,10 @@ function TARDIS:MergeInteriorTemplates(cur_metadata, apply_conditions, ply)
 
     for template_id, template in pairs(cur_metadata.Templates) do
 
+        if template and template.realID then
+            template_id = template.realID
+        end
+
         local template_metadata = self.MetadataTemplates[template_id]
 
         if template and template_metadata
