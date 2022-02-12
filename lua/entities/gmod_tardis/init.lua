@@ -31,6 +31,9 @@ function ENT:Initialize()
     if not self.metadata then
         self.metadata=TARDIS:GetInterior("default")
     end
+
+    self.metadata = TARDIS:MergeInteriorTemplates(self.metadata, true, self:GetCreator())
+
     self.Model=self.metadata.Exterior.Model
     self.Portal=self.metadata.Exterior.Portal
     self.Fallback=self.metadata.Exterior.Fallback
