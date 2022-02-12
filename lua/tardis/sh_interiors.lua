@@ -48,7 +48,6 @@ function TARDIS:SelectDoorVersionID(x, ply)
     if not version.classic_doors_id then return version.id end
 
     return (TARDIS:ShouldUseClassicDoors(ply) and version.classic_doors_id) or version.double_doors_id
-
 end
 
 function TARDIS:SelectSpawnID(id, ply)
@@ -113,7 +112,7 @@ function TARDIS:GetIntCustomSetting(int_id, setting_id, ply, default_val)
     if not int_pref or not int_pref.custom_settings then return default_val end
 
     local settings = int_pref.custom_settings[int_id]
-    if settings and settings[setting_id] then
+    if settings and settings[setting_id] ~= nil then
         return settings[setting_id]
     end
 
@@ -122,8 +121,10 @@ function TARDIS:GetIntCustomSetting(int_id, setting_id, ply, default_val)
     end
 
     local md_settings = metadata.CustomSettings
-    if md_settings and md_settings[setting_id] and md_settings[setting_id].value then
-        return md_settings[setting_id].value
+    if md_settings and md_settings[setting_id] and md_settings[setting_id].value ~= nil then
+        local metadata_value = md_settings[setting_id].value
+        TARDIS:SetIntCustomSetting(int_id, setting_id, metadata_value, ply)
+        return metadata_value
     end
 
     return default_val
@@ -423,10 +424,19 @@ function TARDIS:MergeInteriorTemplates(cur_metadata, apply_conditions, ply)
 
         elseif not template_metadata then
             if not template or not template.ignore_missing then
-                ErrorNoHalt("Failed to find template " .. template_id .. " required for interior " .. id)
+                local err_notification = "[TARDIS] Failed to find template " .. template_id .. " required for interior " .. id
+                if CLIENT then
+                    LocalPlayer():ChatPrint(err_notification)
+                else
+                    ErrorNoHalt("\n" .. err_notification)
+                end
             end
             if template and template.fail_msg then
-                print(template.fail_msg)
+                if CLIENT then
+                    LocalPlayer():ChatPrint(template.fail_msg)
+                else
+                    print("\n" .. template.fail_msg .. "\n")
+                end
             end
             if template and template.fail then
                 template.fail()

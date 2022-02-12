@@ -48,7 +48,7 @@ function ENT:SetVisible(visible)
             self:SetColor(Color(255,255,255,255))
         end
     else
-        self.pre_invis_color = self:GetColor()
+        self.pre_invis_color = (self:GetColor().a ~= 0) and self:GetColor()
         self:SetColor(Color(0,0,0,0))
     end
 end
