@@ -303,10 +303,13 @@ if SERVER then
     end)
 
     ENT:AddHook("StopDemat", "vortex-random-pos", function(self)
-        if not self:GetData("demat-fast", false) then
+        if not self:GetData("demat-fast", false)
+            and not self:GetData("redecorate")
+            and not self:GetData("redecorate_parent")
+        then
             self:Timer("VortexChangePositionTime", 3, function()
                 self:ChangePosition(self:GetRandomLocation(false), self:GetAngles(), false)
-            end)      
+            end)
         end
     end)
 
