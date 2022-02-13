@@ -107,7 +107,10 @@ T.Exterior = {
         FlightLoopDamaged = "drmatt/tardis/flight_loop_damaged.wav",
         Cloak = "drmatt/tardis/phase_enable.wav",
         CloakOff = "drmatt/tardis/phase_disable.wav",
-        Hum = nil,
+        Hum = {
+            path = "drmatt/tardis/flight_loop.wav",
+
+        }
     },
     Parts = {
         vortex = {
