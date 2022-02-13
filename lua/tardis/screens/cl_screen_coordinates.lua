@@ -138,28 +138,40 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Coordinates", menu=fals
         local name = ""
         local pos = Vector(0,0,0)
         local ang = Angle(0,0,0)
-        Derma_StringRequest("New Location",
-        "Enter the name for the new location",
-        "New Location", 
-        function(text)
-            name = text
-            Derma_Query(
-                "Use current TARDIS position and rotation?\nSelecting 'No' will use the information on the inputs.",
-                "New Location",
-                "Yes",
-                function() 
-                        pos = ext:GetPos() 
-                        ang = ext:GetAngles() 
-                        if name == "" then name = "Unnamed" end
-                        TARDIS:AddLocation(pos,ang,name,map) 
-                        updatelist() 
-                end,
-                "No", 
-                function() 
-                    TARDIS:AddLocation(pos,ang,name,map)
-                    updatelist() 
-                end)
-        end)
+        Derma_StringRequest(
+            "New Location",
+            "Enter the name for the new location",
+            "New Location",
+            function(text)
+                name = text
+                Derma_Query(
+                    "Use current TARDIS position and rotation?\nSelecting 'No' will use the information on the inputs.",
+                    "New Location",
+                    "Yes",
+                    function()
+                        if ext:GetData("vortex", false) then
+                            name = text
+                            Derma_Query(
+                                "You cannot use the TARDIS's position to save this location at the moment.",
+                                "New Location",
+                                "Okay"
+                            )
+                        else
+                            pos = ext:GetPos()
+                            ang = ext:GetAngles()
+                            if name == "" then name = "Unnamed" end
+                            TARDIS:AddLocation(pos,ang,name,map)
+                            updatelist()
+                        end
+                    end,
+                    "No",
+                    function()
+                        TARDIS:AddLocation(pos,ang,name,map)
+                        updatelist()
+                    end
+                )
+            end
+        )
     end
 
     local edit = vgui.Create("DButton", frame)
@@ -263,18 +275,18 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Coordinates", menu=fals
         Derma_Query("You have unsaved changes, would you like to save them?",
         "Pending changes",
         "Yes",
-        function() 
-            TARDIS:SaveLocations() 
+        function()
+            TARDIS:SaveLocations()
             pendingchanges = false
             TARDIS:RemoveHUDScreen()
         end,
         "No",
-        function() 
+        function()
             pendingchanges = false
             TARDIS:RemoveHUDScreen()
         end,
         "Cancel",
-        function() 
+        function()
 
         end
         )
