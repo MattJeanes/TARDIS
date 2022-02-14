@@ -10,18 +10,18 @@ TARDIS:AddSetting({
 })
 
 function TARDIS:InitializeVersions(int_id)
-	local versions = self.Metadata[int_id].Versions or {}
+    local versions = self.Metadata[int_id].Versions or {}
 
-	versions.other = versions.other or {}
-	versions.custom = versions.custom or {}
-	versions.main = versions.main or { id = int_id, }
+    versions.other = versions.other or {}
+    versions.custom = versions.custom or {}
+    versions.main = versions.main or { id = int_id, }
 
-	versions.random_list = table.Copy(versions.other) or {}
-	versions.random_list_custom = table.Copy(versions.other) or {}
-	versions.random_list.main = versions.main
-	versions.random_list_custom.main = versions.main
+    versions.random_list = table.Copy(versions.other) or {}
+    versions.random_list_custom = table.Copy(versions.other) or {}
+    versions.random_list.main = versions.main
+    versions.random_list_custom.main = versions.main
 
-	self.Metadata[int_id].Versions = versions
+    self.Metadata[int_id].Versions = versions
 end
 
 function TARDIS:ShouldUseClassicDoors(ply)
@@ -34,7 +34,7 @@ function TARDIS:SelectDoorVersionID(x, ply)
 
     if not version.classic_doors_id then return version.id end
 
-	local use_classic = TARDIS:ShouldUseClassicDoors(ply)
+    local use_classic = TARDIS:ShouldUseClassicDoors(ply)
     return (use_classic and version.classic_doors_id) or version.double_doors_id
 end
 
