@@ -34,7 +34,30 @@ function TARDIS:SelectDoorVersionID(x, ply)
 
     if not version.classic_doors_id then return version.id end
 
-    return (TARDIS:ShouldUseClassicDoors(ply) and version.classic_doors_id) or version.double_doors_id
+	local use_classic = TARDIS:ShouldUseClassicDoors(ply)
+    return (use_classic and version.classic_doors_id) or version.double_doors_id
+end
+
+
+function TARDIS:InitPreferredVersionSetting(int_id, ply)
+    local int_id = TARDIS:GetMainVersionId(int_id)
+    local metadata = self.Metadata[int_id]
+    local versions = metadata and metadata.Versions
+
+    local preferred_version = "main"
+
+    if versions and versions.randomize and versions.randomize_custom
+        and not table.IsEmpty(versions.custom)
+    then
+        preferred_version = "random_custom"
+    elseif versions and versions.randomize
+        and not table.IsEmpty(versions.other)
+    then
+        preferred_version = "random"
+    end
+
+    TARDIS:SetCustomSetting(int_id, "preferred_version", preferred_version, ply)
+    return preferred_version
 end
 
 function TARDIS:SelectSpawnID(id, ply)
