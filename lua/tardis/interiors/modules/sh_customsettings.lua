@@ -28,11 +28,10 @@ function TARDIS:GetCustomSetting(int_id, setting_id, ply, default_val)
         return self:InitPreferredVersionSetting(int_id, ply)
     end
 
-    -- getting the default setting value from metadata and saving it for the user
+    -- getting the default setting value from metadata
     local md_settings = metadata.CustomSettings
     if md_settings and md_settings[setting_id] and md_settings[setting_id].value ~= nil then
         local metadata_value = md_settings[setting_id].value
-        self:SetCustomSetting(int_id, setting_id, metadata_value, ply)
         return metadata_value
     end
 
