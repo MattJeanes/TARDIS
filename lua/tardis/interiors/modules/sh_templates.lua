@@ -119,10 +119,11 @@ end
 function TARDIS:AddInteriorTemplate(id, template)
     if not id or not template then return end
 
-    if self.MetadataTemplates[id] ~= nil then
+    if not template.NoFullReload and self.MetadataTemplates[id] ~= nil then
         TARDIS:FullReloadInteriors()
         return
     end
 
+    template.NoFullReload = nil
     self.MetadataTemplates[id] = template
 end

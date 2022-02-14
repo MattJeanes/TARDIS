@@ -21,26 +21,28 @@ function TARDIS:MergeMetadata(base, t)
 end
 
 function TARDIS:AddInterior(t)
-    if self.Metadata[t.ID] ~= nil and self.MetadataRaw[t.ID] ~= nil then
+    local id = t.ID
+
+    if not t.NoFullReload and (self.Metadata[id] ~= nil or self.MetadataRaw[id] ~= nil) then
         TARDIS:FullReloadInteriors()
         return
     end
 
-    self.Metadata[t.ID] = t
-    self.MetadataRaw[t.ID] = t
+    self.Metadata[id] = t
+    self.MetadataRaw[id] = t
     if t.Base and self.Metadata[t.Base] then
-        self.Metadata[t.ID] = TARDIS:MergeMetadata(TARDIS.Metadata[t.Base], t)
-        self.Metadata[t.ID].Versions = self.MetadataRaw[t.ID].Versions
+        self.Metadata[id] = TARDIS:MergeMetadata(TARDIS.Metadata[t.Base], t)
+        self.Metadata[id].Versions = self.MetadataRaw[id].Versions
     end
     for k,v in pairs(self.MetadataRaw) do
-        if t.ID == v.Base then
+        if id == v.Base then
             self.Metadata[k] = TARDIS:MergeMetadata(TARDIS.Metadata[v.Base], v)
             self.Metadata[k].Versions = self.MetadataRaw[k].Versions
         end
     end
 
     if t.Base ~= true and not t.Hidden and not t.IsVersionOf then
-        TARDIS:InitializeVersions(t.ID)
+        TARDIS:InitializeVersions(id)
         TARDIS:SetupSpawnmenuIcon(t)
     end
 end
