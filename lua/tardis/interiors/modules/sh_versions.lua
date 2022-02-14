@@ -16,10 +16,10 @@ function TARDIS:InitializeVersions(int_id)
     versions.custom = versions.custom or {}
     versions.main = versions.main or { id = int_id, }
 
-    versions.random_list = table.Copy(versions.other) or {}
-    versions.random_list_custom = table.Copy(versions.other) or {}
-    versions.random_list.main = versions.main
-    versions.random_list_custom.main = versions.main
+    versions.list_original = table.Copy(versions.other) or {}
+    versions.list_all = table.Copy(versions.other) or {}
+    versions.list_original.main = versions.main
+    versions.list_all.main = versions.main
 
     self.Metadata[int_id].Versions = versions
 end
@@ -35,6 +35,20 @@ function TARDIS:SelectDoorVersionID(x, ply)
     if not version.classic_doors_id then return version.id end
 
     local use_classic = TARDIS:ShouldUseClassicDoors(ply)
+    local custom = TARDIS:GetCustomSetting(version.classic_doors_id, "preferred_door_type", ply, nil)
+
+    if custom ~= nil and custom ~= "default" then
+        if custom == "classic" then
+            return version.classic_doors_id
+        end
+        if custom == "double" then
+            return version.double_doors_id
+        end
+        if custom == "random" then
+            use_classic = (math.random(0, 1) == 1)
+        end
+    end
+
     return (use_classic and version.classic_doors_id) or version.double_doors_id
 end
 
@@ -69,14 +83,16 @@ function TARDIS:SelectSpawnID(id, ply)
 
     local version = versions.main
 
-    if preferred_version == "random_custom" and versions.random_list_custom then
-        version = table.Random(versions.random_list_custom)
-    elseif preferred_version == "random" and versions.random_list then
-        version = table.Random(versions.random_list)
+    if istable(preferred_version) then
+        version = preferred_version
+    elseif preferred_version == "random_custom" and versions.list_all then
+        version = table.Random(versions.list_all)
+    elseif preferred_version == "random" and versions.list_original then
+        version = table.Random(versions.list_original)
     elseif preferred_version == "main" then
         version = versions.main
     else
-        return preferred_version or id
+        version = id
     end
 
     return TARDIS:SelectDoorVersionID(version, ply)
@@ -97,7 +113,7 @@ function TARDIS:AddCustomVersion(main_id, version_id, version)
 
     versions.custom[version_id] = version
 
-    versions.random_list_custom[version_id] = version
+    versions.list_all[version_id] = version
 end
 
 

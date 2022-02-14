@@ -82,7 +82,7 @@ if CLIENT then
         return setting_button
     end
 
-    local function AddMenuListSetting(dmenu, int_id, setting_id, name, options)
+    local function AddMenuListSetting(dmenu, int_id, setting_id, name, options, compare_func)
         local ply = LocalPlayer()
 
         local submenu = dmenu:AddSubMenu(name, nil)
@@ -103,7 +103,11 @@ if CLIENT then
         function submenu:Think()
             local value = TARDIS:GetCustomSetting(int_id, setting_id, ply)
             for i,v in ipairs(option_buttons) do
-                v[2]:SetChecked(value == v[1])
+                local checked = (value == v[1])
+                if compare_func then
+                    checked = compare_func(value, v[1])
+                end
+                v[2]:SetChecked(checked)
             end
         end
 
@@ -120,56 +124,76 @@ if CLIENT then
 
         local other_versions_exist = not table.IsEmpty(versions.other)
         local custom_versions_exist = not table.IsEmpty(versions.custom)
-        local main_version_double = (versions.main.classic_doors_id ~= nil)
 
-        local versions_exist = other_versions_exist or custom_versions_exist or main_version_double
+        local versions_exist = other_versions_exist or custom_versions_exist
         local dmenu = parent:AddSubMenu("Settings", nil)
 
         if versions_exist then
 
-            local option_versions = {
-                ["main"] = "  Default", -- spaces are intentional (sorting)
-            }
+            local option_versions = {}
 
-            if not table.IsEmpty(versions.custom) then
-                option_versions["random_custom"] = "  Random (original & custom versions)"
-                option_versions["random"] = "  Random (original versions only)"
-            elseif not table.IsEmpty(versions.other) then
-                option_versions["random"] = "  Random"
+            local function add_version_option(option_name, option_id, order)
+                local prefixes = { "  ", "  ", "  ", "  " } -- spaces are different symbols
+                option_versions[option_id] = prefixes[order] .. option_name
             end
 
-            local function add_version_option(option_id, option_name)
-                if not option_versions[option_id] then
-                    option_versions[option_id] = option_name
+            add_version_option("Default", "main", 1)
+
+            if other_versions_exist then
+                add_version_option("Random", "random", 2)
+            end
+            if custom_versions_exist then
+                add_version_option("Random (original versions)", "random", 2)
+                add_version_option("Random (original & custom versions)", "random_custom", 2)
+            end
+
+            if other_versions_exist then
+                for k,v in SortedPairs(versions.other) do
+                    add_version_option(v.name, v, 3)
                 end
             end
-
-            if versions.main.classic_doors_id then
-                add_version_option(versions.main.classic_doors_id, "  Classic doors version") -- spaces are intentional (sorting)
-                add_version_option(versions.main.double_doors_id, "  Double doors version")
-            end
-
-            for k,v in SortedPairs(versions.other) do
-                if v.classic_doors_id then
-                    add_version_option(v.classic_doors_id, "  " .. v.name .. " (classic doors)")
-                    add_version_option(v.double_doors_id, "  " .. v.name .. " (double doors)")
-                else
-                    add_version_option(v.id, "  " .. v.name)
-                end
-            end
-
-            if not table.IsEmpty(versions.custom) then
+            if custom_versions_exist then
                 for k,v in SortedPairs(versions.custom) do
-                    if v.classic_doors_id then
-                        add_version_option(v.classic_doors_id, "  " .. v.name .. " (classic doors)")
-                        add_version_option(v.double_doors_id, "  " .. v.name .. " (double doors)")
-                    else
-                        add_version_option(v.id, "  " .. v.name)
-                    end
+                    add_version_option(v.name, v, 4)
                 end
             end
 
-            AddMenuListSetting(dmenu, int_id, "preferred_version", "Preferred version", option_versions)
+            local function versions_compare(a, b)
+                if istable(a) ~= istable(b) then return false end
+                if not istable(a) then
+                    return (a == b)
+                end
+                local ok = true
+                ok = ok and (a.id == b.id)
+                ok = ok and (a.classic_doors_id == b.classic_doors_id)
+                ok = ok and (a.double_doors_id == b.double_doors_id)
+                return ok
+            end
+
+            AddMenuListSetting(dmenu, int_id, "preferred_version", "Preferred version", option_versions, versions_compare)
+        end
+
+        local function search_for_double_versions(version_list, current_val)
+            if current_val then return true end
+            for k,v in pairs(version_list) do
+                if v.classic_doors_id then
+                    return true
+                end
+            end
+            return false
+        end
+
+        local has_double_versions = (versions.main.classic_doors_id ~= nil)
+        has_double_versions = search_for_double_versions(versions.other, has_double_versions)
+        has_double_versions = search_for_double_versions(versions.custom, has_double_versions)
+
+        if has_double_versions then
+            AddMenuListSetting(dmenu, int_id, "preferred_door_type", "Preferred door type", {
+                ["default"] = " Default (configured in TARDIS settings)",
+                ["random"] = " Random",
+                ["classic"] = " Classic doors",
+                ["double"] = " Double doors",
+            })
         end
 
         AddMenuBoolSetting(dmenu, int_id, "redecoration_exclude", "Exclude from random redecoration")

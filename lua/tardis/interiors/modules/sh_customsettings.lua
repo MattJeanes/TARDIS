@@ -27,6 +27,9 @@ function TARDIS:GetCustomSetting(int_id, setting_id, ply, default_val)
     if setting_id == "preferred_version" then
         return self:InitPreferredVersionSetting(int_id, ply)
     end
+    if setting_id == "preferred_door_type" then
+        return "default"
+    end
 
     -- getting the default setting value from metadata
     local md_settings = metadata.CustomSettings
