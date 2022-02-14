@@ -36,11 +36,26 @@ if SERVER then
             TARDIS:Message(self:GetCreator(), "Your TARDIS is under attack!")
             self:SetData("hads-triggered", true)
             self:SetFastRemat(false)
+            self:SetRandomDestination(true) 
             self:AutoDemat()
             self:CallHook("HADSTrigger")
+            self:SetData("hads-need-remat", true, true)
+            self:Timer("HadsRematTime", math.random(10,25), function()
+                if self:GetData("hads-need-remat", false) then 
+                    self:Mat(function(result)
+                        if result then
+                            TARDIS:Message(self:GetCreator(), "Your TARDIS is materialising")
+                        end               
+                    end)
+                end
+            end)
             return true
         end
     end 
+
+    ENT:AddHook("MatStart", "hads-cancel-remat", function(self)
+        self:SetData("hads-need-remat", nil, true)
+    end)
 
     ENT:AddHook("OnTakeDamage", "hads", function(self)
         self:TriggerHADS()  
