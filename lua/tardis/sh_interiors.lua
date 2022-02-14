@@ -120,6 +120,7 @@ function TARDIS:GetCustomSetting(int_id, setting_id, ply, default_val)
         return TARDIS:SetupPreferredSpawn(int_id, ply)
     end
 
+    -- getting the default setting value from metadata and saving it for the user
     local md_settings = metadata.CustomSettings
     if md_settings and md_settings[setting_id] and md_settings[setting_id].value ~= nil then
         local metadata_value = md_settings[setting_id].value
