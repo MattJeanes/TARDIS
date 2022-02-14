@@ -55,18 +55,18 @@ function TARDIS:SelectSpawnID(id, ply)
     local versions = metadata and metadata.Versions
     if not versions then return id end
 
-    local preferred_spawn = TARDIS:GetCustomSetting(id, "preferred_spawn", ply, "main")
+    local preferred_version = TARDIS:GetCustomSetting(id, "preferred_version", ply, "main")
 
     local version = versions.main
 
-    if preferred_spawn == "random_custom" and versions.random_list_custom then
+    if preferred_version == "random_custom" and versions.random_list_custom then
         version = table.Random(versions.random_list_custom)
-    elseif preferred_spawn == "random" and versions.random_list then
+    elseif preferred_version == "random" and versions.random_list then
         version = table.Random(versions.random_list)
-    elseif preferred_spawn == "main" then
+    elseif preferred_version == "main" then
         version = versions.main
     else
-        return preferred_spawn or id
+        return preferred_version or id
     end
 
     return TARDIS:SelectDoorVersionID(version, ply)
@@ -116,8 +116,8 @@ function TARDIS:GetCustomSetting(int_id, setting_id, ply, default_val)
         return settings[setting_id]
     end
 
-    if setting_id == "preferred_spawn" then
-        return TARDIS:SetupPreferredSpawn(int_id, ply)
+    if setting_id == "preferred_version" then
+        return TARDIS:SetupPreferredVersion(int_id, ply)
     end
 
     -- getting the default setting value from metadata and saving it for the user
@@ -164,25 +164,25 @@ function TARDIS:ToggleCustomSetting(int_id, setting_id, ply)
     TARDIS:SetCustomSetting(int_id, setting_id, (not value), ply)
 end
 
-function TARDIS:SetupPreferredSpawn(int_id, ply)
+function TARDIS:SetupPreferredVersion(int_id, ply)
     local int_id = TARDIS:GetMainVersionId(int_id)
     local metadata = self.Metadata[int_id]
     local versions = metadata and metadata.Versions
 
-    local preferred_spawn = "main"
+    local preferred_version = "main"
 
     if versions and versions.randomize and versions.randomize_custom
         and not table.IsEmpty(versions.custom)
     then
-        preferred_spawn = "random_custom"
+        preferred_version = "random_custom"
     elseif versions and versions.randomize
         and not table.IsEmpty(versions.other)
     then
-        preferred_spawn = "random"
+        preferred_version = "random"
     end
 
-    TARDIS:SetCustomSetting(int_id, "preferred_spawn", preferred_spawn, ply)
-    return preferred_spawn
+    TARDIS:SetCustomSetting(int_id, "preferred_version", preferred_version, ply)
+    return preferred_version
 end
 
 ----------------------------------------------------------------------------------------------------
@@ -666,7 +666,7 @@ local function AddSettingsSubmenu(parent, int_id)
             end
         end
 
-        AddMenuListSetting(dmenu, int_id, "preferred_spawn", "Preferred version", option_versions)
+        AddMenuListSetting(dmenu, int_id, "preferred_version", "Preferred version", option_versions)
     end
 
     AddMenuBoolSetting(dmenu, int_id, "redecoration_exclude", "Exclude from random redecoration")
