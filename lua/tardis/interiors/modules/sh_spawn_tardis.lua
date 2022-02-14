@@ -20,6 +20,8 @@ TARDIS:AddSetting({
     desc="Whether or not winter TARDIS skins will be used while it's randomized"
 })
 
+if CLIENT then return end
+
 function TARDIS:SpawnTARDIS(ply, customData)
     local entityName = "gmod_tardis"
 
