@@ -282,11 +282,19 @@ if SERVER then
         if not TARDIS:GetSetting("health-enabled") then return false end
     end)
 
+    ---------------------------------
+    --Damage calculation and sounds--
+    ---------------------------------
+
     ENT:AddHook("OnTakeDamage", "Health", function(self, dmginfo)
         if dmginfo:GetInflictor():GetClass() == "env_fire" then return end
         if dmginfo:GetDamage() <= 0 then return end
         local newhealth = self:GetHealth() - (dmginfo:GetDamage()/2)
         self:ChangeHealth(newhealth)
+        if dmginfo:IsDamageType(DMG_BLAST) and self:GetHealth() ~= 0 then
+            int = self.metadata.Interior.Sounds.Damage
+            self.interior:EmitSound(int.Explosion)
+        end
     end)
 
     ENT:AddHook("PhysicsCollide", "Health", function(self, data, collider)
@@ -294,6 +302,15 @@ if SERVER then
         if (data.Speed < 300) then return end
         local newhealth = self:GetHealth() - (data.Speed / 23)
         self:ChangeHealth(newhealth)
+        local phys = self:GetPhysicsObject()
+        local vel = phys:GetVelocity():Length()
+        if self:GetHealth() ~= 0 and vel < 900 then
+            int = self.metadata.Interior.Sounds.Damage
+            self.interior:EmitSound(int.Crash)
+        elseif self:GetHealth() ~= 0 and vel > 900 then
+            int = self.metadata.Interior.Sounds.Damage
+            self.interior:EmitSound(int.BigCrash)
+        end
     end)
 
     ENT:AddHook("OnHealthChange", "wiremod", function (self)
@@ -302,6 +319,11 @@ if SERVER then
 
     ENT:AddHook("OnHealthDepleted", "death", function(self)
         self:SetPower(false)
+        local int = self.metadata.Interior.Sounds.Damage
+        self.interior:StopSound(int.BigCrash)
+        self.interior:StopSound(int.Crash)
+        self.interior:StopSound(int.Explosion)
+        self.interior:EmitSound(int.Death)
         self:Explode(180)
     end)
 
