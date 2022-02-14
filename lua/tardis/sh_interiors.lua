@@ -55,7 +55,7 @@ function TARDIS:SelectSpawnID(id, ply)
     local versions = metadata and metadata.Versions
     if not versions then return id end
 
-    local preferred_spawn = TARDIS:GetIntCustomSetting(id, "preferred_spawn", ply, "main")
+    local preferred_spawn = TARDIS:GetCustomSetting(id, "preferred_spawn", ply, "main")
 
     local version = versions.main
 
@@ -104,7 +104,7 @@ function TARDIS:GetMainVersionId(int_id)
     return (self.Metadata[int_id] and self.Metadata[int_id].IsVersionOf) or int_id
 end
 
-function TARDIS:GetIntCustomSetting(int_id, setting_id, ply, default_val)
+function TARDIS:GetCustomSetting(int_id, setting_id, ply, default_val)
     local int_id = TARDIS:GetMainVersionId(int_id)
     local metadata = self.Metadata[int_id]
 
@@ -123,14 +123,14 @@ function TARDIS:GetIntCustomSetting(int_id, setting_id, ply, default_val)
     local md_settings = metadata.CustomSettings
     if md_settings and md_settings[setting_id] and md_settings[setting_id].value ~= nil then
         local metadata_value = md_settings[setting_id].value
-        TARDIS:SetIntCustomSetting(int_id, setting_id, metadata_value, ply)
+        TARDIS:SetCustomSetting(int_id, setting_id, metadata_value, ply)
         return metadata_value
     end
 
     return default_val
 end
 
-function TARDIS:SetIntCustomSetting(int_id, setting_id, value, ply)
+function TARDIS:SetCustomSetting(int_id, setting_id, value, ply)
     local int_id = TARDIS:GetMainVersionId(int_id)
 
     local int_pref = TARDIS:GetIntPreferences(ply)
@@ -140,7 +140,7 @@ function TARDIS:SetIntCustomSetting(int_id, setting_id, value, ply)
     self:SaveIntPreferences(int_pref)
 end
 
-function TARDIS:ResetIntCustomSettings(ply, int_id)
+function TARDIS:ResetCustomSettings(ply, int_id)
     local int_id = TARDIS:GetMainVersionId(int_id)
 
     local int_pref = TARDIS:GetIntPreferences(ply)
@@ -156,11 +156,11 @@ function TARDIS:ResetIntCustomSettings(ply, int_id)
     self:SaveIntPreferences(int_pref)
 end
 
-function TARDIS:ToggleIntCustomSetting(int_id, setting_id, ply)
+function TARDIS:ToggleCustomSetting(int_id, setting_id, ply)
     local int_id = TARDIS:GetMainVersionId(int_id)
 
-    local value = TARDIS:GetIntCustomSetting(int_id, setting_id, ply)
-    TARDIS:SetIntCustomSetting(int_id, setting_id, (not value), ply)
+    local value = TARDIS:GetCustomSetting(int_id, setting_id, ply)
+    TARDIS:SetCustomSetting(int_id, setting_id, (not value), ply)
 end
 
 function TARDIS:SetupPreferredSpawn(int_id, ply)
@@ -180,7 +180,7 @@ function TARDIS:SetupPreferredSpawn(int_id, ply)
         preferred_spawn = "random"
     end
 
-    TARDIS:SetIntCustomSetting(int_id, "preferred_spawn", preferred_spawn, ply)
+    TARDIS:SetCustomSetting(int_id, "preferred_spawn", preferred_spawn, ply)
     return preferred_spawn
 end
 
@@ -208,7 +208,7 @@ end
 
 function TARDIS:ShouldRedecorateInto(int_id, ply)
     local int_id = TARDIS:GetMainVersionId(int_id)
-    return not TARDIS:GetIntCustomSetting(int_id, "redecoration_exclude", ply)
+    return not TARDIS:GetCustomSetting(int_id, "redecoration_exclude", ply)
 end
 
 function TARDIS:SelectNewRandomInterior(current, ply)
@@ -564,12 +564,12 @@ local function AddMenuBoolSetting(dmenu, int_id, setting_id, name)
     local ply = LocalPlayer()
 
     local setting_button = dmenu:AddOption(name, function(self)
-        TARDIS:ToggleIntCustomSetting(int_id, setting_id, ply)
+        TARDIS:ToggleCustomSetting(int_id, setting_id, ply)
     end)
     setting_button:SetIsCheckable(true)
 
     function setting_button:Think()
-        local value = TARDIS:GetIntCustomSetting(int_id, setting_id, ply, false)
+        local value = TARDIS:GetCustomSetting(int_id, setting_id, ply, false)
         if self:GetChecked() ~= value then
             self:SetChecked(value)
         end
@@ -589,7 +589,7 @@ local function AddMenuListSetting(dmenu, int_id, setting_id, name, options)
     for option_value, option_text in SortedPairsByValue(options) do
 
         local option_button = submenu:AddOption(option_text, function(self)
-            TARDIS:SetIntCustomSetting(int_id, setting_id, option_value, ply)
+            TARDIS:SetCustomSetting(int_id, setting_id, option_value, ply)
         end)
         option_button:SetIsCheckable(true)
 
@@ -597,7 +597,7 @@ local function AddMenuListSetting(dmenu, int_id, setting_id, name, options)
     end
 
     function submenu:Think()
-        local value = TARDIS:GetIntCustomSetting(int_id, setting_id, ply)
+        local value = TARDIS:GetCustomSetting(int_id, setting_id, ply)
         for i,v in ipairs(option_buttons) do
             v[2]:SetChecked(value == v[1])
         end
@@ -694,7 +694,7 @@ local function AddSettingsSubmenu(parent, int_id)
     end
 
     local reset_button = dmenu:AddOption("Reset settings", function(self)
-        TARDIS:ResetIntCustomSettings(LocalPlayer(), int_id)
+        TARDIS:ResetCustomSettings(LocalPlayer(), int_id)
     end)
 
 end
