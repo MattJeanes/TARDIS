@@ -32,7 +32,7 @@ function ENT:Initialize()
         self.metadata=TARDIS:GetInterior("default")
     end
 
-    self.metadata = TARDIS:MergeInteriorTemplates(self.metadata, true, self:GetCreator())
+    self.metadata = TARDIS:MergeInteriorTemplates(self.metadata, true, self:GetCreator(), self)
 
     self.Model=self.metadata.Exterior.Model
     self.Portal=self.metadata.Exterior.Portal
