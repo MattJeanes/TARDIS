@@ -9,6 +9,7 @@
         "*.git*",
         "*.fgd",
         "*.psd",
-        "CODEOWNERS"
+        "CODEOWNERS",
+        ".vscode/*"
     ]
 }
