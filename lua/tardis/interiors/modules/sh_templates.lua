@@ -155,7 +155,6 @@ function TARDIS:MergeIntTextureSets(int_id)
 
     for ts_id, ts in pairs(metadata.Interior.TextureSets) do
         merge_texture_set(ts_id)
-        tardisdebug("Merged texture set", ts_id, "of interior", int_id)
     end
 
     self.Metadata[int_id].Interior.TextureSets = TextureSetsMerged
