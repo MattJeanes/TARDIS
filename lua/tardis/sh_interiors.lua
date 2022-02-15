@@ -12,6 +12,7 @@ function TARDIS:FullReloadInteriors()
     TARDIS:LoadFolder("interiors", nil, true)
     TARDIS:LoadFolder("interiors/versions", nil, true)
     TARDIS:MergeTemplates()
+    TARDIS:MergeTextureSets()
 end
 
 function TARDIS:MergeMetadata(base, t)
