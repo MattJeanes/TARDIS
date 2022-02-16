@@ -36,7 +36,7 @@ T.Interior = {
 }
 
 T.Templates = {
-	ttcapsule = { override = true, fail = function() ErrorNoHalt("Failed to add tt_capsule default exterior") end, },
+    ttcapsule = { override = true, fail = function() ErrorNoHalt("Failed to add tt_capsule default exterior") end, },
 }
 
 TARDIS:AddInterior(T)

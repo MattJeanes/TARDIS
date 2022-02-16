@@ -63,7 +63,12 @@ end
 
 function TARDIS:AddSetting(data)
     self.SettingsData[data.id]=data
-    if (self.Settings[data.id] ~= nil) or (self.ClientSettings[data.id] ~= nil) or (CLIENT and ((self.NetworkedSettings[data.id] ~= nil) or (self.LocalSettings[data.id] ~= nil))) then return end
+
+    if self.Settings[data.id] ~= nil then return end
+    if self.ClientSettings[data.id] ~= nil then return end
+    if CLIENT and (self.NetworkedSettings[data.id] ~= nil) then return end
+    if CLIENT and (self.LocalSettings[data.id] ~= nil) then return end
+
     self:SetSetting(data.id,data.value,data.networked,true)
 end
 
