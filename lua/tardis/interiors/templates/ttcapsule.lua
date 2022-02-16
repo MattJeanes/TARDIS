@@ -39,7 +39,7 @@ T = {
     Interior = {
         Parts={
             door={
-                model="models/vtalanov98/hellbentext/doorsext.mdl",
+                model="models/vtalanov98/hellbentext/doors.mdl",
                 posoffset=Vector(3, 0, 0),
             },
         }
