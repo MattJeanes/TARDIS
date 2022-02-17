@@ -1,5 +1,5 @@
 -- Door
 
 function ENT:DoorOpen(...)
-	return self.exterior:DoorOpen(...)
+    return self.exterior:DoorOpen(...)
 end
