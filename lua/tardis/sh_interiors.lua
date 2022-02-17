@@ -12,6 +12,7 @@ function TARDIS:FullReloadInteriors()
     TARDIS:LoadFolder("interiors", nil, true)
     TARDIS:LoadFolder("interiors/versions", nil, true)
     TARDIS:MergeTemplates()
+    TARDIS:MergeTextureSets()
 end
 
 function TARDIS:MergeMetadata(base, t)
@@ -47,10 +48,15 @@ function TARDIS:AddInterior(t)
     end
 end
 
-function TARDIS:GetInterior(id)
-    if self.Metadata[id] ~= nil then
+function TARDIS:GetInterior(id, ent)
+    if self.Metadata[id] == nil then return end
+
+    if not ent then
         return self.Metadata[id]
     end
+
+    local merged_metadata = TARDIS:MergeInteriorTemplates(self.Metadata[id], true, ent)
+    return merged_metadata
 end
 
 function TARDIS:GetInteriors()

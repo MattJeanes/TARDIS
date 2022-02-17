@@ -27,12 +27,10 @@ ENT:AddHook("CustomData", "metadata", function(self, customData)
 end)
 
 function ENT:Initialize()
-    self.metadata=TARDIS:GetInterior(self.metadataID)
+    self.metadata=TARDIS:GetInterior(self.metadataID, self)
     if not self.metadata then
-        self.metadata=TARDIS:GetInterior("default")
+        self.metadata=TARDIS:GetInterior("default", self)
     end
-
-    self.metadata = TARDIS:MergeInteriorTemplates(self.metadata, true, self:GetCreator())
 
     self.Model=self.metadata.Exterior.Model
     self.Portal=self.metadata.Exterior.Portal

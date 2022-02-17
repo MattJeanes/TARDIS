@@ -35,7 +35,15 @@ T = {
                 angoffset=Angle(0,0,0)
             },
         }
-    }
+    },
+    Interior = {
+        Parts={
+            door={
+                model="models/vtalanov98/hellbentext/doors.mdl",
+                posoffset=Vector(3, 0, 0),
+            },
+        }
+    },
 }
 
 TARDIS:AddInteriorTemplate("ttcapsule", T)

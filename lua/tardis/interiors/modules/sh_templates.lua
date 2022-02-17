@@ -48,7 +48,7 @@ local function AddInteriorPartsRotation(template, rotate_ang)
 end
 
 
-function TARDIS:MergeInteriorTemplates(cur_metadata, apply_conditions, ply)
+function TARDIS:MergeInteriorTemplates(cur_metadata, apply_conditions, ent)
     if not cur_metadata.Templates then
         return cur_metadata
     end
@@ -68,7 +68,7 @@ function TARDIS:MergeInteriorTemplates(cur_metadata, apply_conditions, ply)
 
         if template and template_metadata
             and ((not apply_conditions and not template.condition)
-                or (apply_conditions and template.condition and template.condition(id, ply)))
+                or (apply_conditions and template.condition and template.condition(id, ent:GetCreator(), ent)))
         then
             if template.parts_rotation then
                 template_metadata = AddInteriorPartsRotation(template_metadata, template.parts_rotation)
@@ -126,4 +126,44 @@ function TARDIS:AddInteriorTemplate(id, template)
 
     template.NoFullReload = nil
     self.MetadataTemplates[id] = template
+end
+
+-- Texture set support of inherited params
+
+function TARDIS:MergeIntTextureSets(int_id)
+    local metadata = self.Metadata[int_id]
+    if not metadata or not metadata.Interior.TextureSets then return end
+
+    local TextureSetsMerged = {}
+
+    local function merge_texture_set(id)
+        local ts = metadata.Interior.TextureSets[id]
+
+        if not ts.base then
+            TextureSetsMerged[id] = ts
+            return
+        end
+
+        if not TextureSetsMerged[ts.base] then
+            merge_texture_set(ts.base)
+        end
+
+        local base_merged = TextureSetsMerged[ts.base] or {}
+        local merged = TARDIS:MergeMetadata(base_merged, ts)
+        TextureSetsMerged[id] = merged
+    end
+
+    for ts_id, ts in pairs(metadata.Interior.TextureSets) do
+        merge_texture_set(ts_id)
+    end
+
+    self.Metadata[int_id].Interior.TextureSets = TextureSetsMerged
+end
+
+function TARDIS:MergeTextureSets()
+    if not self.Metadata then return end
+
+    for int_id, interior in pairs(self.Metadata) do
+        TARDIS:MergeIntTextureSets(int_id)
+    end
 end
