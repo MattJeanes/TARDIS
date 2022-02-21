@@ -7,8 +7,5 @@ ENT:AddHook("PlayerInitialize", "interior", function(self)
     self.Fallback=self.metadata.Interior.Fallback
     self.Portal=self.metadata.Interior.Portal
     self.ExitDistance=self.metadata.Interior.ExitDistance
-    if GetConVarNumber("r_rootlod")>0 then
-        Derma_Query("The TARDIS Interior may require model detail on high, set now?", "TARDIS Interior", "Yes", function() RunConsoleCommand("r_rootlod", 0) end, "No", function() end)
-    end
 end)
 
