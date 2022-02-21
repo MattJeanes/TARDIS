@@ -1,4 +1,4 @@
--- High Qaulity Model Prompt 
+-- High Quality Model Prompt 
 
 ENT:AddHook("PlayerEnter", "lod_prompt", function(self)
     if self.metadata.Interior.RequireHighModelDetail ~= false and GetConVarNumber("r_rootlod")>0 then
