@@ -1,8 +1,7 @@
 --Prompts
 
 TARDIS:AddSetting({
-    id="light_override_request_noshow",
-    name="don't show again",
+    id="light_override_prompt_noshow",
     value=false,
     type="bool",
 })
@@ -10,7 +9,7 @@ TARDIS:AddSetting({
 ENT:AddHook("PlayerEnter", "lightingoverride_prompt", function(self)
     local require_override = (self.metadata.Interior.RequireLightOverride == true) 
     local light_override = TARDIS:GetSetting("lightoverride-enabled", false)
-    local noshow = TARDIS:GetSetting("light_override_request_noshow", false)
+    local noshow = TARDIS:GetSetting("light_override_prompt_noshow", false)
     if require_override and not light_override and not noshow then
         Derma_Query(
             "This TARDIS recommends Lighting Override which you do not have enabled. Enable now? This can be changed in TARDIS settings later.",
@@ -21,8 +20,8 @@ ENT:AddHook("PlayerEnter", "lightingoverride_prompt", function(self)
             end,
             "No",
             nil,
-            "Dont Show Again",function()
-                TARDIS:SetSetting("light_override_request_noshow", true)
+            "Don't Show Again",function()
+                TARDIS:SetSetting("light_override_prompt_noshow", true)
             end
         )
     end
