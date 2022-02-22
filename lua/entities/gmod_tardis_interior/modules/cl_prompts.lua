@@ -7,7 +7,7 @@ TARDIS:AddSetting({
     type="bool",
 })
 
-ENT:AddHook("PlayerInitialize", "customlightenable", function(self)
+ENT:AddHook("PlayerEnter", "lightingoverride_prompt", function(self)
     local require_override = (self.metadata.Interior.RequireLightOverride == true) 
     local light_override = TARDIS:GetSetting("lightoverride-enabled", false)
     local noshow = TARDIS:GetSetting("light_override_request_noshow", false)
