@@ -26,7 +26,7 @@ T.Versions = {
 }
 
 
-T.Base = "base"
+T.Base = "base_seamless"
 T.Name = "Default"
 T.ID = "default"
 T.Interior = {
