@@ -98,10 +98,33 @@ end
 
 
 function TARDIS:CreateOptionInterface(id, data)
+
+    local text = data.name or id
+    local tooltip = data.desc or ""
+    if data.value then
+        tooltip = tooltip .. "\n\nDefault: " .. tostring(data.value)
+    end
+
+    if data.type == "bool" then
+        local checkbox = vgui.Create("DCheckBoxLabel")
+        checkbox:SetText(text)
+        checkbox:SetTextColor(Color(0,0,0))
+        checkbox:SetValue(TARDIS:GetSetting(id))
+        checkbox.OnChange = function(self, val)
+            TARDIS:SetSetting(id, val)
+        end
+        checkbox:SetTooltip(tooltip)
+        return checkbox
+    end
+
     local button = vgui.Create("DButton")
-    button:SetText(data.name or id)
+    button:SetText(text)
     button.DoClick = function()
         TARDIS:ChangeOption(id, data)
     end
+    button.DoRightClick = function()
+        TARDIS:ChangeOption(id, data)
+    end
+    button:SetTooltip(tooltip)
     return button
 end

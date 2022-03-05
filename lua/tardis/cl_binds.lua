@@ -62,5 +62,6 @@ function TARDIS:CreateBindOptionInterface(id, data)
     button.DoClick = function()
         TARDIS:ChangeKeyBind(id,data)
     end
+    button:SetTooltip(data.desc)
     return button
 end
