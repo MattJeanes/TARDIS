@@ -2,8 +2,8 @@
 
 
 TARDIS:AddKeyBind("cloak-toggle",{
-    name="Toggle",
-    section="Cloak",
+    name="Toggle Cloak",
+    section="Third Person",
     func=function(self,down,ply)
         if ply == self.pilot and down then
             TARDIS:Control("cloak", ply)
@@ -72,7 +72,7 @@ else
         id = "cloaksound-enabled",
         name = "Cloak Sound",
         desc = "Toggles whether or not sounds play when TARDIS cloaking is toggled",
-        section = "Sound",
+        section = "Sounds",
         value = true,
         type = "bool",
         option = true

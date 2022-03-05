@@ -1,6 +1,123 @@
 if CLIENT then
     hook.Add("PopulateToolMenu", "TARDIS2-PopulateToolMenu", function()
-        spawnmenu.AddToolMenuOption("Options", "Doctor Who", "TARDIS2_Options", "TARDIS", "", "", function(panel)
+
+        -- Options
+        local options={}
+        local sections={}
+        for k,v in pairs(TARDIS:GetSettingsData()) do
+            if v.option then
+                table.insert(options,{v.name,v.id,v})
+                if v.section and not table.HasValue(sections,v.section) then
+                    table.insert(sections,v.section)
+                end
+            end
+        end
+        table.SortByMember(options,1,true)
+        table.SortByMember(sections,1,true)
+
+        for k,v in ipairs(sections) do
+            spawnmenu.AddToolMenuOption("Options", "TARDIS", "TARDIS2_Options_" .. v, v, "", "", function(panel)
+                for a,b in ipairs(options) do
+                    local name,id,data=b[1],b[2],b[3]
+                    if data.section==v then
+                        local button = vgui.Create("DButton")
+                        button:SetText(name or id)
+                        button.DoClick = function()
+                            TARDIS:ChangeOption(id,data)
+                        end
+                        panel:AddItem(button)
+                    end
+                end
+            end)
+        end
+
+        spawnmenu.AddToolMenuOption("Options", "TARDIS", "TARDIS2_Options_Other", "Other", "", "", function(panel)
+            for a,b in ipairs(options) do
+                local name,id,data=b[1],b[2],b[3]
+                if not data.section then
+                    local button = vgui.Create("DButton")
+                    button:SetText(name or id)
+                    button.DoClick = function()
+                        TARDIS:ChangeOption(id,data)
+                    end
+                    panel:AddItem(button)
+                end
+            end
+        end)
+
+
+        -- Binds
+        spawnmenu.AddToolMenuOption("Options", "TARDIS", "TARDIS2_Binds", "Binds", "", "", function(panel)
+            local keybinds={}
+            local sections={}
+            for k,v in pairs(TARDIS:GetBinds()) do
+                table.insert(keybinds,{k,v})
+                if v.section and not table.HasValue(sections,v.section) then
+                    table.insert(sections,v.section)
+                end
+            end
+            table.SortByMember(keybinds,1,true)
+            table.SortByMember(sections,1,true)
+
+            for k,v in ipairs(sections) do
+                local category = vgui.Create("DForm")
+                panel:AddItem(category)
+
+                category:SetLabel(v)
+                category:SetExpanded(false)
+
+                for a,b in ipairs(keybinds) do
+                    local id,data=b[1],b[2]
+                    if data.section == v then
+                        local button = vgui.Create("DButton")
+                        button:SetText(data.name or id)
+                        button.DoClick = function()
+                            TARDIS:ChangeKeyBind(id,data)
+                        end
+                        category:AddItem(button)
+                    end
+                end
+            end
+
+            local other_category = vgui.Create("DForm")
+            panel:AddItem(other_category)
+
+            other_category:SetLabel("Other")
+            other_category:SetExpanded(false)
+
+            for a,b in ipairs(keybinds) do
+                local id,data=b[1],b[2]
+                if not data.section then
+                    local button = vgui.Create("DButton")
+                    button:SetText(data.name or id)
+                    button.DoClick = function()
+                        TARDIS:ChangeKeyBind(id,data)
+                    end
+                    other_category:AddItem(button)
+                end
+            end
+        end)
+
+        -- Reset all
+        spawnmenu.AddToolMenuOption("Options", "TARDIS", "TARDIS2_Reset_Settings", "Reset Settings", "", "", function(panel)
+            local button = vgui.Create("DButton")
+            button:SetText("Reset clientside settings")
+            button.DoClick = function(button)
+                Derma_Query(
+                    "Reset all clientside settings? This cannot be undone.",
+                    "TARDIS Interface",
+                    "OK", function()
+                        TARDIS:ResetSettings()
+                        TARDIS:Message(LocalPlayer(), "TARDIS clientside settings have been reset. You may need to respawn the TARDIS for all changes to apply.")
+                    end,
+                    "Cancel", nil
+                ):SetSkin("TARDIS")
+            end
+            panel:AddItem(button)
+        end)
+
+
+        spawnmenu.AddToolMenuOption("Options", "TARDIS", "TARDIS2_Options_old", "Options (old)", "", "", function(panel)
             panel:ClearControls()
             -- Do menu things here
 
