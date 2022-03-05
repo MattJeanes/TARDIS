@@ -6,17 +6,17 @@ if CLIENT then
         local sections={}
         for k,v in pairs(TARDIS:GetSettingsData()) do
             if v.option then
-                table.insert(options,{v.id,v})
+                table.insert(options,{v.id, v, v.name})
                 if v.section and not table.HasValue(sections,v.section) then
                     table.insert(sections,v.section)
                 end
             end
         end
-        table.SortByMember(options,1,true)
+        table.SortByMember(options,3,true)
         table.SortByMember(sections,1,true)
 
         for k,v in ipairs(sections) do
-            spawnmenu.AddToolMenuOption("Options", "TARDIS", "TARDIS2_Options_" .. v, v, "", "", function(panel)
+            spawnmenu.AddToolMenuOption("Options", "TARDIS", "TARDIS2_Options_" .. v, " " .. v, "", "", function(panel)
                 for a,b in ipairs(options) do
                     local id,data=b[1],b[2]
                     if data.section == v then
@@ -27,7 +27,7 @@ if CLIENT then
             end)
         end
 
-        spawnmenu.AddToolMenuOption("Options", "TARDIS", "TARDIS2_Options_Other", "Other", "", "", function(panel)
+        spawnmenu.AddToolMenuOption("Options", "TARDIS", "TARDIS2_Options_Other", " Other", "", "", function(panel)
             for a,b in ipairs(options) do
                 local id,data=b[1],b[2]
                 if not data.section then
@@ -39,7 +39,7 @@ if CLIENT then
 
 
         -- Binds
-        spawnmenu.AddToolMenuOption("Options", "TARDIS", "TARDIS2_Binds", "Binds", "", "", function(panel)
+        spawnmenu.AddToolMenuOption("Options", "TARDIS", "TARDIS2_Binds", " Binds", "", "", function(panel)
             local keybinds={}
             local sections={}
             for k,v in pairs(TARDIS:GetBinds()) do
@@ -83,7 +83,7 @@ if CLIENT then
         end)
 
         -- Reset all
-        spawnmenu.AddToolMenuOption("Options", "TARDIS", "TARDIS2_Reset_Settings", "Reset Settings", "", "", function(panel)
+        spawnmenu.AddToolMenuOption("Options", "TARDIS", "TARDIS2_Reset_Settings", " Reset All Settings", "", "", function(panel)
             local button = vgui.Create("DButton")
             button:SetText("Reset clientside settings")
             button.DoClick = function(button)
@@ -101,7 +101,7 @@ if CLIENT then
         end)
 
 
-        spawnmenu.AddToolMenuOption("Options", "TARDIS", "TARDIS2_Options_old", "Options (old)", "", "", function(panel)
+        spawnmenu.AddToolMenuOption("Options", "TARDIS", "TARDIS2_Options_old", " Options (old)", "", "", function(panel)
             panel:ClearControls()
             -- Do menu things here
 

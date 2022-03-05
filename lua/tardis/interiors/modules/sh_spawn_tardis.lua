@@ -1,22 +1,24 @@
 TARDIS:AddSetting({
     id="randomize_skins",
-    name="Randomize TARDIS skins at spawn",
-    value=true,
     type="bool",
+    value=true,
     networked=true,
+
     option=true,
     section="Misc",
+    name="Random skins - enabled",
     desc="Whether or not TARDIS skin will be randomized when it's spawned"
 })
 
 TARDIS:AddSetting({
     id="winter_skins",
-    name="Use winter skins while randomizing TARDIS skins at spawn",
-    value=false,
     type="bool",
+    value=false,
     networked=true,
+
     option=true,
     section="Misc",
+    name="Random skins - use winter skins",
     desc="Whether or not winter TARDIS skins will be used while it's randomized"
 })
 
