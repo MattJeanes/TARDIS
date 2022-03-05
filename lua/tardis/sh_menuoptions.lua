@@ -6,7 +6,7 @@ if CLIENT then
         local sections={}
         for k,v in pairs(TARDIS:GetSettingsData()) do
             if v.option then
-                table.insert(options,{v.name,v.id,v})
+                table.insert(options,{v.id,v})
                 if v.section and not table.HasValue(sections,v.section) then
                     table.insert(sections,v.section)
                 end
@@ -18,14 +18,10 @@ if CLIENT then
         for k,v in ipairs(sections) do
             spawnmenu.AddToolMenuOption("Options", "TARDIS", "TARDIS2_Options_" .. v, v, "", "", function(panel)
                 for a,b in ipairs(options) do
-                    local name,id,data=b[1],b[2],b[3]
-                    if data.section==v then
-                        local button = vgui.Create("DButton")
-                        button:SetText(name or id)
-                        button.DoClick = function()
-                            TARDIS:ChangeOption(id,data)
-                        end
-                        panel:AddItem(button)
+                    local id,data=b[1],b[2]
+                    if data.section == v then
+                        local option_changer = TARDIS:CreateOptionInterface(id, data)
+                        panel:AddItem(option_changer)
                     end
                 end
             end)
@@ -33,14 +29,10 @@ if CLIENT then
 
         spawnmenu.AddToolMenuOption("Options", "TARDIS", "TARDIS2_Options_Other", "Other", "", "", function(panel)
             for a,b in ipairs(options) do
-                local name,id,data=b[1],b[2],b[3]
+                local id,data=b[1],b[2]
                 if not data.section then
-                    local button = vgui.Create("DButton")
-                    button:SetText(name or id)
-                    button.DoClick = function()
-                        TARDIS:ChangeOption(id,data)
-                    end
-                    panel:AddItem(button)
+                    local option_changer = TARDIS:CreateOptionInterface(id, data)
+                    panel:AddItem(option_changer)
                 end
             end
         end)
@@ -69,12 +61,8 @@ if CLIENT then
                 for a,b in ipairs(keybinds) do
                     local id,data=b[1],b[2]
                     if data.section == v then
-                        local button = vgui.Create("DButton")
-                        button:SetText(data.name or id)
-                        button.DoClick = function()
-                            TARDIS:ChangeKeyBind(id,data)
-                        end
-                        category:AddItem(button)
+                        local keybind_changer = TARDIS:CreateBindOptionInterface(id, data)
+                        category:AddItem(keybind_changer)
                     end
                 end
             end
@@ -88,12 +76,8 @@ if CLIENT then
             for a,b in ipairs(keybinds) do
                 local id,data=b[1],b[2]
                 if not data.section then
-                    local button = vgui.Create("DButton")
-                    button:SetText(data.name or id)
-                    button.DoClick = function()
-                        TARDIS:ChangeKeyBind(id,data)
-                    end
-                    other_category:AddItem(button)
+                    local keybind_changer = TARDIS:CreateBindOptionInterface(id, data)
+                    other_category:AddItem(keybind_changer)
                 end
             end
         end)

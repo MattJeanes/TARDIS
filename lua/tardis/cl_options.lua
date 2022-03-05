@@ -95,3 +95,13 @@ function TARDIS:ChangeOption(id,data)
     frame:Center()
     frame:MakePopup()
 end
+
+
+function TARDIS:CreateOptionInterface(id, data)
+    local button = vgui.Create("DButton")
+    button:SetText(data.name or id)
+    button.DoClick = function()
+        TARDIS:ChangeOption(id, data)
+    end
+    return button
+end

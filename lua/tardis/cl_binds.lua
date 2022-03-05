@@ -55,3 +55,12 @@ function TARDIS:ChangeKeyBind(id,data)
     reset:SetPos(frame:GetWide()-reset:GetWide()-10,frame:GetTall()-reset:GetTall()-10)
     reset.DoClick = function() keybutton.key=TARDIS:GetBind(id).key keybutton:Update() end
 end
+
+function TARDIS:CreateBindOptionInterface(id, data)
+    local button = vgui.Create("DButton")
+    button:SetText(data.name or id)
+    button.DoClick = function()
+        TARDIS:ChangeKeyBind(id,data)
+    end
+    return button
+end
