@@ -96,35 +96,107 @@ function TARDIS:ChangeOption(id,data)
     frame:MakePopup()
 end
 
-
 function TARDIS:CreateOptionInterface(id, data)
 
     local text = data.name or id
     local tooltip = data.desc or ""
-    if data.value then
+    if data.value ~= nil then
         tooltip = tooltip .. "\n\nDefault: " .. tostring(data.value)
     end
 
+    local elem
+
     if data.type == "bool" then
-        local checkbox = vgui.Create("DCheckBoxLabel")
-        checkbox:SetText(text)
-        checkbox:SetTextColor(Color(0,0,0))
-        checkbox:SetValue(TARDIS:GetSetting(id))
-        checkbox.OnChange = function(self, val)
+        elem = vgui.Create("DCheckBoxLabel")
+        elem:SetValue(TARDIS:GetSetting(id))
+        elem.OnChange = function(self, val)
             TARDIS:SetSetting(id, val)
         end
-        checkbox:SetTooltip(tooltip)
-        return checkbox
+        elem.Think = function(self)
+            local setting = TARDIS:GetSetting(id, data.value)
+            if setting and setting ~= self:GetChecked() then
+                self:SetValue(setting)
+            end
+        end
+    elseif data.type == "number" or data.type == "integer" then
+        elem = vgui.Create("DNumSlider")
+        elem:SetMinMax(data.min, data.max)
+        elem:SetValue(TARDIS:GetSetting(id))
+
+        if data.type == "integer" then
+            elem:SetDecimals(0)
+        end
+        elem.OnValueChanged = function(self, val)
+            TARDIS:SetSetting(id, val)
+        end
+        elem.Think = function(self)
+            if not self:IsEditing() then
+                local setting = TARDIS:GetSetting(id, data.value)
+                if setting and self:GetValue() ~= setting then
+                    self:SetValue(setting)
+                end
+                if setting and self:GetTextArea():GetText() ~= tostring(setting) then
+                    self:GetTextArea():SetText(tostring(setting))
+                end
+            end
+        end
+    elseif data.type=="color" then
+        elem = vgui.Create("DForm")
+        elem:SetLabel(text)
+        elem:SetExpanded(true)
+
+        local mixer = vgui.Create("DColorMixer")
+        mixer:SetText(text)
+        mixer:SetPalette(false)
+        mixer:SetAlphaBar(false)
+        mixer:SetWangs(true)
+        mixer.ValueChanged = function(self, val)
+            TARDIS:SetSetting(id, val)
+        end
+        mixer.Think = function(self)
+            local setting = TARDIS:GetSetting(id, data.value)
+            if setting and self:GetColor() ~= setting then
+                self:SetColor(setting)
+            end
+        end
+
+        elem:AddItem(mixer)
+
+        local spacer = vgui.Create("DPanel")
+        spacer:SetTall(2)
+        elem:AddItem(spacer)
+
+    elseif data.type=="list" then
+        elem = vgui.Create("DComboBox")
+
+        if data.get_values_func ~= nil then
+            for k,v in pairs(data.get_values_func()) do
+                elem:AddChoice(v[1], v[2])
+            end
+        end
+
+        elem.OnSelect = function(self, index, value, selected_data)
+            TARDIS:SetSetting(id, selected_data)
+        end
+
+        elem.Think = function(self)
+            local setting = TARDIS:GetSetting(id, data.value)
+            local _,selected = self:GetSelected()
+            if setting and selected ~= setting then
+                self:SetText(self:GetOptionTextByData(setting))
+            end
+        end
+    else
+        elem = vgui.Create("DButton")
+        elem.DoClick = function()
+            TARDIS:ChangeOption(id, data)
+        end
     end
 
-    local button = vgui.Create("DButton")
-    button:SetText(text)
-    button.DoClick = function()
-        TARDIS:ChangeOption(id, data)
-    end
-    button.DoRightClick = function()
-        TARDIS:ChangeOption(id, data)
-    end
-    button:SetTooltip(tooltip)
-    return button
+    if elem.SetText then elem:SetText(text) end
+    if elem.SetDark then elem:SetDark(true) end
+
+    elem:SetTooltip(tooltip)
+
+    return elem
 end

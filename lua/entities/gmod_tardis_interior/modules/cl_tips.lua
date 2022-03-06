@@ -2,23 +2,36 @@
 
 TARDIS:AddSetting({
     id="tips",
-    name="Tips",
-    desc="Should tips be shown for TARDIS controls?",
-    section="Misc",
     value=true,
     type="bool",
+    networked=false,
+
     option=true,
-    networked=false
+    name="Tips",
+    section="Misc",
+    subsection="Tips",
+    desc="Should tips be shown for TARDIS controls?",
 })
 
 TARDIS:AddSetting({
     id="tips_style",
+    type="list",
+    value="default",
+    networked=false,
+
+    get_values_func = function()
+        local values = {}
+        for k,v in pairs(TARDIS:GetTipStyles()) do
+            table.insert(values, {v.style_name, v.style_id})
+        end
+        return values
+    end,
+
+    option=true,
+    section="Misc",
+    subsection="Tips",
     name="Tips Style",
     desc="Which style should the TARDIS tips use?",
-    section="Misc",
-    value="default",
-    option=false,
-    networked=false
 })
 
 function ENT:InitializeTips(style_name)

@@ -81,6 +81,10 @@ function TARDIS:GetSettingsData()
 end
 
 function TARDIS:SetSetting(id,value,networked,broadcast)
+    if self.SettingsData[id] and self.SettingsData[id].type == "integer" then
+        value = math.Round(value)
+    end
+
     if SERVER then
         self.Settings[id]=value
     elseif networked then
@@ -214,6 +218,24 @@ function TARDIS:ResetSettings()
         self.NetworkedSettings={}
         for k,v in pairs(self.SettingsData) do
             (v.networked and self.NetworkedSettings or self.LocalSettings)[k]=v.value
+        end
+    end
+    self:SaveSettings()
+    self:SendSettings()
+end
+
+function TARDIS:ResetSectionSettings(section)
+    if SERVER then
+        for k,v in pairs(self.SettingsData) do
+            if (section ~= nil and v.section == section) or (section == nil and v.option ~= nil) then
+                self.Settings[k] = v.value
+            end
+        end
+    else
+        for k,v in pairs(self.SettingsData) do
+            if (section ~= nil and v.section == section) or (section == nil and v.option ~= nil) then
+                (v.networked and self.NetworkedSettings or self.LocalSettings)[k]=v.value
+            end
         end
     end
     self:SaveSettings()
