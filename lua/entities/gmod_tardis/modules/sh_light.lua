@@ -8,34 +8,51 @@ if SERVER then
     end
 else
     TARDIS:AddSetting({
-        id="extlight-color",
-        name="Exterior Light Color",
-        section="Lights",
-        desc="The color of the exterior light, uses interior default if unchanged",
+        id="extlight-override-color",
+        type="bool",
         value=false,
-        type="color",
+        networked=true,
+    
         option=true,
-        networked=true
+        name="Enable Light Color Override",
+        section="Lights",
+        subsection="Exterior light",
+        desc="Whether the override of exterior light color is enabled",
+    })
+
+    TARDIS:AddSetting({
+        id="extlight-color",
+        type="color",
+        value=Color(255,255,255),
+        networked=true,
+
+        option=true,
+        name="Color Override",
+        section="Lights",
+        subsection="Exterior light",
+        desc="The override color of the exterior light",
     })
 
     TARDIS:AddSetting({
         id="extlight-alwayson",
+        type="bool",
+        value=false,
+
+        option=true,
         name="Exterior Light Always On",
         section="Lights",
         desc="Should the exterior light always be lit?",
-        value=false,
-        type="bool",
-        option=true
     })
 
     TARDIS:AddSetting({
         id="extlight-dynamic",
+        type="bool",
+        value=true,
+
+        option=true,
         name="Exterior Light Dynamic",
         section="Lights",
         desc="Should the exterior emit dynamic lighting?",
-        value=true,
-        type="bool",
-        option=true
     })
     
     function ENT:FlashLight(time)
@@ -76,9 +93,9 @@ else
         local shouldoff=self:CallHook("ShouldTurnOffLight")
         
         if shouldon and (not shouldoff) then
-            local col = TARDIS:GetSetting("extlight-color",nil,self:GetCreator())
-            if not col then
-                col = light.color
+            local col = light.color
+            if TARDIS:GetSetting("extlight-override-color", nil, self:GetCreator()) then
+                col = TARDIS:GetSetting("extlight-color",nil,self:GetCreator())
             end
             if self.lightpixvis and (not wp.drawing) and (halo.RenderedEntity()~=self) then
                 local pos=self:LocalToWorld(light.pos)
@@ -112,9 +129,9 @@ else
         local shouldoff=self:CallHook("ShouldTurnOffLight")
         
         if shouldon and (not shouldoff) then
-            local col = TARDIS:GetSetting("extlight-color",nil,self:GetCreator())
-            if not col then
-                col = light.color
+            local col = light.color
+            if TARDIS:GetSetting("extlight-override-color", nil, self:GetCreator()) then
+                col = TARDIS:GetSetting("extlight-color",nil,self:GetCreator())
             end
             local dlight = DynamicLight( self:EntIndex() )
             if ( dlight ) then

@@ -75,7 +75,7 @@ TARDIS:AddSetting({
     name="Enable Light Color Override",
     section="Exterior Door",
     subsection="Projected light",
-    desc="Whether the override of light color is enabled",
+    desc="Whether the override of projected light color is enabled",
 })
 
 TARDIS:AddSetting({

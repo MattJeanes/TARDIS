@@ -234,6 +234,8 @@ function TARDIS:ResetSectionSettings(section)
     else
         for k,v in pairs(self.SettingsData) do
             if (section ~= nil and v.section == section) or (section == nil and v.option ~= nil) then
+                self.NetworkedSettings[k] = nil
+                self.LocalSettings[k] = nil
                 (v.networked and self.NetworkedSettings or self.LocalSettings)[k]=v.value
             end
         end

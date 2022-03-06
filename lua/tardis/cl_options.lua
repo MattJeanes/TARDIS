@@ -105,37 +105,49 @@ function TARDIS:CreateOptionInterface(id, data)
     end
 
     local elem
+    local elem2 = nil
+
+    local function GetCurrentSetting()
+        local ply = data.networked and LocalPlayer() or nil
+        return TARDIS:GetSetting(id, data.value, ply)
+    end
+    local function SetCurrentSetting(val)
+        TARDIS:SetSetting(id, val, data.networked)
+    end
+
+    local function AreColorsDifferent(a,b)
+        return (a.r ~= b.r) or (a.g ~= b.g) or (a.b ~= b.b) or (a.a ~= b.a)
+    end
 
     if data.type == "bool" then
         elem = vgui.Create("DCheckBoxLabel")
-        elem:SetValue(TARDIS:GetSetting(id))
+        elem:SetValue(GetCurrentSetting())
         elem.OnChange = function(self, val)
-            TARDIS:SetSetting(id, val)
+            SetCurrentSetting(val)
         end
         elem.Think = function(self)
-            local setting = TARDIS:GetSetting(id, data.value)
-            if setting and setting ~= self:GetChecked() then
-                self:SetValue(setting)
+            local setting = GetCurrentSetting()
+            if setting ~= self:GetChecked() then
+                self:SetChecked(setting)
             end
         end
     elseif data.type == "number" or data.type == "integer" then
         elem = vgui.Create("DNumSlider")
         elem:SetMinMax(data.min, data.max)
-        elem:SetValue(TARDIS:GetSetting(id))
 
         if data.type == "integer" then
             elem:SetDecimals(0)
         end
         elem.OnValueChanged = function(self, val)
-            TARDIS:SetSetting(id, val)
+            SetCurrentSetting(val)
         end
         elem.Think = function(self)
             if not self:IsEditing() then
-                local setting = TARDIS:GetSetting(id, data.value)
-                if setting and self:GetValue() ~= setting then
+                local setting = GetCurrentSetting()
+                if setting ~= nil and self:GetValue() ~= setting then
                     self:SetValue(setting)
                 end
-                if setting and self:GetTextArea():GetText() ~= tostring(setting) then
+                if setting ~= nil and self:GetTextArea():GetText() ~= tostring(setting) then
                     self:GetTextArea():SetText(tostring(setting))
                 end
             end
@@ -151,11 +163,11 @@ function TARDIS:CreateOptionInterface(id, data)
         mixer:SetAlphaBar(false)
         mixer:SetWangs(true)
         mixer.ValueChanged = function(self, val)
-            TARDIS:SetSetting(id, val)
+            SetCurrentSetting(val)
         end
         mixer.Think = function(self)
-            local setting = TARDIS:GetSetting(id, data.value)
-            if setting and self:GetColor() ~= setting then
+            local setting = TARDIS:GetSetting(id, data.value, nil) --GetCurrentSetting()
+            if setting and AreColorsDifferent(self:GetColor(), setting) then
                 self:SetColor(setting)
             end
         end
@@ -167,22 +179,24 @@ function TARDIS:CreateOptionInterface(id, data)
         elem:AddItem(spacer)
 
     elseif data.type=="list" then
-        elem = vgui.Create("DComboBox")
+        elem = vgui.Create("DLabel")
+
+        elem2 = vgui.Create("DComboBox")
 
         if data.get_values_func ~= nil then
             for k,v in pairs(data.get_values_func()) do
-                elem:AddChoice(v[1], v[2])
+                elem2:AddChoice(v[1], v[2])
             end
         end
 
-        elem.OnSelect = function(self, index, value, selected_data)
-            TARDIS:SetSetting(id, selected_data)
+        elem2.OnSelect = function(self, index, value, selected_data)
+            SetCurrentSetting(selected_data)
         end
 
-        elem.Think = function(self)
-            local setting = TARDIS:GetSetting(id, data.value)
+        elem2.Think = function(self)
+            local setting = GetCurrentSetting()
             local _,selected = self:GetSelected()
-            if setting and selected ~= setting then
+            if setting ~= nil and selected ~= setting then
                 self:SetText(self:GetOptionTextByData(setting))
             end
         end
@@ -198,5 +212,5 @@ function TARDIS:CreateOptionInterface(id, data)
 
     elem:SetTooltip(tooltip)
 
-    return elem
+    return elem, elem2
 end

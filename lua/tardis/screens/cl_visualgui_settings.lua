@@ -57,10 +57,20 @@ TARDIS:AddSetting({
 
 TARDIS:AddSetting({
     id = "visgui_theme",
+    type = "list",
+    value = "default",
+    networked = true,
+
+    get_values_func = function()
+        local values = {}
+        for k,v in pairs(TARDIS:GetGUIThemes()) do
+            table.insert(values, {v.name, v.id})
+        end
+        return values
+    end,
+
+    option = true,
     name = "VisGUI Theme",
     desc = "Theme for new Visual GUI",
     section = "GUI",
-    value = "default",
-    option = false,
-    networked = true
 })
