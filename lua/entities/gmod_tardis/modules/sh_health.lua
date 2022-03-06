@@ -33,7 +33,7 @@ TARDIS:AddSetting({
     name="Max Health",
     desc="Maximum ammount of health the TARDIS has",
     section="Misc",
-    type="number",
+    type="integer",
     value=1000,
     min=1,
     max=50000,
