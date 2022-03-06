@@ -43,7 +43,12 @@ list.Set("DesktopWindows", "TardisHUD", {
     title = "TARDIS",
     icon = "materials/vgui/entities/tardis/default.png",
     init = function()
-        TARDIS:HUDScreen()
+        local ext = LocalPlayer():GetTardisData("exterior")
+        if IsValid(ext) then
+            TARDIS:HUDScreen()
+        else
+            TARDIS:ErrorMessage(LocalPlayer(), "You are not in the TARDIS")
+        end
     end
 })
 
