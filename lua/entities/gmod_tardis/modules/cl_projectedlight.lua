@@ -9,7 +9,7 @@ TARDIS:AddSetting({
 
     option=true,
     name=" Enabled",
-    section="Exterior Door",
+    section="Exterior",
     subsection="Projected light",
     desc="Should light shine out through the doors when they're open?",
 })
@@ -21,7 +21,7 @@ TARDIS:AddSetting({
 
     option=true,
     name="Enable Light Brightness Override",
-    section="Exterior Door",
+    section="Exterior",
     subsection="Projected light",
     desc="Whether the override of light brightness is enabled",
 })
@@ -35,7 +35,7 @@ TARDIS:AddSetting({
 
     option=true,
     name="Brightness Override",
-    section="Exterior Door",
+    section="Exterior",
     subsection="Projected light",
     desc="Override brightness of light",
 })
@@ -47,7 +47,7 @@ TARDIS:AddSetting({
 
     option=true,
     name="Enable Light Distance Override",
-    section="Exterior Door",
+    section="Exterior",
     subsection="Projected light",
     desc="Whether the override of light distance is enabled",
 })
@@ -61,7 +61,7 @@ TARDIS:AddSetting({
 
     option=true,
     name="Distance Override",
-    section="Exterior Door",
+    section="Exterior",
     subsection="Projected light",
     desc="Override distance of light",
 })
@@ -73,7 +73,7 @@ TARDIS:AddSetting({
 
     option=true,
     name="Enable Light Color Override",
-    section="Exterior Door",
+    section="Exterior",
     subsection="Projected light",
     desc="Whether the override of projected light color is enabled",
 })
@@ -85,7 +85,7 @@ TARDIS:AddSetting({
 
     option=true,
     name="Color Override",
-    section="Exterior Door",
+    section="Exterior",
     subsection="Projected light",
     desc="Override color of projected light",
 })

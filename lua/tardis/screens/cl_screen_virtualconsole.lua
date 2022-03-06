@@ -269,7 +269,7 @@ local function old_virtual_console(self,ext,int,frame,screen)
 end
 
 TARDIS:AddScreen("Virtual Console", {id="virtualconsole",menu=false, order=1}, function(self,ext,int,frame,screen)
-    if TARDIS:GetSetting("visgui_enabled") then
+    if not TARDIS:GetSetting("gui_old") then
         new_virtual_console(self,ext,int,frame,screen)
     else
         old_virtual_console(self,ext,int,frame,screen)

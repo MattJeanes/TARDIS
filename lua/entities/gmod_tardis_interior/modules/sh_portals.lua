@@ -15,8 +15,8 @@ if SERVER then
 else
     TARDIS:AddSetting({
         id="portals-enabled",
-        name=" Portal Enabled ",
-        section="Exterior Door",
+        name="Portals Enabled",
+        section="Performance",
         desc="Whether portals will render or not, turn this off if they impact framerate significantly",
         value=true,
         type="bool",
@@ -24,8 +24,8 @@ else
     })
     TARDIS:AddSetting({
         id="portals-closedist",
-        name="Close Distance",
-        section="Exterior Door",
+        name="Door Close Distance",
+        section="Performance",
         desc="The distance at which the door automatically closes",
         value=1000,
         type="number",

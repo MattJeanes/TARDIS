@@ -15,7 +15,7 @@ else
     
         option=true,
         name="Enable Light Color Override",
-        section="Lights",
+        section="Exterior",
         subsection="Exterior light",
         desc="Whether the override of exterior light color is enabled",
     })
@@ -28,7 +28,7 @@ else
 
         option=true,
         name="Color Override",
-        section="Lights",
+        section="Exterior",
         subsection="Exterior light",
         desc="The override color of the exterior light",
     })
@@ -40,7 +40,7 @@ else
 
         option=true,
         name="Exterior Light Always On",
-        section="Lights",
+        section="Exterior",
         desc="Should the exterior light always be lit?",
     })
 
@@ -51,7 +51,7 @@ else
 
         option=true,
         name="Exterior Light Dynamic",
-        section="Lights",
+        section="Exterior",
         desc="Should the exterior emit dynamic lighting?",
     })
     
