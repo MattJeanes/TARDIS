@@ -54,6 +54,7 @@ if CLIENT then
                             subsection:SetExpanded(expanded or false)
                             subsection.OnToggle = function(self, expanded)
                                 unfolded_subsections[section][data.subsection] = expanded
+                                TARDIS:SetSetting("options-unfolded-subsections", unfolded_subsections)
                             end
 
                             for a2,b2 in ipairs(options) do
