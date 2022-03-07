@@ -13,17 +13,6 @@ TARDIS:AddKeyBind("tp-toggledoor",{
     exterior=true
 })
 
-TARDIS:AddSetting({
-    id="thirdperson_careful_enabled",
-    name="Use walk key to enter third person",
-    desc="Should the WALK ('ALT' by default) key be pressed to enter third person when pressing USE ('E' by default) key on the console?",
-    section="Misc",
-    value=true,
-    type="bool",
-    option=true,
-    networked=true
-})
-
 hook.Add("PlayerSwitchFlashlight", "tardis-thirdperson", function(ply,enabled)
     if ply:GetTardisData("thirdperson") then
         return false

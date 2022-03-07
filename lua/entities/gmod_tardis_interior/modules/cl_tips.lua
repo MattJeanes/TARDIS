@@ -1,39 +1,5 @@
 -- Tips
 
-TARDIS:AddSetting({
-    id="tips",
-    value=true,
-    type="bool",
-    networked=false,
-
-    option=true,
-    name="Tips",
-    section="Misc",
-    subsection="Tips",
-    desc="Should tips be shown for TARDIS controls?",
-})
-
-TARDIS:AddSetting({
-    id="tips_style",
-    type="list",
-    value="default",
-    networked=false,
-
-    get_values_func = function()
-        local values = {}
-        for k,v in pairs(TARDIS:GetTipStyles()) do
-            table.insert(values, {v.style_name, v.style_id})
-        end
-        return values
-    end,
-
-    option=true,
-    section="Misc",
-    subsection="Tips",
-    name="Tips Style",
-    desc="Which style should the TARDIS tips use?",
-})
-
 function ENT:InitializeTips(style_name)
     local int_metadata = self.metadata.Interior
     local text_overrides = int_metadata.TipSettings.TextOverrides

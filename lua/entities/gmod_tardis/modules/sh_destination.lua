@@ -247,16 +247,6 @@ else
             prop:Remove()
         end
     end
-    TARDIS:AddSetting({
-        id="dest-onsetdemat",
-        name="Destination - Demat on Set",
-        desc="Should the TARDIS dematerialise immediately after destination is set?",
-        section="Misc",
-        value=false,
-        type="bool",
-        option=true,
-        networked=true
-    })
     ENT:AddHook("Outside-StartCommand", "destination", function(self, ply, cmd)
         if LocalPlayer():GetTardisData("destination") and cmd:GetMouseWheel()~=0 then
             ply:SetTardisData("destinationdist",math.Clamp(ply:GetTardisData("destinationdist",defaultdist)-cmd:GetMouseWheel()*0.03*(1.1+ply:GetTardisData("destinationdist",defaultdist)),90,500))

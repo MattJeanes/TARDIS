@@ -1,31 +1,3 @@
-TARDIS:AddSetting({
-    id="randomize_skins",
-    type="bool",
-    value=true,
-    networked=true,
-
-    option=true,
-    section="Misc",
-    subsection="Random skins",
-    name="Enable",
-    desc="Whether or not TARDIS skin will be randomized when it's spawned"
-})
-
-TARDIS:AddSetting({
-    id="winter_skins",
-    type="bool",
-    value=false,
-    networked=true,
-
-    option=true,
-    section="Misc",
-    subsection="Random skins",
-    name="Use winter skins",
-    desc="Whether or not winter TARDIS skins will be used while it's randomized"
-})
-
-if CLIENT then return end
-
 function TARDIS:SpawnTARDIS(ply, customData)
     local entityName = "gmod_tardis"
 

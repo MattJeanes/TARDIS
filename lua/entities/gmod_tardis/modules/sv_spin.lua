@@ -1,19 +1,5 @@
 -- Spin
 
-TARDIS:AddSetting({
-    id="opened-door-no-spin",
-    name="Stop spinning with opened door",
-    desc="Should the TARDIS stop spinning when doors are opened in flight?",
-    section="Misc",
-    value=true,
-    type="bool",
-    option=true,
-    networked=true
-})
-
-if CLIENT then return end
-
-
 ENT:AddHook("Initialize", "spin", function(self)
     self:SetData("spindir", -1)
     self:SetData("spindir_prev", 0)

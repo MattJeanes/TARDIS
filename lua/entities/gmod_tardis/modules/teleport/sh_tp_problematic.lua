@@ -1,27 +1,5 @@
 -- Failed teleport, interrupted teleport, effects
 
-TARDIS:AddSetting({
-    id="teleport-door-autoclose",
-    name="Auto-Close Doors at Demat",
-    desc="Should TARDIS close doors automatically before demat?",
-    section="Misc",
-    value=false,
-    type="bool",
-    option=true,
-    networked=true
-})
-
-TARDIS:AddSetting({
-    id="breakdown-effects",
-    name="Breakdown Effects",
-    desc="Should TARDIS have sparkling and explosion effects in emergency moments?",
-    section="Misc",
-    value=true,
-    type="bool",
-    option=true,
-    networked=true
-})
-
 if SERVER then
 
     function ENT:HandleNoDemat(pos, ang, callback, force)

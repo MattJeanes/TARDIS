@@ -1,10 +1,3 @@
-TARDIS:AddSetting({
-    id="redecorate-interior",
-    name="Redecoration interior",
-    value=false,
-    networked=true
-})
-
 local ext_saved_data_names = {
     "cloak",
     "floatfirst",

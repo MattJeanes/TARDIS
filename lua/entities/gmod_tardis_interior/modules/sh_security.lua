@@ -1,17 +1,5 @@
 -- Security System (Isomorphic)
 
-TARDIS:AddSetting({
-    id="security",
-    type="bool",
-    value=false,
-
-    option=true,
-    section="Misc",
-    name="Isomorphic Security on by default",
-    networked=true,
-    desc="Whether or not others can use your TARDIS' controls by default."
-})
-
 function ENT:GetSecurity()
     return self:GetData("security", false)
 end

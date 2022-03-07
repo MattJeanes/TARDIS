@@ -314,15 +314,6 @@ if SERVER then
     end)
 
 else
-
-    TARDIS:AddSetting({ id="teleport-sound",
-        name="Teleport Sound",
-        section="Sounds",
-        value=true,
-        type="bool",
-        option=true
-    })
-
     ENT:OnMessage("demat", function(self)
         self:SetData("demat",true)
         self:SetData("step",1)

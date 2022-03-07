@@ -7,54 +7,6 @@ if SERVER then
         end)
     end
 else
-    TARDIS:AddSetting({
-        id="extlight-override-color",
-        type="bool",
-        value=false,
-        networked=true,
-    
-        option=true,
-        name="Enable Light Color Override",
-        section="Exterior",
-        subsection="Exterior light",
-        desc="Whether the override of exterior light color is enabled",
-    })
-
-    TARDIS:AddSetting({
-        id="extlight-color",
-        type="color",
-        value=Color(255,255,255),
-        networked=true,
-
-        option=true,
-        name="Color Override",
-        section="Exterior",
-        subsection="Exterior light",
-        desc="The override color of the exterior light",
-    })
-
-    TARDIS:AddSetting({
-        id="extlight-alwayson",
-        type="bool",
-        value=false,
-
-        option=true,
-        name="Exterior Light Always On",
-        section="Exterior",
-        desc="Should the exterior light always be lit?",
-    })
-
-    TARDIS:AddSetting({
-        id="extlight-dynamic",
-        type="bool",
-        value=true,
-
-        option=true,
-        name="Exterior Light Dynamic",
-        section="Exterior",
-        desc="Should the exterior emit dynamic lighting?",
-    })
-    
     function ENT:FlashLight(time)
         self:SetData("flashuntil",CurTime()+time)
     end

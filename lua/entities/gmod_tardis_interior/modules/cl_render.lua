@@ -1,15 +1,5 @@
 -- Rendering override
 
-TARDIS:AddSetting({
-    id="lightoverride-enabled",
-    name="Lighting Override",
-    desc="Better interior lighting independent from the map ambience.\nMay cause performance drops on lower end systems.",
-    section="Performance",
-    value=true,
-    type="bool",
-    option=true,
-})
-
 local function predraw_o(self)
     if not TARDIS:GetSetting("lightoverride-enabled",false) then return end
     if self.metadata.Interior.Light == nil then return end --because for some reason SOMEONE OUT THERE didn't define a light.

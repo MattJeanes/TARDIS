@@ -92,17 +92,6 @@ if SERVER then
         end
     end)
 else
-    TARDIS:AddSetting({
-        id="vortex-enabled",
-        name="Show Vortex",
-        desc="Whether the vortex is shown during vortex flight",
-        section="Misc",
-        value=true,
-        type="bool",
-        option=true,
-        networked=true
-    })
-    
     ENT:AddHook("Think","vortex",function(self)
         local alpha = self:GetData("vortexalpha",0)
         local enabled = self:IsVortexEnabled()

@@ -1,21 +1,5 @@
 -- Debug messages
 
-CreateConVar("tardis2_debug", 0, {FCVAR_ARCHIVE, FCVAR_REPLICATED}, "TARDIS - debug enabled")
-cvars.AddChangeCallback("tardis2_debug", function()
-    TARDIS.debug = GetConVar("tardis2_debug"):GetBool()
-end)
-
-CreateConVar("tardis2_debug_chat", 0, {FCVAR_ARCHIVE, FCVAR_REPLICATED}, "TARDIS - print debug to chat as well")
-cvars.AddChangeCallback("tardis2_debug_chat", function()
-    TARDIS.debug_chat = GetConVar("tardis2_debug_chat"):GetBool()
-end)
-
-TARDIS.debug = GetConVar("tardis2_debug"):GetBool()
-TARDIS.debug_chat = GetConVar("tardis2_debug_chat"):GetBool()
-function TARDIS:IsDebugOn()
-    return TARDIS.debug
-end
-
 if SERVER then
     util.AddNetworkString("TARDIS-Debug")
 end
@@ -43,7 +27,7 @@ if CLIENT then
 end
 
 function TARDIS:Debug(...)
-    if not TARDIS:IsDebugOn() then return end
+    if not TARDIS:GetSetting("debug", false) then return end
 
     local args = {...}
 
@@ -78,7 +62,7 @@ function TARDIS:Debug(...)
         end
     end
     print("\n")
-    if self.debug_chat then
+    if TARDIS:GetSetting("debug_chat") then
         if SERVER then print(full_text) end
         chat_print(full_text)
     else
@@ -100,23 +84,17 @@ else
         local message = net.ReadString()
         TARDIS:Message(LocalPlayer(), message, error)
     end)
-
-    CreateConVar("tardis2_message_type", 3, {FCVAR_ARCHIVE}, "TARDIS - debug enabled")
-    cvars.AddChangeCallback("tardis2_message_type", function()
-        TARDIS.msg_style = GetConVar("tardis2_message_type"):GetInt()
-    end)
-    TARDIS.msg_style = GetConVar("tardis2_message_type"):GetInt()
 end
 
 function TARDIS:Message(ply, message, error)
-    if SERVER then 
+    if SERVER then
         net.Start("tardis_message")
             net.WriteBool(error)
             net.WriteString(message)
         net.Send(ply)
         return
     end
-    local style = self.msg_style
+    local style = self:GetSetting("notification_type", 3, ply)
 
     local prefix = "[TARDIS] "
     local err = error and "ERROR: " or ""
