@@ -41,7 +41,7 @@ end)
 
 list.Set("DesktopWindows", "TardisHUD", {
     title = "TARDIS",
-    icon = "materials/vgui/entities/tardis/default.png",
+    icon = "materials/vgui/tardis_context_menu.png",
     init = function()
         local ext = LocalPlayer():GetTardisData("exterior")
         if IsValid(ext) then
