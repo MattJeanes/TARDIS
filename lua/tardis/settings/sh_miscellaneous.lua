@@ -4,8 +4,6 @@ TARDIS:AddSetting({
     id="notification_type",
     type="list",
     value=3,
-    networked=true,
-
     get_values_func = function()
         return {
             { "Disabled", 0 },
@@ -15,6 +13,9 @@ TARDIS:AddSetting({
         }
     end,
 
+    networked=true,
+    class="networked",
+
     option=true,
     section=SETTING_SECTION,
     name="Notification type",
@@ -23,13 +24,16 @@ TARDIS:AddSetting({
 
 TARDIS:AddSetting({
     id="csequences-enabled",
+    type="bool",
+    value=false,
+
+    class="networked",
+    networked=true,
+
+    option=true,
+    section=SETTING_SECTION,
     name="Enable Control Sequences",
     desc="Should control sequences or 'advanced mode' be used?",
-    section=SETTING_SECTION,
-    value=false,
-    type="bool",
-    option=true,
-    networked=true
 })
 
 TARDIS:AddSetting({
@@ -37,10 +41,12 @@ TARDIS:AddSetting({
     type="bool",
     value=false,
 
+    class="networked",
+    networked=true,
+
     option=true,
     section=SETTING_SECTION,
     name="Isomorphic Security on by default",
-    networked=true,
     desc="Whether or not others can use your TARDIS' controls by default."
 })
 
@@ -49,50 +55,62 @@ TARDIS:AddSetting({
 
 TARDIS:AddSetting({
     id="teleport-door-autoclose",
-    name="Auto-Close Doors at Demat",
-    desc="Should TARDIS close doors automatically before demat?",
+    type="bool",
+    value=false,
+
+    class="networked",
+    networked=true,
+
+    option=true,
     section=SETTING_SECTION,
     subsection="Teleport",
-    value=false,
-    type="bool",
-    option=true,
-    networked=true
+    name="Auto-Close Doors at Demat",
+    desc="Should TARDIS close doors automatically before demat?",
 })
 
 TARDIS:AddSetting({
     id="breakdown-effects",
-    name="Breakdown Effects",
-    desc="Should TARDIS have sparkling and explosion effects in emergency moments?",
+    type="bool",
+    value=true,
+
+    class="networked",
+    networked=true,
+
+    option=true,
     section=SETTING_SECTION,
     subsection="Teleport",
-    value=true,
-    type="bool",
-    option=true,
-    networked=true
+    name="Breakdown Effects",
+    desc="Should TARDIS have sparkling and explosion effects in emergency moments?",
 })
 
 TARDIS:AddSetting({
     id="dest-onsetdemat",
-    name="Destination - Demat on Set",
-    desc="Should the TARDIS dematerialise immediately after destination is set?",
+    type="bool",
+    value=false,
+
+    networked=true,
+    class="networked",
+
+    option=true,
     section=SETTING_SECTION,
     subsection="Teleport",
-    value=false,
-    type="bool",
-    option=true,
-    networked=true
+    name="Destination - Demat on Set",
+    desc="Should the TARDIS dematerialise immediately after destination is set?",
 })
 
 TARDIS:AddSetting({
     id="vortex-enabled",
-    name="Show Vortex",
-    desc="Whether the vortex is shown during vortex flight",
+    type="bool",
+    value=true,
+
+    networked=true,
+    class="networked",
+
+    option=true,
     section=SETTING_SECTION,
     subsection="Teleport",
-    value=true,
-    type="bool",
-    option=true,
-    networked=true
+    name="Show Vortex",
+    desc="Whether the vortex is shown during vortex flight",
 })
 
 --------------------------------------------------------------------------------
@@ -100,38 +118,47 @@ TARDIS:AddSetting({
 
 TARDIS:AddSetting({
     id="opened-door-no-spin",
-    name="Stop spinning with opened door",
-    desc="Should the TARDIS stop spinning when doors are opened in flight?",
+    type="bool",
+    value=true,
+
+    class="networked",
+    networked=true,
+
+    option=true,
     section=SETTING_SECTION,
     subsection="Flight",
-    value=true,
-    type="bool",
-    option=true,
-    networked=true
+    name="Stop spinning with opened door",
+    desc="Should the TARDIS stop spinning when doors are opened in flight?",
 })
 
 TARDIS:AddSetting({
     id="opened-door-no-boost",
-    name="Disable boost with opened doors",
-    desc="Should the TARDIS boost stop working when doors are opened in flight?",
+    type="bool",
+    value=false,
+
+    class="networked",
+    networked=true,
+
+    option=true,
     section=SETTING_SECTION,
     subsection="Flight",
-    value=false,
-    type="bool",
-    option=true,
-    networked=true
+    name="Disable boost with opened doors",
+    desc="Should the TARDIS boost stop working when doors are opened in flight?",
 })
 
 TARDIS:AddSetting({
     id="thirdperson_careful_enabled",
-    name="Use walk key to enter third person",
-    desc="Should the WALK ('ALT' by default) key be pressed to enter third person when pressing USE ('E' by default) key on the console?",
+    type="bool",
+    value=true,
+
+    class="networked",
+    networked=true,
+
+    option=true,
     section=SETTING_SECTION,
     subsection="Flight",
-    value=true,
-    type="bool",
-    option=true,
-    networked=true
+    name="Use walk key to enter third person",
+    desc="Should the WALK ('ALT' by default) key be pressed to enter third person when pressing USE ('E' by default) key on the console?",
 })
 
 --------------------------------------------------------------------------------
@@ -139,14 +166,16 @@ TARDIS:AddSetting({
 
 TARDIS:AddSetting({
     id="tips",
-    value=true,
     type="bool",
+    value=true,
+
+    class="local",
     networked=false,
 
     option=true,
-    name="Tips",
     section=SETTING_SECTION,
     subsection="Tips",
+    name="Tips",
     desc="Should tips be shown for TARDIS controls?",
 })
 
@@ -154,7 +183,6 @@ TARDIS:AddSetting({
     id="tips_style",
     type="list",
     value="default",
-    networked=false,
 
     get_values_func = function()
         local values = {}
@@ -163,6 +191,9 @@ TARDIS:AddSetting({
         end
         return values
     end,
+
+    networked=false,
+    class="local",
 
     option=true,
     section=SETTING_SECTION,
@@ -176,13 +207,16 @@ TARDIS:AddSetting({
 
 TARDIS:AddSetting({
     id="use_classic_door_interiors",
-    name="Prefer classic door interiors",
-    value=true,
     type="bool",
+    value=true,
+
+    class="networked",
     networked=true,
+
     option=true,
     section=SETTING_SECTION,
     subsection="Spawning the TARDIS",
+    name="Prefer classic door interiors",
     desc="Whether classic (big) door versions of interiors will spawn by default"
 })
 
@@ -190,6 +224,8 @@ TARDIS:AddSetting({
     id="randomize_skins",
     type="bool",
     value=true,
+
+    class="networked",
     networked=true,
 
     option=true,
@@ -203,6 +239,8 @@ TARDIS:AddSetting({
     id="winter_skins",
     type="bool",
     value=false,
+
+    class="networked",
     networked=true,
 
     option=true,
@@ -219,11 +257,13 @@ TARDIS:AddSetting({
     id="debug",
     type="bool",
     value=false,
+
+    class="networked",
     networked=true,
 
     option=true,
     section=SETTING_SECTION,
-	subsection="Developer tools",
+    subsection="Developer tools",
     name="Enable debug info",
     desc="Whether or not TARDIS debug messages will be printed"
 })
@@ -232,11 +272,13 @@ TARDIS:AddSetting({
     id="debug_chat",
     type="bool",
     value=false,
+
+    class="networked",
     networked=true,
 
     option=true,
     section=SETTING_SECTION,
-	subsection="Developer tools",
+    subsection="Developer tools",
     name="Print debug info in chat",
     desc="Whether or not TARDIS debug messages will be duplicated in chat"
 })

@@ -5,38 +5,49 @@ CreateConVar("tardis2_damage", 1, {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY
 
 TARDIS:AddSetting({
     id="health-enabled",
+    type="bool",
+    value=true,
+
+    class="global",
+    networked=true,
+
+    option = false,
+    section=SETTING_SECTION,
     name="Enable Health",
     desc="Should the TARDIS have health and take damage?",
-    section=SETTING_SECTION,
-    value=true,
-    type="bool",
-    setting=true,
-    networked=true
 })
 
 TARDIS:AddSetting({
     id="health-max",
-    name="Max Health",
-    desc="Maximum ammount of health the TARDIS has",
-    section=SETTING_SECTION,
     type="integer",
     value=1000,
     min=1,
     max=50000,
-    networked=true
+
+    networked=true,
+    class="global",
+
+    option = false,
+    section=SETTING_SECTION,
+    name="Max Health",
+    desc="Maximum ammount of health the TARDIS has",
 })
 
 
 TARDIS:AddSetting({
     id="boost-speed",
-    name="Boost Speed",
-    desc="The increase of speed the TARDIS gets with the boost key enabled",
-    section=SETTING_SECTION,
     type="number",
     value=2.5,
     min=1.0,
     max=4.0,
-    networked=true
+
+    class="global",
+    networked=true,
+
+    option = false,
+    name="Boost Speed",
+    desc="The increase of speed the TARDIS gets with the boost key enabled",
+    section=SETTING_SECTION,
 })
 
 CreateConVar("tardis2_boost_speed", 2.5, {FCVAR_ARCHIVE, FCVAR_REPLICATED}, "TARDIS - Boost Speed")
@@ -53,7 +64,7 @@ if SERVER then
         TARDIS:SetSetting("boost-speed", nvnum, true)
     end, "UpdateOnChange")
 
-	cvars.AddChangeCallback("tardis2_maxhealth", function(cvname, oldvalue, newvalue)
+    cvars.AddChangeCallback("tardis2_maxhealth", function(cvname, oldvalue, newvalue)
         local nvnum = tonumber(newvalue)
         if nvnum < 0 then
             nvnum = 1

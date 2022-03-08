@@ -3,28 +3,37 @@
 -- Interior-specific settings
 TARDIS:AddSetting({
     id = "interior_custom_settings",
-	type="table",
+    type="table",
     value = {},
+
+    class="networked",
+    networked = true,
+
     option = false,
-    networked = true
 })
 
 -- Used by "Select for redecoration"
 TARDIS:AddSetting({
     id="redecorate-interior",
-	type="text",
+    type="text",
     value=false,
-	option = false,
-    networked=true
+
+    class="networked",
+    networked=true,
+
+    option = false,
 })
 
 -- Helps to keep the folded/unfolded subsections in the settings
 TARDIS:AddSetting({
     id = "options-unfolded-subsections",
-	type="table",
+    type="table",
     value = {},
-    option = false,
+
+    class="local",
     networked = false,
+
+    option = false,
 })
 
 -- "Don't Show Again" button (cl_prompts.lua)
@@ -32,6 +41,9 @@ TARDIS:AddSetting({
     id="light_override_prompt_noshow",
     type="bool",
     value=false,
-	option = false,
-	networked = false,
+
+    class="local",
+    networked = false,
+
+    option = false,
 })
