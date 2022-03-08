@@ -1,19 +1,39 @@
 local function AddInteriorPartsOffset(template, offset)
     local moved = table.Copy(template)
 
-    for k,v in pairs(moved.Interior.Parts) do
-        local new_pos = Vector(0,0,0)
-        if v.pos then new_pos:Add(v.pos) end
-        new_pos:Add(offset)
-        v.pos = new_pos
+    if istable(rotated.Interior.Parts) then
+        for k,v in pairs(moved.Interior.Parts) do
+            if v and istable(v) then
+                local new_pos = Vector(0,0,0)
+                if v.pos then new_pos:Add(v.pos) end
+                new_pos:Add(offset)
+                v.pos = new_pos
+            end
+        end
     end
 
-    for k,v in pairs(moved.Interior.PartTips) do
-        local new_pos = Vector(0,0,0)
-        if v.pos then new_pos:Add(v.pos) end
-        new_pos:Add(offset)
-        v.pos = (new_pos == Vector(0,0,0)) and nil or new_pos
-        -- sometimes tip.pos needs to be nil
+    if istable(rotated.Interior.PartTips) then
+        for k,v in pairs(moved.Interior.PartTips) do
+            if v and istable(v) then
+                local new_pos = Vector(0,0,0)
+                if v.pos then new_pos:Add(v.pos) end
+                new_pos:Add(offset)
+                v.pos = (new_pos == Vector(0,0,0)) and nil or new_pos
+                -- sometimes tip.pos needs to be nil
+            end
+        end
+    end
+
+    if istable(rotated.Interior.CustomTips) then
+        for k,v in pairs(moved.Interior.CustomTips) do
+            if v and istable(v) then
+                local new_pos = Vector(0,0,0)
+                if v.pos then new_pos:Add(v.pos) end
+                new_pos:Add(offset)
+                v.pos = (new_pos == Vector(0,0,0)) and nil or new_pos
+                -- sometimes tip.pos needs to be nil
+            end
+        end
     end
 
     return moved
@@ -22,26 +42,46 @@ end
 local function AddInteriorPartsRotation(template, rotate_ang)
     local rotated = table.Copy(template)
 
-    for k,v in pairs(rotated.Interior.Parts) do
-        local new_ang = Angle(0,0,0)
-        local new_pos = Vector(0,0,0)
+    if istable(rotated.Interior.Parts) then
+        for k,v in pairs(rotated.Interior.Parts) do
+            if v and istable(v) then
+                local new_ang = Angle(0,0,0)
+                local new_pos = Vector(0,0,0)
 
-        if v.ang then new_ang:Add(v.ang) end
-        if v.pos then new_pos:Add(v.pos) end
+                if v.ang then new_ang:Add(v.ang) end
+                if v.pos then new_pos:Add(v.pos) end
 
-        new_ang:Add(rotate_ang)
-        new_pos:Rotate(rotate_ang)
+                new_ang:Add(rotate_ang)
+                new_pos:Rotate(rotate_ang)
 
-        v.pos = new_pos
-        v.ang = new_ang
+                v.pos = new_pos
+                v.ang = new_ang
+            end
+        end
     end
 
-    for k,v in pairs(rotated.Interior.PartTips) do
-        local new_pos = Vector(0,0,0)
-        if v.pos then new_pos:Add(v.pos) end
-        new_pos:Rotate(rotate_ang)
-        v.pos = (new_pos == Vector(0,0,0)) and nil or new_pos
-        -- sometimes tip.pos needs to stay nil
+    if istable(rotated.Interior.PartTips) then
+        for k,v in pairs(rotated.Interior.PartTips) do
+            if v and istable(v) then
+                local new_pos = Vector(0,0,0)
+                if v.pos then new_pos:Add(v.pos) end
+                new_pos:Rotate(rotate_ang)
+                v.pos = (new_pos == Vector(0,0,0)) and nil or new_pos
+                -- sometimes tip.pos needs to stay nil
+            end
+        end
+    end
+
+    if istable(rotated.Interior.CustomTips) then
+        for k,v in pairs(rotated.Interior.CustomTips) do
+            if v and istable(v) then
+                local new_pos = Vector(0,0,0)
+                if v.pos then new_pos:Add(v.pos) end
+                new_pos:Rotate(rotate_ang)
+                v.pos = (new_pos == Vector(0,0,0)) and nil or new_pos
+                -- sometimes tip.pos needs to stay nil
+            end
+        end
     end
 
     return rotated
