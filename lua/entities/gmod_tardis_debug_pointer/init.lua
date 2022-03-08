@@ -20,10 +20,8 @@ function ENT:Initialize()
     self:SetUseType(SIMPLE_USE)
 
     local phys = self:GetPhysicsObject()
-    phys:EnableMotion(false)
-
-    local phys = self:GetPhysicsObject()
     if (phys:IsValid()) then
+        phys:EnableMotion(false)
         phys:Wake()
     end
 end
