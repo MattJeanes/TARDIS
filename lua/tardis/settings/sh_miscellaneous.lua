@@ -251,38 +251,5 @@ TARDIS:AddSetting({
 })
 
 --------------------------------------------------------------------------------
--- Developer Tools
-
-TARDIS:AddSetting({
-    id="debug",
-    type="bool",
-    value=false,
-
-    class="networked",
-    networked=true,
-
-    option=true,
-    section=SETTING_SECTION,
-    subsection="Developer tools",
-    name="Enable debug info",
-    desc="Whether or not TARDIS debug messages will be printed"
-})
-
-TARDIS:AddSetting({
-    id="debug_chat",
-    type="bool",
-    value=false,
-
-    class="networked",
-    networked=true,
-
-    option=true,
-    section=SETTING_SECTION,
-    subsection="Developer tools",
-    name="Print debug info in chat",
-    desc="Whether or not TARDIS debug messages will be duplicated in chat"
-})
-
---------------------------------------------------------------------------------
 -- Tips
 

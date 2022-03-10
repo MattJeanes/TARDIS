@@ -81,18 +81,3 @@ if SERVER then
        TARDIS:SetSetting("health-enabled", tobool(newvalue), true)
     end, "UpdateOnChange")
 end
-
---[[
-CreateConVar("tardis2_debug", 0, {FCVAR_ARCHIVE, FCVAR_REPLICATED}, "TARDIS - debug enabled")
-cvars.AddChangeCallback("tardis2_debug", function()
-    TARDIS.debug = GetConVar("tardis2_debug"):GetBool()
-end)
-
-CreateConVar("tardis2_debug_chat", 0, {FCVAR_ARCHIVE, FCVAR_REPLICATED}, "TARDIS - print debug to chat as well")
-cvars.AddChangeCallback("tardis2_debug_chat", function()
-    TARDIS.debug_chat = GetConVar("tardis2_debug_chat"):GetBool()
-end)
-
-TARDIS.debug = GetConVar("tardis2_debug"):GetBool()
-TARDIS.debug_chat = GetConVar("tardis2_debug_chat"):GetBool()
-]]
