@@ -1,7 +1,4 @@
 hook.Add("PopulateToolMenu", "TARDIS2-PopulateToolMenu", function()
-
-    local unfolded_subsections = TARDIS:GetSetting("options-unfolded-subsections")
-
     -- Options
     local options={}
     local sections={}
@@ -13,7 +10,6 @@ hook.Add("PopulateToolMenu", "TARDIS2-PopulateToolMenu", function()
                 table.insert(sections, v.section)
             end
             if v.section and v.subsection then
-                unfolded_subsections[v.section] = unfolded_subsections[v.section] or {}
                 subsections[v.section] = subsections[v.section] or {}
                 subsections[v.section][v.subsection] = true
             end
@@ -39,13 +35,20 @@ hook.Add("PopulateToolMenu", "TARDIS2-PopulateToolMenu", function()
                     if data.subsection and subsections[section]
                         and subsections[section][data.subsection]
                     then
+                        local unfolded_subsections = TARDIS:GetSetting("options-unfolded-subsections", {})
+                        local expanded = false
+                        if unfolded_subsections[section] then
+                            expanded = unfolded_subsections[section][data.subsection]
+                        end
+
                         local subsection = vgui.Create("DForm")
                         subsection:SetLabel(data.subsection)
 
                         -- save the subsection state for more convenience
-                        local expanded = unfolded_subsections[section][data.subsection]
                         subsection:SetExpanded(expanded or false)
                         subsection.OnToggle = function(self, expanded)
+                            local unfolded_subsections = TARDIS:GetSetting("options-unfolded-subsections", {})
+                            unfolded_subsections[section] = unfolded_subsections[section] or {}
                             unfolded_subsections[section][data.subsection] = expanded
                             TARDIS:SetSetting("options-unfolded-subsections", unfolded_subsections)
                         end
@@ -79,6 +82,7 @@ hook.Add("PopulateToolMenu", "TARDIS2-PopulateToolMenu", function()
                     "OK", function()
                         TARDIS:ResetSectionSettings(section)
                         TARDIS:Message(LocalPlayer(), "TARDIS clientside settings of section \"" .. section ..  "\" have been reset. You may need to respawn the TARDIS for all changes to apply.")
+                        RunConsoleCommand("spawnmenu_reload")
                     end,
                     "Cancel", nil
                 ):SetSkin("TARDIS")
@@ -187,6 +191,7 @@ hook.Add("PopulateToolMenu", "TARDIS2-PopulateToolMenu", function()
                 "OK", function()
                     TARDIS:ResetSettings()
                     TARDIS:Message(LocalPlayer(), "TARDIS clientside settings have been reset. You may need to respawn the TARDIS for all changes to apply.")
+                    RunConsoleCommand("spawnmenu_reload")
                 end,
                 "Cancel", nil
             ):SetSkin("TARDIS")

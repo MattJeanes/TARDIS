@@ -107,10 +107,8 @@ function TARDIS:CreateOptionInterface(id, data)
     local elem
     local elem2 = nil
 
-    local function GetCurrentSetting()
-        local ply = data.networked and LocalPlayer() or nil
-        return TARDIS:GetSetting(id, data.value, ply)
-    end
+    local setting = TARDIS:GetSetting(id)
+
     local function SetCurrentSetting(val)
         TARDIS:SetSetting(id, val, data.networked)
     end
@@ -121,16 +119,11 @@ function TARDIS:CreateOptionInterface(id, data)
 
     if data.type == "bool" then
         elem = vgui.Create("DCheckBoxLabel")
-        elem:SetValue(GetCurrentSetting())
         elem.OnChange = function(self, val)
             SetCurrentSetting(val)
         end
-        elem.Think = function(self)
-            local setting = GetCurrentSetting()
-            if setting ~= self:GetChecked() then
-                self:SetChecked(setting)
-            end
-        end
+        elem:SetChecked(setting)
+
     elseif data.type == "number" or data.type == "integer" then
         elem = vgui.Create("DNumSlider")
         elem:SetMinMax(data.min, data.max)
@@ -141,17 +134,9 @@ function TARDIS:CreateOptionInterface(id, data)
         elem.OnValueChanged = function(self, val)
             SetCurrentSetting(val)
         end
-        elem.Think = function(self)
-            if not self:IsEditing() then
-                local setting = GetCurrentSetting()
-                if setting ~= nil and self:GetValue() ~= setting then
-                    self:SetValue(setting)
-                end
-                if setting ~= nil and self:GetTextArea():GetText() ~= tostring(setting) then
-                    self:GetTextArea():SetText(tostring(setting))
-                end
-            end
-        end
+        elem:SetValue(setting)
+        elem:GetTextArea():SetText(tostring(setting))
+
     elseif data.type=="color" then
         elem = vgui.Create("DForm")
         elem:SetLabel(text)
@@ -162,16 +147,10 @@ function TARDIS:CreateOptionInterface(id, data)
         mixer:SetPalette(false)
         mixer:SetAlphaBar(false)
         mixer:SetWangs(true)
+        mixer:SetColor(setting)
         mixer.ValueChanged = function(self, val)
             SetCurrentSetting(val)
         end
-        mixer.Think = function(self)
-            local setting = TARDIS:GetSetting(id, data.value, nil) --GetCurrentSetting()
-            if setting and AreColorsDifferent(self:GetColor(), setting) then
-                self:SetColor(setting)
-            end
-        end
-
         elem:AddItem(mixer)
 
         local spacer = vgui.Create("DPanel")
@@ -189,17 +168,12 @@ function TARDIS:CreateOptionInterface(id, data)
             end
         end
 
+        elem2:SetText(elem2:GetOptionTextByData(setting))
+
         elem2.OnSelect = function(self, index, value, selected_data)
             SetCurrentSetting(selected_data)
         end
 
-        elem2.Think = function(self)
-            local setting = GetCurrentSetting()
-            local _,selected = self:GetSelected()
-            if setting ~= nil and selected ~= setting then
-                self:SetText(self:GetOptionTextByData(setting))
-            end
-        end
     else
         elem = vgui.Create("DLabel")
     end
@@ -208,6 +182,9 @@ function TARDIS:CreateOptionInterface(id, data)
     if elem.SetDark then elem:SetDark(true) end
 
     elem:SetTooltip(tooltip)
+    if elem2 then
+        elem2:SetTooltip(tooltip)
+    end
 
     return elem, elem2
 end
