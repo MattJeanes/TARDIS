@@ -52,10 +52,13 @@ function TARDIS:Debug(...)
         end
     end
 
-    local debug_prefix = "[TARDIS DEBUG] (" .. (SERVER and "SERVER" or "CLIENT") .. ")  :  "
+    local SOURCE = (SERVER and "SERVER" or "CLIENT")
+    local debug_prefix = "[TARDIS DEBUG] (" .. SOURCE .. ")  :  "
+    local debug_table_prefix = "[TARDIS DEBUG :: TABLE OUTPUT] (" .. SOURCE .. ")  :  "
+
+    local tables_to_print = {}
 
     local full_text = debug_prefix
-    local table_num = 1
 
     if ... == nil or args == nil then
         full_text = "<nil>"
@@ -63,13 +66,8 @@ function TARDIS:Debug(...)
         for k,arg in pairs(args) do
             local text
             if istable(arg) then
-                print("\n" .. debug_prefix .. "Table #" .. table_num .. ":")
-                print("---------------------------------------------------")
-                PrintTable(arg, 1)
-                print("---------------------------------------------------")
-
-                full_text = full_text .. "<table #" .. table_num .. ">  "
-                table_num = table_num + 1
+                table.insert(tables_to_print, arg)
+                full_text = full_text .. "<" .. tostring(arg) .. ">  "
             else
                 full_text = full_text .. tostring(arg) .. "  "
             end
@@ -82,6 +80,14 @@ function TARDIS:Debug(...)
     else
         print(full_text)
     end
+
+    for i,v in ipairs(tables_to_print) do
+        print("\n\n" .. debug_table_prefix .. tostring(v) .. ":")
+        print("―――――――――――――――――――――――――――――――――――――――――――――――――――")
+        PrintTable(v, 1)
+        print("―――――――――――――――――――――――――――――――――――――――――――――――――――")
+    end
+    print("\n\n\n")
 
 end
 
