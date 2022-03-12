@@ -70,27 +70,6 @@ if SERVER then
         self:SetData("failed-mat-destination-ang", nil)
     end)
 
-    function ENT:StopTeleportSounds()
-        local ext = self.metadata.Exterior.Sounds.Teleport
-        local int = self.metadata.Interior.Sounds.Teleport
-
-        self:StopSound(ext.demat_damaged)
-        self:StopSound(ext.demat)
-        self:StopSound(ext.demat_fail)
-        self:StopSound(ext.mat_damaged)
-        self:StopSound(ext.mat)
-        self:StopSound(ext.fullflight)
-        self:StopSound(ext.fullflight_damaged)
-
-        self.interior:StopSound(int.demat_damaged or ext.demat_damaged)
-        self.interior:StopSound(int.demat or ext.demat)
-        self.interior:StopSound(int.demat_fail or ext.demat_fail)
-        self.interior:StopSound(int.mat_damaged or ext.mat_damaged)
-        self.interior:StopSound(int.mat or ext.mat)
-        self.interior:StopSound(int.fullflight or ext.fullflight)
-        self.interior:StopSound(int.fullflight_damaged or ext.fullflight_damaged)
-    end
-
     ENT:AddHook("ShouldFailDemat", "doors", function(self, force)
         if self:GetData("doorstatereal") and force ~= true
             and not TARDIS:GetSetting("teleport-door-autoclose", false, self:GetCreator())
@@ -185,8 +164,6 @@ if SERVER then
             end
         end
 
-        self:StopTeleportSounds()
-
         self:Explode()
         self.interior:Explode(20)
 
@@ -195,12 +172,7 @@ if SERVER then
             self.interior:Explode(20)
         end)
 
-        if TARDIS:GetSetting("teleport-sound") and TARDIS:GetSetting("sound") then
-            local ext = self.metadata.Exterior.Sounds.Teleport
-            local int = self.metadata.Interior.Sounds.Teleport
-            self:EmitSound(ext.interrupt)
-            self.interior:EmitSound(int.interrupt or ext.interrupt)
-        end
+        self:SendMessage("interrupt-teleport")
 
         self:SetData("demat-pos",nil,true)
         self:SetData("demat-ang",nil,true)
@@ -288,6 +260,37 @@ else -- CLIENT
         end
         if LocalPlayer():GetTardisData("exterior") == self then
             util.ScreenShake(self.interior:GetPos(), 2.5, 100, 3, 300)
+        end
+    end)
+
+    function ENT:StopTeleportSounds()
+        local ext = self.metadata.Exterior.Sounds.Teleport
+        local int = self.metadata.Interior.Sounds.Teleport
+
+        self:StopSound(ext.demat_damaged)
+        self:StopSound(ext.demat)
+        self:StopSound(ext.demat_fail)
+        self:StopSound(ext.mat_damaged)
+        self:StopSound(ext.mat)
+        self:StopSound(ext.fullflight)
+        self:StopSound(ext.fullflight_damaged)
+
+        self.interior:StopSound(int.demat_damaged or ext.demat_damaged)
+        self.interior:StopSound(int.demat or ext.demat)
+        self.interior:StopSound(int.demat_fail or ext.demat_fail)
+        self.interior:StopSound(int.mat_damaged or ext.mat_damaged)
+        self.interior:StopSound(int.mat or ext.mat)
+        self.interior:StopSound(int.fullflight or ext.fullflight)
+        self.interior:StopSound(int.fullflight_damaged or ext.fullflight_damaged)
+    end
+
+    ENT:OnMessage("interrupt-teleport", function(self)
+        self:StopTeleportSounds()
+        if TARDIS:GetSetting("teleport-sound") and TARDIS:GetSetting("sound") then
+            local ext = self.metadata.Exterior.Sounds.Teleport
+            local int = self.metadata.Interior.Sounds.Teleport
+            self:EmitSound(ext.interrupt)
+            self.interior:EmitSound(int.interrupt or ext.interrupt)
         end
     end)
 
