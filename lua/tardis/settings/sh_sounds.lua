@@ -162,7 +162,7 @@ TARDIS:AddSetting({
     type="number",
     value=100,
     min=0,
-    max=100,
+    max=1000,
 
     class="networked",
 
