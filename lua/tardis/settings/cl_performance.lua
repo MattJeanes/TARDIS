@@ -66,3 +66,17 @@ TARDIS:AddSetting({
     name="Projected Door Exterior Light",
     desc="Should light shine out through the doors when they're open?",
 })
+
+TARDIS:AddSetting({
+    id="breakdown-effects",
+    type="bool",
+    value=true,
+
+    class="networked",
+    networked=true,
+
+    option=true,
+    section=SETTING_SECTION,
+    name="Breakdown Effects",
+    desc="Should TARDIS have sparkling and explosion effects in emergency moments?",
+})

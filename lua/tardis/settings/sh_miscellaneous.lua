@@ -69,21 +69,6 @@ TARDIS:AddSetting({
 })
 
 TARDIS:AddSetting({
-    id="breakdown-effects",
-    type="bool",
-    value=true,
-
-    class="networked",
-    networked=true,
-
-    option=true,
-    section=SETTING_SECTION,
-    subsection="Teleport",
-    name="Breakdown Effects",
-    desc="Should TARDIS have sparkling and explosion effects in emergency moments?",
-})
-
-TARDIS:AddSetting({
     id="dest-onsetdemat",
     type="bool",
     value=false,
