@@ -162,33 +162,22 @@ end
 function TARDIS:ResetSettings()
     if SERVER then
         self.GlobalSettings={}
-        for k,v in pairs(self.SettingsData) do
-            self.GlobalSettings[k]=v.value
-        end
     else
         self.LocalSettings={}
         self.NetworkedSettings={}
-        for k,v in pairs(self.SettingsData) do
-            (v.networked and self.NetworkedSettings or self.LocalSettings)[k]=v.value
-        end
     end
     self:SaveSettings()
     self:SendSettings()
 end
 
 function TARDIS:ResetSectionSettings(section)
-    if SERVER then
-        for k,v in pairs(self.SettingsData) do
-            if (section ~= nil and v.section == section) or (section == nil and v.option ~= nil) then
-                self.GlobalSettings[k] = v.value
-            end
-        end
-    else
-        for k,v in pairs(self.SettingsData) do
-            if (section ~= nil and v.section == section) or (section == nil and v.option ~= nil) then
+    for k,v in pairs(self.SettingsData) do
+        if (section ~= nil and v.section == section) or (section == nil and v.option ~= nil) then
+            if SERVER then
+                self.GlobalSettings[k] = nil
+            else
                 self.NetworkedSettings[k] = nil
                 self.LocalSettings[k] = nil
-                (v.networked and self.NetworkedSettings or self.LocalSettings)[k]=v.value
             end
         end
     end
