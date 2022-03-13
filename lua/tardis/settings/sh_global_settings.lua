@@ -9,7 +9,6 @@ TARDIS:AddSetting({
     value=true,
 
     class="global",
-    networked=true,
 
     option = false,
     section=SETTING_SECTION,
@@ -24,7 +23,6 @@ TARDIS:AddSetting({
     min=1,
     max=50000,
 
-    networked=true,
     class="global",
 
     option = false,
@@ -42,7 +40,6 @@ TARDIS:AddSetting({
     max=4.0,
 
     class="global",
-    networked=true,
 
     option = false,
     name="Boost Speed",

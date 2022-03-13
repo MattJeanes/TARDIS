@@ -6,7 +6,6 @@ TARDIS:AddSetting({
     value=false,
 
     class="local",
-    networked=false,
 
     option=true,
     section=SETTING_SECTION,
@@ -20,7 +19,6 @@ TARDIS:AddSetting({
     value=true,
 
     class="local",
-    networked=false,
 
     option=true,
     section=SETTING_SECTION,
@@ -49,7 +47,6 @@ TARDIS:AddSetting({
     value=false,
 
     class="local",
-    networked=false,
 
     option=true,
     section=SETTING_SECTION,

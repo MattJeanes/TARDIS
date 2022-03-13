@@ -73,7 +73,6 @@ TARDIS:AddSetting({
     value=true,
 
     class="networked",
-    networked=true,
 
     option=true,
     section=SETTING_SECTION,

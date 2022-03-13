@@ -9,7 +9,6 @@ TARDIS:AddSetting({
     value=false,
 
     class="networked",
-    networked=true,
 
     option=true,
     section=SETTING_SECTION,
@@ -24,7 +23,6 @@ TARDIS:AddSetting({
     value=Color(255,255,255),
 
     class="networked",
-    networked=true,
 
     option=true,
     section=SETTING_SECTION,

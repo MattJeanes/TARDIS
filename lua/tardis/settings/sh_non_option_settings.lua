@@ -7,7 +7,6 @@ TARDIS:AddSetting({
     value = {},
 
     class="networked",
-    networked = true,
 
     option = false,
 })
@@ -19,7 +18,6 @@ TARDIS:AddSetting({
     value=false,
 
     class="networked",
-    networked=true,
 
     option = false,
 })
@@ -31,7 +29,6 @@ TARDIS:AddSetting({
     value = {},
 
     class="local",
-    networked = false,
 
     option = false,
 })
@@ -43,7 +40,6 @@ TARDIS:AddSetting({
     value=false,
 
     class="local",
-    networked = false,
 
     option = false,
 })
