@@ -115,10 +115,10 @@ function TARDIS:CreateOptionInterface(id, data)
 
     if data.type == "bool" then
         elem = vgui.Create("DCheckBoxLabel")
+        elem:SetChecked(setting)
         elem.OnChange = function(self, val)
             TARDIS:SetSetting(id, val)
         end
-        elem:SetChecked(setting)
 
     elseif data.type == "number" or data.type == "integer" then
         elem = vgui.Create("DNumSlider")
@@ -127,11 +127,11 @@ function TARDIS:CreateOptionInterface(id, data)
         if data.type == "integer" then
             elem:SetDecimals(0)
         end
+        elem:SetValue(setting)
+        elem:GetTextArea():SetText(tostring(setting))
         elem.OnValueChanged = function(self, val)
             TARDIS:SetSetting(id, val)
         end
-        elem:SetValue(setting)
-        elem:GetTextArea():SetText(tostring(setting))
 
     elseif data.type=="color" then
         elem = vgui.Create("DForm")
@@ -147,6 +147,7 @@ function TARDIS:CreateOptionInterface(id, data)
         mixer.ValueChanged = function(self, val)
             TARDIS:SetSetting(id, val)
         end
+
         elem:AddItem(mixer)
 
         local spacer = vgui.Create("DPanel")

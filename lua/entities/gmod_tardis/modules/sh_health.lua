@@ -21,6 +21,14 @@ ENT:AddHook("Initialize","health-init",function(self)
     end
 end)
 
+ENT:AddHook("GlobalSettingChanged","maxhealth-changed", function(self, id, val)
+    if id ~= "health-max" then return end
+
+    if self:GetHealth() > val then
+        self:ChangeHealth(val)
+    end
+end)
+
 function ENT:ChangeHealth(newhealth)
     if self:GetData("repairing", false) then
         return

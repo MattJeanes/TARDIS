@@ -15,6 +15,30 @@ end
 
 function TARDIS:AddSetting(data)
     self.SettingsData[data.id]=data
+    if data.class == "global" and data.convar then
+        local convar = data.convar
+        local convar_default_value = data.value
+
+        CreateConVar(convar.name, tostring(convar_default_value), convar.flags, convar.desc, data.min, data.max)
+
+        cvars.AddChangeCallback(convar.name, function(cvname, oldvalue, newvalue)
+            if data.type == "integer" or data.type == "number" then
+                local value = tonumber(newvalue)
+                local set_value = TARDIS:SetSetting(data.id, value)
+                if set_value ~= value then
+                    if data.type == "integer" then
+                        GetConVar(convar.name):SetInt(set_value)
+                    else
+                        GetConVar(convar.name):SetFloat(set_value)
+                    end
+                end
+            elseif data.type == "bool" then
+                TARDIS:SetSetting(data.id, tobool(newvalue))
+            else
+                TARDIS:SetSetting(data.id, tostring(newvalue))
+            end
+        end, "UpdateOnChange")
+    end
 end
 
 function TARDIS:GetSettingData(id)
@@ -36,9 +60,26 @@ function TARDIS:SetSetting(id, value)
         value = math.Round(value)
     end
 
+    if data.min and data.type == "number" or data.type == "integer" then
+        value = math.max(data.min, math.min(data.max, value))
+    end
+
     if SERVER then
         if data.class == "global" then
             self.GlobalSettings[id]=value
+
+            if data.convar then
+                local convar = GetConVar(data.convar.name)
+                if data.type == "integer" then
+                    convar:SetInt(value)
+                elseif data.type == "number" then
+                    convar:SetFloat(value)
+                elseif data.type == "bool" then
+                    convar:SetBool(value)
+                else
+                    convar:SetString(tostring(value))
+                end
+            end
         else
             error("Setting " .. id .. " is being set serverside, but is not global")
         end
@@ -47,6 +88,8 @@ function TARDIS:SetSetting(id, value)
             self.NetworkedSettings[id]=value
         elseif data.class == "local" then
             self.LocalSettings[id]=value
+        elseif data.class == "global" then
+            TARDIS:GlobalSettingChange(id, value)
         else
             error("Setting " .. id .. " is being set clientside, but has unsupported class")
         end
@@ -56,7 +99,13 @@ function TARDIS:SetSetting(id, value)
 
     if (SERVER and data.class == "global") or (CLIENT and data.class == "networked") then
         self:SendSetting(id, value)
+
+        for k,v in pairs(ents.FindByClass("gmod_tardis")) do
+            v:CallCommonHook("GlobalSettingChanged", id, value)
+        end
     end
+
+    return value
 end
 
 function TARDIS:GetSetting(id, src)
@@ -192,6 +241,7 @@ if SERVER then
     util.AddNetworkString("TARDIS-Settings")
     util.AddNetworkString("TARDIS-RequestSettings")
     util.AddNetworkString("TARDIS-ClientSettings")
+    util.AddNetworkString("TARDIS-GlobalSettingChange")
 
     net.Receive("TARDIS-ClientSettings",function(len,ply)
         local userID = ply:UserID()
@@ -246,7 +296,26 @@ if SERVER then
         TARDIS:SendPlayerSettings(ply)
         TARDIS:RequestSettings(ply)
     end)
+
+    net.Receive("TARDIS-GlobalSettingChange", function(len,ply)
+        if not ply:IsAdmin() then return end
+        local id = net.ReadType()
+        local val = net.ReadType()
+        TARDIS:SetSetting(id, val)
+    end)
 else
+    function TARDIS:GlobalSettingChange(id, value)
+        local ply = LocalPlayer()
+        if not ply:IsAdmin() then
+            TARDIS:ErrorMessage(ply, "You don't have permissions to edit global settings")
+            return
+        end
+        net.Start("TARDIS-GlobalSettingChange")
+            net.WriteType(id)
+            net.WriteType(value)
+        net.SendToServer()
+    end
+
     net.Receive("TARDIS-RequestSettings",function(len)
         TARDIS:SendSettings()
     end)
