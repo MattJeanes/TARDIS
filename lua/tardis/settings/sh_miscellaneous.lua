@@ -13,7 +13,6 @@ TARDIS:AddSetting({
         }
     end,
 
-    networked=true,
     class="networked",
 
     option=true,
@@ -28,7 +27,6 @@ TARDIS:AddSetting({
     value=false,
 
     class="networked",
-    networked=true,
 
     option=true,
     section=SETTING_SECTION,
@@ -42,7 +40,6 @@ TARDIS:AddSetting({
     value=false,
 
     class="networked",
-    networked=true,
 
     option=true,
     section=SETTING_SECTION,
@@ -59,7 +56,6 @@ TARDIS:AddSetting({
     value=false,
 
     class="networked",
-    networked=true,
 
     option=true,
     section=SETTING_SECTION,
@@ -73,7 +69,6 @@ TARDIS:AddSetting({
     type="bool",
     value=false,
 
-    networked=true,
     class="networked",
 
     option=true,
@@ -88,7 +83,6 @@ TARDIS:AddSetting({
     type="bool",
     value=true,
 
-    networked=true,
     class="networked",
 
     option=true,
@@ -107,7 +101,6 @@ TARDIS:AddSetting({
     value=true,
 
     class="networked",
-    networked=true,
 
     option=true,
     section=SETTING_SECTION,
@@ -122,7 +115,6 @@ TARDIS:AddSetting({
     value=false,
 
     class="networked",
-    networked=true,
 
     option=true,
     section=SETTING_SECTION,
@@ -137,7 +129,6 @@ TARDIS:AddSetting({
     value=true,
 
     class="networked",
-    networked=true,
 
     option=true,
     section=SETTING_SECTION,
@@ -155,7 +146,6 @@ TARDIS:AddSetting({
     value=true,
 
     class="local",
-    networked=false,
 
     option=true,
     section=SETTING_SECTION,
@@ -177,7 +167,6 @@ TARDIS:AddSetting({
         return values
     end,
 
-    networked=false,
     class="local",
 
     option=true,
@@ -196,7 +185,6 @@ TARDIS:AddSetting({
     value=true,
 
     class="networked",
-    networked=true,
 
     option=true,
     section=SETTING_SECTION,
@@ -211,7 +199,6 @@ TARDIS:AddSetting({
     value=true,
 
     class="networked",
-    networked=true,
 
     option=true,
     section=SETTING_SECTION,
@@ -226,7 +213,6 @@ TARDIS:AddSetting({
     value=false,
 
     class="networked",
-    networked=true,
 
     option=true,
     section=SETTING_SECTION,
