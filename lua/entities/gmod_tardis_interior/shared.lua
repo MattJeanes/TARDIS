@@ -35,8 +35,7 @@ function ENT:ListHooks()
 end
 
 function ENT:CallCommonHook(name, ...)
-    self:CallHook(name, ...)
-    self.interior:CallHook(name, ...)
+    return self.exterior:CallCommonHook(name, ...)
 end
 
 function ENT:CallHook(name,...)

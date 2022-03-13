@@ -44,8 +44,17 @@ function ENT:ListHooks(listInteriorHooks)
 end
 
 function ENT:CallCommonHook(name, ...)
-    self:CallHook(name, ...)
-    self.interior:CallHook(name, ...)
+    local a,b,c,d,e,f
+
+    a,b,c,d,e,f = self:CallHook(name, ...)
+    if a~=nil then
+        return a,b,c,d,e,f
+    end
+
+    a,b,c,d,e,f = self.interior:CallHook(name, ...)
+    if a~=nil then
+        return a,b,c,d,e,f
+    end
 end
 
 function ENT:CallHook(name,...)
