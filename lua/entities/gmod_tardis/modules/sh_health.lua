@@ -33,13 +33,11 @@ function ENT:ChangeHealth(newhealth)
     if newhealth <= 0 then
         newhealth = 0
         if newhealth == 0 and not (newhealth == oldhealth) then
-            self:CallHook("OnHealthDepleted")
-            if self.interior then self.interior:CallHook("OnHealthDepleted") end
+            self:CallCommonHook("OnHealthDepleted")
         end
     end
     self:SetData("health-val", newhealth, true)
-    self:CallHook("OnHealthChange", newhealth, oldhealth)
-    if self.interior then self.interior:CallHook("OnHealthChange", newhealth, oldhealth) end
+    self:CallCommonHook("OnHealthChange", newhealth, oldhealth)
 end
 
 function ENT:GetHealth()
@@ -119,7 +117,6 @@ if SERVER then
 
     function ENT:FinishRepair()
         if self:CallHook("ShouldRedecorate") and self:Redecorate() then
-            
             return
         end
         self:EmitSound(self.metadata.Exterior.Sounds.RepairFinish)
@@ -303,20 +300,14 @@ if SERVER then
     ENT:AddHook("OnHealthChange", "warning", function(self)
         if self:GetHealthPercent() <= 20 and (not self:GetData("health-warning",false)) then
             self:SetData("health-warning", true, true)
-            self:CallHook("HealthWarningToggled",true)
-            if self.interior then
-                self.interior:CallHook("HealthWarningToggled",true)
-            end
+            self:CallCommonHook("HealthWarningToggled",true)
         end
     end)
 
     ENT:AddHook("OnHealthChange", "warning-stop", function(self)
         if self:GetHealthPercent() > 20 and (self:GetData("health-warning",false)) then
             self:SetData("health-warning", false, true)
-            self:CallHook("HealthWarningToggled",false)
-            if self.interior then
-                self.interior:CallHook("HealthWarningToggled",false)
-            end
+            self:CallCommonHook("HealthWarningToggled", false)
         end
     end)
 

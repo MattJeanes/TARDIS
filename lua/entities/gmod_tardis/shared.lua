@@ -51,9 +51,11 @@ function ENT:CallCommonHook(name, ...)
         return a,b,c,d,e,f
     end
 
-    a,b,c,d,e,f = self.interior:CallHook(name, ...)
-    if a~=nil then
-        return a,b,c,d,e,f
+    if self.interior then
+        a,b,c,d,e,f = self.interior:CallHook(name, ...)
+        if a~=nil then
+            return a,b,c,d,e,f
+        end
     end
 end
 

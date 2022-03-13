@@ -158,7 +158,7 @@ hook.Add("HUDPaint", "TARDIS-DrawTips", function()
     end
 
     local player_pos = LocalPlayer():EyePos()
-    local should_randomize = (interior.exterior:CallHook("RandomizeTips") == true)
+    local should_randomize = (interior:CallCommonHook("RandomizeTips") == true)
     for k,tip in ipairs(interior.tips)
     do
         local view_range_min = tip.view_range_min
