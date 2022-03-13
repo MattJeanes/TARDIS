@@ -84,7 +84,7 @@ function TARDIS:ChangeOption(id,data)
     button:SetText("Save")
     button:SetSize(frame:GetWide()*0.2, 40)
     button:SetPos(10,frame:GetTall()-button:GetTall()-10)
-    button.DoClick = function() TARDIS:SetSetting(id,value,data.networked) frame:Close() end
+    button.DoClick = function() TARDIS:SetSetting(id, value) frame:Close() end
     
     local reset = vgui.Create("DButton",frame)
     reset:SetText("Reset")
@@ -109,10 +109,6 @@ function TARDIS:CreateOptionInterface(id, data)
 
     local setting = TARDIS:GetSetting(id)
 
-    local function SetCurrentSetting(val)
-        TARDIS:SetSetting(id, val, data.networked)
-    end
-
     local function AreColorsDifferent(a,b)
         return (a.r ~= b.r) or (a.g ~= b.g) or (a.b ~= b.b) or (a.a ~= b.a)
     end
@@ -120,7 +116,7 @@ function TARDIS:CreateOptionInterface(id, data)
     if data.type == "bool" then
         elem = vgui.Create("DCheckBoxLabel")
         elem.OnChange = function(self, val)
-            SetCurrentSetting(val)
+            TARDIS:SetSetting(id, val)
         end
         elem:SetChecked(setting)
 
@@ -132,7 +128,7 @@ function TARDIS:CreateOptionInterface(id, data)
             elem:SetDecimals(0)
         end
         elem.OnValueChanged = function(self, val)
-            SetCurrentSetting(val)
+            TARDIS:SetSetting(id, val)
         end
         elem:SetValue(setting)
         elem:GetTextArea():SetText(tostring(setting))
@@ -149,7 +145,7 @@ function TARDIS:CreateOptionInterface(id, data)
         mixer:SetWangs(true)
         mixer:SetColor(setting)
         mixer.ValueChanged = function(self, val)
-            SetCurrentSetting(val)
+            TARDIS:SetSetting(id, val)
         end
         elem:AddItem(mixer)
 
@@ -171,7 +167,7 @@ function TARDIS:CreateOptionInterface(id, data)
         elem2:SetText(elem2:GetOptionTextByData(setting))
 
         elem2.OnSelect = function(self, index, value, selected_data)
-            SetCurrentSetting(selected_data)
+            TARDIS:SetSetting(id, val)
         end
 
     else

@@ -28,7 +28,7 @@ end
 --------------------------------------------------------------------------------
 -- Accessing
 
-function TARDIS:SetSetting(id,value,networked,broadcast)
+function TARDIS:SetSetting(id, value)
     local data = self.SettingsData[id]
     if not data then error("Requested setting ", id, " does not exist") end
 

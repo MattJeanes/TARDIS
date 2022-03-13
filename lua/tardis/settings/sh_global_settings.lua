@@ -78,6 +78,6 @@ if SERVER then
     end, "UpdateOnChange")
 
     cvars.AddChangeCallback("tardis2_damage", function(cvname, oldvalue, newvalue)
-       TARDIS:SetSetting("health-enabled", tobool(newvalue), true)
+       TARDIS:SetSetting("health-enabled", tobool(newvalue))
     end, "UpdateOnChange")
 end
