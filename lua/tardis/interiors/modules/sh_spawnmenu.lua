@@ -5,7 +5,7 @@ end
 
 if CLIENT then
     local function SelectForRedecoration(id)
-        TARDIS:SetSetting("redecorate-interior", id, true)
+        TARDIS:SetSetting("redecorate-interior", id)
         local current_tardis = LocalPlayer():GetTardisData("exterior")
 
         if not current_tardis or not current_tardis:GetData("redecorate") then

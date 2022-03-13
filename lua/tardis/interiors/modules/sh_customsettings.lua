@@ -3,7 +3,7 @@ function TARDIS:GetCustomSettings(ply)
 end
 
 function TARDIS:SaveCustomSettings(settings)
-    TARDIS:SetSetting("interior_custom_settings", settings, true)
+    TARDIS:SetSetting("interior_custom_settings", settings)
 end
 
 function TARDIS:GetCustomSetting(int_id, setting_id, ply, default_val)

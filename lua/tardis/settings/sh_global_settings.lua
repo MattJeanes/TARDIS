@@ -61,7 +61,7 @@ if SERVER then
             return
         end
         print("TARDIS boost speed has been set to "..nvnum)
-        TARDIS:SetSetting("boost-speed", nvnum, true)
+        TARDIS:SetSetting("boost-speed", nvnum)
     end, "UpdateOnChange")
 
     cvars.AddChangeCallback("tardis2_maxhealth", function(cvname, oldvalue, newvalue)
@@ -69,7 +69,7 @@ if SERVER then
         if nvnum < 0 then
             nvnum = 1
         end
-        TARDIS:SetSetting("health-max", nvnum, true)
+        TARDIS:SetSetting("health-max", nvnum)
         for k,v in pairs(ents.FindByClass("gmod_tardis")) do
             if v:GetHealth() > nvnum then
                 v:ChangeHealth(nvnum)
