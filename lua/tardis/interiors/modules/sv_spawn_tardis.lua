@@ -53,14 +53,14 @@ function TARDIS:SpawnTARDIS(ply, customData)
     ply:AddCleanup("sents", entity)
     entity:SetVar("Player", ply)
 
-    if TARDIS:GetSetting("randomize_skins", true, entity:GetCreator()) then
+    if TARDIS:GetSetting("randomize_skins", entity) then
         local total_skins = entity:SkinCount()
         if total_skins then
             local chosen_skin = math.random(total_skins)
 
             local excluded = entity.metadata.Exterior.ExcludedSkins
             local winter = entity.metadata.Exterior.WinterSkins
-            local winter_ok = TARDIS:GetSetting("winter_skins", false, entity:GetCreator())
+            local winter_ok = TARDIS:GetSetting("winter_skins", entity)
 
             local function cannot_use_skin(chosen_skin)
                 local is_excluded = table.HasValue(excluded, chosen_skin)

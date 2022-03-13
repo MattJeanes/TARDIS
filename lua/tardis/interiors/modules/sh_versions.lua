@@ -14,7 +14,7 @@ function TARDIS:InitializeVersions(int_id)
 end
 
 function TARDIS:ShouldUseClassicDoors(ply)
-    return TARDIS:GetSetting("use_classic_door_interiors", true, ply)
+    return TARDIS:GetSetting("use_classic_door_interiors", ply)
 end
 
 function TARDIS:SelectDoorVersionID(x, ply)

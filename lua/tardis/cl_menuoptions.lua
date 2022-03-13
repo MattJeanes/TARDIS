@@ -35,7 +35,7 @@ hook.Add("PopulateToolMenu", "TARDIS2-PopulateToolMenu", function()
                     if data.subsection and subsections[section]
                         and subsections[section][data.subsection]
                     then
-                        local unfolded_subsections = TARDIS:GetSetting("options-unfolded-subsections", {})
+                        local unfolded_subsections = TARDIS:GetSetting("options-unfolded-subsections")
                         local expanded = false
                         if unfolded_subsections[section] then
                             expanded = unfolded_subsections[section][data.subsection]
@@ -47,7 +47,7 @@ hook.Add("PopulateToolMenu", "TARDIS2-PopulateToolMenu", function()
                         -- save the subsection state for more convenience
                         subsection:SetExpanded(expanded or false)
                         subsection.OnToggle = function(self, expanded)
-                            local unfolded_subsections = TARDIS:GetSetting("options-unfolded-subsections", {})
+                            local unfolded_subsections = TARDIS:GetSetting("options-unfolded-subsections")
                             unfolded_subsections[section] = unfolded_subsections[section] or {}
                             unfolded_subsections[section][data.subsection] = expanded
                             TARDIS:SetSetting("options-unfolded-subsections", unfolded_subsections)

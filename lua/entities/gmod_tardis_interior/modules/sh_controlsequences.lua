@@ -43,7 +43,7 @@ Full documentation for control sequences will be available on the wiki.
 
 
 function ENT:GetSequencesEnabled()
-    return TARDIS:GetSetting("csequences-enabled",false,self:GetCreator())
+    return TARDIS:GetSetting("csequences-enabled", self)
 end
 
 ENT:AddHook("CanStartControlSequence", "conditions", function(self,id)

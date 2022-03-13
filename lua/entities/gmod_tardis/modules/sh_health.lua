@@ -48,7 +48,7 @@ end
 
 function ENT:GetHealthPercent()
     local val = self:GetData("health-val", 0)
-    local percent = (val * 100)/TARDIS:GetSetting("health-max",1)
+    local percent = (val * 100)/TARDIS:GetSetting("health-max")
     return percent
 end
 
@@ -77,8 +77,8 @@ if SERVER then
         return self:SetRepair(on)
     end
     function ENT:SetRepair(on)
-        if not TARDIS:GetSetting("health-enabled") and self:GetHealth()~=TARDIS:GetSetting("health-max",1) then 
-            self:ChangeHealth(TARDIS:GetSetting("health-max"),1)
+        if not TARDIS:GetSetting("health-enabled") and self:GetHealth()~=TARDIS:GetSetting("health-max") then 
+            self:ChangeHealth(TARDIS:GetSetting("health-max"))
             return false
         end
         if self:CallHook("CanRepair")==false then return false end
@@ -108,7 +108,9 @@ if SERVER then
     function ENT:StartRepair()
         if not IsValid(self) then return end
         self:SetLocked(true,nil,true)
-        local time = CurTime()+(math.Clamp((TARDIS:GetSetting("health-max")-self:GetData("health-val"))*0.1, 1, 60))
+        local maxhealth = TARDIS:GetSetting("health-max")
+        local curhealth = self:GetData("health-val")
+        local time = CurTime() + ( math.Clamp((maxhealth - curhealth) * 0.1, 1, 60) )
         self:SetData("repair-time", time, true)
         self:SetData("repairing", true, true)
         self:SetData("repair-primed", false, true)
@@ -167,7 +169,7 @@ if SERVER then
 
     ENT:AddHook("CanRepair", "health", function(self)
         if self:GetData("vortex", false) then return false end
-        if (self:GetHealth() >= TARDIS:GetSetting("health-max", 1))
+        if (self:GetHealth() >= TARDIS:GetSetting("health-max"))
             and not self:CallHook("ShouldRedecorate")
         then
             return false

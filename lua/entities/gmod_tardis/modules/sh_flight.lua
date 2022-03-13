@@ -225,7 +225,7 @@ if SERVER then
                     local force_mult
                     local door = self:GetData("doorstatereal", false)
 
-                    if door and TARDIS:GetSetting("opened-door-no-boost", true, self:GetCreator()) then
+                    if door and TARDIS:GetSetting("opened-door-no-boost", self) then
                         force_mult = 0.25
                         brakes = true -- no spin, no tilt
                         local lastmsg = self.bad_flight_boost_msg

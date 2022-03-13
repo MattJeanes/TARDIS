@@ -19,7 +19,7 @@ end
 
 ENT:AddHook("Initialize","security", function(self)
     if not self:GetData("security") then
-        self:SetData("security", TARDIS:GetSetting("security",false,self:GetCreator()), true)
+        self:SetData("security", TARDIS:GetSetting("security", self), true)
     end
 end)
 

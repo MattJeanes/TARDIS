@@ -72,7 +72,7 @@ if SERVER then
 
     ENT:AddHook("ShouldFailDemat", "doors", function(self, force)
         if self:GetData("doorstatereal") and force ~= true
-            and not TARDIS:GetSetting("teleport-door-autoclose", false, self:GetCreator())
+            and not TARDIS:GetSetting("teleport-door-autoclose", self)
         then
             return true
         end
@@ -352,7 +352,7 @@ ENT:AddHook("Think","breakdown-effects", function(self)
 
         local showeffects = (CLIENT and LocalPlayer():GetTardisData("exterior") == self
             and (not LocalPlayer():GetTardisData("thirdperson"))
-            and TARDIS:GetSetting("breakdown-effects", true, LocalPlayer()))
+            and TARDIS:GetSetting("breakdown-effects"))
 
         if showeffects then
             local effpos
@@ -403,7 +403,7 @@ ENT:AddHook("Think","interrupted-teleport", function(self)
         local showeffects = (CLIENT and self:GetData("teleport-interrupt-effects", false)
                 and LocalPlayer():GetTardisData("exterior") == self
                 and (not LocalPlayer():GetTardisData("thirdperson"))
-                and TARDIS:GetSetting("breakdown-effects", true, LocalPlayer()))
+                and TARDIS:GetSetting("breakdown-effects"))
 
         if showeffects then
             if math.Round(10 * CurTime()) % 2 == 0 then

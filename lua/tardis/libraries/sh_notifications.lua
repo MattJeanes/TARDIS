@@ -18,7 +18,7 @@ function TARDIS:Message(ply, message, error)
         net.Send(ply)
         return
     end
-    local style = self:GetSetting("notification_type", 3, ply)
+    local style = self:GetSetting("notification_type", ply)
 
     local prefix = "[TARDIS] "
     local err = error and "ERROR: " or ""

@@ -172,7 +172,7 @@ if SERVER then
                 TARDIS:Message(ply, "Failed to set destination, may be transitioning")
             end
         else
-            if TARDIS:GetSetting("dest-onsetdemat",false,ply) then
+            if TARDIS:GetSetting("dest-onsetdemat", ply) then
                 self:Demat(pos,ang,function(success)
                     if success then
                         TARDIS:Message(ply, "Destination locked, dematerialising...")

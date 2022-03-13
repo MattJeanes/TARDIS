@@ -124,7 +124,7 @@ ENT:AddHook("Initialize", "tips", function(self)
         end
     end
 
-    local style_name = TARDIS:GetSetting("tips_style", "default")
+    local style_name = TARDIS:GetSetting("tips_style")
     self:InitializeTips(style_name)
 end)
 
@@ -138,7 +138,7 @@ hook.Add("HUDPaint", "TARDIS-DrawTips", function()
     local interior = TARDIS:GetInteriorEnt(LocalPlayer())
     if not (interior and interior.tips and TARDIS:GetSetting("tips") and (interior:CallHook("ShouldDrawTips")~=false)) then return end
 
-    local selected_tip_style = TARDIS:GetSetting("tips_style", "default")
+    local selected_tip_style = TARDIS:GetSetting("tips_style")
     if interior.tip_style_name ~= selected_tip_style then
         interior:InitializeTips(selected_tip_style)
     end

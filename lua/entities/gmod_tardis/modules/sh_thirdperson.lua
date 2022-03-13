@@ -43,7 +43,7 @@ end
 if SERVER then
     function ENT:PlayerThirdPerson(ply, enabled, careful)
 
-        if careful and TARDIS:GetSetting("thirdperson_careful_enabled", true, ply) and not ply:KeyDown(IN_WALK) then
+        if careful and TARDIS:GetSetting("thirdperson_careful_enabled", ply) and not ply:KeyDown(IN_WALK) then
             self:SendMessage("thirdperson-careful-hint", nil, ply)
             return
         end

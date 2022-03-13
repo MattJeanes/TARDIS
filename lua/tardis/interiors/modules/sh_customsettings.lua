@@ -1,5 +1,5 @@
 function TARDIS:GetCustomSettings(ply)
-    return TARDIS:GetSetting("interior_custom_settings", {}, ply) or {} -- nil is never allowed
+    return TARDIS:GetSetting("interior_custom_settings", ply) or {} -- nil is never allowed
 end
 
 function TARDIS:SaveCustomSettings(settings)

@@ -87,7 +87,7 @@ if SERVER then
     end
 
     function ENT:DematDoorCheck(force, callback)
-        local autoclose = TARDIS:GetSetting("teleport-door-autoclose", false, self:GetCreator())
+        local autoclose = TARDIS:GetSetting("teleport-door-autoclose", self)
         if (force or autoclose) and self:GetData("doorstatereal") then
             self:CloseDoor()
         end

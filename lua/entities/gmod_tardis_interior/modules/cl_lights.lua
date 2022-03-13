@@ -20,7 +20,7 @@ function ENT:DrawLight(id,light)
 end
 
 ENT:AddHook("Think", "lights", function(self)
-    if TARDIS:GetSetting("lightoverride-enabled",false) then return end
+    if TARDIS:GetSetting("lightoverride-enabled") then return end
     local light=self.metadata.Interior.Light
     local lights=self.metadata.Interior.Lights
     local index=self:EntIndex()

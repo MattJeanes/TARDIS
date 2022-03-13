@@ -59,7 +59,14 @@ function TARDIS:SetSetting(id, value)
     end
 end
 
-function TARDIS:GetSetting(id, default, ply)
+function TARDIS:GetSetting(id, src)
+    local ply
+    if IsEntity(src) and src:IsPlayer() then
+        ply = src
+    elseif IsEntity(src) then
+        ply = src:GetCreator()
+    end
+
     if not id then error("Requested setting with no id") end
     local data = self.SettingsData[id]
     if not data then error("Requested setting " .. id .. " does not exist") end
