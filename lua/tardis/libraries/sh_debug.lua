@@ -61,7 +61,7 @@ function TARDIS:Debug(...)
     local full_text = debug_prefix
 
     if ... == nil or args == nil then
-        full_text = "<nil>"
+        full_text = full_text .. "<nil>"
     else
         for k,arg in pairs(args) do
             local text
