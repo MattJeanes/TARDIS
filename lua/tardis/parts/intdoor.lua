@@ -34,16 +34,21 @@ else
     end
 
     function PART:Think()
-        self.IntDoorTarget=self.exterior.IntDoorOverride or (self.exterior:GetData("doorstatereal",false) and 1 or 0)
-        local animtime = self.exterior.metadata.Interior.IntDoorAnimationTime
-            or self.exterior.metadata.Exterior.DoorAnimationTime
+        local classic = self.interior.metadata.EnableClassicDoors
+        local behaviour = self.exterior:GetData("intdoor_behaviour")
+        if classic == true or behaviour == "sync" then
+            self.IntDoorTarget = (self.exterior:GetData("doorstatereal",false) and 1 or 0)
 
-        -- Have to spam it otherwise it glitches out (http://facepunch.com/showthread.php?t=1414695)
-        self.IntDoorPos = self.exterior.IntDoorOverride or
-            math.Approach(self.IntDoorPos, self.IntDoorTarget, FrameTime() * (1 / animtime))
+            if self.IntDoorTarget ~= self.IntDoorPos then
+                local animtime = self.exterior.metadata.Interior.IntDoorAnimationTime
 
-        self:SetPoseParameter("switch", self.IntDoorPos)
-        self:InvalidateBoneCache()
+                -- Have to spam it otherwise it glitches out (http://facepunch.com/showthread.php?t=1414695)
+                self.IntDoorPos = math.Approach(self.IntDoorPos, self.IntDoorTarget, FrameTime() * (1 / animtime))
+
+                self:SetPoseParameter("switch", self.IntDoorPos)
+                self:InvalidateBoneCache()
+            end
+        end
 
     end
 end

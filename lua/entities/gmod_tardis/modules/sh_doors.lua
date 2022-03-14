@@ -87,14 +87,14 @@ if SERVER then
         self:SetBodygroup(1,1)
     end)
 
-    ENT:AddHook("ToggleDoor", "intdoors", function(self,open)
-        local intdoor=TARDIS:GetPart(self.interior,"door")
-        if IsValid(intdoor) then
+    ENT:AddHook("ToggleDoor", "interior_doors", function(self,open)
+        local int_door=TARDIS:GetPart(self.interior,"door")
+        if IsValid(int_door) then
             local override = self:CallHook("DoorCollisionOverride")
             if (override == nil and open) or override==false then
-                intdoor:SetCollisionGroup( COLLISION_GROUP_WORLD )
+                int_door:SetCollide(false)
             elseif override or override==nil then
-                intdoor:SetCollisionGroup( COLLISION_GROUP_NONE )
+                int_door:SetCollide(true)
             end
         end
     end)
@@ -164,33 +164,33 @@ if SERVER then
         -- this fixes interior door skin if it's chosen at spawn
         -- we can not do it at the beginning because the interior doesn't exist yet
         if self:GetData("intdoor_skin_needs_update", false) and IsValid(self.interior) then
-            local intdoor=TARDIS:GetPart(self.interior,"door")
-            if IsValid(intdoor) then
+            local int_door=TARDIS:GetPart(self.interior,"door")
+            if IsValid(int_door) then
                 self:SetData("intdoor_skin_needs_update", false, true)
-                intdoor:SetSkin(self:GetSkin())
+                int_door:SetSkin(self:GetSkin())
             end
         end
     end)
 
     ENT:AddHook("SkinChanged","doors",function(self,i)
         local door=TARDIS:GetPart(self,"door")
-        local intdoor=TARDIS:GetPart(self.interior,"door")
+        local int_door=TARDIS:GetPart(self.interior,"door")
         if IsValid(door) then
             door:SetSkin(i)
         end
-        if IsValid(intdoor) then
-            intdoor:SetSkin(i)
+        if IsValid(int_door) then
+            int_door:SetSkin(i)
         end
     end)
 
     ENT:AddHook("BodygroupChanged","doors",function(self,bodygroup,value)
         local door=TARDIS:GetPart(self,"door")
-        local intdoor=TARDIS:GetPart(self.interior,"door")
+        local int_door=TARDIS:GetPart(self.interior,"door")
         if IsValid(door) then
             door:SetBodygroup(bodygroup,value)
         end
-        if IsValid(intdoor) then
-            intdoor:SetBodygroup(bodygroup,value)
+        if IsValid(int_door) then
+            int_door:SetBodygroup(bodygroup,value)
         end
     end)
 else
@@ -217,24 +217,46 @@ else
     end)
 
     ENT:AddHook("ToggleDoorReal","doorsounds",function(self,open)
+        if not TARDIS:GetSetting("doorsounds-enabled") then return end
+        if not TARDIS:GetSetting("sound") then return end
+
         local extsnds = self.metadata.Exterior.Sounds.Door
         local intsnds = self.metadata.Interior.Sounds.Door or extsnds
 
-        if TARDIS:GetSetting("doorsounds-enabled") and TARDIS:GetSetting("sound") then
-            if extsnds.enabled then
-                local extpart = self:GetPart("door")
-                local extsnd = open and extsnds.open or extsnds.close
-                if IsValid(extpart) and extpart.exterior:CallHook("ShouldEmitDoorSound")~=false then
-                    extpart:EmitSound(extsnd)
-                end
-            end
-            if intsnds.enabled and IsValid(self.interior) then
-                local intpart = self.interior:GetPart("door")
-                local intsnd = open and intsnds.open or intsnds.close
-                if IsValid(intpart) then
-                    intpart:EmitSound(intsnd)
-                end
+        if extsnds.enabled then
+            local extpart = self:GetPart("door")
+            local extsnd = open and extsnds.open or extsnds.close
+            if IsValid(extpart) and extpart.exterior:CallHook("ShouldEmitDoorSound")~=false then
+                extpart:EmitSound(extsnd)
             end
         end
+        if intsnds.enabled and IsValid(self.interior) then
+            local intpart = self.interior:GetPart("door")
+            local intsnd = open and intsnds.open or intsnds.close
+            if IsValid(intpart) then
+                intpart:EmitSound(intsnd)
+            end
+        end
+
+    end)
+
+    ENT:AddHook("ToggleDoorReal","intdoor_sounds_sync",function(self,open)
+        if not IsValid(self.interior) then return end
+
+        local intdoor_part = self.interior:GetPart("intdoor")
+        if not IsValid(intdoor_part) then return end
+
+        if self:GetData("intdoor_behaviour") ~= "sync" then return end
+        if not TARDIS:GetSetting("doorsounds-enabled") then return end
+        if not TARDIS:GetSetting("sound") then return end
+
+        local sounds = self.metadata.Exterior.Sounds
+        local intdoor_sounds = sounds.Door or sounds.IntDoor
+
+        if not intdoor_sounds.enabled then return end
+
+        local intdoor_sound = open and intdoor_sounds.open or intdoor_sounds.close
+        intdoor_part:EmitSound(intdoor_sound)
+
     end)
 end

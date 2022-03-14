@@ -47,7 +47,8 @@ T.Interior = {
         nopowerbrightness = 0.05 --Interior brightness with no power. Should always be darker than basebrightness.
     },
     ScreenDistance = 500,
-    ScreensEnabled = true
+    ScreensEnabled = true,
+    IntDoorAnimationTime = 3,
 }
 T.Exterior = {
     Model = "models/drmatt/tardis/exterior/exterior.mdl",

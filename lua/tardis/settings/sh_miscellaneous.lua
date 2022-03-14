@@ -222,5 +222,26 @@ TARDIS:AddSetting({
 })
 
 --------------------------------------------------------------------------------
--- Tips
+
+TARDIS:AddSetting({
+    id="intdoor_behaviour",
+    type="list",
+    value="non-clickable",
+    get_values_func = function()
+        return {
+            { "Default (set by interior)", "default" },
+            { "Sync with exterior doors", "sync" },
+            { "Openable by hand", "clickable" },
+            { "Non-clickable (use the switch)", "non-clickable" },
+        }
+    end,
+
+    class="networked",
+
+    option=true,
+    section=SETTING_SECTION,
+    subsection="Spawning the TARDIS",
+    name="Double Door Behaviour",
+    desc="How the double door will be opened/closed"
+})
 
