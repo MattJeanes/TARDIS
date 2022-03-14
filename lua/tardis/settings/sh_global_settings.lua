@@ -25,7 +25,13 @@ TARDIS:AddSetting({
     type="integer",
     value=1000,
     min=1,
-    max=100000,
+    max=10000,
+    round_func = function(x)
+        if x < 50 then return x end
+        if x < 500 then return (x - x % 10) end
+        if x < 2000 then return (x - x % 100) end
+        return (x - x % 500)
+    end,
 
     class="global",
     convar = {
@@ -46,7 +52,10 @@ TARDIS:AddSetting({
     type="number",
     value=2.5,
     min=1.0,
-    max=4.0,
+    max=8.0,
+    round_func = function(x)
+        return (x - x % 0.5)
+    end,
 
     class="global",
     convar = {

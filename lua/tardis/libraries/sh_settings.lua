@@ -56,12 +56,21 @@ function TARDIS:SetSetting(id, value)
     local data = self.SettingsData[id]
     if not data then error("Requested setting ", id, " does not exist") end
 
-    if data.type == "integer" then
+    if value ~= nil and data.type == "integer" then
         value = math.Round(value)
     end
 
-    if data.min and data.type == "number" or data.type == "integer" then
-        value = math.max(data.min, math.min(data.max, value))
+    if value ~= nil and (data.type == "number" or data.type == "integer") then
+        if data.min and data.max then
+            value = math.max(data.min, math.min(data.max, value))
+        end
+        if data.round_func then
+            value = data.round_func(value)
+        end
+    end
+
+    if value == nil and data.class == "global" then
+        value = data.value
     end
 
     if SERVER then
@@ -224,6 +233,8 @@ function TARDIS:ResetSectionSettings(section)
         if (section ~= nil and v.section == section) or (section == nil and v.option ~= nil) then
             if SERVER then
                 self.GlobalSettings[k] = nil
+            elseif v.class == "global" then
+                TARDIS:GlobalSettingChange(k, nil)
             else
                 self.NetworkedSettings[k] = nil
                 self.LocalSettings[k] = nil
