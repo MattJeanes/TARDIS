@@ -54,7 +54,7 @@ end
 
 function TARDIS:SetSetting(id, value)
     local data = self.SettingsData[id]
-    if not data then error("Requested setting ", id, " does not exist") end
+    if not data then error("Requested setting " .. id .. " does not exist") end
 
     if value ~= nil and data.type == "integer" then
         value = math.Round(value)
@@ -119,10 +119,8 @@ end
 
 function TARDIS:GetSetting(id, src)
     local ply
-    if IsEntity(src) and src:IsPlayer() then
-        ply = src
-    elseif IsEntity(src) then
-        ply = src:GetCreator()
+    if IsEntity(src) then
+        ply = (src:IsPlayer() and src) or src:GetCreator()
     end
 
     if not id then error("Requested setting with no id") end
@@ -163,7 +161,7 @@ function TARDIS:GetSetting(id, src)
         error("Networked setting " .. id .. " was requested for invalid player " .. tostring(ply))
     end
 
-    error("Requested setting " .. "either doesn't exist or has no defined class")
+    error("Requested setting " .. id .. "either doesn't exist or has no defined class")
     return
 end
 
