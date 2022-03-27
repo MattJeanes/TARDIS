@@ -33,36 +33,6 @@ if SERVER then
     return
 end
 
-TARDIS:AddSetting({
-    id="music-enabled",
-    name="Enabled",
-    desc="Whether music is played through the screens or not",
-    section="Music",
-    value=true,
-    type="bool",
-    option=true
-})
-TARDIS:AddSetting({
-    id="music-volume",
-    name="Volume",
-    desc="The volume of the music played through the screens",
-    section="Music",
-    value=100,
-    type="number",
-    min=0,
-    max=100,
-    option=true
-})
-TARDIS:AddSetting({
-    id="music-exit",
-    name="Stop on exit",
-    desc="Whether music is stopped when leaving the TARDIS",
-    section="Music",
-    value=true,
-    type="bool",
-    option=true
-})
-
 function ENT:StopMusic(network)
     if IsValid(self.music) then
         if self.music:GetState() == GMOD_CHANNEL_PLAYING then

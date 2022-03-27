@@ -1,10 +1,3 @@
-TARDIS:AddSetting({
-    id="redecorate-interior",
-    name="Redecoration interior",
-    value=false,
-    networked=true
-})
-
 local ext_saved_data_names = {
     "cloak",
     "floatfirst",
@@ -185,6 +178,6 @@ else -- CLIENT
 
     ENT:OnMessage("redecorate-reset", function(self)
         if not IsValid(self) or (not LocalPlayer() == self:GetCreator()) then return end
-        TARDIS:SetSetting("redecorate-interior",false,true)
+        TARDIS:SetSetting("redecorate-interior", false)
     end)
 end

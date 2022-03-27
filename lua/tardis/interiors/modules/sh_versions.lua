@@ -1,14 +1,3 @@
-TARDIS:AddSetting({
-    id="use_classic_door_interiors",
-    name="Use classic door interiors by default",
-    value=true,
-    type="bool",
-    networked=true,
-    option=true,
-    section="Misc",
-    desc="Whether classic (big) door versions of interiors will spawn by default"
-})
-
 function TARDIS:InitializeVersions(int_id)
     local versions = self.Metadata[int_id].Versions or {}
 
@@ -25,7 +14,7 @@ function TARDIS:InitializeVersions(int_id)
 end
 
 function TARDIS:ShouldUseClassicDoors(ply)
-    return TARDIS:GetSetting("use_classic_door_interiors", true, ply)
+    return TARDIS:GetSetting("use_classic_door_interiors", ply)
 end
 
 function TARDIS:SelectDoorVersionID(x, ply)

@@ -16,7 +16,7 @@ surface.CreateFont("TARDIS-HUD-Small", {
 })
 
 hook.Add("HUDPaint", "TARDIS-HUD", function()
-    if not TARDIS:GetSetting("health-enabled", true) then return end
+    if not TARDIS:GetSetting("health-enabled") then return end
     if not (LocalPlayer():GetTardisData("interior") or LocalPlayer():GetTardisData("exterior")) then return end
     local tardis = LocalPlayer():GetTardisData("exterior")
     if not IsValid(tardis) then return end
@@ -41,9 +41,14 @@ end)
 
 list.Set("DesktopWindows", "TardisHUD", {
     title = "TARDIS",
-    icon = "materials/vgui/entities/tardis/default.png",
+    icon = "materials/vgui/tardis_context_menu.png",
     init = function()
-        TARDIS:HUDScreen()
+        local ext = LocalPlayer():GetTardisData("exterior")
+        if IsValid(ext) then
+            TARDIS:HUDScreen()
+        else
+            TARDIS:ErrorMessage(LocalPlayer(), "You are not in the TARDIS")
+        end
     end
 })
 

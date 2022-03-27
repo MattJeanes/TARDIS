@@ -1,17 +1,9 @@
-TARDIS:AddSetting({
-    id = "interior_custom_settings",
-    name = "Interior-specific settings",
-    value = {},
-    option = false,
-    networked = true
-})
-
 function TARDIS:GetCustomSettings(ply)
-    return TARDIS:GetSetting("interior_custom_settings", {}, ply) or {} -- nil is never allowed
+    return TARDIS:GetSetting("interior_custom_settings", ply) or {} -- nil is never allowed
 end
 
 function TARDIS:SaveCustomSettings(settings)
-    TARDIS:SetSetting("interior_custom_settings", settings, true)
+    TARDIS:SetSetting("interior_custom_settings", settings)
 end
 
 function TARDIS:GetCustomSetting(int_id, setting_id, ply, default_val)

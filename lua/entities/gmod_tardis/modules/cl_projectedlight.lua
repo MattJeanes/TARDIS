@@ -1,51 +1,5 @@
 --Fake light bleeding
 
---Settings
-
-TARDIS:AddSetting({
-    id="extprojlight-enabled",
-    name="Light Enabled",
-    section="Exterior Door",
-    desc="Should light shine out through the doors when they're open?",
-    value=true,
-    type="bool",
-    option=true,
-})
-
-TARDIS:AddSetting({
-    id="extprojlight-brightness-override",
-    name="Light Brightness Override",
-    section="Exterior Door",
-    desc="Override brightness of light, reset for default",
-    value=false,
-    type="number",
-    min=0,
-    max=10,
-    option=true,
-})
-
-TARDIS:AddSetting({
-    id="extprojlight-distance-override",
-    name="Light Distance Override",
-    section="Exterior Door",
-    desc="Override distance of light, reset for default",
-    value=false,
-    min=0,
-    max=5000,
-    type="number",
-    option=true,
-})
-
-TARDIS:AddSetting({
-    id="extprojlight-color-override",
-    name="Light Color Override",
-    section="Exterior Door",
-    desc="Override color of light, reset for default",
-    value=false,
-    type="color",
-    option=true,
-})
-
 --Methods
 
 function ENT:CalcLightBrightness(pos)
@@ -58,8 +12,8 @@ function ENT:CalcLightBrightness(pos)
 end
 
 function ENT:PickProjectedLightColor()
-    local override = TARDIS:GetSetting("extprojlight-color-override")
-    if override then return override end
+    local override = TARDIS:GetSetting("extprojlight-override-color")
+    if override then return TARDIS:GetSetting("extprojlight-color") end
     local warning = self:GetData("health-warning",false)
     local color = self.metadata.Exterior.ProjectedLight.color or self.metadata.Interior.Light.color
     local warncolor = self.metadata.Exterior.ProjectedLight.warncolor or self.metadata.Interior.Light.warncolor
@@ -68,11 +22,13 @@ function ENT:PickProjectedLightColor()
 end
 
 function ENT:PickProjectedLightBrightness()
-    return TARDIS:GetSetting("extprojlight-brightness-override") or self.metadata.Exterior.ProjectedLight.brightness
+    local override = TARDIS:GetSetting("extprojlight-override-brightness")
+    return override and TARDIS:GetSetting("extprojlight-brightness") or self.metadata.Exterior.ProjectedLight.brightness
 end
 
 function ENT:PickProjectedLightDistance()
-    return TARDIS:GetSetting("extprojlight-distance-override") or self.metadata.Exterior.ProjectedLight.farz
+    local override = TARDIS:GetSetting("extprojlight-override-distance")
+    return override and TARDIS:GetSetting("extprojlight-distance") or self.metadata.Exterior.ProjectedLight.farz
 end
 
 function ENT:CreateProjectedLight()

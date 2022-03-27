@@ -71,16 +71,6 @@ if SERVER then
         end
     end)
 else
-    TARDIS:AddSetting({
-        id="locksound-enabled",
-        name="Lock Sound",
-        desc="Whether a sound is made when toggling the lock or not",
-        section="Sounds",
-        value=true,
-        type="bool",
-        option=true
-    })
-
     ENT:OnMessage("locksound",function(self)
         local extsound = self.metadata.Exterior.Sounds.Lock
         local intsound = self.metadata.Interior.Sounds.Lock or extsound

@@ -1,45 +1,5 @@
 -- Flight
 
--- Settings
-
-TARDIS:AddSetting({
-    id="opened-door-no-boost",
-    name="Disable boost with opened doors",
-    desc="Should the TARDIS boost stop working when doors are opened in flight?",
-    section="Misc",
-    value=false,
-    type="bool",
-    option=true,
-    networked=true
-})
-
-TARDIS:AddSetting({
-    id="boost-speed",
-    name="Boost Speed",
-    desc="The increase of speed the TARDIS gets with the boost key enabled",
-    section="Misc",
-    type="number",
-    value=2.5,
-    min=1.0,
-    max=4.0,
-    networked=true
-})
-
-CreateConVar("tardis2_boost_speed", 2.5, {FCVAR_ARCHIVE, FCVAR_REPLICATED}, "TARDIS - Boost Speed")
-
-if SERVER then
-    cvars.AddChangeCallback("tardis2_boost_speed", function(cvname, oldvalue, newvalue)
-        local nvnum = tonumber(newvalue)
-        if nvnum < 1.0 or nvnum > 4.0 then
-            nvnum = math.max(1.0, math.min(4.0, nvnum))
-            GetConVar("tardis2_boost_speed"):SetFloat(nvnum)
-            return
-        end
-        print("TARDIS boost speed has been set to "..nvnum)
-        TARDIS:SetSetting("boost-speed", nvnum, true)
-    end, "UpdateOnChange")
-end
-
 -- Binds
 TARDIS:AddKeyBind("flight-toggle",{
     name="Toggle Flight",
@@ -265,7 +225,7 @@ if SERVER then
                     local force_mult
                     local door = self:GetData("doorstatereal", false)
 
-                    if door and TARDIS:GetSetting("opened-door-no-boost", true, self:GetCreator()) then
+                    if door and TARDIS:GetSetting("opened-door-no-boost", self) then
                         force_mult = 0.25
                         brakes = true -- no spin, no tilt
                         local lastmsg = self.bad_flight_boost_msg
@@ -377,16 +337,6 @@ if SERVER then
         end
     end)
 else
-    TARDIS:AddSetting({
-        id="flight-externalsound",
-        name="Flightmode External Sound",
-        section="Sounds",
-        desc="Whether the flight sound can be heard on the outside or not",
-        value=true,
-        type="bool",
-        option=true
-    })
-
     ENT:AddHook("OnRemove", "flight", function(self)
         if self.flightsound then
             self.flightsound:Stop()
