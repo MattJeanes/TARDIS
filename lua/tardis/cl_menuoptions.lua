@@ -22,6 +22,9 @@ hook.Add("PopulateToolMenu", "TARDIS2-PopulateToolMenu", function()
     for k,section in ipairs(sections) do
         local section_id = "TARDIS2_Options_" .. section
         local section_text = " " .. section
+
+        local section_elements = {}
+
         spawnmenu.AddToolMenuOption("Options", "TARDIS", section_id, section_text, "", "", function(panel)
             for a,b in ipairs(options) do
                 local id,data=b[1],b[2]
@@ -29,6 +32,7 @@ hook.Add("PopulateToolMenu", "TARDIS2-PopulateToolMenu", function()
                     if not data.subsection then
                         local el1,el2 = TARDIS:CreateOptionInterface(id, data)
                         panel:AddItem(el1)
+                        table.insert(section_elements, el1)
                         if el2 then panel:AddItem(el2) end
                     end
 
@@ -58,6 +62,7 @@ hook.Add("PopulateToolMenu", "TARDIS2-PopulateToolMenu", function()
                             if data2.section == section and data2.subsection == data.subsection then
                                 local el1,el2 = TARDIS:CreateOptionInterface(id2, data2)
                                 subsection:AddItem(el1)
+                                table.insert(section_elements, el1)
                                 if el2 then subsection:AddItem(el2) end
                             end
                         end
@@ -82,7 +87,12 @@ hook.Add("PopulateToolMenu", "TARDIS2-PopulateToolMenu", function()
                     "OK", function()
                         TARDIS:ResetSectionSettings(section)
                         TARDIS:Message(LocalPlayer(), "TARDIS clientside settings of section \"" .. section ..  "\" have been reset. You may need to respawn the TARDIS for all changes to apply.")
-                        RunConsoleCommand("spawnmenu_reload")
+
+                        for i,v in ipairs(section_elements) do
+                            if v.RefreshVal then
+                                v:RefreshVal()
+                            end
+                        end
                     end,
                     "Cancel", nil
                 ):SetSkin("TARDIS")

@@ -11,11 +11,8 @@ function TARDIS:CreateOptionInterface(id, data)
     local elem
     local elem2 = nil
 
-    local setting = TARDIS:GetSetting(id)
-
     if data.type == "bool" then
         elem = vgui.Create("DCheckBoxLabel")
-        elem:SetChecked(setting)
         elem.OnChange = function(self, val)
             TARDIS:SetSetting(id, val)
             self.lastchange = CurTime()
@@ -27,6 +24,13 @@ function TARDIS:CreateOptionInterface(id, data)
             end
         end
 
+        elem.RefreshVal = function(self)
+            local setting = TARDIS:GetSetting(id)
+            elem:SetChecked(setting)
+        end
+
+
+
     elseif data.type == "number" or data.type == "integer" then
         elem = vgui.Create("DNumSlider")
         elem:SetMinMax(data.min, data.max)
@@ -34,8 +38,7 @@ function TARDIS:CreateOptionInterface(id, data)
         if data.type == "integer" then
             elem:SetDecimals(0)
         end
-        elem:SetValue(setting)
-        elem:GetTextArea():SetText(tostring(setting))
+
         elem.OnValueChanged = function(self, val)
             self.lastchange = CurTime()
             self.lastchange_val = val
@@ -52,6 +55,14 @@ function TARDIS:CreateOptionInterface(id, data)
             end
         end
 
+        elem.RefreshVal = function(self)
+            local setting = TARDIS:GetSetting(id)
+            elem:SetValue(setting)
+            elem:GetTextArea():SetText(tostring(setting))
+        end
+
+
+
     elseif data.type=="color" then
         elem = vgui.Create("DForm")
         elem:SetLabel(text)
@@ -62,7 +73,7 @@ function TARDIS:CreateOptionInterface(id, data)
         mixer:SetPalette(false)
         mixer:SetAlphaBar(false)
         mixer:SetWangs(true)
-        mixer:SetColor(setting)
+
         mixer.ValueChanged = function(self, val)
             TARDIS:SetSetting(id, val)
             self.lastchange = CurTime()
@@ -80,6 +91,13 @@ function TARDIS:CreateOptionInterface(id, data)
         spacer:SetTall(2)
         elem:AddItem(spacer)
 
+        elem.RefreshVal = function(self)
+            local setting = TARDIS:GetSetting(id)
+            mixer:SetColor(setting)
+        end
+
+
+
     elseif data.type=="list" then
         elem = vgui.Create("DLabel")
 
@@ -91,7 +109,6 @@ function TARDIS:CreateOptionInterface(id, data)
             end
         end
 
-        elem2:SetText(elem2:GetOptionTextByData(setting))
         tooltip = tooltip .. " (\"" .. elem2:GetOptionTextByData(data.value) .. "\")"
 
         elem2.OnSelect = function(self, index, value, selected_data)
@@ -106,6 +123,13 @@ function TARDIS:CreateOptionInterface(id, data)
             end
         end
 
+        elem.RefreshVal = function(self)
+            local setting = TARDIS:GetSetting(id)
+            elem2:SetText(elem2:GetOptionTextByData(setting))
+        end
+
+
+
     else
         elem = vgui.Create("DLabel")
     end
@@ -117,6 +141,8 @@ function TARDIS:CreateOptionInterface(id, data)
     if elem2 then
         elem2:SetTooltip(tooltip)
     end
+
+    elem:RefreshVal()
 
     return elem, elem2
 end
