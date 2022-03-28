@@ -1,5 +1,7 @@
 -- Lights
 
+if CLIENT then
+
 function ENT:DrawLight(id,light)
     if self:CallHook("ShouldDrawLight",id,light)==false then return end
     local dlight = DynamicLight(id, true)
@@ -40,7 +42,6 @@ function ENT:AddRoundThing(pos)
     self.roundthings[pos]=util.GetPixelVisibleHandle()
 end
 
-
 ENT:AddHook("Initialize", "lights-roundthings", function(self)
     if self.metadata.Interior.RoundThings then
         self.roundthingmat=Material("sprites/light_ignorez")
@@ -65,3 +66,5 @@ ENT:AddHook("Draw", "lights-roundthings", function(self)
         end
     end
 end)
+
+end
