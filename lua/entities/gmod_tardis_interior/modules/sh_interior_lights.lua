@@ -77,7 +77,7 @@ else -- SERVER
             self.lamps = {}
 
             for k,v in pairs(lamps) do
-                local lamp = MakeLamp(self:GetCreator(),
+                local lamp = MakeLamp(nil, --self:GetCreator(),
                     v.color.r, v.color.g, v.color.b, KEY_NONE, true,
                     v.texture or "effects/flashlight/soft",
                     "models/maxofs2d/lamp_projector.mdl",
