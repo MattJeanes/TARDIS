@@ -17,7 +17,7 @@ ENT:AddHook("CanEnableScreens", "power", function(self)
     end
 end)
 
-function ENT:GetScreensOn(on)
+function ENT:GetScreensOn()
     return self:GetData("screens_on", false)
 end
 
