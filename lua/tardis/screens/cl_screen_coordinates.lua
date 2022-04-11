@@ -46,12 +46,12 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Coordinates", menu=fals
     namebox:SetPlaceholderText("Name")
 
     local function updatetextinputs(pos,ang,name)
-        pitch:SetText(ang.p)
-        yaw:SetText(ang.y)
-        roll:SetText(ang.r)
-        x:SetText(pos.x)
-        y:SetText(pos.y)
-        z:SetText(pos.z)
+        pitch:SetText(ang.p or 0.0)
+        yaw:SetText(ang.y or 0.0)
+        roll:SetText(ang.r or 0.0)
+        x:SetText(pos.x or 0.0)
+        y:SetText(pos.y or 0.0)
+        z:SetText(pos.z or 0.0)
         if name then namebox:SetText(name) end
     end
     local function fetchtextinputs()
