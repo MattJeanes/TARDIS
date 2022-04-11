@@ -45,8 +45,16 @@ function ENT:SaveCreator()
     end
 end
 
-function ENT:GetCreatorAdvanced()
-    return self:GetCreator() or player.GetByAccountID(self.TardisCreatorID)
+function ENT:GetCreatorAdv()
+    local ply = self:GetCreator()
+    if IsValid(ply) then
+        return ply
+    end
+    ply = player.GetByAccountID(self.TardisCreatorID)
+    if IsValid(ply) then
+        self:SetCreator(ply)
+        return ply
+    end
 end
 
 function ENT:CallHook(name,...)
