@@ -1,5 +1,9 @@
 -- Handles players inside the tardis interior
 
+ENT:AddHook("Initialize", "save_creator", function(self)
+    ENT:SaveCreator()
+end)
+
 if SERVER then
     hook.Add("PlayerSpawn", "tardis-handleplayers", function(ply)
         local int=ply:GetTardisData("interior")

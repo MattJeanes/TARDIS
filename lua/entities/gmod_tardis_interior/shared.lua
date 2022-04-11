@@ -38,6 +38,17 @@ function ENT:CallCommonHook(name, ...)
     return self.exterior:CallCommonHook(name, ...)
 end
 
+function ENT:SaveCreator()
+    local ply = self:GetCreator()
+    if IsValid(ply) then
+        self.TardisCreatorID = ply:AccountID()
+    end
+end
+
+function ENT:GetCreatorAdvanced()
+    return self:GetCreator() or player.GetByAccountID(self.TardisCreatorID)
+end
+
 function ENT:CallHook(name,...)
     local a,b,c,d,e,f
     a,b,c,d,e,f=self.BaseClass.CallHook(self,name,...)
