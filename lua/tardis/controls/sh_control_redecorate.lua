@@ -1,7 +1,7 @@
 TARDIS:AddControl({
     id = "redecorate",
     ext_func=function(self,ply)
-        if ply ~= self:GetCreator() then
+        if ply ~= self:GetCreatorAdv() then
             TARDIS:ErrorMessage(ply, "You cannot redecorate someone else's TARDIS")
             return
         end

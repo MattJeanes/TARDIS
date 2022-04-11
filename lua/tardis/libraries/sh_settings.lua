@@ -120,7 +120,7 @@ end
 function TARDIS:GetSetting(id, src)
     local ply
     if IsEntity(src) then
-        ply = (src:IsPlayer() and src) or src:GetCreator()
+        ply = (src:IsPlayer() and src) or src:GetCreatorAdv()
     end
 
     if not id then error("Requested setting with no id") end

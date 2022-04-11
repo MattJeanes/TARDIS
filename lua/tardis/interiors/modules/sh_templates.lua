@@ -108,7 +108,7 @@ function TARDIS:MergeInteriorTemplates(cur_metadata, apply_conditions, ent)
 
         if template and template_metadata
             and ((not apply_conditions and not template.condition)
-                or (apply_conditions and template.condition and template.condition(id, ent:GetCreator(), ent)))
+                or (apply_conditions and template.condition and template.condition(id, ent:GetCreatorAdv(), ent)))
         then
             if template.parts_rotation then
                 template_metadata = AddInteriorPartsRotation(template_metadata, template.parts_rotation)

@@ -290,7 +290,7 @@ if SERVER then
         end
         for k,v in pairs(tempparts) do
             local e=ents.Create(v)
-            Doors:SetupOwner(e,ent:GetCreator())
+            Doors:SetupOwner(e,ent:GetCreatorAdv())
             e.exterior=(ent.TardisExterior and ent or ent.exterior)
             e.interior=(ent.TardisInterior and ent or ent.interior)
             e.parent=ent

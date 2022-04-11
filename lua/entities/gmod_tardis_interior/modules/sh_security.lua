@@ -24,7 +24,7 @@ ENT:AddHook("Initialize","security", function(self)
 end)
 
 ENT:AddHook("CanUsePart","security",function(self,part,ply)
-    if self:GetSecurity() and (ply~=self:GetCreator()) then
+    if self:GetSecurity() and (ply~=self:GetCreatorAdv()) then
         if part.BypassIsomorphic then return end
         TARDIS:Message(ply, "This TARDIS uses Isomorphic Security. You may not use any controls.")
         return false,false

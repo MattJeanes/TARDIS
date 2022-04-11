@@ -133,7 +133,7 @@ if SERVER then
         self:CallHook("RepairFinished")
         self:SetPower(true)
         self:SetLocked(false, nil, true)
-        TARDIS:Message(self:GetCreator(), "Your TARDIS has finished self-repairing")
+        TARDIS:Message(self:GetCreatorAdv(), "Your TARDIS has finished self-repairing")
         self:StopSmoke()
         self:FlashLight(1.5)
     end

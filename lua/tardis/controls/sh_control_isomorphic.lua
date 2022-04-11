@@ -1,7 +1,7 @@
 TARDIS:AddControl({
     id = "isomorphic",
     int_func=function(self,ply)
-        if ply ~= self:GetCreator() then
+        if ply ~= self:GetCreatorAdv() then
             TARDIS:ErrorMessage(ply, "This is not your TARDIS")
             return
         end
