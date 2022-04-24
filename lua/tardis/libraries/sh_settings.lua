@@ -140,7 +140,7 @@ function TARDIS:GetSetting(id, src)
 
     if data.class == "local" then
         if SERVER then
-            error("Local setting " .. id .. "is being requested serverside")
+            error("Local setting " .. id .. " is being requested serverside")
         end
         return select_return_val(self.LocalSettings[id])
     end
@@ -161,7 +161,7 @@ function TARDIS:GetSetting(id, src)
         error("Networked setting " .. id .. " was requested for invalid player " .. tostring(ply))
     end
 
-    error("Requested setting " .. id .. "either doesn't exist or has no defined class")
+    error("Requested setting " .. id .. " either doesn't exist or has no defined class")
     return
 end
 

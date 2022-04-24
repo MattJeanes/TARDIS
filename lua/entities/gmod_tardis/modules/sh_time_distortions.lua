@@ -13,6 +13,7 @@ local function TimeDistortionsPresent(pos, radius)
 end
 
 local function DistortionsInside(ent)
+    if not IsValid(ent) or not IsValid(ent.interior) then return end
     local int_radius = ent.metadata.Interior.ExitDistance
     return TimeDistortionsPresent(ent.interior:GetPos(), int_radius)
 end

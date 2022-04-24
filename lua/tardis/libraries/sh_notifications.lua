@@ -11,6 +11,8 @@ else
 end
 
 function TARDIS:Message(ply, message, error)
+    if not IsValid(ply) then return end
+
     if SERVER then
         net.Start("tardis_message")
             net.WriteBool(error)

@@ -51,7 +51,7 @@ function ENT:CallCommonHook(name, ...)
         return a,b,c,d,e,f
     end
 
-    if self.interior then
+    if IsValid(self.interior) then
         a,b,c,d,e,f = self.interior:CallHook(name, ...)
         if a~=nil then
             return a,b,c,d,e,f

@@ -76,6 +76,6 @@ else
     ENT:OnMessage("thirdperson-careful-hint", function(self)
         local use = string.upper(input.LookupBinding("+use", true)) or "USE"
         local walk = string.upper(input.LookupBinding("+walk", true)) or "WALK"
-        TARDIS:Message(ply, "HINT: Use \'" .. walk .. " + " .. use .. "\' keys to enter third person")
+        TARDIS:Message(LocalPlayer(), "HINT: Use \'" .. walk .. " + " .. use .. "\' keys to enter third person")
     end)
 end

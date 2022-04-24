@@ -307,9 +307,7 @@ if SERVER then
             and not self:GetData("redecorate")
             and not self:GetData("redecorate_parent")
         then
-            self:Timer("VortexChangePositionTime", 3, function()
-                self:ChangePosition(self:GetRandomLocation(false), self:GetAngles(), false)
-            end)
+            self:ChangePosition(self:GetRandomLocation(false), self:GetAngles(), false)
         end
     end)
 
