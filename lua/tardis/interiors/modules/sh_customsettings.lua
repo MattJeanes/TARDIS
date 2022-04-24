@@ -1,17 +1,5 @@
-TARDIS:AddSetting({
-    id = "interior_custom_settings",
-    name = "Interior-specific settings",
-    value = {},
-    option = false,
-    networked = true
-})
-
 function TARDIS:GetCustomSettings(ply)
-    return TARDIS:GetSetting("interior_custom_settings", {}, ply) or {} -- nil is never allowed
-end
-
-function TARDIS:SaveCustomSettings(settings)
-    TARDIS:SetSetting("interior_custom_settings", settings, true)
+    return TARDIS:GetSetting("interior_custom_settings", ply) or {} -- nil is never allowed
 end
 
 function TARDIS:GetCustomSetting(int_id, setting_id, ply, default_val)
@@ -25,7 +13,7 @@ function TARDIS:GetCustomSetting(int_id, setting_id, ply, default_val)
     end
 
     if setting_id == "preferred_version" then
-        return self:InitPreferredVersionSetting(int_id, ply)
+        return self:DefaultPreferredVersion(int_id)
     end
     if setting_id == "preferred_door_type" then
         return "default"
@@ -41,31 +29,37 @@ function TARDIS:GetCustomSetting(int_id, setting_id, ply, default_val)
     return default_val
 end
 
-function TARDIS:SetCustomSetting(int_id, setting_id, value, ply)
-    local int_id = self:GetMainVersionId(int_id)
-
-    local custom_settings = self:GetCustomSettings(ply)
-    custom_settings[int_id] = custom_settings[int_id] or {}
-    custom_settings[int_id][setting_id] = value
-    self:SaveCustomSettings(custom_settings)
-end
-
-function TARDIS:ResetCustomSettings(ply, int_id)
-    local int_id = self:GetMainVersionId(int_id)
-
-    if int_id == nil then
-        self:SaveCustomSettings({})
-        return
+if CLIENT then
+    function TARDIS:SaveCustomSettings(settings)
+        TARDIS:SetSetting("interior_custom_settings", settings)
     end
 
-    local custom_settings = self:GetCustomSettings(ply)
-    custom_settings[int_id] = {}
-    self:SaveCustomSettings(custom_settings)
-end
+    function TARDIS:SetCustomSetting(int_id, setting_id, value)
+        local int_id = self:GetMainVersionId(int_id)
 
-function TARDIS:ToggleCustomSetting(int_id, setting_id, ply)
-    local value = TARDIS:GetCustomSetting(int_id, setting_id, ply)
-    TARDIS:SetCustomSetting(int_id, setting_id, (not value), ply)
+        local custom_settings = self:GetCustomSettings(LocalPlayer())
+        custom_settings[int_id] = custom_settings[int_id] or {}
+        custom_settings[int_id][setting_id] = value
+        self:SaveCustomSettings(custom_settings)
+    end
+
+    function TARDIS:ResetCustomSettings(int_id)
+        local int_id = self:GetMainVersionId(int_id)
+
+        if int_id == nil then
+            self:SaveCustomSettings({})
+            return
+        end
+
+        local custom_settings = self:GetCustomSettings(LocalPlayer())
+        custom_settings[int_id] = {}
+        self:SaveCustomSettings(custom_settings)
+    end
+
+    function TARDIS:ToggleCustomSetting(int_id, setting_id)
+        local value = TARDIS:GetCustomSetting(int_id, setting_id, ply)
+        TARDIS:SetCustomSetting(int_id, setting_id, (not value))
+    end
 end
 
 ----------------------------------------------------------------------------------------------------
@@ -75,10 +69,12 @@ function TARDIS:IsFavoriteInt(id, ply)
     return self:GetCustomSetting(id, "is_favorite", ply, false)
 end
 
-function TARDIS:SetFavoriteInt(id, favorite, ply)
-    self:SetCustomSetting(id, "is_favorite", favorite, ply)
-end
+if CLIENT then
+    function TARDIS:SetFavoriteInt(id, favorite)
+        self:SetCustomSetting(id, "is_favorite", favorite, ply)
+    end
 
-function TARDIS:ToggleFavoriteInt(id, ply)
-    self:ToggleCustomSetting(id, "is_favorite", ply)
+    function TARDIS:ToggleFavoriteInt(id)
+        self:ToggleCustomSetting(id, "is_favorite")
+    end
 end

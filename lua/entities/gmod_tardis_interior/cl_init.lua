@@ -8,3 +8,4 @@ ENT:AddHook("PlayerInitialize", "interior", function(self)
     self.Portal=self.metadata.Interior.Portal
     self.ExitDistance=self.metadata.Interior.ExitDistance
 end)
+

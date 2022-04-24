@@ -43,6 +43,22 @@ function ENT:ListHooks(listInteriorHooks)
     if listInteriorHooks then self.interior:ListHooks() end
 end
 
+function ENT:CallCommonHook(name, ...)
+    local a,b,c,d,e,f
+
+    a,b,c,d,e,f = self:CallHook(name, ...)
+    if a~=nil then
+        return a,b,c,d,e,f
+    end
+
+    if IsValid(self.interior) then
+        a,b,c,d,e,f = self.interior:CallHook(name, ...)
+        if a~=nil then
+            return a,b,c,d,e,f
+        end
+    end
+end
+
 function ENT:CallHook(name,...)
     local a,b,c,d,e,f
     a,b,c,d,e,f=self.BaseClass.CallHook(self,name,...)
@@ -62,6 +78,16 @@ function ENT:CallHook(name,...)
             if body and istable(body) and ((body[1] == name) or (istable(body[1]) and body[1][name])) then
                 local func = body[2]
                 a,b,c,d,e,f = func(self, ...)
+                if a~=nil then
+                    return a,b,c,d,e,f
+                end
+            end
+        end
+    end
+    if self.metadata and self.metadata.CustomHooks then
+        for hook_id,body in pairs(self.metadata.CustomHooks) do
+            if body and istable(body) and body.exthooks and body.exthooks[name] then
+                a,b,c,d,e,f = body.func(self, self.interior, ...)
                 if a~=nil then
                     return a,b,c,d,e,f
                 end

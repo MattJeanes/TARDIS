@@ -156,7 +156,7 @@ function TARDIS:SwitchScreen(screen,newscreen)
         screen.pagename:DoLayout()
         if IsValid(screen.mmenu) then
             screen.mmenu:SetVisible(false)
-            if TARDIS:GetSetting("visgui_enabled") then
+            if not TARDIS:GetSetting("gui_old") then
                 screen.left_arrow:SetVisible(false)
                 screen.right_arrow:SetVisible(false)
             end
@@ -203,7 +203,7 @@ function TARDIS:PushScreen(name,screen,f,f2)
     )
     if not screen.backbutton:IsVisible() then
         screen.backbutton:SetVisible(true)
-        if TARDIS:GetSetting("visgui_enabled") then
+        if not TARDIS:GetSetting("gui_old") then
             screen.left_arrow:SetVisible(false)
             screen.right_arrow:SetVisible(false)
         end
@@ -252,7 +252,7 @@ function TARDIS:HUDScreen()
     screen.width=825
     screen.height=425
 
-    if TARDIS:GetSetting("visgui_enabled") and TARDIS:GetSetting("visgui_bigpopup") then
+    if not TARDIS:GetSetting("gui_old") and TARDIS:GetSetting("visgui_bigpopup") then
         screen.width=screen.width*1.5
         screen.height=screen.height*1.5
     end
@@ -296,7 +296,7 @@ function TARDIS:LoadScreenUI(screen)
 
     screen.backstack={}
 
-    if TARDIS:GetSetting("visgui_enabled") then
+    if not TARDIS:GetSetting("gui_old") then
         frame:SetBackgroundColor(Color(0,0,0,255))
         local frame_background=vgui.Create("DImage", frame)
         frame_background:SetImage(background_img)
@@ -304,7 +304,7 @@ function TARDIS:LoadScreenUI(screen)
     end
 
     local titlebar = vgui.Create("DPanel",frame)
-    if TARDIS:GetSetting("visgui_enabled") then
+    if not TARDIS:GetSetting("gui_old") then
         titlebar:SetSize(frame:GetWide(), frame:GetTall() * 0.15)
         titlebar:SetPos(0, frame:GetTall() - titlebar:GetTall() )
         titlebar:SetBackgroundColor(Color(1, 1, 100, 255))
@@ -315,7 +315,7 @@ function TARDIS:LoadScreenUI(screen)
     end
 
     local pagename = vgui.Create("DLabel",titlebar)
-    if TARDIS:GetSetting("visgui_enabled") then
+    if not TARDIS:GetSetting("gui_old") then
         pagename:SetTextColor(Color(255,255,255))
     else
         pagename:SetTextColor(Color(0,0,0))
@@ -331,7 +331,7 @@ function TARDIS:LoadScreenUI(screen)
 
     local main = vgui.Create("DPanel",frame)
     main:SetSize(frame:GetWide(),frame:GetTall() - titlebar:GetTall())
-    if TARDIS:GetSetting("visgui_enabled") then
+    if not TARDIS:GetSetting("gui_old") then
         main:SetPos(0,0)
         main:SetBackgroundColor(Color(0,0,0,255))
     else
@@ -350,7 +350,7 @@ function TARDIS:LoadScreenUI(screen)
 
     local backbutton, menubutton, popup_button
 
-    if TARDIS:GetSetting("visgui_enabled") then
+    if not TARDIS:GetSetting("gui_old") then
         titlebar.button_size = math.min(titlebar:GetTall() * 0.8, titlebar:GetWide() * 0.25)
         titlebar.button_posY = titlebar:GetTall() * 0.5 - titlebar.button_size * 0.5
 
@@ -434,7 +434,7 @@ function TARDIS:LoadScreenUI(screen)
             if IsValid(screen.curscreen) then
                 screen.curscreen:SetVisible(not mmenu:IsVisible())
             end
-            if TARDIS:GetSetting("visgui_enabled") then
+            if not TARDIS:GetSetting("gui_old") then
                 screen.left_arrow:SetVisible(mmenu:IsVisible())
                 screen.right_arrow:SetVisible(mmenu:IsVisible())
                 if mmenu:IsVisible() then
@@ -499,7 +499,7 @@ function TARDIS:LoadScreenUI(screen)
             table.insert(buttons,button)
         end
         return buttons
-    end, TARDIS:GetSetting("visgui_enabled"))
+    end, not TARDIS:GetSetting("gui_old"))
 
     return main
 end

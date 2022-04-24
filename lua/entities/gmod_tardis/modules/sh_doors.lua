@@ -194,16 +194,6 @@ if SERVER then
         end
     end)
 else
-    TARDIS:AddSetting({
-        id="doorsounds-enabled",
-        name="Door Sound",
-        desc="Whether a sound is made when toggling the door or not",
-        section="Sounds",
-        value=true,
-        type="bool",
-        option=true
-    })
-
     function ENT:DoorOpen(real)
         local door=self:GetPart("door")
         if real and IsValid(door) then

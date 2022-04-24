@@ -87,7 +87,7 @@ if SERVER then
     end
 
     function ENT:DematDoorCheck(force, callback)
-        local autoclose = TARDIS:GetSetting("teleport-door-autoclose", false, self:GetCreator())
+        local autoclose = TARDIS:GetSetting("teleport-door-autoclose", self)
         if (force or autoclose) and self:GetData("doorstatereal") then
             self:CloseDoor()
         end
@@ -307,22 +307,11 @@ if SERVER then
             and not self:GetData("redecorate")
             and not self:GetData("redecorate_parent")
         then
-            self:Timer("VortexChangePositionTime", 3, function()
-                self:ChangePosition(self:GetRandomLocation(false), self:GetAngles(), false)
-            end)
+            self:ChangePosition(self:GetRandomLocation(false), self:GetAngles(), false)
         end
     end)
 
 else
-
-    TARDIS:AddSetting({ id="teleport-sound",
-        name="Teleport Sound",
-        section="Sounds",
-        value=true,
-        type="bool",
-        option=true
-    })
-
     ENT:OnMessage("demat", function(self)
         self:SetData("demat",true)
         self:SetData("step",1)

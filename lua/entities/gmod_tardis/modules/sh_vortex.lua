@@ -3,7 +3,9 @@
 function ENT:IsVortexEnabled(pilot)
     local hookResult = self:CallHook("VortexEnabled", pilot)
     if hookResult ~= nil then return hookResult end
-    return ((not pilot and SERVER) or TARDIS:GetSetting("vortex-enabled",false,pilot)) and IsValid(self:GetPart("vortex")) and (SERVER or self:GetData("vortexmodelvalid"))
+    return ( ((not pilot and SERVER) or TARDIS:GetSetting("vortex-enabled", pilot))
+            and IsValid(self:GetPart("vortex"))
+            and (SERVER or self:GetData("vortexmodelvalid")) )
 end
 
 ENT:AddHook("VortexEnabled", "demat-fast", function(self, pilot)
@@ -92,17 +94,6 @@ if SERVER then
         end
     end)
 else
-    TARDIS:AddSetting({
-        id="vortex-enabled",
-        name="Show Vortex",
-        desc="Whether the vortex is shown during vortex flight",
-        section="Misc",
-        value=true,
-        type="bool",
-        option=true,
-        networked=true
-    })
-    
     ENT:AddHook("Think","vortex",function(self)
         local alpha = self:GetData("vortexalpha",0)
         local enabled = self:IsVortexEnabled()

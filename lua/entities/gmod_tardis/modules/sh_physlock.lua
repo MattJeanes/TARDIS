@@ -1,7 +1,7 @@
 -- Physical Lock
 
 TARDIS:AddKeyBind("physlock-toggle",{
-    name="Physlock Toggle",
+    name="Toggle Physlock",
     section="Third Person",
     desc="Make the TARDIS constant and unmovable in space",
     func=function(self,down,ply)

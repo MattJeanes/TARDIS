@@ -13,27 +13,6 @@ if SERVER then
         end
     end)
 else
-    TARDIS:AddSetting({
-        id="portals-enabled",
-        name=" Portal Enabled ",
-        section="Exterior Door",
-        desc="Whether portals will render or not, turn this off if they impact framerate significantly",
-        value=true,
-        type="bool",
-        option=true
-    })
-    TARDIS:AddSetting({
-        id="portals-closedist",
-        name="Close Distance",
-        section="Exterior Door",
-        desc="The distance at which the door automatically closes",
-        value=1000,
-        type="number",
-        min=350,
-        max=5000,
-        option=true
-    })
-    
     ENT:AddHook("ShouldRenderPortal", "portals", function(self,portal,exit,origin)
         local dont,black = self:CallHook("ShouldNotRenderPortal",self,portal,exit,origin)
         if dont==nil then

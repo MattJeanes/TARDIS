@@ -5,7 +5,7 @@ end
 
 if CLIENT then
     local function SelectForRedecoration(id)
-        TARDIS:SetSetting("redecorate-interior", id, true)
+        TARDIS:SetSetting("redecorate-interior", id)
         local current_tardis = LocalPlayer():GetTardisData("exterior")
 
         if not current_tardis or not current_tardis:GetData("redecorate") then
@@ -65,15 +65,13 @@ if CLIENT then
     end
 
     local function AddMenuBoolSetting(dmenu, int_id, setting_id, name)
-        local ply = LocalPlayer()
-
         local setting_button = dmenu:AddOption(name, function(self)
-            TARDIS:ToggleCustomSetting(int_id, setting_id, ply)
+            TARDIS:ToggleCustomSetting(int_id, setting_id)
         end)
         setting_button:SetIsCheckable(true)
 
         function setting_button:Think()
-            local value = TARDIS:GetCustomSetting(int_id, setting_id, ply, false)
+            local value = TARDIS:GetCustomSetting(int_id, setting_id, LocalPlayer(), false)
             if self:GetChecked() ~= value then
                 self:SetChecked(value)
             end
@@ -83,8 +81,6 @@ if CLIENT then
     end
 
     local function AddMenuListSetting(dmenu, int_id, setting_id, name, options, compare_func)
-        local ply = LocalPlayer()
-
         local submenu = dmenu:AddSubMenu(name, nil)
 
         local option_buttons = {}
@@ -93,7 +89,7 @@ if CLIENT then
         for option_value, option_text in SortedPairsByValue(options) do
 
             local option_button = submenu:AddOption(option_text, function(self)
-                TARDIS:SetCustomSetting(int_id, setting_id, option_value, ply)
+                TARDIS:SetCustomSetting(int_id, setting_id, option_value)
             end)
             option_button:SetIsCheckable(true)
 
@@ -101,7 +97,7 @@ if CLIENT then
         end
 
         function submenu:Think()
-            local value = TARDIS:GetCustomSetting(int_id, setting_id, ply)
+            local value = TARDIS:GetCustomSetting(int_id, setting_id, LocalPlayer())
             for i,v in ipairs(option_buttons) do
                 local checked = (value == v[1])
                 if compare_func then
@@ -120,7 +116,6 @@ if CLIENT then
         if not metadata then return end
         local versions = metadata.Versions
         local custom_settings = metadata.CustomSettings
-        local ply = LocalPlayer()
 
         local other_versions_exist = not table.IsEmpty(versions.other)
         local custom_versions_exist = not table.IsEmpty(versions.custom)
@@ -222,7 +217,7 @@ if CLIENT then
         end
 
         local reset_button = dmenu:AddOption("Reset settings", function(self)
-            TARDIS:ResetCustomSettings(LocalPlayer(), int_id)
+            TARDIS:ResetCustomSettings(int_id)
         end)
 
     end
@@ -271,7 +266,7 @@ if CLIENT then
                 end
     
                 local favorite = dmenu:AddOption("Add to favorites (reload required)", function(self)
-                    TARDIS:ToggleFavoriteInt(obj.spawnname, LocalPlayer())
+                    TARDIS:ToggleFavoriteInt(obj.spawnname)
                     TARDIS:Message(LocalPlayer(), "Reload the game for changes to apply")
                     TARDIS:Message(LocalPlayer(), "Favorites have been updated")
                 end)

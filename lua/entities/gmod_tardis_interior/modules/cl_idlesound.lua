@@ -1,15 +1,5 @@
 -- Idle sound
 
-TARDIS:AddSetting({
-    id="idlesounds",
-    name="Idle Sounds",
-    desc="Whether the idle sounds can be heard on the inside or not",
-    section="Sounds",
-    value=true,
-    type="bool",
-    option=true
-})
-
 ENT:AddHook("Initialize", "idlesound", function(self)
     if self.metadata.Interior.Sounds.Idle or self.metadata.Interior.IdleSound then
         self.idlesounds={}

@@ -8,16 +8,11 @@ function ENT:ToggleHandbrake()
     return self:SetHandbrake(not self:GetData("handbrake"))
 end
 function ENT:SetHandbrake(on)
-    if (self:CallHook("CanToggleHandbrake") == false
-        or self.interior:CallHook("CanToggleHandbrake")) == false
-    then
+    if self:CallCommonHook("CanToggleHandbrake") == false then
         return false
     end
     self:SetData("handbrake", on, true)
-    self:CallHook("HandbrakeToggled", on)
-    if self.interior then
-        self.interior:CallHook("HandbrakeToggled", on)
-    end
+    self:CallCommonHook("HandbrakeToggled", on)
     return true
 end
 
