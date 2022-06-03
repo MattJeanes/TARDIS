@@ -5,7 +5,7 @@ TARDIS:AddControl({
         
         TARDIS:Message(ply, "Random destination has been selected")
     end,
-    serveronly=true,
+    serveronly = true,
     power_independent = true,
     screen_button = false,
     tip_text = "Random Destination",
