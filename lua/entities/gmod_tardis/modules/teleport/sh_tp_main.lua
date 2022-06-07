@@ -320,8 +320,8 @@ else
             local shouldPlayExterior = self:CallHook("ShouldPlayDematSound", false)~=false
             local shouldPlayInterior = self:CallHook("ShouldPlayDematSound", true)~=false
             if not (shouldPlayExterior or shouldPlayInterior) then return end
-            local ext = self.metadata.Exterior.Sounds.Teleport
-            local int = self.metadata.Interior.Sounds.Teleport
+            local ext = self:GetMetadata().Exterior.Sounds.Teleport
+            local int = self:GetMetadata().Interior.Sounds.Teleport
 
             local sound_demat_ext = ext.demat
             local sound_demat_int = int.demat or ext.demat
@@ -377,8 +377,8 @@ else
             local shouldPlayExterior = self:CallHook("ShouldPlayMatSound", false)~=false
             local shouldPlayInterior = self:CallHook("ShouldPlayMatSound", true)~=false
             if not (shouldPlayExterior or shouldPlayInterior) then return end
-            local ext = self.metadata.Exterior.Sounds.Teleport
-            local int = self.metadata.Interior.Sounds.Teleport
+            local ext = self:GetMetadata().Exterior.Sounds.Teleport
+            local int = self:GetMetadata().Interior.Sounds.Teleport
             local pos=net.ReadVector()
             if LocalPlayer():GetTardisData("exterior")==self and (not self:GetData("demat-fast",false)) then
                 if self:GetData("health-warning", false) then
@@ -457,9 +457,9 @@ function ENT:GetTargetAlpha()
     local mat=self:GetData("mat")
     local step=self:GetData("step",1)
     if demat and (not mat) then
-        return self.metadata.Exterior.Teleport.DematSequence[step]
+        return self:GetMetadata().Exterior.Teleport.DematSequence[step]
     elseif mat and (not demat) then
-        return self.metadata.Exterior.Teleport.MatSequence[step]
+        return self:GetMetadata().Exterior.Teleport.MatSequence[step]
     else
         return 255
     end
@@ -474,14 +474,14 @@ ENT:AddHook("Think","teleport",function(self,delta)
     local step=self:GetData("step",1)
     if alpha==target then
         if demat then
-            if step>=#self.metadata.Exterior.Teleport.DematSequence then
+            if step>=#self:GetMetadata().Exterior.Teleport.DematSequence then
                 self:StopDemat()
                 return
             else
                 self:SetData("step",step+1)
             end
         elseif mat then
-            if step>=#self.metadata.Exterior.Teleport.MatSequence then
+            if step>=#self:GetMetadata().Exterior.Teleport.MatSequence then
                 self:StopMat()
                 return
             else
@@ -491,7 +491,7 @@ ENT:AddHook("Think","teleport",function(self,delta)
         target=self:GetTargetAlpha()
         self:SetData("alphatarget",target)
     end
-    local sequencespeed = (self:GetData("demat-fast",false) and self.metadata.Exterior.Teleport.SequenceSpeedFast or self.metadata.Exterior.Teleport.SequenceSpeed)
+    local sequencespeed = (self:GetData("demat-fast",false) and self:GetMetadata().Exterior.Teleport.SequenceSpeedFast or self:GetMetadata().Exterior.Teleport.SequenceSpeed)
     alpha=math.Approach(alpha,target,delta*66*sequencespeed)
     self:SetData("alpha",alpha)
     local attached=self:GetData("demat-attached")

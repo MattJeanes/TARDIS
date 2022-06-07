@@ -3,7 +3,7 @@ AddCSLuaFile('shared.lua')
 include('shared.lua')
 
 ENT:AddHook("PlayerInitialize", "interior", function(self)
-    net.WriteString(self.metadata.ID)
+    net.WriteString(self:GetID())
 end)
 
 ENT:AddHook("PostPlayerInitialize", "senddata", function(self,ply)
@@ -32,9 +32,9 @@ function ENT:Initialize()
         self.metadata=TARDIS:GetInterior("default", self)
     end
 
-    self.Model=self.metadata.Exterior.Model
-    self.Portal=self.metadata.Exterior.Portal
-    self.Fallback=self.metadata.Exterior.Fallback
+    self.Model=self:GetMetadata().Exterior.Model
+    self.Portal=self:GetMetadata().Exterior.Portal
+    self.Fallback=self:GetMetadata().Exterior.Fallback
     self.BaseClass.Initialize(self)
 end
 

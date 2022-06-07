@@ -9,7 +9,7 @@ TARDIS:AddControl({
         end
 
         if not self:GetPower() then
-            if not self.metadata.EnableClassicDoors or oldstate then
+            if not self:GetMetadata().EnableClassicDoors or oldstate then
                 TARDIS:ErrorMessage(ply, "The door switch doesn't work.")
                 TARDIS:ErrorMessage(ply, "Power is disabled.")
                 return

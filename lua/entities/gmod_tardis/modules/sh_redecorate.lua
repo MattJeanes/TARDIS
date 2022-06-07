@@ -18,7 +18,7 @@ local int_saved_data_names = {
 if SERVER then
 
     ENT:AddHook("ShouldRedecorate", "redecorate_toggled", function(self)
-        return (self:GetData("redecorate",false) and self:GetData("redecorate-interior") ~= self.metadata.ID) and true or nil
+        return (self:GetData("redecorate",false) and self:GetData("redecorate-interior") ~= self:GetID()) and true or nil
     end)
 
     function ENT:Redecorate()

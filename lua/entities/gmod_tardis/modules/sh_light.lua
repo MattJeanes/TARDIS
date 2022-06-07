@@ -37,7 +37,7 @@ else
     local size=64
 
     ENT:AddHook("Draw", "light", function(self)
-        local light = self.metadata.Exterior.Light
+        local light = self:GetMetadata().Exterior.Light
         if not light.enabled then return end
         
         local shouldon=self:CallHook("ShouldTurnOnLight")
@@ -74,7 +74,7 @@ else
     end)
 
     ENT:AddHook("Think", "light", function(self)
-        local light = self.metadata.Exterior.Light
+        local light = self:GetMetadata().Exterior.Light
         if not (light.enabled and TARDIS:GetSetting("extlight-dynamic")) then return end
         
         local shouldon=self:CallHook("ShouldTurnOnLight")

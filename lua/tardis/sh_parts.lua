@@ -180,20 +180,20 @@ end)
 local function GetData(self,e,id)
     local data={}
     if self.TardisExterior then
-        if e.Exteriors and e.Exteriors[self.metadata.ID] then
-            data=e.Exteriors[self.metadata.ID]
-        elseif TARDIS.Exteriors and TARDIS.Exteriors[self.metadata.ID] then
-            data=TARDIS.Exteriors[self.metadata.ID]
-        elseif self.metadata.Exterior.Parts and self.metadata.Exterior.Parts[id] then
-            data=self.metadata.Exterior.Parts[id]
+        if e.Exteriors and e.Exteriors[self:GetID()] then
+            data=e.Exteriors[self:GetID()]
+        elseif TARDIS.Exteriors and TARDIS.Exteriors[self:GetID()] then
+            data=TARDIS.Exteriors[self:GetID()]
+        elseif self:GetMetadata().Exterior.Parts and self:GetMetadata().Exterior.Parts[id] then
+            data=self:GetMetadata().Exterior.Parts[id]
         end
     elseif self.TardisInterior then
-        if e.Interiors and e.Interiors[self.metadata.ID] then
-            data=e.Interiors[self.metadata.ID]
-        elseif TARDIS.Interiors and TARDIS.Interiors[self.metadata.ID] then
-            data=TARDIS.Interiors[self.metadata.ID]
-        elseif self.metadata.Interior.Parts and self.metadata.Interior.Parts[id] then
-            data=self.metadata.Interior.Parts[id]
+        if e.Interiors and e.Interiors[self:GetID()] then
+            data=e.Interiors[self:GetID()]
+        elseif TARDIS.Interiors and TARDIS.Interiors[self:GetID()] then
+            data=TARDIS.Interiors[self:GetID()]
+        elseif self:GetMetadata().Interior.Parts and self:GetMetadata().Interior.Parts[id] then
+            data=self:GetMetadata().Interior.Parts[id]
         end
     end
     return data
@@ -237,9 +237,9 @@ end
 
 local function SetupPartMetadataControl(e)
     if (e.parent == e.interior) then
-        controls_metadata = e.parent.metadata.Interior.Controls
+        controls_metadata = e.parent:GetMetadata().Interior.Controls
     else
-        controls_metadata = e.parent.metadata.Exterior.Controls
+        controls_metadata = e.parent:GetMetadata().Exterior.Controls
     end
     if controls_metadata ~= nil then
         if controls_metadata[e.ID] ~= nil then
@@ -254,9 +254,9 @@ if SERVER then
         local tempparts={}
         local data
         if ent.TardisExterior then
-            data=ent.metadata.Exterior
+            data=ent:GetMetadata().Exterior
         elseif ent.TardisInterior then
-            data=ent.metadata.Interior
+            data=ent:GetMetadata().Interior
         end
         if data and data.Parts then
             for k,v in pairs(data.Parts) do
@@ -279,7 +279,7 @@ if SERVER then
                 elseif ent.TardisInterior then
                     t=tbl.Interiors
                 end
-                if t and t[ent.metadata.ID] then
+                if t and t[ent:GetID()] then
                     tempparts[k]=v.class
                 end
             end

@@ -47,9 +47,9 @@ if SERVER then
             if callback then
                 callbacks[callback]=true
             end
-            local dooranimtime = self.metadata.Exterior.DoorAnimationTime
-            if self.metadata.EnableClassicDoors == true then
-                dooranimtime = math.max(dooranimtime, self.metadata.Interior.IntDoorAnimationTime)
+            local dooranimtime = self:GetMetadata().Exterior.DoorAnimationTime
+            if self:GetMetadata().EnableClassicDoors == true then
+                dooranimtime = math.max(dooranimtime, self:GetMetadata().Interior.IntDoorAnimationTime)
             end
             self:SetData("doorchange",CurTime() + dooranimtime)
         end
@@ -100,7 +100,7 @@ if SERVER then
     end)
 
     ENT:AddHook("ToggleDoorReal", "classic_doors_collision", function(self,open)
-        if self.metadata.EnableClassicDoors ~= true then return end
+        if self:GetMetadata().EnableClassicDoors ~= true then return end
 
         local int_classic_door=TARDIS:GetPart(self.interior,"intdoor")
         if IsValid(int_classic_door) then
@@ -217,8 +217,8 @@ else
     end)
 
     ENT:AddHook("ToggleDoorReal","doorsounds",function(self,open)
-        local extsnds = self.metadata.Exterior.Sounds.Door
-        local intsnds = self.metadata.Interior.Sounds.Door or extsnds
+        local extsnds = self:GetMetadata().Exterior.Sounds.Door
+        local intsnds = self:GetMetadata().Interior.Sounds.Door or extsnds
 
         if TARDIS:GetSetting("doorsounds-enabled") and TARDIS:GetSetting("sound") then
             if extsnds.enabled then

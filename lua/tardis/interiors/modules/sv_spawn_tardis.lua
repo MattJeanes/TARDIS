@@ -58,8 +58,8 @@ function TARDIS:SpawnTARDIS(ply, customData)
         if total_skins then
             local chosen_skin = math.random(total_skins)
 
-            local excluded = entity.metadata.Exterior.ExcludedSkins
-            local winter = entity.metadata.Exterior.WinterSkins
+            local excluded = entity:GetMetadata().Exterior.ExcludedSkins
+            local winter = entity:GetMetadata().Exterior.WinterSkins
             local winter_ok = TARDIS:GetSetting("winter_skins", entity)
 
             local function cannot_use_skin(chosen_skin)

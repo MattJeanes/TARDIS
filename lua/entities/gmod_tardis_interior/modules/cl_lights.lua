@@ -21,8 +21,8 @@ end
 
 ENT:AddHook("Think", "lights", function(self)
     if TARDIS:GetSetting("lightoverride-enabled") then return end
-    local light=self.metadata.Interior.Light
-    local lights=self.metadata.Interior.Lights
+    local light=self:GetMetadata().Interior.Light
+    local lights=self:GetMetadata().Interior.Lights
     local index=self:EntIndex()
     if light then
         self:DrawLight(index,light)
@@ -42,10 +42,10 @@ end
 
 
 ENT:AddHook("Initialize", "lights-roundthings", function(self)
-    if self.metadata.Interior.RoundThings then
+    if self:GetMetadata().Interior.RoundThings then
         self.roundthingmat=Material("sprites/light_ignorez")
         self.roundthings={}
-        for k,v in pairs(self.metadata.Interior.RoundThings) do
+        for k,v in pairs(self:GetMetadata().Interior.RoundThings) do
             self:AddRoundThing(v)
         end
     end

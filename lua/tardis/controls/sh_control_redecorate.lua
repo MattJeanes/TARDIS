@@ -18,9 +18,9 @@ TARDIS:AddControl({
         end
 
         local chosen_int = TARDIS:GetSetting("redecorate-interior", ply)
-        if chosen_int == self.metadata.ID or not chosen_int then
+        if chosen_int == self:GetID() or not chosen_int then
             TARDIS:Message(ply, "WARNING: New interior has been selected randomly. Right click in spawnmenu to choose")
-            chosen_int = TARDIS:SelectNewRandomInterior(self.metadata.ID, ply)
+            chosen_int = TARDIS:SelectNewRandomInterior(self:GetID(), ply)
         end
         self:SetData("redecorate-interior", chosen_int)
         self:SendMessage("redecorate-reset")

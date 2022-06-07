@@ -4,7 +4,7 @@ if SERVER then
     hook.Add("PlayerSpawn", "tardis-handleplayers", function(ply)
         local int=ply:GetTardisData("interior")
         if IsValid(int) and int.TardisInterior and ply == int:GetCreator() then
-            local fallback=int.metadata.Interior.Fallback
+            local fallback=int:GetMetadata().Interior.Fallback
             if fallback then
                 ply:SetPos(int:LocalToWorld(fallback.pos))
                 ply:SetEyeAngles(int:LocalToWorldAngles(fallback.ang))

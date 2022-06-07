@@ -27,7 +27,7 @@ if SERVER then
             table.insert(self.interior.stuckfilter, self)
         end
 
-        local metadata=self.exterior.metadata
+        local metadata=self.exterior:GetMetadata()
         local portal=self.ExteriorPart and metadata.Exterior.Portal or metadata.Interior.Portal
         if portal then
             local pos=(self.posoffset or Vector(26*(self.InteriorPart and 1 or -1),0,-51.65))
@@ -45,7 +45,7 @@ if SERVER then
                 if self.exterior:CallHook("LockedUse",a)==nil then
                     TARDIS:Message(a, "The doors are locked.")
                 end
-                self:EmitSound(self.exterior.metadata.Exterior.Sounds.Door.locked)
+                self:EmitSound(self.exterior:GetMetadata().Exterior.Sounds.Door.locked)
             end
         else
             if a:KeyDown(IN_WALK) then
@@ -55,7 +55,7 @@ if SERVER then
                     self.exterior:PlayerExit(a)
                 end
             else
-                if self.exterior.metadata.EnableClassicDoors == true and not self.ExteriorPart then return end
+                if self.exterior:GetMetadata().EnableClassicDoors == true and not self.ExteriorPart then return end
                 if (self.exterior:GetData("repair-primed",false) or self.exterior:GetData("repairing",false)) and self.ExteriorPart then return end
                 self.exterior:ToggleDoor()
             end
@@ -91,7 +91,7 @@ else
         if self.ExteriorPart then
             self.DoorTarget=self.exterior.DoorOverride or (self.exterior:GetData("doorstatereal",false) and 1 or 0)
 
-            local animtime = self.exterior.metadata.Exterior.DoorAnimationTime
+            local animtime = self.exterior:GetMetadata().Exterior.DoorAnimationTime
 
             -- Have to spam it otherwise it glitches out (http://facepunch.com/showthread.php?t=1414695)
             self.DoorPos = self.exterior.DoorOverride or

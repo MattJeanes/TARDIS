@@ -8,7 +8,7 @@ ENT:AddHook("OnRemove", "externalhum", function(self)
 end)
 
 ENT:AddHook("Think", "externalhum", function(self)
-    local hum_sound = self.metadata.Exterior.Sounds.Hum
+    local hum_sound = self:GetMetadata().Exterior.Sounds.Hum
     if hum_sound then
         if TARDIS:GetSetting("external_hum") and TARDIS:GetSetting("sound") and self:GetData("power-state") then
             if not self.ExternalHum then

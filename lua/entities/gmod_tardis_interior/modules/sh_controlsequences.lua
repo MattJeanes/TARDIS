@@ -47,7 +47,7 @@ function ENT:GetSequencesEnabled()
 end
 
 ENT:AddHook("CanStartControlSequence", "conditions", function(self,id)
-    local cseqs = TARDIS:GetControlSequence(self.metadata.Interior.Sequences)
+    local cseqs = TARDIS:GetControlSequence(self:GetMetadata().Interior.Sequences)
     local seq = cseqs[id]
     if not seq then return end
     if not seq.Condition then return end
@@ -66,7 +66,7 @@ end)
 if SERVER then
 
     ENT:AddHook("PartUsed","HandleControlSequence",function(self,part,a)
-        local sequences = TARDIS:GetControlSequence(self.metadata.Interior.Sequences)
+        local sequences = TARDIS:GetControlSequence(self:GetMetadata().Interior.Sequences)
         if sequences == nil then return end
         local id = part.ID
         local active = self:GetData("cseq-active",false)
@@ -75,7 +75,7 @@ if SERVER then
         if active==false and sequences[id] then
             local allowed = self:CallHook("CanStartControlSequence",id)
             if allowed==false then return end
-            self:EmitSound(self.metadata.Interior.Sounds.SequenceOK)
+            self:EmitSound(self:GetMetadata().Interior.Sounds.SequenceOK)
 
             self:SetData("cseq-active", true, true)
             self:SetData("cseq-step", 1, true)
@@ -89,7 +89,7 @@ if SERVER then
             local curseq = self:GetData("cseq-curseq","none")
 
             if sequences[curseq].Controls[step] == id then
-                self:EmitSound(self.metadata.Interior.Sounds.SequenceOK)
+                self:EmitSound(self:GetMetadata().Interior.Sounds.SequenceOK)
                 self:SetData("cseq-step", step + 1, true)
                 if step == #sequences[curseq].Controls then
                     sequences[curseq].OnFinish(self, a, step, part)
@@ -98,7 +98,7 @@ if SERVER then
                 end
             else
                 if id == "console" or id == "door" then return end
-                self:EmitSound(self.metadata.Interior.Sounds.SequenceFail)
+                self:EmitSound(self:GetMetadata().Interior.Sounds.SequenceFail)
                 if sequences[curseq].OnFail then
                     sequences[curseq].OnFail(self, a, step, part)
                 end
@@ -121,7 +121,7 @@ if SERVER then
     end)
 
     function ENT:TerminateSequence()
-        local sequences = TARDIS:GetControlSequence(self.metadata.Interior.Sequences)
+        local sequences = TARDIS:GetControlSequence(self:GetMetadata().Interior.Sequences)
         local curseq = self:GetData("cseq-curseq","none")
         for _,v in pairs(sequences[curseq].Controls) do
             local p = TARDIS:GetPart(self,v)

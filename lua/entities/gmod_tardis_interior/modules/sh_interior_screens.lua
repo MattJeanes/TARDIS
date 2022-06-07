@@ -1,7 +1,7 @@
 -- Adds screens
 
 ENT:AddHook("Initialize", "screens-toggle", function(self)
-    local screens_on = self.metadata.Interior.ScreensEnabled
+    local screens_on = self:GetMetadata().Interior.ScreensEnabled
     self:SetData("screens_on", screens_on, true)
 end)
 
@@ -53,7 +53,7 @@ function ENT:GetScreens()
 end
 
 ENT:AddHook("Initialize", "screens", function(self)
-    local screens=self.metadata.Interior.Screens
+    local screens=self:GetMetadata().Interior.Screens
     if screens then
         self.screens3D={}
         for k,v in pairs(screens) do
@@ -91,7 +91,7 @@ function ENT:ShouldRenderScreen(screen)
     local pos = self:LocalToWorld(screen.pos3D)
     local ang = self:LocalToWorldAngles(screen.ang3D)
     local distance = camOrigin:Distance(pos)
-    local disappearDist = self.metadata.Interior.ScreenDistance
+    local disappearDist = self:GetMetadata().Interior.ScreenDistance
     
     if not (disappearDist <= 0) and distance > disappearDist then return false end
     
