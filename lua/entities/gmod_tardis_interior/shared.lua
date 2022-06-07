@@ -5,11 +5,29 @@ ENT.Author="Dr. Matt"
 ENT.TardisInterior=true
 ENT.Exterior="gmod_tardis"
 
-local class=string.sub(ENT.Folder,string.find(ENT.Folder, "/[^/]*$")+1) -- only works if in a folder
 
-local hooks={}
+function ENT:GetMetadata(x)
+    if x then
+        return self:GetMetadata()[x]
+    end
+
+    if self.metadata then
+        return self.metadata
+    end
+    if not self.exterior then
+        error("Failed to find exterior")
+    end
+    self.metadata = self.exterior:GetMetadata()
+    return self.metadata
+end
+
+function ENT:GetID()
+    return self:GetMetadata(ID)
+end
 
 -- Hook system for modules
+local hooks={}
+
 function ENT:AddHook(name,id,func)
     if not (hooks[name]) then hooks[name]={} end
     if hooks[name][id] then error("Duplicate hook ID '"..id.."' for '"..name.."' hook",2) end
@@ -52,8 +70,8 @@ function ENT:CallHook(name,...)
             end
         end
     end
-    if self.metadata and self.metadata.Interior and self.metadata.Interior.CustomHooks then
-        for hook_id,body in pairs(self.metadata.Interior.CustomHooks) do
+    if self.metadata and self:GetMetadata(Interior) and self:GetMetadata(Interior).CustomHooks then
+        for hook_id,body in pairs(self:GetMetadata(Interior).CustomHooks) do
             if body and istable(body) and ((body[1] == name) or (istable(body[1]) and body[1][name])) then
                 local func = body[2]
                 a,b,c,d,e,f = func(self, ...)
@@ -63,8 +81,8 @@ function ENT:CallHook(name,...)
             end
         end
     end
-    if self.metadata and self.metadata.CustomHooks then
-        for hook_id,body in pairs(self.metadata.CustomHooks) do
+    if self.metadata and self:GetMetadata(CustomHooks) then
+        for hook_id,body in pairs(self:GetMetadata(CustomHooks)) do
             if body and istable(body) and body.inthooks and body.inthooks[name] then
                 a,b,c,d,e,f = body.func(self.exterior, self, ...)
                 if a~=nil then
@@ -74,6 +92,8 @@ function ENT:CallHook(name,...)
         end
     end
 end
+
+local class=string.sub(ENT.Folder,string.find(ENT.Folder, "/[^/]*$")+1) -- only works if in a folder
 
 function ENT:LoadFolder(folder,addonly,noprefix)
     folder="entities/"..class.."/"..folder.."/"

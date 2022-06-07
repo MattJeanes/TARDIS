@@ -13,11 +13,26 @@ if TARDIS_OVERRIDES and TARDIS_OVERRIDES.MainCategory then
 end
 
 
-local class=string.sub(ENT.Folder,string.find(ENT.Folder, "/[^/]*$")+1) -- only works if in a folder
+function ENT:GetMetadata(x)
+    if x then
+        if self:GetMetadata() then
+            return self:GetMetadata()[x]
+        end
+        return nil
+    end
 
-local hooks={}
+    if self:GetMetadata() then
+        return self.metadata
+    end
+end
+
+function ENT:GetID()
+    return self:GetMetadata(ID)
+end
 
 -- Hook system for modules
+local hooks={}
+
 function ENT:AddHook(name,id,func)
     if not (hooks[name]) then hooks[name]={} end
     if hooks[name][id] then error("Duplicate hook ID '"..id.."' for '"..name.."' hook",2) end
@@ -73,8 +88,8 @@ function ENT:CallHook(name,...)
             end
         end
     end
-    if self.metadata and self.metadata.Exterior and self.metadata.Exterior.CustomHooks then
-        for hook_id,body in pairs(self.metadata.Exterior.CustomHooks) do
+    if self.metadata and self:GetMetadata(Exterior) and self:GetMetadata(Exterior).CustomHooks then
+        for hook_id,body in pairs(self:GetMetadata(Exterior).CustomHooks) do
             if body and istable(body) and ((body[1] == name) or (istable(body[1]) and body[1][name])) then
                 local func = body[2]
                 a,b,c,d,e,f = func(self, ...)
@@ -84,8 +99,8 @@ function ENT:CallHook(name,...)
             end
         end
     end
-    if self.metadata and self.metadata.CustomHooks then
-        for hook_id,body in pairs(self.metadata.CustomHooks) do
+    if self.metadata and self:GetMetadata(CustomHooks) then
+        for hook_id,body in pairs(self:GetMetadata(CustomHooks)) do
             if body and istable(body) and body.exthooks and body.exthooks[name] then
                 a,b,c,d,e,f = body.func(self, self.interior, ...)
                 if a~=nil then
@@ -95,6 +110,8 @@ function ENT:CallHook(name,...)
         end
     end
 end
+
+local class=string.sub(ENT.Folder,string.find(ENT.Folder, "/[^/]*$")+1) -- only works if in a folder
 
 function ENT:LoadFolder(folder,addonly,noprefix)
     folder="entities/"..class.."/"..folder.."/"
