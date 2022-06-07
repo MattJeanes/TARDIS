@@ -1,5 +1,5 @@
 function ENT:ApplyTextureSet(set_id)
-    if not self:GetMetadata(Interior) or not self:GetMetadata(Interior).TextureSets then return end
+    if not self:GetMetadata().Interior or not self:GetMetadata().Interior.TextureSets then return end
 
     local texture_set = self:GetMetadata().Interior.TextureSets[set_id]
     if not texture_set then return end

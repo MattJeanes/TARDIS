@@ -6,11 +6,7 @@ ENT.TardisInterior=true
 ENT.Exterior="gmod_tardis"
 
 
-function ENT:GetMetadata(x)
-    if x then
-        return self:GetMetadata()[x]
-    end
-
+function ENT:GetMetadata()
     if self.metadata then
         return self.metadata
     end
@@ -22,7 +18,7 @@ function ENT:GetMetadata(x)
 end
 
 function ENT:GetID()
-    return self:GetMetadata(ID)
+    return self:GetMetadata().ID
 end
 
 -- Hook system for modules
@@ -70,8 +66,8 @@ function ENT:CallHook(name,...)
             end
         end
     end
-    if self.metadata and self:GetMetadata(Interior) and self:GetMetadata(Interior).CustomHooks then
-        for hook_id,body in pairs(self:GetMetadata(Interior).CustomHooks) do
+    if self.metadata and self:GetMetadata().Interior and self:GetMetadata().Interior.CustomHooks then
+        for hook_id,body in pairs(self:GetMetadata().Interior.CustomHooks) do
             if body and istable(body) and ((body[1] == name) or (istable(body[1]) and body[1][name])) then
                 local func = body[2]
                 a,b,c,d,e,f = func(self, ...)
@@ -81,8 +77,8 @@ function ENT:CallHook(name,...)
             end
         end
     end
-    if self.metadata and self:GetMetadata(CustomHooks) then
-        for hook_id,body in pairs(self:GetMetadata(CustomHooks)) do
+    if self.metadata and self:GetMetadata().CustomHooks then
+        for hook_id,body in pairs(self:GetMetadata().CustomHooks) do
             if body and istable(body) and body.inthooks and body.inthooks[name] then
                 a,b,c,d,e,f = body.func(self.exterior, self, ...)
                 if a~=nil then
