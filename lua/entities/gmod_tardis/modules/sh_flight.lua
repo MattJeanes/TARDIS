@@ -346,10 +346,10 @@ else
 
     local function ChooseFlightSound(ent)
         if ent:GetData("health-warning", false) then
-            ent.flightsound = CreateSound(ent, ent:GetMetadata().Exterior.Sounds.FlightLoopDamaged)
+            ent.flightsound = CreateSound(ent, ent:GetExtMetadata().Sounds.FlightLoopDamaged)
             ent.flightsounddamaged = true
         else
-            ent.flightsound = CreateSound(ent, ent:GetMetadata().Exterior.Sounds.FlightLoop)
+            ent.flightsound = CreateSound(ent, ent:GetExtMetadata().Sounds.FlightLoop)
             ent.flightsounddamaged = false
         end
     end

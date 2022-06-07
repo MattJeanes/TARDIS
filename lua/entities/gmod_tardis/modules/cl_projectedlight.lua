@@ -15,28 +15,28 @@ function ENT:PickProjectedLightColor()
     local override = TARDIS:GetSetting("extprojlight-override-color")
     if override then return TARDIS:GetSetting("extprojlight-color") end
     local warning = self:GetData("health-warning",false)
-    local color = self:GetMetadata().Exterior.ProjectedLight.color or self:GetMetadata().Interior.Light.color
-    local warncolor = self:GetMetadata().Exterior.ProjectedLight.warncolor or self:GetMetadata().Interior.Light.warncolor
+    local color = self:GetExtMetadata().ProjectedLight.color or self:GetIntMetadata().Light.color
+    local warncolor = self:GetExtMetadata().ProjectedLight.warncolor or self:GetIntMetadata().Light.warncolor
     local pickedcolor = warning and (warncolor or color) or color
     return pickedcolor
 end
 
 function ENT:PickProjectedLightBrightness()
     local override = TARDIS:GetSetting("extprojlight-override-brightness")
-    return override and TARDIS:GetSetting("extprojlight-brightness") or self:GetMetadata().Exterior.ProjectedLight.brightness
+    return override and TARDIS:GetSetting("extprojlight-brightness") or self:GetExtMetadata().ProjectedLight.brightness
 end
 
 function ENT:PickProjectedLightDistance()
     local override = TARDIS:GetSetting("extprojlight-override-distance")
-    return override and TARDIS:GetSetting("extprojlight-distance") or self:GetMetadata().Exterior.ProjectedLight.farz
+    return override and TARDIS:GetSetting("extprojlight-distance") or self:GetExtMetadata().ProjectedLight.farz
 end
 
 function ENT:CreateProjectedLight()
     if self.projectedlight then return end
     local pl = ProjectedTexture()
-    pl:SetTexture(self:GetMetadata().Exterior.ProjectedLight.texture)
-    pl:SetVerticalFOV(self:GetMetadata().Exterior.ProjectedLight.vertfov or self:GetMetadata().Exterior.Portal.height)
-    pl:SetHorizontalFOV(self:GetMetadata().Exterior.ProjectedLight.horizfov or self:GetMetadata().Exterior.Portal.width+10)
+    pl:SetTexture(self:GetExtMetadata().ProjectedLight.texture)
+    pl:SetVerticalFOV(self:GetExtMetadata().ProjectedLight.vertfov or self:GetExtMetadata().Portal.height)
+    pl:SetHorizontalFOV(self:GetExtMetadata().ProjectedLight.horizfov or self:GetExtMetadata().Portal.width+10)
     pl:SetEnableShadows(true)
     self.projectedlight = pl
 end
@@ -68,7 +68,7 @@ function ENT:UpdateProjectedLight()
         self:SetData("pl-distance",distance)
         self.projectedlight:SetFarZ(distance)
     end
-    self.projectedlight:SetPos(self:LocalToWorld(self:GetMetadata().Exterior.ProjectedLight.offset))
+    self.projectedlight:SetPos(self:LocalToWorld(self:GetExtMetadata().ProjectedLight.offset))
     self.projectedlight:SetAngles(self:GetAngles())
     self.projectedlight:Update()
 end
@@ -88,7 +88,7 @@ end)
 ENT:AddHook("ShouldNotDrawProjectedLight","projectedlight",function(self)
     if (not TARDIS:GetSetting("extprojlight-enabled")) or (not self.interior) then return true end
     if self:GetData("vortex",false)==true then return true end
-    if not self:GetMetadata().Interior.Light then return true end
+    if not self:GetIntMetadata().Light then return true end
 end)
 
 ENT:AddHook("Think", "projectedlight", function(self)

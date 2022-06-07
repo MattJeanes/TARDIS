@@ -241,8 +241,8 @@ if SERVER then
 else -- CLIENT
     ENT:OnMessage("failed-demat", function(self)
         if TARDIS:GetSetting("teleport-sound") and TARDIS:GetSetting("sound") then
-            local ext = self:GetMetadata().Exterior.Sounds.Teleport
-            local int = self:GetMetadata().Interior.Sounds.Teleport
+            local ext = self:GetExtMetadata().Sounds.Teleport
+            local int = self:GetIntMetadata().Sounds.Teleport
             self:EmitSound(ext.demat_fail)
             self.interior:EmitSound(int.demat_fail or ext.demat_fail)
         end
@@ -253,8 +253,8 @@ else -- CLIENT
 
     ENT:OnMessage("failed-mat", function(self)
         if TARDIS:GetSetting("teleport-sound") and TARDIS:GetSetting("sound") then
-            local ext = self:GetMetadata().Exterior.Sounds.Teleport
-            local int = self:GetMetadata().Interior.Sounds.Teleport
+            local ext = self:GetExtMetadata().Sounds.Teleport
+            local int = self:GetIntMetadata().Sounds.Teleport
             self:EmitSound(ext.mat_fail)
             self.interior:EmitSound(int.mat_fail or ext.mat_fail)
         end
@@ -264,8 +264,8 @@ else -- CLIENT
     end)
 
     function ENT:StopTeleportSounds()
-        local ext = self:GetMetadata().Exterior.Sounds.Teleport
-        local int = self:GetMetadata().Interior.Sounds.Teleport
+        local ext = self:GetExtMetadata().Sounds.Teleport
+        local int = self:GetIntMetadata().Sounds.Teleport
 
         self:StopSound(ext.demat_damaged)
         self:StopSound(ext.demat)
@@ -287,8 +287,8 @@ else -- CLIENT
     ENT:OnMessage("interrupt-teleport", function(self)
         self:StopTeleportSounds()
         if TARDIS:GetSetting("teleport-sound") and TARDIS:GetSetting("sound") then
-            local ext = self:GetMetadata().Exterior.Sounds.Teleport
-            local int = self:GetMetadata().Interior.Sounds.Teleport
+            local ext = self:GetExtMetadata().Sounds.Teleport
+            local int = self:GetIntMetadata().Sounds.Teleport
             self:EmitSound(ext.interrupt)
             self.interior:EmitSound(int.interrupt or ext.interrupt)
         end
@@ -303,8 +303,8 @@ else -- CLIENT
 
     local function get_effect_pos(self)
         local console = self.interior:GetPart("console")
-        if self:GetMetadata().Interior.BreakdownEffectPos then
-            self.effect_pos = self.interior:GetPos() + self:GetMetadata().Interior.BreakdownEffectPos
+        if self:GetIntMetadata().BreakdownEffectPos then
+            self.effect_pos = self.interior:GetPos() + self:GetIntMetadata().BreakdownEffectPos
         elseif console and IsValid(console) then
             self.effect_pos = console:GetPos() + Vector(0, 0, 50)
         else

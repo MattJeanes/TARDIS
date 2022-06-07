@@ -54,7 +54,7 @@ if SERVER then
             if self:CallHook("LockedUse",a,c)==nil then
                 TARDIS:Message(a, "This TARDIS is locked.")
             end
-            self:EmitSound(self:GetMetadata().Exterior.Sounds.Door.locked)
+            self:EmitSound(self:GetExtMetadata().Sounds.Door.locked)
         end
     end)
 
@@ -72,8 +72,8 @@ if SERVER then
     end)
 else
     ENT:OnMessage("locksound",function(self)
-        local extsound = self:GetMetadata().Exterior.Sounds.Lock
-        local intsound = self:GetMetadata().Interior.Sounds.Lock or extsound
+        local extsound = self:GetExtMetadata().Sounds.Lock
+        local intsound = self:GetIntMetadata().Sounds.Lock or extsound
 
         if TARDIS:GetSetting("locksound-enabled") and TARDIS:GetSetting("sound") then
             self:EmitSound(extsound)

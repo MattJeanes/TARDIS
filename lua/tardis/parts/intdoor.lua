@@ -35,8 +35,8 @@ else
 
     function PART:Think()
         self.IntDoorTarget=self.exterior.IntDoorOverride or (self.exterior:GetData("doorstatereal",false) and 1 or 0)
-        local animtime = self.exterior:GetMetadata().Interior.IntDoorAnimationTime
-            or self.exterior:GetMetadata().Exterior.DoorAnimationTime
+        local animtime = self.exterior:GetIntMetadata().IntDoorAnimationTime
+            or self.exterior:GetExtMetadata().DoorAnimationTime
 
         -- Have to spam it otherwise it glitches out (http://facepunch.com/showthread.php?t=1414695)
         self.IntDoorPos = self.exterior.IntDoorOverride or

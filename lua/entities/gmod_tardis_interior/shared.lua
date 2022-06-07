@@ -17,6 +17,14 @@ function ENT:GetMetadata()
     return self.metadata
 end
 
+function ENT:GetIntMetadata()
+    return self:GetMetadata().Interior
+end
+
+function ENT:GetExtMetadata()
+    return self:GetMetadata().Exterior
+end
+
 function ENT:GetID()
     return self:GetMetadata().ID
 end
@@ -66,8 +74,8 @@ function ENT:CallHook(name,...)
             end
         end
     end
-    if self.metadata and self:GetMetadata().Interior and self:GetMetadata().Interior.CustomHooks then
-        for hook_id,body in pairs(self:GetMetadata().Interior.CustomHooks) do
+    if self.metadata and self:GetIntMetadata() and self:GetIntMetadata().CustomHooks then
+        for hook_id,body in pairs(self:GetIntMetadata().CustomHooks) do
             if body and istable(body) and ((body[1] == name) or (istable(body[1]) and body[1][name])) then
                 local func = body[2]
                 a,b,c,d,e,f = func(self, ...)

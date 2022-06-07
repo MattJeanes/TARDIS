@@ -45,7 +45,7 @@ if SERVER then
                 if self.exterior:CallHook("LockedUse",a)==nil then
                     TARDIS:Message(a, "The doors are locked.")
                 end
-                self:EmitSound(self.exterior:GetMetadata().Exterior.Sounds.Door.locked)
+                self:EmitSound(self.exterior:GetExtMetadata().Sounds.Door.locked)
             end
         else
             if a:KeyDown(IN_WALK) then
@@ -91,7 +91,7 @@ else
         if self.ExteriorPart then
             self.DoorTarget=self.exterior.DoorOverride or (self.exterior:GetData("doorstatereal",false) and 1 or 0)
 
-            local animtime = self.exterior:GetMetadata().Exterior.DoorAnimationTime
+            local animtime = self.exterior:GetExtMetadata().DoorAnimationTime
 
             -- Have to spam it otherwise it glitches out (http://facepunch.com/showthread.php?t=1414695)
             self.DoorPos = self.exterior.DoorOverride or

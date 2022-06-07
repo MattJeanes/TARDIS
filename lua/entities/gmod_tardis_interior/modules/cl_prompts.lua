@@ -1,7 +1,7 @@
 --Prompts
 
 ENT:AddHook("PlayerEnter", "lightingoverride_prompt", function(self)
-    local require_override = (self:GetMetadata().Interior.RequireLightOverride == true) 
+    local require_override = (self:GetIntMetadata().RequireLightOverride == true) 
     local light_override = TARDIS:GetSetting("lightoverride-enabled")
     local noshow = TARDIS:GetSetting("light_override_prompt_noshow")
     if require_override and not light_override and not noshow then
@@ -22,7 +22,7 @@ ENT:AddHook("PlayerEnter", "lightingoverride_prompt", function(self)
 end)
 
 ENT:AddHook("PlayerEnter", "lod_prompt", function(self)
-    if self:GetMetadata().Interior.RequireHighModelDetail ~= false and GetConVarNumber("r_rootlod")>0 then
+    if self:GetIntMetadata().RequireHighModelDetail ~= false and GetConVarNumber("r_rootlod")>0 then
             Derma_Query(
             "The TARDIS Interior may require model detail on high, set now?",
             "TARDIS Interior",

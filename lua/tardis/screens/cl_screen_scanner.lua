@@ -94,7 +94,7 @@ hook.Add("RenderScene", "TARDISI_Scanner", function(pos,ang)
                     render.ClearDepth()
                     render.ClearStencil()
                     
-                    local offset = ext:GetMetadata().Exterior.ScannerOffset
+                    local offset = ext:GetExtMetadata().ScannerOffset
                     local vec=Vector(offset.x, offset.y, offset.z)
                     vec:Rotate(v.scannerang)
                     local camOrigin = ext:LocalToWorld(vec)

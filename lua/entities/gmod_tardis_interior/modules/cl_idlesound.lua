@@ -1,7 +1,7 @@
 -- Idle sound
 
 ENT:AddHook("Initialize", "idlesound", function(self)
-    if self:GetMetadata().Interior.Sounds.Idle or self:GetMetadata().Interior.IdleSound then
+    if self:GetIntMetadata().Sounds.Idle or self:GetIntMetadata().IdleSound then
         self.idlesounds={}
     end
 end)
@@ -16,7 +16,7 @@ ENT:AddHook("OnRemove", "idlesound", function(self)
 end)
 
 ENT:AddHook("Think", "idlesound", function(self)
-    local sounds = self:GetMetadata().Interior.Sounds.Idle or self:GetMetadata().Interior.IdleSound
+    local sounds = self:GetIntMetadata().Sounds.Idle or self:GetIntMetadata().IdleSound
     if sounds and self.idlesounds then
         for k,v in pairs(sounds) do
             if TARDIS:GetSetting("idlesounds") and TARDIS:GetSetting("sound") then

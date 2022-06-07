@@ -2,17 +2,17 @@
 
 local function predraw_o(self)
     if not TARDIS:GetSetting("lightoverride-enabled") then return end
-    if self:GetMetadata().Interior.Light == nil then return end --because for some reason SOMEONE OUT THERE didn't define a light.
+    if self:GetIntMetadata().Light == nil then return end --because for some reason SOMEONE OUT THERE didn't define a light.
     --render.SetLightingMode(1)
-    local light=self:GetMetadata().Interior.Light
-    local lights=self:GetMetadata().Interior.Lights
+    local light=self:GetIntMetadata().Light
+    local lights=self:GetIntMetadata().Lights
     local warning = self.exterior:GetData("health-warning", false)
     
     render.SuppressEngineLighting(true)
     local tab={}
 
     if self:CallHook("ShouldDrawLight",nil,light) ~= false then
-        local bb = self:GetMetadata().Interior.LightOverride.basebrightness
+        local bb = self:GetIntMetadata().LightOverride.basebrightness
         render.ResetModelLighting(bb, bb, bb)
 
         local c=light.color
@@ -25,7 +25,7 @@ local function predraw_o(self)
             quadraticFalloff=light.falloff or 20,
         })
     else
-        local ob = self:GetMetadata().Interior.LightOverride.nopowerbrightness
+        local ob = self:GetIntMetadata().LightOverride.nopowerbrightness
         render.ResetModelLighting(ob, ob, ob)
     end
     if lights then
@@ -53,7 +53,7 @@ end
 
 local function postdraw_o(self)
     if not TARDIS:GetSetting("lightoverride-enabled") then return end
-    if self:GetMetadata().Interior.Light == nil then return end
+    if self:GetIntMetadata().Light == nil then return end
     render.SuppressEngineLighting(false)
 end
 

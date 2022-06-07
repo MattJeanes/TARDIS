@@ -1,7 +1,7 @@
 -- Add seats
 
 ENT:AddHook("Initialize","seats",function(self)
-    local seats=self:GetMetadata().Interior.Seats
+    local seats=self:GetIntMetadata().Seats
     if seats then
         self.seats={}
         local vname="Seat_Airboat"

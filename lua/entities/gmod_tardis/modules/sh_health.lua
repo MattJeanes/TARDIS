@@ -127,7 +127,7 @@ if SERVER then
         if self:CallHook("ShouldRedecorate") and self:Redecorate() then
             return
         end
-        self:EmitSound(self:GetMetadata().Exterior.Sounds.RepairFinish)
+        self:EmitSound(self:GetExtMetadata().Sounds.RepairFinish)
         self:SetData("repairing", false, true)
         self:ChangeHealth(TARDIS:GetSetting("health-max"))
         self:CallHook("RepairFinished")
@@ -270,7 +270,7 @@ if SERVER then
         local newhealth = self:GetHealth() - (dmginfo:GetDamage()/2)
         self:ChangeHealth(newhealth)
         if dmginfo:IsDamageType(DMG_BLAST) and self:GetHealth() ~= 0 then
-            int = self:GetMetadata().Interior.Sounds.Damage
+            int = self:GetIntMetadata().Sounds.Damage
             self.interior:EmitSound(int.Explosion)
         end
     end)
@@ -283,10 +283,10 @@ if SERVER then
         local phys = self:GetPhysicsObject()
         local vel = phys:GetVelocity():Length()
         if self:GetHealth() ~= 0 and vel < 900 then
-            int = self:GetMetadata().Interior.Sounds.Damage
+            int = self:GetIntMetadata().Sounds.Damage
             self.interior:EmitSound(int.Crash)
         elseif self:GetHealth() ~= 0 and vel > 900 then
-            int = self:GetMetadata().Interior.Sounds.Damage
+            int = self:GetIntMetadata().Sounds.Damage
             self.interior:EmitSound(int.BigCrash)
         end
     end)
@@ -297,7 +297,7 @@ if SERVER then
 
     ENT:AddHook("OnHealthDepleted", "death", function(self)
         self:SetPower(false)
-        local int = self:GetMetadata().Interior.Sounds.Damage
+        local int = self:GetIntMetadata().Sounds.Damage
         self.interior:StopSound(int.BigCrash)
         self.interior:StopSound(int.Crash)
         self.interior:StopSound(int.Explosion)

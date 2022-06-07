@@ -1,7 +1,7 @@
 -- Tips
 
 function ENT:InitializeTips(style_name)
-    local int_metadata = self:GetMetadata().Interior
+    local int_metadata = self:GetIntMetadata()
     local text_overrides = int_metadata.TipSettings.TextOverrides
 
     self.tip_style_name = style_name
@@ -95,20 +95,20 @@ end
 
 ENT:AddHook("Initialize", "tips", function(self)
     self.alltips = {}
-    if #self:GetMetadata().Interior.Tips ~= 0 then
-        for inttip_id, inttip in ipairs(self:GetMetadata().Interior.Tips) do
+    if #self:GetIntMetadata().Tips ~= 0 then
+        for inttip_id, inttip in ipairs(self:GetIntMetadata().Tips) do
             -- Interior.Tips are deprecated; should be deleted when the extensions update and
             -- replace with Interior.CustomTips, Interior.PartTips and Interior.TipSettings
             table.insert(self.alltips, inttip)
         end
     end
-    if #self:GetMetadata().Interior.CustomTips ~= 0 then
-        for inttip_id, inttip in ipairs(self:GetMetadata().Interior.CustomTips) do
+    if #self:GetIntMetadata().CustomTips ~= 0 then
+        for inttip_id, inttip in ipairs(self:GetIntMetadata().CustomTips) do
             table.insert(self.alltips, inttip)
         end
     end
-    if self:GetMetadata().Interior.PartTips ~= nil then
-        for part_id, part_tip in pairs(self:GetMetadata().Interior.PartTips) do
+    if self:GetIntMetadata().PartTips ~= nil then
+        for part_id, part_tip in pairs(self:GetIntMetadata().PartTips) do
             if istable(part_tip) then
                 local tip = table.Copy(part_tip)
                 tip.part = part_id
@@ -116,7 +116,7 @@ ENT:AddHook("Initialize", "tips", function(self)
             end
         end
     end
-    for part_id,part in pairs(self:GetMetadata().Interior.Parts) do
+    for part_id,part in pairs(self:GetIntMetadata().Parts) do
         if istable(part) and part.tip then
             local tip = table.Copy(part.tip)
             tip.part = part_id
@@ -147,7 +147,7 @@ hook.Add("HUDPaint", "TARDIS-DrawTips", function()
     local cseq_sequences, cseq_active, cseq_next
 
     if cseq_enabled then
-        cseq_sequences = TARDIS:GetControlSequence(interior:GetMetadata().Interior.Sequences)
+        cseq_sequences = TARDIS:GetControlSequence(interior:GetIntMetadata().Sequences)
         cseq_enabled = cseq_sequences ~= nil
         cseq_active = interior:GetData("cseq-active")
         local cseq_curseq = interior:GetData("cseq-curseq")

@@ -29,8 +29,8 @@ else
     ENT:OnMessage("power-toggled", function(self)
         local state = net.ReadBool()
         if TARDIS:GetSetting("sound") then
-            local sound_on = self:GetMetadata().Interior.Sounds.Power.On
-            local sound_off = self:GetMetadata().Interior.Sounds.Power.Off
+            local sound_on = self:GetIntMetadata().Sounds.Power.On
+            local sound_off = self:GetIntMetadata().Sounds.Power.Off
             if TARDIS:GetExteriorEnt() == self.exterior then
                 if not TARDIS:GetSetting("sound") then return end
                 self:EmitSound(state and sound_on or sound_off)

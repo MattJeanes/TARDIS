@@ -17,11 +17,11 @@ function ENT:Initialize()
             self.metadata=TARDIS:GetInterior("default", self)
         end
 
-        self.Model=self:GetMetadata().Interior.Model
-        self.Fallback=self:GetMetadata().Interior.Fallback
-        self.Portal=self:GetMetadata().Interior.Portal
-        self.CustomPortals=self:GetMetadata().Interior.CustomPortals
-        self.ExitDistance=self:GetMetadata().Interior.ExitDistance
+        self.Model=self:GetIntMetadata().Model
+        self.Fallback=self:GetIntMetadata().Fallback
+        self.Portal=self:GetIntMetadata().Portal
+        self.CustomPortals=self:GetIntMetadata().CustomPortals
+        self.ExitDistance=self:GetIntMetadata().ExitDistance
     end
     self.BaseClass.Initialize(self)
 end

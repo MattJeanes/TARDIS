@@ -1,5 +1,5 @@
 -- Metadata
 
 ENT:AddHook("Initialize", "metadata", function(self)
-    self.phys:SetMass(self:GetMetadata().Exterior.Mass)
+    self.phys:SetMass(self:GetExtMetadata().Mass)
 end)

@@ -184,16 +184,16 @@ local function GetData(self,e,id)
             data=e.Exteriors[self:GetID()]
         elseif TARDIS.Exteriors and TARDIS.Exteriors[self:GetID()] then
             data=TARDIS.Exteriors[self:GetID()]
-        elseif self:GetMetadata().Exterior.Parts and self:GetMetadata().Exterior.Parts[id] then
-            data=self:GetMetadata().Exterior.Parts[id]
+        elseif self:GetExtMetadata().Parts and self:GetExtMetadata().Parts[id] then
+            data=self:GetExtMetadata().Parts[id]
         end
     elseif self.TardisInterior then
         if e.Interiors and e.Interiors[self:GetID()] then
             data=e.Interiors[self:GetID()]
         elseif TARDIS.Interiors and TARDIS.Interiors[self:GetID()] then
             data=TARDIS.Interiors[self:GetID()]
-        elseif self:GetMetadata().Interior.Parts and self:GetMetadata().Interior.Parts[id] then
-            data=self:GetMetadata().Interior.Parts[id]
+        elseif self:GetIntMetadata().Parts and self:GetIntMetadata().Parts[id] then
+            data=self:GetIntMetadata().Parts[id]
         end
     end
     return data
@@ -237,9 +237,9 @@ end
 
 local function SetupPartMetadataControl(e)
     if (e.parent == e.interior) then
-        controls_metadata = e.parent:GetMetadata().Interior.Controls
+        controls_metadata = e.parent:GetIntMetadata().Controls
     else
-        controls_metadata = e.parent:GetMetadata().Exterior.Controls
+        controls_metadata = e.parent:GetExtMetadata().Controls
     end
     if controls_metadata ~= nil then
         if controls_metadata[e.ID] ~= nil then
@@ -254,9 +254,9 @@ if SERVER then
         local tempparts={}
         local data
         if ent.TardisExterior then
-            data=ent:GetMetadata().Exterior
+            data=ent:GetExtMetadata()
         elseif ent.TardisInterior then
-            data=ent:GetMetadata().Interior
+            data=ent:GetIntMetadata()
         end
         if data and data.Parts then
             for k,v in pairs(data.Parts) do

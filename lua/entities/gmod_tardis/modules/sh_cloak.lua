@@ -69,7 +69,7 @@ if SERVER then
     end)
 else
     ENT:AddHook("Initialize", "cloak-material", function(self)
-        self.PhaseMaterial = Material(self:GetMetadata().Exterior.PhaseMaterial or "models/drmatt/tardis/exterior/phase_noise.vmt")
+        self.PhaseMaterial = Material(self:GetExtMetadata().PhaseMaterial or "models/drmatt/tardis/exterior/phase_noise.vmt")
     end)
 
     ENT:AddHook("ShouldThinkFast", "cloak", function(self)
@@ -187,9 +187,9 @@ else
         self:SetData("cloak-animating", true)
         local snd
         if on then
-            snd = self:GetMetadata().Exterior.Sounds.Cloak
+            snd = self:GetExtMetadata().Sounds.Cloak
         else
-            snd = self:GetMetadata().Exterior.Sounds.CloakOff
+            snd = self:GetExtMetadata().Sounds.CloakOff
         end
 
         if TARDIS:GetSetting("cloaksound-enabled") and TARDIS:GetSetting("sound") then

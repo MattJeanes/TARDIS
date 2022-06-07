@@ -32,9 +32,9 @@ function ENT:Initialize()
         self.metadata=TARDIS:GetInterior("default", self)
     end
 
-    self.Model=self:GetMetadata().Exterior.Model
-    self.Portal=self:GetMetadata().Exterior.Portal
-    self.Fallback=self:GetMetadata().Exterior.Fallback
+    self.Model=self:GetExtMetadata().Model
+    self.Portal=self:GetExtMetadata().Portal
+    self.Fallback=self:GetExtMetadata().Fallback
     self.BaseClass.Initialize(self)
 end
 
