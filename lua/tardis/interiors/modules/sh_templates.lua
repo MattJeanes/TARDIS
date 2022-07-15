@@ -125,7 +125,7 @@ function TARDIS:MergeInteriorTemplates(cur_metadata, apply_conditions, ent)
 
         elseif not template_metadata then
             if not template or not template.ignore_missing then
-                local err_notification = "[TARDIS] Failed to find template " .. template_id .. " required for interior " .. id
+                local err_notification = "[TARDIS] "..TARDIS:GetPhrase("Templates.MissingTemplate", template_id, id)
                 if CLIENT and LocalPlayer() and LocalPlayer().ChatPrint then
                     LocalPlayer():ChatPrint(err_notification)
                 else

@@ -6,34 +6,38 @@ else
     net.Receive("tardis_message", function()
         local error = net.ReadBool()
         local message = net.ReadString()
-        TARDIS:Message(LocalPlayer(), message, error)
+        local args = net.ReadTable()
+        TARDIS:MessageInternal(LocalPlayer(), error, message, unpack(args))
     end)
 end
 
-function TARDIS:Message(ply, message, error)
+function TARDIS:MessageInternal(ply, error, message, ...)
     if not IsValid(ply) then return end
 
     if SERVER then
         net.Start("tardis_message")
             net.WriteBool(error)
             net.WriteString(message)
+            local args = {...}
+            net.WriteTable(args)
         net.Send(ply)
         return
     end
     local style = self:GetSetting("notification_type", ply)
 
     local prefix = "[TARDIS] "
-    local err = error and "ERROR: " or ""
+    local err = error and TARDIS:GetPhrase("Common.Error") .. ": " or ""
+    local translatedMessage = TARDIS:GetPhrase(message, ...)
 
     if style == 0 then
         return
     end
     if style == 1 then
-        print(prefix .. err .. message)
+        print(prefix .. err .. translatedMessage)
         return
     end
     if style == 2 then
-        LocalPlayer():ChatPrint(prefix .. err .. message)
+        LocalPlayer():ChatPrint(prefix .. err .. translatedMessage)
         return
     end
     if style == 3 then
@@ -43,14 +47,18 @@ function TARDIS:Message(ply, message, error)
         else
             notifyType = NOTIFY_GENERIC
         end
-        notification.AddLegacy(prefix .. message, notifyType, 5)
-        print(prefix .. err .. message)
+        notification.AddLegacy(prefix .. translatedMessage, notifyType, 5)
+        print(prefix .. err .. translatedMessage)
         return
     end
 end
 
-function TARDIS:ErrorMessage(ply, message)
-    return TARDIS:Message(ply, message, true)
+function TARDIS:Message(ply, message, ...)
+    return TARDIS:MessageInternal(ply, false, message, ...)
+end
+
+function TARDIS:ErrorMessage(ply, message, ...)
+    return TARDIS:MessageInternal(ply, true, message, ...)
 end
 
 function TARDIS:StatusMessage(ply, name, condition, enabled_msg, disabled_msg)

@@ -103,7 +103,7 @@ if SERVER then
         if on and self:GetPhyslock()==true then
             local pilot = self:GetData("pilot",nil)
             if IsValid(pilot) and pilot:IsPlayer() then
-                TARDIS:Message(pilot, "WARNING: Physical lock engaged")
+                TARDIS:Message(pilot, "Flight.WarnPhyslockEngaged")
             end
         end
         self:SetData("flight",on,true)
@@ -139,10 +139,10 @@ if SERVER then
     ENT:AddHook("ThirdPerson", "flight", function(self,ply,enabled)
         if enabled then
             if IsValid(self.pilot) then
-                TARDIS:Message(ply, self.pilot:Nick().." is the pilot.")
+                TARDIS:Message(ply, "Flight.NameIsThePilot", self.pilot:Nick())
             elseif self:CallHook("CanChangePilot",ply)~=false then
                 self.pilot=ply
-                TARDIS:Message(ply, "You are now the pilot.")
+                TARDIS:Message(ply, "Flight.YouAreNowThePilot")
                 self:CallHook("PilotChanged",nil,ply)
             end
         else
@@ -152,19 +152,19 @@ if SERVER then
                 for k,v in pairs(self.occupants) do
                     if k:GetTardisData("thirdperson") then
                         if IsValid(self.pilot) then
-                            TARDIS:Message(k, self.pilot:Nick().." is now the pilot.")
+                            TARDIS:Message(k, "Flight.NameIsNowThePilot", self.pilot:Nick())
                         else
                             self.pilot=k
-                            TARDIS:Message(k, "You are now the pilot.")
+                            TARDIS:Message(k, "Flight.YouAreNowThePilot")
                         end
                     end
                 end
             end
             if waspilot then
                 if IsValid(self.pilot) then
-                    TARDIS:Message(ply, self.pilot:Nick().." is now the pilot.")
+                    TARDIS:Message(ply, "Flight.NameIsNowThePilot", self.pilot:Nick())
                 else
-                    TARDIS:Message(ply, "You are no longer the pilot.")
+                    TARDIS:Message(ply, "Flight.NoLongerPilot")
                 end
                 self:CallHook("PilotChanged",ply,self.pilot)
             end

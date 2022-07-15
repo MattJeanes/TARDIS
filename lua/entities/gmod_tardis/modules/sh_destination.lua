@@ -167,24 +167,24 @@ if SERVER then
         end
         if self:GetData("vortex") or self:GetData("teleport") then
             if self:SetDestination(pos,ang) then
-                TARDIS:Message(ply, "Destination locked, ready to materialise")
+                TARDIS:Message(ply, "Destination.LockedReadyToMat")
             else
-                TARDIS:Message(ply, "Failed to set destination, may be transitioning")
+                TARDIS:Message(ply, "Destination.FailedSetDestinationMaybeTransitioning")
             end
         else
             if TARDIS:GetSetting("dest-onsetdemat", ply) then
                 self:Demat(pos,ang,function(success)
                     if success then
-                        TARDIS:Message(ply, "Destination locked, dematerialising...")
+                        TARDIS:Message(ply, "Destination.LockedDemat")
                     else
-                        TARDIS:Message(ply, "Failed to dematerialise")
+                        TARDIS:Message(ply, "Destination.FailedDemat")
                     end
                 end)
             else
                 if self:SetDestination(pos,ang) then
-                    TARDIS:Message(ply, "Destination locked, ready to dematerialise")
+                    TARDIS:Message(ply, "Destination.LockedReadyToDemat")
                 else
-                    TARDIS:Message(ply, "Failed to set destination")
+                    TARDIS:Message(ply, "Destination.FailedSetDestination")
                 end
             end
         end
