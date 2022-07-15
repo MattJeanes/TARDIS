@@ -1,7 +1,7 @@
 -- Traditional Chinese
 
 local T = {}
-T.Code = "zh-HK"
+T.Code = "zh-TW"
 T.Name = "繁體中文"
 T.Phrases = {
     ["Common.Error"] = "錯誤",
