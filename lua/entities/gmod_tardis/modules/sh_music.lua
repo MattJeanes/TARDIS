@@ -36,7 +36,7 @@ end
 function ENT:StopMusic(network)
     if IsValid(self.music) then
         if self.music:GetState() == GMOD_CHANNEL_PLAYING then
-            TARDIS:Message(LocalPlayer(), "Music stopped")
+            TARDIS:Message(LocalPlayer(), "Music.Stopped")
         end
         self.music:Stop()
         self.music = nil
@@ -60,7 +60,7 @@ function ENT:ResolveMusicURL(url)
                     local tbl=util.JSONToTable(body)
                     if tbl then
                         if tbl.success then
-                            TARDIS:Message(LocalPlayer(), "Playing: " ..tbl.title)
+                            TARDIS:Message(LocalPlayer(), "Music.Playing", tbl.title)
                             self:PlayMusic(api.."play?id="..id,true)
                         else
                             TARDIS:ErrorMessage(LocalPlayer(), "ERROR: Failed to load ("..(tbl.err and tbl.err or "Unknown reason")..")")
@@ -83,7 +83,7 @@ end
 
 function ENT:PlayMusic(url,resolved)
     if not resolved then
-        TARDIS:Message(LocalPlayer(), "Loading music...")
+        TARDIS:Message(LocalPlayer(), "Music.Loading")
         url=self:ResolveMusicURL(url)
     end
     if url and TARDIS:GetSetting("music-enabled") and TARDIS:GetSetting("sound") then

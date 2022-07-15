@@ -90,7 +90,7 @@ if SERVER then
         if self:CallHook("CanRepair")==false then return false end
         if on==true then
             for k,_ in pairs(self.occupants) do
-                TARDIS:Message(k, "This TARDIS has been set to self-repair. Please vacate the interior.")
+                TARDIS:Message(k, "Health.RepairActivated")
             end
             if self:GetPower() then self:SetPower(false) end
             self:SetData("repair-primed",true,true)
@@ -105,7 +105,7 @@ if SERVER then
             self:SetData("repair-primed",false,true)
             self:SetPower(true)
             for k,_ in pairs(self.occupants) do
-                TARDIS:Message(k, "Self-repair has been cancelled.")
+                TARDIS:Message(k, "Health.RepairCancelled")
             end
         end
         return true
@@ -133,7 +133,7 @@ if SERVER then
         self:CallHook("RepairFinished")
         self:SetPower(true)
         self:SetLocked(false, nil, true)
-        TARDIS:Message(self:GetCreator(), "Your TARDIS has finished self-repairing")
+        TARDIS:Message(self:GetCreator(), "Health.RepairFinished")
         self:StopSmoke()
         self:FlashLight(1.5)
     end
@@ -206,7 +206,7 @@ if SERVER then
 
     ENT:AddHook("LockedUse", "repair", function(self, a)
         if self:GetData("repairing") then
-            TARDIS:Message(a, "This TARDIS is repairing. It will be done in "..math.floor(self:GetRepairTime()).." seconds.")
+            TARDIS:Message(a, "Health.Repairing", math.floor(self:GetRepairTime()))
             return true
         end
     end)
@@ -216,7 +216,7 @@ if SERVER then
             self:SetData("repair-primed", false, true)
             self:SetPower(true)
             for k,_ in pairs(self.occupants) do
-                TARDIS:Message(k, "Self-repair has been cancelled.")
+                TARDIS:Message(k, "Health.RepairCancelled")
             end
         end
 
