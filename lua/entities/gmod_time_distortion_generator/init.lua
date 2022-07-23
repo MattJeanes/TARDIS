@@ -31,7 +31,7 @@ function ENT:Use(ply)
     self.on = false
 
     if on and self.FlyTime == nil then
-        TARDIS:Message(ply, "Starting the time distortion generator...")
+        TARDIS:Message(ply, "TimeDistortionGenerator.Starting")
         self:SetColor(Color(255, 166, 0))
         phys:SetAngleVelocity(Vector(20, -20, -10))
         phys:EnableGravity(false)
@@ -44,7 +44,7 @@ function ENT:Use(ply)
     else
         self.FlyTime = nil
         self:SetEnabled(false)
-        TARDIS:Message(ply, "Time distortion generator disabled.")
+        TARDIS:Message(ply, "TimeDistortionGenerator.Disabled")
         self:SetColor(Color(255, 255, 255, 255))
         phys:EnableGravity(true)
 
@@ -68,7 +68,7 @@ function ENT:Think()
         self.FlyTime = nil
         self.on = true
         self:SetEnabled(true)
-        TARDIS:Message(self.LastActivator, "Time distortion generator enabled.")
+        TARDIS:Message(self.LastActivator, "TimeDistortionGenerator.Enabled")
         self:GetPhysicsObject():SetVelocity(Vector(0, 0, 0))
         self:SetColor(Color(164, 90, 250))
 
@@ -77,7 +77,7 @@ function ENT:Think()
         for i,v in ipairs(ents.FindByClass("gmod_tardis_interior")) do
             if v:GetPos():Distance(self:GetPos()) <= v.metadata.Interior.ExitDistance then
                 for occ,_ in pairs(v.occupants) do
-                    TARDIS:ErrorMessage(occ, "WARNING: Something is causing time distortions inside this TARDIS")
+                    TARDIS:ErrorMessage(occ, "TimeDistortionGenerator.Distortions")
                 end
                 break
             end

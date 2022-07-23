@@ -1,4 +1,4 @@
-local SETTING_SECTION = "Sounds & Music"
+local SETTING_SECTION = "SoundsAndMusic"
 
 if CLIENT then
     -- Developers should respect this setting before playing any sounds

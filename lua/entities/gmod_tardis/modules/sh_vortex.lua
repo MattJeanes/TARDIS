@@ -176,7 +176,7 @@ else
             valid = util.IsValidModel(vortex.model)
         end
         if not valid and self:GetData("hasvortex") and (not self:GetData("vortexmodelwarn")) then
-            TARDIS:Message(LocalPlayer(), "WARNING: Vortex model invalid - disabling vortex, are you missing a dependency?")
+            TARDIS:Message(LocalPlayer(), "Vortex.ModelMissing")
             self:SetData("vortexmodelwarn",true)
         end
         self:SetData("vortexmodelvalid",valid)

@@ -6,5 +6,5 @@ TARDIS:AddControl({
     serveronly = true,
     power_independent = false,
     screen_button = false, -- already added as a screen
-    tip_text = "Coordinates",
+    tip_text = "Controls.Coordinates.Tip",
 })

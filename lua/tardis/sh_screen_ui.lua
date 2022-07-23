@@ -566,7 +566,7 @@ function TARDIS:LoadButtons(screen, frame, func, isvgui)
                         button:SetFrameType(options.frame_type[1], options.frame_type[2])
                     end
                     if options.text ~= nil then
-                        button:SetText(options.text)
+                        button:SetText(TARDIS:GetPhrase(options.text))
                     end
                     if options.pressed_state_data ~= nil then
                         local src = options.pressed_state_from_interior and screen.int or screen.ext

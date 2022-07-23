@@ -62,7 +62,7 @@ function TARDIS:ErrorMessage(ply, message, ...)
 end
 
 function TARDIS:StatusMessage(ply, name, condition, enabled_msg, disabled_msg)
-    if not enabled_msg then enabled_msg = "enabled" end
-    if not disabled_msg then disabled_msg = "disabled" end
-    TARDIS:Message(ply, name.." "..(condition and enabled_msg or disabled_msg))
+    if not enabled_msg then enabled_msg = "Common.Enabled.Lower" end
+    if not disabled_msg then disabled_msg = "Common.Disabled.Lower" end
+    TARDIS:Message(ply, TARDIS:GetPhrase(name).." "..(condition and TARDIS:GetPhrase(enabled_msg) or TARDIS:GetPhrase(disabled_msg)))
 end
