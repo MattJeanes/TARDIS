@@ -46,7 +46,7 @@ hook.Add("PopulateToolMenu", "TARDIS2-PopulateToolMenu", function()
                         end
 
                         local subsection = vgui.Create("DForm")
-                        subsection:SetLabel(data.subsection)
+                        subsection:SetLabel(TARDIS:GetPhrase("Settings.Sections."..section.."."..data.subsection))
 
                         -- save the subsection state for more convenience
                         subsection:SetExpanded(expanded or false)

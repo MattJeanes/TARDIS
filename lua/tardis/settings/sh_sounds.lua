@@ -10,10 +10,9 @@ if CLIENT then
         class="local",
 
         option = true,
-        subsection="Sounds",
+        subsection = "Sounds",
         section = SETTING_SECTION,
-        name = "All Sounds",
-        desc = "Lets you easily mute all sounds",
+        name = "All",
     })
 
     TARDIS:AddSetting({
@@ -26,8 +25,7 @@ if CLIENT then
         option=true,
         section=SETTING_SECTION,
         subsection="Sounds",
-        name="External Hum",
-        desc="Whether the hum on the outside of the TARDIS can be heard if it exists",
+        name="ExternalHum",
     })
 
     TARDIS:AddSetting({
@@ -40,8 +38,7 @@ if CLIENT then
         option = true,
         section = SETTING_SECTION,
         subsection="Sounds",
-        name = "Cloak Sound",
-        desc = "Whether or not sounds play when TARDIS cloaking is toggled",
+        name = "Cloak",
     })
 
     TARDIS:AddSetting({
@@ -54,8 +51,7 @@ if CLIENT then
         option=true,
         section=SETTING_SECTION,
         subsection="Sounds",
-        name="Door Sound",
-        desc="Whether a sound is made when toggling the door or not",
+        name="Door",
     })
 
     TARDIS:AddSetting({
@@ -68,8 +64,7 @@ if CLIENT then
         option=true,
         section=SETTING_SECTION,
         subsection="Sounds",
-        name="Flightmode External Sound",
-        desc="Whether the flight sound can be heard on the outside or not",
+        name="FlightExternal",
     })
 
     TARDIS:AddSetting({
@@ -82,8 +77,7 @@ if CLIENT then
         option=true,
         section=SETTING_SECTION,
         subsection="Sounds",
-        name="Lock Sound",
-        desc="Whether a sound is made when toggling the lock or not",
+        name="Lock",
     })
 
     TARDIS:AddSetting({
@@ -96,8 +90,7 @@ if CLIENT then
         option=true,
         section=SETTING_SECTION,
         subsection="Sounds",
-        name="Teleport Sound",
-        desc="Whether the teleport sounds can be heard or not",
+        name="Teleport",
     })
 
     TARDIS:AddSetting({
@@ -110,8 +103,7 @@ if CLIENT then
         option=true,
         section=SETTING_SECTION,
         subsection="Sounds",
-        name="Cloister bells",
-        desc="Whether the warning bells can be heard on the interior or not",
+        name="CloisterBells",
     })
 
     TARDIS:AddSetting({
@@ -124,8 +116,7 @@ if CLIENT then
         option=true,
         section=SETTING_SECTION,
         subsection="Sounds",
-        desc="Whether the flight sound can be heard on the inside or not",
-        name="Flightmode Internal Sound",
+        name="FlightInternal",
     })
 
     TARDIS:AddSetting({
@@ -138,8 +129,7 @@ if CLIENT then
         option=true,
         section=SETTING_SECTION,
         subsection="Sounds",
-        name="Idle Sounds",
-        desc="Whether the idle sounds can be heard on the inside or not",
+        name="Idle",
     })
 end
 
@@ -154,7 +144,6 @@ TARDIS:AddSetting({
     section=SETTING_SECTION,
     subsection="Music",
     name="Enabled",
-    desc="Whether music is played through the screens or not",
 })
 
 TARDIS:AddSetting({
@@ -170,7 +159,6 @@ TARDIS:AddSetting({
     section=SETTING_SECTION,
     subsection="Music",
     name="Volume",
-    desc="The volume of the music played through the screens",
 })
 
 TARDIS:AddSetting({
@@ -183,6 +171,5 @@ TARDIS:AddSetting({
     option=true,
     section=SETTING_SECTION,
     subsection="Music",
-    name="Stop on exit",
-    desc="Whether music is stopped when leaving the TARDIS",
+    name="StopOnExit",
 })

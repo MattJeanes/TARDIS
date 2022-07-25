@@ -9,8 +9,7 @@ TARDIS:AddSetting({
 
     option=true,
     section=SETTING_SECTION,
-    name="Use old GUI",
-    desc="Use the old 2D GUI with no pictures instead of the new one",
+    name="OldGUI",
 })
 
 TARDIS:AddSetting({
@@ -22,8 +21,7 @@ TARDIS:AddSetting({
 
     option=true,
     section=SETTING_SECTION,
-    name="GUI big popup",
-    desc="Should the popup for new visual GUI be bigger?",
+    name="BigPopup",
 })
 
 TARDIS:AddSetting({
@@ -37,8 +35,7 @@ TARDIS:AddSetting({
 
     option=true,
     section=SETTING_SECTION,
-    name="GUI rows (screen)",
-    desc="How many rows of buttons should the visual GUI on the screen have?",
+    name="ScreenRows",
 })
 
 TARDIS:AddSetting({
@@ -50,8 +47,7 @@ TARDIS:AddSetting({
 
     option=true,
     section=SETTING_SECTION,
-    name="GUI override screen rows",
-    desc="Should the interior settings for button rows be overridable?",
+    name="ScreenOverrideRows",
 })
 
 TARDIS:AddSetting({
@@ -65,8 +61,7 @@ TARDIS:AddSetting({
 
     option=true,
     section=SETTING_SECTION,
-    name="GUI rows (popup)",
-    desc="How many rows of buttons should the visual GUI in the popup have?",
+    name="PopupRows",
 })
 
 TARDIS:AddSetting({
@@ -77,7 +72,8 @@ TARDIS:AddSetting({
     get_values_func = function()
         local values = {}
         for k,v in pairs(TARDIS:GetGUIThemes()) do
-            table.insert(values, {v.name, v.id})
+            local name = "Themes."..v.name
+            table.insert(values, {TARDIS:PhraseExists(name) and name or v.name, v.id})
         end
         return values
     end,
@@ -86,6 +82,5 @@ TARDIS:AddSetting({
 
     option = true,
     section = SETTING_SECTION,
-    name = "GUI Theme",
-    desc = "Theme for the user interface",
+    name = "Theme",
 })

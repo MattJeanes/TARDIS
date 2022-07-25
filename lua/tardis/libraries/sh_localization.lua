@@ -21,6 +21,20 @@ function TARDIS:PhraseExists(phrase)
     return self:GetPhraseInternal(phrase) ~= nil
 end
 
+function TARDIS:GetPhraseIfExists(phrase, ...)
+    if not phrase then
+        return nil
+    end
+    local str = self:GetPhraseInternal(phrase)
+    if not str then
+        return nil
+    end
+    if not ... then
+        return str
+    end
+    return string.format(str, ...)
+end
+
 function TARDIS:GetPhraseInternal(phrase)
     local lang = self:GetLanguage()
     local str = lang.Phrases[phrase]

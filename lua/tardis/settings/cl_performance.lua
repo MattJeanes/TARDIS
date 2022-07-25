@@ -9,8 +9,7 @@ TARDIS:AddSetting({
 
     option=true,
     section=SETTING_SECTION,
-    name="Lighting Override",
-    desc="Better interior lighting independent from the map ambience.\nMay cause performance drops on lower end systems.",
+    name="LightingOverride",
 })
 
 TARDIS:AddSetting({
@@ -22,8 +21,7 @@ TARDIS:AddSetting({
 
     option=true,
     section=SETTING_SECTION,
-    name="Portals Enabled",
-    desc="Whether portals will render or not, turn this off if they impact framerate significantly",
+    name="Portals",
 })
 
 TARDIS:AddSetting({
@@ -37,8 +35,7 @@ TARDIS:AddSetting({
 
     option=true,
     section=SETTING_SECTION,
-    name="Door Close Distance",
-    desc="The distance at which the door automatically closes",
+    name="DoorCloseDistance",
 })
 
 TARDIS:AddSetting({
@@ -50,8 +47,7 @@ TARDIS:AddSetting({
 
     option=true,
     section=SETTING_SECTION,
-    name="Dynamic Exterior Light",
-    desc="Should the exterior emit dynamic lighting?",
+    name="DynamicExteriorLight",
 })
 
 TARDIS:AddSetting({
@@ -63,8 +59,7 @@ TARDIS:AddSetting({
 
     option=true,
     section=SETTING_SECTION,
-    name="Projected Door Exterior Light",
-    desc="Should light shine out through the doors when they're open?",
+    name="ProjectedDoorExteriorLight",
 })
 
 TARDIS:AddSetting({
@@ -76,6 +71,5 @@ TARDIS:AddSetting({
 
     option=true,
     section=SETTING_SECTION,
-    name="Breakdown Effects",
-    desc="Should TARDIS have sparkling and explosion effects in emergency moments?",
+    name="BreakdownEffects",
 })

@@ -2,10 +2,14 @@
 
 function TARDIS:CreateOptionInterface(id, data)
 
-    local text = data.name or id
-    local tooltip = data.desc or ""
+    local section = "Settings.Sections."..(data.section or "Other")
+    local subsection = data.subsection and section .. "." .. data.subsection or section
+    local name = subsection .. "." .. (data.name or id)
+    local desc = name .. ".Description"
+    local text = TARDIS:GetPhrase(name)
+    local tooltip = TARDIS:GetPhraseIfExists(desc) or ""
     if data.value ~= nil then
-        tooltip = tooltip .. "\n\nDefault: " .. tostring(data.value)
+        tooltip = tooltip .. "\n\n".. TARDIS:GetPhrase("Common.Default") .. ": " .. tostring(data.value)
     end
 
     local elem
@@ -105,7 +109,7 @@ function TARDIS:CreateOptionInterface(id, data)
 
         if data.get_values_func ~= nil then
             for k,v in pairs(data.get_values_func()) do
-                elem2:AddChoice(v[1], v[2])
+                elem2:AddChoice(TARDIS:GetPhrase(v[1]), v[2])
             end
         end
 

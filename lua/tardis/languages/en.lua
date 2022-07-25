@@ -11,6 +11,7 @@ T.Phrases = {
     ["Common.Cancel"] = "Cancel",
     ["Common.Save"] = "Save",
     ["Common.Reset"] = "Reset",
+    ["Common.Default"] = "Default",
     ["Common.PowerDisabled"] = "Power is disabled",
     ["Common.Enabled.Lower"] = "enabled",
     ["Common.Disabled.Lower"] = "disabled",
@@ -78,12 +79,192 @@ T.Phrases = {
     ["MenuOptions.ResetSettingsConfirmation"] = "TARDIS clientside settings have been reset. You may need to respawn the TARDIS for all changes to apply.",
 
     ["Settings.Sections.GUI"] = "GUI",
+
+    ["Settings.Sections.GUI.OldGUI"] = "Use old GUI",
+    ["Settings.Sections.GUI.OldGUI.Description"] = "Use the old 2D GUI with no pictures instead of the new one",
+    
+    ["Settings.Sections.GUI.BigPopup"] = "GUI big popup",
+    ["Settings.Sections.GUI.BigPopup.Description"] = "Should the popup for new visual GUI be bigger?",
+    
+    ["Settings.Sections.GUI.ScreenRows"] = "GUI rows (screen)",
+    ["Settings.Sections.GUI.ScreenRows.Description"] = "How many rows of buttons should the visual GUI on the screen have?",
+    
+    ["Settings.Sections.GUI.ScreenOverrideRows"] = "GUI override screen rows",
+    ["Settings.Sections.GUI.ScreenOverrideRows.Description"] = "Should the interior settings for button rows be overridable?",
+    
+    ["Settings.Sections.GUI.PopupRows"] = "GUI rows (popup)",
+    ["Settings.Sections.GUI.PopupRows.Description"] = "How many rows of buttons should the visual GUI in the popup have?",
+    
+    ["Settings.Sections.GUI.Theme"] = "GUI Theme",
+    ["Settings.Sections.GUI.Theme.Description"] = "Theme for the user interface",
+
     ["Settings.Sections.Performance"] = "Performance",
+    
+    ["Settings.Sections.Performance.LightingOverride"] = "Lighting Override",
+    ["Settings.Sections.Performance.LightingOverride.Description"] = "Better interior lighting independent from the map ambience.\nMay cause performance drops on lower end systems.",
+    
+    ["Settings.Sections.Performance.Portals"] = "Portals Enabled",
+    ["Settings.Sections.Performance.Portals.Description"] = "Whether portals will render or not, turn this off if they impact framerate significantly",
+    
+    ["Settings.Sections.Performance.DoorCloseDistance"] = "Door Close Distance",
+    ["Settings.Sections.Performance.DoorCloseDistance.Description"] = "The distance at which the door automatically closes",
+    
+    ["Settings.Sections.Performance.DynamicExteriorLight"] = "Dynamic Exterior Light",
+    ["Settings.Sections.Performance.DynamicExteriorLight.Description"] = "Should the exterior emit dynamic lighting?",
+
+    ["Settings.Sections.Performance.ProjectedDoorExteriorLight"] = "Projected Door Exterior Light",
+    ["Settings.Sections.Performance.ProjectedDoorExteriorLight.Description"] = "Should light shine out through the doors when they're open?",
+
+    ["Settings.Sections.Performance.BreakdownEffects"] = "Breakdown Effects",
+    ["Settings.Sections.Performance.BreakdownEffects.Description"] = "Should the TARDIS have sparkling and explosion effects in emergency situations?",
+
     ["Settings.Sections.Exterior"] = "Exterior",
-    ["Settings.Sections.AdminOptions"] = "Admin Options",
+
+    ["Settings.Sections.Exterior.Light"] = "Exterior light",
+    
+    ["Settings.Sections.Exterior.Light.EnableColorOverride"] = "Enable Light Color Override",
+    ["Settings.Sections.Exterior.Light.EnableColorOverride.Description"] = "Whether the override of exterior light color is enabled",
+
+    ["Settings.Sections.Exterior.Light.ColorOverride"] = "Color Override",
+    ["Settings.Sections.Exterior.Light.ColorOverride.Description"] = "The override color of the exterior light",
+
+    ["Settings.Sections.Exterior.Light.AlwaysOn"] = "Exterior Light Always On",
+    ["Settings.Sections.Exterior.Light.AlwaysOn.Description"] = "Should the exterior light always be lit?",
+
+    ["Settings.Sections.Exterior.ProjectedLight"] = "Projected light",
+
+    ["Settings.Sections.Exterior.ProjectedLight.EnableBrightnessOverride"] = "Enable Brightness Override",
+    ["Settings.Sections.Exterior.ProjectedLight.EnableBrightnessOverride.Description"] = "Whether the override of projected light brightness is enabled",
+
+    ["Settings.Sections.Exterior.ProjectedLight.EnableColorOverride"] = "Enable Color Override",
+    ["Settings.Sections.Exterior.ProjectedLight.EnableColorOverride.Description"] = "Whether the override of projected light color is enabled",
+
+    ["Settings.Sections.Exterior.ProjectedLight.EnableDistanceOverride"] = "Enable Distance Override",
+    ["Settings.Sections.Exterior.ProjectedLight.EnableDistanceOverride.Description"] = "Whether the override of projected light distance is enabled",
+
+    ["Settings.Sections.Exterior.ProjectedLight.BrightnessOverride"] = "Brightness Override",
+    ["Settings.Sections.Exterior.ProjectedLight.BrightnessOverride.Description"] = "Override brightness of projected light",
+
+    ["Settings.Sections.Exterior.ProjectedLight.DistanceOverride"] = "Distance Override",
+    ["Settings.Sections.Exterior.ProjectedLight.DistanceOverride.Description"] = "Override distance of projected light",
+
+    ["Settings.Sections.Exterior.ProjectedLight.ColorOverride"] = "Color Override",
+    ["Settings.Sections.Exterior.ProjectedLight.ColorOverride.Description"] = "Override color of projected light",
+
+    ["Settings.Sections.Global"] = "Admin Options",
+
+    ["Settings.Sections.Global.EnableHealth"] = "Enable Health",
+    ["Settings.Sections.Global.EnableHealth.Description"] = "Should the TARDIS have health and take damage?",
+
+    ["Settings.Sections.Global.MaxHealth"] = "Max Health",
+    ["Settings.Sections.Global.MaxHealth.Description"] = "Maximum ammount of health the TARDIS has",
+
+    ["Settings.Sections.Global.BoostSpeed"] = "Boost Speed",
+    ["Settings.Sections.Global.BoostSpeed.Description"] = "The increase of speed the TARDIS gets with the boost key enabled",
+
     ["Settings.Sections.Misc"] = "Misc",
+
+    ["Settings.Sections.Misc.NotificationType"] = "Notification type",
+    ["Settings.Sections.Misc.NotificationType.Description"] = "Which type of notifications is being used",
+    ["Settings.Sections.Misc.NotificationType.Types.Disabled"] = "Disabled",
+    ["Settings.Sections.Misc.NotificationType.Types.ConsoleLog"] = "Console log",
+    ["Settings.Sections.Misc.NotificationType.Types.Chat"] = "Chat notifications",
+    ["Settings.Sections.Misc.NotificationType.Types.Inbuilt"] = "In-built notifications",
+
+    ["Settings.Sections.Misc.EnableControlSequences"] = "Enable Control Sequences",
+    ["Settings.Sections.Misc.EnableControlSequences.Description"] = "Should control sequences or 'advanced mode' be used?",
+    
+    ["Settings.Sections.Misc.IsomorphicSecurityDefault"] = "Isomorphic Security on by default",
+    ["Settings.Sections.Misc.IsomorphicSecurityDefault.Description"] = "Whether or not others can use your TARDIS' controls by default",
+    
+    ["Settings.Sections.Misc.Teleport"] = "Teleport",
+
+    ["Settings.Sections.Misc.Teleport.AutoCloseDoors"] = "Auto-Close Doors at Demat",
+    ["Settings.Sections.Misc.Teleport.AutoCloseDoors.Description"] = "Should TARDIS close doors automatically before demat?",
+
+    ["Settings.Sections.Misc.Teleport.DestinationDematOnSet"] = "Destination - Demat on Set",
+    ["Settings.Sections.Misc.Teleport.DestinationDematOnSet.Description"] = "Should the TARDIS dematerialise immediately after destination is set?",
+
+    ["Settings.Sections.Misc.Teleport.ShowVortex"] = "Show Vortex",
+    ["Settings.Sections.Misc.Teleport.ShowVortex.Description"] = "Whether the vortex is shown during vortex flight",
+    
+    ["Settings.Sections.Misc.Flight"] = "Flight",
+
+    ["Settings.Sections.Misc.Flight.StopSpinningOpenDoor"] = "Stop spinning with opened door",
+    ["Settings.Sections.Misc.Flight.StopSpinningOpenDoor.Description"] = "Should the TARDIS stop spinning when doors are opened in flight?",
+
+    ["Settings.Sections.Misc.Flight.DisableBoostOpenDoor"] = "Disable boost with opened doors",
+    ["Settings.Sections.Misc.Flight.DisableBoostOpenDoor.Description"] = "Should the TARDIS boost stop working when doors are opened in flight?",
+
+    ["Settings.Sections.Misc.Flight.UseWalkKeyThirdPerson"] = "Use walk key to enter third person",
+    ["Settings.Sections.Misc.Flight.UseWalkKeyThirdPerson.Description"] = "Should the WALK ('ALT' by default) key be pressed to enter third person when pressing USE ('E' by default) key on the console?",
+
+    ["Settings.Sections.Misc.Tips"] = "Tips",
+
+    ["Settings.Sections.Misc.Tips.Enabled"] = "Tips",
+    ["Settings.Sections.Misc.Tips.Enabled.Description"] = "Should tips be shown for TARDIS controls?",
+
+    ["Settings.Sections.Misc.Tips.Style"] = "Tips Style",
+    ["Settings.Sections.Misc.Tips.Style.Description"] = "Which style should the TARDIS tips use?",
+
+    ["Settings.Sections.Misc.Spawning"] = "Spawning the TARDIS",
+
+    ["Settings.Sections.Misc.Spawning.PreferClassicDoor"] = "Prefer classic door interiors",
+    ["Settings.Sections.Misc.Spawning.PreferClassicDoor.Description"] = "Whether classic (big) door versions of interiors will spawn by default",
+
+    ["Settings.Sections.Misc.Spawning.RandomizeSkins"] = "Randomize skins",
+    ["Settings.Sections.Misc.Spawning.RandomizeSkins.Description"] = "Whether or not TARDIS skin will be randomized when it's spawned",
+
+    ["Settings.Sections.Misc.Spawning.UseWinterSkins"] = "Use winter skins",
+    ["Settings.Sections.Misc.Spawning.UseWinterSkins.Description"] = "Whether or not winter TARDIS skins will be used while it's randomized",
+    
     ["Settings.Sections.SoundsAndMusic"] = "Sounds & Music",
+
+    ["Settings.Sections.SoundsAndMusic.Sounds"] = "Sounds",
+
+    ["Settings.Sections.SoundsAndMusic.Sounds.All"] = "All Sounds",
+    ["Settings.Sections.SoundsAndMusic.Sounds.All.Description"] = "Lets you easily mute all sounds",
+
+    ["Settings.Sections.SoundsAndMusic.Sounds.ExternalHum"] = "External Hum",
+    ["Settings.Sections.SoundsAndMusic.Sounds.ExternalHum.Description"] = "Whether the hum on the outside of the TARDIS can be heard if it exists",
+
+    ["Settings.Sections.SoundsAndMusic.Sounds.Cloak"] = "Cloak Sound",
+    ["Settings.Sections.SoundsAndMusic.Sounds.Cloak.Description"] = "Whether or not sounds play when TARDIS cloaking is toggled",
+
+    ["Settings.Sections.SoundsAndMusic.Sounds.Door"] = "Door Sound",
+    ["Settings.Sections.SoundsAndMusic.Sounds.Door.Description"] = "Whether a sound is made when toggling the door or not",
+
+    ["Settings.Sections.SoundsAndMusic.Sounds.FlightExternal"] = "Flightmode External Sound",
+    ["Settings.Sections.SoundsAndMusic.Sounds.FlightExternal.Description"] = "Whether the flight sound can be heard on the outside or not",
+
+    ["Settings.Sections.SoundsAndMusic.Sounds.Lock"] = "Lock Sound",
+    ["Settings.Sections.SoundsAndMusic.Sounds.Lock.Description"] = "Whether a sound is made when toggling the lock or not",
+
+    ["Settings.Sections.SoundsAndMusic.Sounds.Teleport"] = "Teleport Sound",
+    ["Settings.Sections.SoundsAndMusic.Sounds.Teleport.Description"] = "Whether the teleport sounds can be heard or not",
+
+    ["Settings.Sections.SoundsAndMusic.Sounds.CloisterBells"] = "Cloister bells",
+    ["Settings.Sections.SoundsAndMusic.Sounds.CloisterBells.Description"] = "Whether the warning bells can be heard on the interior or not",
+
+    ["Settings.Sections.SoundsAndMusic.Sounds.FlightInternal"] = "Flightmode Internal Sound",
+    ["Settings.Sections.SoundsAndMusic.Sounds.FlightInternal.Description"] = "Whether the flight sound can be heard on the inside or not",
+
+    ["Settings.Sections.SoundsAndMusic.Sounds.Idle"] = "Idle Sounds",
+    ["Settings.Sections.SoundsAndMusic.Sounds.Idle.Description"] = "Whether the idle sounds can be heard on the inside or not",
+
+    ["Settings.Sections.SoundsAndMusic.Music"] = "Music",
+
+    ["Settings.Sections.SoundsAndMusic.Music.Enabled"] = "Enabled",
+    ["Settings.Sections.SoundsAndMusic.Music.Enabled.Description"] = "Whether music is played through the screens or not",
+
+    ["Settings.Sections.SoundsAndMusic.Music.Volume"] = "Volume",
+    ["Settings.Sections.SoundsAndMusic.Music.Volume.Description"] = "The volume of the music played through the screens",
+
+    ["Settings.Sections.SoundsAndMusic.Music.StopOnExit"] = "Stop on exit",
+    ["Settings.Sections.SoundsAndMusic.Music.StopOnExit.Description"] = "Whether music is stopped when leaving the TARDIS",
+
     ["Settings.Sections.Binds"] = "Binds",
+
     ["Settings.Sections.Other"] = "Other",
 
     ["Binds.Key"] = "Key",
@@ -285,6 +466,15 @@ T.Phrases = {
     ["Controls.VortexFlight.Tip"] = "Vortex Flight",
     ["Controls.VortexFlight.Status"] = "Vortex flight",
     ["Controls.VortexFlight.FailedToggle"] = "Failed to toggle vortex flight",
+
+    ["Themes.Default"] = "Default",
+    ["Themes.Transparent"] = "Transparent",
+    ["Themes.TextOnly"] = "Text only",
+
+    ["TipStyles.Default"] = "Default (set by interior)",
+    ["TipStyles.Classic"] = "Classic (legacy)",
+    ["TipStyles.WhiteOnBlue"] = "White on blue",
+    ["TipStyles.WhiteOnGrey"] = "White on grey",
 }
 
 TARDIS:AddLanguage(T)
