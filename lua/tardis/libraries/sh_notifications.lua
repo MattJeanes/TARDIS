@@ -25,7 +25,7 @@ function TARDIS:MessageInternal(ply, error, message, ...)
     end
     local style = self:GetSetting("notification_type", ply)
 
-    local prefix = "[TARDIS] "
+    local prefix = "[" .. TARDIS:GetPhrase("Common.TARDIS") .. "] "
     local err = error and TARDIS:GetPhrase("Common.Error") .. ": " or ""
     local translatedMessage = TARDIS:GetPhrase(message, ...)
 

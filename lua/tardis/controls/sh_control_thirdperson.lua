@@ -10,8 +10,8 @@ TARDIS:AddControl({
         mmenu = true,
         toggle = false,
         frame_type = {0, 1},
-        text = "Flight Control",
+        text = "Controls.ThirdPerson",
         order = 5,
     },
-    tip_text = "Manual Flight Control",
+    tip_text = "Controls.ThirdPerson.Tip",
 })

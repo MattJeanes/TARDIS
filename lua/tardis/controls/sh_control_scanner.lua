@@ -6,5 +6,5 @@ TARDIS:AddControl({
     serveronly = true,
     power_independent = true,
     screen_button = false, -- already added as a screen
-    tip_text = "Scanner",
+    tip_text = "Controls.Scanner.Tip",
 })

@@ -7,5 +7,5 @@ TARDIS:AddControl({
     serveronly = true,
     power_independent = true,
     screen_button = false, -- already added as a screen
-    tip_text = "Virtual Console",
+    tip_text = "Controls.VirtualConsole.Tip",
 })

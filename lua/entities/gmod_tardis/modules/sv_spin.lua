@@ -43,13 +43,16 @@ function ENT:GetSpinDirText(show_next)
         current = self:GetData("spindir_prev", 0)
     end
 
+    local text
     if current == -1 then
-        return "anti-clockwise"
+        text = "Spin.Directions.AntiClockwise"
     elseif current == 0 then
-        return "none"
+        text = "Spin.Directions.None"
     elseif current == 1 then
-        return "clockwise"
+        text = "Spin.Directions.Clockwise"
     end
+
+    return TARDIS:GetPhrase(text)
 end
 
 ENT:AddHook("ToggleDoorReal", "spin-dir", function(self,open)

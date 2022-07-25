@@ -1,7 +1,7 @@
 TARDIS:AddControl({
     id = "shields",
     ext_func=function(self,ply)
-        TARDIS:Message(ply, "This hasn't been implemented yet.")
+        TARDIS:Message(ply, "Common.NotYetImplemented")
     end,
     clientonly=true,
     power_independent = false,
@@ -9,5 +9,5 @@ TARDIS:AddControl({
         virt_console = false,
         mmenu = false,
     },
-    tip_text = "Shields",
+    tip_text = "Controls.Shields.Tip",
 })

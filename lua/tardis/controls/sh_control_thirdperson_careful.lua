@@ -6,5 +6,5 @@ TARDIS:AddControl({
     serveronly=true,
     power_independent = true,
     screen_button = false,
-    tip_text = "Manual Flight Control",
+    tip_text = "Controls.ThirdPersonCareful.Tip",
 })

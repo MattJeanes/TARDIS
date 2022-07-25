@@ -2,7 +2,7 @@ TARDIS:AddControl({
     id = "spin_cycle",
     ext_func=function(self,ply)
         self:CycleSpinDir()
-        TARDIS:Message(ply, "Spin direction set to " .. self:GetSpinDirText())
+        TARDIS:Message(ply, "Spin.Changed", self:GetSpinDirText())
     end,
     serveronly=true,
     power_independent = false,
@@ -11,10 +11,10 @@ TARDIS:AddControl({
         mmenu = false,
         toggle = false,
         frame_type = {0, 1},
-        text = "Spin direction",
+        text = "Controls.SpinCycle",
         pressed_state_from_interior = false,
         pressed_state_data = nil,
         order = 16,
     },
-    tip_text = "Spin",
+    tip_text = "Controls.SpinCycle.Tip",
 })

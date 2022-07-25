@@ -57,6 +57,11 @@ T.Phrases = {
 
     ["Security.PartUseDenied"] = "This TARDIS uses Isomorphic Security. You may not use any controls",
 
+    ["Spin.Changed"] = "Spin direction set to %s",
+    ["Spin.Directions.AntiClockwise"] = "anti-clockwise",
+    ["Spin.Directions.None"] = "none",
+    ["Spin.Directions.Clockwise"] = "clockwise",
+
     ["TimeDistortionGenerator.Starting"] = "Starting the time distortion generator...",
     ["TimeDistortionGenerator.Disabled"] = "Time distortion generator disabled",
     ["TimeDistortionGenerator.Enabled"] = "Time distortion generator enabled",
@@ -135,6 +140,85 @@ T.Phrases = {
 
     ["Controls.InteriorLights.Tip"] = "Lights",
 
+    ["Controls.Isomorphic"] = "Isomorphic Security",
+    ["Controls.Isomorphic.Tip"] = "Isomorphic Security System",
+    ["Controls.Isomorphic.Status"] = "Isomorphic security",
+    ["Controls.Isomorphic.FailedToggle"] = "Failed to toggle isomorphic security",
+    ["Controls.Isomorphic.NotCreator"] = "This is not your TARDIS",
+    ["Controls.Isomorphic.SingleplayerWarning"] = "WARNING: Isomorphic security has no use in singleplayer",
+
+    ["Controls.Music.Tip"] = "Music",
+
+    ["Controls.Physlock"] = "Physlock",
+    ["Controls.Physlock.Tip"] = "Locking-Down Mechanism",
+    ["Controls.Physlock.Status"] = "Locking-down mechanism",
+    ["Controls.Physlock.FailedToggle"] = "Failed to toggle locking-down mechanism",
+
+    ["Controls.Power"] = "Power",
+    ["Controls.Power.Tip"] = "Power Switch",
+    ["Controls.Power.Status"] = "Power",
+    ["Controls.Power.FailedToggle"] = "Failed to toggle power",
+
+    ["Controls.RandomCoords.Tip"] = "Random Destination",
+    ["Controls.RandomCoords.Selected"] = "Random destination has been selected",
+    
+    ["Controls.Redecorate"] = "Redecoration",
+    ["Controls.Redecorate.Tip"] = "Redecoration",
+    ["Controls.Redecorate.Status"] = "Redecoration",
+    ["Controls.Redecorate.FailedToggle"] = "Failed to toggle redecoration",
+    ["Controls.Redecorate.RandomInteriorWarning"] = "WARNING: New interior has been selected randomly. Right click in spawnmenu to choose",
+    ["Controls.Redecorate.NotCreator"] = "You cannot redecorate someone else's TARDIS",
+
+    ["Controls.Repair"] = "Self-Repair",
+    ["Controls.Repair.Tip"] = "Self-Repair",
+    ["Controls.Repair.FailedToggle"] = "Failed to toggle self-repair",
+
+    ["Controls.Scanner.Tip"] = "Scanner",
+
+    ["Controls.Shields.Tip"] = "Shields",
+
+    ["Controls.SonicDispenser.Tip"] = "Sonic Charger",
+    ["Controls.SonicDispenser.MissingAddon"] = "You do not have the Sonic Screwdriver addon installed. Install it for this part to work",
+    ["Controls.SonicDispenser.Dispensed"] = "Sonic Screwdriver has been dispensed",
+    ["Controls.SonicDispenser.Equipped"] = "Sonic Screwdriver has been equipped",
+    ["Controls.SonicDispenser.AlreadyEquipped"] = "You are already holding a Sonic Screwdriver",
+
+    ["Controls.SpinCycle"] = "Spin direction",
+    ["Controls.SpinCycle.Tip"] = "Spin",
+
+    ["Controls.SpinSwitch.Tip"] = "Spin direction",
+    ["Controls.SpinSwitch.ChangedDisabled"] = "Spin is disabled, but spin direction set to %s",
+
+    ["Controls.SpinToggle.Tip"] = "Toggle spin",
+    ["Controls.SpinToggle.Status"] = "Spin",
+
+    ["Controls.Stabilizers.Tip"] = "Flight stabilizers",
+
+    ["Controls.Teleport"] = "Teleport",
+    ["Controls.Teleport.Tip"] = "Space-Time Throttle",
+    ["Controls.Teleport.Mat"] = "Materialising",
+    ["Controls.Teleport.FailedMat"] = "Failed to materialise",
+    ["Controls.Teleport.Demat"] = "Dematerialising",
+    ["Controls.Teleport.FailedDematDoorsOpen"] = "Can't dematerialise while doors are open",
+    ["Controls.Teleport.FailedDematHandbrake"] = "Time Rotor Handbrake is engaged! Cannot dematerialise",
+    ["Controls.Teleport.FailedDemat"] = "Failed to dematerialise",
+
+    ["Controls.ThirdPersonCareful.Tip"] = "Manual Flight Control",
+
+    ["Controls.ThirdPerson"] = "Flight Control",
+    ["Controls.ThirdPerson.Tip"] = "Manual Flight Control",
+
+    ["Controls.ToggleScreens"] = "Toggle Screen",
+    ["Controls.ToggleScreens.Tip"] = "Toggle Screen",
+    ["Controls.ToggleScreens.Status"] = "Interior screens",
+    ["Controls.ToggleScreens.FailedToggle"] = "Failed to toggle interior screens",
+
+    ["Controls.VirtualConsole.Tip"] = "Virtual Console",
+
+    ["Controls.VortexFlight"] = "Vortex Flight",
+    ["Controls.VortexFlight.Tip"] = "Vortex Flight",
+    ["Controls.VortexFlight.Status"] = "Vortex flight",
+    ["Controls.VortexFlight.FailedToggle"] = "Failed to toggle vortex flight",
 }
 
 TARDIS:AddLanguage(T)
