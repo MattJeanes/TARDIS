@@ -1,8 +1,8 @@
 -- Third person
 
 TARDIS:AddKeyBind("tp-toggledoor",{
-    name="Toggle Door",
-    section="Third Person",
+    name="ToggleDoor",
+    section="ThirdPerson",
     func=function(self,down,ply)
         if ply==self.pilot and down then
             TARDIS:Control("door", ply)

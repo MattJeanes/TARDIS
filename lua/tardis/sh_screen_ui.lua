@@ -80,9 +80,8 @@ TARDIS:CreateScreenFont("PageName", {
 })
 
 TARDIS:AddKeyBind("tp-openscreen",{
-    name="Open Screen",
-    section="Third Person",
-    desc="Toggles the HUD screen",
+    name="OpenScreen",
+    section="ThirdPerson",
     func=function(self,down,ply)
         if down and ply:GetTardisData("outside") then
             TARDIS:HUDScreen()

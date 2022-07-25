@@ -4,8 +4,7 @@
 
 TARDIS:AddKeyBind("destination-open",{
     name="Destination",
-    section="Third Person",
-    desc="Enter destination select state",
+    section="ThirdPerson",
     func=function(self,down,ply)
         if down and ply == self.pilot then
             TARDIS:Control("destination", ply)
@@ -60,7 +59,6 @@ TARDIS:AddKeyBind("destination-down",{
 TARDIS:AddKeyBind("destination-boost",{
     name="Boost",
     section="Destination",
-    desc="Hold this key while navigating to speed up",
     key=KEY_LSHIFT,
     clientonly=true,
     exterior=true
@@ -68,7 +66,6 @@ TARDIS:AddKeyBind("destination-boost",{
 TARDIS:AddKeyBind("destination-slow",{
     name="Slow",
     section="Destination",
-    desc="Hold this key to slow movement",
     key=KEY_LALT,
     clientonly=true,
     exterior=true
@@ -76,7 +73,6 @@ TARDIS:AddKeyBind("destination-slow",{
 TARDIS:AddKeyBind("destination-rotate",{
     name="Rotate",
     section="Destination",
-    desc="Hold this with the boost and left or right keys to rotate",
     key=KEY_LALT,
     clientonly=true,
     exterior=true
@@ -101,9 +97,8 @@ TARDIS:AddKeyBind("destination-demat",{
     exterior=true
 })
 TARDIS:AddKeyBind("destination-snaptofloor",{
-    name="Snap To Floor",
+    name="SnapToFloor",
     section="Destination",
-    desc="Press this key to snap to the nearest floor",
     func=function(self,down,ply)
         if TARDIS:HUDScreenOpen(ply) then return end
         if ply:GetTardisData("destination") then

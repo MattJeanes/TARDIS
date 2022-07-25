@@ -7,21 +7,7 @@ function TARDIS:GetPhrase(phrase, ...)
     if not phrase then
         return ""
     end
-    local lang = TARDIS:GetLanguage()
-    local str = lang.Phrases[phrase]
-    if not str then
-        while lang.Base do
-            local baseLang = lang.Base
-            lang = self.Languages[baseLang]
-            if not lang then
-                return phrase
-            end
-            str = lang.Phrases[phrase]
-            if str then
-                break
-            end
-        end
-    end
+    local str = self:GetPhraseInternal(phrase)
     if not str then
         return phrase
     end
@@ -29,6 +15,30 @@ function TARDIS:GetPhrase(phrase, ...)
         return str
     end
     return string.format(str, ...)
+end
+
+function TARDIS:PhraseExists(phrase)
+    return self:GetPhraseInternal(phrase) ~= nil
+end
+
+function TARDIS:GetPhraseInternal(phrase)
+    local lang = self:GetLanguage()
+    local str = lang.Phrases[phrase]
+    if str then
+        return str
+    else
+        while lang.Base do
+            local baseLang = lang.Base
+            lang = self.Languages[baseLang]
+            if not lang then
+                return nil
+            end
+            str = lang.Phrases[phrase]
+            if str then
+                return str
+            end
+        end
+    end
 end
 
 function TARDIS:AddLanguage(t)

@@ -153,7 +153,7 @@ hook.Add("PopulateToolMenu", "TARDIS2-PopulateToolMenu", function()
             local category = vgui.Create("DForm")
             panel:AddItem(category)
 
-            category:SetLabel(v)
+            category:SetLabel(TARDIS:GetPhrase("Binds.Sections."..v))
             category:SetExpanded(false)
 
             for a,b in ipairs(keybinds) do
@@ -177,7 +177,7 @@ hook.Add("PopulateToolMenu", "TARDIS2-PopulateToolMenu", function()
         if other_exist then
             local other_category = vgui.Create("DForm")
             panel:AddItem(other_category)
-            other_category:SetLabel("Other")
+            other_category:SetLabel(TARDIS:GetPhrase("Binds.Sections.Other"))
             other_category:SetExpanded(false)
 
             for a,b in ipairs(keybinds) do

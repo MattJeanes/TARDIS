@@ -2,8 +2,8 @@
 
 -- Binds
 TARDIS:AddKeyBind("flight-toggle",{
-    name="Toggle Flight",
-    section="Third Person",
+    name="ToggleFlight",
+    section="ThirdPerson",
     func=function(self,down,ply)
         if ply==self.pilot and down then
             TARDIS:Control("flight", ply)
@@ -58,7 +58,6 @@ TARDIS:AddKeyBind("flight-down",{
 TARDIS:AddKeyBind("flight-boost",{
     name="Boost",
     section="Flight",
-    desc="Hold this key while flying to speed up",
     key=KEY_LSHIFT,
     serveronly=true,
     exterior=true
@@ -66,15 +65,13 @@ TARDIS:AddKeyBind("flight-boost",{
 TARDIS:AddKeyBind("flight-rotate",{
     name="Rotate",
     section="Flight",
-    desc="Hold this key while using left and right to rotate",
     key=KEY_LALT,
     serveronly=true,
     exterior=true
 })
 TARDIS:AddKeyBind("flight-spindir",{
-    name="Spin Direction",
+    name="SpinDirection",
     section="Flight",
-    desc="Changes which way the TARDIS rotates while flying",
     func=function(self,down,ply)
         if TARDIS:HUDScreenOpen(ply) then return end
         if down and ply==self.pilot then
@@ -85,7 +82,6 @@ TARDIS:AddKeyBind("flight-spindir",{
     serveronly=true,
     exterior=true
 })
-
 
 if SERVER then
     function ENT:ToggleFlight()

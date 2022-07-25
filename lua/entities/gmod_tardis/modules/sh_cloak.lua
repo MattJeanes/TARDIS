@@ -2,8 +2,8 @@
 
 
 TARDIS:AddKeyBind("cloak-toggle",{
-    name="Toggle Cloak",
-    section="Third Person",
+    name="ToggleCloak",
+    section="ThirdPerson",
     func=function(self,down,ply)
         if ply == self.pilot and down then
             TARDIS:Control("cloak", ply)
