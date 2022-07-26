@@ -70,13 +70,13 @@ T.Phrases = {
     ["TimeDistortionGenerator.Enabled"] = "时间扭曲发生器已启用",
     ["TimeDistortionGenerator.Distortions"] = "警告：塔迪斯内部有东西在造成时间扭曲",
 
-    ["MenuOptions.SectionReset"] = "TARDIS clientside settings of section \"%s\" have been reset. You may need to respawn the TARDIS for all changes to apply",
-    ["MenuOptions.ConfirmSectionReset"] = "Reset clientside settings of section \"%s\"? This cannot be undone.",
-    ["MenuOptions.SectionResetThisSection"] = "Reset settings (this section)",
-    ["MenuOptions.ResetAllSettings"] = "Reset All Settings",
-    ["MenuOptions.ResetClientsideSettings"] = "Reset clientside settings",
-    ["MenuOptions.ConfirmResetSettings"] = "Reset all clientside settings? This cannot be undone.",
-    ["MenuOptions.ResetSettingsConfirmation"] = "TARDIS clientside settings have been reset. You may need to respawn the TARDIS for all changes to apply.",
+    ["MenuOptions.SectionReset"] = "塔迪斯客户端设置\"%s\"已被恢复，您可能需要重新生成塔迪斯以应用所有更改",
+    ["MenuOptions.ConfirmSectionReset"] = "恢复\"%s\"部分的客户端设置？此步骤无法撤销！",
+    ["MenuOptions.SectionResetThisSection"] = "恢复设置（此部分）",
+    ["MenuOptions.ResetAllSettings"] = "恢复所有设置",
+    ["MenuOptions.ResetClientsideSettings"] = "恢复客户端设置",
+    ["MenuOptions.ConfirmResetSettings"] = "恢复所有客户端设置？此步骤无法撤销！",
+    ["MenuOptions.ResetSettingsConfirmation"] = "塔迪斯客户端设置已被恢复，您可能需要重新生成塔迪斯以应用所有更改",
 
     ["Settings.Sections.GUI"] = "GUI", -- NOD --
 
@@ -162,7 +162,7 @@ T.Phrases = {
     ["Settings.Sections.Global.BoostSpeed"] = "加速速度",
     ["Settings.Sections.Global.BoostSpeed.Description"] = "按下加速键后，塔迪斯的加速速度",
 
-    ["Settings.Sections.Misc"] = "Misc",
+    ["Settings.Sections.Misc"] = "杂项",
 
     ["Settings.Sections.Misc.NotificationType"] = "通知类型",
     ["Settings.Sections.Misc.NotificationType.Description"] = "正在使用的通知类型",
@@ -376,7 +376,7 @@ T.Phrases = {
     ["Controls.Float.Status"] = "反重力",
     ["Controls.Float.FailedToggle"] = "切换反重力失败",
 
-    ["Controls.HADS"] = "H.A.D.S.",
+    ["Controls.HADS"] = "敌对活动位移系统",
     ["Controls.HADS.Tip"] = "敌对活动位移系统",
     ["Controls.HADS.Status"] = "敌对活动位移系统",
 
