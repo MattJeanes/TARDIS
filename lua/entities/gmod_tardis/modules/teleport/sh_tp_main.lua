@@ -491,7 +491,11 @@ ENT:AddHook("Think","teleport",function(self,delta)
         target=self:GetTargetAlpha()
         self:SetData("alphatarget",target)
     end
-    local sequencespeed = (self:GetData("demat-fast",false) and self.metadata.Exterior.Teleport.SequenceSpeedFast or self.metadata.Exterior.Teleport.SequenceSpeed)
+    local teleport_md = self.metadata.Exterior.Teleport
+    local sequencespeed = (self:GetData("demat-fast") and teleport_md.SequenceSpeedFast or teleport_md.SequenceSpeed)
+    if self:GetData("health-warning",false) then 
+        sequencespeed = (self:GetData("demat-fast") and teleport_md.SequenceSpeedWarnFast or teleport_md.SequenceSpeedWarning)
+    end
     alpha=math.Approach(alpha,target,delta*66*sequencespeed)
     self:SetData("alpha",alpha)
     local attached=self:GetData("demat-attached")
