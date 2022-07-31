@@ -64,17 +64,17 @@ end
 
 function TARDIS:AddCustomMusic(name, url)
     if name == nil or name == "" then
-        TARDIS:ErrorMessage(LocalPlayer(), "You need to specify the name of the custom track to add it")
+        TARDIS:ErrorMessage(LocalPlayer(), "Screens.Music.MissingName")
         return
     end
     if url == nil or url == "" then
-        TARDIS:ErrorMessage(LocalPlayer(), "You need to specify the URL of the custom track to add it")
+        TARDIS:ErrorMessage(LocalPlayer(), "Screens.Music.MissingUrl")
         return
     end
 
     for k,v in pairs(custom_music) do
         if v[1] == name then
-            TARDIS:ErrorMessage(LocalPlayer(), "A music track with such name already exists")
+            TARDIS:ErrorMessage(LocalPlayer(), "Screens.Music.Conflict")
             return
         end
     end
@@ -233,9 +233,9 @@ TARDIS:AddScreen("Music", {id="music", menu=false, order=10, popuponly=true}, fu
         local line = list_custom:GetSelectedLine()
         if not line then
             if list_premade:GetSelectedLine() then
-                TARDIS:ErrorMessage(LocalPlayer(), "You cannot delete pre-loaded music")
+                TARDIS:ErrorMessage(LocalPlayer(), "Screens.Music.CannotRemoveDefault")
             else
-                TARDIS:ErrorMessage(LocalPlayer(), "Nothing has been chosen for removal")
+                TARDIS:ErrorMessage(LocalPlayer(), "Screens.Music.DeleteNoSelection")
             end
             return
         end
@@ -274,7 +274,7 @@ TARDIS:AddScreen("Music", {id="music", menu=false, order=10, popuponly=true}, fu
             elseif string.len(url_bar:GetValue())>0 then
                 ext:PlayMusic(url_bar:GetValue())
             else
-                TARDIS:ErrorMessage(LocalPlayer(), "No music has been chosen")
+                TARDIS:ErrorMessage(LocalPlayer(), "Screens.Music.NoChoice")
                 return
             end
             list_premade:ClearSelection()

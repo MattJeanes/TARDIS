@@ -53,7 +53,7 @@ ENT:AddHook("Initialize", "wiremod", function(self)
     local intypes = {}
     for k,v in ipairs(inputs) do
         ins[k] = v.name
-        indescs[k] = v.desc or nil
+        indescs[k] = v.desc and TARDIS:GetPhrase(v.desc) or nil
         intypes[k] = v.datatype or nil
     end
     WireLib.CreateSpecialInputs(self, ins, intypes, indescs)
@@ -62,7 +62,7 @@ ENT:AddHook("Initialize", "wiremod", function(self)
     local outtypes = {}
     for k,v in ipairs(outputs) do
         outs[k] = v.name
-        outdescs[k] = v.desc or nil
+        outdescs[k] = v.desc and TARDIS:GetPhrase(v.desc) or nil
         outtypes[k] = v.datatype or nil
     end
     WireLib.CreateSpecialOutputs(self, outs, outtypes, outdescs)

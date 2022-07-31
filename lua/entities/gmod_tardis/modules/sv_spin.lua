@@ -52,7 +52,7 @@ function ENT:GetSpinDirText(show_next)
         text = "Spin.Directions.Clockwise"
     end
 
-    return TARDIS:GetPhrase(text)
+    return text
 end
 
 ENT:AddHook("ToggleDoorReal", "spin-dir", function(self,open)

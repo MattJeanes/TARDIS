@@ -4,7 +4,7 @@ TARDIS:AddControl({
         if self:ToggleFastRemat() then
             TARDIS:StatusMessage(ply, "Controls.VortexFlight.Status", self:GetData("demat-fast"), "Common.Disabled.Lower", "Common.Enabled.Lower")
         else
-            TARDIS:ErrorMessage(ply, "")
+            TARDIS:ErrorMessage(ply, "Controls.VortexFlight.FailedToggle")
         end
     end,
     serveronly = true,

@@ -1,4 +1,4 @@
--- Adds screens
+-- Interior screens
 
 ENT:AddHook("Initialize", "screens-toggle", function(self)
     local screens_on = self.metadata.Interior.ScreensEnabled

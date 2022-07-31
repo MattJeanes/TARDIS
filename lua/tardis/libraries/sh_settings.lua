@@ -316,7 +316,7 @@ else
     function TARDIS:GlobalSettingChange(id, value)
         local ply = LocalPlayer()
         if not ply:IsAdmin() then
-            TARDIS:ErrorMessage(ply, "You don't have permissions to edit global settings")
+            TARDIS:ErrorMessage(ply, "Settings.NoPermissionGlobalSettings")
             return
         end
         net.Start("TARDIS-GlobalSettingChange")

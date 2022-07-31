@@ -34,7 +34,7 @@ if SERVER then
         if DistortionsInside(self) then
             self:Timer("time_dist_inside_warning", 0, function() -- fix for the hook working when player exits
                 if IsPlayerInside(self.interior, ply) then
-                    TARDIS:ErrorMessage(ply, "WARNING: Something is causing time distortions inside this TARDIS")
+                    TARDIS:ErrorMessage(ply, "TimeDistortionGenerator.Distortions")
                 end
             end)
         end

@@ -63,7 +63,7 @@ function ENT:GetRepairTime()
 end
 
 if SERVER then
-    ENT:AddWireOutput("Health", "TARDIS Health")
+    ENT:AddWireOutput("Health", "Wiremod.Outputs.Health")
 
     function ENT:Explode(f)
         local force = 60

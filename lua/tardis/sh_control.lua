@@ -1,4 +1,4 @@
--- Key bind system (inspired by WAC)
+-- Control
 
 if SERVER then
     util.AddNetworkString("TARDIS-Control")

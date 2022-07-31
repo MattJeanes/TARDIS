@@ -76,7 +76,7 @@ local overrides={
         end
 
         if self.PowerOffUse == false and not self.interior:GetPower() then
-            TARDIS:ErrorMessage(a, "Power is disabled. This control is blocked.")
+            TARDIS:ErrorMessage(a, "Common.PowerDisabledControl")
         else
             if allowed~=false then
                 if self.HasUseBasic then

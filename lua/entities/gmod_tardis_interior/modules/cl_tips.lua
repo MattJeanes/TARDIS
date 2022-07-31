@@ -44,7 +44,7 @@ function ENT:InitializeTips(style_name)
                     if part.Control then
                         local control = TARDIS:GetControl(part.Control)
                         if control and control.tip_text then
-                            tip.text = TARDIS:GetPhrase(control.tip_text)
+                            tip.text = control.tip_text
                         else
                             print("[TARDIS] WARNING: Control \""..part.Control.."\" either does not exist or has no tip text specified")
                         end
@@ -59,7 +59,7 @@ function ENT:InitializeTips(style_name)
             if tip.control then
                 local control = TARDIS:GetControl(tip.control)
                 if control and control.tip_text then
-                    tip.text = TARDIS:GetPhrase(control.tip_text)
+                    tip.text = control.tip_text
                 else
                     print("[TARDIS] WARNING: Control \""..tip.control.."\" either does not exist or has no tip text specified")
                 end
@@ -87,6 +87,8 @@ function ENT:InitializeTips(style_name)
                 tip.text = text_overrides[tip.text]
             end
 
+            
+            tip.text = TARDIS:GetPhrase(tip.text)
             table.insert(tips, tip)
         end
     end

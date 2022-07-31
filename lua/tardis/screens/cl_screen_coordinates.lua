@@ -229,7 +229,7 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Coordinates", menu=fals
     function save:DoClick()
         TARDIS:SaveLocations()
         pendingchanges = false
-        TARDIS:Message(LocalPlayer(), "Locations Saved")
+        TARDIS:Message(LocalPlayer(), "Screens.Coordinates.Saved")
     end
     function save:Think()
         if pendingchanges then
@@ -247,7 +247,7 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Coordinates", menu=fals
         TARDIS:LoadLocations()
         updatelist()
         pendingchanges = false
-        TARDIS:Message(LocalPlayer(), "Locations Loaded")
+        TARDIS:Message(LocalPlayer(), "Screens.Coordinates.Loaded")
     end
 
     local confirm = vgui.Create("DButton",frame)
@@ -268,7 +268,7 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Coordinates", menu=fals
                 end
             end)
         else
-            TARDIS:ErrorMessage(LocalPlayer(), "No destination set")
+            TARDIS:ErrorMessage(LocalPlayer(), "Screens.Coordinates.NoDestinationSet")
         end
     end
 

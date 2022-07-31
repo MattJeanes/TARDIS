@@ -14,7 +14,11 @@ function TARDIS:GetPhrase(phrase, ...)
     if not ... then
         return str
     end
-    return string.format(str, ...)
+    local args = {...}
+    for k,v in ipairs(args) do
+        args[k] = self:GetPhraseInternal(v) or v
+    end
+    return string.format(str, unpack(args))
 end
 
 function TARDIS:PhraseExists(phrase)

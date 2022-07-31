@@ -13,7 +13,7 @@ end)
 if not TARDIS.DoorsFound then
     function ENT:SpawnFunction(ply,...)
         if not scripted_ents.GetStored(self.Base) then
-            TARDIS:ErrorMessage(ply, "Doors is not installed!")
+            TARDIS:ErrorMessage(ply, "Common.DoorsNotInstalled")
             ply:SendLua('TARDIS:ShowDoorsPopup()')
             return
         end

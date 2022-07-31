@@ -9,9 +9,9 @@ if CLIENT then
         local current_tardis = LocalPlayer():GetTardisData("exterior")
 
         if not current_tardis or not current_tardis:GetData("redecorate") then
-            TARDIS:Message(LocalPlayer(), "TARDIS interior decor selected. Enable redecoration in your TARDIS to apply.")
+            TARDIS:Message(LocalPlayer(), "Spawnmenu.DecorSelected")
         else
-            TARDIS:Message(LocalPlayer(), "TARDIS interior decor selected. Restart the redecoration to apply.")
+            TARDIS:Message(LocalPlayer(), "Spawnmenu.DecorSelectedRestart")
         end
     end
 
@@ -267,8 +267,8 @@ if CLIENT then
     
                 local favorite = dmenu:AddOption("Add to favorites (reload required)", function(self)
                     TARDIS:ToggleFavoriteInt(obj.spawnname)
-                    TARDIS:Message(LocalPlayer(), "Reload the game for changes to apply")
-                    TARDIS:Message(LocalPlayer(), "Favorites have been updated")
+                    TARDIS:Message(LocalPlayer(), "Spawnmenu.ReloadGame")
+                    TARDIS:Message(LocalPlayer(), "Spawnmenu.FavoritesUpdated")
                 end)
                 favorite:SetIcon("icon16/heart_add.png")
                 function favorite:Think()

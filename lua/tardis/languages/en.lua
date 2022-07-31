@@ -9,10 +9,14 @@ T.Phrases = {
     ["Common.Interface"] = "TARDIS Interface",
     ["Common.OK"] = "OK",
     ["Common.Cancel"] = "Cancel",
+    ["Common.Yes"] = "Yes",
+    ["Common.No"] = "No",
+    ["Common.DontAskAgain"] = "Don't ask again",
     ["Common.Save"] = "Save",
     ["Common.Reset"] = "Reset",
     ["Common.Default"] = "Default",
     ["Common.PowerDisabled"] = "Power is disabled",
+    ["Common.PowerDisabledControl"] = "Power is disabled. This doesn't work",
     ["Common.Enabled.Lower"] = "enabled",
     ["Common.Disabled.Lower"] = "disabled",
     ["Common.Opened.Lower"] = "opened",
@@ -22,6 +26,11 @@ T.Phrases = {
     ["Common.Engaged.Lower"] = "engaged",
     ["Common.Disengaged.Lower"] = "disengaged",
     ["Common.NotYetImplemented"] = "This hasn't been implemented yet",
+    ["Common.UnknownError"] = "Unknown error",
+    ["Common.DoorsNotInstalled"] = "Doors is not installed!",
+    ["Common.EnterTextInput"] = "Enter text input",
+    ["Common.NotInTARDIS"] = "You are not in the TARDIS",
+    ["Common.ControlSequencesEnabledWarning"] = "Control Sequences are enabled. You must use the sequence",
 
     ["Templates.MissingTemplate"] = "Failed to find template %s required for interior %s",
 
@@ -37,6 +46,7 @@ T.Phrases = {
     ["Flight.NameIsNowThePilot"] = "%s is now the pilot",
     ["Flight.YouAreNowThePilot"] = "You are now the pilot",
     ["Flight.NoLongerPilot"] = "You are no longer the pilot",
+    ["Flight.DoorOpenNoBoost"] = "Boost doesn't work with doors open",
 
     ["HADS.Triggered"] = "H.A.D.S. has been triggered!",
     ["HADS.UnderAttack"] = "Your TARDIS is under attack!",
@@ -53,6 +63,16 @@ T.Phrases = {
     ["Music.Stopped"] = "Music stopped",
     ["Music.Playing"] = "Playing: %s",
     ["Music.Loading"] = "Loading music...",
+    ["Music.LoadFailed"] = "ERROR: Failed to load (%s)",
+    ["Music.LoadFailedResponse"] = "ERROR: Failed to load API response",
+    ["Music.LoadFailedResolve"] = "ERROR: Failed to resolve url (%s)",
+    ["Music.LoadFailedMissingId"] = "ERROR: Couldn't find video ID inside url",
+    ["Music.LoadFailedBass"] = "ERROR: Failed to load song (Error ID: %s, %s)",
+
+    ["Prompts.LightingOverride"] = "This TARDIS recommends Lighting Override which you do not have enabled. Enable now? This can be changed in TARDIS settings later",
+    ["Prompts.LOD"] = "The TARDIS Interior may require model detail on high, set now?",
+
+    ["Redecorate.Failed"] = "Redecoration failed: failed to spawn the replacement",
 
     ["ThirdPerson.KeyHint"] = "HINT: Use '%s + %s' keys to enter third person",
 
@@ -467,6 +487,16 @@ T.Phrases = {
     ["Controls.VortexFlight.Status"] = "Vortex flight",
     ["Controls.VortexFlight.FailedToggle"] = "Failed to toggle vortex flight",
 
+    ["Parts.DefaultAtomAccelerator.Text"] = "Atom Accelerator",
+    ["Parts.DefaultDematCircuit.Text"] = "Dematerialisation Circuit",
+    ["Parts.DefaultDirectionalPointer.Text"] = "Directional Pointer",
+    ["Parts.DefaultGramophone.Text"] = "Gramophone",
+    ["Parts.DefaultHelmic.Text"] = "Helmic Regulator",
+    ["Parts.DefaultScreen.Text"] = "Monitor",
+    ["Parts.DefaultWibblyLever.Text"] = "Wibbly Lever",
+
+    ["Parts.Door.Locked"] = "The doors are locked",
+
     ["Themes.Default"] = "Default",
     ["Themes.Transparent"] = "Transparent",
     ["Themes.TextOnly"] = "Text only",
@@ -475,6 +505,31 @@ T.Phrases = {
     ["TipStyles.Classic"] = "Classic (legacy)",
     ["TipStyles.WhiteOnBlue"] = "White on blue",
     ["TipStyles.WhiteOnGrey"] = "White on grey",
+
+    ["Screens.Coordinates.Saved"] = "Locations saved",
+    ["Screens.Coordinates.Loaded"] = "Locations loaded",
+    ["Screens.Coordinates.NoDestinationSet"] = "No destination set",
+
+    ["Screens.Music.MissingName"] = "You need to specify the name of the custom track to add it",
+    ["Screens.Music.MissingUrl"] = "You need to specify the URL of the custom track to add it",
+    ["Screens.Music.Conflict"] = "A music track with such name already exists",
+    ["Screens.Music.CannotRemoveDefault"] = "You cannot delete pre-loaded music",
+    ["Screens.Music.DeleteNoSelection"] = "Nothing has been chosen for removal",
+    ["Screens.Music.NoChoice"] = "No music has been chosen",
+
+    ["Spawnmenu.DecorSelected"] = "TARDIS interior decor selected. Enable redecoration in your TARDIS to apply",
+    ["Spawnmenu.DecorSelectedRestart"] = "TARDIS interior decor selected. Restart the redecoration to apply",
+    ["Spawnmenu.ReloadGame"] = "Reload the game for changes to apply",
+    ["Spawnmenu.FavoritesUpdated"] = "Favorites have been updated",
+
+    ["Settings.NoPermissionGlobalSettings"] = "You don't have permissions to edit global settings",
+
+    ["Wiremod.Inputs.Demat"] = "Dematerialise the TARDIS",
+    ["Wiremod.Inputs.Mat"] = "Materialise the TARDIS",
+    ["Wiremod.Inputs.Pos"] = "X,Y,Z: Teleport position",
+    ["Wiremod.Inputs.Ang"] = "X,Y,Z: Teleport angle",
+
+    ["Wiremod.Outputs.Health"] = "TARDIS Health",
 }
 
 TARDIS:AddLanguage(T)

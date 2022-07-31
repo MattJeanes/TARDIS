@@ -1,9 +1,9 @@
 -- Wiremod-related teleport functions
 
-ENT:AddWireInput("Demat", "Dematerialise the TARDIS")
-ENT:AddWireInput("Mat", "Materialise the TARDIS")
-ENT:AddWireInput("Pos", "X,Y,Z: Teleport position", "VECTOR")
-ENT:AddWireInput("Ang", "X,Y,Z: Teleport angle", "ANGLE")
+ENT:AddWireInput("Demat", "Wiremod.Inputs.Demat")
+ENT:AddWireInput("Mat", "Wiremod.Inputs.Mat")
+ENT:AddWireInput("Pos", "Wiremod.Inputs.Pos", "VECTOR")
+ENT:AddWireInput("Ang", "Wiremod.Inputs.Ang", "ANGLE")
 
 ENT:AddHook("OnWireInput","teleport",function (self, name, value)
     if name == "Demat" and value >= 1 then
