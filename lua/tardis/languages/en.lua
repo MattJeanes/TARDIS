@@ -31,6 +31,7 @@ T.Phrases = {
     ["Common.EnterTextInput"] = "Enter text input",
     ["Common.NotInTARDIS"] = "You are not in the TARDIS",
     ["Common.ControlSequencesEnabledWarning"] = "Control Sequences are enabled. You must use the sequence",
+    ["Common.Loading"] = "Loading...",
 
     ["Templates.MissingTemplate"] = "Failed to find template %s required for interior %s",
 
@@ -516,6 +517,8 @@ T.Phrases = {
     ["Screens.Music.CannotRemoveDefault"] = "You cannot delete pre-loaded music",
     ["Screens.Music.DeleteNoSelection"] = "Nothing has been chosen for removal",
     ["Screens.Music.NoChoice"] = "No music has been chosen",
+    ["Screens.Music.DefaultLoadError"] = "Error loading pre-loaded music: %s",
+    ["Screens.Music.UnableToDecodeList"] = "Unable to decode list",
 
     ["Spawnmenu.DecorSelected"] = "TARDIS interior decor selected. Enable redecoration in your TARDIS to apply",
     ["Spawnmenu.DecorSelectedRestart"] = "TARDIS interior decor selected. Restart the redecoration to apply",

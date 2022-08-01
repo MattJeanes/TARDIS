@@ -17,7 +17,10 @@ function TARDIS:PopToScreen(name, ply)
         end
     else
         self:HUDScreen()
-        self:SwitchScreen(self.screenpop, self:GetScreenByName(name))
+        local screen = self:GetScreenByName(name)
+        if screen then
+            self:SwitchScreen(self.screenpop, screen)
+        end
     end
 end
 
@@ -128,7 +131,7 @@ function TARDIS:GetScreens()
     local tab = {}
 
     for k,v in pairs(self.screenpop.screens) do
-        tab[v[1]] = v
+        tab[v.name] = v
     end
 
     return tab
@@ -137,11 +140,12 @@ end
 function TARDIS:GetScreenByName(name)
     if not self.HUDScreenActive or not IsValid(self.screenpop) then return end
     local screen = self:GetScreens()[name]
-    if not IsValid(screen) then return end
+    if not screen then return end
     return screen
 end
 
 function TARDIS:SwitchScreen(screen,newscreen)
+    if not newscreen then return false end
     local frame = newscreen.frame
     if IsValid(frame) then
         if #screen.backstack>0 then
@@ -165,6 +169,9 @@ function TARDIS:SwitchScreen(screen,newscreen)
                 screen.right_arrow:SetVisible(false)
             end
         end
+        return true
+    else
+        return false
     end
 end
 

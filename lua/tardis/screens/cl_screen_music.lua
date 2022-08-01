@@ -115,13 +115,26 @@ TARDIS:AddScreen("Music", {id="music", menu=false, order=10, popuponly=true}, fu
     local url = ""
     local default_music = {}
 
-    http.Fetch("https://cdn.mattjeanes.com/tardis/music.json", function(body)
+    list_premade:AddLine(TARDIS:GetPhrase("Common.Loading"))
+    list_premade.loading = true
+
+    http.Fetch("https://cdn.mattjeanes.com/tardis/dmusic.json", function(body)
         default_music = util.JSONToTable(body)
-        for k,v in pairs(default_music) do
-            list_premade:AddLine(v[1])
+        list_premade:Clear()
+        if default_music == nil then
+            default_music = {}
+            TARDIS:ErrorMessage(LocalPlayer(), "Screens.Music.DefaultLoadError", "Screens.Music.UnableToDecodeList")
+            list_premade:AddLine(TARDIS:GetPhrase("Screens.Music.DefaultLoadError", "Screens.Music.UnableToDecodeList"))
+        else
+            for k,v in pairs(default_music) do
+                list_premade:AddLine(v[1])
+            end
+            list_premade.loading = false
         end
     end, function(error)
-        TARDIS:ErrorMessage("Screens.Music.DefaultLoadError", error)
+        TARDIS:ErrorMessage(LocalPlayer(), "Screens.Music.DefaultLoadError", error)
+        list_premade:Clear()
+        list_premade:AddLine(TARDIS:GetPhrase("Screens.Music.DefaultLoadError", "Screens.Music.UnableToDecodeList"))
     end)
 
     function list_custom:UpdateAll()
@@ -153,6 +166,7 @@ TARDIS:AddScreen("Music", {id="music", menu=false, order=10, popuponly=true}, fu
     end
 
     function list_premade:OnRowSelected(rowIndex, row)
+        if list_premade.loading then return end
         list_custom:ClearSelection()
         url = "https://cdn.mattjeanes.com/tardis/" .. default_music[rowIndex][2] ..".mp3"
         url_bar:SetTextColor(Color(139,139,139))
@@ -160,6 +174,7 @@ TARDIS:AddScreen("Music", {id="music", menu=false, order=10, popuponly=true}, fu
     end
 
     function list_premade:DoDoubleClick(rowIndex, row)
+        if list_premade.loading then return end
         ext:PlayMusic("https://cdn.mattjeanes.com/tardis/" .. default_music[rowIndex][2] ..".mp3")
         list_premade:ClearSelection()
     end
