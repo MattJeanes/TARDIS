@@ -123,12 +123,12 @@ function TARDIS:ScreenActive(name)
     end
 end
 
-function TARDIS:GetScreenFrames()
+function TARDIS:GetScreens()
     if not self.HUDScreenActive or not IsValid(self.screenpop) then return end
     local tab = {}
 
     for k,v in pairs(self.screenpop.screens) do
-        tab[v[1]] = v[2]
+        tab[v[1]] = v
     end
 
     return tab
@@ -136,22 +136,27 @@ end
 
 function TARDIS:GetScreenByName(name)
     if not self.HUDScreenActive or not IsValid(self.screenpop) then return end
-    local screen = self:GetScreenFrames()[name]
+    local screen = self:GetScreens()[name]
     if not IsValid(screen) then return end
     return screen
 end
 
 function TARDIS:SwitchScreen(screen,newscreen)
-    if IsValid(newscreen) then
+    local frame = newscreen.frame
+    if IsValid(frame) then
         if #screen.backstack>0 then
             self:PopScreen(screen,true)
         end
         if IsValid(screen.curscreen) then
             screen.curscreen:SetVisible(false)
         end
-        newscreen:SetVisible(true)
-        screen.curscreen=newscreen
-        screen.pagename:SetText(tostring(newscreen._name))
+        if not frame._loaded then
+            newscreen.func(TARDIS,screen.ext,screen.int,frame,screen)
+            frame._loaded = true
+        end
+        frame:SetVisible(true)
+        screen.curscreen=frame
+        screen.pagename:SetText(tostring(frame._name))
         screen.pagename:DoLayout()
         if IsValid(screen.mmenu) then
             screen.mmenu:SetVisible(false)
@@ -475,24 +480,28 @@ function TARDIS:LoadScreenUI(screen)
             frame:SetSize(main:GetSize())
             frame:SetPos(0,0)
             frame._name=k
-            v[2](self,ext,int,frame,screen)
-            table.insert(screen.screens,{k,frame,v[1]})
+            frame._loaded=false
+            table.insert(screen.screens,{name=k,frame=frame,options=v[1],func=v[2]})
         end
     end
-    table.SortByMember(screen.screens,1,true)
+    table.SortByMember(screen.screens,"name",true)
 
     self:LoadButtons(screen, mmenu, function(parent)
         local buttons={}
         for k,v in ipairs(screen.screens) do
-            local options = v[3]
             local button = vgui.Create("DButton")
-            button:SetText(v[1])
+            button:SetText(v.id)
             button:SetFont(TARDIS:GetScreenFont(screen, "Default"))
             button.DoClick = function()
-                if options and options.popuponly and screen.is3D2D then
-                    self:PopToScreen(v[1])
+                if v.options and v.options.popuponly and screen.is3D2D then
+                    self:PopToScreen(v.id)
                 else
-                    self:SwitchScreen(screen, v[2])
+                    self:SwitchScreen(screen, v)
+                end
+            end
+            if v.options ~= nil then
+                if v.options.text then
+                    button:SetText(TARDIS:GetPhrase(v.options.text))
                 end
             end
             table.insert(buttons,button)
@@ -519,26 +528,24 @@ function TARDIS:LoadButtons(screen, frame, func, isvgui)
         local layout = HexagonalLayout:new(frame, layout_rows, 0.2)
 
         for k,v in ipairs(screen.screens) do
-            local name = v[1]
-            local options = v[3]
             local button = TardisScreenButton:new(frame,screen)
-            button:SetID(options and options.id or name)
+            button:SetID(v.options and v.options.id or v.name)
             button:SetFrameType(0, 1)
             button:SetIsToggle(false)
             button:SetFont(TARDIS:GetScreenFont(screen, "Default"))
-            button:SetText(name)
+            button:SetText(v.name)
             button.DoClick = function()
-                if screen.is3D2D and options and options.popuponly then
-                    self:PopToScreen(name)
+                if screen.is3D2D and v.options and v.options.popuponly then
+                    self:PopToScreen(v.name)
                 else
-                    self:SwitchScreen(screen, v[2])
+                    self:SwitchScreen(screen, v)
                 end
             end
-            if options ~= nil then
-                if options.text then
-                    button:SetText(options.text)
+            if v.options ~= nil then
+                if v.options.text then
+                    button:SetText(TARDIS:GetPhrase(v.options.text))
                 end
-                button:SetOrder(options.order)
+                button:SetOrder(v.options.order)
             end
             layout:AddNewButton(button)
         end
