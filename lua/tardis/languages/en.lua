@@ -616,7 +616,6 @@ T.Phrases = {
     ["Spawnmenu.AddToFavourites"] = "Add to favorites (reload required)",
     ["Spawnmenu.RemoveFromFavourites"] = "Remove from favorites (reload required)",
     ["Spawnmenu.Category"] = "Doctor Who - TARDIS",
-
     ["Spawnmenu.RedecorationExclude"] = "Exclude from random redecoration",
     ["Spawnmenu.ResetSettings"] = "Reset settings",
 
