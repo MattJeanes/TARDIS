@@ -9,38 +9,38 @@ if CLIENT then
         local current_tardis = LocalPlayer():GetTardisData("exterior")
 
         if not current_tardis or not current_tardis:GetData("redecorate") then
-            TARDIS:Message(LocalPlayer(), "Spawnmenu.DecorSelected")
+            TARDIS:Message(LocalPlayer(), "Spawnmenu.RedecorationSelected")
         else
-            TARDIS:Message(LocalPlayer(), "Spawnmenu.DecorSelectedRestart")
+            TARDIS:Message(LocalPlayer(), "Spawnmenu.RedecorationSelectedRestart")
         end
     end
 
     local function AddMenuLabel(dmenu, text)
         local label = vgui.Create("DLabel", dmenu)
-        label:SetText("  " .. text)
+        label:SetText("  " .. TARDIS:GetPhrase(text))
         label:SetTextColor(Color(0,0,0))
         dmenu:AddPanel(label)
     end
 
     local function AddMenuSingleVersion(dmenu, id)
-        local spawn = dmenu:AddOption("Spawn", function()
+        local spawn = dmenu:AddOption(TARDIS:GetPhrase("Spawnmenu.Spawn"), function()
             TARDIS:SpawnByID(id)
         end)
         spawn:SetIcon("icon16/add.png")
 
-        local select_redecoration = dmenu:AddOption("Select for redecoration", function()
+        local select_redecoration = dmenu:AddOption(TARDIS:GetPhrase("Spawnmenu.SelectForRedecoration"), function()
             SelectForRedecoration(id)
         end)
         select_redecoration:SetIcon("icon16/color_wheel.png")
     end
 
     local function AddMenuDoubleVersion(dmenu, classic_doors_id, double_doors_id)
-        AddMenuLabel(dmenu, "Classic doors version:")
+        AddMenuLabel(dmenu, "Spawnmenu.ClassicDoorsVersion")
         AddMenuSingleVersion(dmenu, classic_doors_id)
 
         dmenu:AddSpacer()
 
-        AddMenuLabel(dmenu, "Double doors version:")
+        AddMenuLabel(dmenu, "Spawnmenu.DoubleDoorsVersion")
         AddMenuSingleVersion(dmenu, double_doors_id)
     end
 
@@ -56,7 +56,7 @@ if CLIENT then
     local function AddVersionSubMenu(dmenu, version)
         if not version or not version.name then return end
 
-        local submenu = dmenu:AddSubMenu(version.name, function()
+        local submenu = dmenu:AddSubMenu(TARDIS:GetPhrase(version.name), function()
             TARDIS:SpawnByID( TARDIS:SelectDoorVersionID(version, LocalPlayer()) )
         end)
         AddMenuVersion(submenu, version)
@@ -65,7 +65,7 @@ if CLIENT then
     end
 
     local function AddMenuBoolSetting(dmenu, int_id, setting_id, name)
-        local setting_button = dmenu:AddOption(name, function(self)
+        local setting_button = dmenu:AddOption(TARDIS:GetPhrase(name), function(self)
             TARDIS:ToggleCustomSetting(int_id, setting_id)
         end)
         setting_button:SetIsCheckable(true)
@@ -81,14 +81,14 @@ if CLIENT then
     end
 
     local function AddMenuListSetting(dmenu, int_id, setting_id, name, options, compare_func)
-        local submenu = dmenu:AddSubMenu(name, nil)
+        local submenu = dmenu:AddSubMenu(TARDIS:GetPhrase(name), nil)
 
         local option_buttons = {}
 
         if not options then return end
         for option_value, option_text in SortedPairsByValue(options) do
 
-            local option_button = submenu:AddOption(option_text, function(self)
+            local option_button = submenu:AddOption(TARDIS:GetPhrase(option_text), function(self)
                 TARDIS:SetCustomSetting(int_id, setting_id, option_value)
             end)
             option_button:SetIsCheckable(true)
@@ -121,7 +121,7 @@ if CLIENT then
         local custom_versions_exist = not table.IsEmpty(versions.custom)
 
         local versions_exist = other_versions_exist or custom_versions_exist
-        local dmenu = parent:AddSubMenu("Settings", nil)
+        local dmenu = parent:AddSubMenu(TARDIS:GetPhrase("Spawnmenu.Settings"), nil)
 
         if versions_exist then
 
@@ -129,17 +129,17 @@ if CLIENT then
 
             local function add_version_option(option_name, option_id, order)
                 local prefixes = { "  ", "  ", "  ", "  " } -- spaces are different symbols
-                option_versions[option_id] = prefixes[order] .. option_name
+                option_versions[option_id] = prefixes[order] .. TARDIS:GetPhrase(option_name)
             end
 
-            add_version_option("Default", "main", 1)
+            add_version_option("Spawnmenu.VersionOptions.Default", "main", 1)
 
             if other_versions_exist then
-                add_version_option("Random", "random", 2)
+                add_version_option("Spawnmenu.VersionOptions.Random", "random", 2)
             end
             if custom_versions_exist then
-                add_version_option("Random (original versions)", "random", 2)
-                add_version_option("Random (original & custom versions)", "random_custom", 2)
+                add_version_option("Spawnmenu.VersionOptions.RandomOriginal", "random", 2)
+                add_version_option("Spawnmenu.VersionOptions.RandomOriginalAndCustom", "random_custom", 2)
             end
 
             if other_versions_exist then
@@ -165,7 +165,7 @@ if CLIENT then
                 return ok
             end
 
-            AddMenuListSetting(dmenu, int_id, "preferred_version", "Preferred version", option_versions, versions_compare)
+            AddMenuListSetting(dmenu, int_id, "preferred_version", "Spawnmenu.PreferredVersion", option_versions, versions_compare)
         end
 
         local function search_for_double_versions(version_list, current_val)
@@ -183,15 +183,15 @@ if CLIENT then
         has_double_versions = search_for_double_versions(versions.custom, has_double_versions)
 
         if has_double_versions then
-            AddMenuListSetting(dmenu, int_id, "preferred_door_type", "Preferred door type", {
-                ["default"] = " Default (configured in TARDIS settings)",
-                ["random"] = " Random",
-                ["classic"] = " Classic doors",
-                ["double"] = " Double doors",
+            AddMenuListSetting(dmenu, int_id, "preferred_door_type", "Spawnmenu.PreferredDoorType", {
+                ["default"] = " ".. TARDIS:GetPhrase("Spawnmenu.PreferredDoorType.Default"),
+                ["random"] = " ".. TARDIS:GetPhrase("Spawnmenu.PreferredDoorType.Random"),
+                ["classic"] = " " .. TARDIS:GetPhrase("Spawnmenu.PreferredDoorType.Classic"),
+                ["double"] = " " .. TARDIS:GetPhrase("Spawnmenu.PreferredDoorType.Double"),
             })
         end
 
-        AddMenuBoolSetting(dmenu, int_id, "redecoration_exclude", "Exclude from random redecoration")
+        AddMenuBoolSetting(dmenu, int_id, "redecoration_exclude", "Spawnmenu.RedecorationExclude")
 
         if custom_settings then
             local custom_categories = {}
@@ -216,7 +216,7 @@ if CLIENT then
 
         end
 
-        local reset_button = dmenu:AddOption("Reset settings", function(self)
+        local reset_button = dmenu:AddOption(TARDIS:GetPhrase("Spawnmenu.ResetSettings"), function(self)
             TARDIS:ResetCustomSettings(int_id)
         end)
 
@@ -250,7 +250,7 @@ if CLIENT then
                 dmenu:AddSpacer()
     
                 if not table.IsEmpty(versions.other) then
-                    AddMenuLabel(dmenu, "Alternative versions:")
+                    AddMenuLabel(dmenu, "Spawnmenu.AlternativeVersions")
                     for k,v in SortedPairs(versions.other) do
                         AddVersionSubMenu(dmenu, v)
                     end
@@ -258,14 +258,14 @@ if CLIENT then
                 end
     
                 if not table.IsEmpty(versions.custom) then
-                    AddMenuLabel(dmenu, "Custom versions:")
+                    AddMenuLabel(dmenu, "Spawnmenu.CustomVersions")
                     for k,v in SortedPairs(versions.custom) do
                         AddVersionSubMenu(dmenu, v)
                     end
                     dmenu:AddSpacer()
                 end
     
-                local favorite = dmenu:AddOption("Add to favorites (reload required)", function(self)
+                local favorite = dmenu:AddOption(TARDIS:GetPhrase("Spawnmenu.AddToFavourites"), function(self)
                     TARDIS:ToggleFavoriteInt(obj.spawnname)
                     TARDIS:Message(LocalPlayer(), "Spawnmenu.ReloadGame")
                     TARDIS:Message(LocalPlayer(), "Spawnmenu.FavoritesUpdated")
@@ -274,9 +274,9 @@ if CLIENT then
                 function favorite:Think()
                     local fav = TARDIS:IsFavoriteInt(obj.spawnname, LocalPlayer())
                     local fav_icon = fav and "heart_delete.png" or "heart_add.png"
-                    local fav_text = fav and "Remove from" or "Add to"
+                    local fav_text = fav and "Spawnmenu.RemoveFromFavourites" or "Spawnmenu.AddToFavourites"
                     self:SetIcon("icon16/" .. fav_icon)
-                    self:SetText(fav_text .. " favorites (reload required)")
+                    self:SetText(TARDIS:GetPhrase(fav_text))
                 end
     
                 AddSettingsSubmenu(dmenu, obj.spawnname)
@@ -296,8 +296,6 @@ end
 TARDIS_OVERRIDES = TARDIS_OVERRIDES or {}
 local c_overrides = TARDIS_OVERRIDES.Categories or {}
 local n_overrides = TARDIS_OVERRIDES.Names or {}
-local default_category = TARDIS_OVERRIDES.MainCategory or "Doctor Who - TARDIS"
-
 
 function TARDIS:SetupSpawnmenuIcon(t)
     local ent={}
@@ -314,8 +312,10 @@ function TARDIS:SetupSpawnmenuIcon(t)
 
     local name_override = (n_overrides ~= nil) and (n_overrides[t.ID] or n_overrides[t.Name]) or nil
 
+    local default_category = TARDIS_OVERRIDES.MainCategory or TARDIS:GetPhrase("Spawnmenu.Category")
+
     ent.Category = cat_override or t.Category or default_category
-    ent.PrintName = name_override or t.Name
+    ent.PrintName = TARDIS:GetPhrase(name_override or t.Name)
 
     if CLIENT and TARDIS:IsFavoriteInt(t.ID, LocalPlayer()) then
         ent.PrintName = "  " .. ent.PrintName -- move to the top

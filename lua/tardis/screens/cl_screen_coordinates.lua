@@ -1,10 +1,10 @@
 -- Destination
 
-TARDIS:AddScreen("Destination", {id="coordinates", text="Coordinates", menu=false, order=2, popuponly=true}, function(self,ext,int,frame,screen)
+TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", menu=false, order=2, popuponly=true}, function(self,ext,int,frame,screen)
     local button=vgui.Create("DButton",frame)
     button:SetSize( frame:GetWide()*0.2, frame:GetTall()*0.1 )
     button:SetPos(frame:GetWide()*0.86 - button:GetWide()*0.5,frame:GetTall()*0.08 - button:GetTall()*0.5)
-    button:SetText("Select Manually")
+    button:SetText(TARDIS:GetPhrase("Screens.Coordinates.SelectManually"))
     button:SetFont(TARDIS:GetScreenFont(screen, "Default"))
     button.DoClick = function()
         TARDIS:Control("destination", LocalPlayer())
@@ -13,24 +13,24 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Coordinates", menu=fals
 
     local btnx,btny = button:GetPos()
     local x = vgui.Create("DTextEntry",frame)
-    x:SetPlaceholderText("x")
+    x:SetPlaceholderText(TARDIS:GetPhrase("Screens.Coordinates.X"))
     x:SetPos(btnx*0.97,btny*5)
     local y = vgui.Create("DTextEntry",frame)
-    y:SetPlaceholderText("y")
+    y:SetPlaceholderText(TARDIS:GetPhrase("Screens.Coordinates.Y"))
     y:SetPos(btnx*1.08,btny*5)
     local z = vgui.Create("DTextEntry",frame)
-    z:SetPlaceholderText("z")
+    z:SetPlaceholderText(TARDIS:GetPhrase("Screens.Coordinates.Z"))
     z:SetPos(btnx*1.19,btny*5)
 
 
     local pitch = vgui.Create("DTextEntry",frame)
-    pitch:SetPlaceholderText("Pitch")
+    pitch:SetPlaceholderText(TARDIS:GetPhrase("Screens.Coordinates.Pitch"))
     pitch:SetPos(btnx*0.97,btny*7)
     local yaw = vgui.Create("DTextEntry",frame)
-    yaw:SetPlaceholderText("Yaw")
+    yaw:SetPlaceholderText(TARDIS:GetPhrase("Screens.Coordinates.Yaw"))
     yaw:SetPos(btnx*1.08,btny*7)
     local roll = vgui.Create("DTextEntry",frame)
-    roll:SetPlaceholderText("Roll")
+    roll:SetPlaceholderText(TARDIS:GetPhrase("Screens.Coordinates.Roll"))
     roll:SetPos(btnx*1.19,btny*7)
 
     x:SetNumeric(true)
@@ -43,7 +43,7 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Coordinates", menu=fals
     local namebox = vgui.Create("DTextEntry", frame)
     namebox:SetPos(pitch:GetPos()+5,frame:GetTall()*0.33 - button:GetTall()*0.5)
     namebox:SetWide(frame:GetWide()*0.237)
-    namebox:SetPlaceholderText("Name")
+    namebox:SetPlaceholderText(TARDIS:GetPhrase("Screens.Coordinates.Name"))
 
     local function updatetextinputs(pos,ang,name)
         pitch:SetText(ang.p or 0.0)
@@ -67,11 +67,11 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Coordinates", menu=fals
         if namebox:GetText() ~= "" then
             name = namebox:GetText()
         end
-        if name == "" then name = "Unnamed" end
+        if name == "" then name = TARDIS:GetPhrase("Screens.Coordinates.Unnamed") end
         return pos,ang,name
     end
     if ext:GetData("demat-pos") and ext:GetData("demat-ang") then
-        updatetextinputs(ext:GetData("demat-pos"), ext:GetData("demat-ang"),"Current Set Destination")
+        updatetextinputs(ext:GetData("demat-pos"), ext:GetData("demat-ang"), TARDIS:GetPhrase("Screens.Coordinates.CurrentSetDestination"))
         namebox:SetEnabled(false)
     end
 
@@ -90,8 +90,8 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Coordinates", menu=fals
                 list:AddLine(v.name)
             end
         end
-        list:AddLine("Random (ground)")
-        list:AddLine("Random")
+        list:AddLine(TARDIS:GetPhrase("Screens.Coordinates.RandomGround"))
+        list:AddLine(TARDIS:GetPhrase("Screens.Coordinates.Random"))
     end
     updatelist()
     function list:OnRowSelected(i,row)
@@ -99,15 +99,16 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Coordinates", menu=fals
         if TARDIS.Locations[map] ~= nil then
             locations_num = #TARDIS.Locations[map]
         end
+        local name,pos,ang
         if i > locations_num then
             local ground = (i == locations_num + 1)
             local ext = LocalPlayer():GetTardisData("exterior")
             pos = ext:GetRandomLocation(ground)
             ang = {p = 0, y = 0, r = 0}
             if ground then
-                name = "Random location on the ground"
+                name = TARDIS:GetPhrase("Screens.Coordinates.RandomLocationGround")
             else
-                name = "Random location"
+                name = TARDIS:GetPhrase("Screens.Coordinates.RandomLocation")
             end
         else
             pos = TARDIS.Locations[map][i].pos
@@ -123,7 +124,7 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Coordinates", menu=fals
     gpos:SetSize( frame:GetWide()*0.247, frame:GetTall()*0.1 )
     gpos:SetPos(pitch:GetPos(),frame:GetTall()*0.4 - button:GetTall()*0.5)
     gpos:SetFont(TARDIS:GetScreenFont(screen, "Default"))
-    gpos:SetText("Get Current Position")
+    gpos:SetText(TARDIS:GetPhrase("Screens.Coordinates.GetCurrentPosition"))
 
     function gpos:DoClick()
         updatetextinputs(ext:GetPos(), ext:GetAngles())
@@ -132,7 +133,7 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Coordinates", menu=fals
     local new = vgui.Create("DButton", frame)
     new:SetSize( frame:GetWide()*0.08, frame:GetTall()*0.1 )
     new:SetPos(pitch:GetPos(),frame:GetTall()*0.52 - button:GetTall()*0.5)
-    new:SetText("New")
+    new:SetText(TARDIS:GetPhrase("Common.New"))
     new:SetFont(TARDIS:GetScreenFont(screen, "Default"))
     function new:DoClick()
         local name = ""
@@ -140,15 +141,12 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Coordinates", menu=fals
         local ang = Angle(0,0,0)
         local vortex = ext:GetData("vortex", false)
 
-        local request = "Enter the name for the new location"
-        if vortex then
-            request = request .. " (The info from the inputs would be used)"
-        end
+        local request = vortex and "Screens.Coordinates.NameNewLocationFromInputs" or "Screens.Coordinates.NameNewLocation"
 
         Derma_StringRequest(
-            "New Location",
-            request,
-            "New Location",
+            TARDIS:GetPhrase("Screens.Coordinates.NewLocation"),
+            TARDIS:GetPhrase(request),
+            TARDIS:GetPhrase("Screens.Coordinates.NewLocation"),
             function(text)
                 name = text
                 if vortex then
@@ -156,17 +154,17 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Coordinates", menu=fals
                     updatelist()
                 else
                     Derma_Query(
-                        "Use current TARDIS position and rotation?\nSelecting 'No' will use the information on the inputs.",
-                        "New Location",
-                        "Yes",
+                        TARDIS:GetPhrase("Screens.Coordinates.NewLocationUseCurrentPos", "Common.No"),
+                        TARDIS:GetPhrase("Screens.Coordinates.NewLocation"),
+                        TARDIS:GetPhrase("Common.Yes"),
                         function()
                             pos = ext:GetPos()
                             ang = ext:GetAngles()
-                            if name == "" then name = "Unnamed" end
+                            if name == "" then name = TARDIS:GetPhrase("Screens.Coordinates.Unnamed") end
                             TARDIS:AddLocation(pos,ang,name,map)
                             updatelist()
                         end,
-                        "No",
+                        TARDIS:GetPhrase("Common.No"),
                         function()
                             TARDIS:AddLocation(pos,ang,name,map)
                             updatelist()
@@ -180,7 +178,7 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Coordinates", menu=fals
     local edit = vgui.Create("DButton", frame)
     edit:SetSize( frame:GetWide()*0.08, frame:GetTall()*0.1 )
     edit:SetPos(yaw:GetPos(),frame:GetTall()*0.52 - button:GetTall()*0.5)
-    edit:SetText("Update")
+    edit:SetText(TARDIS:GetPhrase("Common.Update"))
     edit:SetFont(TARDIS:GetScreenFont(screen, "Default"))
     edit:SetEnabled(false)
     function edit:DoClick()
@@ -203,14 +201,18 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Coordinates", menu=fals
     local remove = vgui.Create("DButton", frame)
     remove:SetSize( frame:GetWide()*0.08, frame:GetTall()*0.1 )
     remove:SetPos(roll:GetPos(),frame:GetTall()*0.52 - button:GetTall()*0.5)
-    remove:SetText("Delete")
+    remove:SetText(TARDIS:GetPhrase("Common.Delete"))
     remove:SetFont(TARDIS:GetScreenFont(screen, "Default"))
     function remove:DoClick()
         local index = list:GetSelectedLine()
         if not index then return end
-        Derma_Query("This will remove the selected location PERMANENTLY! Are you sure?","Remove Location","Yes",
-        function() TARDIS:RemoveLocation(map,index) updatelist() pendingchanges = true end,
-        "No")
+        Derma_Query(
+            TARDIS:GetPhrase("Screens.Coordinates.ConfirmRemoveLocation"),
+            TARDIS:GetPhrase("Screens.Coordinates.RemoveLocation"),
+            TARDIS:GetPhrase("Common.Yes"),
+            function() TARDIS:RemoveLocation(map,index) updatelist() pendingchanges = true end,
+            TARDIS:GetPhrase("Common.No")
+        )
     end
     function remove:Think()
         if list:GetSelectedLine() ~= nil then
@@ -224,7 +226,7 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Coordinates", menu=fals
     local save = vgui.Create("DButton", frame)
     save:SetSize( frame:GetWide()*0.07, frame:GetTall()*0.1 )
     save:SetPos(frame:GetWide()*0.82 - save:GetWide()*0.5, frame:GetTall()*0.64 - save:GetTall()*0.5)
-    save:SetText("Save")
+    save:SetText(TARDIS:GetPhrase("Common.Save"))
     save:SetFont(TARDIS:GetScreenFont(screen, "Default"))
     function save:DoClick()
         TARDIS:SaveLocations()
@@ -233,15 +235,15 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Coordinates", menu=fals
     end
     function save:Think()
         if pendingchanges then
-            self:SetText("Save*")
+            self:SetText(TARDIS:GetPhrase("Common.Save").."*")
         else
-            self:SetText("Save")
+            self:SetText(TARDIS:GetPhrase("Common.Save"))
         end
     end
     local load = vgui.Create("DButton", frame)
     load:SetSize( frame:GetWide()*0.07, frame:GetTall()*0.1 )
     load:SetPos(frame:GetWide()*0.9 - load:GetWide()*0.5, frame:GetTall()*0.64 - load:GetTall()*0.5)
-    load:SetText("Load")
+    load:SetText(TARDIS:GetPhrase("Common.Load"))
     load:SetFont(TARDIS:GetScreenFont(screen, "Default"))
     function load:DoClick()
         TARDIS:LoadLocations()
@@ -253,7 +255,7 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Coordinates", menu=fals
     local confirm = vgui.Create("DButton",frame)
     confirm:SetSize( frame:GetWide()*0.1, frame:GetTall()*0.1 )
     confirm:SetPos(yaw:GetPos()-15,frame:GetTall()*0.9 - button:GetTall()*0.5)
-    confirm:SetText("Set")
+    confirm:SetText(TARDIS:GetPhrase("Common.Set"))
     confirm:SetFont(TARDIS:GetScreenFont(screen, "Default"))
     function confirm:DoClick()
         local pos,ang = fetchtextinputs()
@@ -275,23 +277,24 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Coordinates", menu=fals
     function frame:OnCloseScreen()
         local result = true
         if not pendingchanges then return end
-        Derma_Query("You have unsaved changes, would you like to save them?",
-        "Pending changes",
-        "Yes",
-        function()
-            TARDIS:SaveLocations()
-            pendingchanges = false
-            TARDIS:RemoveHUDScreen()
-        end,
-        "No",
-        function()
-            pendingchanges = false
-            TARDIS:RemoveHUDScreen()
-        end,
-        "Cancel",
-        function()
+        Derma_Query(
+            TARDIS:GetPhrase("Common.UnsavedChangesWarning"),
+            TARDIS:GetPhrase("Common.UnsavedChanges"),
+            TARDIS:GetPhrase("Common.Yes"),
+            function()
+                TARDIS:SaveLocations()
+                pendingchanges = false
+                TARDIS:RemoveHUDScreen()
+            end,
+            TARDIS:GetPhrase("Common.No"),
+            function()
+                pendingchanges = false
+                TARDIS:RemoveHUDScreen()
+            end,
+            TARDIS:GetPhrase("Common.Cancel"),
+            function()
 
-        end
+            end
         )
         return false;
     end

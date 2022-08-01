@@ -33,19 +33,19 @@ function TARDIS:AddCustomMusic(name, url)
     end
 
     local next = table.insert(custom_music,{name, url})
-    print("[TARDIS] Custom music added (" .. name ..", " .. url .. ")")
+    TARDIS:Message(LocalPlayer(), "Screens.Music.CustomAdded", name, url)
     TARDIS:SaveCustomMusic()
 end
 
 function TARDIS:RemoveCustomMusic(index)
-    print("[TARDIS] Custom music removed (" .. custom_music[index][1] ..", " .. custom_music[index][2] .. ")")
+    TARDIS:Message(LocalPlayer(), "Screens.Music.CustomRemoved", custom_music[index][1], custom_music[index][2])
     table.remove(custom_music, index)
     TARDIS:SaveCustomMusic()
 end
 
 
 -- Music GUI
-TARDIS:AddScreen("Music", {id="music", menu=false, order=10, popuponly=true}, function(self,ext,int,frame,screen)
+TARDIS:AddScreen("Music", {id="music", text="Screens.Music", menu=false, order=10, popuponly=true}, function(self,ext,int,frame,screen)
 
 --------------------------------------------------------------------------------
 -- Layout calculations
@@ -70,23 +70,23 @@ TARDIS:AddScreen("Music", {id="music", menu=false, order=10, popuponly=true}, fu
     local list_premade = vgui.Create("DListView",frame)
     list_premade:SetSize(listW, listT)
     list_premade:SetPos(gap, gap)
-    list_premade:AddColumn("Pre-loaded music")
+    list_premade:AddColumn(TARDIS:GetPhrase("Screens.Music.DefaultMusic"))
     list_premade:SetMultiSelect(false)
 
     local list_custom = vgui.Create("DListView",frame)
     list_custom:SetSize(listW, listT)
     list_custom:SetPos(2 * gap + listW, gap)
-    list_custom:AddColumn("Custom music")
+    list_custom:AddColumn(TARDIS:GetPhrase("Screens.Music.CustomMusic"))
     list_custom:SetMultiSelect(false)
 
     local url_bar = vgui.Create( "DTextEntry", frame )
-    url_bar:SetPlaceholderText("Enter song URL")
+    url_bar:SetPlaceholderText(TARDIS:GetPhrase("Screens.Music.UrlPlaceholder"))
     url_bar:SetFont(TARDIS:GetScreenFont(screen, "Default"))
     url_bar:SetSize(tbW, tbT)
     url_bar:SetPos(midX, gap)
 
     local name_bar = vgui.Create( "DTextEntry", frame )
-    name_bar:SetPlaceholderText("Enter custom song name")
+    name_bar:SetPlaceholderText(TARDIS:GetPhrase("Screens.Music.NamePlaceholder"))
     name_bar:SetFont(TARDIS:GetScreenFont(screen, "Default"))
     name_bar:SetSize(tbW, tbT)
     name_bar:SetPos(midX, 2 * gap + tbT)
@@ -94,19 +94,19 @@ TARDIS:AddScreen("Music", {id="music", menu=false, order=10, popuponly=true}, fu
     local play_stop_button=vgui.Create("DButton",frame)
     play_stop_button:SetSize(tbW, bT * 1.3)
     play_stop_button:SetPos(midX, gap + listT - bT * 1.3)
-    play_stop_button:SetText("Play / Stop")
+    play_stop_button:SetText(TARDIS:GetPhrase("Screens.Music.PlayStop"))
     play_stop_button:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 
     local save_custom_button=vgui.Create("DButton",frame)
     save_custom_button:SetSize(bW, bT)
     save_custom_button:SetPos(midX, 3 * gap + 2 * tbT)
-    save_custom_button:SetText("Save")
+    save_custom_button:SetText(TARDIS:GetPhrase("Common.Save"))
     save_custom_button:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 
     local remove_custom_button=vgui.Create("DButton",frame)
     remove_custom_button:SetSize(bW, bT)
     remove_custom_button:SetPos(midX + gap + bW, 3 * gap + 2 * tbT)
-    remove_custom_button:SetText("Remove")
+    remove_custom_button:SetText(TARDIS:GetPhrase("Common.Remove"))
     remove_custom_button:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 
 --------------------------------------------------------------------------------
@@ -118,7 +118,7 @@ TARDIS:AddScreen("Music", {id="music", menu=false, order=10, popuponly=true}, fu
     list_premade:AddLine(TARDIS:GetPhrase("Common.Loading"))
     list_premade.loading = true
 
-    http.Fetch("https://cdn.mattjeanes.com/tardis/dmusic.json", function(body)
+    http.Fetch("https://cdn.mattjeanes.com/tardis/music.json", function(body)
         default_music = util.JSONToTable(body)
         list_premade:Clear()
         if default_music == nil then
@@ -224,14 +224,14 @@ TARDIS:AddScreen("Music", {id="music", menu=false, order=10, popuponly=true}, fu
             return
         end
 
-        Derma_Query("Are you sure you want to remove \"" .. custom_music[line][1] .. "\" from the music list? This cannot be undone.",
-                    "TARDIS Interface",
-                    "Yes",
+        Derma_Query(TARDIS:GetPhrase("Screens.Music.DeleteConfirm", custom_music[line][1]),
+                    TARDIS:GetPhrase("Common.Interface"),
+                    TARDIS:GetPhrase("Common.Yes"),
                     function()
                         TARDIS:RemoveCustomMusic(line)
                         list_custom:UpdateAll()
                     end,
-                    "No",
+                    TARDIS:GetPhrase("Common.No"),
                     function()
                     end):SetSkin("TARDIS")
     end
