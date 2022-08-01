@@ -1,52 +1,5 @@
 -- Music
 
-local default_music={
-    {"Main Theme (2005)", "theme1"},
-    {"Main Theme (2009)", "theme2"},
-    {"Main Theme (2010)", "theme3"},
-    {"Main Theme (2013)", "theme4"},
-    {"Main Theme (2014)", "theme-2014"},
-    {"Ninth Doctor", "nine"},
-    {"Tenth Doctor", "ten"},
-    {"Eleventh Doctor", "eleven"},
-    {"Twelfth Doctor", "twelve"},
-    {"Thirteenth Doctor", "thirteen"},
-    {"Rose Tyler", "rose"},
-    {"Martha Jones", "martha"},
-    {"Donna Noble", "donna"},
-    {"Amy Pond", "amy"},
-    {"River Song", "river"},
-    {"Clara Oswald", "clara"},
-    {"Amy in the TARDIS", "amyinthetardis"},
-    {"Abigail's Song", "abigail"},
-    {"Not a war", "notawar"},
-    {"This is Gallifrey", "thisisgallifrey"},
-    {"Gallifrey", "gallifrey"},
-    {"Life Among the Distant Stars", "lifeamongthedistantstars"},
-    {"Vale Decem", "valedecem"},
-    {"The Majestic Tale", "majestictale"},
-    {"Forgiven", "forgiven"},
-    {"I Need To Know", "ineedtoknow"},
-    {"The Wedding of River Song", "weddingofriversong"},
-    {"Together Or Not At All", "togetherornotatall"},
-    {"All the Strange Creatures", "allthestrangecreatures"},
-    {"You're Fired", "yourefired"},
-    {"Shepherd's Boy", "shepherdsboy"},
-    {"My Beautiful Ghost Monument", "mybeautifulghostmonument"},
-    {"Whose Enigma", "whoseenigma"},
-    {"The Long Song", "thelongsong"},
-    {"Infinite Potential", "infinitepotential"},
-    {"The New Doctor", "thenewdoctor"},
-    {"Down to Earth", "downtoearth"},
-    {"Sonic Screwdriver", "sonicscrewdriver"},
-    {"My Husband's Home", "myhusbandshome"},
-    {"Doomsday", "doomsday"},
-    {"Dark and Endless Dalek Night", "darkandendlessdaleknight"},
-    {"Corridors and Fire Escape", "corridorsandfireescape"},
-    {"The Greatest Story Never Told", "greateststorynevertold"},
-
-}
-
 --Custom music
 
 local custom_music
@@ -160,10 +113,16 @@ TARDIS:AddScreen("Music", {id="music", menu=false, order=10, popuponly=true}, fu
 -- Loading data
 --------------------------------------------------------------------------------
     local url = ""
+    local default_music = {}
 
-    for k,v in pairs(default_music) do
-        list_premade:AddLine(v[1])
-    end
+    http.Fetch("https://cdn.mattjeanes.com/tardis/music.json", function(body)
+        default_music = util.JSONToTable(body)
+        for k,v in pairs(default_music) do
+            list_premade:AddLine(v[1])
+        end
+    end, function(error)
+        TARDIS:ErrorMessage("Screens.Music.DefaultLoadError", error)
+    end)
 
     function list_custom:UpdateAll()
         self:Clear()
@@ -188,11 +147,21 @@ TARDIS:AddScreen("Music", {id="music", menu=false, order=10, popuponly=true}, fu
         name_bar:SetTextColor(Color(0,0,0))
     end
 
+    function list_custom:DoDoubleClick(rowIndex, row)
+        ext:PlayMusic(custom_music[rowIndex][2])
+        list_custom:ClearSelection()
+    end
+
     function list_premade:OnRowSelected(rowIndex, row)
         list_custom:ClearSelection()
-        url = ("https://mattjeanes.com/data/tardis/" .. default_music[rowIndex][2] ..".mp3")
+        url = "https://cdn.mattjeanes.com/tardis/" .. default_music[rowIndex][2] ..".mp3"
         url_bar:SetTextColor(Color(139,139,139))
         name_bar:SetTextColor(Color(139,139,139))
+    end
+
+    function list_premade:DoDoubleClick(rowIndex, row)
+        ext:PlayMusic("https://cdn.mattjeanes.com/tardis/" .. default_music[rowIndex][2] ..".mp3")
+        list_premade:ClearSelection()
     end
 
     local function highlight_custom()
