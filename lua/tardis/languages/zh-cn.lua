@@ -107,7 +107,7 @@ T.Phrases = {
     ["MenuOptions.ConfirmResetSettings"] = "恢复所有客户端设置？此步骤无法撤销！",
     ["MenuOptions.ResetSettingsConfirmation"] = "塔迪斯客户端设置已被恢复，您可能需要重新生成塔迪斯以应用所有更改",
 
-    ["Settings.Sections.GUI"] = "GUI", -- NOD --
+    ["Settings.Sections.GUI"] = "用户界面", -- NOD --
 
     ["Settings.Sections.GUI.OldGUI"] = "使用旧的界面",
     ["Settings.Sections.GUI.OldGUI.Description"] = "使用没有图片的旧界面来代替新的",
@@ -352,7 +352,7 @@ T.Phrases = {
     ["Binds.Sections.Float.Boost.Description"] = "漂浮时按住此键以加速旋转",
     ["Binds.Sections.Float.Rotate"] = "旋转",
     ["Binds.Sections.Float.Rotate.Description"] = "按住此键同时使用左和右来偏航",
-    ["Binds.Sections.Float.Brake"] = "Brake",
+    ["Binds.Sections.Float.Brake"] = "制动",
     ["Binds.Sections.Float.Brake.Description"] = "漂浮时按住此键以减慢旋转",
     
     ["Binds.Sections.Teleport"] = "传送",
