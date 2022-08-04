@@ -23,17 +23,17 @@ T.Phrases = {
     ["Common.Default"] = "Стандартный",
     ["Common.PowerDisabled"] = "Питание отключено",
     ["Common.PowerDisabledControl"] = "Питание отключено. Это не работает",
-    ["Common.Enabled.Lower"] = "включено",
-    ["Common.Disabled.Lower"] = "выключено",
-    ["Common.Opened.Lower"] = "открыто",
-    ["Common.Closed.Lower"] = "закрыто",
-    ["Common.Locked.Lower"] = "заперто",
-    ["Common.Unlocked.Lower"] = "разблокировано",
-    ["Common.Engaged.Lower"] = "включено",
-    ["Common.Disengaged.Lower"] = "выключено",
+    ["Common.Enabled.Lower"] = "- включено",
+    ["Common.Disabled.Lower"] = "- выключено",
+    ["Common.Opened.Lower"] = "открыты",
+    ["Common.Closed.Lower"] = "закрыты",
+    ["Common.Locked.Lower"] = "заперты",
+    ["Common.Unlocked.Lower"] = "разблокированы",
+    ["Common.Engaged.Lower"] = "включен",
+    ["Common.Disengaged.Lower"] = "выключен",
     ["Common.NotYetImplemented"] = "Это ещё не осуществленно",
     ["Common.UnknownError"] = "Неопознанная ошибка",
-    ["Common.DoorsNotInstalled"] = "Аддон "Doors" не установлен!",
+    ["Common.DoorsNotInstalled"] = "Аддон Doors не установлен!",
     ["Common.EnterTextInput"] = "Ввести текст",
     ["Common.NotInTARDIS"] = "Вы не находитесь в ТАРДИС",
     ["Common.ControlSequencesEnabledWarning"] = "Последовательное управление включено. Используйте последовательность рычагов",
@@ -53,7 +53,7 @@ T.Phrases = {
     ["Flight.WarnPhyslockEngaged"] = "ПРЕДУПРЕЖДЕНИЕ: Физическая оболочка зафиксирована",
     ["Flight.NameIsThePilot"] = "%s является пилотом",
     ["Flight.NameIsNowThePilot"] = "%s теперь пилот",
-    ["Flight.YouAreNowThePilot"] = "Вы теперь пилотируете ТАРДИС",
+    ["Flight.YouAreNowThePilot"] = "Теперь вы пилотируете ТАРДИС",
     ["Flight.NoLongerPilot"] = "Вы больше не пилотируете ТАРДИС",
     ["Flight.DoorOpenNoBoost"] = "Ускорение не работает с открытыми дверями.",
 
@@ -189,7 +189,7 @@ T.Phrases = {
     ["Settings.Sections.Global.MaxHealth.Description"] = "Максимальное кол-во здоровья которое имеет ТАРДИС",
 
     ["Settings.Sections.Global.BoostSpeed"] = "Значение ускорения",
-    ["Settings.Sections.Global.BoostSpeed.Description"] = "Изменение скорости ТАРДИС при задействовании кнопки "буста"(по стандарту-shift) ",
+    ["Settings.Sections.Global.BoostSpeed.Description"] = "Изменение скорости ТАРДИС при задействовании кнопки Ускорения(по стандарту-shift) ",
 
     ["Settings.Sections.Misc"] = "Разное",
 
@@ -201,7 +201,7 @@ T.Phrases = {
     ["Settings.Sections.Misc.NotificationType.Types.Inbuilt"] = "Встроенные уведомления(Из Garry's Mod)",
 
     ["Settings.Sections.Misc.EnableControlSequences"] = "Включение последовательного управления",
-    ["Settings.Sections.Misc.EnableControlSequences.Description"] = "Стоит ли использовать последовательное управление или "продвинутый режим" ?",
+    ["Settings.Sections.Misc.EnableControlSequences.Description"] = "Стоит ли использовать последовательное управление или 'продвинутый режим' ?",
     
     ["Settings.Sections.Misc.IsomorphicSecurityDefault"] = "Изоморфная защита по стандарту?",
     ["Settings.Sections.Misc.IsomorphicSecurityDefault.Description"] = "Никто(игроки) не может пользоваться вашей ТАРДИС по стандарту",
@@ -226,7 +226,7 @@ T.Phrases = {
     ["Settings.Sections.Misc.Flight.DisableBoostOpenDoor.Description"] = "Стоит ли ТАРДИС запретить ускорение с открытами дверями в полёте?",
 
     ["Settings.Sections.Misc.Flight.UseWalkKeyThirdPerson"] = "Использование двух кнопок для входа в 3-е лицо",
-    ["Settings.Sections.Misc.Flight.UseWalkKeyThirdPerson.Description"] = "Стоит ли нажимать кнопку "медленной ходьбы"(ALT-по стандарту) вместе с "использовать" (E-по стандарту? для вхождения в 3-е лицо ТАРДИС?" ,
+    ["Settings.Sections.Misc.Flight.UseWalkKeyThirdPerson.Description"] = "Стоит ли нажимать кнопку 'медленной ходьбы'(ALT-по стандарту) вместе с 'использовать' (E-по стандарту? для вхождения в 3-е лицо ТАРДИС?" ,
 
     ["Settings.Sections.Misc.Tips"] = "Подсказки",
 
@@ -454,7 +454,7 @@ T.Phrases = {
     ["Controls.Shields.Tip"] = "Щиты",
 
     ["Controls.SonicDispenser.Tip"] = "Заряжатель Звуковых Устройств",
-    ["Controls.SonicDispenser.MissingAddon"] = "У вас не установлен аддон "Sonic Screwdriver". Установите его для работы этой функции.",
+    ["Controls.SonicDispenser.MissingAddon"] = "У вас не установлен аддон 'Sonic Screwdriver'. Установите его для работы этой функции.",
     ["Controls.SonicDispenser.Dispensed"] = "Звуковая Отвёртка была выпущена",
     ["Controls.SonicDispenser.Equipped"] = "Звуковая Отвёртка была взята",
     ["Controls.SonicDispenser.AlreadyEquipped"] = "Вы уже держите звуковое устройтво",
@@ -484,8 +484,8 @@ T.Phrases = {
     ["Controls.ThirdPerson"] = "Управление Полётом",
     ["Controls.ThirdPerson.Tip"] = "Ручное Управление Полётом",
 
-    ["Controls.ToggleScreens"] = "Переключатель Мониторов",
-    ["Controls.ToggleScreens.Tip"] = "Переключатель Мониторов",
+    ["Controls.ToggleScreens"] = "Переключатель Монитора",
+    ["Controls.ToggleScreens.Tip"] = "Переключатель Монитора",
     ["Controls.ToggleScreens.Status"] = "Внутренние Мониторы",
     ["Controls.ToggleScreens.FailedToggle"] = "Не получилось переключить внутренние мониторы",
 
@@ -496,7 +496,7 @@ T.Phrases = {
     ["Controls.VortexFlight.Status"] = "Полёт в Воронке",
     ["Controls.VortexFlight.FailedToggle"] = "Не получилось переключить Полёт в Воронке",
 
-    ["Parts.DefaultAtomAccelerator.Text"] = "Ускоритель Заряженных Частиц",
+    ["Parts.DefaultAtomAccelerator.Text"] = "Изменение Полярности Оболочки",
     ["Parts.DefaultDematCircuit.Text"] = "Контур Дематериализации",
     ["Parts.DefaultDirectionalPointer.Text"] = "Изменение Направления",
     ["Parts.DefaultGramophone.Text"] = "Грамофон",
