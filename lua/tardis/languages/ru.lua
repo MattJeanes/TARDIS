@@ -1,8 +1,8 @@
 -- English
 
 local T = {}
-T.Code = "rus"
-T.Name = "Russian"
+T.Code = "ru"
+T.Name = "Русский"
 T.Phrases = {
     ["Common.Error"] = "ОШИБКА",
     ["Common.TARDIS"] = "ТАРДИС",
