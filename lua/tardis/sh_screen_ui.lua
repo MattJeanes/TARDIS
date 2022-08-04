@@ -160,7 +160,7 @@ function TARDIS:SwitchScreen(screen,newscreen)
         end
         frame:SetVisible(true)
         screen.curscreen=frame
-        screen.pagename:SetText(tostring(frame._name))
+        screen.pagename:SetText(TARDIS:GetPhrase(frame._text))
         screen.pagename:DoLayout()
         if IsValid(screen.mmenu) then
             screen.mmenu:SetVisible(false)
@@ -487,6 +487,7 @@ function TARDIS:LoadScreenUI(screen)
             frame:SetSize(main:GetSize())
             frame:SetPos(0,0)
             frame._name=k
+            frame._text=v[1].text or k
             frame._loaded=false
             table.insert(screen.screens,{name=k,frame=frame,options=v[1],func=v[2]})
         end
