@@ -246,6 +246,10 @@ T.Phrases = {
 
     ["Settings.Sections.Misc.Spawning.UseWinterSkins"] = "Use winter skins",
     ["Settings.Sections.Misc.Spawning.UseWinterSkins.Description"] = "Whether or not winter TARDIS skins will be used while it's randomized",
+
+    ["Settings.Sections.Misc.Language"] = "Language",
+    ["Settings.Sections.Misc.Language.Description"] = "Language of the addon, falls back to English for any missing translations",
+    ["Settings.Sections.Misc.Language.Default"] = "Game Language",
     
     ["Settings.Sections.SoundsAndMusic"] = "Sounds & Music",
 

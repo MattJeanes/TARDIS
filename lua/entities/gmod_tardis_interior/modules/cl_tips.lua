@@ -136,6 +136,10 @@ ENT:AddHook("ShouldDrawTips", "tips", function(self)
     end
 end)
 
+ENT:AddHook("LanguageChanged", "tips", function(self, code)
+    self.tip_style_name = nil
+end)
+
 hook.Add("HUDPaint", "TARDIS-DrawTips", function()
     local interior = TARDIS:GetInteriorEnt(LocalPlayer())
     if not (IsValid(interior) and interior.tips and TARDIS:GetSetting("tips") and (interior:CallHook("ShouldDrawTips")~=false)) then return end

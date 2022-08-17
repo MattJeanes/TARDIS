@@ -246,6 +246,10 @@ T.Phrases = {
 
     ["Settings.Sections.Misc.Spawning.UseWinterSkins"] = "使用冬季皮肤",
     ["Settings.Sections.Misc.Spawning.UseWinterSkins.Description"] = "随机皮肤时是否会使用冬季皮肤",
+
+    ["Settings.Sections.Misc.Language"] = "语",
+    ["Settings.Sections.Misc.Language.Description"] = "插件的语言，对于任何缺失的翻译回退到英语",
+    ["Settings.Sections.Misc.Language.Default"] = "游戏语言",
     
     ["Settings.Sections.SoundsAndMusic"] = "音效与音乐",
 

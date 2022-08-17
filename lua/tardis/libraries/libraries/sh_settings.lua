@@ -108,11 +108,9 @@ function TARDIS:SetSetting(id, value)
 
     if (SERVER and data.class == "global") or (CLIENT and data.class == "networked") then
         self:SendSetting(id, value)
-
-        for k,v in pairs(ents.FindByClass("gmod_tardis")) do
-            v:CallCommonHook("GlobalSettingChanged", id, value)
-        end
     end
+
+    self:OnSettingChanged(id, value)
 
     return value
 end
@@ -257,7 +255,7 @@ if SERVER then
         if not TARDIS.ClientSettings[userID] then TARDIS.ClientSettings[userID]={} end
         local mode=net.ReadBool()
         if mode then
-            local key=net.ReadType()
+            local key=net.ReadString()
             local value=net.ReadType()
             TARDIS.ClientSettings[userID][key]=value
             net.Start("TARDIS-ClientSettings")
@@ -308,7 +306,7 @@ if SERVER then
 
     net.Receive("TARDIS-GlobalSettingChange", function(len,ply)
         if not ply:IsAdmin() then return end
-        local id = net.ReadType()
+        local id = net.ReadString()
         local val = net.ReadType()
         TARDIS:SetSetting(id, val)
     end)
@@ -320,7 +318,7 @@ else
             return
         end
         net.Start("TARDIS-GlobalSettingChange")
-            net.WriteType(id)
+            net.WriteString(id)
             net.WriteType(value)
         net.SendToServer()
     end
@@ -334,7 +332,10 @@ else
         if not TARDIS.ClientSettings[ply] then TARDIS.ClientSettings[ply]={} end
         local mode=net.ReadBool()
         if mode then
-            TARDIS.ClientSettings[ply][net.ReadType()]=net.ReadType()
+            local id = net.ReadString()
+            local value = net.ReadType()
+            TARDIS.ClientSettings[ply][id]=value
+            TARDIS:OnSettingChanged(id, value, ply)
         else
             TARDIS.ClientSettings[ply]=TARDIS.von.deserialize(net.ReadString())
         end
@@ -343,7 +344,10 @@ else
     net.Receive("TARDIS-Settings",function(len)
         local mode=net.ReadBool()
         if mode then
-            TARDIS.GlobalSettings[net.ReadType()]=net.ReadType()
+            local id = net.ReadString()
+            local value = net.ReadType()
+            TARDIS.GlobalSettings[id]=value
+            TARDIS:OnSettingChanged(id, value)
         else
             table.Merge(TARDIS.GlobalSettings,TARDIS.von.deserialize(net.ReadString()))
         end
@@ -353,7 +357,7 @@ end
 function TARDIS:SendSetting(id,value,ply)
     net.Start(SERVER and "TARDIS-Settings" or "TARDIS-ClientSettings")
         net.WriteBool(true)
-        net.WriteType(id)
+        net.WriteString(id)
         net.WriteType(value)
     if SERVER then
         if IsValid(ply) then
@@ -378,6 +382,13 @@ function TARDIS:SendSettings(ply)
         end
     else
         net.SendToServer()
+    end
+end
+
+function TARDIS:OnSettingChanged(id,value,ply)
+    hook.Call("TARDIS_SettingChanged", GAMEMODE, id, value, ply)
+    for k,v in pairs(ents.FindByClass("gmod_tardis")) do
+        v:CallCommonHook("SettingChanged", id, value)
     end
 end
 
