@@ -175,6 +175,10 @@ hook.Add("TARDIS_SettingChanged", "TARDIS_LanguageSettingChanged", function(id, 
     end
 end)
 
+cvars.AddChangeCallback("gmod_language", function()
+    TARDIS:UpdateLanguage()
+end)
+
 function TARDIS:GetLanguages()
     return self.Languages
 end

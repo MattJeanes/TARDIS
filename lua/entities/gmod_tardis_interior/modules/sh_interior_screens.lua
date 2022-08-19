@@ -52,7 +52,18 @@ function ENT:GetScreens()
     return screens
 end
 
-ENT:AddHook("Initialize", "screens", function(self)
+function ENT:RemoveScreens()
+    if self.screens3D then
+        for k,v in pairs(self.screens3D) do
+            if IsValid(v) then
+                v:Remove()
+            end
+        end
+    end
+end
+
+function ENT:LoadScreens()
+    self:RemoveScreens()
     local screens=self.metadata.Interior.Screens
     if screens then
         self.screens3D={}
@@ -73,16 +84,18 @@ ENT:AddHook("Initialize", "screens", function(self)
             self.screens3D[k].ang3D=v.ang
         end 
     end
+end
+
+ENT:AddHook("Initialize", "screens", function(self)
+    self:LoadScreens()
+end)
+
+ENT:AddHook("LanguageChanged", "screens", function(self)
+    self:LoadScreens()
 end)
 
 ENT:AddHook("OnRemove", "screens", function(self)
-    if self.screens3D then
-        for k,v in pairs(self.screens3D) do
-            if IsValid(v) then
-                v:Remove()
-            end
-        end
-    end
+    self:RemoveScreens()
 end)
 
 -- Thanks world-portals

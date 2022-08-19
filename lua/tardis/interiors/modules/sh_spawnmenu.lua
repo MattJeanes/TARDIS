@@ -291,6 +291,13 @@ if CLIENT then
             return icon
         end)
     end)
+
+    hook.Add("TARDIS_LanguageChanged", "tardis-spawnmenu", function()
+        for k,v in pairs(TARDIS:GetInteriors()) do
+            TARDIS:SetupSpawnmenuIcon(v)
+        end
+        RunConsoleCommand("spawnmenu_reload")
+    end)
 end
 
 TARDIS_OVERRIDES = TARDIS_OVERRIDES or {}
@@ -298,6 +305,10 @@ local c_overrides = TARDIS_OVERRIDES.Categories or {}
 local n_overrides = TARDIS_OVERRIDES.Names or {}
 
 function TARDIS:SetupSpawnmenuIcon(t)
+    if t.Base == true or t.Hidden or t.IsVersionOf then
+        return
+    end
+    
     local ent={}
 
     local cat_override
