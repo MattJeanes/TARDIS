@@ -3,7 +3,7 @@
 if SERVER then
     function ENT:PlayMusic(url, ply)
         if url then
-            if not self:CheckSecurity(ply) then
+            if ply and (not self:CheckSecurity(ply)) then
                 TARDIS:Message(ply, "Security.ControlUseDenied")
                 return false
             end
