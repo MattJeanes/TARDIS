@@ -5,7 +5,7 @@ function ENT:GetSecurity()
 end
 
 function ENT:CheckSecurity(ply)
-    return (not self:GetSecurity()) or (ply~=self:GetCreator())
+    return (not self:GetSecurity()) or (ply==self:GetCreator())
 end
 
 if SERVER then
