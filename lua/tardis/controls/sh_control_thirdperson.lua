@@ -5,6 +5,7 @@ TARDIS:AddControl({
     end,
     serveronly=true,
     power_independent = true,
+    bypass_isomorphic = true,
     screen_button = {
         virt_console = false,
         mmenu = true,

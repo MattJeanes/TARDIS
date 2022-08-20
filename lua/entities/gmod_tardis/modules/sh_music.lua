@@ -1,8 +1,12 @@
 -- Music
 
 if SERVER then
-    function ENT:PlayMusic(url)
+    function ENT:PlayMusic(url, ply)
         if url then
+            if not self:CheckSecurity(ply) then
+                TARDIS:Message(ply, "Security.ControlUseDenied")
+                return false
+            end
             for ply, _ in pairs(self.occupants) do
                 self:SendMessage("play-music", function() 
                     net.WriteString(url)
@@ -10,6 +14,8 @@ if SERVER then
             end
     
             self.music = url
+
+            return true
         end
     end
     
@@ -22,8 +28,8 @@ if SERVER then
         end
     end
     
-    ENT:OnMessage("play-music", function(self) 
-        self:PlayMusic(net.ReadString())
+    ENT:OnMessage("play-music", function(self, ply) 
+        self:PlayMusic(net.ReadString(), ply)
     end)
     
     ENT:OnMessage("stop-music", function(self) 

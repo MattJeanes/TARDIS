@@ -87,7 +87,7 @@ T.Phrases = {
 
     ["Vortex.ModelMissing"] = "警告：旋涡模型无效 - 已禁用旋涡，你错过了一个依赖吗？",
 
-    ["Security.PartUseDenied"] = "这架塔迪斯使用了同构安全协议。您不能操控她",
+    ["Security.ControlUseDenied"] = "这架塔迪斯使用了同构安全协议。您不能操控她",
 
     ["Spin.Changed"] = "自旋方向已设为 %s",
     ["Spin.Directions.AntiClockwise"] = "逆时针",

@@ -87,7 +87,7 @@ T.Phrases = {
 
     ["Vortex.ModelMissing"] = "WARNING: Vortex model invalid - disabling vortex, are you missing a dependency?",
 
-    ["Security.PartUseDenied"] = "This TARDIS uses Isomorphic Security. You may not use any controls",
+    ["Security.ControlUseDenied"] = "This TARDIS uses Isomorphic Security. You may not use any controls",
 
     ["Spin.Changed"] = "Spin direction set to %s",
     ["Spin.Directions.AntiClockwise"] = "anti-clockwise",
