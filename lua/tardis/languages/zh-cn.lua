@@ -94,6 +94,8 @@ T.Phrases = {
     ["Spin.Directions.None"] = "无",
     ["Spin.Directions.Clockwise"] = "顺时针",
 
+    ["TimeDistortionGenerator"] = "时间失真发生器",
+    ["TimeDistortionGenerator.Instructions"] = "造成时间扭曲，扰乱 TARDIS 引擎，并阻止其起飞或着陆",
     ["TimeDistortionGenerator.Starting"] = "启动时扭曲发生器…",
     ["TimeDistortionGenerator.Disabled"] = "时间扭曲发生器已禁用",
     ["TimeDistortionGenerator.Enabled"] = "时间扭曲发生器已启用",
@@ -620,6 +622,7 @@ T.Phrases = {
     ["Spawnmenu.AddToFavourites"] = "添加到收藏夹（需要重新加载）",
     ["Spawnmenu.RemoveFromFavourites"] = "从收藏夹中移除（需要重新加载）",
     ["Spawnmenu.Category"] = "神秘博士 - 塔迪斯",
+    ["Spawnmenu.CategoryTools"] = "神秘博士 - TARDIS 工具",
     ["Spawnmenu.RedecorationExclude"] = "排除在随机重装修外",
     ["Spawnmenu.ResetSettings"] = "恢复默认设置",
     

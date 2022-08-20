@@ -161,11 +161,17 @@ function TARDIS:UpdateLanguage()
         self:CompileLanguage(langCode)
     end
 
-    if oldLangCode ~= langCode then
-        hook.Call("TARDIS_LanguageChanged", GAMEMODE, langCode, oldLangCode)
-        for k,v in pairs(ents.FindByClass("gmod_tardis")) do
-            v:CallCommonHook("LanguageChanged", langCode, oldLangCode)
+    if language then 
+        for k,v in pairs(self.LanguageCache[langCode]) do
+            language.Add("TARDIS."..k, v)
         end
+    end
+    
+    if oldLangCode == langCode then return end
+
+    hook.Call("TARDIS_LanguageChanged", GAMEMODE, langCode, oldLangCode)
+    for k,v in pairs(ents.FindByClass("gmod_tardis")) do
+        v:CallCommonHook("LanguageChanged", langCode, oldLangCode)
     end
 end
 
@@ -173,6 +179,10 @@ hook.Add("TARDIS_SettingChanged", "TARDIS_LanguageSettingChanged", function(id, 
     if id == "language" then
         TARDIS:UpdateLanguage()
     end
+end)
+
+hook.Add("InitPostEntity", "TARDIS_Language", function()
+    TARDIS:UpdateLanguage()
 end)
 
 cvars.AddChangeCallback("gmod_language", function()

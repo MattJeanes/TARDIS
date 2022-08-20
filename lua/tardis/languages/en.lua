@@ -94,6 +94,8 @@ T.Phrases = {
     ["Spin.Directions.None"] = "none",
     ["Spin.Directions.Clockwise"] = "clockwise",
 
+    ["TimeDistortionGenerator"] = "Time Distortion Generator",
+    ["TimeDistortionGenerator.Instructions"] = "Creates time distortions, which mess with the TARDIS engines, and prevent it from taking off or landing",
     ["TimeDistortionGenerator.Starting"] = "Starting the time distortion generator...",
     ["TimeDistortionGenerator.Disabled"] = "Time distortion generator disabled",
     ["TimeDistortionGenerator.Enabled"] = "Time distortion generator enabled",
@@ -620,6 +622,7 @@ T.Phrases = {
     ["Spawnmenu.AddToFavourites"] = "Add to favorites (reload required)",
     ["Spawnmenu.RemoveFromFavourites"] = "Remove from favorites (reload required)",
     ["Spawnmenu.Category"] = "Doctor Who - TARDIS",
+    ["Spawnmenu.CategoryTools"] = "Doctor Who - TARDIS Tools",
     ["Spawnmenu.RedecorationExclude"] = "Exclude from random redecoration",
     ["Spawnmenu.ResetSettings"] = "Reset settings",
 

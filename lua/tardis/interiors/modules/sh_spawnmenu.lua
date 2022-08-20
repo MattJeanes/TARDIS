@@ -323,7 +323,7 @@ function TARDIS:SetupSpawnmenuIcon(t)
 
     local name_override = (n_overrides ~= nil) and (n_overrides[t.ID] or n_overrides[t.Name]) or nil
 
-    local default_category = TARDIS_OVERRIDES.MainCategory or TARDIS:GetPhrase("Spawnmenu.Category")
+    local default_category = TARDIS_OVERRIDES.MainCategory or "#TARDIS.Spawnmenu.Category"
 
     ent.Category = cat_override or t.Category or default_category
     ent.PrintName = TARDIS:GetPhrase(name_override or t.Name)
