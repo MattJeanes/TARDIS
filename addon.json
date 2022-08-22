@@ -13,7 +13,7 @@
         "LICENSE",
         ".vscode/*",
         "i18n/*",
-        "generate_languages.ps1",
+        "generate-languages.ps1",
         "crowdin.yml"
     ]
 }
