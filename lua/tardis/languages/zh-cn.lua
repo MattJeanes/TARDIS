@@ -1,5 +1,5 @@
 -- AUTO GENERATED FILE - DO NOT EDIT --
--- SOURCE FILE: i18n\languages\zh-CN.json --
+-- SOURCE FILE: i18n/languages/zh-CN.json --
 
 local T = {}
 T.Code = "zh-CN"

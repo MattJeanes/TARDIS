@@ -1,5 +1,5 @@
 -- AUTO GENERATED FILE - DO NOT EDIT --
--- SOURCE FILE: i18n\languages\en.json --
+-- SOURCE FILE: i18n/languages/en.json --
 
 local T = {}
 T.Code = "en"
