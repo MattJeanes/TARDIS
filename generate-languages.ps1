@@ -7,7 +7,7 @@ Get-ChildItem $sourceLanguageFolder | ForEach-Object {
     $targetFilename = Join-Path $targetLanguageFolder "$($code.ToLower()).lua"
 
     $content = "-- AUTO GENERATED FILE - DO NOT EDIT --`n"
-    $content += "-- SOURCE FILE: $($_.FullName.Replace($PSScriptRoot, [string]::Empty).Substring(1)) --`n`n"
+    $content += "-- SOURCE FILE: i18n/languages/$($_.Name) --`n`n"
     $content += "local T = {}`n"
     $content += "T.Code = `"$code`"`n"
     $content += "T.Name = `"$($language.Name)`"`n"
