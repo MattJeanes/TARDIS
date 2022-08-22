@@ -1,8 +1,6 @@
 $sourceLanguageFolder = Join-Path $PSScriptRoot "i18n/languages"
 $targetLanguageFolder = Join-Path $PSScriptRoot "lua/tardis/languages"
 
-$sourceLanguageCode = "en"
-$sourceLanguage = Get-Content -Raw (Join-Path $sourceLanguageFolder "$sourceLanguageCode.json") | ConvertFrom-Json -AsHashtable
 $targetLanguageFolder | Get-ChildItem | Remove-Item
 
 Get-ChildItem $sourceLanguageFolder | ForEach-Object {
@@ -11,6 +9,16 @@ Get-ChildItem $sourceLanguageFolder | ForEach-Object {
     $language = $languageFile | ConvertFrom-Json -AsHashtable
     $targetFilename = Join-Path $targetLanguageFolder "$($code.ToLower()).lua"
 
+    if (-not $language.Name) {
+        Write-Warning "Language $code has no name, skipping.."
+        return
+    }
+
+    if ((-not $language.Phrases) -or ($language.Phrases.Keys.Count -eq 0)) {
+        Write-Warning "Language $code has no phrases, skipping.."
+        return
+    }
+
     $content = "-- AUTO GENERATED FILE - DO NOT EDIT --`n"
     $content += "-- SOURCE FILE: i18n/languages/$($_.Name) --`n`n"
     $content += "local T = {}`n"
@@ -18,25 +26,18 @@ Get-ChildItem $sourceLanguageFolder | ForEach-Object {
     $content += "T.Name = `"$($language.Name)`"`n"
     $content += "T.Phrases = {`n"
 
-    $changes = $false
-    $language.Phrases.Keys | Sort-Object | ForEach-Object {
+    $language.Phrases.Keys | Where-Object { $language.Phrases[$_] } | Sort-Object | ForEach-Object {
         $key = $_
         $phrase = $language.Phrases[$key]
-        if (-not $changes -and $sourceLanguage.Phrases[$key] -ne $phrase) {
-            $changes = $true
-        }
         $phrase = $phrase.Replace("`n", "\n")
         $phrase = $phrase.Replace("`"", "\`"")
         $content += "    [`"$key`"] = `"$phrase`",`n"
     }
 
-    if (-not $changes -and $sourceLanguageCode -ne $code) {
-        Write-Warning "No phrases changed in $code compared to $sourceLanguageCode baseline, skipping.."
-        return
-    }
-
     $content += "}`n`n"
     $content += "TARDIS:AddLanguage(T)`n"
+
+    Write-Host "Writing language $code to $targetFilename"
 
     Set-Content -NoNewline -Path $targetFilename -Value $content
 }
