@@ -22,21 +22,21 @@ T.Phrases = {
     ["Common.Delete"] = "刪除",
     ["Common.Default"] = "預設",
     ["Common.PowerDisabled"] = "能源已關閉",
-    ["Common.PowerDisabledControl"] = "能源已關閉，此裝置停用",
+    ["Common.PowerDisabledControl"] = "能源已關閉，此裝置停用", This doesn't work",
     ["Common.Enabled.Lower"] = "啓用",
     ["Common.Disabled.Lower"] = "禁用",
     ["Common.Opened.Lower"] = "已打開",
-    ["Common.Closed.Lower"] = "已關閉",
-    ["Common.Locked.Lower"] = "已上鎖",
-    ["Common.Unlocked.Lower"] = "已解鎖",
     ["Common.Engaged.Lower"] = "已閉合",
+    ["Common.Unlocked.Lower"] = "已解鎖",
+    ["Common.Locked.Lower"] = "已上鎖",
     ["Common.Disengaged.Lower"] = "已釋放",
+    ["Common.Closed.Lower"] = "已關閉",
     ["Common.NotYetImplemented"] = "此項功能未實現",
     ["Common.UnknownError"] = "未知錯誤",
     ["Common.DoorsNotInstalled"] = "「Doors」 插件未安裝",
     ["Common.EnterTextInput"] = "輸入文本輸入",
     ["Common.NotInTARDIS"] = "您不在塔迪斯中",
-    ["Common.ControlSequencesEnabledWarning"] = "控製序列已啟用，你必須使用序列",
+    ["Common.ControlSequencesEnabledWarning"] = "控製序列已啟用，你必須使用序列", You must use the sequence",
     ["Common.Loading"] = "加載中……",
     ["Common.UnsavedChanges"] = "未保存的更改",
     ["Common.UnsavedChangesWarning"] = "您有未保存的更改，是否要保存它們？",
@@ -57,15 +57,15 @@ T.Phrases = {
     ["Flight.NoLongerPilot"] = "你不再是飛行員了",
     ["Flight.DoorOpenNoBoost"] = "門打開時無法加速",
 
-    ["HADS.Triggered"] = "敵對活動位移系統（H.A.D.S）已被觸發！",
+    ["HADS.Triggered"] = "敵對活動位移系統（H.A.D.S）已被觸發！", has been triggered!",
     ["HADS.UnderAttack"] = "你的塔迪斯遭到攻擊！",
-    ["HADS.DematError"] = "有東西阻止了 H.A.D.S 讓塔迪斯去物質化！",
+    ["HADS.DematError"] = "有東西阻止了 H.A.D.S 讓塔迪斯去物質化！", from dematerialising the TARDIS!",
     ["HADS.Mat"] = "你的塔迪斯正在降落",
 
-    ["Health.RepairActivated"] = "這架塔迪斯已啟動自我修復。請離開內部",
+    ["Health.RepairFinished"] = "你的塔迪斯已完成自我修復", Please vacate the interior",
     ["Health.RepairCancelled"] = "自我修復已被取消",
-    ["Health.RepairFinished"] = "你的塔迪斯已完成自我修復",
-    ["Health.Repairing"] = "這架塔迪斯正在修復。將在 %d 秒內完成",
+    ["Controls.Repair"] = "自我修復",
+    ["Health.Repairing"] = "這架塔迪斯正在修復。將在 %d 秒內完成", It will be done in %d seconds",
 
     ["Lock.Locked"] = "這架塔迪斯已上鎖",
 
@@ -78,16 +78,16 @@ T.Phrases = {
     ["Music.LoadFailedMissingId"] = "錯誤：無法在URL中找到視頻ID",
     ["Music.LoadFailedBass"] = "錯誤：加載歌曲失敗（錯誤ID：%s，%s）",
 
-    ["Prompts.LightingOverride"] = "此塔迪斯建議您啟用照明覆蓋，是否啟用？這可以稍後在塔迪斯設置中更改",
+    ["Prompts.LightingOverride"] = "此塔迪斯建議您啟用照明覆蓋，是否啟用？這可以稍後在塔迪斯設置中更改", Enable now? This can be changed in TARDIS settings later",
     ["Prompts.LOD"] = "塔迪斯內部可能需要高精細模型，現在更改？",
 
     ["Redecorate.Failed"] = "重裝修失敗：生成替代失敗",
-    
+
     ["ThirdPerson.KeyHint"] = "提示：使用 「%s + %s」 鍵進入第三人稱",
 
     ["Vortex.ModelMissing"] = "警告：旋渦模型無效 - 已禁用旋渦，你錯過了一個依賴嗎？",
 
-    ["Security.ControlUseDenied"] = "這架塔迪斯使用了同構安全協議。您不能操控她",
+    ["Controls.Isomorphic"] = "同構安全", You may not use any controls",
 
     ["Spin.Changed"] = "自旋方向已設為 %s",
     ["Spin.Directions.AntiClockwise"] = "逆時針",
@@ -101,15 +101,15 @@ T.Phrases = {
     ["TimeDistortionGenerator.Enabled"] = "時間扭曲發生器已啟用",
     ["TimeDistortionGenerator.Distortions"] = "警告：塔迪斯內部有東西在造成時間扭曲",
 
-    ["MenuOptions.SectionReset"] = "塔迪斯客戶端設置\"%s\"已被恢復，您可能需要重新生成塔迪斯以應用所有更改",
-    ["MenuOptions.ConfirmSectionReset"] = "恢復\"%s\"部分的客戶端設置？此步驟無法撤銷！",
+    ["MenuOptions.ResetClientsideSettings"] = "恢復客戶端設置", ["MenuOptions.SectionReset"] = "塔迪斯客戶端設置\"%s\"已被恢復，您可能需要重新生成塔迪斯以應用所有更改",
+    ["MenuOptions.ConfirmSectionReset"] = "恢復\"%s\"部分的客戶端設置？此步驟無法撤銷！", This cannot be undone.",
     ["MenuOptions.SectionResetThisSection"] = "恢復設置（此部分）",
     ["MenuOptions.ResetAllSettings"] = "恢復所有設置",
-    ["MenuOptions.ResetClientsideSettings"] = "恢復客戶端設置",
     ["MenuOptions.ConfirmResetSettings"] = "恢復所有客戶端設置？此步驟無法撤銷！",
-    ["MenuOptions.ResetSettingsConfirmation"] = "塔迪斯客戶端設置已被恢復，您可能需要重新生成塔迪斯以應用所有更改",
+    ["MenuOptions.ResetSettingsConfirmation"] = "塔迪斯客戶端設置已被恢復，您可能需要重新生成塔迪斯以應用所有更改", This cannot be undone.",
+    ["Spawnmenu.ResetSettings"] = "恢復預設設置", You may need to respawn the TARDIS for all changes to apply.",
 
-    ["Settings.Sections.GUI"] = "用戶界面", -- NOD --
+    ["Settings.Sections.GUI.Theme"] = "界面主題",
 
     ["Settings.Sections.GUI.OldGUI"] = "舊界面",
     ["Settings.Sections.GUI.OldGUI.Description"] = "使用沒有圖片的舊界面",
@@ -126,8 +126,8 @@ T.Phrases = {
     ["Settings.Sections.GUI.PopupRows"] = "界面行（彈出框）",
     ["Settings.Sections.GUI.PopupRows.Description"] = "彈出框中的可視化界面有多少行按鈕",
     
-    ["Settings.Sections.GUI.Theme"] = "界面主題",
     ["Settings.Sections.GUI.Theme.Description"] = "用戶界面的主題",
+    ["Settings.Sections.GUI"] = "用戶界面", -- NOD --
 
     ["Settings.Sections.Performance"] = "性能",
     
@@ -252,8 +252,8 @@ T.Phrases = {
     ["Settings.Sections.Misc.Language"] = "語",
     ["Settings.Sections.Misc.Language.Description"] = "插件的語言，對於任何缺失的翻譯回退到英語",
     ["Settings.Sections.Misc.Language.Default"] = "遊戲語言",
-
-    ["Settings.Sections.SoundsAndMusic"] = "音效與音樂",
+    
+    ["Settings.Sections.SoundsAndMusic.Music"] = "音樂",
 
     ["Settings.Sections.SoundsAndMusic.Sounds"] = "音效",
 
@@ -279,21 +279,21 @@ T.Phrases = {
     ["Settings.Sections.SoundsAndMusic.Sounds.Teleport.Description"] = "傳送時是否發出聲音",
 
     ["Settings.Sections.SoundsAndMusic.Sounds.CloisterBells"] = "修道院鐘聲",
-    ["Settings.Sections.SoundsAndMusic.Sounds.CloisterBells.Description"] = "緊急狀況下是否響起修道院鐘聲",
-
-    ["Settings.Sections.SoundsAndMusic.Sounds.FlightInternal"] = "飛行模式音效（內部）",
     ["Settings.Sections.SoundsAndMusic.Sounds.FlightInternal.Description"] = "是否在內部播放飛行音效",
 
-    ["Settings.Sections.SoundsAndMusic.Sounds.Idle"] = "空閑音效",
+    ["Settings.Sections.SoundsAndMusic.Sounds.FlightInternal"] = "飛行模式音效（內部）",
     ["Settings.Sections.SoundsAndMusic.Sounds.Idle.Description"] = "是否在內部播放空閑音效",
 
-    ["Settings.Sections.SoundsAndMusic.Music"] = "音樂",
+    ["Settings.Sections.SoundsAndMusic.Sounds.Idle"] = "空閑音效",
+    ["Settings.Sections.SoundsAndMusic.Music.Volume"] = "音量",
+
+    ["Settings.Sections.SoundsAndMusic"] = "音效與音樂",
 
     ["Settings.Sections.SoundsAndMusic.Music.Enabled"] = "啟用",
     ["Settings.Sections.SoundsAndMusic.Music.Enabled.Description"] = "是否能通過屏幕播放音樂",
 
-    ["Settings.Sections.SoundsAndMusic.Music.Volume"] = "音量",
     ["Settings.Sections.SoundsAndMusic.Music.Volume.Description"] = "通過屏幕播放的音樂的音量",
+    ["Screens.Music.DefaultMusic"] = "預加載音樂",
 
     ["Settings.Sections.SoundsAndMusic.Music.StopOnExit"] = "退出時停止",
     ["Settings.Sections.SoundsAndMusic.Music.StopOnExit.Description"] = "離開塔迪斯時是否停止播放音樂",
@@ -331,21 +331,21 @@ T.Phrases = {
     ["Binds.Sections.Destination.Slow"] = "減速",
     ["Binds.Sections.Destination.Slow.Description"] = "按住此鍵以減速移動",
     ["Binds.Sections.Destination.Rotate"] = "旋轉",
-    ["Binds.Sections.Destination.Rotate.Description"] = "按住加速鍵同時使用左和右以旋轉",
+    ["Binds.Sections.Flight.Rotate.Description"] = "按住此鍵+左/右以旋轉",
     ["Binds.Sections.Destination.SnapToFloor"] = "對齊到地面",
     ["Binds.Sections.Destination.SnapToFloor.Description"] = "按下此鍵對齊到最近的地面",
     
-    ["Binds.Sections.Flight"] = "飛行",
+    ["Binds.Sections.Flight.Up"] = "上",
     ["Binds.Sections.Flight.Forward"] = "前",
     ["Binds.Sections.Flight.Backward"] = "後",
     ["Binds.Sections.Flight.Left"] = "左",
     ["Binds.Sections.Flight.Right"] = "右",
-    ["Binds.Sections.Flight.Up"] = "上",
     ["Binds.Sections.Flight.Down"] = "下",
+    ["Binds.Sections.Flight"] = "飛行",
     ["Binds.Sections.Flight.Boost"] = "加速",
     ["Binds.Sections.Flight.Boost.Description"] = "飛行時按住此鍵以加速",
     ["Binds.Sections.Flight.Rotate"] = "旋轉",
-    ["Binds.Sections.Flight.Rotate.Description"] = "按住此鍵+左/右以旋轉",
+    ["Binds.Sections.Float.Rotate.Description"] = "按住此鍵同時使用左和右來偏航",
     ["Binds.Sections.Flight.SpinDirection"] = "自旋方向",
     ["Binds.Sections.Flight.SpinDirection.Description"] = "改變塔迪斯飛行時自旋的方向",
     
@@ -357,7 +357,7 @@ T.Phrases = {
     ["Binds.Sections.Float.Boost"] = "加速",
     ["Binds.Sections.Float.Boost.Description"] = "漂浮時按住此鍵以加速旋轉",
     ["Binds.Sections.Float.Rotate"] = "旋轉",
-    ["Binds.Sections.Float.Rotate.Description"] = "按住此鍵同時使用左和右來偏航",
+    ["Binds.Sections.Destination.Rotate.Description"] = "按住加速鍵同時使用左和右以旋轉",
     ["Binds.Sections.Float.Brake"] = "製動",
     ["Binds.Sections.Float.Brake.Description"] = "漂浮時按住此鍵以減慢旋轉",
     
@@ -412,7 +412,7 @@ T.Phrases = {
     ["Controls.Float.FailedToggle"] = "切換反重力失敗",
 
     ["Controls.HADS"] = "敵對活動位移系統",
-    ["Controls.HADS.Tip"] = "敵對活動位移系統",
+    ["Controls.SpinCycle.Tip"] = "自旋",
     ["Controls.HADS.Status"] = "敵對活動位移系統",
 
     ["Controls.Handbrake"] = "時間轉子手剎",
@@ -422,10 +422,10 @@ T.Phrases = {
 
     ["Controls.InteriorLights.Tip"] = "燈光",
 
-    ["Controls.Isomorphic"] = "同構安全",
     ["Controls.Isomorphic.Tip"] = "同構安全系統",
-    ["Controls.Isomorphic.Status"] = "同構安全",
     ["Controls.Isomorphic.FailedToggle"] = "切換同構安全系統失敗",
+    ["Controls.Isomorphic.Status"] = "同構安全",
+    ["Controls.ToggleScreens.FailedToggle"] = "切換內部屏幕失敗",
     ["Controls.Isomorphic.NotCreator"] = "這不是您的塔迪斯",
     ["Controls.Isomorphic.SingleplayerWarning"] = "警告：同構安全在單人遊戲中無效",
 
@@ -448,31 +448,31 @@ T.Phrases = {
     ["Controls.Redecorate.Tip"] = "重裝修",
     ["Controls.Redecorate.Status"] = "重裝修",
     ["Controls.Redecorate.FailedToggle"] = "啟用重裝修失敗",
-    ["Controls.Redecorate.RandomInteriorWarning"] = "警告：已隨機選擇新的內飾。右擊生成菜單手動選擇",
+    ["Controls.Redecorate.RandomInteriorWarning"] = "警告：已隨機選擇新的內飾。右擊生成菜單手動選擇", ["Spawnmenu.AlternativeVersions"] = "選擇版本：",
     ["Controls.Redecorate.NotCreator"] = "您不能重裝修其他人的塔迪斯",
 
-    ["Controls.Repair"] = "自我修復",
     ["Controls.Repair.Tip"] = "自我修復",
     ["Controls.Repair.FailedToggle"] = "切換自我修復失敗",
+    ["Controls.VortexFlight.FailedToggle"] = "切換漩渦飛行失敗",
 
     ["Controls.Scanner.Tip"] = "監視器",
 
     ["Controls.Shields.Tip"] = "護盾",
 
     ["Controls.SonicDispenser.Tip"] = "音速充電口",
-    ["Controls.SonicDispenser.MissingAddon"] = "您沒有安裝 Sonic Screwdriver 插件，安裝它來使此部件工作",
+    ["Controls.SonicDispenser.MissingAddon"] = "您沒有安裝 Sonic Screwdriver 插件，安裝它來使此部件工作", Install it for this part to work",
     ["Controls.SonicDispenser.Dispensed"] = "音速起子已被分配",
     ["Controls.SonicDispenser.Equipped"] = "音速起子已經配備",
     ["Controls.SonicDispenser.AlreadyEquipped"] = "您已經有音速起子了",
 
     ["Controls.SpinCycle"] = "自旋方向",
-    ["Controls.SpinCycle.Tip"] = "自旋",
+    ["Controls.SpinToggle.Tip"] = "切換自旋",
 
     ["Controls.SpinSwitch.Tip"] = "自旋方向",
     ["Controls.SpinSwitch.ChangedDisabled"] = "自旋已被禁用，但自旋方向設置為 %s",
 
-    ["Controls.SpinToggle.Tip"] = "切換自旋",
     ["Controls.SpinToggle.Status"] = "自旋",
+    ["Controls.ToggleScreens.Status"] = "內部屏幕",
 
     ["Controls.Stabilizers.Tip"] = "飛行穩定器",
 
@@ -482,7 +482,7 @@ T.Phrases = {
     ["Controls.Teleport.FailedMat"] = "降落失敗",
     ["Controls.Teleport.Demat"] = "起飛……",
     ["Controls.Teleport.FailedDematDoorsOpen"] = "無法在門打開時起飛",
-    ["Controls.Teleport.FailedDematHandbrake"] = "時間轉子手剎已閉合，無法起飛",
+    ["Controls.Teleport.FailedDematHandbrake"] = "時間轉子手剎已閉合，無法起飛", Cannot dematerialise",
     ["Controls.Teleport.FailedDemat"] = "起飛失敗",
 
     ["Controls.ThirdPersonCareful.Tip"] = "手動飛行控製",
@@ -492,15 +492,15 @@ T.Phrases = {
 
     ["Controls.ToggleScreens"] = "切換屏幕",
     ["Controls.ToggleScreens.Tip"] = "切換屏幕",
-    ["Controls.ToggleScreens.Status"] = "內部屏幕",
-    ["Controls.ToggleScreens.FailedToggle"] = "切換內部屏幕失敗",
+    ["Screens.Common.Exit"] = "退出",
+    ["Screens.VirtualConsole.Old.TogglePower"] = "切換能源",
 
     ["Controls.VirtualConsole.Tip"] = "虛擬操縱臺",
 
     ["Controls.VortexFlight"] = "漩渦飛行",
     ["Controls.VortexFlight.Tip"] = "漩渦飛行",
     ["Controls.VortexFlight.Status"] = "漩渦飛行",
-    ["Controls.VortexFlight.FailedToggle"] = "切換漩渦飛行失敗",
+    ["Controls.HADS.Tip"] = "敵對活動位移系統",
 
     ["Parts.DefaultAtomAccelerator.Text"] = "原子加速器",
     ["Parts.DefaultDematCircuit.Text"] = "去物質化電路",
@@ -509,14 +509,14 @@ T.Phrases = {
     ["Parts.DefaultHelmic.Text"] = "赫爾米克調節器",
     ["Parts.DefaultScreen.Text"] = "監控器",
     ["Parts.DefaultWibblyLever.Text"] = "Wibbly控製桿",
-    
+
     ["Parts.Door.Locked"] = "門已上鎖",
-    
+
     ["Interiors.DefaultTTCapsule"] = "TT時間艙 預設",
     
     ["Interiors.Default"] = "預設",
     ["Interiors.Default.Versions.TTCapsule"] = "TT時間艙版本",
-    
+
     ["Themes.Default"] = "預設",
     ["Themes.Transparent"] = "透明",
     ["Themes.TextOnly"] = "僅文字",
@@ -525,13 +525,13 @@ T.Phrases = {
     ["TipStyles.Classic"] = "經典",
     ["TipStyles.WhiteOnBlue"] = "藍底白字",
     ["TipStyles.WhiteOnGrey"] = "白底藍字",
-    
+
     ["Screens.Common.Back"] = "返回",
     ["Screens.Common.Menu"] = "菜單",
-    ["Screens.Common.Exit"] = "退出",
     ["Screens.Common.Popup"] = "彈出窗",
     ["Screens.Common.CurrentPage"] = "第%d頁，共%d頁",
-    
+    ["Screens.Scanner.Front"] = "前",
+
     ["Screens.Coordinates"] = "坐標",
     ["Screens.Coordinates.Saved"] = "位置已保存",
     ["Screens.Coordinates.Loaded"] = "位置已加載",
@@ -546,17 +546,17 @@ T.Phrases = {
     ["Screens.Coordinates.Name"] = "名稱",
     ["Screens.Coordinates.Unnamed"] = "未命名",
     ["Screens.Coordinates.CurrentSetDestination"] = "當前設定目標",
-    ["Screens.Coordinates.RandomGround"] = "隨機（地面）",
     ["Screens.Coordinates.Random"] = "隨機",
-    ["Screens.Coordinates.RandomLocationGround"] = "地面隨機位置",
     ["Screens.Coordinates.RandomLocation"] = "隨機位置",
+    ["Screens.Coordinates.RandomLocationGround"] = "地面隨機位置",
+    ["Screens.Coordinates.RandomGround"] = "隨機（地面）",
     ["Screens.Coordinates.GetCurrentPosition"] = "獲取當前位置",
     ["Screens.Coordinates.NameNewLocationFromInputs"] = "輸入新位置的名稱（將使用輸入的信息）",
     ["Screens.Coordinates.NameNewLocation"] = "輸入新位置的名稱",
     ["Screens.Coordinates.NewLocation"] = "新位置",
     ["Screens.Coordinates.NewLocationUseCurrentPos"] = "使用當前TARDIS位置和旋轉？\n選擇'%s'將使用輸入的信息",
     ["Screens.Coordinates.RemoveLocation"] = "移除位置",
-    ["Screens.Coordinates.ConfirmRemoveLocation"] = "這將永久刪除所選位置！你確定嗎？",
+    ["Screens.Coordinates.ConfirmRemoveLocation"] = "這將永久刪除所選位置！你確定嗎？", Are you sure?",
 
     ["Screens.Music"] = "音樂",
     ["Screens.Music.MissingName"] = "您需要指定自定義曲目的名稱來添加它",
@@ -569,21 +569,21 @@ T.Phrases = {
     ["Screens.Music.UnableToDecodeList"] = "無法解碼列表",
     ["Screens.Music.CustomAdded"] = "自定義曲目'%s'已添加：%s",
     ["Screens.Music.CustomRemoved"] = "自定義曲目'%s'已移除：%s",
-    ["Screens.Music.DefaultMusic"] = "預加載音樂",
     ["Screens.Music.CustomMusic"] = "自定義曲目",
     ["Screens.Music.UrlPlaceholder"] = "輸入音樂URL",
     ["Screens.Music.NamePlaceholder"] = "輸入自定義曲目名稱",
     ["Screens.Music.PlayStop"] = "播放/停止",
     ["Screens.Music.DeleteConfirm"] = "您確定要從音樂列表中刪除\"%s\"嗎？此步驟無法撤銷！",
+    ["Screens.Music.DeleteConfirm"] = "Are you sure you want to remove \"%s\" from the music list? This cannot be undone",
 
     ["Screens.Scanner"] = "監視器",
-    ["Screens.Scanner.Front"] = "前",
     ["Screens.Scanner.Back"] = "後",
     ["Screens.Scanner.Left"] = "左",
     ["Screens.Scanner.Right"] = "右",
-    
+    ["Screens.Scanner.Right"] = "Right",
+
     ["Screens.VirtualConsole"] = "虛擬操縱臺",
-    ["Screens.VirtualConsole.Old.TogglePower"] = "切換能源",
+    ["Screens.VirtualConsole.Old.DoorClosing"] = "門關閉",
     ["Screens.VirtualConsole.Old.Repair"] = "修復塔迪斯",
     ["Screens.VirtualConsole.Old.FastRemat"] = "快速實現",
     ["Screens.VirtualConsole.Old.Physlock"] = "物理鎖定",
@@ -593,39 +593,39 @@ T.Phrases = {
     ["Screens.VirtualConsole.Old.OpenDoor"] = "開門",
     ["Screens.VirtualConsole.Old.UnlockDoor"] = "門解鎖",
     ["Screens.VirtualConsole.Old.LockDoor"] = "門上鎖",
-    ["Screens.VirtualConsole.Old.DoorClosing"] = "門關閉",
     ["Screens.VirtualConsole.Old.DoorOpening"] = "門打開",
     ["Screens.VirtualConsole.Old.LockUnlocking"] = "鎖：解鎖中",
     ["Screens.VirtualConsole.Old.LockLocking"] = "鎖：上鎖中",
-    
-    ["Spawnmenu.RedecorationSelected"] = "塔迪斯內部裝飾選定，請在您的塔迪斯中啟用重裝修",
-    ["Spawnmenu.RedecorationSelectedRestart"] = "塔迪斯內部裝飾選定，重新啟動重裝修以應用更改",
-    ["Spawnmenu.SelectForRedecoration"] = "選擇重裝修",
+    ["Screens.VirtualConsole.Old.LockLocking"] = "Lock: Locking",
+
+    ["Spawnmenu.SelectForRedecoration"] = "選擇重裝修", ["Spawnmenu.RedecorationSelected"] = "塔迪斯內部裝飾選定，請在您的塔迪斯中啟用重裝修",
+    ["Spawnmenu.RedecorationSelectedRestart"] = "塔迪斯內部裝飾選定，重新啟動重裝修以應用更改", Restart the redecoration to apply",
+    ["Spawnmenu.RedecorationExclude"] = "排除在隨機重裝修外",
     ["Spawnmenu.ReloadGame"] = "重新加載遊戲以應用更改",
     ["Spawnmenu.FavoritesUpdated"] = "收藏夾已更新",
     ["Spawnmenu.ClassicDoorsVersion"] = "經典門版本：",
     ["Spawnmenu.DoubleDoorsVersion"] = "雙層門版本：",
-    ["Spawnmenu.AlternativeVersions"] = "選擇版本：",
     ["Spawnmenu.CustomVersions"] = "自定義版本：",
+    ["Spawnmenu.PreferredVersion"] = "首選的版本",
     ["Spawnmenu.VersionOptions.Default"] = "預設",
     ["Spawnmenu.VersionOptions.Random"] = "隨機",
     ["Spawnmenu.VersionOptions.RandomOriginal"] = "隨機（原始版本）",
     ["Spawnmenu.VersionOptions.RandomOriginalAndCustom"] = "隨機（原始和自定義版本）",
     ["Spawnmenu.Spawn"] = "生成",
     ["Spawnmenu.Settings"] = "設置",
-    ["Spawnmenu.PreferredVersion"] = "首選的版本",
+    ["Spawnmenu.PreferredDoorType.Random"] = "隨機",
     ["Spawnmenu.PreferredDoorType"] = "首選的門的類型",
     ["Spawnmenu.PreferredDoorType.Default"] = "預設（在塔迪斯設置中配置）",
-    ["Spawnmenu.PreferredDoorType.Random"] = "隨機",
-    ["Spawnmenu.PreferredDoorType.Classic"] = "經典門",
     ["Spawnmenu.PreferredDoorType.Double"] = "雙層門",
+    ["Spawnmenu.PreferredDoorType.Classic"] = "經典門",
     ["Spawnmenu.AddToFavourites"] = "添加到收藏夾（需要重新加載）",
     ["Spawnmenu.RemoveFromFavourites"] = "從收藏夾中移除（需要重新加載）",
+    ["Spawnmenu.RemoveFromFavourites"] = "Remove from favorites (reload required)",
     ["Spawnmenu.Category"] = "神秘博士 - 塔迪斯",
     ["Spawnmenu.CategoryTools"] = "神秘博士 - TARDIS 工具",
-    ["Spawnmenu.RedecorationExclude"] = "排除在隨機重裝修外",
-    ["Spawnmenu.ResetSettings"] = "恢復預設設置",
-    
+    ["Spawnmenu.RedecorationExclude"] = "Exclude from random redecoration",
+    ["Spawnmenu.ResetSettings"] = "Reset settings",
+
     ["Settings.NoPermissionGlobalSettings"] = "您沒有權限編輯全局設置",
 
     ["Wiremod.Inputs.Demat"] = "使塔迪斯起飛",
