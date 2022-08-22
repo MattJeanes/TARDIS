@@ -479,6 +479,7 @@ T.Phrases = {
     ["Spin.Directions.Clockwise"] = "clockwise",
     ["Spin.Directions.None"] = "none",
     ["Templates.MissingTemplate"] = "Failed to find template %s required for interior %s",
+    ["Testing123"] = "Testing 123",
     ["Themes.Default"] = "Default",
     ["Themes.TextOnly"] = "Text only",
     ["Themes.Transparent"] = "Transparent",
