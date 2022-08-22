@@ -1,0 +1,25 @@
+name: Generate Languages
+
+on:
+  push:
+    branches:
+    - dev
+    - crowdsource
+    paths:
+    - i18n/languages/*.json    
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Run a multi-line script
+        run: ./generate-languages.ps1
+        shell: pwsh
+        
+      - name: Git Auto Commit
+        uses: stefanzweifel/git-auto-commit-action@v4.14.1
+        with:
+          commit_message: "Update Generated Languages"
