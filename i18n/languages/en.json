@@ -1,5 +1,6 @@
 {
   "Name": "English",
+  "Author": "TARDIS Development Team",
   "Phrases": {
     "Binds.AnyKey": "Press any key",
     "Binds.Invalid": "Invalid",

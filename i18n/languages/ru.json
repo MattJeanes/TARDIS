@@ -1,5 +1,6 @@
 {
   "Name": "Русский",
+  "Author": "P00gie",
   "Phrases": {
     "Binds.AnyKey": "Нажмите клавишу",
     "Binds.Invalid": "Несуществует",
