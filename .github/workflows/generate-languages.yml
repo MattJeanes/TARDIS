@@ -31,7 +31,7 @@ jobs:
           token: ${{ secrets.TOKEN }}
         if: github.event_name != 'pull_request'
           
-      - name: Run a multi-line script
+      - name: Generate Languages
         run: ./generate-languages.ps1
         shell: pwsh
         
