@@ -11,6 +11,7 @@
         "*.psd",
         "CODEOWNERS",
         "LICENSE",
-        ".vscode/*"
+        ".vscode/*",
+        "i18n/*"
     ]
 }
