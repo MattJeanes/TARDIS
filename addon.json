@@ -12,6 +12,8 @@
         "CODEOWNERS",
         "LICENSE",
         ".vscode/*",
-        "i18n/*"
+        "i18n/*",
+        "generate_languages.ps1",
+        "crowdin.yml"
     ]
 }
