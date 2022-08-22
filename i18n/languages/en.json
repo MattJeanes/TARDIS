@@ -4,6 +4,7 @@
     "Binds.AnyKey": "Press any key",
     "Binds.Invalid": "Invalid",
     "Binds.Key": "Key",
+    "Testing123": "Testing 123",
     "Binds.Sections.Destination.Backward": "Backward",
     "Binds.Sections.Destination.Boost.Description": "Hold this key while navigating to speed up",
     "Binds.Sections.Destination.Boost": "Boost",
