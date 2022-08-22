@@ -1,0 +1,3 @@
+files:
+  - source: /lua/tardis/languages/en.lua
+    translation: /lua/tardis/languages/%two_letters_code%.lua
