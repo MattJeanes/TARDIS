@@ -1,13 +1,11 @@
 name: Generate Languages
 
 on:
-  push:
+  pull_request_target:
     branches:
     - dev
-    - crowdsource
     paths:
     - i18n/languages/*.json
-  workflow_dispatch:
 
 jobs:
   build:
@@ -15,7 +13,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.head_ref }}
+          
       - name: Run a multi-line script
         run: ./generate-languages.ps1
         shell: pwsh
