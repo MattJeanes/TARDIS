@@ -37,7 +37,10 @@ T.Phrases = {
     ["Binds.Sections.Flight.SpinDirection.Description"] = "Modifie la façon dont le TARDIS tourne en volant",
     ["Binds.Sections.Flight.Up"] = "Haut",
     ["Binds.Sections.Float.Backward"] = "Reculer",
+    ["Binds.Sections.Float.Boost"] = "Boost",
     ["Binds.Sections.Float.Boost.Description"] = "Maintenez cette touche enfoncée en volant pour accélérer",
+    ["Binds.Sections.Float.Brake"] = "Frein",
+    ["Binds.Sections.Float.Brake.Description"] = "Maintenez cette touche enfoncée pour ralentir la rotation en mode flottant",
 }
 
 TARDIS:AddLanguage(T)
