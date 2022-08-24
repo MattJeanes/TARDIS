@@ -480,7 +480,7 @@ function TARDIS:LoadScreenUI(screen)
     local int=screen.int
     for k,v in pairs(screens) do
         if not ((v[1].intonly and (not IsValid(int)))
-            or (v[1].menu==false and (not (IsValid(ext) and IsValid(int)))))
+            or (v[1].menu==false and (not (IsValid(ext)))))
         then
             local frame = vgui.Create("DPanel",main)
             frame:SetVisible(false)

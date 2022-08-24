@@ -269,6 +269,7 @@ if SERVER then
         if dmginfo:GetDamage() <= 0 then return end
         local newhealth = self:GetHealth() - (dmginfo:GetDamage()/2)
         self:ChangeHealth(newhealth)
+        if not IsValid(self.interior) then return end
         if dmginfo:IsDamageType(DMG_BLAST) and self:GetHealth() ~= 0 then
             int = self.metadata.Interior.Sounds.Damage
             self.interior:EmitSound(int.Explosion)
@@ -280,6 +281,7 @@ if SERVER then
         if (data.Speed < 300) then return end
         local newhealth = self:GetHealth() - (data.Speed / 23)
         self:ChangeHealth(newhealth)
+        if not IsValid(self.interior) then return end
         local phys = self:GetPhysicsObject()
         local vel = phys:GetVelocity():Length()
         if self:GetHealth() ~= 0 and vel < 900 then

@@ -32,13 +32,13 @@ ENT:AddHook("ShouldTracePortal", "portals", function(self,portal)
 end)
 
 ENT:AddHook("TraceFilterPortal", "portals", function(self,portal)
-    if self.interior and portal == self.interior.portals.exterior then
+    if IsValid(self.interior) and portal == self.interior.portals.exterior then
         return self.interior:GetPart("door")
     end
 end)
 
 ENT:AddHook("ShouldVortexIgnoreZ", "portals", function(self)
-    if self.interior and wp.drawingent==self.interior.portals.interior then
+    if IsValid(self.interior) and wp.drawingent==self.interior.portals.interior then
         return true
     end
 end)

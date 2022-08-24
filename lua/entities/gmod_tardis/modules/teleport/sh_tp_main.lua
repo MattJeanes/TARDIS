@@ -60,9 +60,13 @@ if SERVER then
     end
 
     function ENT:SetRandomDestination(grounded)
-        local pos = self:GetRandomLocation(grounded)
-        local ang = Angle(0,0,0)
-        self:SetDestination(pos, ang)
+        local randomLocation = self:GetRandomLocation(grounded)
+        if randomLocation then
+            self:SetDestination(randomLocation, Angle(0,0,0))
+            return true
+        else
+            return false
+        end
     end
 
     function ENT:GetDestination()
@@ -307,7 +311,10 @@ if SERVER then
             and not self:GetData("redecorate")
             and not self:GetData("redecorate_parent")
         then
-            self:ChangePosition(self:GetRandomLocation(false), self:GetAngles(), false)
+            local randomLocation = self:GetRandomLocation(false)
+            if randomLocation then
+                self:ChangePosition(randomLocation, self:GetAngles(), false)
+            end
         end
     end)
 

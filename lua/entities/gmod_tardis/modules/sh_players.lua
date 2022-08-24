@@ -13,6 +13,13 @@ if SERVER then
         end
     end)
 
+    ENT:AddHook("Outside", "players", function(self,ply,enabled)
+        if (not enabled) and (not IsValid(self.interior)) then
+            ply:Spectate(OBS_MODE_NONE)
+            self:PlayerExit(ply, true)
+        end
+    end)
+
     ENT:AddHook("PlayerExit", "players", function(self,ply,forced,notp)
         ply:ClearTardisData()
     end)

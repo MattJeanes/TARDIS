@@ -141,7 +141,7 @@ end
 local parts={}
 
 function TARDIS:GetPart(ent,id)
-    return ent.parts and ent.parts[id] or NULL
+    return IsValid(ent) and ent.parts and ent.parts[id] or NULL
 end
 
 local overridequeue={}

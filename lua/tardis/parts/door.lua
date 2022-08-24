@@ -60,7 +60,7 @@ if SERVER then
                 self:EmitSound(self.exterior.metadata.Exterior.Sounds.Door.locked)
             end
         else
-            if a:KeyDown(IN_WALK) then
+            if a:KeyDown(IN_WALK) or not IsValid(self.interior) then
                 if self.ExteriorPart then
                     self.exterior:PlayerEnter(a)
                 else
