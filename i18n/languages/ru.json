@@ -2,7 +2,7 @@
   "Name": "Русский",
   "Author": "P00gie",
   "Phrases": {
-    "Binds.AnyKey": "Нажмите клавишу",
+    "Binds.AnyKey": "Нажмите любую клавишу",
     "Binds.Invalid": "Несуществует",
     "Binds.Key": "Клавиша",
     "Binds.Sections.Destination.Backward": "Назад",
