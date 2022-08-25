@@ -299,11 +299,13 @@ if SERVER then
 
     ENT:AddHook("OnHealthDepleted", "death", function(self)
         self:SetPower(false)
-        local int = self.metadata.Interior.Sounds.Damage
-        self.interior:StopSound(int.BigCrash)
-        self.interior:StopSound(int.Crash)
-        self.interior:StopSound(int.Explosion)
-        self.interior:EmitSound(int.Death)
+        if IsValid(self.interior) then
+            local int = self.metadata.Interior.Sounds.Damage
+            self.interior:StopSound(int.BigCrash)
+            self.interior:StopSound(int.Crash)
+            self.interior:StopSound(int.Explosion)
+            self.interior:EmitSound(int.Death)
+        end
         self:Explode(180)
     end)
 

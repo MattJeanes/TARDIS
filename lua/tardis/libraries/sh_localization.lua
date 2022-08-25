@@ -151,13 +151,17 @@ function TARDIS:UpdateLanguage()
     end
 
     if not self.Languages[langCode] then
-        langCode = TARDIS.DefaultLanguage
+        if self.Languages[self.DefaultLanguage] then
+            langCode = self.DefaultLanguage
+        else
+            return
+        end
     end
 
-    local oldLangCode = TARDIS.CurrentLanguage
-    TARDIS.CurrentLanguage = langCode
+    local oldLangCode = self.CurrentLanguage
+    self.CurrentLanguage = langCode
 
-    if not TARDIS.LanguageCache[langCode] then
+    if not self.LanguageCache[langCode] then
         self:CompileLanguage(langCode)
     end
 
