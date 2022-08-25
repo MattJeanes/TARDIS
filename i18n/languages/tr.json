@@ -1,8 +1,8 @@
 {
-  "Name": "",
-  "Author": "",
+  "Name": "Türkçe",
+  "Author": "TARDIS",
   "Phrases": {
-    "Binds.AnyKey": "",
+    "Binds.AnyKey": "Binds",
     "Binds.Invalid": "",
     "Binds.Key": "",
     "Binds.Sections.Destination.Backward": "",
