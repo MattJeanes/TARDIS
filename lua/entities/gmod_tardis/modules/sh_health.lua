@@ -21,9 +21,9 @@ ENT:AddHook("Initialize","health-init",function(self)
     end
 end)
 
-ENT:AddHook("GlobalSettingChanged","maxhealth-changed", function(self, id, val)
+ENT:AddHook("SettingChanged","maxhealth-changed", function(self, id, val)
     if id ~= "health-max" then return end
-
+    
     if self:GetHealth() > val then
         self:ChangeHealth(val)
     end
@@ -63,7 +63,7 @@ function ENT:GetRepairTime()
 end
 
 if SERVER then
-    ENT:AddWireOutput("Health", "TARDIS Health")
+    ENT:AddWireOutput("Health", "Wiremod.Outputs.Health")
 
     function ENT:Explode(f)
         local force = 60
@@ -269,6 +269,7 @@ if SERVER then
         if dmginfo:GetDamage() <= 0 then return end
         local newhealth = self:GetHealth() - (dmginfo:GetDamage()/2)
         self:ChangeHealth(newhealth)
+        if not IsValid(self.interior) then return end
         if dmginfo:IsDamageType(DMG_BLAST) and self:GetHealth() ~= 0 then
             int = self.metadata.Interior.Sounds.Damage
             self.interior:EmitSound(int.Explosion)
@@ -280,6 +281,7 @@ if SERVER then
         if (data.Speed < 300) then return end
         local newhealth = self:GetHealth() - (data.Speed / 23)
         self:ChangeHealth(newhealth)
+        if not IsValid(self.interior) then return end
         local phys = self:GetPhysicsObject()
         local vel = phys:GetVelocity():Length()
         if self:GetHealth() ~= 0 and vel < 900 then
@@ -297,11 +299,13 @@ if SERVER then
 
     ENT:AddHook("OnHealthDepleted", "death", function(self)
         self:SetPower(false)
-        local int = self.metadata.Interior.Sounds.Damage
-        self.interior:StopSound(int.BigCrash)
-        self.interior:StopSound(int.Crash)
-        self.interior:StopSound(int.Explosion)
-        self.interior:EmitSound(int.Death)
+        if IsValid(self.interior) then
+            local int = self.metadata.Interior.Sounds.Damage
+            self.interior:StopSound(int.BigCrash)
+            self.interior:StopSound(int.Crash)
+            self.interior:StopSound(int.Explosion)
+            self.interior:EmitSound(int.Death)
+        end
         self:Explode(180)
     end)
 

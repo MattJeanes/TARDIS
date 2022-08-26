@@ -1,52 +1,5 @@
 -- Music
 
-local default_music={
-    {"Main Theme (2005)", "theme1"},
-    {"Main Theme (2009)", "theme2"},
-    {"Main Theme (2010)", "theme3"},
-    {"Main Theme (2013)", "theme4"},
-    {"Main Theme (2014)", "theme-2014"},
-    {"Ninth Doctor", "nine"},
-    {"Tenth Doctor", "ten"},
-    {"Eleventh Doctor", "eleven"},
-    {"Twelfth Doctor", "twelve"},
-    {"Thirteenth Doctor", "thirteen"},
-    {"Rose Tyler", "rose"},
-    {"Martha Jones", "martha"},
-    {"Donna Noble", "donna"},
-    {"Amy Pond", "amy"},
-    {"River Song", "river"},
-    {"Clara Oswald", "clara"},
-    {"Amy in the TARDIS", "amyinthetardis"},
-    {"Abigail's Song", "abigail"},
-    {"Not a war", "notawar"},
-    {"This is Gallifrey", "thisisgallifrey"},
-    {"Gallifrey", "gallifrey"},
-    {"Life Among the Distant Stars", "lifeamongthedistantstars"},
-    {"Vale Decem", "valedecem"},
-    {"The Majestic Tale", "majestictale"},
-    {"Forgiven", "forgiven"},
-    {"I Need To Know", "ineedtoknow"},
-    {"The Wedding of River Song", "weddingofriversong"},
-    {"Together Or Not At All", "togetherornotatall"},
-    {"All the Strange Creatures", "allthestrangecreatures"},
-    {"You're Fired", "yourefired"},
-    {"Shepherd's Boy", "shepherdsboy"},
-    {"My Beautiful Ghost Monument", "mybeautifulghostmonument"},
-    {"Whose Enigma", "whoseenigma"},
-    {"The Long Song", "thelongsong"},
-    {"Infinite Potential", "infinitepotential"},
-    {"The New Doctor", "thenewdoctor"},
-    {"Down to Earth", "downtoearth"},
-    {"Sonic Screwdriver", "sonicscrewdriver"},
-    {"My Husband's Home", "myhusbandshome"},
-    {"Doomsday", "doomsday"},
-    {"Dark and Endless Dalek Night", "darkandendlessdaleknight"},
-    {"Corridors and Fire Escape", "corridorsandfireescape"},
-    {"The Greatest Story Never Told", "greateststorynevertold"},
-
-}
-
 --Custom music
 
 local custom_music
@@ -64,35 +17,35 @@ end
 
 function TARDIS:AddCustomMusic(name, url)
     if name == nil or name == "" then
-        TARDIS:ErrorMessage(LocalPlayer(), "You need to specify the name of the custom track to add it")
+        TARDIS:ErrorMessage(LocalPlayer(), "Screens.Music.MissingName")
         return
     end
     if url == nil or url == "" then
-        TARDIS:ErrorMessage(LocalPlayer(), "You need to specify the URL of the custom track to add it")
+        TARDIS:ErrorMessage(LocalPlayer(), "Screens.Music.MissingUrl")
         return
     end
 
     for k,v in pairs(custom_music) do
         if v[1] == name then
-            TARDIS:ErrorMessage(LocalPlayer(), "A music track with such name already exists")
+            TARDIS:ErrorMessage(LocalPlayer(), "Screens.Music.Conflict")
             return
         end
     end
 
     local next = table.insert(custom_music,{name, url})
-    print("[TARDIS] Custom music added (" .. name ..", " .. url .. ")")
+    TARDIS:Message(LocalPlayer(), "Screens.Music.CustomAdded", name, url)
     TARDIS:SaveCustomMusic()
 end
 
 function TARDIS:RemoveCustomMusic(index)
-    print("[TARDIS] Custom music removed (" .. custom_music[index][1] ..", " .. custom_music[index][2] .. ")")
+    TARDIS:Message(LocalPlayer(), "Screens.Music.CustomRemoved", custom_music[index][1], custom_music[index][2])
     table.remove(custom_music, index)
     TARDIS:SaveCustomMusic()
 end
 
 
 -- Music GUI
-TARDIS:AddScreen("Music", {id="music", menu=false, order=10, popuponly=true}, function(self,ext,int,frame,screen)
+TARDIS:AddScreen("Music", {id="music", text="Screens.Music", menu=false, order=10, popuponly=true}, function(self,ext,int,frame,screen)
 
 --------------------------------------------------------------------------------
 -- Layout calculations
@@ -117,23 +70,23 @@ TARDIS:AddScreen("Music", {id="music", menu=false, order=10, popuponly=true}, fu
     local list_premade = vgui.Create("DListView",frame)
     list_premade:SetSize(listW, listT)
     list_premade:SetPos(gap, gap)
-    list_premade:AddColumn("Pre-loaded music")
+    list_premade:AddColumn(TARDIS:GetPhrase("Screens.Music.DefaultMusic"))
     list_premade:SetMultiSelect(false)
 
     local list_custom = vgui.Create("DListView",frame)
     list_custom:SetSize(listW, listT)
     list_custom:SetPos(2 * gap + listW, gap)
-    list_custom:AddColumn("Custom music")
+    list_custom:AddColumn(TARDIS:GetPhrase("Screens.Music.CustomMusic"))
     list_custom:SetMultiSelect(false)
 
     local url_bar = vgui.Create( "DTextEntry", frame )
-    url_bar:SetPlaceholderText("Enter song URL")
+    url_bar:SetPlaceholderText(TARDIS:GetPhrase("Screens.Music.UrlPlaceholder"))
     url_bar:SetFont(TARDIS:GetScreenFont(screen, "Default"))
     url_bar:SetSize(tbW, tbT)
     url_bar:SetPos(midX, gap)
 
     local name_bar = vgui.Create( "DTextEntry", frame )
-    name_bar:SetPlaceholderText("Enter custom song name")
+    name_bar:SetPlaceholderText(TARDIS:GetPhrase("Screens.Music.NamePlaceholder"))
     name_bar:SetFont(TARDIS:GetScreenFont(screen, "Default"))
     name_bar:SetSize(tbW, tbT)
     name_bar:SetPos(midX, 2 * gap + tbT)
@@ -141,29 +94,48 @@ TARDIS:AddScreen("Music", {id="music", menu=false, order=10, popuponly=true}, fu
     local play_stop_button=vgui.Create("DButton",frame)
     play_stop_button:SetSize(tbW, bT * 1.3)
     play_stop_button:SetPos(midX, gap + listT - bT * 1.3)
-    play_stop_button:SetText("Play / Stop")
+    play_stop_button:SetText(TARDIS:GetPhrase("Screens.Music.PlayStop"))
     play_stop_button:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 
     local save_custom_button=vgui.Create("DButton",frame)
     save_custom_button:SetSize(bW, bT)
     save_custom_button:SetPos(midX, 3 * gap + 2 * tbT)
-    save_custom_button:SetText("Save")
+    save_custom_button:SetText(TARDIS:GetPhrase("Common.Save"))
     save_custom_button:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 
     local remove_custom_button=vgui.Create("DButton",frame)
     remove_custom_button:SetSize(bW, bT)
     remove_custom_button:SetPos(midX + gap + bW, 3 * gap + 2 * tbT)
-    remove_custom_button:SetText("Remove")
+    remove_custom_button:SetText(TARDIS:GetPhrase("Common.Remove"))
     remove_custom_button:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 
 --------------------------------------------------------------------------------
 -- Loading data
 --------------------------------------------------------------------------------
     local url = ""
+    local default_music = {}
 
-    for k,v in pairs(default_music) do
-        list_premade:AddLine(v[1])
-    end
+    list_premade:AddLine(TARDIS:GetPhrase("Common.Loading"))
+    list_premade.loading = true
+
+    http.Fetch("https://cdn.mattjeanes.com/tardis/music.json", function(body)
+        default_music = util.JSONToTable(body)
+        list_premade:Clear()
+        if default_music == nil then
+            default_music = {}
+            TARDIS:ErrorMessage(LocalPlayer(), "Screens.Music.DefaultLoadError", "Screens.Music.UnableToDecodeList")
+            list_premade:AddLine(TARDIS:GetPhrase("Screens.Music.DefaultLoadError", "Screens.Music.UnableToDecodeList"))
+        else
+            for k,v in pairs(default_music) do
+                list_premade:AddLine(v[1])
+            end
+            list_premade.loading = false
+        end
+    end, function(error)
+        TARDIS:ErrorMessage(LocalPlayer(), "Screens.Music.DefaultLoadError", error)
+        list_premade:Clear()
+        list_premade:AddLine(TARDIS:GetPhrase("Screens.Music.DefaultLoadError", "Screens.Music.UnableToDecodeList"))
+    end)
 
     function list_custom:UpdateAll()
         self:Clear()
@@ -188,11 +160,23 @@ TARDIS:AddScreen("Music", {id="music", menu=false, order=10, popuponly=true}, fu
         name_bar:SetTextColor(Color(0,0,0))
     end
 
-    function list_premade:OnRowSelected(rowIndex, row)
+    function list_custom:DoDoubleClick(rowIndex, row)
+        ext:PlayMusic(custom_music[rowIndex][2])
         list_custom:ClearSelection()
-        url = ("https://mattjeanes.com/data/tardis/" .. default_music[rowIndex][2] ..".mp3")
+    end
+
+    function list_premade:OnRowSelected(rowIndex, row)
+        if list_premade.loading then return end
+        list_custom:ClearSelection()
+        url = "https://cdn.mattjeanes.com/tardis/" .. default_music[rowIndex][2] ..".mp3"
         url_bar:SetTextColor(Color(139,139,139))
         name_bar:SetTextColor(Color(139,139,139))
+    end
+
+    function list_premade:DoDoubleClick(rowIndex, row)
+        if list_premade.loading then return end
+        ext:PlayMusic("https://cdn.mattjeanes.com/tardis/" .. default_music[rowIndex][2] ..".mp3")
+        list_premade:ClearSelection()
     end
 
     local function highlight_custom()
@@ -233,21 +217,21 @@ TARDIS:AddScreen("Music", {id="music", menu=false, order=10, popuponly=true}, fu
         local line = list_custom:GetSelectedLine()
         if not line then
             if list_premade:GetSelectedLine() then
-                TARDIS:ErrorMessage(LocalPlayer(), "You cannot delete pre-loaded music")
+                TARDIS:ErrorMessage(LocalPlayer(), "Screens.Music.CannotRemoveDefault")
             else
-                TARDIS:ErrorMessage(LocalPlayer(), "Nothing has been chosen for removal")
+                TARDIS:ErrorMessage(LocalPlayer(), "Screens.Music.DeleteNoSelection")
             end
             return
         end
 
-        Derma_Query("Are you sure you want to remove \"" .. custom_music[line][1] .. "\" from the music list? This cannot be undone.",
-                    "TARDIS Interface",
-                    "Yes",
+        Derma_Query(TARDIS:GetPhrase("Screens.Music.DeleteConfirm", custom_music[line][1]),
+                    TARDIS:GetPhrase("Common.Interface"),
+                    TARDIS:GetPhrase("Common.Yes"),
                     function()
                         TARDIS:RemoveCustomMusic(line)
                         list_custom:UpdateAll()
                     end,
-                    "No",
+                    TARDIS:GetPhrase("Common.No"),
                     function()
                     end):SetSkin("TARDIS")
     end
@@ -274,7 +258,7 @@ TARDIS:AddScreen("Music", {id="music", menu=false, order=10, popuponly=true}, fu
             elseif string.len(url_bar:GetValue())>0 then
                 ext:PlayMusic(url_bar:GetValue())
             else
-                TARDIS:ErrorMessage(LocalPlayer(), "No music has been chosen")
+                TARDIS:ErrorMessage(LocalPlayer(), "Screens.Music.NoChoice")
                 return
             end
             list_premade:ClearSelection()

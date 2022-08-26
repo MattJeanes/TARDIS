@@ -76,7 +76,7 @@ local overrides={
         end
 
         if self.PowerOffUse == false and not self.interior:GetPower() then
-            TARDIS:ErrorMessage(a, "Power is disabled. This control is blocked.")
+            TARDIS:ErrorMessage(a, "Common.PowerDisabledControl")
         else
             if allowed~=false then
                 if self.HasUseBasic then
@@ -141,7 +141,7 @@ end
 local parts={}
 
 function TARDIS:GetPart(ent,id)
-    return ent.parts and ent.parts[id] or NULL
+    return IsValid(ent) and ent.parts and ent.parts[id] or NULL
 end
 
 local overridequeue={}

@@ -27,6 +27,7 @@ TARDIS:AddControl({
         end
     end,
     power_independent = true,
+    bypass_isomorphic = true,
     serveronly = true,
     screen_button = false,
     tip_text = "Controls.SonicDispenser.Tip",

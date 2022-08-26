@@ -106,7 +106,12 @@ if SERVER then
 
         ang = self:GetAngles()
         if self:GetData("vortex", false) then
-            pos = self:GetRandomLocation(false)
+            local randomLocation = self:GetRandomLocation(false)
+            if randomLocation then
+                pos = randomLocation
+            else
+                pos = self:GetPos()
+            end
         else
             pos = self:GetPos()
         end

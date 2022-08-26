@@ -17,7 +17,10 @@ function TARDIS:PopToScreen(name, ply)
         end
     else
         self:HUDScreen()
-        self:SwitchScreen(self.screenpop, self:GetScreenByName(name))
+        local screen = self:GetScreenByName(name)
+        if screen then
+            self:SwitchScreen(self.screenpop, screen)
+        end
     end
 end
 
@@ -123,12 +126,12 @@ function TARDIS:ScreenActive(name)
     end
 end
 
-function TARDIS:GetScreenFrames()
+function TARDIS:GetScreens()
     if not self.HUDScreenActive or not IsValid(self.screenpop) then return end
     local tab = {}
 
     for k,v in pairs(self.screenpop.screens) do
-        tab[v[1]] = v[2]
+        tab[v.name] = v
     end
 
     return tab
@@ -136,22 +139,28 @@ end
 
 function TARDIS:GetScreenByName(name)
     if not self.HUDScreenActive or not IsValid(self.screenpop) then return end
-    local screen = self:GetScreenFrames()[name]
-    if not IsValid(screen) then return end
+    local screen = self:GetScreens()[name]
+    if not screen then return end
     return screen
 end
 
 function TARDIS:SwitchScreen(screen,newscreen)
-    if IsValid(newscreen) then
+    if not newscreen then return false end
+    local frame = newscreen.frame
+    if IsValid(frame) then
         if #screen.backstack>0 then
             self:PopScreen(screen,true)
         end
         if IsValid(screen.curscreen) then
             screen.curscreen:SetVisible(false)
         end
-        newscreen:SetVisible(true)
-        screen.curscreen=newscreen
-        screen.pagename:SetText(tostring(newscreen._name))
+        if not frame._loaded then
+            newscreen.func(TARDIS,screen.ext,screen.int,frame,screen)
+            frame._loaded = true
+        end
+        frame:SetVisible(true)
+        screen.curscreen=frame
+        screen.pagename:SetText(TARDIS:GetPhrase(frame._text))
         screen.pagename:DoLayout()
         if IsValid(screen.mmenu) then
             screen.mmenu:SetVisible(false)
@@ -160,6 +169,9 @@ function TARDIS:SwitchScreen(screen,newscreen)
                 screen.right_arrow:SetVisible(false)
             end
         end
+        return true
+    else
+        return false
     end
 end
 
@@ -240,7 +252,7 @@ function TARDIS:HUDScreen()
 
     local frame=vgui.Create("DFrame")
     frame:SetSkin("TARDIS")
-    frame:SetTitle("TARDIS Interface")
+    frame:SetTitle(TARDIS:GetPhrase("Common.Interface"))
     frame:SetDraggable(true)
     frame:ShowCloseButton(false)
     frame:MakePopup()
@@ -417,7 +429,7 @@ function TARDIS:LoadScreenUI(screen)
     end
     screen.titlebar=titlebar
 
-    backbutton:SetText("Back")
+    backbutton:SetText(TARDIS:GetPhrase("Screens.Common.Back"))
     backbutton:SetFont(TARDIS:GetScreenFont(screen, "Default"))
     backbutton:SetVisible(false)
     backbutton.DoClick = function()
@@ -425,7 +437,7 @@ function TARDIS:LoadScreenUI(screen)
     end
     screen.backbutton=backbutton
 
-    menubutton:SetText("Menu")
+    menubutton:SetText(TARDIS:GetPhrase("Screens.Common.Menu"))
     menubutton:SetFont(TARDIS:GetScreenFont(screen, "Default"))
     menubutton.DoClick = function(self)
         if IsValid(screen.curscreen) or not mmenu:IsVisible() then
@@ -452,12 +464,12 @@ function TARDIS:LoadScreenUI(screen)
 
     popup_button:SetFont(TARDIS:GetScreenFont(screen, "Default"))
     if not screen.is3D2D then
-        popup_button:SetText("Exit")
+        popup_button:SetText(TARDIS:GetPhrase("Screens.Common.Exit"))
         popup_button.DoClick = function()
             TARDIS:RemoveHUDScreen()
         end
     else
-        popup_button:SetText("Popup")
+        popup_button:SetText(TARDIS:GetPhrase("Screens.Common.Popup"))
         popup_button.DoClick = function()
             self:PopToScreen(screen.pagename:GetText())
         end
@@ -468,31 +480,36 @@ function TARDIS:LoadScreenUI(screen)
     local int=screen.int
     for k,v in pairs(screens) do
         if not ((v[1].intonly and (not IsValid(int)))
-            or (v[1].menu==false and (not (IsValid(ext) and IsValid(int)))))
+            or (v[1].menu==false and (not (IsValid(ext)))))
         then
             local frame = vgui.Create("DPanel",main)
             frame:SetVisible(false)
             frame:SetSize(main:GetSize())
             frame:SetPos(0,0)
             frame._name=k
-            v[2](self,ext,int,frame,screen)
-            table.insert(screen.screens,{k,frame,v[1]})
+            frame._text=v[1].text or k
+            frame._loaded=false
+            table.insert(screen.screens,{name=k,frame=frame,options=v[1],func=v[2]})
         end
     end
-    table.SortByMember(screen.screens,1,true)
+    table.SortByMember(screen.screens,"name",true)
 
     self:LoadButtons(screen, mmenu, function(parent)
         local buttons={}
         for k,v in ipairs(screen.screens) do
-            local options = v[3]
             local button = vgui.Create("DButton")
-            button:SetText(v[1])
+            button:SetText(v.id)
             button:SetFont(TARDIS:GetScreenFont(screen, "Default"))
             button.DoClick = function()
-                if options and options.popuponly and screen.is3D2D then
-                    self:PopToScreen(v[1])
+                if v.options and v.options.popuponly and screen.is3D2D then
+                    self:PopToScreen(v.id)
                 else
-                    self:SwitchScreen(screen, v[2])
+                    self:SwitchScreen(screen, v)
+                end
+            end
+            if v.options ~= nil then
+                if v.options.text then
+                    button:SetText(TARDIS:GetPhrase(v.options.text))
                 end
             end
             table.insert(buttons,button)
@@ -519,26 +536,24 @@ function TARDIS:LoadButtons(screen, frame, func, isvgui)
         local layout = HexagonalLayout:new(frame, layout_rows, 0.2)
 
         for k,v in ipairs(screen.screens) do
-            local name = v[1]
-            local options = v[3]
             local button = TardisScreenButton:new(frame,screen)
-            button:SetID(options and options.id or name)
+            button:SetID(v.options and v.options.id or v.name)
             button:SetFrameType(0, 1)
             button:SetIsToggle(false)
             button:SetFont(TARDIS:GetScreenFont(screen, "Default"))
-            button:SetText(name)
+            button:SetText(v.name)
             button.DoClick = function()
-                if screen.is3D2D and options and options.popuponly then
-                    self:PopToScreen(name)
+                if screen.is3D2D and v.options and v.options.popuponly then
+                    self:PopToScreen(v.name)
                 else
-                    self:SwitchScreen(screen, v[2])
+                    self:SwitchScreen(screen, v)
                 end
             end
-            if options ~= nil then
-                if options.text then
-                    button:SetText(options.text)
+            if v.options ~= nil then
+                if v.options.text then
+                    button:SetText(TARDIS:GetPhrase(v.options.text))
                 end
-                button:SetOrder(options.order)
+                button:SetOrder(v.options.order)
             end
             layout:AddNewButton(button)
         end
@@ -667,7 +682,7 @@ function TARDIS:LoadButtons(screen, frame, func, isvgui)
                 label:SizeToContents()
                 label:SetPos(frame:GetWide()/2-label:GetWide()/2-screen.gap,frame:GetTall()-label:GetTall()-screen.gap)
             end
-            label:SetText("Page "..curpage.." of "..#pages)
+            label:SetText(TARDIS:GetPhrase("Screens.Common.CurrentPage", curpage, #pages))
             label:DoLayout()
 
             local nxt
@@ -683,7 +698,7 @@ function TARDIS:LoadButtons(screen, frame, func, isvgui)
                     pages[curpage]:SetVisible(false)
                     curpage=curpage-1
                     pages[curpage]:SetVisible(true)
-                    label:SetText("Page "..curpage.." of "..#pages)
+                    label:SetText(TARDIS:GetPhrase("Screens.Common.CurrentPage", curpage, #pages))
                     if curpage==1 then
                         back:SetVisible(false)
                     end
@@ -702,7 +717,7 @@ function TARDIS:LoadButtons(screen, frame, func, isvgui)
                     pages[curpage]:SetVisible(false)
                     curpage=curpage+1
                     pages[curpage]:SetVisible(true)
-                    label:SetText("Page "..curpage.." of "..#pages)
+                    label:SetText(TARDIS:GetPhrase("Screens.Common.CurrentPage", curpage, #pages))
                     if curpage==#pages then
                         nxt:SetVisible(false)
                     end

@@ -11,7 +11,7 @@ local mat = CreateMaterial(
 )
 
 local uid=0
-TARDIS:AddScreen("Scanner", {id="scanner", menu=false, order=3}, function(self,ext,int,frame,screen)
+TARDIS:AddScreen("Scanner", {id="scanner",text="Screens.Scanner", menu=false, order=3}, function(self,ext,int,frame,screen)
     screen.scanner=GetRenderTarget("tardisi_scanner-"..uid.."-"..screen.id,
         screen.width*screen.res,
         screen.height*screen.res,
@@ -36,21 +36,21 @@ TARDIS:AddScreen("Scanner", {id="scanner", menu=false, order=3}, function(self,e
         label:SizeToContents()
         label:SetPos(frame:GetWide()/2-label:GetWide()/2-screen.gap,frame:GetTall()-label:GetTall()-screen.gap)
     end
-    label:SetText("Front")
+    label:SetText(TARDIS:GetPhrase("Screens.Scanner.Front"))
     label:DoLayout()
     
     local function updatetext(y)
         local text
         if y==-180 or y==180 then
-            text="Back"
+            text="Screens.Scanner.Back"
         elseif y==-90 then
-            text="Right"
+            text="Screens.Scanner.Right"
         elseif y==0 then
-            text="Front"
+            text="Screens.Scanner.Front"
         elseif y==90 then
-            text="Left"
+            text="Screens.Scanner.Left"
         end
-        label:SetText(text)
+        label:SetText(TARDIS:GetPhrase(text))
         label:DoLayout()
     end
     

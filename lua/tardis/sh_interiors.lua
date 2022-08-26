@@ -42,10 +42,8 @@ function TARDIS:AddInterior(t)
         end
     end
 
-    if t.Base ~= true and not t.Hidden and not t.IsVersionOf then
-        TARDIS:InitializeVersions(id)
-        TARDIS:SetupSpawnmenuIcon(t)
-    end
+    TARDIS:InitializeVersions(t)
+    TARDIS:SetupSpawnmenuIcon(t)
 end
 
 function TARDIS:GetInterior(id, ent)

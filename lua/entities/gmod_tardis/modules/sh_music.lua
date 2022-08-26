@@ -1,8 +1,12 @@
 -- Music
 
 if SERVER then
-    function ENT:PlayMusic(url)
+    function ENT:PlayMusic(url, ply)
         if url then
+            if ply and (not self:CheckSecurity(ply)) then
+                TARDIS:Message(ply, "Security.ControlUseDenied")
+                return false
+            end
             for ply, _ in pairs(self.occupants) do
                 self:SendMessage("play-music", function() 
                     net.WriteString(url)
@@ -10,6 +14,8 @@ if SERVER then
             end
     
             self.music = url
+
+            return true
         end
     end
     
@@ -22,8 +28,8 @@ if SERVER then
         end
     end
     
-    ENT:OnMessage("play-music", function(self) 
-        self:PlayMusic(net.ReadString())
+    ENT:OnMessage("play-music", function(self, ply) 
+        self:PlayMusic(net.ReadString(), ply)
     end)
     
     ENT:OnMessage("stop-music", function(self) 
@@ -63,18 +69,18 @@ function ENT:ResolveMusicURL(url)
                             TARDIS:Message(LocalPlayer(), "Music.Playing", tbl.title)
                             self:PlayMusic(api.."play?id="..id,true)
                         else
-                            TARDIS:ErrorMessage(LocalPlayer(), "ERROR: Failed to load ("..(tbl.err and tbl.err or "Unknown reason")..")")
+                            TARDIS:ErrorMessage(LocalPlayer(), "Music.LoadFailed", tbl.err and tbl.err or "Common.UnknownError")
                         end
                     else
-                        TARDIS:ErrorMessage(LocalPlayer(), "ERROR: Failed to load API response")
+                        TARDIS:ErrorMessage(LocalPlayer(), "Music.LoadFailedResponse")
                     end
                 end,
                 function(err)
-                    TARDIS:ErrorMessage(LocalPlayer(), "ERROR: Failed to resolve url ("..err..")")
+                    TARDIS:ErrorMessage(LocalPlayer(), "Music.LoadFailedResolve", err)
                 end
             )
         else
-            TARDIS:ErrorMessage(LocalPlayer(), "ERROR: Couldn't find video ID inside url")
+            TARDIS:ErrorMessage(LocalPlayer(), "Music.LoadFailedMissingId")
         end
     else
         return url
@@ -104,7 +110,7 @@ ENT:OnMessage("play-music", function(self)
             station:Play()
             self.music=station
         else
-            TARDIS:ErrorMessage(LocalPlayer(), "ERROR: Failed to load song (Error ID: "..errorid..", "..errorname..")")
+            TARDIS:ErrorMessage(LocalPlayer(), "Music.LoadFailedBass", errorid, errorname)
         end
     end)
 end)

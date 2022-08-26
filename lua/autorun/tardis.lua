@@ -33,6 +33,7 @@ function TARDIS:LoadFolder(folder,addonly,noprefix)
         end
     end
 end
+TARDIS:LoadFolder("libraries/libraries/libraries")
 TARDIS:LoadFolder("libraries/libraries")
 TARDIS:LoadFolder("libraries")
 TARDIS:LoadFolder()

@@ -155,6 +155,10 @@ if SERVER then
         end
     end)
     ENT:OnMessage("destination-demat", function(self, ply)
+        if not self:CheckSecurity(ply) then
+            TARDIS:Message(ply, "Security.ControlUseDenied")
+            return
+        end
         local pos = net.ReadVector()
         local ang = net.ReadAngle()
         if ply:GetTardisData("destination") then

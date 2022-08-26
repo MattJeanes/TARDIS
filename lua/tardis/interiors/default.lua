@@ -19,7 +19,7 @@ T.Versions = {
     },
     other = {
         {
-            name = "TT Capsule Version",
+            name = "Interiors.Default.Versions.TTCapsule",
             id = "default_tt_capsule",
         },
     },
@@ -27,7 +27,7 @@ T.Versions = {
 
 
 T.Base = "base"
-T.Name = "Default"
+T.Name = "Interiors.Default"
 T.ID = "default"
 T.Interior = {
     Model = "models/drmatt/tardis/interior.mdl",

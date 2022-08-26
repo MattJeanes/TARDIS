@@ -17,7 +17,7 @@ if SERVER then
         if self.exterior:GetData("locked") then
             if IsValid(a) and a:IsPlayer() then
                 if self.exterior:CallHook("LockedUse",a)==nil then
-                    TARDIS:Message(a, "The doors are locked.")
+                    TARDIS:Message(a, "Parts.Door.Locked")
                 end
             end
         else

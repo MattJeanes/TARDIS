@@ -16,7 +16,7 @@ if SERVER then
         then
             TARDIS:Control("teleport", ply)
         else
-            TARDIS:ErrorMessage(ply, "Control Sequences are enabled. You must use the sequence.")
+            TARDIS:ErrorMessage(ply, "Common.ControlSequencesEnabledWarning")
         end
     end
 end

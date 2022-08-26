@@ -11,6 +11,10 @@
         "*.psd",
         "CODEOWNERS",
         "LICENSE",
-        ".vscode/*"
+        ".vscode/*",
+        ".github/*",
+        "i18n/*",
+        "generate-languages.ps1",
+        "crowdin.yml"
     ]
 }

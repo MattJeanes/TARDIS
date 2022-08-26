@@ -209,6 +209,40 @@ TARDIS:AddSetting({
     name="UseWinterSkins",
 })
 
---------------------------------------------------------------------------------
--- Tips
+TARDIS:AddSetting({
+    id="nointerior",
+    type="bool",
+    value=false,
 
+    class="networked",
+
+    option=true,
+    section=SETTING_SECTION,
+    subsection="Spawning",
+    name="NoInterior",
+})
+
+--------------------------------------------------------------------------------
+-- Language
+
+TARDIS:AddSetting({
+    id = "language",
+    type = "list",
+    value = "default",
+
+    get_values_func = function()
+        local values = {
+            {TARDIS:GetPhrase("Settings.Sections.Misc.Language.Default"), "default"},
+        }
+        for k,v in pairs(TARDIS:GetLanguages()) do
+            table.insert(values, {v.Name, k})
+        end
+        return values
+    end,
+
+    class="local",
+
+    option = true,
+    section = SETTING_SECTION,
+    name = "Language",
+})

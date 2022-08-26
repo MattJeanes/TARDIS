@@ -82,11 +82,11 @@ hook.Add("PopulateToolMenu", "TARDIS2-PopulateToolMenu", function()
             reset_button:SetText(TARDIS:GetPhrase("MenuOptions.SectionResetThisSection"))
             reset_button.DoClick = function(self)
                 Derma_Query(
-                    TARDIS:GetPhrase("MenuOptions.ConfirmSectionReset", TARDIS:GetPhrase("Settings.Sections."..section)),
+                    TARDIS:GetPhrase("MenuOptions.ConfirmSectionReset", "Settings.Sections."..section),
                     TARDIS:GetPhrase("Common.Interface"),
                     TARDIS:GetPhrase("Common.OK"), function()
                         TARDIS:ResetSectionSettings(section)
-                        TARDIS:Message(LocalPlayer(), "MenuOptions.SectionReset", TARDIS:GetPhrase("Settings.Sections."..section))
+                        TARDIS:Message(LocalPlayer(), "MenuOptions.SectionReset", "Settings.Sections."..section)
 
                         for i,v in ipairs(section_elements) do
                             if v.RefreshVal then
@@ -123,11 +123,11 @@ hook.Add("PopulateToolMenu", "TARDIS2-PopulateToolMenu", function()
             reset_button:SetText(TARDIS:GetPhrase("MenuOptions.SectionResetThisSection"))
             reset_button.DoClick = function(self)
                 Derma_Query(
-                    TARDIS:GetPhrase("MenuOptions.ConfirmSectionReset", TARDIS:GetPhrase("Settings.Sections.Other")),
+                    TARDIS:GetPhrase("MenuOptions.ConfirmSectionReset", "Settings.Sections.Other"),
                     TARDIS:GetPhrase("Common.Interface"),
                     TARDIS:GetPhrase("Common.OK"), function()
                         TARDIS:ResetSectionSettings(nil)
-                        TARDIS:Message(LocalPlayer(), "MenuOptions.SectionReset", TARDIS:GetPhrase("Settings.Sections.Other"))
+                        TARDIS:Message(LocalPlayer(), "MenuOptions.SectionReset", "Settings.Sections.Other")
                     end,
                     TARDIS:GetPhrase("Common.Cancel"), nil
                 ):SetSkin("TARDIS")
