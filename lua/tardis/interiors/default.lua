@@ -223,6 +223,9 @@ T.Exterior = {
     Parts = {
         door = true
     },
+    Light = {
+        warncolor = Color(255,200,200),
+    },
     PhaseMaterial = "models/drmatt/tardis/exterior/phase.vmt"
 }
 
