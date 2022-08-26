@@ -385,6 +385,8 @@
     "Settings.Sections.Misc.NotificationType.Types.Disabled": "禁用",
     "Settings.Sections.Misc.NotificationType.Types.Inbuilt": "內置通知",
     "Settings.Sections.Misc.NotificationType": "通知類型",
+    "Settings.Sections.Misc.Spawning.NoInterior": "沒有內飾",
+    "Settings.Sections.Misc.Spawning.NoInterior.Description": "啟用後，TARDIS 將在沒有內部的情況下生成",
     "Settings.Sections.Misc.Spawning.PreferClassicDoor.Description": "是否預設生成經典門版本的內飾（雙層門）",
     "Settings.Sections.Misc.Spawning.PreferClassicDoor": "經典門內飾",
     "Settings.Sections.Misc.Spawning.RandomizeSkins.Description": "生成塔迪斯時是否隨機皮膚",

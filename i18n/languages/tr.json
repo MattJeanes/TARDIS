@@ -385,6 +385,8 @@
     "Settings.Sections.Misc.NotificationType.Types.Disabled": "Engelli",
     "Settings.Sections.Misc.NotificationType.Types.Inbuilt": "Dahili bildirimler",
     "Settings.Sections.Misc.NotificationType": "Bildirim türü",
+    "Settings.Sections.Misc.Spawning.NoInterior": "İç mekan yok",
+    "Settings.Sections.Misc.Spawning.NoInterior.Description": "TARDIS etkinleştirildiğinde bir iç mekan olmadan doğacak",
     "Settings.Sections.Misc.Spawning.PreferClassicDoor.Description": "İç mekanların klasik (büyük) kapı versiyonlarının varsayılan olarak ortaya çıkıp çıkmayacağı",
     "Settings.Sections.Misc.Spawning.PreferClassicDoor": "Klasik kapı iç mekanlarını tercih edin",
     "Settings.Sections.Misc.Spawning.RandomizeSkins.Description": "TARDIS görünümünün ortaya çıktığında rastgele olup olmayacağı",
