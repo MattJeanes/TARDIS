@@ -385,6 +385,8 @@
     "Settings.Sections.Misc.NotificationType.Types.Disabled": "Выключены",
     "Settings.Sections.Misc.NotificationType.Types.Inbuilt": "Встроенные уведомления игры",
     "Settings.Sections.Misc.NotificationType": "Тип уведомлений",
+    "Settings.Sections.Misc.Spawning.NoInterior": "",
+    "Settings.Sections.Misc.Spawning.NoInterior.Description": "",
     "Settings.Sections.Misc.Spawning.PreferClassicDoor.Description": "По-умолчанию использовать вариации ТАРДИС с классическими (большими) дверьми",
     "Settings.Sections.Misc.Spawning.PreferClassicDoor": "Предпочитать классические двери в интерьере",
     "Settings.Sections.Misc.Spawning.RandomizeSkins.Description": "Будут ли скины ТАРДИС выбираться случайным образом?",
