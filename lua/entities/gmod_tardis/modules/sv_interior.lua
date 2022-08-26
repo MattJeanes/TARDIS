@@ -29,3 +29,9 @@ ENT:AddHook("FoundPosition", "interior", function(self,e,ply)
     TARDIS:Message(ply, "Interior.FoundPosition")
     return true
 end)
+
+ENT:AddHook("ShouldSpawnInterior", "interior", function(self)
+    if TARDIS:GetSetting("nointerior", self) then
+        return false
+    end
+end)

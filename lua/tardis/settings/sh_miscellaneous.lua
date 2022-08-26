@@ -209,6 +209,19 @@ TARDIS:AddSetting({
     name="UseWinterSkins",
 })
 
+TARDIS:AddSetting({
+    id="nointerior",
+    type="bool",
+    value=false,
+
+    class="networked",
+
+    option=true,
+    section=SETTING_SECTION,
+    subsection="Spawning",
+    name="NoInterior",
+})
+
 --------------------------------------------------------------------------------
 -- Language
 

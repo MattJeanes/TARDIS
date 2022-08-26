@@ -385,6 +385,8 @@
     "Settings.Sections.Misc.NotificationType.Types.Disabled": "Disabled",
     "Settings.Sections.Misc.NotificationType.Types.Inbuilt": "In-built notifications",
     "Settings.Sections.Misc.NotificationType": "Notification type",
+    "Settings.Sections.Misc.Spawning.NoInterior": "No interior",
+    "Settings.Sections.Misc.Spawning.NoInterior.Description": "TARDIS will spawn without an interior when enabled",
     "Settings.Sections.Misc.Spawning.PreferClassicDoor.Description": "Whether classic (big) door versions of interiors will spawn by default",
     "Settings.Sections.Misc.Spawning.PreferClassicDoor": "Prefer classic door interiors",
     "Settings.Sections.Misc.Spawning.RandomizeSkins.Description": "Whether or not TARDIS skin will be randomized when it's spawned",
