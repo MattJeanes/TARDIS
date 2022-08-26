@@ -385,6 +385,8 @@
     "Settings.Sections.Misc.NotificationType.Types.Disabled": "",
     "Settings.Sections.Misc.NotificationType.Types.Inbuilt": "",
     "Settings.Sections.Misc.NotificationType": "",
+    "Settings.Sections.Misc.Spawning.NoInterior": "",
+    "Settings.Sections.Misc.Spawning.NoInterior.Description": "",
     "Settings.Sections.Misc.Spawning.PreferClassicDoor.Description": "",
     "Settings.Sections.Misc.Spawning.PreferClassicDoor": "",
     "Settings.Sections.Misc.Spawning.RandomizeSkins.Description": "",
