@@ -91,6 +91,7 @@ T.Exterior = {
             mat = "drmatt/tardis/mat.wav",
             mat_damaged = "jeredek/tardis/mat_damaged.wav",
             mat_fail = "drmatt/tardis/mat_fail.wav",
+            mat_fast = "Poogie/tardis/mat_fast.wav",
             fullflight = "drmatt/tardis/full.wav",
             fullflight_damaged = "drmatt/tardis/full_damaged.wav",
             interrupt = "drmatt/tardis/repairfinish.wav",
