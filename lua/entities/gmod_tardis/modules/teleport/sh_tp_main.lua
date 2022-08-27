@@ -369,7 +369,7 @@ else
                 if pos and self:GetData("demat-fast",false) then
                     if not IsValid(self) then return end
                     if self:GetData("health-warning", false) and (self:GetData("demat-fast",false))==true then
-                        sound.Play(ext.matdamaged_fast, pos)
+                        sound.Play(ext.mat_damaged_fast, pos)
                     else
                         sound.Play(ext.mat_fast, pos)
                     end
