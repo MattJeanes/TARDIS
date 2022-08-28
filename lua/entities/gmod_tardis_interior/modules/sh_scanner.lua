@@ -1,5 +1,22 @@
 -- Scanner
 
+function ENT:GetScannersOn()
+    return self:GetData("scanners_on", false)
+end
+
+if SERVER then
+    function ENT:SetScannersOn(on)
+        self:SetData("scanners_on", on, true)
+        return true
+    end
+
+    function ENT:ToggleScanners()
+        return self:SetScannersOn(not self:GetScannersOn())
+    end
+
+    return
+end
+
 ENT:AddHook("ShouldDraw", "scanner", function(self)
     if self.scannerrender then
         return false
