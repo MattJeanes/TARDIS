@@ -11,11 +11,19 @@ function TARDIS:GetPhrase(phrase, ...)
     end
     local str = self.LanguageCache[self.CurrentLanguage][phrase]
     if not str then
-        return phrase
+        if ... then
+            return self:FormatString(phrase, ...)
+        else
+            return phrase
+        end
     end
     if not ... then
         return str
     end
+    return self:FormatString(str, ...)
+end
+
+function TARDIS:FormatString(str, ...)
     local args = {...}
     for k, v in ipairs(args) do
         args[k] = self.LanguageCache[self.CurrentLanguage][v] or v
