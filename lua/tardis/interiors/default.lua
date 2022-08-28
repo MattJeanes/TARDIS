@@ -75,6 +75,15 @@ T.Interior = {
             power_off_black = true
         }
     },
+    Scanners = {
+        {
+            mat = "models/drmatt/tardis/tardisscanner",
+            width = 1024,
+            height = 1024,
+            ang = Angle(0,0,0),
+            fov = 90,
+        }
+    },
     Sequences = "default_sequences",
     Parts = {
         door = {

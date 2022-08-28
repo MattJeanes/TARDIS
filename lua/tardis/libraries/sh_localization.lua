@@ -127,6 +127,9 @@ function TARDIS:CompileLanguage(code)
             local baseLang
             repeat
                 baseLang = self.Languages[base]
+                if not baseLang then
+                    break
+                end
                 if base == code then
                     self:CompileLanguage(k)
                     break

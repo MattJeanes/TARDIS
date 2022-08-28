@@ -12,13 +12,14 @@ local mat = CreateMaterial(
 
 local uid=0
 TARDIS:AddScreen("Scanner", {id="scanner",text="Screens.Scanner", menu=false, order=3}, function(self,ext,int,frame,screen)
-    screen.scanner=GetRenderTarget("tardisi_scanner-"..uid.."-"..screen.id,
+    screen.scanner=GetRenderTarget("tardisi_scanner_screen_"..uid.."_"..screen.id,
         screen.width*screen.res,
         screen.height*screen.res,
         false
     )
     uid=uid+1
     screen.scannerang=Angle()
+    screen.scannerfov=120
     
     local scanner=vgui.Create("DImage",frame)
     scanner:SetSize(frame:GetWide()-screen.gap2,frame:GetTall()-screen.gap2)
@@ -78,51 +79,5 @@ TARDIS:AddScreen("Scanner", {id="scanner",text="Screens.Scanner", menu=false, or
             screen.scannerang.y=180
         end
         updatetext(screen.scannerang.y)
-    end
-end)
-
-hook.Add("RenderScene", "TARDISI_Scanner", function(pos,ang)
-    local int=LocalPlayer():GetTardisData("interior")
-    local ext=LocalPlayer():GetTardisData("exterior")
-    if IsValid(ext) then
-        local screens=TARDIS:ScreenActive("Scanner")
-        if screens then
-            for k,v in pairs(screens) do
-                local oldRT = render.GetRenderTarget()
-                render.SetRenderTarget( v.scanner )
-                    render.Clear( 0, 0, 0, 255 )
-                    render.ClearDepth()
-                    render.ClearStencil()
-                    
-                    local offset = ext.metadata.Exterior.ScannerOffset
-                    local vec=Vector(offset.x, offset.y, offset.z)
-                    vec:Rotate(v.scannerang)
-                    local camOrigin = ext:LocalToWorld(vec)
-                    local camAngle = ext:LocalToWorldAngles(v.scannerang)
-                    if IsValid(int) then
-                        int.scannerrender=true
-                        int:CallHook("PreScannerRender")
-                    end
-                    render.RenderView({
-                        x = 0,
-                        y = 0,
-                        w = v.width*v.res,
-                        h = v.height*v.res,
-                        fov = 120,
-                        origin = camOrigin,
-                        angles = camAngle,
-                        drawpostprocess = true,
-                        drawhud = false,
-                        drawmonitors = false,
-                        drawviewmodel = false,
-                        --zfar = 1500
-                    })
-                    if IsValid(int) then
-                        int.scannerrender=false
-                        int:CallHook("PostScannerRender")
-                    end
-                render.SetRenderTarget( oldRT )
-            end
-        end
     end
 end)
