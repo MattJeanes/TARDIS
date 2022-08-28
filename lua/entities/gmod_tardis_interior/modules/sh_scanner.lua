@@ -44,7 +44,7 @@ ENT:AddHook("Initialize", "scanner", function(self)
                 ErrorNoHalt("Could not find material "..v.mat.." for scanner on "..self:GetModel())
             end
             scanner.rt = GetRenderTarget(scanner.uid, v.width, v.height, false)
-		    scanner.mat:SetTexture("$basetexture",scanner.rt)
+            scanner.mat:SetTexture("$basetexture",scanner.rt)
             scanner.ang = v.ang
             scanner.width = v.width
             scanner.height = v.height
