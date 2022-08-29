@@ -55,6 +55,11 @@ T.Phrases = {
     ["Binds.Sections.ThirdPerson.Destination.Description"] = "Mewnbwn cyflwr gosod cyrchfan",
     ["Binds.Sections.ThirdPerson.OpenScreen"] = "Agor Sgrîn",
     ["Binds.Sections.ThirdPerson.OpenScreen.Description"] = "Toglo'r sgrin HUD",
+    ["Binds.Sections.ThirdPerson.ToggleCloak"] = "Toglo'r Clogyn",
+    ["Binds.Sections.ThirdPerson.ToggleDoor"] = "Toglo'r Drws",
+    ["Binds.Sections.ThirdPerson.ToggleFlight"] = "Toglo'r Hedfan",
+    ["Binds.Sections.ThirdPerson.ToggleFloat"] = "Toglo'r arnofio",
+    ["Binds.Sections.ThirdPerson.ToggleFloat.Description"] = "Gadael i'r TARDIS hedfan fel pe na bai disgyrchiant",
 }
 
 TARDIS:AddLanguage(T)
