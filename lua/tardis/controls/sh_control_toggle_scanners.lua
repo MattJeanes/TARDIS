@@ -7,6 +7,7 @@ TARDIS:AddControl({
             TARDIS:ErrorMessage(ply, "Controls.ToggleScanners.FailedToggle")
         end
     end,
+    serveronly=true,
     power_independent = false,
     screen_button = {
         virt_console = true,

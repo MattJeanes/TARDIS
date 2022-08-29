@@ -55,7 +55,7 @@ ENT:AddHook("Initialize", "scanner", function(self)
 end)
 
 ENT:AddHook("ShouldDrawScanners", "scanner", function(self)
-    if not (self:GetScannersOn() and self:GetPower()) then
+    if not (self:GetScannersOn() and self:GetPower() and (not LocalPlayer():GetTardisData("outside"))) then
         return false
     end
 end)
