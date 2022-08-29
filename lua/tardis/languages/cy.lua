@@ -24,7 +24,17 @@ T.Phrases = {
     ["Binds.Sections.Destination.SnapToFloor.Description"] = "Gwasgwch y cywair hwn i chlecia i'r llawr agosach",
     ["Binds.Sections.Destination.Up"] = "i fyny",
     ["Binds.Sections.Flight.Backward"] = "Yn ôl",
+    ["Binds.Sections.Flight.Boost"] = "Cynyddu cyflymder",
     ["Binds.Sections.Flight.Boost.Description"] = "Dal y cywair hwn pan hedfan i gyflymu",
+    ["Binds.Sections.Flight.Down"] = "i lawr",
+    ["Binds.Sections.Flight.Forward"] = "Ymlaen",
+    ["Binds.Sections.Flight.Left"] = "i'r chwith",
+    ["Binds.Sections.Flight.Right"] = "i'r dde",
+    ["Binds.Sections.Flight.Rotate"] = "Cylchdroi",
+    ["Binds.Sections.Flight.Rotate.Description"] = "Gwasgwch a ddal y cywair hwn tra defnyddio chwith neu dde i cylchdroi",
+    ["Binds.Sections.Flight.SpinDirection"] = "Cyfeiriad cylchdroi",
+    ["Binds.Sections.Flight.SpinDirection.Description"] = "Newid pa ffordd mae'r TARDIS yn cylchdroi pan hedfan",
+    ["Binds.Sections.Flight.Up"] = "i fyny",
 }
 
 TARDIS:AddLanguage(T)
