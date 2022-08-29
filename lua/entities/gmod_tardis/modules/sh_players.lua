@@ -9,7 +9,6 @@ if SERVER then
         ply:SetTardisData("interior", self.interior, true)
         if not IsValid(self.interior) then
             ply:SetTardisData("intfallback", true)
-            ply:Spectate(OBS_MODE_ROAMING)
             self:PlayerThirdPerson(ply,true)
         end
     end)
@@ -21,18 +20,7 @@ if SERVER then
     end)
 
     ENT:AddHook("PlayerExit", "players", function(self,ply,forced,notp)
-        if ply:GetTardisData("intfallback") then
-            ply:Spectate(OBS_MODE_NONE)
-        end
         ply:ClearTardisData()
-    end)
-
-    ENT:AddHook("Think", "players", function(self)
-        for k,v in pairs(self.occupants) do
-            if k:GetTardisData("intfallback") then
-                k:SetPos(self:GetPos())
-            end
-        end
     end)
     
     local meta=FindMetaTable("Player")
