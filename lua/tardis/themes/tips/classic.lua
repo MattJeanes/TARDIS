@@ -1,6 +1,6 @@
 local style={
     style_id="classic",
-    style_name="Classic (Legacy)",
+    style_name="Classic",
     font="GModWorldtip",
     padding = 10,
     offset = 30,

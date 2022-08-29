@@ -33,7 +33,7 @@ function TARDIS:SpawnTARDIS(ply, customData)
     ClassName = nil
 
     local interior = TARDIS:GetInterior(metadataID)
-    local printName = "TARDIS ("..interior.Name..")"
+    local printName = TARDIS:GetPhrase("Common.TARDIS").." ("..TARDIS:GetPhrase(interior.Name)..")"
 
     if not IsValid(entity) then return end
 

@@ -2,9 +2,9 @@ TARDIS:AddControl({
     id = "toggle_screens",
     int_func=function(self,ply)
         if self:ToggleScreens() then
-            TARDIS:StatusMessage(ply, "Interior screens", self:GetData("screens_on"))
+            TARDIS:StatusMessage(ply, "Controls.ToggleScreens.Status", self:GetData("screens_on"))
         else
-            TARDIS:ErrorMessage(ply, "Failed to toggle interior screens")
+            TARDIS:ErrorMessage(ply, "Controls.ToggleScreens.FailedToggle")
         end
     end,
     power_independent = false,
@@ -14,10 +14,10 @@ TARDIS:AddControl({
         popup_only = true,
         toggle = true,
         frame_type = {2, 1},
-        text = "Toggle Screen",
+        text = "Controls.ToggleScreens",
         pressed_state_from_interior = true,
         pressed_state_data = "screens_on",
         order = 1,
     },
-    tip_text = "Toggle Screen",
+    tip_text = "Controls.ToggleScreens.Tip",
 })

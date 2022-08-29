@@ -4,7 +4,7 @@ local textpnl
 local function RequestInput( pnl )
     if not textpnl then
         textpnl=pnl
-        Derma_StringRequest("TARDIS Interface",pnl.sub3D2D or pnl.strTooltipText or "Enter text input",pnl:GetText(),function(text)
+        Derma_StringRequest(TARDIS:GetPhrase("Common.Interface"),pnl.sub3D2D or pnl.strTooltipText or TARDIS:GetPhrase("Common.EnterTextInput"),pnl:GetText(),function(text)
             pnl:SetText( text )
             pnl:SetCaretPos( text:len() )
             pnl:OnTextChanged()

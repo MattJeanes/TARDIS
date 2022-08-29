@@ -1,4 +1,4 @@
-local SETTING_SECTION = "Admin Options"
+local SETTING_SECTION = "Global"
 
 CONVAR_FLAGS = {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}
 
@@ -16,8 +16,7 @@ TARDIS:AddSetting({
 
     option = true,
     section=SETTING_SECTION,
-    name="Enable Health",
-    desc="Should the TARDIS have health and take damage?",
+    name="EnableHealth",
 })
 
 TARDIS:AddSetting({
@@ -42,8 +41,7 @@ TARDIS:AddSetting({
 
     option = true,
     section=SETTING_SECTION,
-    name="Max Health",
-    desc="Maximum ammount of health the TARDIS has",
+    name="MaxHealth",
 })
 
 
@@ -65,7 +63,6 @@ TARDIS:AddSetting({
     },
 
     option = true,
-    name="Boost Speed",
-    desc="The increase of speed the TARDIS gets with the boost key enabled",
     section=SETTING_SECTION,
+    name="BoostSpeed",
 })

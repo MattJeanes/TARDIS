@@ -35,7 +35,7 @@ hook.Add("HUDPaint", "TARDIS-HUD", function()
     local textcolor = (health > 0) and NamedColor("FgColor") or NamedColor("Caution")
     if (health > 20) then textcolor = NamedColor("FgColor")
     else textcolor = NamedColor("Caution") end
-    draw.DrawText( "TARDIS", "TARDIS-HUD-Small", x+10, y+10, textcolor, TEXT_ALIGN_LEFT )
+    draw.DrawText( TARDIS:GetPhrase("Common.TARDIS"), "TARDIS-HUD-Small", x+10, y+10, textcolor, TEXT_ALIGN_LEFT )
     draw.DrawText( tostring(health) .. "%", healthfont, x+10, y+45, textcolor, TEXT_ALIGN_LEFT )
 end)
 
@@ -47,7 +47,7 @@ list.Set("DesktopWindows", "TardisHUD", {
         if IsValid(ext) then
             TARDIS:HUDScreen()
         else
-            TARDIS:ErrorMessage(LocalPlayer(), "You are not in the TARDIS")
+            TARDIS:ErrorMessage(LocalPlayer(), "Common.NotInTARDIS")
         end
     end
 })

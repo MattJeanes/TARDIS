@@ -50,7 +50,7 @@ if SERVER then
         })
 
         if not IsValid(child) then
-            ErrorNoHalt("Redecoration failed: failed to spawn the replacement")
+            ErrorNoHalt(TARDIS:GetPhrase("Redecorate.Failed"))
         end
         return IsValid(child) -- if gone wrong, finish repair
     end

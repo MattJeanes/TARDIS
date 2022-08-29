@@ -1,6 +1,6 @@
 local theme = {
     id = "base",
-    name = "Text only",
+    name = "TextOnly",
     base_id = nil,
 
     folder = "base",

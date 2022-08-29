@@ -2,8 +2,8 @@
 
 
 TARDIS:AddKeyBind("cloak-toggle",{
-    name="Toggle Cloak",
-    section="Third Person",
+    name="ToggleCloak",
+    section="ThirdPerson",
     func=function(self,down,ply)
         if ply == self.pilot and down then
             TARDIS:Control("cloak", ply)
@@ -76,6 +76,14 @@ else
         if self:GetData("cloak-animating",false) then return true end
     end)
 
+    ENT:AddHook("ShouldAllowThickPortal", "cloak", function(self, portal)
+        if self.interior and portal==self.interior.portals.exterior then
+            if self:GetCloak() or self:GetData("cloak-animating") then
+                return false
+            end
+        end
+    end)
+
     ENT:AddHook("Think", "cloak", function(self)
         local target = self:GetData("cloak",false) and -0.5 or 1
         local animating = self:GetData("cloak-animating",false)
@@ -83,10 +91,12 @@ else
         if percent == target then
             if animating then
                 self:SetData("cloak-animating", false)
+                self:CallHook("CloakAnimationFinished")
             end
             return
         elseif not animating then
             self:SetData("cloak-animating", true)
+            self:CallHook("CloakAnimationStarted")
         end
 
         local timepassed = CurTime() - self:GetData("phase-lastTick",CurTime())
@@ -184,7 +194,6 @@ else
     ENT:OnMessage("cloak", function(self)
         local on = net.ReadBool()
         self:SetData("cloak", on)
-        self:SetData("cloak-animating", true)
         local snd
         if on then
             snd = self.metadata.Exterior.Sounds.Cloak

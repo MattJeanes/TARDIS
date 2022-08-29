@@ -4,8 +4,7 @@
 
 TARDIS:AddKeyBind("destination-open",{
     name="Destination",
-    section="Third Person",
-    desc="Enter destination select state",
+    section="ThirdPerson",
     func=function(self,down,ply)
         if down and ply == self.pilot then
             TARDIS:Control("destination", ply)
@@ -60,7 +59,6 @@ TARDIS:AddKeyBind("destination-down",{
 TARDIS:AddKeyBind("destination-boost",{
     name="Boost",
     section="Destination",
-    desc="Hold this key while navigating to speed up",
     key=KEY_LSHIFT,
     clientonly=true,
     exterior=true
@@ -68,7 +66,6 @@ TARDIS:AddKeyBind("destination-boost",{
 TARDIS:AddKeyBind("destination-slow",{
     name="Slow",
     section="Destination",
-    desc="Hold this key to slow movement",
     key=KEY_LALT,
     clientonly=true,
     exterior=true
@@ -76,7 +73,6 @@ TARDIS:AddKeyBind("destination-slow",{
 TARDIS:AddKeyBind("destination-rotate",{
     name="Rotate",
     section="Destination",
-    desc="Hold this with the boost and left or right keys to rotate",
     key=KEY_LALT,
     clientonly=true,
     exterior=true
@@ -101,9 +97,8 @@ TARDIS:AddKeyBind("destination-demat",{
     exterior=true
 })
 TARDIS:AddKeyBind("destination-snaptofloor",{
-    name="Snap To Floor",
+    name="SnapToFloor",
     section="Destination",
-    desc="Press this key to snap to the nearest floor",
     func=function(self,down,ply)
         if TARDIS:HUDScreenOpen(ply) then return end
         if ply:GetTardisData("destination") then
@@ -160,6 +155,10 @@ if SERVER then
         end
     end)
     ENT:OnMessage("destination-demat", function(self, ply)
+        if not self:CheckSecurity(ply) then
+            TARDIS:Message(ply, "Security.ControlUseDenied")
+            return
+        end
         local pos = net.ReadVector()
         local ang = net.ReadAngle()
         if ply:GetTardisData("destination") then
@@ -167,24 +166,24 @@ if SERVER then
         end
         if self:GetData("vortex") or self:GetData("teleport") then
             if self:SetDestination(pos,ang) then
-                TARDIS:Message(ply, "Destination locked, ready to materialise")
+                TARDIS:Message(ply, "Destination.LockedReadyToMat")
             else
-                TARDIS:Message(ply, "Failed to set destination, may be transitioning")
+                TARDIS:Message(ply, "Destination.FailedSetDestinationMaybeTransitioning")
             end
         else
             if TARDIS:GetSetting("dest-onsetdemat", ply) then
                 self:Demat(pos,ang,function(success)
                     if success then
-                        TARDIS:Message(ply, "Destination locked, dematerialising...")
+                        TARDIS:Message(ply, "Destination.LockedDemat")
                     else
-                        TARDIS:Message(ply, "Failed to dematerialise")
+                        TARDIS:Message(ply, "Destination.FailedDemat")
                     end
                 end)
             else
                 if self:SetDestination(pos,ang) then
-                    TARDIS:Message(ply, "Destination locked, ready to dematerialise")
+                    TARDIS:Message(ply, "Destination.LockedReadyToDemat")
                 else
-                    TARDIS:Message(ply, "Failed to set destination")
+                    TARDIS:Message(ply, "Destination.FailedSetDestination")
                 end
             end
         end

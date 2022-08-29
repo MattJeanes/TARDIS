@@ -11,14 +11,15 @@ local mat = CreateMaterial(
 )
 
 local uid=0
-TARDIS:AddScreen("Scanner", {id="scanner", menu=false, order=3}, function(self,ext,int,frame,screen)
-    screen.scanner=GetRenderTarget("tardisi_scanner-"..uid.."-"..screen.id,
+TARDIS:AddScreen("Scanner", {id="scanner",text="Screens.Scanner", menu=false, order=3}, function(self,ext,int,frame,screen)
+    screen.scanner=GetRenderTarget("tardisi_scanner_screen_"..uid.."_"..screen.id,
         screen.width*screen.res,
         screen.height*screen.res,
         false
     )
     uid=uid+1
     screen.scannerang=Angle()
+    screen.scannerfov=120
     
     local scanner=vgui.Create("DImage",frame)
     scanner:SetSize(frame:GetWide()-screen.gap2,frame:GetTall()-screen.gap2)
@@ -36,21 +37,21 @@ TARDIS:AddScreen("Scanner", {id="scanner", menu=false, order=3}, function(self,e
         label:SizeToContents()
         label:SetPos(frame:GetWide()/2-label:GetWide()/2-screen.gap,frame:GetTall()-label:GetTall()-screen.gap)
     end
-    label:SetText("Front")
+    label:SetText(TARDIS:GetPhrase("Screens.Scanner.Front"))
     label:DoLayout()
     
     local function updatetext(y)
         local text
         if y==-180 or y==180 then
-            text="Back"
+            text="Screens.Scanner.Back"
         elseif y==-90 then
-            text="Right"
+            text="Screens.Scanner.Right"
         elseif y==0 then
-            text="Front"
+            text="Screens.Scanner.Front"
         elseif y==90 then
-            text="Left"
+            text="Screens.Scanner.Left"
         end
-        label:SetText(text)
+        label:SetText(TARDIS:GetPhrase(text))
         label:DoLayout()
     end
     
@@ -78,51 +79,5 @@ TARDIS:AddScreen("Scanner", {id="scanner", menu=false, order=3}, function(self,e
             screen.scannerang.y=180
         end
         updatetext(screen.scannerang.y)
-    end
-end)
-
-hook.Add("RenderScene", "TARDISI_Scanner", function(pos,ang)
-    local int=LocalPlayer():GetTardisData("interior")
-    local ext=LocalPlayer():GetTardisData("exterior")
-    if IsValid(ext) then
-        local screens=TARDIS:ScreenActive("Scanner")
-        if screens then
-            for k,v in pairs(screens) do
-                local oldRT = render.GetRenderTarget()
-                render.SetRenderTarget( v.scanner )
-                    render.Clear( 0, 0, 0, 255 )
-                    render.ClearDepth()
-                    render.ClearStencil()
-                    
-                    local offset = ext.metadata.Exterior.ScannerOffset
-                    local vec=Vector(offset.x, offset.y, offset.z)
-                    vec:Rotate(v.scannerang)
-                    local camOrigin = ext:LocalToWorld(vec)
-                    local camAngle = ext:LocalToWorldAngles(v.scannerang)
-                    if IsValid(int) then
-                        int.scannerrender=true
-                        int:CallHook("PreScannerRender")
-                    end
-                    render.RenderView({
-                        x = 0,
-                        y = 0,
-                        w = v.width*v.res,
-                        h = v.height*v.res,
-                        fov = 120,
-                        origin = camOrigin,
-                        angles = camAngle,
-                        drawpostprocess = true,
-                        drawhud = false,
-                        drawmonitors = false,
-                        drawviewmodel = false,
-                        --zfar = 1500
-                    })
-                    if IsValid(int) then
-                        int.scannerrender=false
-                        int:CallHook("PostScannerRender")
-                    end
-                render.SetRenderTarget( oldRT )
-            end
-        end
     end
 end)

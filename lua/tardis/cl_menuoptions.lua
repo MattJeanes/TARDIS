@@ -21,11 +21,11 @@ hook.Add("PopulateToolMenu", "TARDIS2-PopulateToolMenu", function()
 
     for k,section in ipairs(sections) do
         local section_id = "TARDIS2_Options_" .. section
-        local section_text = " " .. section
+        local section_text = " " .. TARDIS:GetPhrase("Settings.Sections."..section)
 
         local section_elements = {}
 
-        spawnmenu.AddToolMenuOption("Options", "TARDIS", section_id, section_text, "", "", function(panel)
+        spawnmenu.AddToolMenuOption("Options", TARDIS:GetPhrase("Common.TARDIS"), section_id, section_text, "", "", function(panel)
             for a,b in ipairs(options) do
                 local id,data=b[1],b[2]
                 if data.section == section then
@@ -46,7 +46,7 @@ hook.Add("PopulateToolMenu", "TARDIS2-PopulateToolMenu", function()
                         end
 
                         local subsection = vgui.Create("DForm")
-                        subsection:SetLabel(data.subsection)
+                        subsection:SetLabel(TARDIS:GetPhrase("Settings.Sections."..section.."."..data.subsection))
 
                         -- save the subsection state for more convenience
                         subsection:SetExpanded(expanded or false)
@@ -79,14 +79,14 @@ hook.Add("PopulateToolMenu", "TARDIS2-PopulateToolMenu", function()
             end
 
             local reset_button = vgui.Create("DButton")
-            reset_button:SetText("Reset settings (this section)")
+            reset_button:SetText(TARDIS:GetPhrase("MenuOptions.SectionResetThisSection"))
             reset_button.DoClick = function(self)
                 Derma_Query(
-                    "Reset clientside settings of section \"" .. section .. "\"? This cannot be undone.",
-                    "TARDIS Interface",
-                    "OK", function()
+                    TARDIS:GetPhrase("MenuOptions.ConfirmSectionReset", "Settings.Sections."..section),
+                    TARDIS:GetPhrase("Common.Interface"),
+                    TARDIS:GetPhrase("Common.OK"), function()
                         TARDIS:ResetSectionSettings(section)
-                        TARDIS:Message(LocalPlayer(), "TARDIS clientside settings of section \"" .. section ..  "\" have been reset. You may need to respawn the TARDIS for all changes to apply.")
+                        TARDIS:Message(LocalPlayer(), "MenuOptions.SectionReset", "Settings.Sections."..section)
 
                         for i,v in ipairs(section_elements) do
                             if v.RefreshVal then
@@ -94,7 +94,7 @@ hook.Add("PopulateToolMenu", "TARDIS2-PopulateToolMenu", function()
                             end
                         end
                     end,
-                    "Cancel", nil
+                    TARDIS:GetPhrase("Common.Cancel"), nil
                 ):SetSkin("TARDIS")
             end
             panel:AddItem(reset_button)
@@ -110,7 +110,7 @@ hook.Add("PopulateToolMenu", "TARDIS2-PopulateToolMenu", function()
     end
 
     if others_exist then
-        spawnmenu.AddToolMenuOption("Options", "TARDIS", "TARDIS2_Options_Other", " Other", "", "", function(panel)
+        spawnmenu.AddToolMenuOption("Options", TARDIS:GetPhrase("Common.TARDIS"), "TARDIS2_Options_Other", " ".. TARDIS:GetPhrase("Settings.Sections.Other"), "", "", function(panel)
             for a,b in ipairs(options) do
                 local id,data=b[1],b[2]
                 if not data.section then
@@ -120,16 +120,16 @@ hook.Add("PopulateToolMenu", "TARDIS2-PopulateToolMenu", function()
             end
 
             local reset_button = vgui.Create("DButton")
-            reset_button:SetText("Reset settings (this section)")
+            reset_button:SetText(TARDIS:GetPhrase("MenuOptions.SectionResetThisSection"))
             reset_button.DoClick = function(self)
                 Derma_Query(
-                    "Reset clientside settings of section \"Other\"? This cannot be undone.",
-                    "TARDIS Interface",
-                    "OK", function()
+                    TARDIS:GetPhrase("MenuOptions.ConfirmSectionReset", "Settings.Sections.Other"),
+                    TARDIS:GetPhrase("Common.Interface"),
+                    TARDIS:GetPhrase("Common.OK"), function()
                         TARDIS:ResetSectionSettings(nil)
-                        TARDIS:Message(LocalPlayer(), "TARDIS clientside settings of section \"Other\" have been reset. You may need to respawn the TARDIS for all changes to apply.")
+                        TARDIS:Message(LocalPlayer(), "MenuOptions.SectionReset", "Settings.Sections.Other")
                     end,
-                    "Cancel", nil
+                    TARDIS:GetPhrase("Common.Cancel"), nil
                 ):SetSkin("TARDIS")
             end
             panel:AddItem(reset_button)
@@ -137,7 +137,7 @@ hook.Add("PopulateToolMenu", "TARDIS2-PopulateToolMenu", function()
     end
 
     -- Binds
-    spawnmenu.AddToolMenuOption("Options", "TARDIS", "TARDIS2_Binds", " Binds", "", "", function(panel)
+    spawnmenu.AddToolMenuOption("Options", TARDIS:GetPhrase("Common.TARDIS"), "TARDIS2_Binds", " "..TARDIS:GetPhrase("Settings.Sections.Binds"), "", "", function(panel)
         local keybinds={}
         local sections={}
         for k,v in pairs(TARDIS:GetBinds()) do
@@ -153,7 +153,7 @@ hook.Add("PopulateToolMenu", "TARDIS2-PopulateToolMenu", function()
             local category = vgui.Create("DForm")
             panel:AddItem(category)
 
-            category:SetLabel(v)
+            category:SetLabel(TARDIS:GetPhrase("Binds.Sections."..v))
             category:SetExpanded(false)
 
             for a,b in ipairs(keybinds) do
@@ -177,7 +177,7 @@ hook.Add("PopulateToolMenu", "TARDIS2-PopulateToolMenu", function()
         if other_exist then
             local other_category = vgui.Create("DForm")
             panel:AddItem(other_category)
-            other_category:SetLabel("Other")
+            other_category:SetLabel(TARDIS:GetPhrase("Binds.Sections.Other"))
             other_category:SetExpanded(false)
 
             for a,b in ipairs(keybinds) do
@@ -191,19 +191,19 @@ hook.Add("PopulateToolMenu", "TARDIS2-PopulateToolMenu", function()
     end)
 
     -- Reset all
-    spawnmenu.AddToolMenuOption("Options", "TARDIS", "TARDIS2_Reset_Settings", " Reset All Settings", "", "", function(panel)
+    spawnmenu.AddToolMenuOption("Options", TARDIS:GetPhrase("Common.TARDIS"), "TARDIS2_Reset_Settings", " "..TARDIS:GetPhrase("MenuOptions.ResetAllSettings"), "", "", function(panel)
         local button = vgui.Create("DButton")
-        button:SetText("Reset clientside settings")
+        button:SetText(TARDIS:GetPhrase("MenuOptions.ResetClientsideSettings"))
         button.DoClick = function(button)
             Derma_Query(
-                "Reset all clientside settings? This cannot be undone.",
-                "TARDIS Interface",
-                "OK", function()
+                TARDIS:GetPhrase("MenuOptions.ConfirmResetSettings"),
+                TARDIS:GetPhrase("Common.Interface"),
+                TARDIS:GetPhrase("Common.OK"), function()
                     TARDIS:ResetSettings()
-                    TARDIS:Message(LocalPlayer(), "TARDIS clientside settings have been reset. You may need to respawn the TARDIS for all changes to apply.")
+                    TARDIS:Message(LocalPlayer(), "MenuOptions.ResetSettingsConfirmation")
                     RunConsoleCommand("spawnmenu_reload")
                 end,
-                "Cancel", nil
+                TARDIS:GetPhrase("Common.Cancel"), nil
             ):SetSkin("TARDIS")
         end
         panel:AddItem(button)

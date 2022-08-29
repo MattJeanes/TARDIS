@@ -1,8 +1,8 @@
 -- Third person
 
 TARDIS:AddKeyBind("tp-toggledoor",{
-    name="Toggle Door",
-    section="Third Person",
+    name="ToggleDoor",
+    section="ThirdPerson",
     func=function(self,down,ply)
         if ply==self.pilot and down then
             TARDIS:Control("door", ply)
@@ -76,6 +76,6 @@ else
     ENT:OnMessage("thirdperson-careful-hint", function(self)
         local use = string.upper(input.LookupBinding("+use", true)) or "USE"
         local walk = string.upper(input.LookupBinding("+walk", true)) or "WALK"
-        TARDIS:Message(LocalPlayer(), "HINT: Use \'" .. walk .. " + " .. use .. "\' keys to enter third person")
+        TARDIS:Message(LocalPlayer(), "ThirdPerson.KeyHint", walk, use)
     end)
 end

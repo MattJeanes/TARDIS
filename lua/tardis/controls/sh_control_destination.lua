@@ -10,8 +10,8 @@ TARDIS:AddControl({
         mmenu = true,
         toggle = false,
         frame_type = {0, 1},
-        text = "Destination",
+        text = "Controls.Destination",
         order = 4,
     },
-    tip_text = "Destination Select",
+    tip_text = "Controls.Destination.Tip",
 })

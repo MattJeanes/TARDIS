@@ -1,4 +1,9 @@
-function TARDIS:InitializeVersions(int_id)
+function TARDIS:InitializeVersions(t)
+    if t.Base == true or t.Hidden or t.IsVersionOf then
+        return
+    end
+    local int_id = t.ID
+
     local versions = self.Metadata[int_id].Versions or {}
 
     versions.other = versions.other or {}

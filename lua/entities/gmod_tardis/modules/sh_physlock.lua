@@ -1,9 +1,8 @@
 -- Physical Lock
 
 TARDIS:AddKeyBind("physlock-toggle",{
-    name="Toggle Physlock",
-    section="Third Person",
-    desc="Make the TARDIS constant and unmovable in space",
+    name="TogglePhyslock",
+    section="ThirdPerson",
     func=function(self,down,ply)
         if ply==self.pilot and down then
             TARDIS:Control("physlock", ply)
@@ -31,7 +30,7 @@ function ENT:SetPhyslock(on)
     local phys = self:GetPhysicsObject()
     local vel = phys:GetVelocity():Length()
     if on then
-        if vel > 50 then
+        if vel > 50 and IsValid(self.interior) then
             util.ScreenShake(self.interior:GetPos(), 1, 20, 0.3, 700)
         end
         if vel > 1600 then

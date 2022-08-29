@@ -21,9 +21,9 @@ ENT:AddHook("Initialize","health-init",function(self)
     end
 end)
 
-ENT:AddHook("GlobalSettingChanged","maxhealth-changed", function(self, id, val)
+ENT:AddHook("SettingChanged","maxhealth-changed", function(self, id, val)
     if id ~= "health-max" then return end
-
+    
     if self:GetHealth() > val then
         self:ChangeHealth(val)
     end
@@ -63,7 +63,7 @@ function ENT:GetRepairTime()
 end
 
 if SERVER then
-    ENT:AddWireOutput("Health", "TARDIS Health")
+    ENT:AddWireOutput("Health", "Wiremod.Outputs.Health")
 
     function ENT:Explode(f)
         local force = 60
@@ -90,7 +90,7 @@ if SERVER then
         if self:CallHook("CanRepair")==false then return false end
         if on==true then
             for k,_ in pairs(self.occupants) do
-                TARDIS:Message(k, "This TARDIS has been set to self-repair. Please vacate the interior.")
+                TARDIS:Message(k, "Health.RepairActivated")
             end
             if self:GetPower() then self:SetPower(false) end
             self:SetData("repair-primed",true,true)
@@ -105,7 +105,7 @@ if SERVER then
             self:SetData("repair-primed",false,true)
             self:SetPower(true)
             for k,_ in pairs(self.occupants) do
-                TARDIS:Message(k, "Self-repair has been cancelled.")
+                TARDIS:Message(k, "Health.RepairCancelled")
             end
         end
         return true
@@ -133,7 +133,7 @@ if SERVER then
         self:CallHook("RepairFinished")
         self:SetPower(true)
         self:SetLocked(false, nil, true)
-        TARDIS:Message(self:GetCreator(), "Your TARDIS has finished self-repairing")
+        TARDIS:Message(self:GetCreator(), "Health.RepairFinished")
         self:StopSmoke()
         self:FlashLight(1.5)
     end
@@ -206,7 +206,7 @@ if SERVER then
 
     ENT:AddHook("LockedUse", "repair", function(self, a)
         if self:GetData("repairing") then
-            TARDIS:Message(a, "This TARDIS is repairing. It will be done in "..math.floor(self:GetRepairTime()).." seconds.")
+            TARDIS:Message(a, "Health.Repairing", math.floor(self:GetRepairTime()))
             return true
         end
     end)
@@ -216,7 +216,7 @@ if SERVER then
             self:SetData("repair-primed", false, true)
             self:SetPower(true)
             for k,_ in pairs(self.occupants) do
-                TARDIS:Message(k, "Self-repair has been cancelled.")
+                TARDIS:Message(k, "Health.RepairCancelled")
             end
         end
 
@@ -269,6 +269,7 @@ if SERVER then
         if dmginfo:GetDamage() <= 0 then return end
         local newhealth = self:GetHealth() - (dmginfo:GetDamage()/2)
         self:ChangeHealth(newhealth)
+        if not IsValid(self.interior) then return end
         if dmginfo:IsDamageType(DMG_BLAST) and self:GetHealth() ~= 0 then
             int = self.metadata.Interior.Sounds.Damage
             self.interior:EmitSound(int.Explosion)
@@ -280,6 +281,7 @@ if SERVER then
         if (data.Speed < 300) then return end
         local newhealth = self:GetHealth() - (data.Speed / 23)
         self:ChangeHealth(newhealth)
+        if not IsValid(self.interior) then return end
         local phys = self:GetPhysicsObject()
         local vel = phys:GetVelocity():Length()
         if self:GetHealth() ~= 0 and vel < 900 then
@@ -297,11 +299,13 @@ if SERVER then
 
     ENT:AddHook("OnHealthDepleted", "death", function(self)
         self:SetPower(false)
-        local int = self.metadata.Interior.Sounds.Damage
-        self.interior:StopSound(int.BigCrash)
-        self.interior:StopSound(int.Crash)
-        self.interior:StopSound(int.Explosion)
-        self.interior:EmitSound(int.Death)
+        if IsValid(self.interior) then
+            local int = self.metadata.Interior.Sounds.Damage
+            self.interior:StopSound(int.BigCrash)
+            self.interior:StopSound(int.Crash)
+            self.interior:StopSound(int.Explosion)
+            self.interior:EmitSound(int.Death)
+        end
         self:Explode(180)
     end)
 

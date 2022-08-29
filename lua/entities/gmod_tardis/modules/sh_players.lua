@@ -8,13 +8,31 @@ if SERVER then
         ply:SetTardisData("exterior", self, true)
         ply:SetTardisData("interior", self.interior, true)
         if not IsValid(self.interior) then
+            ply:SetTardisData("intfallback", true)
             ply:Spectate(OBS_MODE_ROAMING)
             self:PlayerThirdPerson(ply,true)
         end
     end)
 
+    ENT:AddHook("Outside", "players", function(self,ply,enabled)
+        if (not enabled) and (ply:GetTardisData("intfallback")) then
+            self:PlayerExit(ply, true)
+        end
+    end)
+
     ENT:AddHook("PlayerExit", "players", function(self,ply,forced,notp)
+        if ply:GetTardisData("intfallback") then
+            ply:Spectate(OBS_MODE_NONE)
+        end
         ply:ClearTardisData()
+    end)
+
+    ENT:AddHook("Think", "players", function(self)
+        for k,v in pairs(self.occupants) do
+            if k:GetTardisData("intfallback") then
+                k:SetPos(self:GetPos())
+            end
+        end
     end)
     
     local meta=FindMetaTable("Player")
@@ -39,6 +57,13 @@ if SERVER then
         net.Start("TARDIS-PlayerDataClear")
         net.Send(self)
     end
+
+    hook.Add("DoPlayerDeath", "TARDIS_PlayerDeath", function(ply)
+        local ext=ply:GetTardisData("exterior")
+        if IsValid(ext) and ply:GetTardisData("intfallback") then
+            ext:PlayerExit(ply, true)
+        end
+    end)
 else
     local meta=FindMetaTable("Player")
     function meta:SetTardisData(k,v)

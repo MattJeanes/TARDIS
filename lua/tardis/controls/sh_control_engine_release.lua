@@ -5,9 +5,9 @@ TARDIS:AddControl({
         local ang = ang or self:GetData("demat-ang") or self:GetAngles()
         self:EngineReleaseDemat(pos, ang, function(result)
             if result then
-                TARDIS:Message(ply, "Force dematerialisation triggered")
+                TARDIS:Message(ply, "Controls.EngineRelease.ForceDemat")
             elseif result == false then
-                TARDIS:ErrorMessage(ply, "Failed to dematerialise")
+                TARDIS:ErrorMessage(ply, "Controls.EngineRelease.FailedDemat")
             end
         end)
     end,
@@ -18,8 +18,8 @@ TARDIS:AddControl({
         mmenu = false,
         toggle = false,
         frame_type = {0, 1},
-        text = "Engine Release",
+        text = "Controls.EngineRelease",
         order = 8,
     },
-    tip_text = "Engine Release",
+    tip_text = "Controls.EngineRelease.Tip",
 })

@@ -157,7 +157,7 @@ function TardisScreenButton:SetFrameType(type1, type2)
         type2 = type1
     end
     local function getFrameType(type)
-        if     type == 0 then
+        if type == 0 then
             return "default", true
         elseif type == 1 then
             return "on"
@@ -192,7 +192,7 @@ function TardisScreenButton:SetText(text)
         file_on =  TARDIS:GetGUIThemeElement(self.theme, "text_icons_on")
         file_off = TARDIS:GetGUIThemeElement(self.theme, "text_icons_off")
         self.label:SetColor(Color(0,0,0,255))
-        self.label:SetText(text)
+        self.label:SetText(TARDIS:GetPhrase(text))
     end
 
     self:SetImages(file_off, file_on)

@@ -3,12 +3,12 @@
 ENT.Type = "anim"
 ENT.Base = "base_gmodentity"
 
-ENT.PrintName = "Time Distortion Generator"
+ENT.PrintName = "#TARDIS.TimeDistortionGenerator"
 ENT.Spawnable = true
 
-ENT.Instructions= "Creates time distortions, which mess with the TARDIS engines, and prevent it from taking off or landing"
+ENT.Instructions= "#TARDIS.TimeDistortionGenerator.Instructions"
 ENT.AdminOnly = false
-ENT.Category = "Doctor Who - TARDIS Tools"
+ENT.Category = "#TARDIS.Spawnmenu.CategoryTools"
 ENT.IconOverride = "materials/entities/time_distortion_generator.png"
 
 

@@ -12,9 +12,8 @@ TARDIS:AddSetting({
 
     option=true,
     section=SETTING_SECTION,
-    subsection="Exterior light",
-    name="Enable Light Color Override",
-    desc="Whether the override of exterior light color is enabled",
+    subsection="Light",
+    name="EnableColorOverride",
 })
 
 TARDIS:AddSetting({
@@ -26,9 +25,8 @@ TARDIS:AddSetting({
 
     option=true,
     section=SETTING_SECTION,
-    subsection="Exterior light",
-    name="Color Override",
-    desc="The override color of the exterior light",
+    subsection="Light",
+    name="ColorOverride",
 })
 
 TARDIS:AddSetting({
@@ -40,9 +38,8 @@ TARDIS:AddSetting({
 
     option=true,
     section=SETTING_SECTION,
-    subsection="Exterior light",
-    name="Exterior Light Always On",
-    desc="Should the exterior light always be lit?",
+    subsection="Light",
+    name="AlwaysOn",
 })
 
 --------------------------------------------------------------------------------
@@ -57,9 +54,8 @@ TARDIS:AddSetting({
 
     option=true,
     section=SETTING_SECTION,
-    subsection="Projected light",
-    name="Enable Brightness Override",
-    desc="Whether the override of light brightness is enabled",
+    subsection="ProjectedLight",
+    name="EnableBrightnessOverride",
 })
 
 TARDIS:AddSetting({
@@ -71,9 +67,8 @@ TARDIS:AddSetting({
 
     option=true,
     section=SETTING_SECTION,
-    subsection="Projected light",
-    name="Enable Color Override",
-    desc="Whether the override of projected light color is enabled",
+    subsection="ProjectedLight",
+    name="EnableColorOverride",
 })
 
 TARDIS:AddSetting({
@@ -85,9 +80,8 @@ TARDIS:AddSetting({
 
     option=true,
     section=SETTING_SECTION,
-    subsection="Projected light",
-    name="Enable Distance Override",
-    desc="Whether the override of light distance is enabled",
+    subsection="ProjectedLight",
+    name="EnableDistanceOverride",
 })
 
 TARDIS:AddSetting({
@@ -101,9 +95,8 @@ TARDIS:AddSetting({
 
     option=true,
     section=SETTING_SECTION,
-    subsection="Projected light",
-    name="Brightness Override",
-    desc="Override brightness of projected light",
+    subsection="ProjectedLight",
+    name="BrightnessOverride",
 })
 
 TARDIS:AddSetting({
@@ -117,9 +110,8 @@ TARDIS:AddSetting({
 
     option=true,
     section=SETTING_SECTION,
-    subsection="Projected light",
-    name="Distance Override",
-    desc="Override distance of projected light",
+    subsection="ProjectedLight",
+    name="DistanceOverride",
 })
 
 TARDIS:AddSetting({
@@ -131,7 +123,6 @@ TARDIS:AddSetting({
 
     option=true,
     section=SETTING_SECTION,
-    subsection="Projected light",
-    name="Color Override",
-    desc="Override color of projected light",
+    subsection="ProjectedLight",
+    name="ColorOverride",
 })

@@ -89,8 +89,10 @@ T.Exterior = {
             demat_damaged = "drmatt/tardis/demat_damaged.wav",
             demat_fail = "drmatt/tardis/demat_fail.wav",
             mat = "drmatt/tardis/mat.wav",
-            mat_damaged = "drmatt/tardis/mat_damaged.wav",
+            mat_damaged = "jeredek/tardis/mat_damaged.wav",
             mat_fail = "drmatt/tardis/mat_fail.wav",
+            mat_fast = "p00gie/tardis/mat_fast.wav",
+            mat_damaged_fast = "p00gie/tardis/mat_damaged_fast.wav",
             fullflight = "drmatt/tardis/full.wav",
             fullflight_damaged = "drmatt/tardis/full_damaged.wav",
             interrupt = "drmatt/tardis/repairfinish.wav",
@@ -119,7 +121,9 @@ T.Exterior = {
     },
     Teleport = {
         SequenceSpeed = 0.77,
+        SequenceSpeedWarning = 0.6,
         SequenceSpeedFast = 0.935,
+        SequenceSpeedWarnFast = 0.97,
         DematSequence = {
             150,
             200,

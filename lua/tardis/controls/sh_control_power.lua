@@ -2,9 +2,9 @@ TARDIS:AddControl({
     id = "power",
     ext_func=function(self,ply)
         if self:TogglePower() then
-            TARDIS:StatusMessage(ply, "Power", self:GetData("power-state"))
+            TARDIS:StatusMessage(ply, "Controls.Power.Status", self:GetData("power-state"))
         else
-            TARDIS:ErrorMessage(ply, "Failed to toggle power")
+            TARDIS:ErrorMessage(ply, "Controls.Power.FailedToggle")
         end
     end,
     serveronly=true,
@@ -14,10 +14,10 @@ TARDIS:AddControl({
         mmenu = false,
         toggle = true,
         frame_type = {2, 1},
-        text = "Power",
+        text = "Controls.Power",
         pressed_state_from_interior = false,
         pressed_state_data = "power-state",
         order = 2,
     },
-    tip_text = "Power Switch",
+    tip_text = "Controls.Power.Tip",
 })

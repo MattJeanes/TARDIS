@@ -1,4 +1,4 @@
--- Key bind system (inspired by WAC)
+-- Control
 
 if SERVER then
     util.AddNetworkString("TARDIS-Control")
@@ -33,9 +33,8 @@ function TARDIS:Control(control_id, ply)
     local ext=ply:GetTardisData("exterior")
     if control and IsValid(ext) then
         local int=ply:GetTardisData("interior")
-        if not IsValid(int) then return end
-        if ext:CallHook("CanUseTardisControl", control_id, ply) == false
-            or int:CallHook("CanUseTardisControl", control_id, ply) == false
+        if ext:CallHook("CanUseTardisControl", control, ply) == false
+            or (IsValid(int) and int:CallHook("CanUseTardisControl", control, ply) == false)
         then
             return
         end
@@ -44,7 +43,7 @@ function TARDIS:Control(control_id, ply)
         if cl_serv_ok and control.ext_func then
             res_ext = control.ext_func(ext, ply)
         end
-        if cl_serv_ok and control.int_func then
+        if cl_serv_ok and control.int_func and IsValid(int) then
             res_int = control.int_func(int, ply)
         end
         if CLIENT and (res_ext ~= false) and (res_int ~= false) and (not control.clientonly) then
@@ -53,7 +52,9 @@ function TARDIS:Control(control_id, ply)
             net.SendToServer()
         end
         ext:CallHook("TardisControlUsed", control_id, ply)
-        int:CallHook("TardisControlUsed", control_id, ply)
+        if IsValid(int) then
+            int:CallHook("TardisControlUsed", control_id, ply)
+        end
     end
 end
 

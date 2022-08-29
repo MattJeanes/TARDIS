@@ -1,6 +1,6 @@
 local style = {
     style_id = "white_on_grey",
-    style_name = "white on grey",
+    style_name = "WhiteOnGrey",
     font = "Trebuchet24",
     padding = 10,
     offset = 30,

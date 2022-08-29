@@ -19,7 +19,7 @@ T.Versions = {
     },
     other = {
         {
-            name = "TT Capsule Version",
+            name = "Interiors.Default.Versions.TTCapsule",
             id = "default_tt_capsule",
         },
     },
@@ -27,7 +27,7 @@ T.Versions = {
 
 
 T.Base = "base"
-T.Name = "Default"
+T.Name = "Interiors.Default"
 T.ID = "default"
 T.Interior = {
     Model = "models/drmatt/tardis/interior.mdl",
@@ -75,6 +75,15 @@ T.Interior = {
             power_off_black = true
         }
     },
+    Scanners = {
+        {
+            mat = "models/drmatt/tardis/tardisscanner",
+            width = 1024,
+            height = 1024,
+            ang = Angle(0,0,0),
+            fov = 90,
+        }
+    },
     Sequences = "default_sequences",
     Parts = {
         door = {
@@ -88,6 +97,7 @@ T.Interior = {
         default_flightlever         =   {pos = Vector(-0.431641, 44.75, 6.4),               ang = Angle(-63.913, 137.035, 136.118), },
         default_screen              =   {pos = Vector(42, 0.75, 27.1),                      ang = Angle(0, -5, 0),                  },
         default_screenbutton        =   {pos = Vector(44.5, 9.75, 38.2),                    ang = Angle(215, 85, 90),               },
+        default_scannerbutton       =   {pos = Vector(42, -31.5, 1.4),                      ang = Angle(-25, 150, -10)              },
         default_wibblylever         =   {pos = Vector(-48, 18, 5.4),                        ang = Angle(335, 347, 6),               },
         default_enginerelease       =   {pos = Vector(-61.229, 21.622, -4.514),             ang = Angle(180, 90.911, -90),          },
         default_doorbutton          =   {pos = Vector(-60.782, -25.129, -6.108),            ang = Angle(0, 65.911, -81.515),        },
@@ -136,6 +146,7 @@ T.Interior = {
         default_flightlever         = "flight",
         default_screen              = nil,
         default_screenbutton        = "toggle_screens",
+        default_scannerbutton       = "toggle_scanners",
         default_wibblylever         = "doorlock",
         default_enginerelease       = "engine_release",
         default_doorbutton          = "door",
@@ -174,31 +185,32 @@ T.Interior = {
     },
     PartTips = {
 
-        default_throttle            =   {pos = Vector(-8.87, -50, 5.5),         down = true},
-        default_flightlever         =   {pos = Vector(-1, 59, 2),                   down = true},
-        default_screen              =   {pos = Vector(42, 0.75, 29.1),           down = true},
-        default_screenbutton        =   {pos = Vector(47, 10, 38),               right = true},
-        default_wibblylever         =   {pos = Vector(-48, 18, 5.4),               right = true},
+        default_throttle            =   {pos = Vector(-8.87, -50, 5.5), down = true},
+        default_flightlever         =   {pos = Vector(-1, 59, 2), down = true},
+        default_screen              =   {pos = Vector(42, 0.75, 29.1), down = true},
+        default_screenbutton        =   {pos = Vector(47, 10, 38), right = true},
+        default_scannerbutton        =  {pos = Vector(43, -32, 3.5), down = true},
+        default_wibblylever         =   {pos = Vector(-48, 18, 5.4), right = true},
         default_enginerelease       =   {pos = Vector(-61.229, 21.622, -4.514), down = true},
         default_doorbutton          =   {pos = Vector(-62.699, -24.23, -5.506), down = true},
-        default_powerlever          =   {pos = Vector(44, -18, 5.5),               right = true},
-        default_keyboard            =   {pos = Vector(29, -53, -8),             right = true, down = true},
-        default_hads                =   {pos = Vector(52, 31, 1),                   down = true},
-        default_typewriter          =   {pos = Vector(19, 48.80, 2.07)           },
-        default_repairlever         =   {pos = Vector(-8, 45, 9),                   right = true},
-        default_redecoratebutton    =   {pos = Vector(-6.542, 54.408, 3.081),     down = true, right = true},
-        default_handbrake           =   {pos = Vector(-52, -29, 2),             down = true},
-        default_gramophone          =   {pos = Vector(-26, -1.50, 40),           right = true, down = true},
-        default_biglever            =   {pos = Vector(-9.94, -65, -12)           },
-        default_physlock            =   {pos = Vector(52, -30, 0),               down = true},
-        default_isomorphic          =   {pos = Vector(-52, 29, 2),               down = true},
-        default_atomaccel           =   {pos = Vector(20, -38, 6),               right = true},
-        default_directionalpointer  =   {pos = Vector(12.5, -24.5, 23)           },
-        default_float               =   {pos = Vector(-2, -60, 1),               right = true, down = true},
-        default_blacksticks         =   {pos = Vector(4.48, -43.9, 7)             },
-        default_longflighttoggle    =   {pos = Vector(-37.24, -27.91, 7.42)     },
-        default_dematcircuit        =   {pos = Vector(-43.16, -31.01, 4.7),     right = true, down = true},
-        default_sonicdispenser      =   {pos = Vector(-26.048, 42.31, 3.15),       right = true, down = false},
+        default_powerlever          =   {pos = Vector(44, -18, 5.5), right = true},
+        default_keyboard            =   {pos = Vector(29, -53, -8), right = true, down = true},
+        default_hads                =   {pos = Vector(52, 31, 1), down = true},
+        default_typewriter          =   {pos = Vector(19, 48.80, 2.07) },
+        default_repairlever         =   {pos = Vector(-8, 45, 9), right = true},
+        default_redecoratebutton    =   {pos = Vector(-6.542, 54.408, 3.081), down = true, right = true},
+        default_handbrake           =   {pos = Vector(-52, -29, 2), down = true},
+        default_gramophone          =   {pos = Vector(-26, -1.50, 40), right = true, down = true},
+        default_biglever            =   {pos = Vector(-9.94, -65, -12) },
+        default_physlock            =   {pos = Vector(52, -30, 0), down = true},
+        default_isomorphic          =   {pos = Vector(-52, 29, 2), down = true},
+        default_atomaccel           =   {pos = Vector(20, -38, 6), right = true},
+        default_directionalpointer  =   {pos = Vector(12.5, -24.5, 23) },
+        default_float               =   {pos = Vector(-2, -60, 1), right = true, down = true},
+        default_blacksticks         =   {pos = Vector(4.48, -43.9, 7) },
+        default_longflighttoggle    =   {pos = Vector(-37.24, -27.91, 7.42) },
+        default_dematcircuit        =   {pos = Vector(-43.16, -31.01, 4.7), right = true, down = true},
+        default_sonicdispenser      =   {pos = Vector(-26.048, 42.31, 3.15), right = true, down = false},
         default_helmic = {
             pos = Vector(-26, -41, 4),
             right = true,
@@ -222,6 +234,9 @@ T.Interior = {
 T.Exterior = {
     Parts = {
         door = true
+    },
+    Light = {
+        warncolor = Color(255,200,200),
     },
     PhaseMaterial = "models/drmatt/tardis/exterior/phase.vmt"
 }

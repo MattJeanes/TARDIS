@@ -27,13 +27,13 @@ if SERVER then
             if self:CallHook("CanDemat", true) == false then
                 if not self:GetData("hads-failed-time") or CurTime() > self:GetData("hads-failed-time") + 10 then
                     self:SetData("hads-failed-time", CurTime())
-                    TARDIS:ErrorMessage(self:GetCreator(), "Something stopped H.A.D.S. from dematerialising the TARDIS!")
-                    TARDIS:ErrorMessage(self:GetCreator(), "Your TARDIS is under attack!")
+                    TARDIS:ErrorMessage(self:GetCreator(), "HADS.DematError")
+                    TARDIS:ErrorMessage(self:GetCreator(), "HADS.UnderAttack")
                 end
                 return false
             end
-            TARDIS:Message(self:GetCreator(), "H.A.D.S. has been triggered!")
-            TARDIS:Message(self:GetCreator(), "Your TARDIS is under attack!")
+            TARDIS:Message(self:GetCreator(), "HADS.Triggered")
+            TARDIS:Message(self:GetCreator(), "HADS.UnderAttack")
             self:SetData("hads-triggered", true)
             self:SetFastRemat(false)
             self:SetRandomDestination(true) 
@@ -44,8 +44,8 @@ if SERVER then
                 if self:GetData("hads-need-remat", false) then 
                     self:Mat(function(result)
                         if result then
-                            TARDIS:Message(self:GetCreator(), "Your TARDIS is materialising")
-                        end               
+                            TARDIS:Message(self:GetCreator(), "HADS.Mat")
+                        end
                     end)
                 end
             end)

@@ -87,6 +87,8 @@ function ENT:InitializeTips(style_name)
                 tip.text = text_overrides[tip.text]
             end
 
+            
+            tip.text = TARDIS:GetPhrase(tip.text)
             table.insert(tips, tip)
         end
     end
@@ -132,6 +134,10 @@ ENT:AddHook("ShouldDrawTips", "tips", function(self)
     if LocalPlayer():GetTardisData("thirdperson") or LocalPlayer():GetTardisData("destination") then
         return false
     end
+end)
+
+ENT:AddHook("LanguageChanged", "tips", function(self, code)
+    self.tip_style_name = nil
 end)
 
 hook.Add("HUDPaint", "TARDIS-DrawTips", function()

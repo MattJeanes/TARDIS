@@ -76,7 +76,7 @@ local overrides={
         end
 
         if self.PowerOffUse == false and not self.interior:GetPower() then
-            TARDIS:ErrorMessage(a, "Power is disabled. This control is blocked.")
+            TARDIS:ErrorMessage(a, "Common.PowerDisabledControl")
         else
             if allowed~=false then
                 if self.HasUseBasic then
@@ -141,13 +141,18 @@ end
 local parts={}
 
 function TARDIS:GetPart(ent,id)
-    return ent.parts and ent.parts[id] or NULL
+    return IsValid(ent) and ent.parts and ent.parts[id] or NULL
 end
 
 local overridequeue={}
 postinit=postinit or false -- local vars cannot stay on autorefresh
 function TARDIS:AddPart(e)
     local source = debug.getinfo(2).short_src
+
+    if string.lower(e.ID) ~= e.ID then
+        error("The part ID \"" .. e.ID .. "\" contains uppercase symbols. All part IDs have to be lowercase.")
+    end
+
     if parts[e.ID] and parts[e.ID].source ~= source then
         error("Duplicate part ID registered: " .. e.ID .. " (exists in both " .. parts[e.ID].source .. " and " .. source .. ")")
     end

@@ -2,9 +2,8 @@
 
 -- Binds
 TARDIS:AddKeyBind("float-toggle",{
-    name="Toggle Float",
-    section="Third Person",
-    desc="Lets the TARDIS fly as if there is no gravity",
+    name="ToggleFloat",
+    section="ThirdPerson",
     func=function(self,down,ply)
         if ply==self.pilot and down then
             TARDIS:Control("float", ply)
@@ -45,7 +44,6 @@ TARDIS:AddKeyBind("float-right",{
 TARDIS:AddKeyBind("float-boost",{
     name="Boost",
     section="Float",
-    desc="Hold this key while floating to speed up rotation",
     key=KEY_LSHIFT,
     serveronly=true,
     exterior=true
@@ -53,7 +51,6 @@ TARDIS:AddKeyBind("float-boost",{
 TARDIS:AddKeyBind("float-rotate",{
     name="Rotate",
     section="Float",
-    desc="Hold this key while using left and right to rotate on yaw axis",
     key=KEY_LALT,
     serveronly=true,
     exterior=true
@@ -61,7 +58,6 @@ TARDIS:AddKeyBind("float-rotate",{
 TARDIS:AddKeyBind("float-brake",{
     name="Brake",
     section="Float",
-    desc="Hold this key to slow rotation in float mode",
     key=KEY_SPACE,
     serveronly=true,
     exterior=true

@@ -60,9 +60,13 @@ if SERVER then
     end
 
     function ENT:SetRandomDestination(grounded)
-        local pos = self:GetRandomLocation(grounded)
-        local ang = Angle(0,0,0)
-        self:SetDestination(pos, ang)
+        local randomLocation = self:GetRandomLocation(grounded)
+        if randomLocation then
+            self:SetDestination(randomLocation, Angle(0,0,0))
+            return true
+        else
+            return false
+        end
     end
 
     function ENT:GetDestination()
@@ -307,7 +311,10 @@ if SERVER then
             and not self:GetData("redecorate")
             and not self:GetData("redecorate_parent")
         then
-            self:ChangePosition(self:GetRandomLocation(false), self:GetAngles(), false)
+            local randomLocation = self:GetRandomLocation(false)
+            if randomLocation then
+                self:ChangePosition(randomLocation, self:GetAngles(), false)
+            end
         end
     end)
 
@@ -361,10 +368,10 @@ else
                 sound.Play(sound_demat_ext,self:GetPos())
                 if pos and self:GetData("demat-fast",false) then
                     if not IsValid(self) then return end
-                    if (self:GetData("demat-fast",false))==true then
-                        sound.Play(ext.mat_damaged, pos)
+                    if self:GetData("health-warning", false) and (self:GetData("demat-fast",false))==true then
+                        sound.Play(ext.mat_damaged_fast, pos)
                     else
-                        sound.Play(ext.mat, pos)
+                        sound.Play(ext.mat_fast, pos)
                     end
                 end
             end
@@ -491,7 +498,11 @@ ENT:AddHook("Think","teleport",function(self,delta)
         target=self:GetTargetAlpha()
         self:SetData("alphatarget",target)
     end
-    local sequencespeed = (self:GetData("demat-fast",false) and self.metadata.Exterior.Teleport.SequenceSpeedFast or self.metadata.Exterior.Teleport.SequenceSpeed)
+    local teleport_md = self.metadata.Exterior.Teleport
+    local sequencespeed = (self:GetData("demat-fast") and teleport_md.SequenceSpeedFast or teleport_md.SequenceSpeed)
+    if self:GetData("health-warning",false) then 
+        sequencespeed = (self:GetData("demat-fast") and teleport_md.SequenceSpeedWarnFast or teleport_md.SequenceSpeedWarning)
+    end
     alpha=math.Approach(alpha,target,delta*66*sequencespeed)
     self:SetData("alpha",alpha)
     local attached=self:GetData("demat-attached")
