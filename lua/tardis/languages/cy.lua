@@ -51,6 +51,7 @@ T.Phrases = {
     ["Binds.Sections.Teleport.Demat"] = "Dad-sylweddol",
     ["Binds.Sections.Teleport.Mat"] = "Gwireddu",
     ["Binds.Sections.Teleport.Set"] = "Osod",
+    ["Binds.Sections.ThirdPerson"] = "Trydydd Person",
     ["Binds.Sections.ThirdPerson.Destination"] = "Cyrchfan",
     ["Binds.Sections.ThirdPerson.Destination.Description"] = "Mewnbwn cyflwr gosod cyrchfan",
     ["Binds.Sections.ThirdPerson.OpenScreen"] = "Agor Sgrîn",
@@ -60,6 +61,19 @@ T.Phrases = {
     ["Binds.Sections.ThirdPerson.ToggleFlight"] = "Toglo'r Hedfan",
     ["Binds.Sections.ThirdPerson.ToggleFloat"] = "Toglo'r arnofio",
     ["Binds.Sections.ThirdPerson.ToggleFloat.Description"] = "Gadael i'r TARDIS hedfan fel pe na bai disgyrchiant",
+    ["Binds.Sections.ThirdPerson.TogglePhyslock"] = "Toglo Physlock",
+    ["Binds.Sections.ThirdPerson.TogglePhyslock.Description"] = "Gwnewch y TARDIS yn gyson ac yn ansymudol yn y gofod",
+    ["Common.Cancel"] = "Canslo",
+    ["Common.Closed.Lower"] = "ar gau",
+    ["Common.ControlSequencesEnabledWarning"] = "Mae Dilyniannau Rheoli wedi'u galluogi. Rhaid i chi ddefnyddio'r dilyniant",
+    ["Common.Default"] = "Diofyn",
+    ["Common.NotInTARDIS"] = "Nid ydych yn y TARDIS",
+    ["Common.OK"] = "OK",
+    ["Common.Opened.Lower"] = "ar Agor",
+    ["Common.TARDIS"] = "TARDIS",
+    ["Common.Yes"] = "Ydw",
+    ["Controls.Destination"] = "Cyrchfan",
+    ["Controls.Destination.Tip"] = "Dewis Cyrchfan",
 }
 
 TARDIS:AddLanguage(T)
