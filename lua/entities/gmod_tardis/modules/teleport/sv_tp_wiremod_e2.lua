@@ -59,7 +59,7 @@ ENT:AddHook("HandleE2", "teleport_gets", function(self, name, e2)
     elseif name == "GetLongflight" then
         return self:GetData("demat-fast",false) and 0 or 1
     elseif name == "LastAng" then
-        return self:GetData("fastreturn-ang", {0,0,0})
+        return self:GetData("fastreturn-ang", Angle(0,0,0))
     elseif name == "LastPos" then
         return self:GetData("fastreturn-pos", Vector(0,0,0))
     end
