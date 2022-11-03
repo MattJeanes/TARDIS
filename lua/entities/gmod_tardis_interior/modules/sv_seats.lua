@@ -42,6 +42,8 @@ function ENT:MakeVehicle( Pos, Ang, Model, Class, VName, VTable )
     ent:GetPhysicsObject():EnableMotion(false)
     ent:SetRenderMode(RENDERMODE_TRANSALPHA)
     ent:SetColor(Color(255,255,255,0))
+    self:DeleteOnRemove(ent)
+
     constraint.Weld(self,ent,0,0)
     if IsValid(self.owner) then
         if SPropProtection then
