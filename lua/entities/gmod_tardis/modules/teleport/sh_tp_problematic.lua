@@ -430,14 +430,10 @@ ENT:AddHook("Think", "interrupted-teleport", function(self)
     end
 end)
 
-ENT:AddHook("CanTogglePower","interrupted-teleport", function(self)
+ENT:AddHook("CanTogglePower", "interrupted-teleport", function(self)
     if self:GetData("teleport-interrupted", false) then
         return false
     end
-end)
-
-ENT:AddHook("InterruptTeleport", "demat", function(self)
-
 end)
 
 
