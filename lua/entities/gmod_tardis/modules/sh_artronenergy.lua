@@ -23,6 +23,7 @@ TARDIS:AddSetting({
     name="MaxHealth",
 })
 if SERVER then
+
 local function passiveArtronPower(this)
 
     timer.Simple( 5, function() 
@@ -38,6 +39,7 @@ local function passiveArtronPower(this)
             end
         end
         passiveArtronPower(this)
+        checkTardisArtron(this)
     end )
 
 end
@@ -51,10 +53,9 @@ local function ArtronPowerOff(this)
         if this:GetData("artron-val") < GetConVar("te_maxartronenergy"):GetInt() then
             this:SetData("artron-val", this:GetData("artron-val") + 250, true)
         end
-        if this:GetData("artron-val") > GetConVar("te_maxartronenergy"):GetInt() then
-            this:SetData("artron-val", GetConVar("te_maxartronenergy"):GetInt())
-        end
         ArtronPowerOff(this)
+        checkTardisArtron(this)
+
     end )
 
 end
@@ -100,7 +101,6 @@ end
 
 
 ENT:AddHook("Initialize","artron-init",function(self)
-    print("Initializing Tardis Extension")
     if GetConVar("te_startwithmaxenergy"):GetBool() == true then
         self:SetData("artron-val", GetConVar("te_maxartronenergy"):GetInt(), true)
     else
@@ -151,8 +151,13 @@ end)
 function checkTardisArtron(this)
     if this:GetData("artron-val") < 0 then
         this:SetData("artron-val", 0, true)
+    elseif this:GetData("artron-val") > GetConVar("te_maxartronenergy"):GetInt() then
+                
+        this:SetData("artron-val", GetConVar("te_maxartronenergy"):GetInt(), true)
+ 
     end
 end
+
 
 ENT:AddHook("Think", "powerdisableartron", function(self)
     if  self:GetData("power-state") == true and self:GetData("artron-val") <= 0 then
