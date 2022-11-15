@@ -88,12 +88,14 @@ if SERVER then
             return false
         end
         if self:CallHook("CanRepair")==false then return false end
-        if on==true then
+        if on == true then
             for k,_ in pairs(self.occupants) do
                 TARDIS:Message(k, "Health.RepairActivated")
             end
-            if self:GetPower() then self:SetPower(false) end
-            self:SetData("repair-primed",true,true)
+            local power = self:GetPower()
+            self:SetData("power-before-repair", power)
+            if power then self:SetPower(false) end
+            self:SetData("repair-primed", true, true)
 
             if table.IsEmpty(self.occupants) then
                 self:Timer("repair-nooccupants", 0, function() 
@@ -103,11 +105,19 @@ if SERVER then
             end
         else
             self:SetData("repair-primed",false,true)
-            self:SetPower(true)
+
+            local prev_power = self:GetData("power-before-repair")
+            if (prev_power ~= nil) then
+                self:SetPower(prev_power)
+            else
+                self:SetPower(true)
+            end
+
             for k,_ in pairs(self.occupants) do
                 TARDIS:Message(k, "Health.RepairCancelled")
             end
         end
+        self:CallHook("RepairToggled", on)
         return true
     end
 
