@@ -68,6 +68,7 @@ if SERVER then
         if (not on) and self:CallHook("CanTurnOffFloat")==false then return end
         if (on) and self:CallHook("CanTurnOnFloat")==false then return end
         self:SetData("float",on,true)
+        self:CallCommonHook("FloatToggled", on)
         self.phys:EnableGravity(not on)
         return true
     end

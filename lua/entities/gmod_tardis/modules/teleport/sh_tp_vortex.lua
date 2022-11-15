@@ -20,6 +20,7 @@ end
 
 function ENT:SetFastRemat(on)
     self:SetData("demat-fast",on,true)
+    self:CallHook("FastRematToggled", on)
     return true
 end
 
@@ -34,6 +35,7 @@ function ENT:FastReturn(callback)
         self:SetData("demat-fast-prev", self:GetData("demat-fast", false));
         self:SetFastRemat(true)
         self:SetData("fastreturn",true)
+        self:CallHook("FastReturnTriggered")
         self:Demat(self:GetData("fastreturn-pos"),self:GetData("fastreturn-ang"))
         if callback then callback(true) end
     else

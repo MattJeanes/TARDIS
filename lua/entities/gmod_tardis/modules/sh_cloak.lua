@@ -40,6 +40,7 @@ if SERVER then
         if (not self:GetData("teleport")) and (not self:GetData("vortex")) then
             self:DrawShadow(not on)
         end
+        self:CallHook("CloakToggled", on)
         return true
     end
     
