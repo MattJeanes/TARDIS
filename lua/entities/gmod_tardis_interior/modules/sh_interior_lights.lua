@@ -5,7 +5,7 @@ cvars.AddChangeCallback("tardis2_debug_lamps", function()
     TARDIS.debug_lamps = GetConVar("tardis2_debug_lamps"):GetBool()
 end)
 
-TARDIS.debug_lamps = GetConVar("tardis2_debug_chat"):GetBool()
+TARDIS.debug_lamps = GetConVar("tardis2_debug_lamps"):GetBool()
 
 if CLIENT then
 
