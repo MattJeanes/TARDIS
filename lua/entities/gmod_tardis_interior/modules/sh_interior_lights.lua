@@ -1,5 +1,12 @@
 -- Lights
 
+CreateConVar("tardis2_debug_lamps", 0, {FCVAR_ARCHIVE, FCVAR_REPLICATED}, "TARDIS - enable debugging interior lamps")
+cvars.AddChangeCallback("tardis2_debug_lamps", function()
+    TARDIS.debug_lamps = GetConVar("tardis2_debug_lamps"):GetBool()
+end)
+
+TARDIS.debug_lamps = GetConVar("tardis2_debug_chat"):GetBool()
+
 if CLIENT then
 
     function ENT:DrawLight(id,light)
@@ -92,7 +99,7 @@ else -- SERVER
                     lamp:GetPhysicsObject():EnableGravity(false)
                     lamp:GetPhysicsObject():EnableMotion(false)
 
-                    if self.metadata.Interior.LampsDebug == true then
+                    if TARDIS.debug_lamps then
                         lamp:SetUseType(SIMPLE_USE)
                         lamp.Use = function(ply)
                             local clr = lamp:GetColor()
