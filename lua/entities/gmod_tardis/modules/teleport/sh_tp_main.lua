@@ -62,7 +62,7 @@ if SERVER then
     function ENT:SetRandomDestination(grounded)
         local randomLocation = self:GetRandomLocation(grounded)
         if randomLocation then
-            self:CallHook("RandomDestinationSet")
+            self:CallHook("RandomDestinationSet", randomLocation)
             self:SetDestination(randomLocation, Angle(0,0,0))
             return true
         else
