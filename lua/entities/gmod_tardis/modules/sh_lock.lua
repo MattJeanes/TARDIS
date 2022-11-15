@@ -18,6 +18,7 @@ if SERVER then
         self:SetData("locked",locked,true)
         self:FlashLight(0.6)
         if not silent then self:SendMessage("locksound") end
+        self:CallHook("DoorLockToggled", current)
         if callback then callback(true) end
     end
 

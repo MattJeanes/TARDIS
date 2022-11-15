@@ -10,6 +10,7 @@ end
 
 if SERVER then
     function ENT:SetSecurity(on)
+        self:CallHook("SecurityToggled", on)
         return self:SetData("security", on, true)
     end
 

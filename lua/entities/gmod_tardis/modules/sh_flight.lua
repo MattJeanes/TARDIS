@@ -103,6 +103,7 @@ if SERVER then
             end
         end
         self:SetData("flight",on,true)
+        self:CallCommonHook("FlightToggled", on)
         self:SetFloat(on)
         return true
     end

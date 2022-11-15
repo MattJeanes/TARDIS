@@ -28,12 +28,17 @@ if SERVER then
         self:SetData("spindir_prev", 0, true)
     end)
 
+    function ENT:SetSpinDir(dir)
+        self:CallHook("SpinChanged", dir)
+        return self:SetData("spindir", dir, true)
+    end
+
     function ENT:ToggleSpin()
         local current = self:GetData("spindir", -1)
         local prev = self:GetData("spindir_prev", 0)
 
         self:SetData("spindir_prev", current, true)
-        self:SetData("spindir", prev, true)
+        self:SetSpinDir(prev)
     end
 
     function ENT:CycleSpinDir()
@@ -41,7 +46,7 @@ if SERVER then
         local prev = self:GetData("spindir_prev", 0)
 
         self:SetData("spindir_prev", current, true)
-        self:SetData("spindir", -prev, true)
+        self:SetSpinDir(-prev)
     end
 
     function ENT:SwitchSpinDir()
@@ -49,11 +54,7 @@ if SERVER then
         local prev = self:GetData("spindir_prev", 0)
 
         self:SetData("spindir_prev", -prev, true)
-        self:SetData("spindir", -current, true)
-    end
-
-    function ENT:SetSpinDir(dir)
-        return self:SetData("spindir", dir, true)
+        self:SetSpinDir(-current)
     end
 
     ENT:AddHook("ToggleDoorReal", "spin-dir", function(self,open)

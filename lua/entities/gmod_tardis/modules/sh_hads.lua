@@ -2,6 +2,7 @@
 
 if SERVER then
     function ENT:SetHADS(on)
+        self:CallCommonHook("HadsToggled", on)
         return self:SetData("hads",on,true)
     end
 
