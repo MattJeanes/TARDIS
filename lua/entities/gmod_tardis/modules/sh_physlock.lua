@@ -45,6 +45,7 @@ function ENT:SetPhyslock(on)
         phys:EnableMotion(true)
     end
     phys:Wake()
+    self:CallCommonHook("PhyslockToggled", on)
     return true
 end
 

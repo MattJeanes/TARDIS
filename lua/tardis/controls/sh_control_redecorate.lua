@@ -8,6 +8,7 @@ TARDIS:AddControl({
 
         local on = not self:GetData("redecorate", false)
         self:SetData("redecorate", on, true)
+        self:CallHook("RedecorateToggled", on)
         TARDIS:StatusMessage(ply, "Controls.Redecorate.Status", on)
 
         if not self:GetData("redecorate", false) then

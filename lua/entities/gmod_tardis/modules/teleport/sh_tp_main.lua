@@ -62,6 +62,7 @@ if SERVER then
     function ENT:SetRandomDestination(grounded)
         local randomLocation = self:GetRandomLocation(grounded)
         if randomLocation then
+            self:CallHook("RandomDestinationSet", randomLocation)
             self:SetDestination(randomLocation, Angle(0,0,0))
             return true
         else
@@ -213,6 +214,7 @@ if SERVER then
 
             self:SendMessage("premat",function() net.WriteVector(self:GetData("demat-pos",Vector())) end)
             self:SetData("teleport",true)
+            self:CallHook("PreMatStart")
 
             local timerdelay = (self:GetData("demat-fast",false) and 1.9 or 8.5)
             self:Timer("matdelay", timerdelay, function()
@@ -376,6 +378,7 @@ else
                 end
             end
         end
+        self:CallHook("DematStart")
     end)
 
     ENT:OnMessage("premat", function(self)
@@ -411,12 +414,14 @@ else
                 end
             end
         end
+        self:CallHook("PreMatStart")
     end)
 
     ENT:OnMessage("mat", function(self)
         self:SetData("mat",true)
         self:SetData("step",1)
         self:SetData("vortex",false)
+        self:CallHook("MatStart")
     end)
 
     function ENT:StopDemat()
@@ -431,6 +436,7 @@ else
         self:SetData("mat",false)
         self:SetData("step",1)
         self:SetData("teleport",false)
+        self:CallHook("StopMat")
     end
 
 end
