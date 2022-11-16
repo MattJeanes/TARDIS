@@ -76,7 +76,6 @@ if SERVER then
                 this:ChangeArtron(250, true)
             end
             ArtronPowerOff(this)
-            checkTardisArtron(this)
 
         end )
 
@@ -117,7 +116,7 @@ if SERVER then
         if GetConVar("te_startwithmaxenergy"):GetBool() == true then
             self:ChangeArtron(GetConVar("te_maxartronenergy"):GetInt(), false)
         else
-            self:ChangeArtron(500, false)
+            self:ChangeArtron(100, false)
         end
         passiveArtronPower(self)
 
@@ -128,7 +127,7 @@ if SERVER then
         self:ChangeArtron(-50, true)
     end)
 
-    ENT:AddHook("CanDemat", "dematartron", function(self)
+    ENT:AddHook("DematStart", "dematartron", function(self)
         self:ChangeArtron(-500, true)
     end)
 
@@ -159,21 +158,36 @@ if SERVER then
 
 
 
-    ENT:AddHook("Think", "powerdisableartron", function(self)
+    ENT:AddHook("Think", "thinkartrontardis", function(self)
         if  self:GetData("power-state") == true and self:GetData("artron-val") <= 0 then
             if self:GetData("cloak") == true then 
                 self:SetCloak(false)
             end
+            if self:GetData("floatfirst") == true then
+                print("stop")
+                self:ToggleFloat()
+            end
             if self:GetData("flight") == true then
                 self:SetFlight(false)
             end
-            self:SetPower(false)
+
+
+            self:SetPower(false) -- Do all flight and cloak stuff before this because it wont work i think i dont remember -\_(o.o)_/-
             self:SetHandbrake(true)
             self:SetHandbrake(false)
             for k,_ in pairs(self.occupants) do
                 TARDIS:ErrorMessage(k, "Artron Depleted.")
             end
         end
+
+        --Timers n stuff (soon)
+
+
+
+
+
+
+        
     end)
 end
 
