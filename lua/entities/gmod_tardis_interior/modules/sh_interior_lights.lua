@@ -1,11 +1,27 @@
 -- Lights
 
-CreateConVar("tardis2_debug_lamps", 0, {FCVAR_ARCHIVE, FCVAR_REPLICATED}, "TARDIS - enable debugging interior lamps")
-cvars.AddChangeCallback("tardis2_debug_lamps", function()
-    TARDIS.debug_lamps = GetConVar("tardis2_debug_lamps"):GetBool()
-end)
+CreateConVar("tardis2_debug_lamps", 0, {FCVAR_ARCHIVE}, "TARDIS - enable debugging interior lamps")
 
-TARDIS.debug_lamps = GetConVar("tardis2_debug_lamps"):GetBool()
+if SERVER then
+    util.AddNetworkString("TARDIS-DebugLampsToggled")
+
+    -- It was required to manually code networking for this convar
+    -- AddChangeCallback doesn't callback client convars with FCVAR_REPLICATED
+    -- Details: https://github.com/Facepunch/garrysmod-issues/issues/3740
+
+    cvars.AddChangeCallback("tardis2_debug_lamps", function()
+        TARDIS.debug_lamps_enabled = GetConVar("tardis2_debug_lamps"):GetBool()
+        net.Start("TARDIS-DebugLampsToggled")
+            net.WriteBool(TARDIS.debug_lamps_enabled)
+        net.Broadcast()
+    end)
+else
+    net.Receive("TARDIS-DebugLampsToggled", function()
+        TARDIS.debug_lamps_enabled = net.ReadBool()
+    end)
+end
+
+TARDIS.debug_lamps_enabled = GetConVar("tardis2_debug_lamps"):GetBool()
 
 if CLIENT then
 
@@ -74,64 +90,171 @@ if CLIENT then
         end
     end)
 
-else -- SERVER
-    
-    if SERVER then
-        ENT:AddHook("Initialize", "lamps", function(self)
-            local lamps = self.metadata.Interior.Lamps
-            if not lamps then return end
+    function ENT:CreateProjectedLights()
+        if TARDIS.debug_lamps_enabled then return end
 
-            self.lamps = {}
+        local lamps = self.metadata.Interior.Lamps
+        if not lamps then return end
 
-            for k,v in pairs(lamps) do
-                if v then
-                    local lamp = MakeLamp(nil, --self:GetCreator(),
-                        v.color.r, v.color.g, v.color.b, KEY_NONE, true,
-                        v.texture or "effects/flashlight/soft",
-                        "models/maxofs2d/lamp_projector.mdl",
-                        v.fov or 90, v.distance or 1024, v.brightness or 3.0, true,
-                        {
-                            Pos = self:LocalToWorld(v.pos or Vector(0,0,0)),
-                            Angle = v.ang or Angle(0,0,0),
-                        })
+        self.projected_lights = {}
 
-                    lamp:SetUnFreezable(false)
-                    lamp:GetPhysicsObject():EnableGravity(false)
-                    lamp:GetPhysicsObject():EnableMotion(false)
+        for k,v in pairs(lamps) do
+            if v then
+                local pl = ProjectedTexture()
 
-                    if TARDIS.debug_lamps then
-                        lamp:SetUseType(SIMPLE_USE)
-                        lamp.Use = function(ply)
-                            local clr = lamp:GetColor()
-                            local pos = self:WorldToLocal(lamp:GetPos())
-                            local ang = lamp:GetAngles()
-                            print("{\n\tcolor = Color(" .. clr.r .. ", " .. clr.g .. ", " .. clr.b .. "),")
-                            print("\ttexture = \"" .. lamp:GetFlashlightTexture() .. "\",")
-                            print("\tfov = " .. lamp:GetLightFOV() .. ",")
-                            print("\tdistance = " .. lamp:GetDistance() .. ",")
-                            print("\tbrightness = " .. lamp:GetBrightness() .. ",")
-                            print("\tpos = Vector(" .. pos.x .. ", " .. pos.y .. ", " .. pos.z .. "),")
-                            print("\tang = Angle(" .. ang.x .. ", " .. ang.y .. ", " .. ang.z .. "),")
-                            print("},")
-                        end
-                        lamp:SetCollisionGroup(COLLISION_GROUP_WORLD)
-                    else
-                        lamp:SetCollisionGroup(COLLISION_GROUP_IN_VEHICLE)
-                        lamp:SetRenderMode(RENDERMODE_TRANSALPHA)
-                        lamp:SetColor(Color(v.color.r, v.color.g, v.color.b,0))
-                    end
+                pl:SetTexture(v.texture or "effects/flashlight/soft")
+                pl:SetPos(self:LocalToWorld(v.pos or Vector(0,0,0)))
+                pl:SetAngles(v.ang or Angle(0,0,0))
+                pl:SetFOV(v.fov or 90)
+                pl:SetColor(v.color or Color(255,255,255))
+                pl:SetBrightness(v.brightness or 3.0)
+                pl:SetFarZ(v.distance or 1024)
+                pl:SetEnableShadows(v.shadows or false)
 
-                    lamp.lamp_data = v
-
-                    table.insert(self.lamps, lamp)
-                end
+                pl:Update()
+                self.projected_lights[k] = pl
             end
+        end
+    end
+
+    function ENT:UpdateProjectedLights()
+        if not TARDIS:GetSetting("projlights-enabled") then return end
+        if not self.projected_lights then return end
+
+        self.projected_lights_need_updating = true
+
+        self:Timer("projlights_update_stop", 1, function()
+            self.projected_lights_need_updating = false
         end)
     end
 
+    function ENT:RemoveProjectedLights()
+        if not self.projected_lights then return end
+
+        for k,v in pairs(self.projected_lights) do
+            if IsValid(v) then
+                v:Remove()
+            end
+        end
+
+        self.projected_lights = nil
+    end
+
+    ENT:AddHook("Initialize", "projected_lights", function(self)
+        self:CreateProjectedLights()
+    end)
+
+    ENT:AddHook("PostInitialize", "projected_lights", function(self)
+        self:UpdateProjectedLights()
+    end)
+
+    ENT:AddHook("ToggleDoor", "projected_lights", function(self)
+        self:UpdateProjectedLights()
+    end)
+
+    ENT:AddHook("PlayerEnter", "projected_lights", function(self)
+        self:UpdateProjectedLights()
+    end)
+
+    ENT:AddHook("Think", "projected_lights_updates", function(self)
+        if not self.projected_lights_need_updating then return end
+
+        if not TARDIS:GetSetting("projlights-enabled") then return end
+        if not self.projected_lights then return end
+
+        for k,v in pairs(self.projected_lights) do
+            if IsValid(v) then
+                v:Update()
+            end
+        end
+    end)
+
+    ENT:AddHook("OnRemove", "projected_lights", function(self)
+        self:RemoveProjectedLights()
+    end)
+
+    ENT:AddHook("SettingChanged", "projected_lights", function(self, id, val)
+        if id ~= "projlights-enabled" then return end
+
+        if val and not self.projected_lights then
+            self:CreateProjectedLights()
+        elseif not val and self.projected_lights then
+            self:RemoveProjectedLights()
+        end
+    end)
+
+    ENT:AddHook("PowerToggled", "lamps", function(self, on)
+        if not self.projected_lights then return end
+
+        local lamps = self.metadata.Interior.Lamps
+
+        for k,v in pairs(lamps) do
+            if not v.nopower and self.projected_lights[k] then
+                self.projected_lights[k]:SetBrightness(on and v.brightness or 0)
+                self.projected_lights[k]:Update()
+            end
+        end
+    end)
+
+
+else -- SERVER
+    ENT:AddHook("Initialize", "lamps", function(self)
+        if not TARDIS.debug_lamps_enabled then return end
+
+        local lamps = self.metadata.Interior.Lamps
+        if not lamps then return end
+
+        self.debug_lamps = {}
+
+        for k,v in pairs(lamps) do
+            if v then
+                local lamp = MakeLamp(nil, -- creator
+                    v.color.r, v.color.g, v.color.b,
+                    KEY_NONE, -- toggle key
+                    true, -- toggle
+                    v.texture or "effects/flashlight/soft", -- projected texture
+                    "models/maxofs2d/lamp_projector.mdl", -- lamp model
+                    v.fov or 90,
+                    v.distance or 1024,
+                    v.brightness or 3.0,
+                    true, -- enabled
+                    {
+                        Pos = self:LocalToWorld(v.pos or Vector(0,0,0)),
+                        Angle = v.ang or Angle(0,0,0),
+                    }
+                )
+
+                lamp:SetUnFreezable(false)
+                lamp:GetPhysicsObject():EnableGravity(false)
+                lamp:GetPhysicsObject():EnableMotion(false)
+
+                lamp:SetUseType(SIMPLE_USE)
+                lamp.Use = function(lamp, ply)
+                    local clr = lamp:GetColor()
+                    local pos = self:WorldToLocal(lamp:GetPos())
+                    local ang = lamp:GetAngles()
+
+                    print("{\n\tcolor = Color(" .. clr.r .. ", " .. clr.g .. ", " .. clr.b .. "),")
+                    print("\ttexture = \"" .. lamp:GetFlashlightTexture() .. "\",")
+                    print("\tfov = " .. lamp:GetLightFOV() .. ",")
+                    print("\tdistance = " .. lamp:GetDistance() .. ",")
+                    print("\tbrightness = " .. lamp:GetBrightness() .. ",")
+                    print("\tpos = Vector(" .. pos.x .. ", " .. pos.y .. ", " .. pos.z .. "),")
+                    print("\tang = Angle(" .. ang.x .. ", " .. ang.y .. ", " .. ang.z .. "),")
+                    print("},")
+                end
+                lamp:SetCollisionGroup(COLLISION_GROUP_WORLD)
+
+                lamp.lamp_data = v
+
+                table.insert(self.debug_lamps, lamp)
+            end
+        end
+    end)
+
     ENT:AddHook("OnRemove", "lamps", function(self)
-        if not self.lamps then return end
-        for k,v in pairs(self.lamps) do
+        if not self.debug_lamps then return end
+        for k,v in pairs(self.debug_lamps) do
             if IsValid(v) then
                 v:Remove()
             end
@@ -139,8 +262,9 @@ else -- SERVER
     end)
 
     ENT:AddHook("PowerToggled", "lamps", function(self, on)
-        if not self.lamps then return end
-        for k,v in pairs(self.lamps) do
+        if not self.debug_lamps then return end
+
+        for k,v in pairs(self.debug_lamps) do
             if IsValid(v) and v.lamp_data.nopower ~= true then
                 v:SetOn(on)
             end
