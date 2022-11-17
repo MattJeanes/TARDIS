@@ -13,6 +13,18 @@ TARDIS:AddSetting({
 })
 
 TARDIS:AddSetting({
+    id="projlights-enabled",
+    type="bool",
+    value=true,
+
+    class="local",
+
+    option=true,
+    section=SETTING_SECTION,
+    name="ProjectedLights",
+})
+
+TARDIS:AddSetting({
     id="portals-enabled",
     type="bool",
     value=true,
