@@ -93,6 +93,7 @@ T.Phrases = {
     ["Common.Save"] = "Save",
     ["Common.Set"] = "Set",
     ["Common.TARDIS"] = "TARDIS",
+    ["Common.ARTRON"] = "ARTRON",
     ["Common.UnknownError"] = "Unknown error",
     ["Common.Unlocked.Lower"] = "unlocked",
     ["Common.UnsavedChanges"] = "Unsaved changes",
