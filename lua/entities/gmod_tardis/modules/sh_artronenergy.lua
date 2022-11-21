@@ -1,30 +1,13 @@
 if SERVER then
-    function ENT:ChangeArtron(setartron, add) -- Second one is for if you wanna add or set it.
-        local currentArtron = self:GetData("artron-val")
+    function ENT:SetArtron(value)
         local maxArtron = TARDIS:GetSetting("artron_energy_max")
-        if currentArtron == nil then  
-            currentArtron = 0
-        end
-        if currentArtron + setartron > maxArtron then
-            if setartron == maxArtron then
-                return
-            end
-            currentArtron = 0
-            setartron = maxArtron
 
-        end  
-        if currentArtron + setartron < 0 then
-            if setartron == 0 then
-                return
-            end
-            currentArtron = 0
-            setartron = 0
+        self:SetData("artron-val", math.max(0, math.min(value, maxArtron)), true)
+    end
 
-        end  
-        if add == false or add == nil then
-            currentArtron = 0
-        end
-        self:SetData("artron-val", setartron + currentArtron, true)
+    function ENT:AddArtron(value)
+        local currentArtron = self:GetData("artron-val", 0)
+        self:SetArtron(currentArtron + value)
     end
 
     local function passiveArtronPower(this)
@@ -34,7 +17,7 @@ if SERVER then
                 return 
             end
             if not this:GetData("vortex") and not this:GetData("teleport") and not this:GetData("flight") and this:GetData("power-state") and not this:GetData("cloak") then 
-                this:ChangeArtron(50, true)
+                this:AddArtron(50)
             end
             passiveArtronPower(this)
         end )
@@ -42,18 +25,15 @@ if SERVER then
     end
 
     local function ArtronPowerOff(this)
-
         timer.Simple( 5, function() 
             if not IsValid(this.Entity) or this:GetData("power-state") then 
                 return 
             end
             if this:GetData("artron-val") < TARDIS:GetSetting("artron_energy_max") then
-                this:ChangeArtron(250, true)
+                this:AddArtron(250)
             end
             ArtronPowerOff(this)
-
         end )
-
     end
 
     local function DematleechLoop(this)
@@ -61,7 +41,7 @@ if SERVER then
             if not IsValid(this.Entity) or not this:GetData("vortex") or not this:GetData("teleport") then 
                 return 
             end
-            this:ChangeArtron(-24, true)
+            this:AddArtron(-24)
             DematleechLoop(this)
         end )
     end
@@ -71,7 +51,7 @@ if SERVER then
             if not IsValid(this.Entity) or not this:GetData("flight") then 
                 return 
             end
-            this:ChangeArtron(-25, true)
+            this:AddArtron(-25)
             FlyingLeechLoop(this)
         end )
     end
@@ -81,7 +61,7 @@ if SERVER then
             if not IsValid(this.Entity) or not this:GetData("cloak") then 
                 return 
             end
-            this:ChangeArtron(-20, true)
+            this:AddArtron(-20)
             CloakLeechLoop(this)
         end )
     end
@@ -89,21 +69,20 @@ if SERVER then
 
     ENT:AddHook("Initialize","artron-init",function(self)
         if TARDIS:GetSetting("artron_energy_start_full") == true then
-            self:ChangeArtron(TARDIS:GetSetting("artron_energy_max"), false)
+            self:SetArtron(TARDIS:GetSetting("artron_energy_max"))
         else
-            self:ChangeArtron(100, false)
+            self:SetArtron(100)
         end
         passiveArtronPower(self)
-
     end)
 
 
     ENT:AddHook("CanTurnOnFloat", "floatartron", function(self)
-        self:ChangeArtron(-50, true)
+        self:AddArtron(-50)
     end)
 
     ENT:AddHook("DematStart", "dematartron", function(self)
-        self:ChangeArtron(-500, true)
+        self:AddArtron(-500)
     end)
 
     ENT:AddHook("CanTogglePower", "artronpowertoggled", function(self, on)
@@ -154,15 +133,48 @@ if SERVER then
                 TARDIS:ErrorMessage(k, "Artron Depleted.")
             end
         end
-
-        --Timers n stuff (soon)
-
-
-
-
-
-
-        
     end)
+else
+
+    hook.Add("HUDPaint", "TARDIS-HUD2", function()
+        if not TARDIS:GetSetting("health-enabled") then return end
+        if not (LocalPlayer():GetTardisData("interior") or LocalPlayer():GetTardisData("exterior")) then return end
+        local tardis = LocalPlayer():GetTardisData("exterior")
+        if not IsValid(tardis) then return end
+        local sw = ScrW()
+        local sh = ScrH()
+        local val = tardis:GetData("artron-val", 0)
+        local percent = val * 100 / TARDIS:GetSetting("artron_energy_max")
+        local health = math.ceil(percent)
+
+        local width = 115
+        if health >= 10 then width = width + 10 end
+        if health == 100 then width = width + 35 end
+        local height = (sw >= 800) and 120 or 95
+        local healthfont = (height == 120) and "TARDIS-HUD-Large" or "TARDIS-HUD-Med"
+        local x = (ScrW()-width)*0.02
+        local y = (ScrH()-height)*0.025
+        draw.RoundedBox( 10, x + 190, y, width, height, NamedColor("BgColor") )
+        local textcolor
+        local textcolor = (health > 0) and NamedColor("FgColor") or NamedColor("Caution")
+        if (health > 20) then textcolor = NamedColor("FgColor")
+        else textcolor = NamedColor("Caution") end
+        draw.DrawText( TARDIS:GetPhrase("ARTRON"), "TARDIS-HUD-Small", x+200, y+10, textcolor, TEXT_ALIGN_LEFT )
+        draw.DrawText( tostring(health) .. "%", healthfont, x+200, y+45, textcolor, TEXT_ALIGN_LEFT )
+    end)
+
+    list.Set("DesktopWindows", "TardisHUD2", {
+        title = "TARDIS",
+        icon = "materials/vgui/tardis_context_menu.png",
+        init = function()
+            local ext = LocalPlayer():GetTardisData("exterior")
+            if IsValid(ext) then
+                TARDIS:HUDScreen()
+            else
+                TARDIS:ErrorMessage(LocalPlayer(), "Common.NotInTARDIS")
+            end
+        end
+    })
+
 end
 
