@@ -161,7 +161,6 @@ if SERVER then
             end
         end
 
-        self:SetBodygroup(1,1)
         self:SetData("demat-attached",nil,true)
         self:SetData("fastreturn",false)
 

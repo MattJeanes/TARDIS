@@ -1,5 +1,3 @@
--- Adds matching interior door
-
 local PART={}
 PART.ID = "door"
 PART.Name = "Door"
