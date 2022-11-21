@@ -1,8 +1,11 @@
 if SERVER then
     function ENT:SetArtron(value)
         local maxArtron = TARDIS:GetSetting("artron_energy_max")
-
-        self:SetData("artron-val", math.max(0, math.min(value, maxArtron)), true)
+        value = math.max(0, math.min(value, maxArtron))
+        self:SetData("artron-val", value, true)
+        if value == 0 then
+            self:CallHook("ArtronDepleted")
+        end
     end
 
     function ENT:AddArtron(value)
@@ -10,36 +13,70 @@ if SERVER then
         self:SetArtron(currentArtron + value)
     end
 
+    ENT:AddHook("Initialize", "artron_energy", function(self)
+        local artron = 100
+        if TARDIS:GetSetting("artron_energy_start_full") == true then
+            self:SetArtron(TARDIS:GetSetting("artron_energy_max"))
+        end
+        self:SetArtron(artron)
+        passiveArtronPower(self)
+    end)
+
+    ENT:AddHook("ArtronDepleted", "poweroff", function(self)
+        if self:GetPower() then
+            if self:GetData("cloak") == true then 
+                self:SetCloak(false)
+            end
+            if self:GetData("floatfirst") == true then
+                self:ToggleFloat()
+            end
+            if self:GetData("flight") == true then
+                self:SetFlight(false)
+            end
+
+            self:SetPower(false) -- Do all flight and cloak stuff before this because it wont work i think i dont remember -\_(o.o)_/-
+            self:SetHandbrake(true)
+            self:SetHandbrake(false)
+            for k,_ in pairs(self.occupants) do
+                TARDIS:ErrorMessage(k, "Artron Depleted.")
+            end
+        end
+    end)
+
+
+
+
+
     local function passiveArtronPower(this)
 
-        timer.Simple( 5, function() 
-            if not IsValid(this.Entity) then 
-                return 
-            end
-            if not this:GetData("vortex") and not this:GetData("teleport") and not this:GetData("flight") and this:GetData("power-state") and not this:GetData("cloak") then 
+        timer.Simple(5, function() 
+            if not IsValid(this.Entity) then return end
+            local vortex = this:GetData("vortex")
+            local teleport = this:GetData("teleport")
+            local flight = this:GetData("flight")
+            local power = this:GetData("power-state")
+            local cloak = this:GetData("cloak")
+            if not vortex and not teleport and not flight and power and not cloak then 
                 this:AddArtron(50)
             end
             passiveArtronPower(this)
-        end )
-
+        end)
     end
 
     local function ArtronPowerOff(this)
-        timer.Simple( 5, function() 
-            if not IsValid(this.Entity) or this:GetData("power-state") then 
-                return 
-            end
+        timer.Simple(5, function() 
+            if not IsValid(this.Entity) or this:GetPower() then return end
             if this:GetData("artron-val") < TARDIS:GetSetting("artron_energy_max") then
                 this:AddArtron(250)
             end
             ArtronPowerOff(this)
-        end )
+        end)
     end
 
     local function DematleechLoop(this)
-        timer.Simple( 1, function() 
+        timer.Simple( 1, function()
             if not IsValid(this.Entity) or not this:GetData("vortex") or not this:GetData("teleport") then 
-                return 
+                return
             end
             this:AddArtron(-24)
             DematleechLoop(this)
@@ -66,17 +103,6 @@ if SERVER then
         end )
     end
 
-
-    ENT:AddHook("Initialize","artron-init",function(self)
-        if TARDIS:GetSetting("artron_energy_start_full") == true then
-            self:SetArtron(TARDIS:GetSetting("artron_energy_max"))
-        else
-            self:SetArtron(100)
-        end
-        passiveArtronPower(self)
-    end)
-
-
     ENT:AddHook("CanTurnOnFloat", "floatartron", function(self)
         self:AddArtron(-50)
     end)
@@ -92,7 +118,7 @@ if SERVER then
     end)
 
     ENT:AddHook("PowerToggled", "artronpowertoggledafter", function(self, on)
-        if self:GetData("power-state") == false then
+        if on == false then
             ArtronPowerOff(self)
         end
     end)
@@ -107,32 +133,6 @@ if SERVER then
 
     ENT:AddHook("CanToggleCloak", "artronpowercloakleech", function(self, on)
         CloakLeechLoop(self)
-    end)
-
-
-
-
-    ENT:AddHook("Think", "thinkartrontardis", function(self)
-        if  self:GetData("power-state") == true and self:GetData("artron-val") <= 0 then
-            if self:GetData("cloak") == true then 
-                self:SetCloak(false)
-            end
-            if self:GetData("floatfirst") == true then
-                print("stop")
-                self:ToggleFloat()
-            end
-            if self:GetData("flight") == true then
-                self:SetFlight(false)
-            end
-
-
-            self:SetPower(false) -- Do all flight and cloak stuff before this because it wont work i think i dont remember -\_(o.o)_/-
-            self:SetHandbrake(true)
-            self:SetHandbrake(false)
-            for k,_ in pairs(self.occupants) do
-                TARDIS:ErrorMessage(k, "Artron Depleted.")
-            end
-        end
     end)
 else
 
