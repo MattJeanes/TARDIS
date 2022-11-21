@@ -62,6 +62,60 @@ TARDIS:AddSetting({
 })
 
 TARDIS:AddSetting({
+    id="artron_energy",
+    type="bool",
+    value=true,
+
+    class="global",
+    convar = {
+        name = "tardis2_artron_energy",
+        flags = CONVAR_FLAGS,
+        desc = "TARDIS - Whether artron energy is enabled",
+    },
+
+    option = true,
+    section=SETTING_SECTION,
+    name="ArtronEnergyEnabled",
+})
+
+TARDIS:AddSetting({
+    id="artron_energy_full",
+    type="bool",
+    value=false,
+
+    class="global",
+    convar = {
+        name = "tardis2_artron_energy_full",
+        flags = CONVAR_FLAGS,
+        desc = "TARDIS - Start with full artron energy charge",
+    },
+
+    option = true,
+    section=SETTING_SECTION,
+    name="ArtronEnergyFull",
+})
+
+TARDIS:AddSetting({
+    id="artron_energy_max",
+    type="integer",
+    value=1000,
+    min=500,
+    max=50000,
+
+    class="global",
+    convar = {
+        name = "tardis2_artron_energy_max",
+        flags = CONVAR_FLAGS,
+        desc = "TARDIS - Max amount of artron energy",
+    },
+
+    option = true,
+    section=SETTING_SECTION,
+    name="ArtronEnergyMax",
+})
+
+
+TARDIS:AddSetting({
     id="boost-speed",
     type="number",
     value=2.5,

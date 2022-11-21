@@ -1,28 +1,3 @@
-TARDIS:AddSetting({
-    id="artron-val",
-    type="integer",
-    value=1000,
-    min=1,
-    max=10000,
-    round_func = function(x)
-        if x < 50 then return x end
-        if x < 500 then return (x - x % 10) end
-        if x < 2000 then return (x - x % 100) end
-        return (x - x % 500)
-    end,
-
-    class="global",
-    convar = {
-        name = "tardis2_artronenergy",
-        flags = CONVAR_FLAGS,
-        desc = "TARDIS - Artron Energy",
-    },
-
-    option = true,
-    section=SETTING_SECTION,
-    name="MaxHealth",
-})
-
 if SERVER then
     function ENT:ChangeArtron(setartron, add) -- Second one is for if you wanna add or set it.
         local currentArtron = self:GetData("artron-val")
