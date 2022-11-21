@@ -8,7 +8,7 @@ hook.Add("HUDPaint", "TARDIS-HUD2", function()
     local sw = ScrW()
     local sh = ScrH()
     local val = tardis:GetData("artron-val", 0)
-    local percent = val * 100 / GetConVar("te_maxartronenergy"):GetInt()
+    local percent = val * 100 / TARDIS:GetSetting("artron_energy_max")
     local health = math.ceil(percent)
 
     local width = 115

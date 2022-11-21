@@ -79,13 +79,13 @@ TARDIS:AddSetting({
 })
 
 TARDIS:AddSetting({
-    id="artron_energy_full",
+    id="artron_energy_start_full",
     type="bool",
     value=false,
 
     class="global",
     convar = {
-        name = "tardis2_artron_energy_full",
+        name = "tardis2_artron_energy_start_full",
         flags = CONVAR_FLAGS,
         desc = "TARDIS - Start with full artron energy charge",
     },

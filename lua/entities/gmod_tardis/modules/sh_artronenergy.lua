@@ -1,7 +1,7 @@
 if SERVER then
     function ENT:ChangeArtron(setartron, add) -- Second one is for if you wanna add or set it.
         local currentArtron = self:GetData("artron-val")
-        local maxArtron = GetConVar("te_maxartronenergy"):GetInt()
+        local maxArtron = TARDIS:GetSetting("artron_energy_max")
         if currentArtron == nil then  
             currentArtron = 0
         end
@@ -47,7 +47,7 @@ if SERVER then
             if not IsValid(this.Entity) or this:GetData("power-state") then 
                 return 
             end
-            if this:GetData("artron-val") < GetConVar("te_maxartronenergy"):GetInt() then
+            if this:GetData("artron-val") < TARDIS:GetSetting("artron_energy_max") then
                 this:ChangeArtron(250, true)
             end
             ArtronPowerOff(this)
@@ -88,8 +88,8 @@ if SERVER then
 
 
     ENT:AddHook("Initialize","artron-init",function(self)
-        if GetConVar("te_startwithmaxenergy"):GetBool() == true then
-            self:ChangeArtron(GetConVar("te_maxartronenergy"):GetInt(), false)
+        if TARDIS:GetSetting("artron_energy_start_full") == true then
+            self:ChangeArtron(TARDIS:GetSetting("artron_energy_max"), false)
         else
             self:ChangeArtron(100, false)
         end
