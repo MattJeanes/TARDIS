@@ -36,29 +36,21 @@ if SERVER then
     ENT:AddHook("Initialize", "artron", function(self)
         local artron = artron_values.initial_value
         if TARDIS:GetSetting("artron_energy_start_full") == true then
-            self:SetArtron(TARDIS:GetSetting("artron_energy_max"))
+            artron = TARDIS:GetSetting("artron_energy_max")
         end
         self:SetArtron(artron)
     end)
 
-    ENT:AddHook("ArtronDepleted", "poweroff", function(self)
+    ENT:AddHook("ArtronDepleted", "teleport_and_poweroff", function(self)
+        if self:GetData("teleport") or self:GetData("vortex") then
+            self:InterruptTeleport()
+            return
+        end
         if self:GetPower() then
             self:SetPower(false)
             for k,_ in pairs(self.occupants) do
                 TARDIS:ErrorMessage(k, "Artron Depleted.")
             end
-        end
-    end)
-
-    ENT:AddHook("ArtronDepleted", "teleport", function(self)
-        if self:GetData("teleport") or self:GetData("vortex") then
-            self:InterruptTeleport()
-        end
-    end)
-
-    ENT:AddHook("ArtronDepleted", "cloak", function(self)
-        if self:GetCloak() then
-            self:SetCloak(false)
         end
     end)
 
@@ -107,7 +99,7 @@ if SERVER then
             return
         end
         if float then
-            self:AddArtron(artron_values.change_float)
+            self:AddArtron(artron_values.charge_float)
             return
         end
 
