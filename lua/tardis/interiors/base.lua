@@ -85,15 +85,15 @@ T.Exterior = {
     },
     Sounds = {
         Teleport = {
-            demat = "drmatt/tardis/demat.wav",
+            demat = "p00gie/tardis/demat.wav",
             demat_damaged = "drmatt/tardis/demat_damaged.wav",
             demat_fail = "drmatt/tardis/demat_fail.wav",
-            mat = "drmatt/tardis/mat.wav",
+            mat = "p00gie/tardis/mat.wav",
             mat_damaged = "jeredek/tardis/mat_damaged.wav",
-            mat_fail = "drmatt/tardis/mat_fail.wav",
-            mat_fast = "p00gie/tardis/mat_fast.wav",
-            mat_damaged_fast = "p00gie/tardis/mat_damaged_fast.wav",
-            fullflight = "drmatt/tardis/full.wav",
+            mat_fail = "p00gie/tardis/mat_fail.wav",
+            mat_fast = "p00gie/tardis/fastmat.wav",
+            mat_damaged_fast = "p00gie/tardis/fastmat_damaged.wav",
+            fullflight = "p00gie/tardis/full.wav",
             fullflight_damaged = "drmatt/tardis/full_damaged.wav",
             interrupt = "drmatt/tardis/repairfinish.wav",
         },
@@ -120,7 +120,7 @@ T.Exterior = {
         }
     },
     Teleport = {
-        SequenceSpeed = 0.77,
+        SequenceSpeed = 0.8,
         SequenceSpeedWarning = 0.6,
         SequenceSpeedFast = 0.935,
         SequenceSpeedWarnFast = 0.97,
