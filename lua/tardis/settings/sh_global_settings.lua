@@ -99,8 +99,12 @@ TARDIS:AddSetting({
     id="artron_energy_max",
     type="integer",
     value=1000,
-    min=500,
+    min=1000,
     max=50000,
+    round_func = function(x)
+        if x < 10000 then return (x - x % 500) end
+        return (x - x % 1000)
+    end,
 
     class="global",
     convar = {
