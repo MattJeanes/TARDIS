@@ -37,14 +37,13 @@ end
 
 if SERVER then
     ENT:AddHook("Initialize", "debug_textures", function(self)
-        if TARDIS.debug_textures then
-            print("Exterior textures:")
-            print()
-            for k,v in pairs(self:GetMaterials()) do
-                print("{\"self" .. "\", " .. k - 1 .. ", \"" .. v .. "\"},")
-            end
-            print()
+        if not TARDIS.debug_textures then return end
+        print("Exterior textures:")
+        print()
+        for k,v in pairs(self:GetMaterials()) do
+            print("{\"self" .. "\", " .. k - 1 .. ", \"" .. v .. "\"},")
         end
+        print()
     end)
 
     ENT:AddHook("PostInitialize", "debug_textures_parts", function(self)

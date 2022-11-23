@@ -35,7 +35,6 @@ function ENT:ChangeTexture(part_id, a, b, prefix)
     end
 end
 
-
 if SERVER then
     ENT:AddHook("Initialize", "debug_textures", function(self)
         if not TARDIS.debug_textures then return end
