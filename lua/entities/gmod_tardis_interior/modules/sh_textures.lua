@@ -42,7 +42,7 @@ if SERVER then
         print("Interior textures:")
         print()
         for k,v in pairs(self:GetMaterials()) do
-            print("{\"self" .. "\", " .. k .. ", \"" .. v .. "\"},")
+            print("{\"self" .. "\", " .. k - 1 .. ", \"" .. v .. "\"},")
         end
         print()
     end)
@@ -56,7 +56,7 @@ if SERVER then
         print()
         for k,v in pairs(parts) do
             for k1,v1 in pairs(v:GetMaterials()) do
-                print("{\"" .. v.ID .. "\", " .. k1 .. ", \"" .. v1 .. "\"},")
+                print("{\"" .. v.ID .. "\", " .. k1 - 1 .. ", \"" .. v1 .. "\"},")
             end
         end
         print()
