@@ -144,6 +144,10 @@ function TARDIS:GetPart(ent,id)
     return IsValid(ent) and ent.parts and ent.parts[id] or NULL
 end
 
+function TARDIS:GetParts(ent)
+    return IsValid(ent) and ent.parts
+end
+
 local overridequeue={}
 postinit=postinit or false -- local vars cannot stay on autorefresh
 function TARDIS:AddPart(e)
@@ -312,19 +316,6 @@ if SERVER then
                 end
                 e:Spawn()
                 e:Activate()
-
-                if SERVER and TARDIS.debug_textures then
-                    if e.InteriorPart then
-                        for k1,v1 in pairs(e:GetMaterials()) do
-                            print("{\"" .. e.ID .. "\", " .. k1 .. ", \"" .. v1 .. "\"},")
-                        end
-                    else
-                        for k1,v1 in pairs(e:GetMaterials()) do
-                            print("EXT. PART: {\"" .. e.ID .. "\", " .. k1 .. ", \"" .. v1 .. "\"},")
-                        end
-                    end
-                end
-
                 ent:DeleteOnRemove(e)
                 ent.parts[k]=e
             end

@@ -34,3 +34,31 @@ function ENT:ChangeTexture(part_id, a, b, prefix)
         ErrorNoHaltWithStack("Wrong texture parameter format: " .. a)
     end
 end
+
+if SERVER then
+    ENT:AddHook("Initialize", "debug_textures", function(self)
+        if TARDIS.debug_textures then
+            print("Exterior textures:")
+            print()
+            for k,v in pairs(self:GetMaterials()) do
+                print("{\"self" .. "\", " .. k .. ", \"" .. v .. "\"},")
+            end
+            print()
+        end
+    end)
+
+    ENT:AddHook("PostInitialize", "debug_textures_parts", function(self)
+        if not TARDIS.debug_textures then return end
+        local parts = self:GetParts()
+        if not parts then return end
+
+        print("Exterior part textures:")
+        print()
+        for k,v in pairs(parts) do
+            for k1,v1 in pairs(v:GetMaterials()) do
+                print("{\"" .. v.ID .. "\", " .. k1 .. ", \"" .. v1 .. "\"},")
+            end
+        end
+        print()
+    end)
+end

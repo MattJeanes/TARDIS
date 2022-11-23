@@ -24,15 +24,6 @@ function ENT:Initialize()
         self.ExitDistance=self.metadata.Interior.ExitDistance
     end
     self.BaseClass.Initialize(self)
-
-    if SERVER and TARDIS.debug_textures then
-        print("Interior:")
-        print()
-        for k,v in pairs(self:GetMaterials()) do
-            print("{\"self" .. "\", " .. k .. ", \"" .. v .. "\"},")
-        end
-        print()
-    end
 end
 
 function ENT:OnTakeDamage(dmginfo)
