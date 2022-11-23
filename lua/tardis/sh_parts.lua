@@ -312,6 +312,19 @@ if SERVER then
                 end
                 e:Spawn()
                 e:Activate()
+
+                if SERVER and TARDIS.debug_textures then
+                    if e.InteriorPart then
+                        for k1,v1 in pairs(e:GetMaterials()) do
+                            print("{\"" .. e.ID .. "\", " .. k1 .. ", \"" .. v1 .. "\"},")
+                        end
+                    else
+                        for k1,v1 in pairs(e:GetMaterials()) do
+                            print("EXT. PART: {\"" .. e.ID .. "\", " .. k1 .. ", \"" .. v1 .. "\"},")
+                        end
+                    end
+                end
+
                 ent:DeleteOnRemove(e)
                 ent.parts[k]=e
             end

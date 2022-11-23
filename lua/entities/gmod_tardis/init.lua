@@ -36,6 +36,15 @@ function ENT:Initialize()
     self.Portal=self.metadata.Exterior.Portal
     self.Fallback=self.metadata.Exterior.Fallback
     self.BaseClass.Initialize(self)
+
+    if SERVER and TARDIS.debug_textures then
+        print("Exterior:")
+        print()
+        for k,v in pairs(self:GetMaterials()) do
+            print("{\"self" .. "\", " .. k .. ", \"" .. v .. "\"},")
+        end
+        print()
+    end
 end
 
 function ENT:PhysicsCollide(colData, collider)
