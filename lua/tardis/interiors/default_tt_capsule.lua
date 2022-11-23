@@ -18,7 +18,6 @@ T.Interior = {
         Teleport = {
             demat = "drmatt/tardis/demat.wav",
             mat = "drmatt/tardis/mat.wav",
-            mat_fail = "drmatt/tardis/mat_fail.wav",
             mat_fast = "p00gie/tardis/mat_fast.wav",
             mat_damaged_fast = "p00gie/tardis/mat_damaged_fast.wav",
             fullflight = "drmatt/tardis/full.wav",
