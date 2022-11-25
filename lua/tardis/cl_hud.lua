@@ -15,8 +15,10 @@ surface.CreateFont("TARDIS-HUD-Small", {
     size=34
 })
 
-local function CreatePercentageHUDPanel(text, value, offset)
-    
+local function CreatePercentageHUDPanel(text, value, offset, red_level)
+
+    red_level = red_level or 20
+
     local width = 115
     local height = (ScrW() >= 800) and 120 or 95
 
@@ -28,7 +30,7 @@ local function CreatePercentageHUDPanel(text, value, offset)
 
     local header_font = "TARDIS-HUD-Small"
     local value_font = (height == 120) and "TARDIS-HUD-Large" or "TARDIS-HUD-Med"
-    local textcolor = (value > 20) and NamedColor("FgColor") or NamedColor("Caution")
+    local textcolor = (value > red_level) and NamedColor("FgColor") or NamedColor("Caution")
 
     draw.RoundedBox( 10, x, y, width, height, NamedColor("BgColor") )
     draw.DrawText( text, header_font, x+10, y+10, textcolor, TEXT_ALIGN_LEFT )
@@ -64,7 +66,7 @@ hook.Add("HUDPaint", "TARDIS-HUD", function()
         local percent = val * 100 / TARDIS:GetSetting("artron_energy_max")
 
         CreatePercentageHUDPanel(TARDIS:GetPhrase("Common.ARTRON"),
-            math.ceil(percent), offset + 10
+            math.ceil(percent), offset + 10, 10
         )
     end
 end)
