@@ -2,17 +2,17 @@
 
 surface.CreateFont("TARDIS-HUD-Large", {
     font="Roboto",
-    size=68
+    size=58
 })
 
 surface.CreateFont("TARDIS-HUD-Med", {
     font="Roboto",
-    size=40
+    size=36
 })
 
 surface.CreateFont("TARDIS-HUD-Small", {
     font="Roboto",
-    size=34
+    size=30
 })
 
 local function CreatePercentageHUDPanel(text, value, offset, red_level)
@@ -20,21 +20,21 @@ local function CreatePercentageHUDPanel(text, value, offset, red_level)
     red_level = red_level or 20
 
     local width = 115
-    local height = (ScrW() >= 800) and 120 or 95
+    local height = (ScrW() >= 800) and 95 or 85
 
     if value >= 10 then width = width + 10 end
-    if value == 100 then width = width + 35 end
+    if value == 100 then width = width + 20 end
 
     local x = (ScrW() - width) * 0.02 + offset
     local y = (ScrH() - height) * 0.025
 
     local header_font = "TARDIS-HUD-Small"
-    local value_font = (height == 120) and "TARDIS-HUD-Large" or "TARDIS-HUD-Med"
+    local value_font = (height == 95) and "TARDIS-HUD-Large" or "TARDIS-HUD-Med"
     local textcolor = (value > red_level) and NamedColor("FgColor") or NamedColor("Caution")
 
     draw.RoundedBox( 10, x, y, width, height, NamedColor("BgColor") )
     draw.DrawText( text, header_font, x+10, y+10, textcolor, TEXT_ALIGN_LEFT )
-    draw.DrawText( tostring(value) .. "%", value_font, x+10, y+45, textcolor, TEXT_ALIGN_LEFT )
+    draw.DrawText( tostring(value) .. "%", value_font, x+10, y+35, textcolor, TEXT_ALIGN_LEFT )
 
     return width, height
 end
