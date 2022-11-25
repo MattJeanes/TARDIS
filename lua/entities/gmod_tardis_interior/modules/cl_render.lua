@@ -23,7 +23,14 @@ local function predraw_o(self)
     local function AddLightRenderTable(lt)
         if self:CallHook("ShouldDrawLight",nil,lt) == false then return end
 
-        if not power then
+        if not power and warning then
+            table.insert(tab, {
+                type = MATERIAL_LIGHT_POINT,
+                color = lt.off_warn_color_vec,
+                pos = lt.off_warn_pos_global,
+                quadraticFalloff = lt.off_warn_falloff,
+            })
+        elseif not power then
             table.insert(tab, {
                 type = MATERIAL_LIGHT_POINT,
                 color = lt.off_color_vec,

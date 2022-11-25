@@ -40,10 +40,16 @@ if CLIENT then
         lt.warn_falloff = lt.warn_falloff or lt.falloff
 
         if lt.nopower then
-            lt.off_color = lt.offcolor or lt.color
+            lt.off_color = lt.off_color or lt.color
             lt.off_pos = lt.off_pos or lt.pos
             lt.off_brightness = lt.off_brightness or lt.brightness
             lt.off_falloff = lt.off_falloff or lt.falloff
+
+            -- defaulting `off + warn` to `off` unless specified otherwise
+            lt.off_warn_color = lt.off_warn_color or lt.off_color
+            lt.off_warn_pos = lt.off_warn_pos or lt.off_pos
+            lt.off_warn_brightness = lt.off_warn_brightness or lt.off_brightness
+            lt.off_warn_falloff = lt.off_warn_falloff or lt.off_falloff
         end
 
         -- optimize calculations in `cl_render.lua::predraw_o`
@@ -56,6 +62,9 @@ if CLIENT then
         if lt.nopower then
             lt.off_pos_global = interior:LocalToWorld(lt.off_pos)
             lt.off_color_vec = lt.off_color:ToVector() * lt.off_brightness
+
+            lt.off_warn_pos_global = interior:LocalToWorld(lt.off_warn_pos)
+            lt.off_warn_color_vec = lt.off_warn_color:ToVector() * lt.off_warn_brightness
         end
 
         if not lt.states then return end
@@ -87,9 +96,13 @@ if CLIENT then
         local warning = self:GetData("health-warning", false)
         local power = self:GetPower()
 
-        if not power then
-            -- if the light shouldn't be rendered at this point,
-            -- the ShouldDraw hook would have stopped it before
+        if not power and warning then
+            dlight.Pos = light.off_warn_pos_global
+            dlight.r = light.off_warn_color.r
+            dlight.g = light.off_warn_color.g
+            dlight.b = light.off_warn_color.b
+            dlight.Brightness = light.off_warn_brightness
+        elseif not power then
             dlight.Pos = light.off_pos_global
             dlight.r = light.off_color.r
             dlight.g = light.off_color.g
