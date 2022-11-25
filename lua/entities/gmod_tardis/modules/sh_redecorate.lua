@@ -9,7 +9,8 @@ local ext_saved_data_names = {
     "physlock",
     "demat-fast",
     "fastreturn-pos",
-    "fastreturn-ang"
+    "fastreturn-ang",
+    "artron-val",
 }
 local int_saved_data_names = {
     "security"
