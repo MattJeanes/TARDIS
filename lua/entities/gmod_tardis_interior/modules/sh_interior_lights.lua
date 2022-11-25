@@ -64,7 +64,7 @@ if CLIENT then
         local lights = self.metadata.Interior.Lights
 
         self.light_data = {
-            main = table.Copy(light),
+            main = TARDIS:CopyTable(light),
             extra = {},
         }
         ParseLightTable(self.light_data.main, self, 20)
@@ -72,7 +72,7 @@ if CLIENT then
         if not lights then return end
         for k,v in pairs(lights) do
             if v and istable(v) then
-                self.light_data.extra[k] = table.Copy(v)
+                self.light_data.extra[k] = TARDIS:CopyTable(v)
                 ParseLightTable(self.light_data.extra[k], self, 10)
             end
         end
@@ -146,32 +146,99 @@ end
 -- Lamps (projected lights)
 
 if CLIENT then
+    local function AddDefaultLampValues(lmp, interior)
+        if not lmp then return end
+
+        lmp.texture = lmp.texture or "effects/flashlight/soft"
+        lmp.pos = lmp.pos or Vector(0,0,0)
+        lmp.ang = lmp.ang or Angle(0,0,0)
+        lmp.fov = lmp.fov or 90
+        lmp.color = lmp.color or Color(255,255,255)
+        lmp.brightness = lmp.brightness or 3.0
+        lmp.distance = lmp.distance or 1024
+        lmp.shadows = lmp.shadows or false
+
+        lmp.pos_global = interior:LocalToWorld(lmp.pos)
+
+        AddDefaultLampValues(lmp.warn, interior)
+        AddDefaultLampValues(lmp.off, interior)
+        AddDefaultLampValues(lmp.off_warn, interior)
+        if lmp.states then
+            for k,v in lmp.states do
+                AddDefaultLampValues(v, interior)
+            end
+        end
+    end
+
+    local function MergeLampTable(tbl, base, keep_warn_off_options)
+        if not tbl then return nil end
+
+        local new_table = TARDIS:CopyTable(base)
+        new_table.states = nil
+        if not keep_warn_off_options then
+            new_table.warn = nil
+            new_table.off = nil
+            new_table.off_warn = nil
+        end
+        table.Merge(new_table, tbl)
+        return new_table
+    end
+
+    local function ParseLampTable(lmp, interior)
+        if not lmp then return end
+
+        lmp.warn = MergeLampTable(lmp.warn, lmp, false)
+        lmp.off = MergeLampTable(lmp.off, lmp, false)
+        lmp.off_warn = MergeLampTable(lmp.off_warn, lmp.off or lmp, false)
+
+        if lmp.states then
+            for k,v in pairs(lmp.states) do
+                lmp.states[k] = MergeLampTable(v, lmp, true)
+            end
+        end
+
+        AddDefaultLampValues(lmp, interior)
+    end
+
+    ENT:AddHook("Initialize", "lamps", function(self)
+        local lamps = self.metadata.Interior.Lamps
+        if not lamps then return end
+
+        self.lamps_data = {}
+
+        for k,v in pairs(lamps) do
+            self.lamps_data[k] = TARDIS:CopyTable(v)
+            ParseLampTable(self.lamps_data[k], self)
+        end
+
+        self:CreateLamps()
+    end)
+
+    local function CreateLamp(lmp, interior)
+        if not lmp then return end
+
+        local pl = ProjectedTexture()
+        pl:SetTexture(lmp.texture)
+        pl:SetPos(lmp.pos_global)
+        pl:SetAngles(lmp.ang)
+        pl:SetFOV(lmp.fov)
+        pl:SetColor(lmp.color)
+        pl:SetBrightness(lmp.brightness)
+        pl:SetFarZ(lmp.distance)
+        pl:SetEnableShadows(lmp.shadows)
+        pl:Update()
+        return pl
+    end
 
     function ENT:CreateLamps()
         if not TARDIS:GetSetting("lamps-enabled") then return end
         if TARDIS.debug_lamps_enabled then return end
-
-        local lamps = self.metadata.Interior.Lamps
-        if not lamps then return end
+        if not self.lamps_data then return end
 
         self.lamps = {}
 
-        for k,v in pairs(lamps) do
-            if v then
-                local pl = ProjectedTexture()
-
-                pl:SetTexture(v.texture or "effects/flashlight/soft")
-                pl:SetPos(self:LocalToWorld(v.pos or Vector(0,0,0)))
-                pl:SetAngles(v.ang or Angle(0,0,0))
-                pl:SetFOV(v.fov or 90)
-                pl:SetColor(v.color or Color(255,255,255))
-                pl:SetBrightness(v.brightness or 3.0)
-                pl:SetFarZ(v.distance or 1024)
-                pl:SetEnableShadows(v.shadows or false)
-
-                pl:Update()
-                self.lamps[k] = pl
-            end
+        for k,v in pairs(self.lamps_data) do
+            self.lamps[k] = CreateLamp(v, self)
         end
 
         self:UpdateLamps()
@@ -200,22 +267,6 @@ if CLIENT then
         self.lamps = nil
     end
 
-    ENT:AddHook("Initialize", "lamps", function(self)
-        self:CreateLamps()
-    end)
-
-    ENT:AddHook("PostInitialize", "lamps", function(self)
-        self:UpdateLamps()
-    end)
-
-    ENT:AddHook("ToggleDoor", "lamps", function(self)
-        self:UpdateLamps()
-    end)
-
-    ENT:AddHook("PlayerEnter", "lamps", function(self)
-        self:UpdateLamps()
-    end)
-
     ENT:AddHook("Think", "lamps_updates", function(self)
         if not self.lamps_need_updating then return end
 
@@ -227,10 +278,6 @@ if CLIENT then
                 v:Update()
             end
         end
-    end)
-
-    ENT:AddHook("OnRemove", "lamps", function(self)
-        self:RemoveLamps()
     end)
 
     ENT:AddHook("SettingChanged", "lamps", function(self, id, val)
@@ -258,6 +305,22 @@ if CLIENT then
             end
         end
     end)
+
+    ENT:AddHook("PostInitialize", "lamps", function(self) 
+        self:UpdateLamps()
+    end)
+
+    ENT:AddHook("ToggleDoor", "lamps", function(self)
+        self:UpdateLamps()
+    end)
+
+    ENT:AddHook("PlayerEnter", "lamps", function(self)
+        self:UpdateLamps()
+    end)
+
+    ENT:AddHook("OnRemove", "lamps", function(self)
+        self:RemoveLamps()
+    end)
 end
 
 
@@ -271,6 +334,7 @@ local function ChangeSingleLightState(light_table, state)
 end
 
 function ENT:ApplyLightState(state)
+    self:SetData("light_state", state)
     self:CallHook("LightStateChanged", state)
 
     if CLIENT then
