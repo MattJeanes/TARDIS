@@ -199,6 +199,8 @@ if SERVER then
         if not was_demating then
             self:ChangeHealth(self:GetHealth() * math.random(85, 95) * 0.01)
             self:SetPower(false)
+            local flight = self:GetData("prevortex-flight", false)
+            self:SetData("power-lastflight", flight, true)
             self:SetFloat(false)
             self:SetData("teleport-interrupted", true, true)
             self:SetData("teleport-interrupt-time", CurTime(), true)
