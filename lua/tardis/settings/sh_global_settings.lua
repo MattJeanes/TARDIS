@@ -75,6 +75,7 @@ TARDIS:AddSetting({
 
     option = true,
     section=SETTING_SECTION,
+    subsection="ArtronEnergy",
     name="ArtronEnergyEnabled",
 })
 
@@ -101,6 +102,7 @@ TARDIS:AddSetting({
 
     option=true,
     section=SETTING_SECTION,
+    subsection="ArtronEnergy",
     name="ArtronEnergyStart",
 })
 
@@ -125,6 +127,7 @@ TARDIS:AddSetting({
 
     option = true,
     section=SETTING_SECTION,
+    subsection="ArtronEnergy",
     name="ArtronEnergyMax",
 })
 
