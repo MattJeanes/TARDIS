@@ -75,15 +75,21 @@ if CLIENT then
     end
 
     ENT:AddHook("Initialize", "lights", function(self)
+        local light = self.metadata.Interior.Light
+        local lights = self.metadata.Interior.Lights
+
         self.light_data = {
-            main = table.Copy(self.metadata.Interior.Light),
+            main = table.Copy(light),
             extra = {},
         }
         ParseLightTable(self.light_data.main, self, 20)
 
-        for k,v in pairs(self.metadata.Interior.Lights) do
-            self.light_data.extra[k] = table.Copy(v)
-            ParseLightTable(self.light_data.extra[k], self, 10)
+        if not lights then return end
+        for k,v in pairs(lights) do
+            if v and istable(v) then
+                self.light_data.extra[k] = table.Copy(v)
+                ParseLightTable(self.light_data.extra[k], self, 10)
+            end
         end
     end)
 
@@ -142,6 +148,11 @@ if CLIENT then
                 self:DrawLight((index*1000)+i,light)
             end
         end
+    end)
+
+    ENT:AddHook("ShouldDrawLight", "enabled_check", function(self,id,light)
+        if light.enabled == false then return false end
+        -- allow disabling lights with light states
     end)
 
     -- round things
