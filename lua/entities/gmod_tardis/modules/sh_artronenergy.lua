@@ -9,6 +9,8 @@ if SERVER then
             ["physlock"] = -540,
             ["float"] = -540,
         },
+        cost_hads = -180,
+        cost_failed_demat = -80,
 
         -- every 1 second:
         spend_vortex_teleport = -32,
@@ -23,6 +25,7 @@ if SERVER then
         charge_warning = 10 * 5,
         charge_poweroff = 24 * 5,
         charge_float = 8 * 5,
+        charge_float_handbrake = 40 * 5,
     }
 
     function ENT:SetArtron(value)
@@ -32,6 +35,7 @@ if SERVER then
         if value == 0 then
             self:CallHook("ArtronDepleted")
         end
+        tardisdebug(value)
     end
 
     function ENT:AddArtron(value)
@@ -46,6 +50,8 @@ if SERVER then
     end)
 
     ENT:AddHook("ArtronDepleted", "teleport_and_poweroff", function(self)
+        if not TARDIS:GetSetting("artron_energy") then return end
+
         if self:GetData("teleport") or self:GetData("vortex") then
             self:InterruptTeleport()
             return
@@ -59,7 +65,9 @@ if SERVER then
     end)
 
     ENT:AddHook("Think", "artron", function(self)
-        if not TARDIS:GetSetting("artron_energy") then return false end
+        if not TARDIS:GetSetting("artron_energy") then return end
+
+        if self:CallHook("ShouldDecreaseArtron") == false then return end
 
         -- if artron energy should decrease, it happens every second
         if CurTime() < self:GetData("artron_next_decrease_time", 0) then return end
@@ -98,9 +106,14 @@ if SERVER then
         end
 
         -- if artron energy is charging, it happens every 5 seconds
+        if self:CallHook("CanChargeArtron") == false then return end
         if CurTime() < self:GetData("artron_next_charge_time", 0) then return end
         self:SetData("artron_next_charge_time", CurTime() + 5)
 
+        if handbrake and float then
+            self:AddArtron(artron_values.charge_float_handbrake)
+            return
+        end
         if handbrake then
             self:AddArtron(artron_values.charge_handbrake)
             return
@@ -121,27 +134,112 @@ if SERVER then
     end)
 
     ENT:AddHook("TardisControlUsed", "artron", function(self, control)
+        if not TARDIS:GetSetting("artron_energy") then return end
+
         if artron_values.cost_controls[control] then
             self:AddArtron(artron_values.cost_controls[control])
         end
     end)
 
+
+
+    local function ArtronDematCheck(self)
+        local fast = self:GetData("demat-fast", false)
+        local artron = self:GetData("artron-val", 0)
+
+        if self:CallHook("ShouldDecreaseArtron") == false then return end
+        if self:GetData("hads-triggered", false) then return end
+
+        if fast and artron < -artron_values.cost_full then
+            return true
+        end
+        if not fast and artron < -artron_values.cost_demat then
+            return true
+        end
+    end
+
+    ENT:AddHook("ShouldFailDemat", "artron", function(self, force)
+        if not TARDIS:GetSetting("artron_energy") then return end
+        if self:GetData("hads-attempt") then return end
+
+        if ArtronDematCheck(self) == true then
+            return true
+        end
+    end)
+
+    ENT:AddHook("HandleNoDemat", "artron", function(self)
+        if not TARDIS:GetSetting("artron_energy") then return end
+
+        if ArtronDematCheck(self) == true then return end
+        self:AddArtron(artron_values.cost_failed_demat)
+    end)
+
     ENT:AddHook("DematStart", "artron", function(self)
+        if not TARDIS:GetSetting("artron_energy") then return end
+        if self:CallHook("ShouldDecreaseArtron") == false then return end
+
         if self:GetData("demat-fast", false) then
             self:AddArtron(artron_values.cost_full)
         else
             self:AddArtron(artron_values.cost_demat)
         end
     end)
+
     ENT:AddHook("MatStart", "artron", function(self)
+        if not TARDIS:GetSetting("artron_energy") then return end
+        if self:CallHook("ShouldDecreaseArtron") == false then return end
+
         if self:GetData("demat-fast",false) ~= true then
             self:AddArtron(artron_values.cost_mat)
         end
     end)
 
     ENT:AddHook("CanTogglePower", "artron", function(self, on)
+        if not TARDIS:GetSetting("artron_energy") then return end
+
         if self:GetData("artron-val") <= 0 and self:GetPower() == false then
             return false
+        end
+    end)
+
+    ENT:AddHook("CanChargeArtron", "interrupt-cooldown", function(self)
+        if self:GetData("teleport-interrupted") then
+            return false
+        end
+    end)
+
+    ENT:AddHook("ShouldDecreaseArtron", "repair", function(self)
+        if self:GetData("repair-primed") or self:GetData("repairing") then
+            return false
+        end
+        if self:GetData("redecorate") or self:GetData("redecorate_parent")
+            or self:GetData("redecorate_child")
+        then
+            return false
+        end
+    end)
+
+    ENT:AddHook("HADSTrigger", "artron", function(self)
+        if not TARDIS:GetSetting("artron_energy") then return end
+
+        if self:GetData("artron-val",0) < -artron_values.cost_hads then
+            self:SetArtron(1)
+            return
+        end
+        self:AddArtron(artron_values.cost_hads)
+    end)
+
+    ENT:AddHook("ShouldDecreaseArtron", "hads", function(self)
+        if self:GetData("hads-triggered", false) then
+            return false
+        end
+    end)
+
+    ENT:AddHook("SettingChanged", "maxartron-changed", function(self, id, val)
+        if id ~= "artron_energy_max" then return end
+
+        if self:GetData("artron-val",0) > val then
+            self:SetArtron(val)
         end
     end)
 end
