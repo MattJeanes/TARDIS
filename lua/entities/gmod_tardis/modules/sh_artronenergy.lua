@@ -1,22 +1,28 @@
 if SERVER then
 
     local artron_values = {
-        initial_value = 100,
-
-        cost_demat = -500,
-        cost_enable_float = -50,
-        cost_disable_float = -25,
+        cost_demat = -540,
+        cost_mat = -180,
+        cost_full = -1200,
+        cost_controls = {
+            ["cloak"] = -720,
+            ["physlock"] = -540,
+            ["float"] = -540,
+        },
 
         -- every 1 second:
-        spend_vortex_teleport = -24,
-        spend_flight = -25,
-        spend_cloak = -20,
+        spend_vortex_teleport = -32,
+        spend_flight = -45,
+        spend_flight_boost = -45,
+        spend_cloak = -36,
+        spend_cloak_handbrake = -12,
 
         -- every 5 seconds:
-        charge_handbrake = 400,
-        charge_poweroff = 250,
-        charge_normal = 50,
-        charge_float = 20,
+        charge_handbrake = 180 * 5,
+        charge_normal = 15 * 5,
+        charge_warning = 10 * 5,
+        charge_poweroff = 24 * 5,
+        charge_float = 8 * 5,
     }
 
     function ENT:SetArtron(value)
@@ -34,11 +40,9 @@ if SERVER then
     end
 
     ENT:AddHook("Initialize", "artron", function(self)
-        local artron = artron_values.initial_value
-        if TARDIS:GetSetting("artron_energy_start_full") == true then
-            artron = TARDIS:GetSetting("artron_energy_max")
-        end
-        self:SetArtron(artron)
+        local max = TARDIS:GetSetting("artron_energy_max")
+        local start = TARDIS:GetSetting("artron_energy_start") -- 0, 0.25, 0.5, 0.75 or 1
+        self:SetArtron(max * start)
     end)
 
     ENT:AddHook("ArtronDepleted", "teleport_and_poweroff", function(self)
@@ -68,17 +72,24 @@ if SERVER then
         local handbrake = self:GetData("handbrake")
         local cloak = self:GetCloak()
         local float = self:GetData("floatfirst")
+        local warning = self:GetData("health-warning")
 
         local change = 0
 
         if vortex or teleport then
             change = change + artron_values.spend_vortex_teleport
-        end
-        if flight then
+        elseif flight then
+            if TARDIS:IsBindDown(self.pilot,"flight-boost") then
+                change = change + artron_values.spend_flight_boost
+            end
             change = change + artron_values.spend_flight
         end
         if cloak then
-            change = change + artron_values.spend_cloak
+            if handbrake then
+                change = change + artron_values.spend_cloak_handbrake
+            else
+                change = change + artron_values.spend_cloak
+            end
         end
 
         if change < 0 then
@@ -102,20 +113,30 @@ if SERVER then
             self:AddArtron(artron_values.charge_float)
             return
         end
-
+        if warning then
+            self:AddArtron(artron_values.charge_warning)
+            return
+        end
         self:AddArtron(artron_values.charge_normal) -- default state
     end)
 
-    ENT:AddHook("FloatToggled", "artron", function(self, on)
-        if on then
-            self:AddArtron(artron_values.cost_enable_float)
-        else
-            self:AddArtron(artron_values.cost_disable_float)
+    ENT:AddHook("TardisControlUsed", "artron", function(self, control)
+        if artron_values.cost_controls[control] then
+            self:AddArtron(artron_values.cost_controls[control])
         end
     end)
 
     ENT:AddHook("DematStart", "artron", function(self)
-        self:AddArtron(artron_values.cost_demat)
+        if self:GetData("demat-fast", false) then
+            self:AddArtron(artron_values.cost_full)
+        else
+            self:AddArtron(artron_values.cost_demat)
+        end
+    end)
+    ENT:AddHook("MatStart", "artron", function(self)
+        if self:GetData("demat-fast",false) ~= true then
+            self:AddArtron(artron_values.cost_mat)
+        end
     end)
 
     ENT:AddHook("CanTogglePower", "artron", function(self, on)

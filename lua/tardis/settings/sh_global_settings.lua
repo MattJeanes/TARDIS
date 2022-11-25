@@ -79,31 +79,41 @@ TARDIS:AddSetting({
 })
 
 TARDIS:AddSetting({
-    id="artron_energy_start_full",
-    type="bool",
-    value=false,
+    id="artron_energy_start",
+    type="list",
+    value=0.25,
+    get_values_func = function()
+        return {
+            { "0%", 0.0 },
+            { "25%", 0.25 },
+            { "50%", 0.5 },
+            { "75%", 0.75 },
+            { "100%", 1.0 },
+        }
+    end,
 
     class="global",
     convar = {
-        name = "tardis2_artron_energy_start_full",
+        name = "tardis2_artron_energy_start",
         flags = CONVAR_FLAGS,
-        desc = "TARDIS - Start with full artron energy charge",
+        desc = "TARDIS - Initial amount of artron energy",
     },
 
-    option = true,
+    option=true,
     section=SETTING_SECTION,
-    name="ArtronEnergyFull",
+    name="ArtronEnergyStart",
 })
 
 TARDIS:AddSetting({
     id="artron_energy_max",
     type="integer",
-    value=1000,
-    min=1000,
-    max=50000,
+    value=14400,
+    min=1800,
+    max=57600,
     round_func = function(x)
-        if x < 10000 then return (x - x % 500) end
-        return (x - x % 1000)
+        if x > 20000 then return (x - x % 7200) end
+        if x > 10000 then return (x - x % 3600) end
+        return (x - x % 1800)
     end,
 
     class="global",
