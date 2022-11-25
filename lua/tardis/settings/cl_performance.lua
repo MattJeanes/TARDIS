@@ -25,7 +25,7 @@ TARDIS:AddSetting({
 })
 
 TARDIS:AddSetting({
-    id="projlights-enabled",
+    id="lamps-enabled",
     type="bool",
     value=true,
 
@@ -33,7 +33,7 @@ TARDIS:AddSetting({
 
     option=true,
     section=SETTING_SECTION,
-    name="ProjectedLights",
+    name="Lamps",
 })
 
 TARDIS:AddSetting({

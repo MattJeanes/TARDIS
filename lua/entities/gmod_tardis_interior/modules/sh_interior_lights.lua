@@ -143,18 +143,18 @@ end
 
 
 
--- Projected lights
+-- Lamps (projected lights)
 
 if CLIENT then
 
-    function ENT:CreateProjectedLights()
-        if not TARDIS:GetSetting("projlights-enabled") then return end
+    function ENT:CreateLamps()
+        if not TARDIS:GetSetting("lamps-enabled") then return end
         if TARDIS.debug_lamps_enabled then return end
 
         local lamps = self.metadata.Interior.Lamps
         if not lamps then return end
 
-        self.projected_lights = {}
+        self.lamps = {}
 
         for k,v in pairs(lamps) do
             if v then
@@ -170,91 +170,91 @@ if CLIENT then
                 pl:SetEnableShadows(v.shadows or false)
 
                 pl:Update()
-                self.projected_lights[k] = pl
+                self.lamps[k] = pl
             end
         end
 
-        self:UpdateProjectedLights()
+        self:UpdateLamps()
     end
 
-    function ENT:UpdateProjectedLights()
-        if not TARDIS:GetSetting("projlights-enabled") then return end
-        if not self.projected_lights then return end
+    function ENT:UpdateLamps()
+        if not TARDIS:GetSetting("lamps-enabled") then return end
+        if not self.lamps then return end
 
-        self.projected_lights_need_updating = true
+        self.lamps_need_updating = true
 
-        self:Timer("projlights_update_stop", 1, function()
-            self.projected_lights_need_updating = false
+        self:Timer("lamps_update_stop", 1, function()
+            self.lamps_need_updating = false
         end)
     end
 
-    function ENT:RemoveProjectedLights()
-        if not self.projected_lights then return end
+    function ENT:RemoveLamps()
+        if not self.lamps then return end
 
-        for k,v in pairs(self.projected_lights) do
+        for k,v in pairs(self.lamps) do
             if IsValid(v) then
                 v:Remove()
             end
         end
 
-        self.projected_lights = nil
+        self.lamps = nil
     end
 
-    ENT:AddHook("Initialize", "projected_lights", function(self)
-        self:CreateProjectedLights()
+    ENT:AddHook("Initialize", "lamps", function(self)
+        self:CreateLamps()
     end)
 
-    ENT:AddHook("PostInitialize", "projected_lights", function(self)
-        self:UpdateProjectedLights()
+    ENT:AddHook("PostInitialize", "lamps", function(self)
+        self:UpdateLamps()
     end)
 
-    ENT:AddHook("ToggleDoor", "projected_lights", function(self)
-        self:UpdateProjectedLights()
+    ENT:AddHook("ToggleDoor", "lamps", function(self)
+        self:UpdateLamps()
     end)
 
-    ENT:AddHook("PlayerEnter", "projected_lights", function(self)
-        self:UpdateProjectedLights()
+    ENT:AddHook("PlayerEnter", "lamps", function(self)
+        self:UpdateLamps()
     end)
 
-    ENT:AddHook("Think", "projected_lights_updates", function(self)
-        if not self.projected_lights_need_updating then return end
+    ENT:AddHook("Think", "lamps_updates", function(self)
+        if not self.lamps_need_updating then return end
 
-        if not TARDIS:GetSetting("projlights-enabled") then return end
-        if not self.projected_lights then return end
+        if not TARDIS:GetSetting("lamps-enabled") then return end
+        if not self.lamps then return end
 
-        for k,v in pairs(self.projected_lights) do
+        for k,v in pairs(self.lamps) do
             if IsValid(v) then
                 v:Update()
             end
         end
     end)
 
-    ENT:AddHook("OnRemove", "projected_lights", function(self)
-        self:RemoveProjectedLights()
+    ENT:AddHook("OnRemove", "lamps", function(self)
+        self:RemoveLamps()
     end)
 
-    ENT:AddHook("SettingChanged", "projected_lights", function(self, id, val)
-        if id ~= "projlights-enabled" then return end
+    ENT:AddHook("SettingChanged", "lamps", function(self, id, val)
+        if id ~= "lamps-enabled" then return end
 
-        if val and self.projected_lights == nil then
-            self:CreateProjectedLights()
-        elseif not val and self.projected_lights then
-            self:RemoveProjectedLights()
+        if val and self.lamps == nil then
+            self:CreateLamps()
+        elseif not val and self.lamps then
+            self:RemoveLamps()
         end
     end)
 
-    ENT:AddHook("PowerToggled", "projected_lights", function(self, on)
-        if not self.projected_lights then return end
-        if not TARDIS:GetSetting("projlights-enabled") then
+    ENT:AddHook("PowerToggled", "lamps", function(self, on)
+        if not self.lamps then return end
+        if not TARDIS:GetSetting("lamps-enabled") then
             on = false
         end
 
         local lamps = self.metadata.Interior.Lamps
 
         for k,v in pairs(lamps) do
-            if not v.nopower and self.projected_lights[k] then
-                self.projected_lights[k]:SetBrightness(on and v.brightness or 0)
-                self.projected_lights[k]:Update()
+            if not v.nopower and self.lamps[k] then
+                self.lamps[k]:SetBrightness(on and v.brightness or 0)
+                self.lamps[k]:Update()
             end
         end
     end)
