@@ -2,48 +2,58 @@
 
 local function predraw_o(self)
     if not TARDIS:GetSetting("lightoverride-enabled") then return end
-    if self.light_data.main == nil then return end --because for some reason SOMEONE OUT THERE didn't define a light.
-    --render.SetLightingMode(1)
-    local light=self.light_data.main
-    local lights=self.light_data.extra
-    local warning = self.exterior:GetData("health-warning", false)
-    
+
     render.SuppressEngineLighting(true)
+    local lo = self.metadata.Interior.LightOverride
+    local br = power and lo.basebrightness or lo.nopowerbrightness
+    render.ResetModelLighting(br, br, br)
+
+    --render.SetLightingMode(1)
+    local light = self.light_data.main
+
+    if light == nil then return end
+    --because for some reason SOMEONE OUT THERE didn't define a light.
+
+    local lights = self.light_data.extra
+    local warning = self:GetData("health-warning", false)
+    local power = self:GetPower()
+
     local tab={}
 
-    if self:CallHook("ShouldDrawLight",nil,light) ~= false then
-        local bb = self.metadata.Interior.LightOverride.basebrightness
-        render.ResetModelLighting(bb, bb, bb)
+    local function AddLightRenderTable(lt)
+        if self:CallHook("ShouldDrawLight",nil,lt) == false then return end
 
-        local c = light.color
-        local warnc = light.warncolor or c
-        local lcolor = (warning) and warnc:ToVector() or c:ToVector()
-        table.insert(tab,{
-            type=MATERIAL_LIGHT_POINT,
-            color=lcolor*light.brightness,
-            pos = self:LocalToWorld(light.pos),
-            quadraticFalloff=light.falloff or 20,
-        })
-    else
-        local ob = self.metadata.Interior.LightOverride.nopowerbrightness
-        render.ResetModelLighting(ob, ob, ob)
-    end
-    if lights and not TARDIS:GetSetting("extra-lights-disabled") then
-        for _,l in pairs(lights) do
-            if self:CallHook("ShouldDrawLight",nil,l) ~= false then
-                local c=l.color
-                local warnc = l.warncolor or c
-                local lcolor = warning and warnc:ToVector() or c:ToVector()
-                local tab2 = {
-                    type=MATERIAL_LIGHT_POINT,
-                    color=lcolor*l.brightness,
-                    pos = self:LocalToWorld(l.pos),
-                    quadraticFalloff=l.falloff or 10,
-                }
-                table.insert(tab, tab2)
-            end
+        if not power then
+            table.insert(tab, {
+                type = MATERIAL_LIGHT_POINT,
+                color = lt.off_color_vec,
+                pos = lt.off_pos_global,
+                quadraticFalloff = lt.off_falloff,
+            })
+        elseif warning then
+            table.insert(tab, {
+                type = MATERIAL_LIGHT_POINT,
+                color = lt.warn_color_vec,
+                pos = lt.warn_pos_global,
+                quadraticFalloff = lt.warn_falloff,
+            })
+        else -- power and no warning
+            table.insert(tab, {
+                type = MATERIAL_LIGHT_POINT,
+                color = lt.color_vec,
+                pos = lt.pos_global,
+                quadraticFalloff = lt.falloff,
+            })
         end
     end
+
+    AddLightRenderTable(light)
+    if lights and not TARDIS:GetSetting("extra-lights-disabled") then
+        for _,l in pairs(lights) do
+            AddLightRenderTable(l)
+        end
+    end
+
     if #tab==0 then
         render.SetLocalModelLights()
     else

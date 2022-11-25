@@ -25,49 +25,93 @@ TARDIS.debug_lamps_enabled = GetConVar("tardis2_debug_lamps"):GetBool()
 
 if CLIENT then
 
+    local function ParseLightTable(lt, interior, default_falloff)
+        lt.falloff = lt.falloff or default_falloff
+        -- default falloff values were taken from cl_render.lua::predraw_o
+
+        if lt.warncolor then
+            lt.warn_color = lt.warncolor
+            lt.warncolor = nil
+        end
+
+        lt.warn_color = lt.warn_color or lt.color
+        lt.warn_pos = lt.warn_pos or lt.pos
+        lt.warn_brightness = lt.warn_brightness or lt.brightness
+        lt.warn_falloff = lt.warn_falloff or lt.falloff
+
+        if lt.nopower then
+            lt.off_color = lt.offcolor or lt.color
+            lt.off_pos = lt.off_pos or lt.pos
+            lt.off_brightness = lt.off_brightness or lt.brightness
+            lt.off_falloff = lt.off_falloff or lt.falloff
+        end
+
+        -- optimize calculations in `cl_render.lua::predraw_o`
+        lt.color_vec = lt.color:ToVector() * lt.brightness
+        lt.pos_global = interior:LocalToWorld(lt.pos)
+
+        lt.warn_color_vec = lt.warn_color:ToVector() * lt.warn_brightness
+        lt.warn_pos_global = interior:LocalToWorld(lt.warn_pos)
+
+        if lt.nopower then
+            lt.off_pos_global = interior:LocalToWorld(lt.off_pos)
+            lt.off_color_vec = lt.off_color:ToVector() * lt.off_brightness
+        end
+
+        if not lt.states then return end
+
+        for k,v in lt.states do
+            ParseLightTable(v, self)
+        end
+    end
+
     ENT:AddHook("Initialize", "lights", function(self)
         self.light_data = {
             main = table.Copy(self.metadata.Interior.Light),
             extra = {},
         }
+        ParseLightTable(self.light_data.main, self, 20)
 
         for k,v in pairs(self.metadata.Interior.Lights) do
             self.light_data.extra[k] = table.Copy(v)
+            ParseLightTable(self.light_data.extra[k], self, 10)
         end
     end)
 
-    local function ChangeSingleLightState(light_table, state)
-        local new_state = light_table.states && light_table.states[state]
-        if not new_state then return end
-        table.Merge(light_table, new_state)
-    end
-
-    function ENT:ApplyLightState(state)
-        local ldata = self.light_data
-        ChangeSingleLightState(ldata.main, state)
-
-        for k,v in pairs(ldata.extra) do
-            ChangeSingleLightState(v, state)
-        end
-    end
-
     function ENT:DrawLight(id,light)
         if self:CallHook("ShouldDrawLight",id,light)==false then return end
+
         local dlight = DynamicLight(id, true)
-        if ( dlight ) then
-            local size=1024
-            local c=light.color
-            local warnc = light.warncolor or c
-            local warning = self.exterior:GetData("health-warning", false)
-            dlight.Pos = self:LocalToWorld(light.pos)
-            dlight.r = warning and warnc.r or c.r
-            dlight.g = warning and warnc.g or c.g
-            dlight.b = warning and warnc.b or c.b
+        if not dlight then return end
+
+        local warning = self:GetData("health-warning", false)
+        local power = self:GetPower()
+
+        if not power then
+            -- if the light shouldn't be rendered at this point,
+            -- the ShouldDraw hook would have stopped it before
+            dlight.Pos = light.off_pos_global
+            dlight.r = light.off_color.r
+            dlight.g = light.off_color.g
+            dlight.b = light.off_color.b
+            dlight.Brightness = light.off_brightness
+        elseif warning then
+            dlight.Pos = light.warn_pos_global
+            dlight.r = light.warn_color.r
+            dlight.g = light.warn_color.g
+            dlight.b = light.warn_color.b
+            dlight.Brightness = light.warn_brightness
+        else -- power & no warning
+            dlight.Pos = light.pos_global
+            dlight.r = light.color.r
+            dlight.g = light.color.g
+            dlight.b = light.color.b
             dlight.Brightness = light.brightness
-            dlight.Decay = size * 5
-            dlight.Size = size
-            dlight.DieTime = CurTime() + 1
         end
+
+        dlight.Decay = 5120
+        dlight.Size = 1024
+        dlight.DieTime = CurTime() + 1
     end
 
     ENT:AddHook("Think", "lights", function(self)
@@ -307,4 +351,21 @@ else -- SERVER
         end
     end)
 
+end
+
+local function ChangeSingleLightState(light_table, state)
+    local new_state = light_table.states && light_table.states[state]
+    if not new_state then return end
+    table.Merge(light_table, new_state)
+end
+
+function ENT:ApplyLightState(state)
+    if CLIENT then
+        local ldata = self.light_data
+        ChangeSingleLightState(ldata.main, state)
+
+        for k,v in pairs(ldata.extra) do
+            ChangeSingleLightState(v, state)
+        end
+    end
 end
