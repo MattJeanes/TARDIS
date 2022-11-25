@@ -291,7 +291,7 @@ if CLIENT then
 
 
 else -- SERVER
-    ENT:AddHook("Initialize", "lamps", function(self)
+    ENT:AddHook("Initialize", "debug_lamps", function(self)
         if not TARDIS.debug_lamps_enabled then return end
 
         local lamps = self.metadata.Interior.Lamps
@@ -345,7 +345,7 @@ else -- SERVER
         end
     end)
 
-    ENT:AddHook("OnRemove", "lamps", function(self)
+    ENT:AddHook("OnRemove", "debug_lamps", function(self)
         if not self.debug_lamps then return end
         for k,v in pairs(self.debug_lamps) do
             if IsValid(v) then
@@ -354,7 +354,7 @@ else -- SERVER
         end
     end)
 
-    ENT:AddHook("PowerToggled", "lamps", function(self, on)
+    ENT:AddHook("PowerToggled", "debug_lamps", function(self, on)
         if not self.debug_lamps then return end
 
         for k,v in pairs(self.debug_lamps) do
