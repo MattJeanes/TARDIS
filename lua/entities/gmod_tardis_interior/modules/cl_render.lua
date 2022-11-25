@@ -2,10 +2,10 @@
 
 local function predraw_o(self)
     if not TARDIS:GetSetting("lightoverride-enabled") then return end
-    if self.metadata.Interior.Light == nil then return end --because for some reason SOMEONE OUT THERE didn't define a light.
+    if self.light_data.main == nil then return end --because for some reason SOMEONE OUT THERE didn't define a light.
     --render.SetLightingMode(1)
-    local light=self.metadata.Interior.Light
-    local lights=self.metadata.Interior.Lights
+    local light=self.light_data.main
+    local lights=self.light_data.extra
     local warning = self.exterior:GetData("health-warning", false)
     
     render.SuppressEngineLighting(true)
@@ -15,7 +15,7 @@ local function predraw_o(self)
         local bb = self.metadata.Interior.LightOverride.basebrightness
         render.ResetModelLighting(bb, bb, bb)
 
-        local c=light.color
+        local c = light.color
         local warnc = light.warncolor or c
         local lcolor = (warning) and warnc:ToVector() or c:ToVector()
         table.insert(tab,{
@@ -28,7 +28,7 @@ local function predraw_o(self)
         local ob = self.metadata.Interior.LightOverride.nopowerbrightness
         render.ResetModelLighting(ob, ob, ob)
     end
-    if lights then
+    if lights and not TARDIS:GetSetting("extra-lights-disabled") then
         for _,l in pairs(lights) do
             if self:CallHook("ShouldDrawLight",nil,l) ~= false then
                 local c=l.color
@@ -53,7 +53,7 @@ end
 
 local function postdraw_o(self)
     if not TARDIS:GetSetting("lightoverride-enabled") then return end
-    if self.metadata.Interior.Light == nil then return end
+    if self.light_data.main == nil then return end
     render.SuppressEngineLighting(false)
 end
 

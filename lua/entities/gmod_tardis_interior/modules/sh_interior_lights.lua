@@ -25,6 +25,32 @@ TARDIS.debug_lamps_enabled = GetConVar("tardis2_debug_lamps"):GetBool()
 
 if CLIENT then
 
+    ENT:AddHook("Initialize", "lights", function(self)
+        self.light_data = {
+            main = table.Copy(self.metadata.Interior.Light),
+            extra = {},
+        }
+
+        for k,v in pairs(self.metadata.Interior.Lights) do
+            self.light_data.extra[k] = table.Copy(v)
+        end
+    end)
+
+    local function ChangeSingleLightState(light_table, state)
+        local new_state = light_table.states && light_table.states[state]
+        if not new_state then return end
+        table.Merge(light_table, new_state)
+    end
+
+    function ENT:ApplyLightState(state)
+        local ldata = self.light_data
+        ChangeSingleLightState(ldata.main, state)
+
+        for k,v in pairs(ldata.extra) do
+            ChangeSingleLightState(v, state)
+        end
+    end
+
     function ENT:DrawLight(id,light)
         if self:CallHook("ShouldDrawLight",id,light)==false then return end
         local dlight = DynamicLight(id, true)
@@ -46,13 +72,13 @@ if CLIENT then
 
     ENT:AddHook("Think", "lights", function(self)
         if TARDIS:GetSetting("lightoverride-enabled") then return end
-        local light=self.metadata.Interior.Light
-        local lights=self.metadata.Interior.Lights
+        local light = self.light_data.main
+        local lights = self.light_data.extra
         local index=self:EntIndex()
         if light then
             self:DrawLight(index,light)
         end
-        if lights then
+        if lights and not TARDIS:GetSetting("extra-lights-disabled") then
             local i=0
             for _,light in pairs(lights) do
                 i=i+1
@@ -60,6 +86,8 @@ if CLIENT then
             end
         end
     end)
+
+    -- round things
 
     function ENT:AddRoundThing(pos)
         self.roundthings[pos]=util.GetPixelVisibleHandle()
@@ -90,7 +118,10 @@ if CLIENT then
         end
     end)
 
+    -- projected lights
+
     function ENT:CreateProjectedLights()
+        if not TARDIS:GetSetting("projlights-enabled") then return end
         if TARDIS.debug_lamps_enabled then return end
 
         local lamps = self.metadata.Interior.Lamps
@@ -115,6 +146,8 @@ if CLIENT then
                 self.projected_lights[k] = pl
             end
         end
+
+        self:UpdateProjectedLights()
     end
 
     function ENT:UpdateProjectedLights()
@@ -176,15 +209,18 @@ if CLIENT then
     ENT:AddHook("SettingChanged", "projected_lights", function(self, id, val)
         if id ~= "projlights-enabled" then return end
 
-        if val and not self.projected_lights then
+        if val and self.projected_lights == nil then
             self:CreateProjectedLights()
         elseif not val and self.projected_lights then
             self:RemoveProjectedLights()
         end
     end)
 
-    ENT:AddHook("PowerToggled", "lamps", function(self, on)
+    ENT:AddHook("PowerToggled", "projected_lights", function(self, on)
         if not self.projected_lights then return end
+        if not TARDIS:GetSetting("projlights-enabled") then
+            on = false
+        end
 
         local lamps = self.metadata.Interior.Lamps
 
