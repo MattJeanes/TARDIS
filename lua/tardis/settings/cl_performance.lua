@@ -13,6 +13,18 @@ TARDIS:AddSetting({
 })
 
 TARDIS:AddSetting({
+    id="extra-lights-disabled",
+    type="bool",
+    value=false,
+
+    class="local",
+
+    option=true,
+    section=SETTING_SECTION,
+    name="NoExtraLights",
+})
+
+TARDIS:AddSetting({
     id="projlights-enabled",
     type="bool",
     value=true,
