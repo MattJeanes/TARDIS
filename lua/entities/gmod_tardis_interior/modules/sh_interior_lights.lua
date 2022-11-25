@@ -1,30 +1,15 @@
 -- Lights
 
+-- Convar
+
 CreateConVar("tardis2_debug_lamps", 0, {FCVAR_ARCHIVE}, "TARDIS - enable debugging interior lamps")
-
-if SERVER then
-    util.AddNetworkString("TARDIS-DebugLampsToggled")
-
-    -- It was required to manually code networking for this convar
-    -- AddChangeCallback doesn't callback client convars with FCVAR_REPLICATED
-    -- Details: https://github.com/Facepunch/garrysmod-issues/issues/3740
-
-    cvars.AddChangeCallback("tardis2_debug_lamps", function()
-        TARDIS.debug_lamps_enabled = GetConVar("tardis2_debug_lamps"):GetBool()
-        net.Start("TARDIS-DebugLampsToggled")
-            net.WriteBool(TARDIS.debug_lamps_enabled)
-        net.Broadcast()
-    end)
-else
-    net.Receive("TARDIS-DebugLampsToggled", function()
-        TARDIS.debug_lamps_enabled = net.ReadBool()
-    end)
-end
-
 TARDIS.debug_lamps_enabled = GetConVar("tardis2_debug_lamps"):GetBool()
 
-if CLIENT then
 
+
+-- Dynamic lights
+
+if CLIENT then
     local function ParseLightTable(lt, interior, default_falloff)
         lt.falloff = lt.falloff or default_falloff
         -- default falloff values were taken from cl_render.lua::predraw_o
@@ -154,39 +139,13 @@ if CLIENT then
         if light.enabled == false then return false end
         -- allow disabling lights with light states
     end)
+end
 
-    -- round things
 
-    function ENT:AddRoundThing(pos)
-        self.roundthings[pos]=util.GetPixelVisibleHandle()
-    end
 
-    ENT:AddHook("Initialize", "lights-roundthings", function(self)
-        if self.metadata.Interior.RoundThings then
-            self.roundthingmat=Material("sprites/light_ignorez")
-            self.roundthings={}
-            for k,v in pairs(self.metadata.Interior.RoundThings) do
-                self:AddRoundThing(v)
-            end
-        end
-    end)
+-- Projected lights
 
-    local size=32
-    ENT:AddHook("Draw", "lights-roundthings", function(self)
-        if self.roundthings then
-            if self:CallHook("ShouldDrawLight")==false then return end
-            for k,v in pairs(self.roundthings) do
-                local pos = self:LocalToWorld(k)
-                local vis = util.PixelVisible(pos, 3, v)*255
-                if vis > 0 then
-                    render.SetMaterial(self.roundthingmat)
-                    render.DrawSprite(pos, size, size, Color(255,153,0, vis))
-                end
-            end
-        end
-    end)
-
-    -- projected lights
+if CLIENT then
 
     function ENT:CreateProjectedLights()
         if not TARDIS:GetSetting("projlights-enabled") then return end
@@ -299,9 +258,48 @@ if CLIENT then
             end
         end
     end)
+end
 
 
-else -- SERVER
+
+-- Light states
+
+local function ChangeSingleLightState(light_table, state)
+    local new_state = light_table.states && light_table.states[state]
+    if not new_state then return end
+    table.Merge(light_table, new_state)
+end
+
+function ENT:ApplyLightState(state)
+    self:CallHook("LightStateChanged", state)
+
+    if CLIENT then
+        local ldata = self.light_data
+        ChangeSingleLightState(ldata.main, state)
+
+        for k,v in pairs(ldata.extra) do
+            ChangeSingleLightState(v, state)
+        end
+    end
+end
+
+
+
+-- Debug Lamps (a way for developers to set up the projected lights)
+
+if SERVER then
+
+    util.AddNetworkString("TARDIS-DebugLampsToggled")
+    cvars.AddChangeCallback("tardis2_debug_lamps", function()
+        TARDIS.debug_lamps_enabled = GetConVar("tardis2_debug_lamps"):GetBool()
+        net.Start("TARDIS-DebugLampsToggled")
+            net.WriteBool(TARDIS.debug_lamps_enabled)
+        net.Broadcast()
+        -- It was required to manually code networking for this convar
+        -- AddChangeCallback doesn't callback client convars with FCVAR_REPLICATED
+        -- Details: https://github.com/Facepunch/garrysmod-issues/issues/3740
+    end)
+
     ENT:AddHook("Initialize", "debug_lamps", function(self)
         if not TARDIS.debug_lamps_enabled then return end
 
@@ -374,22 +372,40 @@ else -- SERVER
             end
         end
     end)
-
+else
+    net.Receive("TARDIS-DebugLampsToggled", function()
+        TARDIS.debug_lamps_enabled = net.ReadBool()
+    end)
 end
 
-local function ChangeSingleLightState(light_table, state)
-    local new_state = light_table.states && light_table.states[state]
-    if not new_state then return end
-    table.Merge(light_table, new_state)
-end
-
-function ENT:ApplyLightState(state)
-    if CLIENT then
-        local ldata = self.light_data
-        ChangeSingleLightState(ldata.main, state)
-
-        for k,v in pairs(ldata.extra) do
-            ChangeSingleLightState(v, state)
-        end
+-- Round things (light sprites for old default interior)
+if CLIENT then
+    function ENT:AddRoundThing(pos)
+        self.roundthings[pos]=util.GetPixelVisibleHandle()
     end
+
+    ENT:AddHook("Initialize", "lights-roundthings", function(self)
+        if self.metadata.Interior.RoundThings then
+            self.roundthingmat=Material("sprites/light_ignorez")
+            self.roundthings={}
+            for k,v in pairs(self.metadata.Interior.RoundThings) do
+                self:AddRoundThing(v)
+            end
+        end
+    end)
+
+    local size=32
+    ENT:AddHook("Draw", "lights-roundthings", function(self)
+        if self.roundthings then
+            if self:CallHook("ShouldDrawLight")==false then return end
+            for k,v in pairs(self.roundthings) do
+                local pos = self:LocalToWorld(k)
+                local vis = util.PixelVisible(pos, 3, v)*255
+                if vis > 0 then
+                    render.SetMaterial(self.roundthingmat)
+                    render.DrawSprite(pos, size, size, Color(255,153,0, vis))
+                end
+            end
+        end
+    end)
 end
