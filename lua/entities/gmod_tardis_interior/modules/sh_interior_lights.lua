@@ -9,87 +9,82 @@ TARDIS.debug_lamps_enabled = GetConVar("tardis2_debug_lamps"):GetBool()
 
 -- Dynamic lights
 
-if CLIENT then
-    local function ParseLightTable(lt, interior, default_falloff)
-        lt.falloff = lt.falloff or default_falloff
-        -- default falloff values were taken from cl_render.lua::predraw_o
+local function ParseLightTable(lt, interior, default_falloff)
+    if SERVER then return end
+    lt.falloff = lt.falloff or default_falloff
+    -- default falloff values were taken from cl_render.lua::predraw_o
 
-        if lt.warncolor then
-            lt.warn_color = lt.warncolor
-            lt.warncolor = nil
-        end
-
-        lt.warn_color = lt.warn_color or lt.color
-        lt.warn_pos = lt.warn_pos or lt.pos
-        lt.warn_brightness = lt.warn_brightness or lt.brightness
-        lt.warn_falloff = lt.warn_falloff or lt.falloff
-
-        if lt.nopower then
-            lt.off_color = lt.off_color or lt.color
-            lt.off_pos = lt.off_pos or lt.pos
-            lt.off_brightness = lt.off_brightness or lt.brightness
-            lt.off_falloff = lt.off_falloff or lt.falloff
-
-            -- defaulting `off + warn` to `off` unless specified otherwise
-            lt.off_warn_color = lt.off_warn_color or lt.off_color
-            lt.off_warn_pos = lt.off_warn_pos or lt.off_pos
-            lt.off_warn_brightness = lt.off_warn_brightness or lt.off_brightness
-            lt.off_warn_falloff = lt.off_warn_falloff or lt.off_falloff
-        end
-
-        -- optimize calculations in `cl_render.lua::predraw_o`
-        lt.color_vec = lt.color:ToVector() * lt.brightness
-        lt.pos_global = interior:LocalToWorld(lt.pos)
-
-        lt.warn_color_vec = lt.warn_color:ToVector() * lt.warn_brightness
-        lt.warn_pos_global = interior:LocalToWorld(lt.warn_pos)
-
-        if lt.nopower then
-            lt.off_pos_global = interior:LocalToWorld(lt.off_pos)
-            lt.off_color_vec = lt.off_color:ToVector() * lt.off_brightness
-
-            lt.off_warn_pos_global = interior:LocalToWorld(lt.off_warn_pos)
-            lt.off_warn_color_vec = lt.off_warn_color:ToVector() * lt.off_warn_brightness
-        end
-
-        lt.render_table = {
-            type = MATERIAL_LIGHT_POINT,
-            color = lt.color_vec,
-            pos = lt.pos_global,
-            quadraticFalloff = lt.falloff,
-        }
-        lt.warn_render_table = {
-            type = MATERIAL_LIGHT_POINT,
-            color = lt.warn_color_vec,
-            pos = lt.warn_pos_global,
-            quadraticFalloff = lt.warn_falloff,
-        }
-
-        if lt.nopower then
-            lt.off_render_table = {
-                type = MATERIAL_LIGHT_POINT,
-                color = lt.off_color_vec,
-                pos = lt.off_pos_global,
-                quadraticFalloff = lt.off_falloff,
-            }
-            lt.off_warn_render_table = {
-                type = MATERIAL_LIGHT_POINT,
-                color = lt.off_warn_color_vec,
-                pos = lt.off_warn_pos_global,
-                quadraticFalloff = lt.off_warn_falloff,
-            }
-        else
-            lt.off_render_table = {}
-            lt.off_warn_render_table = {}
-        end
-
-        if not lt.states then return end
-
-        for k,v in lt.states do
-            ParseLightTable(v, self)
-        end
+    if lt.warncolor then
+        lt.warn_color = lt.warncolor
+        lt.warncolor = nil
     end
 
+    lt.warn_color = lt.warn_color or lt.color
+    lt.warn_pos = lt.warn_pos or lt.pos
+    lt.warn_brightness = lt.warn_brightness or lt.brightness
+    lt.warn_falloff = lt.warn_falloff or lt.falloff
+
+    if lt.nopower then
+        lt.off_color = lt.off_color or lt.color
+        lt.off_pos = lt.off_pos or lt.pos
+        lt.off_brightness = lt.off_brightness or lt.brightness
+        lt.off_falloff = lt.off_falloff or lt.falloff
+
+        -- defaulting `off + warn` to `off` unless specified otherwise
+        lt.off_warn_color = lt.off_warn_color or lt.off_color
+        lt.off_warn_pos = lt.off_warn_pos or lt.off_pos
+        lt.off_warn_brightness = lt.off_warn_brightness or lt.off_brightness
+        lt.off_warn_falloff = lt.off_warn_falloff or lt.off_falloff
+    end
+
+    -- optimize calculations in `cl_render.lua::predraw_o`
+    lt.color_vec = lt.color:ToVector() * lt.brightness
+    lt.pos_global = interior:LocalToWorld(lt.pos)
+
+    lt.warn_color_vec = lt.warn_color:ToVector() * lt.warn_brightness
+    lt.warn_pos_global = interior:LocalToWorld(lt.warn_pos)
+
+    if lt.nopower then
+        lt.off_pos_global = interior:LocalToWorld(lt.off_pos)
+        lt.off_color_vec = lt.off_color:ToVector() * lt.off_brightness
+
+        lt.off_warn_pos_global = interior:LocalToWorld(lt.off_warn_pos)
+        lt.off_warn_color_vec = lt.off_warn_color:ToVector() * lt.off_warn_brightness
+    end
+
+    lt.render_table = {
+        type = MATERIAL_LIGHT_POINT,
+        color = lt.color_vec,
+        pos = lt.pos_global,
+        quadraticFalloff = lt.falloff,
+    }
+    lt.warn_render_table = {
+        type = MATERIAL_LIGHT_POINT,
+        color = lt.warn_color_vec,
+        pos = lt.warn_pos_global,
+        quadraticFalloff = lt.warn_falloff,
+    }
+
+    if lt.nopower then
+        lt.off_render_table = {
+            type = MATERIAL_LIGHT_POINT,
+            color = lt.off_color_vec,
+            pos = lt.off_pos_global,
+            quadraticFalloff = lt.off_falloff,
+        }
+        lt.off_warn_render_table = {
+            type = MATERIAL_LIGHT_POINT,
+            color = lt.off_warn_color_vec,
+            pos = lt.off_warn_pos_global,
+            quadraticFalloff = lt.off_warn_falloff,
+        }
+    else
+        lt.off_render_table = {}
+        lt.off_warn_render_table = {}
+    end
+end
+
+if CLIENT then
     ENT:AddHook("Initialize", "lights", function(self)
         local light = self.metadata.Interior.Light
         local lights = self.metadata.Interior.Lights
@@ -247,19 +242,10 @@ if CLIENT then
         self:RunLampUpdate()
     end)
 
-    function ENT:EditLamp(pl, lmp)
-        tardisdebug(lmp)
-
-        if not lmp or lmp.enabled == false then
-            pl:Remove()
-            return
-        end
-
-        if not IsValid(pl) then
-            self:CreateLamp(lmp)
-            return
-        end
-
+    function ENT:CreateLamp(lmp)
+        if not lmp then return end
+        if lmp.enabled == false then return end
+        local pl = ProjectedTexture()
         pl:SetTexture(lmp.texture)
         pl:SetPos(lmp.pos_global)
         pl:SetAngles(lmp.ang)
@@ -269,12 +255,6 @@ if CLIENT then
         pl:SetFarZ(lmp.distance)
         pl:SetEnableShadows(lmp.shadows)
         pl:Update()
-    end
-
-    function ENT:CreateLamp(lmp)
-        if not lmp then return end
-        local pl = ProjectedTexture()
-        self:EditLamp(pl, lmp)
         return pl
     end
 
@@ -314,16 +294,6 @@ if CLIENT then
         end
     end
 
-    function ENT:UpdateLamps()
-        if not TARDIS:GetSetting("lamps-enabled") then return end
-        if TARDIS.debug_lamps_enabled then return end
-        if not self.lamps_data or not self.lamps then return end
-
-        for k,v in pairs(self.lamps_data) do
-            self:EditLamp(self.lamps[k], SelectLampTable(self, v))
-        end
-    end
-
     function ENT:RemoveLamps()
         if not self.lamps then return end
         for k,v in pairs(self.lamps) do
@@ -341,34 +311,11 @@ if CLIENT then
         self:RunLampUpdate()
     end
 
---[[    ENT:AddHook("LightStateChanged", "lamps", ReplaceLamps)
+    ENT:AddHook("LightStateChanged", "lamps", ReplaceLamps)
 
-    ENT:AddHook("PowerToggled", "lamps", function(self, on)
-        if not self.lamps then return end
-        if not TARDIS:GetSetting("lamps-enabled") then
-            on = false
-        end
+    ENT:AddHook("PowerToggled", "lamps", ReplaceLamps)
 
-        local lamps = self.metadata.Interior.Lamps
-
-        for k,v in pairs(lamps) do
-            if not v.nopower and self.lamps[k] then
-                self.lamps[k]:SetBrightness(on and v.brightness or 0)
-                self.lamps[k]:Update()
-            end
-        end
-    end)]]
-
-    ENT:AddHook("PowerToggled", "lamps", function(self, on)
-        ReplaceLamps(self)
-        --self:UpdateLamps()
-    end)
-
-    ENT:AddHook("HealthWarningToggled", "lamps", function(self, on)
-        ReplaceLamps(self)
-        --self:UpdateLamps()
-    end)
-
+    ENT:AddHook("HealthWarningToggled", "lamps", ReplaceLamps)
 
 
     function ENT:RunLampUpdate()
@@ -439,16 +386,27 @@ function ENT:ApplyLightState(state)
     self:SetData("light_state", state)
     self:CallHook("LightStateChanged", state)
 
-    if CLIENT then
+    if SERVER then
+        self:SendMessage("light_state",function()
+            net.WriteString(state)
+        end)
+    else
         local ldata = self.light_data
         ChangeSingleLightState(ldata.main, state)
+        ParseLightTable(ldata.main, self, 20)
 
         for k,v in pairs(ldata.extra) do
             ChangeSingleLightState(v, state)
+            ParseLightTable(v, self, 10)
         end
     end
 end
 
+if CLIENT then
+    ENT:OnMessage("light_state", function(self)
+        self:ApplyLightState(net.ReadString())
+    end)
+end
 
 
 -- Debug Lamps (a way for developers to set up the projected lights)
