@@ -20,47 +20,31 @@ local function predraw_o(self)
 
     local tab={}
 
-    local function AddLightRenderTable(lt)
-        if self:CallHook("ShouldDrawLight",nil,lt) == false then return end
-
-        if not power and warning then
-            table.insert(tab, {
-                type = MATERIAL_LIGHT_POINT,
-                color = lt.off_warn_color_vec,
-                pos = lt.off_warn_pos_global,
-                quadraticFalloff = lt.off_warn_falloff,
-            })
-        elseif not power then
-            table.insert(tab, {
-                type = MATERIAL_LIGHT_POINT,
-                color = lt.off_color_vec,
-                pos = lt.off_pos_global,
-                quadraticFalloff = lt.off_falloff,
-            })
-        elseif warning then
-            table.insert(tab, {
-                type = MATERIAL_LIGHT_POINT,
-                color = lt.warn_color_vec,
-                pos = lt.warn_pos_global,
-                quadraticFalloff = lt.warn_falloff,
-            })
-        else -- power and no warning
-            table.insert(tab, {
-                type = MATERIAL_LIGHT_POINT,
-                color = lt.color_vec,
-                pos = lt.pos_global,
-                quadraticFalloff = lt.falloff,
-            })
+    local function SelectLightRenderTable(lt)
+        if self:CallHook("ShouldDrawLight",nil,lt) == false then
+            return {}
         end
+
+        if (not power) and warning then
+            return lt.off_warn_render_table
+        elseif not power then
+            return lt.off_render_table
+        elseif warning then
+            return lt.warn_render_table
+        end
+        -- power and no warning
+        return lt.render_table
+
     end
 
-    AddLightRenderTable(light)
+    table.insert(tab, SelectLightRenderTable(light))
+
     if lights then
-        if TARDIS:GetSetting("extra-lights-disabled") then
-            table.insert(tab, {})
-        else
-            for _,l in pairs(lights) do
-                AddLightRenderTable(l)
+        for _,l in pairs(lights) do
+            if TARDIS:GetSetting("extra-lights-disabled") then
+                table.insert(tab, {})
+            else
+                table.insert(tab, SelectLightRenderTable(l) or {})
             end
         end
     end
