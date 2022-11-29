@@ -11,8 +11,15 @@ cvars.AddChangeCallback("tardis2_debug_chat", function()
     TARDIS.debug_chat = GetConVar("tardis2_debug_chat"):GetBool()
 end)
 
+CreateConVar("tardis2_debug_textures", 0, {FCVAR_ARCHIVE, FCVAR_REPLICATED},
+    "TARDIS - print the list of textures in TextureSet / ChangeTexture form")
+cvars.AddChangeCallback("tardis2_debug_textures", function()
+    TARDIS.debug_textures = GetConVar("tardis2_debug_textures"):GetBool()
+end)
+
 TARDIS.debug = GetConVar("tardis2_debug"):GetBool()
 TARDIS.debug_chat = GetConVar("tardis2_debug_chat"):GetBool()
+TARDIS.debug_textures = GetConVar("tardis2_debug_textures"):GetBool()
 
 if SERVER then
     util.AddNetworkString("TARDIS-Debug")

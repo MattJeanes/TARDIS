@@ -144,6 +144,10 @@ function TARDIS:GetPart(ent,id)
     return IsValid(ent) and ent.parts and ent.parts[id] or NULL
 end
 
+function TARDIS:GetParts(ent)
+    return IsValid(ent) and ent.parts
+end
+
 local overridequeue={}
 postinit=postinit or false -- local vars cannot stay on autorefresh
 function TARDIS:AddPart(e)
