@@ -152,7 +152,7 @@ if CLIENT then
         if light then
             self:DrawLight(index,light)
         end
-        if lights and not TARDIS:GetSetting("extra-lights-disabled") then
+        if lights and TARDIS:GetSetting("extra-lights") then
             local i=0
             for _,light in pairs(lights) do
                 i=i+1
@@ -161,7 +161,7 @@ if CLIENT then
         end
     end)
 
-    ENT:AddHook("ShouldDrawLight", "enabled_check", function(self,id,light)
+    ENT:AddHook("ShouldDrawLight", "interior_light_enabled", function(self,id,light)
         if light.enabled == false then return false end
         -- allow disabling lights with light states
     end)

@@ -41,7 +41,7 @@ local function predraw_o(self)
 
     if lights then
         for _,l in pairs(lights) do
-            if TARDIS:GetSetting("extra-lights-disabled") then
+            if not TARDIS:GetSetting("extra-lights") then
                 table.insert(tab, {})
             else
                 table.insert(tab, SelectLightRenderTable(l) or {})

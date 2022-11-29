@@ -13,15 +13,15 @@ TARDIS:AddSetting({
 })
 
 TARDIS:AddSetting({
-    id="extra-lights-disabled",
+    id="extra-lights",
     type="bool",
-    value=false,
+    value=true,
 
     class="local",
 
     option=true,
     section=SETTING_SECTION,
-    name="NoExtraLights",
+    name="ExtraLights",
 })
 
 TARDIS:AddSetting({
