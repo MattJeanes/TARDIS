@@ -14,10 +14,20 @@ end
 function ENT:PickProjectedLightColor()
     local override = TARDIS:GetSetting("extprojlight-override-color")
     if override then return TARDIS:GetSetting("extprojlight-color") end
+
     local warning = self:GetData("health-warning",false)
-    local color = self.metadata.Exterior.ProjectedLight.color or self.metadata.Interior.Light.color
-    local warncolor = self.metadata.Exterior.ProjectedLight.warncolor or self.metadata.Interior.Light.warncolor
-    local pickedcolor = warning and (warncolor or color) or color
+
+    local pl = self.metadata.Exterior.ProjectedLight
+    local ld = self.interior.light_data
+    local int_color_data = ld and ld.main or self.metadata.Interior.Light
+    local pickedcolor
+
+    if warning then
+        pickedcolor = pl.warncolor or int_color_data.warn_color
+    end
+
+    pickedcolor = pickedcolor or pl.color or int_color_data.color
+
     return pickedcolor
 end
 
@@ -88,7 +98,7 @@ end)
 ENT:AddHook("ShouldNotDrawProjectedLight","projectedlight",function(self)
     if (not TARDIS:GetSetting("extprojlight-enabled")) or (not self.interior) then return true end
     if self:GetData("vortex",false)==true then return true end
-    if not self.metadata.Interior.Light then return true end
+    if not self.interior.light_data.main then return true end
 end)
 
 ENT:AddHook("Think", "projectedlight", function(self)

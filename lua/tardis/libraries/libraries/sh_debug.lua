@@ -21,6 +21,27 @@ TARDIS.debug = GetConVar("tardis2_debug"):GetBool()
 TARDIS.debug_chat = GetConVar("tardis2_debug_chat"):GetBool()
 TARDIS.debug_textures = GetConVar("tardis2_debug_textures"):GetBool()
 
+concommand.Add("tardis2_debug_warning", function(ply,cmd,args)
+    local ext = ply:GetTardisData("exterior")
+    if not ext or not ply:IsAdmin() then return end
+
+    local oldval = ext:GetData("health-val", 0)
+
+    local val = TARDIS:GetSetting("health-max")
+    if not ext:GetData("health-warning", false) then
+        val = val / 10
+    end
+    ext:SetData("health-val", val, true)
+    ext:CallHook("OnHealthChange", val, oldval)
+end)
+
+concommand.Add("tardis2_debug_power", function(ply,cmd,args)
+    local ext = ply:GetTardisData("exterior")
+    if not ext or not ply:IsAdmin() then return end
+
+    ext:TogglePower()
+end)
+
 if SERVER then
     util.AddNetworkString("TARDIS-Debug")
 end
