@@ -1,7 +1,7 @@
 TARDIS:AddControl({ id = "teleport_double",
     ext_func=function(self,ply,part)
         tardisdebug("a")
-        if (self:GetData("teleport") or self:GetData("vortex")) and not part:GetOn() then
+        if (self:GetData("teleport") or self:GetData("vortex")) and part:GetOn() then
             self:Mat(function(result)
                 if result then
                     TARDIS:Message(ply, "Controls.Teleport.Mat")
@@ -9,7 +9,7 @@ TARDIS:AddControl({ id = "teleport_double",
                     TARDIS:ErrorMessage(ply, "Controls.Teleport.FailedMat")
                 end
             end)
-        else if part:GetOn() then
+        else if not part:GetOn() then
             local pos = pos or self:GetData("demat-pos") or self:GetPos()
             local ang = ang or self:GetData("demat-ang") or self:GetAngles()
             self:Demat(pos, ang, function(result)
@@ -26,6 +26,7 @@ TARDIS:AddControl({ id = "teleport_double",
                 end
             end)
         end
+            end
     end,
     serveronly=true,
     power_independent = false,
