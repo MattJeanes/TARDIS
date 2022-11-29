@@ -3,6 +3,8 @@
 local function predraw_o(self)
     if not TARDIS:GetSetting("lightoverride-enabled") then return end
 
+    local power = self:GetPower()
+
     render.SuppressEngineLighting(true)
     local lo = self.metadata.Interior.LightOverride
     local br = power and lo.basebrightness or lo.nopowerbrightness
@@ -16,7 +18,6 @@ local function predraw_o(self)
 
     local lights = self.light_data.extra
     local warning = self:GetData("health-warning", false)
-    local power = self:GetPower()
 
     local tab={}
 
