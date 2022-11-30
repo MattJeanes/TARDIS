@@ -1,4 +1,5 @@
-TARDIS:AddControl({ id = "teleport_double",
+TARDIS:AddControl({
+    id = "teleport_double",
     ext_func=function(self,ply,part)
         local on = part:GetOn()
         local tp = self:GetData("teleport")
