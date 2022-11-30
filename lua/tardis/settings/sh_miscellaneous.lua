@@ -132,7 +132,7 @@ TARDIS:AddSetting({
 TARDIS:AddSetting({
     id="flight_to_float_if_no_artron",
     type="bool",
-    value=true,
+    value=false,
 
     class="networked",
 
