@@ -244,8 +244,10 @@ if SERVER then
     end)
 
     ENT:AddHook("ShouldUpdateArtron", "redecoration", function(self)
-        if self:GetData("redecorate") or self:GetData("redecorate_parent")
+        if self:GetData("redecorate")
+            or self:GetData("redecorate_parent")
             or self:GetData("redecorate_child")
+            or self:GetData("is_redecorate_child")
         then
             return false
         end

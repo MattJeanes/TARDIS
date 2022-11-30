@@ -75,6 +75,7 @@ if SERVER then
         self:SetPos(parent:GetPos())
         self:SetAngles(parent:GetAngles())
         parent:SetParent(self)
+        self:SetData("is_redecorate_child", true, true)
     end)
 
     ENT:AddHook("StopMat", "redecorate_sync", function(self)
@@ -84,6 +85,8 @@ if SERVER then
             self:SetFastRemat(false)
             self:SetData("redecorate_parent_vortex", nil, true)
         end
+
+        self:SetData("is_redecorate_child", nil, true)
     end)
 
     ENT:AddHook("CustomData", "redecorate_child", function(self, customdata)
