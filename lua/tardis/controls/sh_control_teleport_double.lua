@@ -4,7 +4,7 @@ TARDIS:AddControl({ id = "teleport_double",
         local tp = self:GetData("teleport")
         local vx = self:GetData("vortex")
 
-        if (tp and on) or (vx and on) or (not on and not tp and not vx)
+        if (tp and on) or (vx and on) or (not on and not tp and not vx) then
             TARDIS:Control("teleport", ply, part)
         end
     end,
