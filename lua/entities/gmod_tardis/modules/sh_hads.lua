@@ -76,6 +76,12 @@ if SERVER then
         self:SetData("hads-auto-remat", nil, true)
     end)
 
+    ENT:AddHook("InterruptTeleport", "hads-data", function(self)
+        self:SetData("hads-triggered",false,true)
+        self:SetData("hads-need-remat", nil, true)
+        self:SetData("hads-auto-remat", nil, true)
+    end)
+
     hook.Add("OnPhysgunPickup", "tardis-hads", function(ply,ent)
         if ent:GetClass()=="gmod_tardis" and ent:TriggerHADS() then
             ent:ForcePlayerDrop()
