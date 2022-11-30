@@ -129,6 +129,19 @@ TARDIS:AddSetting({
     name="UseWalkKeyThirdPerson",
 })
 
+TARDIS:AddSetting({
+    id="flight_to_float_if_no_artron",
+    type="bool",
+    value=true,
+
+    class="networked",
+
+    option=true,
+    section=SETTING_SECTION,
+    subsection="Flight",
+    name="FlightToFloatIfNoArtron",
+})
+
 --------------------------------------------------------------------------------
 -- Tips
 

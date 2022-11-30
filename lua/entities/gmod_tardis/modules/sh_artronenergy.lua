@@ -62,7 +62,7 @@ if SERVER then
             return
         end
         if self:GetPower() then
-            if self:GetData("flight") then
+            if self:GetData("flight") and TARDIS:GetSetting("flight_to_float_if_no_artron", self:GetCreator()) then
                 self:SetData("floatfirst", true)
             end
             self:SetPower(false)
