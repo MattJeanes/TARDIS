@@ -83,7 +83,7 @@ local overrides={
                     self.UseBasic(self,a,...)
                 end
                 if SERVER and self.Control and (not self.HasUse) then
-                    TARDIS:Control(self.Control,a)
+                    TARDIS:Control(self.Control,a,self)
                 else
                     res=self.o.Use(self,a,...)
                 end

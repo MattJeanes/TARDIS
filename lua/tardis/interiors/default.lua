@@ -142,7 +142,7 @@ T.Interior = {
         },
     },
     Controls = {
-        default_throttle            = "teleport",
+        default_throttle            = "teleport_double",
         default_flightlever         = "flight",
         default_screen              = nil,
         default_screenbutton        = "toggle_screens",
