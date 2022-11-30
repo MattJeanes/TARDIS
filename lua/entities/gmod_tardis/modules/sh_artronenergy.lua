@@ -62,6 +62,9 @@ if SERVER then
             return
         end
         if self:GetPower() then
+            if self:GetData("flight") then
+                self:SetData("floatfirst", true)
+            end
             self:SetPower(false)
             for k,_ in pairs(self.occupants) do
                 TARDIS:ErrorMessage(k, "Artron Depleted.")
@@ -73,7 +76,7 @@ if SERVER then
         local fast = self:GetData("demat-fast", false)
         local artron = self:GetData("artron-val", 0)
 
-        if self:CallHook("ShouldDecreaseArtron") == false then return end
+        if self:CallHook("ShouldUpdateArtron") == false then return end
         if self:GetData("hads-triggered", false) then return end
 
         if fast and artron < -artron_values.cost_full then
@@ -110,11 +113,11 @@ if SERVER then
     ENT:AddHook("Think", "artron", function(self)
         if not TARDIS:GetSetting("artron_energy") then return end
 
-        if self:CallHook("ShouldDecreaseArtron") == false then return end
+        if self:CallHook("ShouldUpdateArtron") == false then return end
 
         -- if artron energy should decrease, it happens every second
-        if CurTime() < self:GetData("artron_next_decrease_time", 0) then return end
-        self:SetData("artron_next_decrease_time", CurTime() + 1)
+        if CurTime() < self:GetData("artron_next_update_time", 0) then return end
+        self:SetData("artron_next_update_time", CurTime() + 1)
 
         local power = self:GetPower()
         local vortex = self:GetData("vortex")
@@ -193,7 +196,7 @@ if SERVER then
 
     ENT:AddHook("DematStart", "artron", function(self)
         if not TARDIS:GetSetting("artron_energy") then return end
-        if self:CallHook("ShouldDecreaseArtron") == false then return end
+        if self:CallHook("ShouldUpdateArtron") == false then return end
 
         if self:GetData("demat-fast", false) then
             self:AddArtron(artron_values.cost_full)
@@ -204,7 +207,7 @@ if SERVER then
 
     ENT:AddHook("MatStart", "artron", function(self)
         if not TARDIS:GetSetting("artron_energy") then return end
-        if self:CallHook("ShouldDecreaseArtron") == false then return end
+        if self:CallHook("ShouldUpdateArtron") == false then return end
 
         if self:GetData("demat-fast",false) ~= true then
             self:AddArtron(artron_values.cost_mat)
@@ -234,13 +237,13 @@ if SERVER then
         end
     end)
 
-    ENT:AddHook("ShouldDecreaseArtron", "repair", function(self)
+    ENT:AddHook("ShouldUpdateArtron", "repair", function(self)
         if self:GetData("repair-primed") or self:GetData("repairing") then
             return false
         end
     end)
 
-    ENT:AddHook("ShouldDecreaseArtron", "redecoration", function(self)
+    ENT:AddHook("ShouldUpdateArtron", "redecoration", function(self)
         if self:GetData("redecorate") or self:GetData("redecorate_parent")
             or self:GetData("redecorate_child")
         then
@@ -248,8 +251,11 @@ if SERVER then
         end
     end)
 
-    ENT:AddHook("ShouldDecreaseArtron", "hads", function(self)
-        if self:GetData("hads-triggered", false) then
+    ENT:AddHook("ShouldUpdateArtron", "hads", function(self)
+        if self:GetData("hads-triggered")
+            or self:GetData("hads-need-remat")
+            or self:GetData("hads-auto-remat")
+        then
             return false
         end
     end)

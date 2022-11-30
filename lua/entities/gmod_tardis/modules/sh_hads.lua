@@ -40,12 +40,13 @@ if SERVER then
             TARDIS:Message(self:GetCreator(), "HADS.UnderAttack")
             self:SetData("hads-triggered", true)
             self:SetFastRemat(false)
-            self:SetRandomDestination(true) 
+            self:SetRandomDestination(true)
             self:AutoDemat()
             self:CallHook("HADSTrigger")
             self:SetData("hads-need-remat", true, true)
             self:Timer("HadsRematTime", math.random(10,25), function()
-                if self:GetData("hads-need-remat", false) then 
+                if self:GetData("hads-need-remat", false) then
+                    self:SetData("hads-auto-remat", true, true)
                     self:Mat(function(result)
                         if result then
                             TARDIS:Message(self:GetCreator(), "HADS.Mat")
@@ -57,12 +58,22 @@ if SERVER then
         end
     end
 
+    ENT:AddHook("OnTakeDamage", "hads", function(self)
+        self:TriggerHADS()
+    end)
+
     ENT:AddHook("MatStart", "hads-cancel-remat", function(self)
         self:SetData("hads-need-remat", nil, true)
     end)
 
-    ENT:AddHook("OnTakeDamage", "hads", function(self)
-        self:TriggerHADS()
+    ENT:AddHook("StopDemat","hads",function(self)
+        if self:GetData("hads-triggered",false) then
+            self:SetData("hads-triggered",false,true)
+        end
+    end)
+
+    ENT:AddHook("StopMat", "hads", function(self)
+        self:SetData("hads-auto-remat", nil, true)
     end)
 
     hook.Add("OnPhysgunPickup", "tardis-hads", function(ply,ent)
@@ -71,11 +82,6 @@ if SERVER then
         end
     end)
 
-    ENT:AddHook("StopDemat","hads",function(self)
-        if self:GetData("hads-triggered",false) then
-            self:SetData("hads-triggered",false,true)
-        end
-    end)
 
     ENT:AddHook("StopMat", "hads", function(self)
         self:SetData("hads-auto-remat", nil, true)
