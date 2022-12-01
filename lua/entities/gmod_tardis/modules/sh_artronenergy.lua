@@ -300,7 +300,7 @@ if SERVER then
     function ENT:EngineReleaseVortexArtron(callback)
         if not TARDIS:GetSetting("artron_energy") then return end
 
-        if self:GetData("teleport") or self:GetData("vortex") then
+        if self:GetData("vortex") then
             self:ForceAddArtron()
             callback(true)
         end
