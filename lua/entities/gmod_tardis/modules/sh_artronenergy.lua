@@ -2,7 +2,7 @@ if SERVER then
 
     local artron_values = {
         cost_demat = -540,
-        cost_mat = -180,
+        cost_mat = -360,
         cost_full = -1200,
         cost_controls = {
             ["cloak"] = -720,
@@ -26,6 +26,8 @@ if SERVER then
         increase_poweroff = 24 * 5,
         increase_float = 8 * 5,
         increase_float_handbrake = 40 * 5,
+
+        increase_engine_release = 720,
     }
 
     function ENT:SetArtron(value)
@@ -77,7 +79,6 @@ if SERVER then
         local artron = self:GetData("artron-val", 0)
 
         if self:CallHook("ShouldUpdateArtron") == false then return end
-        if self:GetData("hads-triggered", false) then return end
 
         if fast and artron < -artron_values.cost_full then
             return true
@@ -94,6 +95,18 @@ if SERVER then
         if ArtronDematCheck(self) == true then
             return true
         end
+    end)
+
+    ENT:AddHook("ShouldFailMat", "artron", function(self, dest_pos, dest_ang)
+        if not TARDIS:GetSetting("artron_energy") then return end
+        if self:CallHook("ShouldUpdateArtron") == false then return end
+
+        local fast = self:GetData("demat-fast", false)
+        local artron = self:GetData("artron-val", 0)
+        if not fast and artron < -artron_values.cost_mat then
+            return true
+        end
+
     end)
 
     ENT:AddHook("CanTogglePower", "artron", function(self, on)
@@ -130,7 +143,9 @@ if SERVER then
 
         local change = 0
 
-        if vortex or teleport then
+        if teleport then
+            return
+        elseif vortex then
             change = change + artron_values.spend_vortex_teleport
         elseif flight then
             if TARDIS:IsBindDown(self.pilot,"flight-boost") then
@@ -269,5 +284,28 @@ if SERVER then
             self:SetArtron(val)
         end
     end)
+
+
+    --
+    -- Emergency artron behaviour
+    --
+    function ENT:ForceAddArtron()
+        self:Explode(30)
+        self.interior:Explode(30)
+        self:AddArtron(artron_values.increase_engine_release)
+        local newhealth = self:GetHealth() * math.random(60, 85) * 0.01
+        self:ChangeHealth(newhealth)
+    end
+
+    function ENT:EngineReleaseVortexArtron(callback)
+        if not TARDIS:GetSetting("artron_energy") then return end
+
+        if self:GetData("teleport") or self:GetData("vortex") then
+            self:ForceAddArtron()
+            callback(true)
+        end
+        callback(false)
+    end
+
 end
 
