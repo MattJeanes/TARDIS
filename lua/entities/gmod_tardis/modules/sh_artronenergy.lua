@@ -37,7 +37,6 @@ if SERVER then
         if value == 0 then
             self:CallHook("ArtronDepleted")
         end
-        tardisdebug(value)
     end
 
     function ENT:AddArtron(value)
@@ -69,7 +68,7 @@ if SERVER then
             end
             self:SetPower(false)
             for k,_ in pairs(self.occupants) do
-                TARDIS:ErrorMessage(k, "Artron Depleted.")
+                TARDIS:ErrorMessage(k, "Artron.Depleted")
             end
         end
     end)
@@ -92,7 +91,7 @@ if SERVER then
         if not TARDIS:GetSetting("artron_energy") then return end
         if self:GetData("hads-attempt") then return end
 
-        if ArtronDematCheck(self) == true then
+        if ArtronDematCheck(self) then
             return true
         end
     end)
@@ -205,7 +204,7 @@ if SERVER then
     ENT:AddHook("HandleNoDemat", "artron", function(self)
         if not TARDIS:GetSetting("artron_energy") then return end
 
-        if ArtronDematCheck(self) == true then return end
+        if ArtronDematCheck(self) then return end
         self:AddArtron(TARDIS.artron_values.cost_failed_demat)
     end)
 

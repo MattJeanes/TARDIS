@@ -229,6 +229,7 @@ T.Phrases = {
     ["Health.RepairCancelled"] = "Self-repair has been cancelled",
     ["Health.RepairFinished"] = "Your TARDIS has finished self-repairing",
     ["Health.Repairing"] = "This TARDIS is repairing. It will be done in %d seconds",
+    ["Artron.Depleted"] = "Artron energy depleted",
     ["Interior.FindingPosition"] = "Please wait, finding suitable spawn location for interior..",
     ["Interior.FindingPositionFailed.Generic"] = "Coroutine error while finding position: %s",
     ["Interior.FindingPositionFailed.NoSpace"] = "WARNING: Unable to locate space for interior, you can try again or use a different map",
