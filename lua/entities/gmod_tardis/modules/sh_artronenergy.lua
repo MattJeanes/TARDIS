@@ -1,6 +1,6 @@
 if SERVER then
 
-    local artron_values = {
+    TARDIS.artron_values = {
         cost_demat = -540,
         cost_mat = -360,
         cost_full = -1200,
@@ -80,10 +80,10 @@ if SERVER then
 
         if self:CallHook("ShouldUpdateArtron") == false then return end
 
-        if fast and artron < -artron_values.cost_full then
+        if fast and artron < -TARDIS.artron_values.cost_full then
             return true
         end
-        if not fast and artron < -artron_values.cost_demat then
+        if not fast and artron < -TARDIS.artron_values.cost_demat then
             return true
         end
     end
@@ -103,7 +103,7 @@ if SERVER then
 
         local fast = self:GetData("demat-fast", false)
         local artron = self:GetData("artron-val", 0)
-        if not fast and artron < -artron_values.cost_mat then
+        if not fast and artron < -TARDIS.artron_values.cost_mat then
             return true
         end
 
@@ -146,18 +146,18 @@ if SERVER then
         if teleport then
             return
         elseif vortex then
-            change = change + artron_values.spend_vortex_teleport
+            change = change + TARDIS.artron_values.spend_vortex_teleport
         elseif flight then
             if TARDIS:IsBindDown(self.pilot,"flight-boost") then
-                change = change + artron_values.spend_flight_boost
+                change = change + TARDIS.artron_values.spend_flight_boost
             end
-            change = change + artron_values.spend_flight
+            change = change + TARDIS.artron_values.spend_flight
         end
         if cloak then
             if handbrake then
-                change = change + artron_values.spend_cloak_handbrake
+                change = change + TARDIS.artron_values.spend_cloak_handbrake
             else
-                change = change + artron_values.spend_cloak
+                change = change + TARDIS.artron_values.spend_cloak
             end
         end
 
@@ -172,33 +172,33 @@ if SERVER then
         self:SetData("artron_next_increase_time", CurTime() + 5)
 
         if handbrake and float then
-            self:AddArtron(artron_values.increase_float_handbrake)
+            self:AddArtron(TARDIS.artron_values.increase_float_handbrake)
             return
         end
         if handbrake then
-            self:AddArtron(artron_values.increase_handbrake)
+            self:AddArtron(TARDIS.artron_values.increase_handbrake)
             return
         end
         if not power then
-            self:AddArtron(artron_values.increase_poweroff)
+            self:AddArtron(TARDIS.artron_values.increase_poweroff)
             return
         end
         if float then
-            self:AddArtron(artron_values.increase_float)
+            self:AddArtron(TARDIS.artron_values.increase_float)
             return
         end
         if warning then
-            self:AddArtron(artron_values.increase_warning)
+            self:AddArtron(TARDIS.artron_values.increase_warning)
             return
         end
-        self:AddArtron(artron_values.increase_normal) -- default state
+        self:AddArtron(TARDIS.artron_values.increase_normal) -- default state
     end)
 
     ENT:AddHook("TardisControlUsed", "artron", function(self, control)
         if not TARDIS:GetSetting("artron_energy") then return end
 
-        if artron_values.cost_controls[control] then
-            self:AddArtron(artron_values.cost_controls[control])
+        if TARDIS.artron_values.cost_controls[control] then
+            self:AddArtron(TARDIS.artron_values.cost_controls[control])
         end
     end)
 
@@ -206,7 +206,7 @@ if SERVER then
         if not TARDIS:GetSetting("artron_energy") then return end
 
         if ArtronDematCheck(self) == true then return end
-        self:AddArtron(artron_values.cost_failed_demat)
+        self:AddArtron(TARDIS.artron_values.cost_failed_demat)
     end)
 
     ENT:AddHook("DematStart", "artron", function(self)
@@ -214,9 +214,9 @@ if SERVER then
         if self:CallHook("ShouldUpdateArtron") == false then return end
 
         if self:GetData("demat-fast", false) then
-            self:AddArtron(artron_values.cost_full)
+            self:AddArtron(TARDIS.artron_values.cost_full)
         else
-            self:AddArtron(artron_values.cost_demat)
+            self:AddArtron(TARDIS.artron_values.cost_demat)
         end
     end)
 
@@ -225,18 +225,18 @@ if SERVER then
         if self:CallHook("ShouldUpdateArtron") == false then return end
 
         if self:GetData("demat-fast",false) ~= true then
-            self:AddArtron(artron_values.cost_mat)
+            self:AddArtron(TARDIS.artron_values.cost_mat)
         end
     end)
 
     ENT:AddHook("HADSTrigger", "artron", function(self)
         if not TARDIS:GetSetting("artron_energy") then return end
 
-        if self:GetData("artron-val",0) < -artron_values.cost_hads then
+        if self:GetData("artron-val",0) < -TARDIS.artron_values.cost_hads then
             self:SetArtron(1)
             return
         end
-        self:AddArtron(artron_values.cost_hads)
+        self:AddArtron(TARDIS.artron_values.cost_hads)
     end)
 
 
@@ -292,7 +292,7 @@ if SERVER then
     function ENT:ForceAddArtron()
         self:Explode(30)
         self.interior:Explode(30)
-        self:AddArtron(artron_values.increase_engine_release)
+        self:AddArtron(TARDIS.artron_values.increase_engine_release)
         local newhealth = self:GetHealth() * math.random(60, 85) * 0.01
         self:ChangeHealth(newhealth)
     end
