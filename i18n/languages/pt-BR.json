@@ -1,5 +1,5 @@
 {
-  "Name": "Português (brasileiro)",
+  "Name": "Português (Brasil)",
   "Author": "Equipe de Desenvolvimento da TARDIS",
   "Phrases": {
     "Binds.AnyKey": "Aperte qualquer tecla",
@@ -418,10 +418,10 @@
     "Settings.Sections.Performance.DoorCloseDistance": "Distância de Fechamento da Porta",
     "Settings.Sections.Performance.DynamicExteriorLight.Description": "O exterior deve emitir iluminação dinâmica?",
     "Settings.Sections.Performance.DynamicExteriorLight": "Luz Externa Dinâmica",
-    "Settings.Sections.Performance.ExtraLights.Description": "",
-    "Settings.Sections.Performance.ExtraLights": "",
-    "Settings.Sections.Performance.Lamps.Description": "",
-    "Settings.Sections.Performance.Lamps": "",
+    "Settings.Sections.Performance.ExtraLights.Description": "Mais de uma fonte de luz por interior",
+    "Settings.Sections.Performance.ExtraLights": "Luzes Internas Extras",
+    "Settings.Sections.Performance.Lamps.Description": "Ativar lâmpadas internas adicionais",
+    "Settings.Sections.Performance.Lamps": "Lâmpadas Internas",
     "Settings.Sections.Performance.LightingOverride.Description": "Iluminação interna melhorada independente do ambiente do mapa.\nPode causar queda no desempenho em dispositivos mais fracos.",
     "Settings.Sections.Performance.LightingOverride": "Substituição de Iluminação",
     "Settings.Sections.Performance.Portals.Description": "Se os portais serão renderizados ou não, desligue isso se eles afetarem a taxa de quadros significativamente",
