@@ -108,13 +108,6 @@ if CLIENT then
         self:LoadLights()
     end)
 
-    ENT:AddHook("SlowThink", "lights", function(self)
-        local pos = self:GetPos()
-        if self.lights_lastpos == pos then return end
-        self.lights_lastpos = pos
-        self:LoadLights()
-    end)
-
     function ENT:DrawLight(id,light)
         if self:CallHook("ShouldDrawLight",id,light)==false then return end
 
@@ -236,7 +229,7 @@ if CLIENT then
         end
     end
 
-    ENT:AddHook("Initialize", "lamps", function(self)
+    function ENT:LoadLamps()
         local lamps = self.metadata.Interior.Lamps
         if not lamps then return end
 
@@ -248,7 +241,10 @@ if CLIENT then
             self:InitLampData(this_lamp)
             self.lamps_data[k] = this_lamp
         end
+    end
 
+    ENT:AddHook("Initialize", "lamps", function(self)
+        self:LoadLamps()
         self:CreateLamps()
         self:RunLampUpdate()
     end)
@@ -388,7 +384,7 @@ end
 -- Light states
 
 local function ChangeSingleLightState(light_table, state)
-    local new_state = light_table.states && light_table.states[state]
+    local new_state = light_table.states and light_table.states[state]
     if not new_state then return end
     table.Merge(light_table, new_state)
 end
@@ -542,5 +538,17 @@ if CLIENT then
                 end
             end
         end
+    end)
+end
+
+if CLIENT then
+    ENT:AddHook("SlowThink", "lights", function(self)
+        local pos = self:GetPos()
+        if self.lights_lastpos == pos then return end
+        print(pos)
+        self.lights_lastpos = pos
+        self:LoadLights()
+        self:LoadLamps()
+        self:CreateLamps()
     end)
 end
