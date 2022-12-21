@@ -85,7 +85,7 @@ local function ParseLightTable(lt, interior, default_falloff)
 end
 
 if CLIENT then
-    ENT:AddHook("Initialize", "lights", function(self)
+    function ENT:LoadLights()
         local light = self.metadata.Interior.Light
         local lights = self.metadata.Interior.Lights
 
@@ -102,6 +102,10 @@ if CLIENT then
                 ParseLightTable(self.light_data.extra[k], self, 10)
             end
         end
+    end
+
+    ENT:AddHook("Initialize", "lights", function(self)
+        self:LoadLights()
     end)
 
     function ENT:DrawLight(id,light)
@@ -531,5 +535,12 @@ if CLIENT then
                 end
             end
         end
+    end)
+
+    ENT:AddHook("SlowThink", "lights", function(self)
+        local pos = self:GetPos()
+        if self.lights_lastpos == pos then return end
+        self.lights_lastpos = pos
+        self:LoadLights()
     end)
 end
