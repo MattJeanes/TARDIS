@@ -108,6 +108,13 @@ if CLIENT then
         self:LoadLights()
     end)
 
+    ENT:AddHook("SlowThink", "lights", function(self)
+        local pos = self:GetPos()
+        if self.lights_lastpos == pos then return end
+        self.lights_lastpos = pos
+        self:LoadLights()
+    end)
+
     function ENT:DrawLight(id,light)
         if self:CallHook("ShouldDrawLight",id,light)==false then return end
 
@@ -535,12 +542,5 @@ if CLIENT then
                 end
             end
         end
-    end)
-
-    ENT:AddHook("SlowThink", "lights", function(self)
-        local pos = self:GetPos()
-        if self.lights_lastpos == pos then return end
-        self.lights_lastpos = pos
-        self:LoadLights()
     end)
 end
