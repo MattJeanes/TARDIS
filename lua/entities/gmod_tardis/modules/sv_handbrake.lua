@@ -29,3 +29,21 @@ ENT:AddHook("HandbrakeToggled", "vortex", function(self, force)
         end
     end
 end)
+
+ENT:AddHook("HandbrakeToggled", "flight", function(self, force)
+    if self:GetData("handbrake") then
+        if self:GetData("flight") then
+            self:ToggleFlight()
+            self:Explode()
+            if IsValid(self.interior) then
+                self.interior:Explode()
+            end
+        end
+    end
+end)
+
+ENT:AddHook("CanTurnOnFlight", "handbrake", function(self)
+    if self:GetData("handbrake") then
+        return false
+    end
+end)
