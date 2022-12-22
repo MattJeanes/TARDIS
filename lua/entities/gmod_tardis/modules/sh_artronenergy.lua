@@ -292,7 +292,7 @@ if SERVER then
         self:Explode(30)
         self.interior:Explode(30)
         self:AddArtron(TARDIS.artron_values.increase_engine_release)
-        local newhealth = self:GetHealth() * math.random(60, 85) * 0.01
+        local newhealth = self:GetHealth() - math.random(53, 432) 
         self:ChangeHealth(newhealth)
     end
 
