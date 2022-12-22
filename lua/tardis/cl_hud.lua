@@ -65,7 +65,7 @@ hook.Add("HUDPaint", "TARDIS-HUD", function()
         local val = tardis:GetData("artron-val", 0)
         local percent = val * 100 / TARDIS:GetSetting("artron_energy_max")
 
-        CreatePercentageHUDPanel(TARDIS:GetPhrase("Common.ARTRON"),
+        CreatePercentageHUDPanel(TARDIS:GetPhrase("Common.Artron"),
             math.ceil(percent), offset + 10, 10
         )
     end
