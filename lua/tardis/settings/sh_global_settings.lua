@@ -109,13 +109,13 @@ TARDIS:AddSetting({
 TARDIS:AddSetting({
     id="artron_energy_max",
     type="integer",
-    value=14400,
-    min=1800,
-    max=57600,
+    value=100,
+    min=25,
+    max=400,
     round_func = function(x)
-        if x > 20000 then return (x - x % 7200) end
-        if x > 10000 then return (x - x % 3600) end
-        return (x - x % 1800)
+        if x > 200 then return (x - x % 100) end
+        if x > 100 then return (x - x % 50) end
+        return (x - x % 25)
     end,
 
     class="global",

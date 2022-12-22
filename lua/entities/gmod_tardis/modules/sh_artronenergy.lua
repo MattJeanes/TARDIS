@@ -1,36 +1,35 @@
 if SERVER then
 
     TARDIS.artron_values = {
-        cost_demat = -540,
-        cost_mat = -360,
-        cost_full = -1200,
+        cost_demat = -540 / 144,
+        cost_mat = -360 / 144,
+        cost_full = -1200 / 144,
         cost_controls = {
-            ["cloak"] = -720,
-            ["physlock"] = -540,
-            ["float"] = -540,
+            ["cloak"] = -720 / 144,
+            ["physlock"] = -540 / 144,
+            ["float"] = -540 / 144,
         },
-        cost_hads = -180,
-        cost_failed_demat = -80,
+        cost_hads = -180 / 144,
+        cost_failed_demat = -80 / 144,
         min_health_replace = 53,
         max_health_replace = 432,
 
         -- every 1 second:
-        spend_vortex_teleport = -32,
-        spend_flight = -45,
-        spend_flight_boost = -45,
-        spend_cloak = -36,
-        spend_cloak_handbrake = -12,
+        spend_vortex_teleport = -32 / 144,
+        spend_flight = -45 / 144,
+        spend_flight_boost = -45 / 144,
+        spend_cloak = -36 / 144,
+        spend_cloak_handbrake = -12 / 144,
 
         -- every 5 seconds:
-        increase_handbrake = 180 * 5,
-        increase_normal = 15 * 5,
-        increase_warning = 10 * 5,
-        increase_poweroff = 24 * 5,
-        increase_float = 8 * 5,
-        increase_float_handbrake = 40 * 5,
+        increase_handbrake = 180 * 5 / 144,
+        increase_normal = 15 * 5 / 144,
+        increase_warning = 10 * 5 / 144,
+        increase_poweroff = 24 * 5 / 144,
+        increase_float = 8 * 5 / 144,
+        increase_float_handbrake = 40 * 5 / 144,
 
-        increase_engine_release = 720,
-
+        increase_engine_release = 720 / 144,
     }
 
     function ENT:SetArtron(value)
