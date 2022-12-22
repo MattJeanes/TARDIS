@@ -240,44 +240,6 @@ if SERVER then
         self:AddArtron(TARDIS.artron_values.cost_hads)
     end)
 
-
-
-
-    --
-    -- Conditions for artron changing
-    --
-
-    ENT:AddHook("CanIncreaseArtron", "interrupt-cooldown", function(self)
-        if self:GetData("teleport-interrupted") then
-            return false
-        end
-    end)
-
-    ENT:AddHook("ShouldUpdateArtron", "repair", function(self)
-        if self:GetData("repair-primed") or self:GetData("repairing") then
-            return false
-        end
-    end)
-
-    ENT:AddHook("ShouldUpdateArtron", "redecoration", function(self)
-        if self:GetData("redecorate")
-            or self:GetData("redecorate_parent")
-            or self:GetData("redecorate_child")
-            or self:GetData("is_redecorate_child")
-        then
-            return false
-        end
-    end)
-
-    ENT:AddHook("ShouldUpdateArtron", "hads", function(self)
-        if self:GetData("hads-triggered")
-            or self:GetData("hads-need-remat")
-            or self:GetData("hads-auto-remat")
-        then
-            return false
-        end
-    end)
-
     ENT:AddHook("SettingChanged", "maxartron-changed", function(self, id, val)
         if id ~= "artron_energy_max" then return end
 
@@ -285,7 +247,6 @@ if SERVER then
             self:SetArtron(val)
         end
     end)
-
 
     --
     -- Emergency artron behaviour

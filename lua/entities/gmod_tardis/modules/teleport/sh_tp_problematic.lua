@@ -208,6 +208,12 @@ if SERVER then
         end
     end
 
+    ENT:AddHook("CanIncreaseArtron", "interrupt-cooldown", function(self)
+        if self:GetData("teleport-interrupted") then
+            return false
+        end
+    end)
+
     ENT:AddHook("CanDemat", "failed", function(self, force, ignore_fail_demat)
         if ignore_fail_demat ~= true and self:CallHook("ShouldFailDemat", force) == true then
             return false

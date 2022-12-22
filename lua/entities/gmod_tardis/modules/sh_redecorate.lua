@@ -166,6 +166,16 @@ if SERVER then
         end
     end)
 
+    ENT:AddHook("ShouldUpdateArtron", "redecorate", function(self)
+        if self:GetData("redecorate")
+            or self:GetData("redecorate_parent")
+            or self:GetData("redecorate_child")
+            or self:GetData("is_redecorate_child")
+        then
+            return false
+        end
+    end)
+
     hook.Add("AllowPlayerPickup", "tardis_redecorate", function(ply, ent)
         if ent.TardisExterior and (ent:GetData("redecorate_parent") or ent:GetData("redecorate_mat_started")) then
             return false

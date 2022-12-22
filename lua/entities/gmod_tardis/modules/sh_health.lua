@@ -347,6 +347,11 @@ if SERVER then
         end
     end)
 
+    ENT:AddHook("ShouldUpdateArtron", "repair", function(self)
+        if self:GetData("repair-primed") or self:GetData("repairing") then
+            return false
+        end
+    end)
 else
     ENT:OnMessage("health_warning_toggled", function(self)
         self:CallCommonHook("HealthWarningToggled", net.ReadBool())
