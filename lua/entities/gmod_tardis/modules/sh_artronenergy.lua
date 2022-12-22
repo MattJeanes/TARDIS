@@ -11,6 +11,8 @@ if SERVER then
         },
         cost_hads = -180,
         cost_failed_demat = -80,
+        min_health_replace = 53,
+        max_health_replace = 432,
 
         -- every 1 second:
         spend_vortex_teleport = -32,
@@ -28,6 +30,7 @@ if SERVER then
         increase_float_handbrake = 40 * 5,
 
         increase_engine_release = 720,
+
     }
 
     function ENT:SetArtron(value)
@@ -292,7 +295,7 @@ if SERVER then
         self:Explode(30)
         self.interior:Explode(30)
         self:AddArtron(TARDIS.artron_values.increase_engine_release)
-        local newhealth = self:GetHealth() - math.random(53, 432) 
+        local newhealth = self:GetHealth() - math.random(TARDIS.artron_values.min_health_replace, TARDIS.artron_values.max_health_replace) 
         self:ChangeHealth(newhealth)
     end
 
