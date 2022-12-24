@@ -69,18 +69,14 @@ if SERVER then
         end
     end)
 
-    ENT:AddHook("CanToggleCloak", "power", function(self)
-        if self:GetPower() then
-            return false
-        end
-    end)
-
     ENT:AddHook("PowerToggled", "cloak", function(self,on)
-        if on and self:GetData("power_last_cloak", false) == true then
+        if on and self:GetData("power_last_cloak", false) then
             self:SetCloak(true)
-        else
+        elseif not on then
             self:SetData("power_last_cloak", self:GetCloak())
-            self:SetCloak(false)
+            if self:GetCloak() then
+                self:SetCloak(false)
+            end
         end
     end)
 else
