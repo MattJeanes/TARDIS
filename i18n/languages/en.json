@@ -355,6 +355,8 @@
     "Settings.Sections.Global.EnableHealth": "Enable Health",
     "Settings.Sections.Global.MaxHealth.Description": "Maximum ammount of health the TARDIS has",
     "Settings.Sections.Global.MaxHealth": "Max Health",
+    "Settings.Sections.Global.WaitLongForRepair.Description": "Should the max repair time be 60 seconds instead of 15?",
+    "Settings.Sections.Global.WaitLongForRepair": "Enable long repair",
     "Settings.Sections.Global": "Admin Options",
     "Settings.Sections.GUI.BigPopup.Description": "Should the popup for new visual GUI be bigger?",
     "Settings.Sections.GUI.BigPopup": "GUI big popup",

@@ -96,9 +96,10 @@ ENT:AddHook("ShouldDrawProjectedLight", "projectedlight", function(self)
 end)
 
 ENT:AddHook("ShouldNotDrawProjectedLight","projectedlight",function(self)
-    if (not TARDIS:GetSetting("extprojlight-enabled")) or (not IsValid(self.interior)) then return true end
-    if self:GetData("vortex",false)==true then return true end
-    if not self.interior.light_data.main then return true end
+    if not TARDIS:GetSetting("extprojlight-enabled") then return true end
+    if not IsValid(self.interior) then return true end
+    if self:GetData("vortex",false) == true then return true end
+    if not self.interior.light_data or not self.interior.light_data.main then return true end
 end)
 
 ENT:AddHook("Think", "projectedlight", function(self)

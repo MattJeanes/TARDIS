@@ -117,7 +117,7 @@ if SERVER then
                 local fwd=eye:Forward()
                 local ri=eye:Right()
                 local ang=self:WorldToLocalAngles(eye)
-                
+
                 local force=1
                 local rforce=2
                 local offset=-1*eye
