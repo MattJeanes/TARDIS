@@ -355,6 +355,8 @@
     "Settings.Sections.Global.EnableHealth": "啟用生命值",
     "Settings.Sections.Global.MaxHealth.Description": "塔迪斯的最大生命值",
     "Settings.Sections.Global.MaxHealth": "最大生命值",
+    "Settings.Sections.Global.WaitLongForRepair.Description": "",
+    "Settings.Sections.Global.WaitLongForRepair": "",
     "Settings.Sections.Global": "管理員選項",
     "Settings.Sections.GUI.BigPopup.Description": "更大的可視化界面彈出框",
     "Settings.Sections.GUI.BigPopup": "更大界面的彈出框",
