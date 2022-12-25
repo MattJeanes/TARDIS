@@ -68,6 +68,17 @@ if SERVER then
             self:SetCloak(false)
         end
     end)
+
+    ENT:AddHook("PowerToggled", "cloak", function(self,on)
+        if on and self:GetData("power_last_cloak", false) then
+            self:SetCloak(true)
+        elseif not on then
+            self:SetData("power_last_cloak", self:GetCloak())
+            if self:GetCloak() then
+                self:SetCloak(false)
+            end
+        end
+    end)
 else
     ENT:AddHook("Initialize", "cloak-material", function(self)
         self.PhaseMaterial = Material(self.metadata.Exterior.PhaseMaterial or "models/drmatt/tardis/exterior/phase_noise.vmt")

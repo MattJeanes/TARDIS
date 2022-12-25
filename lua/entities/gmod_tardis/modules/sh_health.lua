@@ -1,19 +1,5 @@
 -- Health
 
-concommand.Add("tardis2_debug_warning", function(ply,cmd,args)
-    local ext = ply:GetTardisData("exterior")
-    if not ext or not ply:IsAdmin() then return end
-
-    local oldval = ext:GetData("health-val", 0)
-
-    local val = TARDIS:GetSetting("health-max")
-    if not ext:GetData("health-warning", false) then
-        val = val / 10
-    end
-    ext:SetData("health-val", val, true)
-    ext:CallHook("OnHealthChange", val, oldval)
-end)
-
 ENT:AddHook("Initialize","health-init",function(self)
     self:SetData("health-val", TARDIS:GetSetting("health-max"), true)
     if SERVER and WireLib then
@@ -126,7 +112,10 @@ if SERVER then
         self:SetLocked(true,nil,true)
         local maxhealth = TARDIS:GetSetting("health-max")
         local curhealth = self:GetData("health-val")
-        local time = CurTime() + ( math.Clamp((maxhealth - curhealth) * 0.1, 1, 60) )
+        local maxtime = TARDIS:GetSetting("long_repair") and 60 or 15
+        local repairtime = math.Clamp(maxtime * (maxhealth - curhealth) / maxhealth, 1, maxtime)
+
+        local time = CurTime() + repairtime
         self:SetData("repair-time", time, true)
         self:SetData("repairing", true, true)
         self:SetData("repair-primed", false, true)
@@ -333,6 +322,12 @@ if SERVER then
         end
     end)
 
+    ENT:AddHook("HealthWarningToggled", "client", function(self, on)
+        self:SendMessage("health_warning_toggled", function()
+            net.WriteBool(on)
+        end)
+    end)
+
     ENT:AddHook("HandleE2", "health", function(self,name,e2)
         if name == "GetHealth" then
             return self:GetHealthPercent()
@@ -352,4 +347,8 @@ if SERVER then
         end
     end)
 
+else
+    ENT:OnMessage("health_warning_toggled", function(self)
+        self:CallCommonHook("HealthWarningToggled", net.ReadBool())
+    end)
 end

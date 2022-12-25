@@ -13,6 +13,30 @@ TARDIS:AddSetting({
 })
 
 TARDIS:AddSetting({
+    id="extra-lights",
+    type="bool",
+    value=true,
+
+    class="local",
+
+    option=true,
+    section=SETTING_SECTION,
+    name="ExtraLights",
+})
+
+TARDIS:AddSetting({
+    id="lamps-enabled",
+    type="bool",
+    value=true,
+
+    class="local",
+
+    option=true,
+    section=SETTING_SECTION,
+    name="Lamps",
+})
+
+TARDIS:AddSetting({
     id="portals-enabled",
     type="bool",
     value=true,

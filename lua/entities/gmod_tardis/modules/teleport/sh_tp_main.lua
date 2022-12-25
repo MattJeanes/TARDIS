@@ -82,7 +82,6 @@ if SERVER then
         self:SetData("teleport",true)
         self:SetData("alpha", 0)
 
-        self:SetBodygroup(1,0)
         self:DrawShadow(false)
         for k,v in pairs(self.parts) do
             v:DrawShadow(false)
@@ -122,7 +121,6 @@ if SERVER then
 
         pos=pos or self:GetData("demat-pos") or self:GetPos()
         ang=ang or self:GetData("demat-ang") or self:GetAngles()
-        self:SetBodygroup(1,0)
         self:SetDestination(pos, ang)
         self:SendMessage("demat", function() net.WriteVector(self:GetData("demat-pos",Vector())) end)
         self:SetData("demat",true)
@@ -268,7 +266,6 @@ if SERVER then
     end
 
     function ENT:StopMat()
-        self:SetBodygroup(1,1)
         self:SetData("mat",false)
         self:SetData("step",1)
         self:SetData("teleport",false)

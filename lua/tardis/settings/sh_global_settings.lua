@@ -44,6 +44,22 @@ TARDIS:AddSetting({
     name="MaxHealth",
 })
 
+TARDIS:AddSetting({
+    id="long_repair",
+    type="bool",
+    value=true,
+
+    class="global",
+    convar = {
+        name = "tardis2_long_repair",
+        flags = CONVAR_FLAGS,
+        desc = "TARDIS - Whether max repair time is 60 seconds instead of 15",
+    },
+
+    option = true,
+    section=SETTING_SECTION,
+    name="WaitLongForRepair",
+})
 
 TARDIS:AddSetting({
     id="boost-speed",

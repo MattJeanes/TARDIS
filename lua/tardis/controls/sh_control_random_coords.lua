@@ -6,7 +6,7 @@ TARDIS:AddControl({
         TARDIS:Message(ply, "Controls.RandomCoords.Selected")
     end,
     serveronly = true,
-    power_independent = true,
+    power_independent = false,
     screen_button = false,
     tip_text = "Controls.RandomCoords.Tip",
 })

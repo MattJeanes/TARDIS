@@ -23,6 +23,9 @@ if SERVER then
         if (self:CallCommonHook("CanTogglePower") == false) then return false end
         self:SetData("power-state",on,true)
         self:CallCommonHook("PowerToggled", on)
+        self:SendMessage("power_toggled", function()
+            net.WriteBool(on)
+        end)
         return true
     end
 
@@ -43,12 +46,6 @@ if SERVER then
             return self:GetPower() and 1 or 0
         end
     end)
-
-    ENT:AddHook("CanToggleCloak", "power", function(self)
-        if not self:GetPower() and not self:GetCloak() then 
-            return false 
-        end
-    end)
 else
     ENT:AddHook("ShouldNotDrawProjectedLight", "power", function(self)
         if not self:GetPower() then return true end
@@ -56,5 +53,10 @@ else
 
     ENT:AddHook("ShouldTurnOffLight", "power", function(self)
         if not self:GetPower() then return true end
+    end)
+
+    ENT:OnMessage("power_toggled", function(self)
+        local on = net.ReadBool()
+        self:CallCommonHook("PowerToggled", on)
     end)
 end

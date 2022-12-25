@@ -13,3 +13,7 @@ end)
 function ENT:GetPart(id)
     return self.parts and self.parts[id] or NULL
 end
+
+function ENT:GetParts()
+    return self.parts
+end
