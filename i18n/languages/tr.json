@@ -355,6 +355,8 @@
     "Settings.Sections.Global.EnableHealth": "Sağlığı Etkinleştir",
     "Settings.Sections.Global.MaxHealth.Description": "TARDIS'in sahip olduğu maksimum sağlık miktarı",
     "Settings.Sections.Global.MaxHealth": "Maksimum Sağlık",
+    "Settings.Sections.Global.WaitLongForRepair.Description": "",
+    "Settings.Sections.Global.WaitLongForRepair": "",
     "Settings.Sections.Global": "Yönetici Seçenekleri",
     "Settings.Sections.GUI.BigPopup.Description": "Yeni görsel GUI için açılır pencere daha büyük mü olmalı?",
     "Settings.Sections.GUI.BigPopup": "GUI büyük açılır pencere",
