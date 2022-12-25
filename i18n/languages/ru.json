@@ -355,6 +355,8 @@
     "Settings.Sections.Global.EnableHealth": "Включение здоровья",
     "Settings.Sections.Global.MaxHealth.Description": "Максимальное количество здоровья у ТАРДИС",
     "Settings.Sections.Global.MaxHealth": "Максимальное здоровье",
+    "Settings.Sections.Global.WaitLongForRepair.Description": "",
+    "Settings.Sections.Global.WaitLongForRepair": "",
     "Settings.Sections.Global": "Настройки администратора",
     "Settings.Sections.GUI.BigPopup.Description": "Должен ли интерфейс на экране быть увеличенным?",
     "Settings.Sections.GUI.BigPopup": "Большой экранный интерфейс",
