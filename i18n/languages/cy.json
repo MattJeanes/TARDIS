@@ -355,6 +355,8 @@
     "Settings.Sections.Global.EnableHealth": "Galluogi Iechyd",
     "Settings.Sections.Global.MaxHealth.Description": "Uchafswm iechyd y TARDIS",
     "Settings.Sections.Global.MaxHealth": "Iechyd Mwyaf",
+    "Settings.Sections.Global.WaitLongForRepair.Description": "",
+    "Settings.Sections.Global.WaitLongForRepair": "",
     "Settings.Sections.Global": "Opsiynau Gweinyddol",
     "Settings.Sections.GUI.BigPopup.Description": "A ddylai'r ffenestr naid ar gyfer GUI gweledol newydd fod yn fwy?",
     "Settings.Sections.GUI.BigPopup": "GUI popup mawr",
