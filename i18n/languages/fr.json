@@ -355,6 +355,8 @@
     "Settings.Sections.Global.EnableHealth": "Activer la santé",
     "Settings.Sections.Global.MaxHealth.Description": "Quantité maximale de santé que le TARDIS a",
     "Settings.Sections.Global.MaxHealth": "Santé maximale",
+    "Settings.Sections.Global.WaitLongForRepair.Description": "",
+    "Settings.Sections.Global.WaitLongForRepair": "",
     "Settings.Sections.Global": "Options d'administrateur",
     "Settings.Sections.GUI.BigPopup.Description": "La popup de la nouvelle interface visuelle devrait-elle être plus grande?",
     "Settings.Sections.GUI.BigPopup": "Grande popup de l'interface",
