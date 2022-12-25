@@ -53,7 +53,7 @@ TARDIS:AddSetting({
     convar = {
         name = "tardis2_long_repair",
         flags = CONVAR_FLAGS,
-        desc = "TARDIS - Whether repairing process lasts 60 seconds",
+        desc = "TARDIS - Whether max repair time is 60 seconds instead of 15",
     },
 
     option = true,

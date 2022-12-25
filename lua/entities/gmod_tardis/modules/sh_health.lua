@@ -112,8 +112,10 @@ if SERVER then
         self:SetLocked(true,nil,true)
         local maxhealth = TARDIS:GetSetting("health-max")
         local curhealth = self:GetData("health-val")
-        local maxtime = TARDIS:GetSetting("long_repair") and 60 or 10
-        local time = CurTime() + ( math.Clamp((maxhealth - curhealth) * 0.1, 1, maxtime) )
+        local maxtime = TARDIS:GetSetting("long_repair") and 60 or 15
+        local repairtime = math.Clamp(maxtime * (maxhealth - curhealth) / maxhealth, 1, maxtime)
+
+        local time = CurTime() + repairtime
         self:SetData("repair-time", time, true)
         self:SetData("repairing", true, true)
         self:SetData("repair-primed", false, true)
