@@ -166,7 +166,7 @@ if CLIENT then
     end)
 
     ENT:AddHook("ShouldDrawLight", "interior_light_enabled", function(self,id,light)
-        if light.enabled == false then return false end
+        if light and light.enabled == false then return false end
         -- allow disabling lights with light states
     end)
 end
