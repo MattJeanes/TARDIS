@@ -268,7 +268,7 @@ function TARDIS:HUDScreen(window)
 
     local screen = vgui.Create("DPanel",frame)
     screen.id="pop"
-    screen.width=825
+    screen.width=625
     screen.height=425
 
     local sscale = TARDIS:GetSetting("visgui_popup_scale")
