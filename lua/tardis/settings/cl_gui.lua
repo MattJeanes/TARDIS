@@ -13,15 +13,20 @@ TARDIS:AddSetting({
 })
 
 TARDIS:AddSetting({
-    id="visgui_bigpopup",
-    type="bool",
-    value=true,
+    id="visgui_popup_scale",
+    type="number",
+    value=1.0,
+    min=0.25,
+    max=1.75,
+    round_func = function(x)
+        return (x - x % 0.25)
+    end,
 
     class="local",
 
     option=true,
     section=SETTING_SECTION,
-    name="BigPopup",
+    name="PopupScale",
 })
 
 TARDIS:AddSetting({
