@@ -25,7 +25,7 @@ if SERVER then
         end
     end)
 else
-    local function ShowPortalDebugMenu(p)
+    function TARDIS:ShowPortalDebugMenu(p)
         if IsValid(p.debug_window) then
             if not g_ContextMenu:IsVisible() then
                 g_ContextMenu:Open()
@@ -270,7 +270,6 @@ else
             frame:SetDeleteOnClose(true)
             frame:Close()
             frame:Remove()
-            ShowPortalDebugMenu(p)
         end
 
         local inv = pr:CreateRow( "Actions", "Print to console" )
@@ -299,7 +298,7 @@ else
 
     net.Receive("TARDIS-Debug-Portals", function()
         local p = net.ReadEntity()
-        ShowPortalDebugMenu(p)
+        TARDIS:ShowPortalDebugMenu(p)
     end)
 end
 
@@ -314,3 +313,4 @@ concommand.Add("tardis2_debug_portals", function(ply,cmd,args)
         net.Send(ply)
     end
 end)
+
