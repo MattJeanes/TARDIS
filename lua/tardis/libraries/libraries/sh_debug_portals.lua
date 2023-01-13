@@ -16,6 +16,9 @@ if SERVER then
         elseif update_type == "size" then
             portal:SetWidth(net.ReadFloat())
             portal:SetHeight(net.ReadFloat())
+		elseif update_type == "exit_offset" then
+            portal:SetExitPosOffset(net.ReadVector())
+            portal:SetExitAngOffset(net.ReadAngle())
         elseif update_type == "3d" then
             portal:SetThickness(net.ReadFloat())
             portal:SetInverted(net.ReadBool())
@@ -26,19 +29,24 @@ else
         local p = net.ReadEntity()
 
         if IsValid(p.debug_window) then
-            p.debug_window:Center()
+            if not g_ContextMenu:IsVisible() then
+                g_ContextMenu:Open()
+            end
+            --p.debug_window:Center()
+            local w = p.debug_window
+            w:SetPos(ScrW() * 0.25 - w:GetWide() * 0.5, ScrH() * 0.5 - w:GetTall() * 0.5)
             return
         end
 
-        local x = 300
-        local y = 600
+        local x = ScrW() * 0.2;
+        local y = ScrH() * 0.8;
 
         g_ContextMenu:Open()
         local frame=g_ContextMenu:Add( "DFrame" )
         frame:SetTitle("Portals Debug")
-        frame:SetSize( x + 50, y + 50 )
         frame:SetSizable(true)
-        frame:Center()
+        frame:SetSize(x + 50, y + 50)
+        frame:SetPos(ScrW() * 0.25 - frame:GetWide() * 0.5, ScrH() * 0.5 - frame:GetTall() * 0.5)
         frame:ShowCloseButton(true)
         frame:RequestFocus()
 
@@ -56,11 +64,15 @@ else
 
         local ent = p:GetParent()
         local px, py, pz = ent:WorldToLocal(p:GetPos()):Unpack()
-        local ang_p, ang_y, ang_r = ent:GetAngles():Unpack()
+        local ang_p, ang_y, ang_r = ent:WorldToLocalAngles(p:GetAngles()):Unpack()
         local thickness = p:GetThickness()
         local inverted = p:GetInverted()
         local width = p:GetWidth()
         local height = p:GetHeight()
+
+        -- exit pos offset, exit ang offset
+        local epo_x, epo_y, epo_z = p:GetExitPosOffset():Unpack()
+        local eao_p, eao_y, eao_r = p:GetExitAngOffset():Unpack()
 
         local orig_px, orig_py, orig_pz = px, py, pz
         local orig_ang_p, orig_ang_y, orig_ang_r = ang_p, ang_y, ang_r
@@ -68,6 +80,8 @@ else
         local orig_inverted = inverted
         local orig_width = width
         local orig_height = height
+        local orig_epo_x, orig_epo_y, orig_epo_z = epo_x, epo_y, epo_z
+        local orig_eao_p, orig_eao_y, orig_eao_r = eao_p, eao_y, eao_r
 
         local function UpdatePortalPos()
             net.Start("TARDIS-Debug-Portals-Update")
@@ -81,7 +95,7 @@ else
             net.Start("TARDIS-Debug-Portals-Update")
                 net.WriteEntity(p)
                 net.WriteString("ang")
-                net.WriteAngle(Angle(ang_p, ang_y, ang_r))
+                net.WriteAngle(ent:LocalToWorldAngles(Angle(ang_p, ang_y, ang_r)))
             net.SendToServer()
         end
 
@@ -103,6 +117,15 @@ else
             net.SendToServer()
         end
 
+		local function UpdatePortalExitOffset()
+            net.Start("TARDIS-Debug-Portals-Update")
+                net.WriteEntity(p)
+                net.WriteString("exit_offset")
+                net.WriteVector(Vector(epo_x, epo_y, epo_z))
+                net.WriteAngle(Angle(eao_p, eao_y, eao_r))
+            net.SendToServer()
+        end
+
         local function SetupProperty(category, name, value, a, b, c, d)
             local vmin, vmax, update_func
             local vtype = "Float"
@@ -120,25 +143,25 @@ else
                 vtype = d
             end
 
-            local c = pr:CreateRow( category, name )
-            local cpr = pr:CreateRow( category, name .. " (precise)" )
+            local row1 = pr:CreateRow( category, name )
+            local row2 = pr:CreateRow( category, name .. " (precise)" )
 
-            c:Setup( vtype, { min = vmin, max = vmax } )
-            c:SetValue(value)
-            c.DataChanged = function( _, val )
-                cpr:SetValue(val)
+            row1:Setup( vtype, { min = vmin, max = vmax } )
+            row1:SetValue(value)
+            row1.DataChanged = function( _, val )
+                row2:SetValue(val)
                 update_func(val)
             end
 
-            cpr:Setup( "Generic" )
-            cpr:SetValue(value)
-            cpr.DataChanged = function( _, val )
+            row2:Setup( "Generic" )
+            row2:SetValue(value)
+            row2.DataChanged = function( _, val )
                 if tonumber(val) == nil then return end
-                c:SetValue(val)
+                row1:SetValue(val)
                 update_func(val)
             end
 
-            return c, cpr
+            return row1, row2
         end
 
 
@@ -146,16 +169,24 @@ else
             px = val
             UpdatePortalPos()
         end)
-
         local y, y2 = SetupProperty("Position", "Y", py, 100, function(val)
             py = val
             UpdatePortalPos()
         end)
-
         local z, z2 = SetupProperty("Position", "Z", pz, 100, function(val)
             pz = val
             UpdatePortalPos()
         end)
+
+        local function UpdateCoordValues()
+            x2:SetValue(px)
+            y2:SetValue(py)
+            z2:SetValue(pz)
+
+            x:SetValue(px)
+            y:SetValue(py)
+            z:SetValue(pz)
+        end
 
 
         local ap, ap2 = SetupProperty( "Angle", "Pitch", ang_p, 360, function(val)
@@ -171,17 +202,25 @@ else
             UpdatePortalAng()
         end)
 
+        local function UpdateAngleValues()
+            ap:SetValue(ang_p)
+            ap2:SetValue(ang_p)
+            ay:SetValue(ang_y)
+            ay2:SetValue(ang_y)
+            ar:SetValue(ang_y)
+            ar2:SetValue(ang_y)
+        end
+
         local w, w2 = SetupProperty("Size", "Width", width, 0, 300, function(val)
             width = val
             UpdatePortalSize()
         end)
-
         local h, h2 = SetupProperty("Size", "Height", height, 0, 300, function(val)
             height = val
             UpdatePortalSize()
         end)
 
-        local thick = SetupProperty( "3D", "Thickness", thickness, 150, function(val)
+        local thick, thick2 = SetupProperty( "3D", "Thickness", thickness, 150, function(val)
             thickness = val
             UpdatePortal3D()
         end)
@@ -194,11 +233,69 @@ else
             UpdatePortal3D()
         end
 
-        local inv = pr:CreateRow( "Actions", "Reset" )
-        inv:Setup( "Bool" )
-        inv:SetValue(false)
-        inv.DataChanged = function( _, val )
-            inv:SetValue(false)
+        local function UpdateShapeValues()
+            w:SetValue(width)
+            w2:SetValue(width)
+            h:SetValue(height)
+            h2:SetValue(height)
+            thick:SetValue(thickness)
+            thick2:SetValue(thickness)
+            inv:SetValue(inverted)
+        end
+
+
+        local epox, epox2 = SetupProperty("Exit Point", "X", epo_x, 300, function(val)
+            epo_x = val
+            UpdatePortalExitOffset()
+        end)
+        local epoy, epoy2 = SetupProperty("Exit Point", "Y", epo_y, 300, function(val)
+            epo_y = val
+            UpdatePortalExitOffset()
+        end)
+        local epoz, epoz2 = SetupProperty("Exit Point", "Z", epo_z, 300, function(val)
+            epo_z = val
+            UpdatePortalExitOffset()
+        end)
+
+        local eaop, eaop2 = SetupProperty( "Exit Point", "Pitch", eao_p, 360, function(val)
+            eao_p = val
+            UpdatePortalExitOffset()
+        end)
+        local eaoy, eaoy2 = SetupProperty( "Exit Point", "Yaw", eao_y, 360, function(val)
+            eao_y = val
+            UpdatePortalExitOffset()
+        end)
+        local eaor, eaor2 = SetupProperty( "Exit Point", "Roll", eao_r, 360, function(val)
+            eao_r = val
+            UpdatePortalExitOffset()
+        end)
+
+        local function UpdatePortalOffsetValues()
+            epox:SetValue(epo_x)
+            epox2:SetValue(epo_x)
+            epoy:SetValue(epo_y)
+            epoy2:SetValue(epo_y)
+            epoz:SetValue(epo_z)
+            epoz2:SetValue(epo_z)
+            eaop:SetValue(eao_p)
+            eaop2:SetValue(eao_p)
+            eaoy:SetValue(eao_y)
+            eaoy2:SetValue(eao_y)
+            eaor:SetValue(eao_r)
+            eaor2:SetValue(eao_r)
+        end
+
+        local ep_category = pr:GetCategory("Exit Point")
+
+        ep_category.Container:SetVisible(false)
+        ep_category.Expand:SetExpanded(false)
+        ep_category:InvalidateLayout()
+
+        local reset = pr:CreateRow( "Actions", "Reset" )
+        reset:Setup( "Bool" )
+        reset:SetValue(false)
+        reset.DataChanged = function( _, val )
+            reset:SetValue(false)
 
             px, py, pz = orig_px, orig_py, orig_pz
             ang_p, ang_y, ang_r = orig_ang_p, orig_ang_y, orig_ang_r
@@ -207,10 +304,19 @@ else
             width = orig_width
             height = orig_height
 
+            epo_x, epo_y, epo_z = orig_epo_x, orig_epo_y, orig_epo_z
+            eao_p, eao_y, eao_r = orig_eao_p, orig_eao_y, orig_eao_r
+
             UpdatePortalPos()
             UpdatePortalAng()
             UpdatePortalSize()
             UpdatePortal3D()
+            UpdatePortalExitOffset()
+
+            UpdateCoordValues()
+            UpdateAngleValues()
+            UpdateShapeValues()
+            UpdatePortalOffsetValues()
         end
 
         local inv = pr:CreateRow( "Actions", "Print to console" )
@@ -235,9 +341,6 @@ else
 
             print("),")
         end
-
-
-
     end)
 end
 
