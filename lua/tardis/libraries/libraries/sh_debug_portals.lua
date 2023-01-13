@@ -25,9 +25,7 @@ if SERVER then
         end
     end)
 else
-    net.Receive("TARDIS-Debug-Portals", function()
-        local p = net.ReadEntity()
-
+    local function ShowPortalDebugMenu(p)
         if IsValid(p.debug_window) then
             if not g_ContextMenu:IsVisible() then
                 g_ContextMenu:Open()
@@ -178,17 +176,6 @@ else
             UpdatePortalPos()
         end)
 
-        local function UpdateCoordValues()
-            x2:SetValue(px)
-            y2:SetValue(py)
-            z2:SetValue(pz)
-
-            x:SetValue(px)
-            y:SetValue(py)
-            z:SetValue(pz)
-        end
-
-
         local ap, ap2 = SetupProperty( "Angle", "Pitch", ang_p, 360, function(val)
             ang_p = val
             UpdatePortalAng()
@@ -201,15 +188,6 @@ else
             ang_r = val
             UpdatePortalAng()
         end)
-
-        local function UpdateAngleValues()
-            ap:SetValue(ang_p)
-            ap2:SetValue(ang_p)
-            ay:SetValue(ang_y)
-            ay2:SetValue(ang_y)
-            ar:SetValue(ang_y)
-            ar2:SetValue(ang_y)
-        end
 
         local w, w2 = SetupProperty("Size", "Width", width, 0, 300, function(val)
             width = val
@@ -231,16 +209,6 @@ else
         inv.DataChanged = function( _, val )
             inverted = val
             UpdatePortal3D()
-        end
-
-        local function UpdateShapeValues()
-            w:SetValue(width)
-            w2:SetValue(width)
-            h:SetValue(height)
-            h2:SetValue(height)
-            thick:SetValue(thickness)
-            thick2:SetValue(thickness)
-            inv:SetValue(inverted)
         end
 
 
@@ -270,20 +238,6 @@ else
             UpdatePortalExitOffset()
         end)
 
-        local function UpdatePortalOffsetValues()
-            epox:SetValue(epo_x)
-            epox2:SetValue(epo_x)
-            epoy:SetValue(epo_y)
-            epoy2:SetValue(epo_y)
-            epoz:SetValue(epo_z)
-            epoz2:SetValue(epo_z)
-            eaop:SetValue(eao_p)
-            eaop2:SetValue(eao_p)
-            eaoy:SetValue(eao_y)
-            eaoy2:SetValue(eao_y)
-            eaor:SetValue(eao_r)
-            eaor2:SetValue(eao_r)
-        end
 
         local ep_category = pr:GetCategory("Exit Point")
 
@@ -313,10 +267,10 @@ else
             UpdatePortal3D()
             UpdatePortalExitOffset()
 
-            UpdateCoordValues()
-            UpdateAngleValues()
-            UpdateShapeValues()
-            UpdatePortalOffsetValues()
+            frame:SetDeleteOnClose(true)
+            frame:Close()
+            frame:Remove()
+            ShowPortalDebugMenu(p)
         end
 
         local inv = pr:CreateRow( "Actions", "Print to console" )
@@ -341,6 +295,11 @@ else
 
             print("),")
         end
+    end
+
+    net.Receive("TARDIS-Debug-Portals", function()
+        local p = net.ReadEntity()
+        ShowPortalDebugMenu(p)
     end)
 end
 
