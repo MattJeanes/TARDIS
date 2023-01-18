@@ -7,6 +7,8 @@ if SERVER then
         if not ply:IsAdmin() then return end
 
         local portal = net.ReadEntity()
+        if not IsValid(portal) then return end
+
         local update_type = net.ReadString()
 
         if update_type == "pos" then
@@ -30,7 +32,6 @@ else
             if not g_ContextMenu:IsVisible() then
                 g_ContextMenu:Open()
             end
-            --p.debug_window:Center()
             local w = p.debug_window
             w:SetPos(ScrW() * 0.25 - w:GetWide() * 0.5, ScrH() * 0.5 - w:GetTall() * 0.5)
             return
@@ -288,35 +289,36 @@ else
             UpdatePortal3D()
         end
 
+        local exit_point_category = "Exit point offset (asymmetric portals)"
 
-        local epox, epox2 = SetupProperty("Exit Point", "X", epo_x, 300, function(val)
+        local epox, epox2 = SetupProperty(exit_point_category, "X", epo_x, 300, function(val)
             epo_x = val
             UpdatePortalExitOffset()
         end)
-        local epoy, epoy2 = SetupProperty("Exit Point", "Y", epo_y, 300, function(val)
+        local epoy, epoy2 = SetupProperty(exit_point_category, "Y", epo_y, 300, function(val)
             epo_y = val
             UpdatePortalExitOffset()
         end)
-        local epoz, epoz2 = SetupProperty("Exit Point", "Z", epo_z, 300, function(val)
+        local epoz, epoz2 = SetupProperty(exit_point_category, "Z", epo_z, 300, function(val)
             epo_z = val
             UpdatePortalExitOffset()
         end)
 
-        local eaop, eaop2 = SetupProperty( "Exit Point", "Pitch", eao_p, 360, function(val)
+        local eaop, eaop2 = SetupProperty(exit_point_category, "Pitch", eao_p, 360, function(val)
             eao_p = val
             UpdatePortalExitOffset()
         end)
-        local eaoy, eaoy2 = SetupProperty( "Exit Point", "Yaw", eao_y, 360, function(val)
+        local eaoy, eaoy2 = SetupProperty(exit_point_category, "Yaw", eao_y, 360, function(val)
             eao_y = val
             UpdatePortalExitOffset()
         end)
-        local eaor, eaor2 = SetupProperty( "Exit Point", "Roll", eao_r, 360, function(val)
+        local eaor, eaor2 = SetupProperty(exit_point_category, "Roll", eao_r, 360, function(val)
             eao_r = val
             UpdatePortalExitOffset()
         end)
 
 
-        local ep_category = pr:GetCategory("Exit Point")
+        local ep_category = pr:GetCategory(exit_point_category)
 
         ep_category.Container:SetVisible(false)
         ep_category.Expand:SetExpanded(false)
@@ -375,6 +377,7 @@ else
 
     net.Receive("TARDIS-Debug-Portals", function()
         local p = net.ReadEntity()
+        if not IsValid(p) then return end
         TARDIS:ShowPortalDebugMenu(p)
     end)
 end
@@ -388,6 +391,8 @@ concommand.Add("tardis2_debug_portals", function(ply,cmd,args)
         net.Start("TARDIS-Debug-Portals")
             net.WriteEntity(portal.Entity)
         net.Send(ply)
+    else
+        TARDIS:ErrorMessage(ply, "You're not looking at a portal")
     end
 end)
 
