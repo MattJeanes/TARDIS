@@ -61,8 +61,65 @@ else
         end
 
         local ent = p:GetParent()
+        local x, x2, y, y2, z, z2, xr, xr2, yr, yr2, zr, zr2
+
         local px, py, pz = ent:WorldToLocal(p:GetPos()):Unpack()
         local ang_p, ang_y, ang_r = ent:WorldToLocalAngles(p:GetAngles()):Unpack()
+        local prx, pry, prz = 0, 0, 0
+
+        local function RefreshRelativeCoords()
+            local pos = Vector(px, py, pz)
+            local ang = Angle(ang_p, ang_y, ang_r)
+
+            local B = Matrix()
+            B:SetForward(ang:Forward())
+            B:SetRight(ang:Right())
+            B:SetUp(ang:Up())
+            local B_inv = B:GetInverse()
+
+            prx, pry, prz = (B_inv * pos):Unpack()
+
+            if xr then
+                xr:SetValue(prx)
+                xr2:SetValue(prx)
+            end
+            if yr then
+                yr:SetValue(pry)
+                yr2:SetValue(pry)
+            end
+            if zr then
+                zr:SetValue(prz)
+                zr2:SetValue(prz)
+            end
+        end
+
+        local function RefreshAbsoluteCoords()
+            local posr = Vector(prx, pry, prz)
+            local ang = Angle(ang_p, ang_y, ang_r)
+
+            local B = Matrix()
+            B:SetForward(ang:Forward())
+            B:SetRight(ang:Right())
+            B:SetUp(ang:Up())
+
+            px, py, pz = (B * posr):Unpack()
+
+            if x then
+                x:SetValue(px)
+                x2:SetValue(px)
+            end
+            if y then
+                y:SetValue(py)
+                y2:SetValue(py)
+            end
+            if z then
+                z:SetValue(pz)
+                z2:SetValue(pz)
+            end
+        end
+
+        RefreshRelativeCoords()
+
         local thickness = p:GetThickness()
         local inverted = p:GetInverted()
         local width = p:GetWidth()
@@ -81,7 +138,14 @@ else
         local orig_epo_x, orig_epo_y, orig_epo_z = epo_x, epo_y, epo_z
         local orig_eao_p, orig_eao_y, orig_eao_r = eao_p, eao_y, eao_r
 
-        local function UpdatePortalPos()
+        local function UpdatePortalPos(src_relative)
+
+            if src_relative then
+                RefreshAbsoluteCoords()
+            else
+                RefreshRelativeCoords()
+            end
+
             net.Start("TARDIS-Debug-Portals-Update")
                 net.WriteEntity(p)
                 net.WriteString("pos")
@@ -163,17 +227,30 @@ else
         end
 
 
-        local x, x2 = SetupProperty("Position", "X", px, 100, function(val)
+        x, x2 = SetupProperty("Position", "X", px, 100, function(val)
             px = val
             UpdatePortalPos()
         end)
-        local y, y2 = SetupProperty("Position", "Y", py, 100, function(val)
+        y, y2 = SetupProperty("Position", "Y", py, 100, function(val)
             py = val
             UpdatePortalPos()
         end)
-        local z, z2 = SetupProperty("Position", "Z", pz, 100, function(val)
+        z, z2 = SetupProperty("Position", "Z", pz, 100, function(val)
             pz = val
             UpdatePortalPos()
+        end)
+
+        xr, xr2 = SetupProperty("Position", "Forward / Back", prx, 100, function(val)
+            prx = val
+            UpdatePortalPos(true)
+        end)
+        yr, yr2 = SetupProperty("Position", "Right / Left", pry, 100, function(val)
+            pry = val
+            UpdatePortalPos(true)
+        end)
+        zr, zr2 = SetupProperty("Position", "Up / Down", prz, 100, function(val)
+            prz = val
+            UpdatePortalPos(true)
         end)
 
         local ap, ap2 = SetupProperty( "Angle", "Pitch", ang_p, 360, function(val)
