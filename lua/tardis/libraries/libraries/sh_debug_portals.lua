@@ -155,6 +155,7 @@ else
         end
 
         local function UpdatePortalAng()
+            RefreshRelativeCoords()
             net.Start("TARDIS-Debug-Portals-Update")
                 net.WriteEntity(p)
                 net.WriteString("ang")
