@@ -545,7 +545,6 @@ if CLIENT then
     ENT:AddHook("SlowThink", "lights", function(self)
         local pos = self:GetPos()
         if self.lights_lastpos == pos then return end
-        print(pos)
         self.lights_lastpos = pos
         self:LoadLights()
         self:LoadLamps()
