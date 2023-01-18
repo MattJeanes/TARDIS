@@ -347,6 +347,10 @@ else
                 table.Merge(e,data)
             end
 
+            if e.ExteriorPart then
+                e.RenderGroup = RENDERGROUP_BOTH
+            end
+
             SetupPartMetadataControl(e)
 
             if not parent.parts then parent.parts={} end
