@@ -4,7 +4,6 @@ TARDIS:AddKeyBind("teleport-demat",{
     name="Demat",
     section="Teleport",
     func=function(self,down,ply)
-        if TARDIS:HUDScreenOpen(ply) then return end
         local pilot = self:GetData("pilot")
         if SERVER then
             if ply==pilot and down then
@@ -39,7 +38,6 @@ TARDIS:AddKeyBind("teleport-mat",{
     name="Mat",
     section="Teleport",
     func=function(self,down,ply)
-        if TARDIS:HUDScreenOpen(ply) then return end
         if ply==self.pilot and down then
             if self:GetData("vortex") then
                 self:Mat()

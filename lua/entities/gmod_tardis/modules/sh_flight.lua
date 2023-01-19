@@ -73,7 +73,6 @@ TARDIS:AddKeyBind("flight-spindir",{
     name="SpinDirection",
     section="Flight",
     func=function(self,down,ply)
-        if TARDIS:HUDScreenOpen(ply) then return end
         if down and ply==self.pilot then
             TARDIS:Control("spin_cycle", ply)
         end

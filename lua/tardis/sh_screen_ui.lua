@@ -1,13 +1,5 @@
 -- Adds screens
 
-function TARDIS:HUDScreenOpen(ply)
-    if SERVER then
-        return ply.TARDISHUDScreen
-    else
-        return self.HUDScreenActive
-    end
-end
-
 function TARDIS:PopToScreen(name, ply)
     if SERVER then
         if IsValid(ply) and ply:IsPlayer() then

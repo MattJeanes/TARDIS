@@ -81,7 +81,6 @@ TARDIS:AddKeyBind("destination-demat",{
     name="Set",
     section="Teleport",
     func=function(self,down,ply)
-        if TARDIS:HUDScreenOpen(ply) then return end
         if ply:GetTardisData("destination") then
             local prop = self:GetData("destinationprop")
             if IsValid(prop) then
@@ -100,7 +99,6 @@ TARDIS:AddKeyBind("destination-snaptofloor",{
     name="SnapToFloor",
     section="Destination",
     func=function(self,down,ply)
-        if TARDIS:HUDScreenOpen(ply) then return end
         if ply:GetTardisData("destination") then
             local prop = self:GetData("destinationprop")
             if IsValid(prop) then
