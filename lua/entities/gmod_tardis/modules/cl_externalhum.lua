@@ -10,7 +10,11 @@ end)
 ENT:AddHook("Think", "externalhum", function(self)
     local hum_sound = self.metadata.Exterior.Sounds.Hum
     if hum_sound then
-        if TARDIS:GetSetting("external_hum") and TARDIS:GetSetting("sound") and self:GetData("power-state") then
+        if TARDIS:GetSetting("external_hum")
+            and TARDIS:GetSetting("sound")
+            and self:GetData("power-state")
+            and not self:GetData("vortex")
+        then
             if not self.ExternalHum then
                 self.ExternalHum = CreateSound(self, hum_sound.path)
                 self.ExternalHum:Play()
