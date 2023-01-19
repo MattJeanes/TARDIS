@@ -244,28 +244,37 @@ function TARDIS:RemoveHUDScreen()
     end
 end
 
-function TARDIS:HUDScreen()
+function TARDIS:HUDScreen(window)
     if IsValid(self.screenpopframe) then
         self:RemoveHUDScreen()
-        return
+        if not self.screen_in_context_menu then
+            return
+        end
+        self.screen_in_context_menu = nil
     end
 
-    local frame=vgui.Create("DFrame")
+    local frame = window or vgui.Create("DFrame")
     frame:SetSkin("TARDIS")
     frame:SetTitle(TARDIS:GetPhrase("Common.Interface"))
     frame:SetDraggable(true)
-    frame:ShowCloseButton(false)
-    frame:MakePopup()
+
+    if not window then
+        frame:ShowCloseButton(false)
+        frame:MakePopup()
+    end
+
     self.screenpopframe=frame
+    self.screen_in_context_menu = (window ~= nil)
 
     local screen = vgui.Create("DPanel",frame)
     screen.id="pop"
-    screen.width=825
+    screen.width=700
     screen.height=425
 
-    if not TARDIS:GetSetting("gui_old") and TARDIS:GetSetting("visgui_bigpopup") then
-        screen.width=screen.width*1.5
-        screen.height=screen.height*1.5
+    local sscale = TARDIS:GetSetting("visgui_popup_scale")
+    if not TARDIS:GetSetting("gui_old") then
+        screen.width = screen.width * sscale
+        screen.height = screen.height * sscale
     end
 
     screen.resscale = 0.7
@@ -385,7 +394,7 @@ function TARDIS:LoadScreenUI(screen)
         backbutton:SetIsToggle(false)
 
         popup_button = TardisScreenButton:new(titlebar,screen)
-        if screen.is3D2D then
+        if screen.is3D2D or self.screen_in_context_menu then
             popup_button:SetID("popup")
         else
             popup_button:SetID("exit")
@@ -463,7 +472,7 @@ function TARDIS:LoadScreenUI(screen)
     screen.menubutton=menubutton
 
     popup_button:SetFont(TARDIS:GetScreenFont(screen, "Default"))
-    if not screen.is3D2D then
+    if popup_button.id == "exit" then
         popup_button:SetText(TARDIS:GetPhrase("Screens.Common.Exit"))
         popup_button.DoClick = function()
             TARDIS:RemoveHUDScreen()

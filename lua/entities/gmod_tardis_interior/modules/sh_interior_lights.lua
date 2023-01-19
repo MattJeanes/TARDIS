@@ -166,7 +166,7 @@ if CLIENT then
     end)
 
     ENT:AddHook("ShouldDrawLight", "interior_light_enabled", function(self,id,light)
-        if light.enabled == false then return false end
+        if light and light.enabled == false then return false end
         -- allow disabling lights with light states
     end)
 end
@@ -545,7 +545,6 @@ if CLIENT then
     ENT:AddHook("SlowThink", "lights", function(self)
         local pos = self:GetPos()
         if self.lights_lastpos == pos then return end
-        print(pos)
         self.lights_lastpos = pos
         self:LoadLights()
         self:LoadLamps()
