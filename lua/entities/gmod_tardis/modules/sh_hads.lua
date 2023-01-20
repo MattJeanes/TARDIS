@@ -97,16 +97,6 @@ if SERVER then
         end
     end)
 
-    ENT:AddHook("StopMat", "hads", function(self)
-        self:SetData("hads-auto-remat", nil, true)
-    end)
-
-    ENT:AddHook("InterruptTeleport", "hads-data", function(self)
-        self:SetData("hads-triggered",false,true)
-        self:SetData("hads-need-remat", nil, true)
-        self:SetData("hads-auto-remat", nil, true)
-    end)
-
     ENT:AddHook("HandleE2", "hads", function(self,name,e2)
         if name == "GetHADS" then
             return self:GetData("hads",false) and 1 or 0
