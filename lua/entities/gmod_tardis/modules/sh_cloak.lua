@@ -40,6 +40,7 @@ if SERVER then
         if (not self:GetData("teleport")) and (not self:GetData("vortex")) then
             self:DrawShadow(not on)
         end
+        self:CallHook("CloakToggled", on)
         return true
     end
     
@@ -65,6 +66,17 @@ if SERVER then
     ENT:AddHook("OnHealthDepleted", "cloak", function(self)
         if self:GetCloak() then
             self:SetCloak(false)
+        end
+    end)
+
+    ENT:AddHook("PowerToggled", "cloak", function(self,on)
+        if on and self:GetData("power_last_cloak", false) then
+            self:SetCloak(true)
+        elseif not on then
+            self:SetData("power_last_cloak", self:GetCloak())
+            if self:GetCloak() then
+                self:SetCloak(false)
+            end
         end
     end)
 else

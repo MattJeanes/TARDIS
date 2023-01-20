@@ -83,7 +83,7 @@ local overrides={
                     self.UseBasic(self,a,...)
                 end
                 if SERVER and self.Control and (not self.HasUse) then
-                    TARDIS:Control(self.Control,a)
+                    TARDIS:Control(self.Control,a,self)
                 else
                     res=self.o.Use(self,a,...)
                 end
@@ -142,6 +142,10 @@ local parts={}
 
 function TARDIS:GetPart(ent,id)
     return IsValid(ent) and ent.parts and ent.parts[id] or NULL
+end
+
+function TARDIS:GetParts(ent)
+    return IsValid(ent) and ent.parts
 end
 
 local overridequeue={}
@@ -341,6 +345,10 @@ else
             local data=GetData(parent,e,name)
             if type(data)=="table" then
                 table.Merge(e,data)
+            end
+
+            if e.ExteriorPart then
+                e.RenderGroup = RENDERGROUP_BOTH
             end
 
             SetupPartMetadataControl(e)

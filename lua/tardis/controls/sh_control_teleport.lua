@@ -1,4 +1,5 @@
-TARDIS:AddControl({ id = "teleport",
+TARDIS:AddControl({
+    id = "teleport",
     ext_func=function(self,ply)
         if (self:GetData("teleport") or self:GetData("vortex")) then
             self:Mat(function(result)

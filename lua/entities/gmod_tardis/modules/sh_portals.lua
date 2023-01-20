@@ -20,7 +20,7 @@ else
         elseif (not (self.DoorOpen and self:DoorOpen(true) and origin:Distance(self:GetPos())<TARDIS:GetSetting("portals-closedist"))) then
             return false
         elseif (not TARDIS:GetSetting("portals-enabled")) then
-            return false
+            return false, true
         end
     end)
 end

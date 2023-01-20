@@ -68,6 +68,7 @@ if SERVER then
         if (not on) and self:CallHook("CanTurnOffFloat")==false then return end
         if (on) and self:CallHook("CanTurnOnFloat")==false then return end
         self:SetData("float",on,true)
+        self:CallCommonHook("FloatToggled", on)
         self.phys:EnableGravity(not on)
         return true
     end
@@ -116,7 +117,7 @@ if SERVER then
                 local fwd=eye:Forward()
                 local ri=eye:Right()
                 local ang=self:WorldToLocalAngles(eye)
-                
+
                 local force=1
                 local rforce=2
                 local offset=-1*eye

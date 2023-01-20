@@ -1,7 +1,7 @@
 local function AddInteriorPartsOffset(template, offset)
     local moved = table.Copy(template)
 
-    if istable(rotated.Interior.Parts) then
+    if istable(moved.Interior.Parts) then
         for k,v in pairs(moved.Interior.Parts) do
             if v and istable(v) then
                 local new_pos = Vector(0,0,0)
@@ -12,7 +12,7 @@ local function AddInteriorPartsOffset(template, offset)
         end
     end
 
-    if istable(rotated.Interior.PartTips) then
+    if istable(moved.Interior.PartTips) then
         for k,v in pairs(moved.Interior.PartTips) do
             if v and istable(v) then
                 local new_pos = Vector(0,0,0)
@@ -24,7 +24,7 @@ local function AddInteriorPartsOffset(template, offset)
         end
     end
 
-    if istable(rotated.Interior.CustomTips) then
+    if istable(moved.Interior.CustomTips) then
         for k,v in pairs(moved.Interior.CustomTips) do
             if v and istable(v) then
                 local new_pos = Vector(0,0,0)

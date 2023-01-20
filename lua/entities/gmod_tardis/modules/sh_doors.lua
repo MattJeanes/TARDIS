@@ -83,10 +83,6 @@ if SERVER then
         end
     end
 
-    ENT:AddHook("Initialize", "doors", function(self)
-        self:SetBodygroup(1,1)
-    end)
-
     ENT:AddHook("ToggleDoor", "intdoors", function(self,open)
         local intdoor=TARDIS:GetPart(self.interior,"door")
         if IsValid(intdoor) then

@@ -4,7 +4,6 @@ TARDIS:AddKeyBind("teleport-demat",{
     name="Demat",
     section="Teleport",
     func=function(self,down,ply)
-        if TARDIS:HUDScreenOpen(ply) then return end
         local pilot = self:GetData("pilot")
         if SERVER then
             if ply==pilot and down then
@@ -39,7 +38,6 @@ TARDIS:AddKeyBind("teleport-mat",{
     name="Mat",
     section="Teleport",
     func=function(self,down,ply)
-        if TARDIS:HUDScreenOpen(ply) then return end
         if ply==self.pilot and down then
             if self:GetData("vortex") then
                 self:Mat()
@@ -62,6 +60,7 @@ if SERVER then
     function ENT:SetRandomDestination(grounded)
         local randomLocation = self:GetRandomLocation(grounded)
         if randomLocation then
+            self:CallHook("RandomDestinationSet", randomLocation)
             self:SetDestination(randomLocation, Angle(0,0,0))
             return true
         else
@@ -81,7 +80,6 @@ if SERVER then
         self:SetData("teleport",true)
         self:SetData("alpha", 0)
 
-        self:SetBodygroup(1,0)
         self:DrawShadow(false)
         for k,v in pairs(self.parts) do
             v:DrawShadow(false)
@@ -121,7 +119,6 @@ if SERVER then
 
         pos=pos or self:GetData("demat-pos") or self:GetPos()
         ang=ang or self:GetData("demat-ang") or self:GetAngles()
-        self:SetBodygroup(1,0)
         self:SetDestination(pos, ang)
         self:SendMessage("demat", function() net.WriteVector(self:GetData("demat-pos",Vector())) end)
         self:SetData("demat",true)
@@ -213,6 +210,7 @@ if SERVER then
 
             self:SendMessage("premat",function() net.WriteVector(self:GetData("demat-pos",Vector())) end)
             self:SetData("teleport",true)
+            self:CallHook("PreMatStart")
 
             local timerdelay = (self:GetData("demat-fast",false) and 1.9 or 8.5)
             self:Timer("matdelay", timerdelay, function()
@@ -266,7 +264,6 @@ if SERVER then
     end
 
     function ENT:StopMat()
-        self:SetBodygroup(1,1)
         self:SetData("mat",false)
         self:SetData("step",1)
         self:SetData("teleport",false)
@@ -376,6 +373,7 @@ else
                 end
             end
         end
+        self:CallHook("DematStart")
     end)
 
     ENT:OnMessage("premat", function(self)
@@ -411,12 +409,14 @@ else
                 end
             end
         end
+        self:CallHook("PreMatStart")
     end)
 
     ENT:OnMessage("mat", function(self)
         self:SetData("mat",true)
         self:SetData("step",1)
         self:SetData("vortex",false)
+        self:CallHook("MatStart")
     end)
 
     function ENT:StopDemat()
@@ -431,6 +431,7 @@ else
         self:SetData("mat",false)
         self:SetData("step",1)
         self:SetData("teleport",false)
+        self:CallHook("StopMat")
     end
 
 end

@@ -2,6 +2,7 @@
 
 if SERVER then
     function ENT:SetHADS(on)
+        self:CallCommonHook("HadsToggled", on)
         return self:SetData("hads",on,true)
     end
 
@@ -53,23 +54,33 @@ if SERVER then
         end
     end 
 
+    ENT:AddHook("OnTakeDamage", "hads", function(self)
+        self:TriggerHADS()
+    end)
+
     ENT:AddHook("MatStart", "hads-cancel-remat", function(self)
         self:SetData("hads-need-remat", nil, true)
-    end)
-
-    ENT:AddHook("OnTakeDamage", "hads", function(self)
-        self:TriggerHADS()  
-    end)
-
-    hook.Add("OnPhysgunPickup", "tardis-hads", function(ply,ent)
-        if ent:GetClass()=="gmod_tardis" and ent:TriggerHADS() then
-            ent:ForcePlayerDrop()                                                      
-        end
     end)
 
     ENT:AddHook("StopDemat","hads",function(self)
         if self:GetData("hads-triggered",false) then
             self:SetData("hads-triggered",false,true)
+        end
+    end)
+
+    ENT:AddHook("StopMat", "hads", function(self)
+        self:SetData("hads-auto-remat", nil, true)
+    end)
+
+    ENT:AddHook("InterruptTeleport", "hads-data", function(self)
+        self:SetData("hads-triggered",false,true)
+        self:SetData("hads-need-remat", nil, true)
+        self:SetData("hads-auto-remat", nil, true)
+    end)
+
+    hook.Add("OnPhysgunPickup", "tardis-hads", function(ply,ent)
+        if ent:GetClass()=="gmod_tardis" and ent:TriggerHADS() then
+            ent:ForcePlayerDrop()
         end
     end)
 

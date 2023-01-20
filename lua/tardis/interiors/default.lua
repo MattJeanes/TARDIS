@@ -56,7 +56,7 @@ T.Interior = {
         }
     },
     Portal = {
-        pos = Vector(316.7, 334.9, -36.5),
+        pos = Vector(316.7, 334.9, -33.7),
         ang = Angle(0, 230, 0),
         width = 45,
         height = 91
@@ -96,7 +96,7 @@ T.Interior = {
     Sequences = "default_sequences",
     Parts = {
         door = {
-            pos = Vector(300, 315, -88.1),
+            posoffset=Vector(28,0,-54.6),
             ang = Angle(0, 50, 0),
             width = 443,
             height = 335
@@ -151,7 +151,7 @@ T.Interior = {
         },
     },
     Controls = {
-        default_throttle            = "teleport",
+        default_throttle            = "teleport_double",
         default_flightlever         = "flight",
         default_screen              = nil,
         default_screenbutton        = "toggle_screens",
@@ -242,7 +242,9 @@ T.Interior = {
 
 T.Exterior = {
     Parts = {
-        door = true
+        door = {
+            posoffset=Vector(-28,0,-54.6)
+        }
     },
     Sounds = {
         Teleport = {
@@ -256,7 +258,15 @@ T.Exterior = {
     Light = {
         warncolor = Color(255,200,200),
     },
-    PhaseMaterial = "models/drmatt/tardis/exterior/phase.vmt"
+    PhaseMaterial = "models/drmatt/tardis/exterior/phase.vmt",
+    Portal = {
+        pos = Vector(28,0,54.6),
+        ang = Angle(0,0,0),
+        width = 45,
+        height = 92,
+        thickness = 42,
+        inverted = true,
+    },
 }
 
 local function playerlookingat(self,ply,vec,fov,width)

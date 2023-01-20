@@ -8,7 +8,6 @@ ENT.PrintName       = "TARDIS Part"
 ENT.Author          = "Dr. Matt"
 ENT.Spawnable       = false
 ENT.AdminSpawnable  = false
-ENT.RenderGroup     = RENDERGROUP_BOTH
 ENT.Category        = "Doctor Who"
 ENT.TardisPart      = true
 ENT.AllowedProperties = {
