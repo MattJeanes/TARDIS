@@ -72,7 +72,7 @@ if SERVER then
         end
     end)
 else
-    ENT:OnMessage("locksound",function(self)
+    ENT:OnMessage("locksound", function(self, data, ply)
         local extsound = self.metadata.Exterior.Sounds.Lock
         local intsound = self.metadata.Interior.Sounds.Lock or extsound
 

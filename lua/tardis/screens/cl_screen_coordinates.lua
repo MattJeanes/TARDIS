@@ -265,13 +265,10 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     function confirm:DoClick()
         local pos,ang = fetchtextinputs()
         if pos ~= nil and pos ~= 0 then
-            ext:SendMessage("destination-demat", function()
-                net.WriteVector(pos)
-                net.WriteAngle(ang)
-                if TARDIS:GetSetting("dest-onsetdemat") then
-                    TARDIS:RemoveHUDScreen()
-                end
-            end)
+            ext:SendMessage("destination-demat", { pos, ang } )
+            if TARDIS:GetSetting("dest-onsetdemat") then
+                TARDIS:RemoveHUDScreen()
+            end
         else
             TARDIS:ErrorMessage(LocalPlayer(), "Screens.Coordinates.NoDestinationSet")
         end

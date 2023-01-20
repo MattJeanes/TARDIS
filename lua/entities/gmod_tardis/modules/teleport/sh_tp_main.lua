@@ -120,7 +120,7 @@ if SERVER then
         pos=pos or self:GetData("demat-pos") or self:GetPos()
         ang=ang or self:GetData("demat-ang") or self:GetAngles()
         self:SetDestination(pos, ang)
-        self:SendMessage("demat", function() net.WriteVector(self:GetData("demat-pos",Vector())) end)
+        self:SendMessage("demat", { self:GetData("demat-pos",Vector()) } )
         self:SetData("demat",true)
         self:SetData("fastreturn-pos",self:GetPos())
         self:SetData("fastreturn-ang",self:GetAngles())
@@ -208,7 +208,7 @@ if SERVER then
                 return
             end
 
-            self:SendMessage("premat",function() net.WriteVector(self:GetData("demat-pos",Vector())) end)
+            self:SendMessage("premat", { self:GetData("demat-pos",Vector()) } )
             self:SetData("teleport",true)
             self:CallHook("PreMatStart")
 
@@ -316,7 +316,7 @@ if SERVER then
     end)
 
 else
-    ENT:OnMessage("demat", function(self)
+    ENT:OnMessage("demat", function(self, data, ply)
         self:SetData("demat",true)
         self:SetData("step",1)
         self:SetData("teleport",true)
@@ -341,7 +341,7 @@ else
                 sound_fullflight_int = int.fullflight_damaged or ext.fullflight_damaged
             end
 
-            local pos = net.ReadVector()
+            local pos = data[1]
             
             if LocalPlayer():GetTardisData("exterior")==self then
                 local intsound = int.demat or ext.demat
@@ -376,7 +376,7 @@ else
         self:CallHook("DematStart")
     end)
 
-    ENT:OnMessage("premat", function(self)
+    ENT:OnMessage("premat", function(self, data, ply)
         self:SetData("teleport",true)
         if TARDIS:GetSetting("teleport-sound") and TARDIS:GetSetting("sound") then
             local shouldPlayExterior = self:CallHook("ShouldPlayMatSound", false)~=false
@@ -384,7 +384,7 @@ else
             if not (shouldPlayExterior or shouldPlayInterior) then return end
             local ext = self.metadata.Exterior.Sounds.Teleport
             local int = self.metadata.Interior.Sounds.Teleport
-            local pos=net.ReadVector()
+            local pos=data[1]
             if LocalPlayer():GetTardisData("exterior")==self and (not self:GetData("demat-fast",false)) then
                 if self:GetData("health-warning", false) then
                     if shouldPlayExterior then
@@ -412,7 +412,7 @@ else
         self:CallHook("PreMatStart")
     end)
 
-    ENT:OnMessage("mat", function(self)
+    ENT:OnMessage("mat", function(self, data, ply)
         self:SetData("mat",true)
         self:SetData("step",1)
         self:SetData("vortex",false)

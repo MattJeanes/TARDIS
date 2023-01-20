@@ -84,10 +84,7 @@ TARDIS:AddKeyBind("destination-demat",{
         if ply:GetTardisData("destination") then
             local prop = self:GetData("destinationprop")
             if IsValid(prop) then
-                self:SendMessage("destination-demat", function()
-                    net.WriteVector(prop:GetPos())
-                    net.WriteAngle(prop:GetAngles())
-                end)
+                self:SendMessage("destination-demat", {prop:GetPos(), prop:GetAngles()})
             end
         end
     end,
@@ -128,16 +125,12 @@ if SERVER then
 
                 ply:SetTardisData("destination", false, true)
                 self:CallHook("Destination", ply, false)
-                self:SendMessage("destination",function()
-                    net.WriteBool(false)
-                end, ply)
+                self:SendMessage("destination", {false}, ply)
                 return true
             elseif self:SetOutsideView(ply, enabled) then
                 ply:SetTardisData("destination", enabled, true)
                 self:CallHook("Destination", ply, enabled)
-                self:SendMessage("destination",function()
-                    net.WriteBool(enabled)
-                end,ply)
+                self:SendMessage("destination", {enabled}, ply)
                 return true
             end
         end
@@ -147,18 +140,16 @@ if SERVER then
         if not enabled then
             ply:SetTardisData("destination", enabled, true)
             self:CallHook("Destination", ply, enabled)
-            self:SendMessage("destination",function()
-                net.WriteBool(enabled)
-            end,ply)
+            self:SendMessage("destination", {enabled}, ply)
         end
     end)
-    ENT:OnMessage("destination-demat", function(self, ply)
+    ENT:OnMessage("destination-demat", function(self, data, ply)
         if not self:CheckSecurity(ply) then
             TARDIS:Message(ply, "Security.ControlUseDenied")
             return
         end
-        local pos = net.ReadVector()
-        local ang = net.ReadAngle()
+        local pos = data[1]
+        local ang = data[2]
         if ply:GetTardisData("destination") then
             self:SelectDestination(ply, false)
         end
@@ -261,8 +252,8 @@ else
             self:RemoveDestinationProp()
         end
     end)
-    ENT:OnMessage("destination", function(self)
-        local enabled = net.ReadBool()
+    ENT:OnMessage("destination", function(self, data, ply)
+        local enabled = data[1]
         self:CallHook("Destination", enabled)
     end)
     ENT:AddHook("OnRemove", "destination", function(self)

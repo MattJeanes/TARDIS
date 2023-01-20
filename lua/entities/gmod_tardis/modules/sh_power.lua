@@ -23,9 +23,7 @@ if SERVER then
         if (self:CallCommonHook("CanTogglePower") == false) then return false end
         self:SetData("power-state",on,true)
         self:CallCommonHook("PowerToggled", on)
-        self:SendMessage("power_toggled", function()
-            net.WriteBool(on)
-        end)
+        self:SendMessage("power_toggled", {on})
         return true
     end
 
@@ -55,8 +53,8 @@ else
         if not self:GetPower() then return true end
     end)
 
-    ENT:OnMessage("power_toggled", function(self)
-        local on = net.ReadBool()
+    ENT:OnMessage("power_toggled", function(self, data, ply)
+        local on = data[1]
         self:CallCommonHook("PowerToggled", on)
     end)
 end
