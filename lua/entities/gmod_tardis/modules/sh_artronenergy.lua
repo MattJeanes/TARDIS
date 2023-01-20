@@ -9,10 +9,13 @@ if SERVER then
             ["physlock"] = -540 / 144,
             ["float"] = -540 / 144,
         },
-        cost_hads = -180 / 144,
-        cost_failed_demat = -80 / 144,
+        --Engine release random health cost values:
         min_health_replace = 53,
         max_health_replace = 432,
+
+        --Cost of certain controls and stuff:
+        cost_hads = -180 / 144,
+        cost_failed_demat = -80 / 144,
 
         -- every 1 second:
         spend_vortex_teleport = -32 / 144,
