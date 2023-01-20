@@ -19,18 +19,20 @@ if SERVER then
 
         -- every 1 second:
         spend_vortex_teleport = -32 / 144,
-        spend_flight = -45 / 144,
+        spend_flight = -15 / 144,
         spend_flight_boost = -45 / 144,
-        spend_cloak = -36 / 144,
+        spend_cloak = -18 / 144,
         spend_cloak_handbrake = -12 / 144,
 
+        -- every 1 second:
+        increase_handbrake = 180 / 144,
+        increase_float_handbrake = 40 / 144,
+
         -- every 5 seconds:
-        increase_handbrake = 180 * 5 / 144,
         increase_normal = 15 * 5 / 144,
         increase_warning = 10 * 5 / 144,
         increase_poweroff = 24 * 5 / 144,
         increase_float = 8 * 5 / 144,
-        increase_float_handbrake = 40 * 5 / 144,
 
         increase_engine_release = 720 / 144,
     }
@@ -173,7 +175,10 @@ if SERVER then
         -- if artron energy is charging, it happens every 5 seconds
         if self:CallHook("CanIncreaseArtron") == false then return end
         if CurTime() < self:GetData("artron_next_increase_time", 0) then return end
-        self:SetData("artron_next_increase_time", CurTime() + 5)
+
+        local increase_interval = handbrake and 1 or 5
+
+        self:SetData("artron_next_increase_time", CurTime() + increase_interval)
 
         if handbrake and float then
             self:AddArtron(TARDIS.artron_values.increase_float_handbrake)
