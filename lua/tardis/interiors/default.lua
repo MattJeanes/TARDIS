@@ -85,14 +85,14 @@ T.Interior = {
         }
     },
     Sounds = {
-            Teleport = {
-                demat = "drmatt/tardis/demat.wav",
-                mat = "drmatt/tardis/mat.wav",
-                mat_fast = "p00gie/tardis/mat_fast.wav",
-                mat_damaged_fast = "p00gie/tardis/mat_damaged_fast.wav",
-                fullflight = "drmatt/tardis/full.wav",
-            },
+        Teleport = {
+            demat = "drmatt/tardis/demat.wav",
+            mat = "drmatt/tardis/mat.wav",
+            mat_fast = "p00gie/tardis/mat_fast.wav",
+            mat_damaged_fast = "p00gie/tardis/mat_damaged_fast.wav",
+            fullflight = "drmatt/tardis/full.wav",
         },
+    },
     Sequences = "default_sequences",
     Parts = {
         door = {
