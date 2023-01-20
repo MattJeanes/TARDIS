@@ -130,16 +130,16 @@ TARDIS:AddSetting({
 })
 
 TARDIS:AddSetting({
-    id="flight_to_float_if_no_artron",
+    id="flight_interrupt_to_float",
     type="bool",
-    value=false,
+    value=true,
 
     class="networked",
 
     option=true,
     section=SETTING_SECTION,
     subsection="Flight",
-    name="FlightToFloatIfNoArtron",
+    name="FlightInterruptToFloat",
 })
 
 --------------------------------------------------------------------------------

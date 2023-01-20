@@ -7,7 +7,7 @@ if SERVER then
         cost_controls = {
             ["cloak"] = -720 / 144,
             ["physlock"] = -540 / 144,
-            ["float"] = -540 / 144,
+            ["float"] = -270 / 144,
         },
         --Engine release random health cost values:
         min_health_replace = 53,
@@ -70,9 +70,7 @@ if SERVER then
             return
         end
         if self:GetPower() then
-            if self:GetData("flight") and TARDIS:GetSetting("flight_to_float_if_no_artron", self:GetCreator()) then
-                self:SetData("floatfirst", true)
-            end
+            self:InterruptFlight()
             self:SetPower(false)
             for k,_ in pairs(self.occupants) do
                 TARDIS:ErrorMessage(k, "Artron.Depleted")

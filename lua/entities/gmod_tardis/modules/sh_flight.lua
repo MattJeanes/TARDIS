@@ -88,6 +88,19 @@ if SERVER then
         return self:SetFlight(on)
     end
 
+    function ENT:InterruptFlight()
+        if not self:GetData("flight") then return end
+
+        if TARDIS:GetSetting("flight_interrupt_to_float", self:GetCreator()) then
+            self:SetData("floatfirst", true)
+        end
+
+        self:ToggleFlight()
+        self:CallCommonHook("FlightInterrupted")
+
+        self:ExplodeIfFast()
+    end
+
     function ENT:SetFlight(on)
         if not on and self:CallHook("CanTurnOffFlight")==false then
             return false
