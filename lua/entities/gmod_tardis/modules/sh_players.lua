@@ -79,7 +79,7 @@ else
     
     ENT:AddHook("PlayerExit", "players", function(self)
         if IsValid(TARDIS.screenpopframe) then
-            TARDIS:HUDScreen() -- force close hud screen if exit tardis
+            TARDIS:RemoveHUDScreen() -- force close hud screen if exit tardis
         end
     end)
 end
