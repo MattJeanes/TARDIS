@@ -265,14 +265,14 @@ if SERVER then
         self:ChangeHealth(newhealth)
     end
 
-    function ENT:EngineReleaseVortexArtron(callback)
+    function ENT:EngineReleaseVortexArtron()
         if not TARDIS:GetSetting("artron_energy") then return end
 
         if self:GetData("vortex") then
             self:ForceAddArtron()
-            callback(true)
+            return true
         end
-        callback(false)
+        return false
     end
 
 end

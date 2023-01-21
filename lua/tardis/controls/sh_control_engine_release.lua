@@ -10,11 +10,9 @@ TARDIS:AddControl({
                 TARDIS:ErrorMessage(ply, "Controls.EngineRelease.FailedDemat")
             end
         end)
-        self:EngineReleaseVortexArtron(function(result)
-            if result then
-                TARDIS:Message(ply, "Controls.EngineRelease.ArtronAdded")
-            end
-        end)
+        if self:EngineReleaseVortexArtron() then
+            TARDIS:Message(ply, "Controls.EngineRelease.ArtronAdded")
+        end
     end,
     serveronly=true,
     power_independent = false,
