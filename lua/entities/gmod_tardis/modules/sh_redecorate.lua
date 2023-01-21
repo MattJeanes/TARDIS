@@ -190,7 +190,7 @@ else -- CLIENT
         end
     end)
 
-    ENT:OnMessage("redecorate-reset", function(self)
+    ENT:OnMessage("redecorate-reset", function(self, data, ply)
         if not IsValid(self) or (not LocalPlayer() == self:GetCreator()) then return end
         TARDIS:SetSetting("redecorate-interior", false)
     end)

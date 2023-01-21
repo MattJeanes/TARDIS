@@ -126,9 +126,7 @@ if SERVER then
     end)
 
     ENT:AddHook("ToggleDoorReal", "doors", function(self,open)
-        self:SendMessage("ToggleDoorReal",function()
-            net.WriteBool(open)
-        end)
+        self:SendMessage("ToggleDoorReal", {open})
     end)
 
     ENT:AddHook("Think", "doors", function(self)
@@ -208,8 +206,8 @@ else
         end
     end
 
-    ENT:OnMessage("ToggleDoorReal",function(self)
-        self:CallHook("ToggleDoorReal",net.ReadBool())
+    ENT:OnMessage("ToggleDoorReal", function(self, data, ply)
+        self:CallHook("ToggleDoorReal", data[1])
     end)
 
     ENT:AddHook("ToggleDoorReal","doorsounds",function(self,open)
