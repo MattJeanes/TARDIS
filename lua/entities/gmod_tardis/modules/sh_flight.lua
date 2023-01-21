@@ -73,7 +73,6 @@ TARDIS:AddKeyBind("flight-spindir",{
     name="SpinDirection",
     section="Flight",
     func=function(self,down,ply)
-        if TARDIS:HUDScreenOpen(ply) then return end
         if down and ply==self.pilot then
             TARDIS:Control("spin_cycle", ply)
         end
@@ -170,10 +169,7 @@ if SERVER then
 
     ENT:AddHook("PilotChanged","flight",function(self,old,new)
         self:SetData("pilot",new,true)
-        self:SendMessage("PilotChanged",function()
-            net.WriteEntity(old)
-            net.WriteEntity(new)
-        end)
+        self:SendMessage("PilotChanged", {old, new} )
     end)
 
     ENT:AddHook("Think", "flight", function(self)
@@ -396,9 +392,9 @@ else
         end
     end)
 
-    ENT:OnMessage("PilotChanged",function(self)
-        local old=net.ReadEntity()
-        local new=net.ReadEntity()
+    ENT:OnMessage("PilotChanged", function(self, data, ply)
+        local old=data[1]
+        local new=data[2]
         self:CallHook("PilotChanged",old,new)
     end)
 end

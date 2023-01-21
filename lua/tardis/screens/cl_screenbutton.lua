@@ -282,10 +282,12 @@ end
 function TardisScreenButton:SetPressedStateData(parent, data)
     if istable(data) then
         self.Think = function()
+            if not parent._init then return end
             self:SetPressed(parent:GetData(data[1]) or parent:GetData(data[2]))
         end
     else
         self.Think = function()
+            if not parent._init then return end
             self:SetPressed(parent:GetData(data))
         end
     end

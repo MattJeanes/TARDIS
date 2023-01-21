@@ -1,13 +1,5 @@
 -- Adds screens
 
-function TARDIS:HUDScreenOpen(ply)
-    if SERVER then
-        return ply.TARDISHUDScreen
-    else
-        return self.HUDScreenActive
-    end
-end
-
 function TARDIS:PopToScreen(name, ply)
     if SERVER then
         if IsValid(ply) and ply:IsPlayer() then
@@ -284,6 +276,13 @@ function TARDIS:HUDScreen(window)
     screen.gap2=screen.gap*2
     screen.ext=TARDIS:GetExteriorEnt()
     screen.int=TARDIS:GetInteriorEnt()
+
+    screen.Think = function(self)
+        if not IsValid(screen.ext) then
+            TARDIS:RemoveHUDScreen()
+        end
+    end
+
     screen:SetSize(screen.width,screen.height)
     screen:SetPos(2,25)
     self:LoadScreenUI(screen)

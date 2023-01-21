@@ -21,13 +21,11 @@ if SERVER then
     end
 
     ENT:AddHook("PowerToggled", "interior-power", function(self, state)
-        self:SendMessage("power-toggled", function()
-            net.WriteBool(state)
-        end)
+        self:SendMessage("power-toggled", {state} )
     end)
 else
-    ENT:OnMessage("power-toggled", function(self)
-        local state = net.ReadBool()
+    ENT:OnMessage("power-toggled", function(self, data, ply)
+        local state = data[1]
         if TARDIS:GetSetting("sound") then
             local sound_on = self.metadata.Interior.Sounds.Power.On
             local sound_off = self.metadata.Interior.Sounds.Power.Off

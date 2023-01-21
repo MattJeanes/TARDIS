@@ -394,9 +394,7 @@ function ENT:ApplyLightState(state)
     self:CallHook("LightStateChanged", state)
 
     if SERVER then
-        self:SendMessage("light_state",function()
-            net.WriteString(state)
-        end)
+        self:SendMessage("light_state", {state} )
     else
         local ldata = self.light_data
         ChangeSingleLightState(ldata.main, state)
@@ -410,8 +408,8 @@ function ENT:ApplyLightState(state)
 end
 
 if CLIENT then
-    ENT:OnMessage("light_state", function(self)
-        self:ApplyLightState(net.ReadString())
+    ENT:OnMessage("light_state", function(self, data, ply)
+        self:ApplyLightState(data[1])
     end)
 end
 

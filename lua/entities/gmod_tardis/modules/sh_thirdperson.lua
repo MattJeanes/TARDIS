@@ -73,7 +73,7 @@ else
         end
     end)
 
-    ENT:OnMessage("thirdperson-careful-hint", function(self)
+    ENT:OnMessage("thirdperson-careful-hint", function(self, data, ply)
         local use_binding = input.LookupBinding("+use", true)
         local walk_binding = input.LookupBinding("+walk", true)
         local use = string.upper(use_binding or "USE")

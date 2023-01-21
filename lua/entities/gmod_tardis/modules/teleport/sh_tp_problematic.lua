@@ -248,7 +248,7 @@ if SERVER then
     end)
 
 else -- CLIENT
-    ENT:OnMessage("failed-demat", function(self)
+    ENT:OnMessage("failed-demat", function(self, data, ply)
         if TARDIS:GetSetting("teleport-sound") and TARDIS:GetSetting("sound") then
             local ext = self.metadata.Exterior.Sounds.Teleport
             local int = self.metadata.Interior.Sounds.Teleport
@@ -260,7 +260,7 @@ else -- CLIENT
         end
     end)
 
-    ENT:OnMessage("failed-mat", function(self)
+    ENT:OnMessage("failed-mat", function(self, data, ply)
         if TARDIS:GetSetting("teleport-sound") and TARDIS:GetSetting("sound") then
             local ext = self.metadata.Exterior.Sounds.Teleport
             local int = self.metadata.Interior.Sounds.Teleport
@@ -293,7 +293,7 @@ else -- CLIENT
         self.interior:StopSound(int.fullflight_damaged or ext.fullflight_damaged)
     end
 
-    ENT:OnMessage("interrupt-teleport", function(self)
+    ENT:OnMessage("interrupt-teleport", function(self, data, ply)
         self:StopTeleportSounds()
         if TARDIS:GetSetting("teleport-sound") and TARDIS:GetSetting("sound") then
             local ext = self.metadata.Exterior.Sounds.Teleport
@@ -303,7 +303,7 @@ else -- CLIENT
         end
     end)
 
-    ENT:OnMessage("engine-release-explode", function(self)
+    ENT:OnMessage("engine-release-explode", function(self, data, ply)
         self:InteriorExplosion()
     end)
 
