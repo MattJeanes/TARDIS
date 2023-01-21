@@ -13,6 +13,20 @@ TARDIS:AddKeyBind("flight-toggle",{
     serveronly=true,
     exterior=true
 })
+
+TARDIS:AddKeyBind("handbrake",{
+    name="Handbrake",
+    section="ThirdPerson",
+    func=function(self,down,ply)
+        if down and ply == self.pilot then
+            TARDIS:Control("handbrake", ply)
+        end
+    end,
+    key=KEY_J,
+    serveronly=true,
+    exterior=true
+})
+
 TARDIS:AddKeyBind("flight-forward",{
     name="Forward",
     section="Flight",
