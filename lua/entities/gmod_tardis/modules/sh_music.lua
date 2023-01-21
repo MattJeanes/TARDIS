@@ -8,9 +8,7 @@ if SERVER then
                 return false
             end
             for ply, _ in pairs(self.occupants) do
-                self:SendMessage("play-music", function() 
-                    net.WriteString(url)
-                end, ply)
+                self:SendMessage("play-music", {url}, ply)
             end
     
             self.music = url
@@ -22,17 +20,17 @@ if SERVER then
     function ENT:StopMusic()
         if self.music then
             for ply, _ in pairs(self.occupants) do
-                self:SendMessage("stop-music", function() end, ply)
+                self:SendMessage("stop-music", nil, ply)
             end
             self.music = nil
         end
     end
     
-    ENT:OnMessage("play-music", function(self, ply) 
-        self:PlayMusic(net.ReadString(), ply)
+    ENT:OnMessage("play-music", function(self, data, ply)
+        self:PlayMusic(data[1], ply)
     end)
     
-    ENT:OnMessage("stop-music", function(self) 
+    ENT:OnMessage("stop-music", function(self, data, ply)
         self:StopMusic()
     end)
 
@@ -93,14 +91,12 @@ function ENT:PlayMusic(url,resolved)
         url=self:ResolveMusicURL(url)
     end
     if url and TARDIS:GetSetting("music-enabled") and TARDIS:GetSetting("sound") then
-        self:SendMessage("play-music", function() 
-            net.WriteString(url)
-        end)
+        self:SendMessage("play-music", {url})
     end
 end
 
-ENT:OnMessage("play-music", function(self)
-    local url = net.ReadString()
+ENT:OnMessage("play-music", function(self, data, ply)
+    local url = data[1]
 
     self:StopMusic(false)
     
@@ -115,7 +111,7 @@ ENT:OnMessage("play-music", function(self)
     end)
 end)
 
-ENT:OnMessage("stop-music", function(self)
+ENT:OnMessage("stop-music", function(self, data, ply)
     if self.music then
         self.music:Stop()
         self.music=nil

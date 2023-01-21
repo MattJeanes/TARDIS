@@ -25,16 +25,13 @@ if SERVER then
                 ply:SetTardisData("outsideang")
                 ply:SetTardisData("outsidecool", CurTime()+0.5)
                 self:CallHook("Outside", ply, enabled)
-                self:SendMessage("Outside",function()
-                    net.WriteEntity(ply)
-                    net.WriteBool(enabled)
-                end)
+                self:SendMessage("Outside", {ply, enabled})
             end
-            return true         
+            return true
         end
         return false
     end
-    
+
     ENT:AddHook("PlayerExit", "outside", function(self,ply)
         if ply:GetTardisData("outside") then
             self:SetOutsideView(ply,false)
@@ -46,7 +43,7 @@ if SERVER then
             AddOriginToPVS(ply:GetTardisData("exterior"):GetPos())
         end
     end)
-    
+
     hook.Add("StartCommand", "tardis-outside", function(ply, cmd)
         if ply:GetTardisData("outside") then
             local ext=ply:GetTardisData("exterior")
@@ -90,9 +87,9 @@ else
         end
     end)
     
-    ENT:OnMessage("Outside",function(self)
-        local ply = net.ReadEntity()
-        local enabled = net.ReadBool()
+    ENT:OnMessage("Outside", function(self, data, ply)
+        local ply = data[1]
+        local enabled = data[2]
         self:CallHook("Outside",ply,enabled)
     end)
 

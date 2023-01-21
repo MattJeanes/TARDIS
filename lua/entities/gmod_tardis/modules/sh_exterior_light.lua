@@ -2,15 +2,13 @@
 
 if SERVER then
     function ENT:FlashLight(time)
-        self:SendMessage("flash-light",function()
-            net.WriteFloat(time)
-        end)
+        self:SendMessage("flash-light", { time })
     end
 else
     function ENT:FlashLight(time)
         self:SetData("flashuntil",CurTime()+time)
     end
-    
+
     ENT:AddHook("ShouldTurnOnLight","light",function(self)
         if TARDIS:GetSetting("extlight-alwayson") then
             return true
@@ -24,9 +22,9 @@ else
             end
         end
     end)
-    
-    ENT:OnMessage("flash-light",function(self)
-        self:FlashLight(net.ReadFloat())
+
+    ENT:OnMessage("flash-light", function(self, data, ply)
+        self:FlashLight(data[1])
     end)
 
     ENT:AddHook("Initialize", "light", function(self)
@@ -39,11 +37,11 @@ else
     ENT:AddHook("Draw", "light", function(self)
         local light = self.metadata.Exterior.Light
         if not light.enabled then return end
-        
+
         local shouldon=self:CallHook("ShouldTurnOnLight")
         local shouldpulse=self:CallHook("ShouldPulseLight")
         local shouldoff=self:CallHook("ShouldTurnOffLight")
-        
+
         if shouldon and (not shouldoff) then
             local col = light.color
             if self:GetData("health-warning") and light.warncolor ~= nil then

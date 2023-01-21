@@ -323,9 +323,7 @@ if SERVER then
     end)
 
     ENT:AddHook("HealthWarningToggled", "client", function(self, on)
-        self:SendMessage("health_warning_toggled", function()
-            net.WriteBool(on)
-        end)
+        self:SendMessage("health_warning_toggled", {on})
     end)
 
     ENT:AddHook("HandleE2", "health", function(self,name,e2)
@@ -348,7 +346,7 @@ if SERVER then
     end)
 
 else
-    ENT:OnMessage("health_warning_toggled", function(self)
-        self:CallCommonHook("HealthWarningToggled", net.ReadBool())
+    ENT:OnMessage("health_warning_toggled", function(self, data, ply)
+        self:CallCommonHook("HealthWarningToggled", data[1])
     end)
 end
