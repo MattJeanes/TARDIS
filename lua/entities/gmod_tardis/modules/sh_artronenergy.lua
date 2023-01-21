@@ -267,6 +267,7 @@ if SERVER then
 
     function ENT:EngineReleaseVortexArtron()
         if not TARDIS:GetSetting("artron_energy") then return end
+        if not TARDIS:GetSetting("health-enabled") then return false end
 
         if self:GetData("vortex") then
             self:ForceAddArtron()
