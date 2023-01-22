@@ -103,7 +103,7 @@ if SERVER then
     end
 
     function ENT:InterruptFlight()
-        if not self:GetData("flight") then return end
+        if not self:GetData("flight") and not self:GetData("vortex") then return end
 
         if TARDIS:GetSetting("flight_interrupt_to_float", self:GetCreator()) then
             self:SetData("floatfirst", true)
