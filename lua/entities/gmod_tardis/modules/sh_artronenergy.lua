@@ -260,6 +260,12 @@ if SERVER then
         self:AddArtron(TARDIS.artron_values.cost_hads)
     end)
 
+    ENT:AddHook("HandbrakeToggled", "artron", function(self, on)
+        if on then
+            self:SetData("artron_next_increase_time", CurTime() + 1)
+        end
+    end)
+
     ENT:AddHook("SettingChanged", "maxartron-changed", function(self, id, val)
         if id ~= "artron_energy_max" then return end
 
