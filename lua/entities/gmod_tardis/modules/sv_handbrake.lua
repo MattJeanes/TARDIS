@@ -25,11 +25,7 @@ end)
 ENT:AddHook("HandbrakeToggled", "vortex", function(self, on)
     if on and self:GetData("teleport") or self:GetData("vortex") then
         self:InterruptTeleport()
-    end
-end)
-
-ENT:AddHook("HandbrakeToggled", "flight", function(self, on)
-    if on then
+    else
         self:InterruptFlight()
     end
 end)
