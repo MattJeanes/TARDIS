@@ -266,6 +266,10 @@ if SERVER then
         end
     end)
 
+    ENT:AddHook("OnHealthDepleted", "artron", function(self, on)
+        self:SetArtron(0)
+    end)
+
     ENT:AddHook("SettingChanged", "maxartron-changed", function(self, id, val)
         if id ~= "artron_energy_max" then return end
 

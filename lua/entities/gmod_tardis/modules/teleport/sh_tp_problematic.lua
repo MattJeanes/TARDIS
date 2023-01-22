@@ -242,6 +242,20 @@ if SERVER then
         end
     end
 
+    function ENT:EngineReleaseFreePower()
+        if self:GetData("teleport-interrupted", false) then
+            self:Explode()
+            self.interior:Explode(20)
+
+            self:Timer("interrupt_teleport", 1, function()
+                self:Explode()
+                self.interior:Explode(20)
+            end)
+
+            self:SetData("teleport-interrupted", false, true)
+        end
+    end
+
     ENT:AddHook("ToggleDoor", "failing-demat", function(self,open)
         if self:GetData("failing-demat", false) then
             if not open then
@@ -442,5 +456,6 @@ ENT:AddHook("CanTogglePower", "interrupted-teleport", function(self)
         return false
     end
 end)
+
 
 
