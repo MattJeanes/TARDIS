@@ -354,6 +354,10 @@ if SERVER then
             return false
         end
     end)
+
+    ENT:AddHook("ShouldUpdateArtron", "health", function(self)
+        if self:GetHealth() == 0 then return false end
+    end)
 else
     ENT:OnMessage("health_warning_toggled", function(self, data, ply)
         self:CallCommonHook("HealthWarningToggled", data[1])
