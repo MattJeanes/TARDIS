@@ -184,16 +184,20 @@ if SERVER then
         if self:CallHook("CanIncreaseArtron") == false then return end
         if CurTime() < self:GetData("artron_next_increase_time", 0) then return end
 
-        local increase_interval = handbrake and 1 or TARDIS:GetSetting("artron_energy_charge_frequency")
+        local frequency = TARDIS:GetSetting("artron_energy_charge_frequency")
+        local increase_interval = handbrake and 1 or frequency
 
         self:SetData("artron_next_increase_time", CurTime() + increase_interval)
 
+        local max = TARDIS:GetSetting("artron_energy_max")
         if handbrake and float then
-            self:AddArtron(TARDIS:GetSetting("artron_energy_max") * TARDIS.artron_values.handbrake_multiplier_float)
+            local mult = TARDIS.artron_values.handbrake_multiplier_float
+            self:AddArtron(max * mult * 5 / frequency)
             return
         end
         if handbrake then
-            self:AddArtron(TARDIS:GetSetting("artron_energy_max") * TARDIS.artron_values.handbrake_multiplier)
+            local mult = TARDIS.artron_values.handbrake_multiplier
+            self:AddArtron(max * mult * 5 / frequency)
             return
         end
         if not power then
