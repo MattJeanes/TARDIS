@@ -1,8 +1,6 @@
--- Fast remat / vortex flight related functions
+-- Vortex flight related functions
 
-if CLIENT then return end
-
-ENT:AddHook("StopDemat", "teleport-fast", function(self)
+ENT:AddHook("StopDemat", "no_vortex", function(self)
     if self:GetData("demat-fast",false) then
         self:Timer("fastremat", 0.3, function()
             if not IsValid(self) then return end
@@ -30,25 +28,16 @@ ENT:AddHook("CanToggleFastRemat", "vortex", function(self)
     end
 end)
 
-function ENT:FastReturn(callback)
-    if self:CallHook("CanDemat") ~= false and self:GetData("fastreturn-pos") then
-        self:SetData("demat-fast-prev", self:GetData("demat-fast", false));
-        self:SetFastRemat(true)
-        self:SetData("fastreturn",true)
-        self:CallHook("FastReturnTriggered")
-        self:Demat(self:GetData("fastreturn-pos"),self:GetData("fastreturn-ang"))
-        if callback then callback(true) end
-    else
-        if callback then callback(false) end
-    end
-end
+ENT:AddHook("ShouldStopSmoke", "vortex", function(self)
+    if self:GetData("vortex") then return true end
+end)
 
-function ENT:AutoDemat(pos, ang, callback)
-    if self:CallHook("CanDemat", false) ~= false then
-        self:Demat(pos, ang, callback)
-    elseif self:CallHook("CanDemat", true) ~= false then
-        self:ForceDemat(pos, ang, callback)
-    else
-        if callback then callback(false) end
+ENT:AddHook("ShouldTakeDamage", "vortex", function(self)
+    if self:GetData("vortex",false) then return false end
+end)
+
+ENT:AddHook("ShouldTurnOffRotorwash", "vortex", function(self)
+    if self:GetData("vortex") then
+        return true
     end
-end
+end)

@@ -82,137 +82,15 @@ if SERVER then
         self:Demat(pos, ang, callback, true)
     end
 
-    ENT:AddHook("OnHealthDepleted", "teleport", function(self)
-        if self:GetData("teleport", false) or self:GetData("vortex", false) then
-            self:InterruptTeleport()
-        end
-    end)
-
-    function ENT:InterruptTeleport(callback)
-        if not self:GetData("teleport", false) and not self:GetData("vortex", false) then return end
-
-        local was_demating = self:GetData("demat", false)
-
-        local door_ok = true
-        self:CloseDoor(function(state)
-            if state then
-                door_ok = false
-            end
-        end)
-
-        if not door_ok then
-            if callback then callback(false) end
-            return
-        end
-
-        local pos, ang
-
-        ang = self:GetAngles()
-        if self:GetData("vortex", false) then
-            local randomLocation = self:GetRandomLocation(false)
-            if randomLocation then
-                pos = randomLocation
-            else
-                pos = self:GetPos()
-            end
+    function ENT:AutoDemat(pos, ang, callback)
+        if self:CallHook("CanDemat", false) ~= false then
+            self:Demat(pos, ang, callback)
+        elseif self:CallHook("CanDemat", true) ~= false then
+            self:ForceDemat(pos, ang, callback)
         else
-            pos = self:GetPos()
-        end
-
-        local attached=self:GetData("demat-attached")
-        if attached then
-            for k,v in pairs(attached) do
-                if IsValid(k) then
-                    k:SetColor(ColorAlpha(k:GetColor(),v))
-                end
-                if IsValid(k) and not IsValid(k:GetParent()) then
-                    k.telepos=k:GetPos()-self:GetPos()
-                    if k:GetClass()=="gmod_hoverball" then -- fixes hoverballs spazzing out
-                        k:SetTargetZ( (pos-self:GetPos()).z+k:GetTargetZ() )
-                    end
-                end
-            end
-        end
-        self:SetPos(pos)
-        self:SetAngles(ang)
-        if attached then
-            for k,v in pairs(attached) do
-                if IsValid(k) and not IsValid(k:GetParent()) then
-                    if k:IsRagdoll() then
-                        for i=0,k:GetPhysicsObjectCount() do
-                            local bone=k:GetPhysicsObjectNum(i)
-                            if IsValid(bone) then
-                                bone:SetPos(self:GetPos()+k.telepos)
-                            end
-                        end
-                    end
-                    k:SetPos(self:GetPos()+k.telepos)
-                    k.telepos=nil
-                    local phys=k:GetPhysicsObject()
-                    if phys and IsValid(phys) then
-                        k:SetSolid(SOLID_VPHYSICS)
-                        if k.gravity~=nil then
-                            phys:EnableGravity(k.gravity)
-                            k.gravity = nil
-                        end
-                    end
-                    k.nocollide=nil
-                end
-            end
-        end
-
-        self:SetData("demat-attached",nil,true)
-        self:SetData("fastreturn",false)
-
-        self:DrawShadow(true)
-        for k,v in pairs(self.parts) do
-            if not v.NoShadow then
-                v:DrawShadow(true)
-            end
-        end
-
-        if not was_demating then
-            self:Explode()
-            self.interior:Explode(20)
-
-            self:Timer("interrupt_teleport", 1, function()
-                self:Explode()
-                self.interior:Explode(20)
-            end)
-        end
-
-        self:SendMessage("interrupt-teleport")
-
-        self:SetData("demat-pos",nil,true)
-        self:SetData("demat-ang",nil,true)
-        self:SetSolid(SOLID_VPHYSICS)
-        self:SetCollisionGroup(COLLISION_GROUP_NONE)
-
-        self:SetData("demat", false, true)
-        self:SetData("mat", false, true)
-        self:SetData("teleport", false, true)
-        self:SetData("vortex", false, true)
-        self:SetData("step", 1, true)
-
-        self:CallHook("InterruptTeleport")
-
-        if not was_demating then
-            self:ChangeHealth(self:GetHealth() * math.random(85, 95) * 0.01)
-            self:SetPower(false)
-            local flight = self:GetData("prevortex-flight", false)
-            self:SetData("power-lastflight", flight, true)
-            self:SetFloat(false)
-            self:SetData("teleport-interrupted", true, true)
-            self:SetData("teleport-interrupt-time", CurTime(), true)
-            self:SetData("teleport-interrupt-effects", true, true)
+            if callback then callback(false) end
         end
     end
-
-    ENT:AddHook("CanIncreaseArtron", "interrupt-cooldown", function(self)
-        if self:GetData("teleport-interrupted") then
-            return false
-        end
-    end)
 
     ENT:AddHook("CanDemat", "failed", function(self, force, ignore_fail_demat)
         if ignore_fail_demat ~= true and self:CallHook("ShouldFailDemat", force) == true then
@@ -227,32 +105,19 @@ if SERVER then
     end)
 
     function ENT:EngineReleaseDemat(pos, ang, callback)
-        if self:GetData("failing-demat", false) then
-            self:SetData("failing-demat", false, true)
-            if self:CallHook("ShouldFailDemat", false) == true then
-                if not self:GetData("health-warning", false) then
-                    self:ForceDemat(pos, ang, callback)
-                else
-                    self:SendMessage("engine-release-explode")
-                    self:TogglePower()
-                end
+        if not self:GetData("failing-demat", false) then return end
+
+        self:SetData("failing-demat", false, true)
+
+        if self:CallHook("ShouldFailDemat", false) == true then
+            if not self:GetData("health-warning", false) then
+                self:ForceDemat(pos, ang, callback)
             else
-                self:Demat(pos, ang, callback, false)
+                self:SendMessage("engine-release-explode")
+                self:TogglePower()
             end
-        end
-    end
-
-    function ENT:EngineReleaseFreePower()
-        if self:GetData("teleport-interrupted", false) then
-            self:Explode()
-            self.interior:Explode(20)
-
-            self:Timer("interrupt_teleport", 1, function()
-                self:Explode()
-                self.interior:Explode(20)
-            end)
-
-            self:SetData("teleport-interrupted", false, true)
+        else
+            self:Demat(pos, ang, callback, false)
         end
     end
 
@@ -292,86 +157,9 @@ else -- CLIENT
         end
     end)
 
-    function ENT:StopTeleportSounds()
-        local ext = self.metadata.Exterior.Sounds.Teleport
-        local int = self.metadata.Interior.Sounds.Teleport
-
-        self:StopSound(ext.demat_damaged)
-        self:StopSound(ext.demat)
-        self:StopSound(ext.demat_fail)
-        self:StopSound(ext.mat_damaged)
-        self:StopSound(ext.mat)
-        self:StopSound(ext.fullflight)
-        self:StopSound(ext.fullflight_damaged)
-
-        self.interior:StopSound(int.demat_damaged or ext.demat_damaged)
-        self.interior:StopSound(int.demat or ext.demat)
-        self.interior:StopSound(int.demat_fail or ext.demat_fail)
-        self.interior:StopSound(int.mat_damaged or ext.mat_damaged)
-        self.interior:StopSound(int.mat or ext.mat)
-        self.interior:StopSound(int.fullflight or ext.fullflight)
-        self.interior:StopSound(int.fullflight_damaged or ext.fullflight_damaged)
-    end
-
-    ENT:OnMessage("interrupt-teleport", function(self, data, ply)
-        self:StopTeleportSounds()
-        if TARDIS:GetSetting("teleport-sound") and TARDIS:GetSetting("sound") then
-            local ext = self.metadata.Exterior.Sounds.Teleport
-            local int = self.metadata.Interior.Sounds.Teleport
-            self:EmitSound(ext.interrupt)
-            self.interior:EmitSound(int.interrupt or ext.interrupt)
-        end
-    end)
-
     ENT:OnMessage("engine-release-explode", function(self, data, ply)
         self:InteriorExplosion()
     end)
-
-
-    local function rand_offset() return math.random(-35, 35) end
-
-    local function get_effect_pos(self)
-        local console = self.interior:GetPart("console")
-        if self.metadata.Interior.BreakdownEffectPos then
-            self.effect_pos = self.interior:GetPos() + self.metadata.Interior.BreakdownEffectPos
-        elseif console and IsValid(console) then
-            self.effect_pos = console:GetPos() + Vector(0, 0, 50)
-        else
-            self.effect_pos = self.interior:GetPos() + Vector(0, 0, 50)
-        end
-    end
-
-    function ENT:InteriorExplosion()
-        if self.effect_pos == nil then
-            get_effect_pos(self)
-        end
-
-        local function rand_offset() return math.random(-40, 40) end
-
-        local effect_data = EffectData()
-        effect_data:SetOrigin(self.effect_pos + Vector(rand_offset(), rand_offset(), 0))
-
-        util.Effect("Explosion", effect_data)
-
-        effect_data:SetScale(0.5)
-        effect_data:SetMagnitude(math.random(3, 5))
-        effect_data:SetRadius(math.random(1,5))
-        util.Effect("ElectricSpark", effect_data)
-    end
-
-    function ENT:InteriorSparks(power)
-        if self.effect_pos == nil then
-            get_effect_pos(self)
-        end
-
-        local effect_data = EffectData()
-        effect_data:SetOrigin(self.effect_pos + Vector(rand_offset(), rand_offset(), 0))
-
-        effect_data:SetScale(power)
-        effect_data:SetMagnitude(math.random(3, 5) * power)
-        effect_data:SetRadius(math.random(1,5) * power)
-        util.Effect("ElectricSpark", effect_data)
-    end
 end
 
 
@@ -421,41 +209,7 @@ ENT:AddHook("Think","breakdown-effects", function(self)
     end
 end)
 
-ENT:AddHook("Think", "interrupted-teleport", function(self)
-    if self:GetData("teleport-interrupted", false) then
-        local timediff = CurTime() - self:GetData("teleport-interrupt-time")
 
-        if timediff > 6 and timediff < 6.2 and self:GetData("teleport-interrupt-effects", false) then
-            self:SetData("teleport-interrupt-effects", false, true)
-        end
-
-        local showeffects = (CLIENT and self:GetData("teleport-interrupt-effects", false)
-                and LocalPlayer():GetTardisData("exterior") == self
-                and (not LocalPlayer():GetTardisData("thirdperson"))
-                and TARDIS:GetSetting("breakdown-effects"))
-
-        if showeffects then
-            if math.Round(10 * CurTime()) % 2 == 0 then
-                self:InteriorSparks(1)
-            end
-            if timediff < 0.1 or (timediff > 2 and timediff < 2.1)
-                or (timediff > 2.6 and timediff < 2.7)
-            then
-                self:InteriorExplosion()
-            end
-        end
-
-        if timediff > 10 then
-            self:SetData("teleport-interrupted", false, true)
-        end
-    end
-end)
-
-ENT:AddHook("CanTogglePower", "interrupted-teleport", function(self)
-    if self:GetData("teleport-interrupted", false) then
-        return false
-    end
-end)
 
 
 
