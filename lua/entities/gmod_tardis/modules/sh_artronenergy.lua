@@ -26,7 +26,7 @@ if SERVER then
         increase_handbrake = 180 / 144,
         increase_float_handbrake = 40 / 144,
 
-        -- every 5 seconds:
+        -- every 5 (by default) seconds:
         increase_normal = 15 * 5 / 144,
         increase_warning = 10 * 5 / 144,
         increase_poweroff = 24 * 5 / 144,
@@ -181,11 +181,10 @@ if SERVER then
             return
         end
 
-        -- if artron energy is charging, it happens every 5 seconds
         if self:CallHook("CanIncreaseArtron") == false then return end
         if CurTime() < self:GetData("artron_next_increase_time", 0) then return end
 
-        local increase_interval = handbrake and 1 or 5
+        local increase_interval = handbrake and 1 or TARDIS:GetSetting("artron_energy_charge_frequency")
 
         self:SetData("artron_next_increase_time", CurTime() + increase_interval)
 

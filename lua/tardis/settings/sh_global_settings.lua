@@ -131,6 +131,25 @@ TARDIS:AddSetting({
     name="ArtronEnergyMax",
 })
 
+TARDIS:AddSetting({
+    id="artron_energy_charge_frequency",
+    type="integer",
+    value=5,
+    min=2,
+    max=10,
+
+    class="global",
+    convar = {
+        name = "tardis2_artron_energy_charge_frequency",
+        flags = CONVAR_FLAGS,
+        desc = "TARDIS - How often does the charging of artron energy happen without handbrake",
+    },
+
+    option = true,
+    section=SETTING_SECTION,
+    subsection="ArtronEnergy",
+    name="ArtronEnergyChargeFrequency",
+})
 
 TARDIS:AddSetting({
     id="boost-speed",
