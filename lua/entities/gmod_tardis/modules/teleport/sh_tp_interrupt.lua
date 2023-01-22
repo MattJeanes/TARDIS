@@ -30,6 +30,7 @@ if SERVER then
         self:SetSolid(SOLID_VPHYSICS)
 
         self:StopMat()
+        self:SendMessage("stop_mat")
 
         self:SendMessage("interrupt-teleport")
         self:CallHook("InterruptTeleport")

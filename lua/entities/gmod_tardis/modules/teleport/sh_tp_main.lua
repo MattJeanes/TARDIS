@@ -362,6 +362,9 @@ else
         self:CallHook("StopMat")
     end
 
+    ENT:OnMessage("stop_mat", function(self, data, ply)
+        self:StopMat()
+    end)
 end
 
 function ENT:GetRandomLocation(grounded)
