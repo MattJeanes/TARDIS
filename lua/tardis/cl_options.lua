@@ -36,18 +36,31 @@ function TARDIS:CreateOptionInterface(id, data)
 
 
     elseif data.type == "number" or data.type == "integer" then
-        elem = vgui.Create("DNumSlider")
-        elem:SetMinMax(data.min, data.max)
+        elem = vgui.Create("DLabel")
 
-        if data.type == "integer" then
-            elem:SetDecimals(0)
+        elem2 = vgui.Create("DNumSlider")
+        elem2:SetMinMax(data.min, data.max)
+        elem2.Label:SetVisible(false)
+
+        elem.Scratch = elem:Add( "DNumberScratch" )
+        elem.Scratch:SetImageVisible( false )
+        elem.Scratch:Dock( FILL )
+        elem.Scratch:SetMin(data.min)
+        elem.Scratch:SetMax(data.max)
+        elem.Scratch.OnValueChanged = function()
+            elem2:ValueChanged(elem.Scratch:GetFloatValue())
         end
 
-        elem.OnValueChanged = function(self, val)
+        if data.type == "integer" then
+            elem2:SetDecimals(0)
+            elem.Scratch:SetDecimals(0)
+        end
+
+        elem2.OnValueChanged = function(self, val)
             self.lastchange = CurTime()
             self.lastchange_val = val
         end
-        elem.Think = function(self)
+        elem2.Think = function(self)
             if self.lastchange_val and CurTime() - self.lastchange > 0.1 then
                 TARDIS:SetSetting(id, self.lastchange_val)
                 self.lastchange_val = nil
@@ -61,8 +74,9 @@ function TARDIS:CreateOptionInterface(id, data)
 
         elem.RefreshVal = function(self)
             local setting = TARDIS:GetSetting(id)
-            elem:SetValue(setting)
-            elem:GetTextArea():SetText(tostring(setting))
+            elem2:SetValue(setting)
+            elem.Scratch:SetValue(setting)
+            elem2:GetTextArea():SetText(tostring(setting))
         end
 
 
@@ -140,6 +154,7 @@ function TARDIS:CreateOptionInterface(id, data)
 
     if elem.SetText then elem:SetText(text) end
     if elem.SetDark then elem:SetDark(true) end
+    if elem2 and elem2.SetDark then elem2:SetDark(true) end
 
     elem:SetTooltip(tooltip)
     if elem2 then
