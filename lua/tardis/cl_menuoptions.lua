@@ -49,7 +49,9 @@ hook.Add("PopulateToolMenu", "TARDIS2-PopulateToolMenu", function()
                         subsection:SetLabel(TARDIS:GetPhrase("Settings.Sections."..section.."."..data.subsection))
 
                         -- save the subsection state for more convenience
-                        subsection:SetExpanded(expanded or false)
+                        if expanded == false then
+                            subsection:SetExpanded(false)
+                        end
                         subsection.OnToggle = function(self, expanded)
                             local unfolded_subsections = TARDIS:GetSetting("options-unfolded-subsections")
                             unfolded_subsections[section] = unfolded_subsections[section] or {}
