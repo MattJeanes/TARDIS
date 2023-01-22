@@ -1,14 +1,12 @@
 function ENT:FastReturn(callback)
-    if self:CallHook("CanDemat") ~= false and self:GetData("fastreturn-pos") then
-        self:SetData("demat-fast-prev", self:GetData("demat-fast", false));
-        self:SetFastRemat(true)
-        self:SetData("fastreturn",true)
-        self:CallHook("FastReturnTriggered")
-        self:Demat(self:GetData("fastreturn-pos"),self:GetData("fastreturn-ang"))
-        if callback then callback(true) end
-    else
-        if callback then callback(false) end
-    end
+    if not self:GetData("fastreturn-pos") then callback(false) end
+    if self:CallHook("CanDemat", true) == false then callback(false) end
+
+    self:SetData("demat-fast-prev", self:GetData("demat-fast", false));
+    self:SetFastRemat(true)
+    self:SetData("fastreturn",true)
+    self:CallHook("FastReturnTriggered")
+    self:AutoDemat(self:GetData("fastreturn-pos"),self:GetData("fastreturn-ang"), callback)
 end
 
 ENT:AddHook("DematStart", "fastreturn", function(self)
