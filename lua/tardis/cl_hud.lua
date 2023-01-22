@@ -43,14 +43,13 @@ hook.Add("HUDPaint", "TARDIS-HUD", function()
     local ply = LocalPlayer()
     if ( GetConVarNumber( "cl_drawhud" ) == 0 ) then return end
     local tardis = ply:GetTardisData("exterior")
-    if not tardis then return end
+    if not IsValid(tardis) then return end
 
     local draw_health = TARDIS:GetSetting("health-enabled")
     local draw_artron = TARDIS:GetSetting("artron_energy")
 
     if not draw_health and not draw_artron then return end
 
-    if not IsValid(tardis) then return end
 
     local offset = 0
 
