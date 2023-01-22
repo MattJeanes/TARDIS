@@ -20,11 +20,11 @@ if SERVER then
         spend_flight_moving = -24 / 144,
         spend_flight_boost = -45 / 144,
         spend_cloak = -18 / 144,
-        spend_cloak_handbrake = -12 / 144,
+        spend_cloak_handbrake = -8 / 144,
 
         -- every 1 second:
-        increase_handbrake = 180 / 144,
-        increase_float_handbrake = 40 / 144,
+        handbrake_multiplier = 0.01,
+        handbrake_multiplier_float = 0.005,
 
         -- every 5 (by default) seconds:
         increase_normal = 15 * 5 / 144,
@@ -189,11 +189,11 @@ if SERVER then
         self:SetData("artron_next_increase_time", CurTime() + increase_interval)
 
         if handbrake and float then
-            self:AddArtron(TARDIS.artron_values.increase_float_handbrake)
+            self:AddArtron(TARDIS:GetSetting("artron_energy_max") * TARDIS.artron_values.handbrake_multiplier_float)
             return
         end
         if handbrake then
-            self:AddArtron(TARDIS.artron_values.increase_handbrake)
+            self:AddArtron(TARDIS:GetSetting("artron_energy_max") * TARDIS.artron_values.handbrake_multiplier)
             return
         end
         if not power then
