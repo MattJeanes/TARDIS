@@ -22,10 +22,16 @@ ENT:AddHook("ShouldFailDemat", "handbrake", function(self, force)
     end
 end)
 
-ENT:AddHook("HandbrakeToggled", "vortex", function(self, force)
+ENT:AddHook("HandbrakeToggled", "vortex", function(self, on)
+    if on and self:GetData("teleport") or self:GetData("vortex") then
+        self:InterruptTeleport()
+    else
+        self:InterruptFlight()
+    end
+end)
+
+ENT:AddHook("CanTurnOnFlight", "handbrake", function(self)
     if self:GetData("handbrake") then
-        if self:GetData("teleport") or self:GetData("vortex") then
-            self:InterruptTeleport()
-        end
+        return false
     end
 end)

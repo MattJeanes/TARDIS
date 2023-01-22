@@ -208,6 +208,12 @@ if SERVER then
         end
     end
 
+    ENT:AddHook("CanIncreaseArtron", "interrupt-cooldown", function(self)
+        if self:GetData("teleport-interrupted") then
+            return false
+        end
+    end)
+
     ENT:AddHook("CanDemat", "failed", function(self, force, ignore_fail_demat)
         if ignore_fail_demat ~= true and self:CallHook("ShouldFailDemat", force) == true then
             return false
@@ -233,6 +239,20 @@ if SERVER then
             else
                 self:Demat(pos, ang, callback, false)
             end
+        end
+    end
+
+    function ENT:EngineReleaseFreePower()
+        if self:GetData("teleport-interrupted", false) then
+            self:Explode()
+            self.interior:Explode(20)
+
+            self:Timer("interrupt_teleport", 1, function()
+                self:Explode()
+                self.interior:Explode(20)
+            end)
+
+            self:SetData("teleport-interrupted", false, true)
         end
     end
 
@@ -436,5 +456,6 @@ ENT:AddHook("CanTogglePower", "interrupted-teleport", function(self)
         return false
     end
 end)
+
 
 

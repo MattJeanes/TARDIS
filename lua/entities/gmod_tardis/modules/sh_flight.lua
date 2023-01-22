@@ -13,6 +13,20 @@ TARDIS:AddKeyBind("flight-toggle",{
     serveronly=true,
     exterior=true
 })
+
+TARDIS:AddKeyBind("handbrake",{
+    name="Handbrake",
+    section="ThirdPerson",
+    func=function(self,down,ply)
+        if down and ply == self.pilot then
+            TARDIS:Control("handbrake", ply)
+        end
+    end,
+    key=KEY_J,
+    serveronly=true,
+    exterior=true
+})
+
 TARDIS:AddKeyBind("flight-forward",{
     name="Forward",
     section="Flight",
@@ -86,6 +100,19 @@ if SERVER then
     function ENT:ToggleFlight()
         local on = not self:GetData("flight",false)
         return self:SetFlight(on)
+    end
+
+    function ENT:InterruptFlight()
+        if not self:GetData("flight") and not self:GetData("vortex") then return end
+
+        if TARDIS:GetSetting("flight_interrupt_to_float", self:GetCreator()) then
+            self:SetData("floatfirst", true)
+        end
+
+        self:ToggleFlight()
+        self:CallCommonHook("FlightInterrupted")
+
+        self:ExplodeIfFast()
     end
 
     function ENT:SetFlight(on)

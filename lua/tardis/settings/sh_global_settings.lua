@@ -62,6 +62,96 @@ TARDIS:AddSetting({
 })
 
 TARDIS:AddSetting({
+    id="artron_energy",
+    type="bool",
+    value=true,
+
+    class="global",
+    convar = {
+        name = "tardis2_artron_energy",
+        flags = CONVAR_FLAGS,
+        desc = "TARDIS - Whether artron energy is enabled",
+    },
+
+    option = true,
+    section=SETTING_SECTION,
+    subsection="ArtronEnergy",
+    name="ArtronEnergyEnabled",
+})
+
+TARDIS:AddSetting({
+    id="artron_energy_start",
+    type="list",
+    value=0.25,
+    get_values_func = function()
+        return {
+            { "0%", 0.0 },
+            { "25%", 0.25 },
+            { "50%", 0.5 },
+            { "75%", 0.75 },
+            { "100%", 1.0 },
+        }
+    end,
+
+    class="global",
+    convar = {
+        name = "tardis2_artron_energy_start",
+        flags = CONVAR_FLAGS,
+        desc = "TARDIS - Initial amount of artron energy",
+    },
+
+    option=true,
+    section=SETTING_SECTION,
+    subsection="ArtronEnergy",
+    name="ArtronEnergyStart",
+})
+
+TARDIS:AddSetting({
+    id="artron_energy_max",
+    type="integer",
+    value=100,
+    min=25,
+    max=400,
+    round_func = function(x)
+        if x > 200 then return (x - x % 100) end
+        if x > 100 then return (x - x % 50) end
+        return (x - x % 25)
+    end,
+
+    class="global",
+    convar = {
+        name = "tardis2_artron_energy_max",
+        flags = CONVAR_FLAGS,
+        desc = "TARDIS - Max amount of artron energy",
+    },
+
+    option = true,
+    section=SETTING_SECTION,
+    subsection="ArtronEnergy",
+    name="ArtronEnergyMax",
+})
+
+TARDIS:AddSetting({
+    id="artron_energy_charge_frequency",
+    type="integer",
+    value=5,
+    min=2,
+    max=10,
+
+    class="global",
+    convar = {
+        name = "tardis2_artron_energy_charge_frequency",
+        flags = CONVAR_FLAGS,
+        desc = "TARDIS - How often does the charging of artron energy happen without handbrake",
+    },
+
+    option = true,
+    section=SETTING_SECTION,
+    subsection="ArtronEnergy",
+    name="ArtronEnergyChargeFrequency",
+})
+
+TARDIS:AddSetting({
     id="boost-speed",
     type="number",
     value=2.5,

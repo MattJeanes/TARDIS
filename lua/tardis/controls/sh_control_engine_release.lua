@@ -10,9 +10,13 @@ TARDIS:AddControl({
                 TARDIS:ErrorMessage(ply, "Controls.EngineRelease.FailedDemat")
             end
         end)
+        if self:EngineReleaseVortexArtron() then
+            TARDIS:Message(ply, "Controls.EngineRelease.ArtronAdded")
+        end
+        self:EngineReleaseFreePower()
     end,
     serveronly=true,
-    power_independent = false,
+    power_independent = true,
     screen_button = {
         virt_console = true,
         mmenu = false,

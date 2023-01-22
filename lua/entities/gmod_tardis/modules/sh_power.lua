@@ -1,5 +1,18 @@
 -- Power Exterior
 
+TARDIS:AddKeyBind("power",{
+    name="Power",
+    section="ThirdPerson",
+    func=function(self,down,ply)
+        if down and ply == self.pilot then
+            TARDIS:Control("power", ply)
+        end
+    end,
+    key=KEY_P,
+    serveronly=true,
+    exterior=true
+})
+
 ENT:AddHook("Initialize","power-init", function(self)
     self:SetData("power-state",true,true)
 end)
