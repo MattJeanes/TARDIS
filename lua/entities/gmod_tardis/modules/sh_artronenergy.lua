@@ -9,9 +9,6 @@ if SERVER then
             ["physlock"] = -540 / 144,
             ["float"] = -270 / 144,
         },
-        --Engine release random health cost values:
-        min_health_replace = 53,
-        max_health_replace = 432,
 
         --Cost of certain controls and stuff:
         cost_hads = -180 / 144,
@@ -275,7 +272,9 @@ if SERVER then
         self:Explode(30)
         self.interior:Explode(30)
         self:AddArtron(TARDIS.artron_values.increase_engine_release)
-        local newhealth = self:GetHealth() - math.random(TARDIS.artron_values.min_health_replace, TARDIS.artron_values.max_health_replace) 
+
+        local decrease = math.random(53, 432) * TARDIS:GetSetting("health-max") / 1000
+        local newhealth = self:GetHealth() - decrease
         self:ChangeHealth(newhealth)
     end
 
