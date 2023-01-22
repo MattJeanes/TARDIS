@@ -157,7 +157,7 @@ if SERVER then
                 or TARDIS:IsBindDown(self.pilot,"flight-left")
                 or TARDIS:IsBindDown(self.pilot,"flight-rotate")
                 or TARDIS:IsBindDown(self.pilot,"flight-up")
-                -- we don't have flight-down here to allow langing
+                -- we don't have flight-down here to allow landing
             then
                 if TARDIS:IsBindDown(self.pilot,"flight-boost") then
                     change = change + TARDIS.artron_values.spend_flight_boost
