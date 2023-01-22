@@ -19,7 +19,8 @@ if SERVER then
 
         -- every 1 second:
         spend_vortex_teleport = -32 / 144,
-        spend_flight = -15 / 144,
+        spend_flight_static = -5 / 144,
+        spend_flight_moving = -24 / 144,
         spend_flight_boost = -45 / 144,
         spend_cloak = -18 / 144,
         spend_cloak_handbrake = -12 / 144,
@@ -152,10 +153,23 @@ if SERVER then
         elseif vortex then
             change = change + TARDIS.artron_values.spend_vortex_teleport
         elseif flight then
-            if TARDIS:IsBindDown(self.pilot,"flight-boost") then
-                change = change + TARDIS.artron_values.spend_flight_boost
+            if TARDIS:IsBindDown(self.pilot,"flight-forward")
+                or TARDIS:IsBindDown(self.pilot,"flight-backward")
+                or TARDIS:IsBindDown(self.pilot,"flight-right")
+                or TARDIS:IsBindDown(self.pilot,"flight-rotate")
+                or TARDIS:IsBindDown(self.pilot,"flight-left")
+                or TARDIS:IsBindDown(self.pilot,"flight-rotate")
+                or TARDIS:IsBindDown(self.pilot,"flight-up")
+                -- we don't have flight-down here to allow langing
+            then
+                if TARDIS:IsBindDown(self.pilot,"flight-boost") then
+                    change = change + TARDIS.artron_values.spend_flight_boost
+                else
+                    change = change + TARDIS.artron_values.spend_flight_moving
+                end
             end
-            change = change + TARDIS.artron_values.spend_flight
+
+            change = change + TARDIS.artron_values.spend_flight_static
         end
         if cloak then
             if handbrake then
