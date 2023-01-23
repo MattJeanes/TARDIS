@@ -5,12 +5,12 @@ local m, x_offset, y_offset, width, height, x, y, icon_size, number_offset
 local function UpdateHudFont()
     surface.CreateFont("TARDIS-HUD", {
         font="HalfLife2",
-        size= ScrH() / 14.4
+        size= ScrH() / 15
     })
 
     surface.CreateFont("TARDIS-HUD-Glow", {
         font="HalfLife2",
-        size = ScrH() / 14.4 + 4,
+        size = ScrH() / 15,
         scanlines = 3,
         antialias = true,
         additive = true,
@@ -18,12 +18,12 @@ local function UpdateHudFont()
         weight = 10,
     })
 
-    m = ScrH() / 900 -- optimize calculations
+    m = ScrH() / 1000 -- optimize calculations
     x_offset = 20 * m
     y_offset = 55 * m
     y_offset_2 = y_offset * 0.5
     y_offset_3 = y_offset * 0.27
-    width = 155 * m
+    width = 165 * m
     height = 45 * m
     x = ScrW() * 0.02
     y = ScrH() * 0.025
