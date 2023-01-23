@@ -1,4 +1,4 @@
--- Teleport
+-- Teleport hooks
 
 if SERVER then
 
@@ -36,20 +36,6 @@ if SERVER then
         if self:GetData("teleport") then
             return true
         end
-    end)
-
-    ENT:AddHook("ShouldTurnOffRotorwash", "teleport", function(self)
-        if self:GetData("vortex") then
-            return true
-        end
-    end)
-
-    ENT:AddHook("ShouldStopSmoke", "vortex", function(self)
-        if self:GetData("vortex") then return true end
-    end)
-
-    ENT:AddHook("ShouldTakeDamage", "vortex", function(self)
-        if self:GetData("vortex",false) then return false end
     end)
 
     ENT:AddHook("ShouldExteriorDoorCollide", "teleport", function(self,open)
