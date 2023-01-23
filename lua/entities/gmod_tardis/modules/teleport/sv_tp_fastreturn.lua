@@ -1,3 +1,5 @@
+-- Fast return
+
 function ENT:FastReturn(callback)
     if not self:GetData("fastreturn-pos") then callback(false) end
     if self:CallHook("CanDemat", true) == false then callback(false) end

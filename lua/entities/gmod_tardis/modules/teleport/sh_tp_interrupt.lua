@@ -1,3 +1,5 @@
+-- Teleport interrupting
+
 if SERVER then
     function ENT:InterruptTeleport(callback)
         if not self:GetData("teleport", false) and not self:GetData("vortex", false) then return end

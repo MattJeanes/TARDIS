@@ -1,5 +1,7 @@
-local function rand_offset()
-	return math.random(-35, 35)
+-- Breakdown effects for the TARDIS (sparks, explosions)
+
+local function rand_offset(x)
+	return math.random(-x, x)
 end
 
 local function get_effect_pos(self)
@@ -18,10 +20,8 @@ function ENT:InteriorExplosion()
 		get_effect_pos(self)
 	end
 
-	local function rand_offset() return math.random(-40, 40) end
-
 	local effect_data = EffectData()
-	effect_data:SetOrigin(self.effect_pos + Vector(rand_offset(), rand_offset(), 0))
+	effect_data:SetOrigin(self.effect_pos + Vector(rand_offset(40), rand_offset(40), 0))
 
 	util.Effect("Explosion", effect_data)
 
@@ -37,7 +37,7 @@ function ENT:InteriorSparks(power)
 	end
 
 	local effect_data = EffectData()
-	effect_data:SetOrigin(self.effect_pos + Vector(rand_offset(), rand_offset(), 0))
+	effect_data:SetOrigin(self.effect_pos + Vector(rand_offset(35), rand_offset(35), 0))
 
 	effect_data:SetScale(power)
 	effect_data:SetMagnitude(math.random(3, 5) * power)

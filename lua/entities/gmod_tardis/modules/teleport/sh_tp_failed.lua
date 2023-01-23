@@ -1,4 +1,4 @@
--- Failed teleport, interrupted teleport, effects
+-- Failed and forced teleport functions
 
 if SERVER then
 

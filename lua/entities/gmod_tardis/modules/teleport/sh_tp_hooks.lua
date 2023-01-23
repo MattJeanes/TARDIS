@@ -1,4 +1,4 @@
--- Teleport
+-- Teleport hooks
 
 if SERVER then
 

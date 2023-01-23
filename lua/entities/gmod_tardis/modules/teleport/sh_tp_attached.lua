@@ -1,3 +1,5 @@
+-- Attached / constrained entities behaviour during teleport
+
 if SERVER then
     ENT:AddHook("DematStart", "attached", function(self)
         local constrained = constraint.GetAllConstrainedEntities(self)

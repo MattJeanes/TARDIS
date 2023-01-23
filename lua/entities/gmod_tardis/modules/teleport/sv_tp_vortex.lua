@@ -1,4 +1,4 @@
--- Vortex flight related functions
+-- Vortex / fast remat related functions
 
 ENT:AddHook("StopDemat", "no_vortex", function(self)
     if self:GetData("demat-fast",false) then
