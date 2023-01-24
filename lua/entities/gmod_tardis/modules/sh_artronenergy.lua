@@ -301,6 +301,9 @@ if SERVER then
         end
         return false
     end
+end
 
+function ENT:GetArtron()
+    return self:GetData("artron-val", 0)
 end
 

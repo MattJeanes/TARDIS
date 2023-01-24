@@ -1,42 +1,66 @@
 -- HUD
 
-surface.CreateFont("TARDIS-HUD-Large", {
-    font="Roboto",
-    size=58
-})
+local m, x_offset, y_offset, width, height, x, y, icon_size, number_offset
 
-surface.CreateFont("TARDIS-HUD-Med", {
-    font="Roboto",
-    size=36
-})
+local function UpdateHudFont()
+    surface.CreateFont("TARDIS-HUD", {
+        font="HalfLife2",
+        size= ScrH() / 15
+    })
 
-surface.CreateFont("TARDIS-HUD-Small", {
-    font="Roboto",
-    size=30
-})
+    surface.CreateFont("TARDIS-HUD-Glow", {
+        font="HalfLife2",
+        size = ScrH() / 15,
+        scanlines = 3,
+        antialias = true,
+        additive = true,
+        blursize = 6,
+        weight = 10,
+    })
+
+    m = ScrH() / 1000 -- optimize calculations
+    x_offset = 20 * m
+    y_offset = 55 * m
+    y_offset_2 = y_offset * 0.5
+    y_offset_3 = y_offset * 0.27
+    width = 165 * m
+    height = 45 * m
+    x = ScrW() * 0.02
+    y = ScrH() * 0.025
+    icon_size = 25 * m
+    number_offset = 35 * m
+end
+
+hook.Add("OnScreenSizeChanged", "TARDIS-HUD", UpdateHudFont)
+
+UpdateHudFont()
 
 local fgcolor = NamedColor("FgColor")
 local red = NamedColor("Caution")
 local bgcolor = NamedColor("BgColor")
+local health_icon = Material("vgui/tardis_health.png")
+local energy_icon=  Material("vgui/tardis_energy.png")
 
-local function CreatePercentageHUDPanel(text, value, offset, red_level)
-    local width = 115
-    local height = (ScrW() >= 800) and 95 or 85
+local function DrawNumber(icon_mat, value, red_level, x, y)
+    local bad = (value < red_level)
 
-    if value >= 10 then width = width + 10 end
-    if value == 100 then width = width + 20 end
+    local textcolor = fgcolor
 
-    local x = (ScrW() - width) * 0.02 + offset
-    local y = (ScrH() - height) * 0.025
+    if bad then
+        local alpha = 255 * (0.5 + 0.1 * math.sin(CurTime() * 8))
+        textcolor = Color(red.r, red.g, red.b, alpha)
+    end
 
-    local value_font = (height == 95) and "TARDIS-HUD-Large" or "TARDIS-HUD-Med"
-    local textcolor = (value > red_level) and fgcolor or red
+    surface.SetMaterial(icon_mat)
+    surface.SetDrawColor(textcolor)
 
-    draw.RoundedBox( 10, x, y, width, height, bgcolor )
-    draw.DrawText( text, "TARDIS-HUD-Small", x+10, y+10, textcolor, TEXT_ALIGN_LEFT )
-    draw.DrawText( tostring(value) .. "%", value_font, x+10, y+35, textcolor, TEXT_ALIGN_LEFT )
+    surface.DrawTexturedRect( x, y + icon_size, icon_size, icon_size)
 
-    return width, height
+    draw.DrawText( tostring(value), "TARDIS-HUD", x + number_offset, y, textcolor, TEXT_ALIGN_LEFT)
+
+    if bad then
+        draw.DrawText( tostring(value), "TARDIS-HUD-Glow", x + number_offset - 2, y - 2, textcolor, TEXT_ALIGN_LEFT)
+    end
 end
 
 hook.Add("HUDPaint", "TARDIS-HUD", function()
@@ -48,26 +72,24 @@ hook.Add("HUDPaint", "TARDIS-HUD", function()
     local draw_health = TARDIS:GetSetting("health-enabled")
     local draw_artron = TARDIS:GetSetting("artron_energy")
 
-    if not draw_health and not draw_artron then return end
+    local count = 0
+    if draw_health then count = count + 1 end
+    if draw_artron then count = count + 1 end
+    if count == 0 then return end
 
+    local yc = y
 
-    local offset = 0
+    draw.RoundedBox( 10, x, y, width, height + y_offset * count, bgcolor )
+    draw.DrawText(TARDIS:GetPhrase("Common.TARDIS"), "HudDefault", x + x_offset, y + y_offset_3, fgcolor, TEXT_ALIGN_LEFT )
+    yc = yc + y_offset_2
 
     if draw_health then
-        offset,_ = CreatePercentageHUDPanel(
-            TARDIS:GetPhrase("Common.TARDIS"),
-            math.ceil(tardis:GetHealthPercent()),
-            0, 20
-        )
+        DrawNumber(health_icon, math.ceil(tardis:GetHealthPercent()), 20, x + x_offset, yc)
+        yc = yc + y_offset
     end
-
     if draw_artron then
-        local val = tardis:GetData("artron-val", 0)
-        local percent = val * 100 / TARDIS:GetSetting("artron_energy_max")
-
-        CreatePercentageHUDPanel(TARDIS:GetPhrase("Common.Artron"),
-            math.ceil(percent), offset + 10, 10
-        )
+        DrawNumber(energy_icon, math.ceil(tardis:GetArtron()), TARDIS:GetSetting("artron_energy_max") * 0.1, x + x_offset, yc)
+        yc = yc + y_offset
     end
 end)
 
