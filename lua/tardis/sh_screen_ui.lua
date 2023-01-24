@@ -506,7 +506,7 @@ function TARDIS:LoadScreenUI(screen)
         local buttons={}
         for k,v in ipairs(screen.screens) do
             local button = vgui.Create("DButton")
-            button:SetText(v.id)
+            button:SetText(v.options and v.options.id)
             button:SetFont(TARDIS:GetScreenFont(screen, "Default"))
             button.DoClick = function()
                 if v.options and v.options.popuponly and screen.is3D2D then
