@@ -52,7 +52,7 @@ else
             end
             if self.lightpixvis and (not wp.drawing) and (halo.RenderedEntity()~=self) then
                 local pos=self:LocalToWorld(light.pos)
-                local alpha=shouldpulse and (math.sin(CurTime()*8)+1)*(255/4)+(255/2)-50 or 100
+                local alpha=shouldpulse and (math.sin(CurTime() * 3.7) + 0.2) * (255 / 4) + (255 / 2) - 70 or 100
                 render.SetMaterial(mat)
                 local fallback=false
                 for k,v in pairs(wp.portals) do -- not ideal but does the job
@@ -61,7 +61,7 @@ else
                         break
                     end
                 end
-                
+
                 if fallback then
                     render.DrawSprite(pos, size, size, Color(col.r,col.g,col.b,alpha))
                 else
@@ -77,10 +77,10 @@ else
     ENT:AddHook("Think", "light", function(self)
         local light = self.metadata.Exterior.Light
         if not (light.enabled and TARDIS:GetSetting("extlight-dynamic")) then return end
-        
+
         local shouldon=self:CallHook("ShouldTurnOnLight")
         local shouldoff=self:CallHook("ShouldTurnOffLight")
-        
+
         if shouldon and (not shouldoff) then
             local col = light.color
             if self:GetData("health-warning") and light.warncolor ~= nil then
