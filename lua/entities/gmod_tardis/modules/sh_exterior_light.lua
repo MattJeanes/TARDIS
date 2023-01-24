@@ -1,8 +1,21 @@
 -- Exterior light
 
+function ENT:GetFlashLight()
+    return self:GetData("flash-light-enabled", false)
+end
+
 if SERVER then
     function ENT:FlashLight(time)
         self:SendMessage("flash-light", { time })
+    end
+
+    function ENT:SetFlashLight(enabled)
+        self:SetData("flash-light-enabled", enabled, true)
+        return enabled
+    end
+
+    function ENT:ToggleFlashLight()
+        return self:SetFlashLight(not self:GetFlashLight())
     end
 else
     function ENT:FlashLight(time)
@@ -11,6 +24,9 @@ else
 
     ENT:AddHook("ShouldTurnOnLight","light",function(self)
         if TARDIS:GetSetting("extlight-alwayson") then
+            return true
+        end
+        if self:GetFlashLight() then
             return true
         end
         local flashuntil=self:GetData("flashuntil")
@@ -52,7 +68,7 @@ else
             end
             if self.lightpixvis and (not wp.drawing) and (halo.RenderedEntity()~=self) then
                 local pos=self:LocalToWorld(light.pos)
-                local alpha=shouldpulse and (math.sin(CurTime() * 3.7) + 0.2) * (255 / 4) + (255 / 2) - 70 or 100
+                local alpha = shouldpulse and (math.sin(CurTime() * 3.7) + 0.2) * (255 / 4) + (255 / 2) - 70 or 100
                 render.SetMaterial(mat)
                 local fallback=false
                 for k,v in pairs(wp.portals) do -- not ideal but does the job
@@ -80,6 +96,9 @@ else
 
         local shouldon=self:CallHook("ShouldTurnOnLight")
         local shouldoff=self:CallHook("ShouldTurnOffLight")
+        local shouldpulse=self:CallHook("ShouldPulseLight")
+
+        local mult = shouldpulse and (1 + 0.1 * math.sin(CurTime() * 3.7)) or 1
 
         if shouldon and (not shouldoff) then
             local col = light.color
@@ -98,7 +117,7 @@ else
                 dlight.b = c.b
                 dlight.Brightness = light.dynamicbrightness
                 dlight.Decay = light.dynamicsize * light.dynamicbrightness
-                dlight.Size = light.dynamicsize
+                dlight.Size = light.dynamicsize * mult
                 dlight.DieTime = CurTime() + 1
             end
         end
