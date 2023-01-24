@@ -23,10 +23,7 @@ else
     end
 
     ENT:AddHook("ShouldTurnOnLight","light",function(self)
-        if TARDIS:GetSetting("extlight-alwayson") then
-            return true
-        end
-        if self:GetFlashLight() then
+        if TARDIS:GetSetting("extlight-alwayson") ~= self:GetFlashLight() then
             return true
         end
         local flashuntil=self:GetData("flashuntil")
