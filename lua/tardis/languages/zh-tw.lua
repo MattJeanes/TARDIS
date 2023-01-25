@@ -5,6 +5,7 @@ local T = {}
 T.Code = "zh-TW"
 T.Name = "繁體中文"
 T.Phrases = {
+    ["Artron.Depleted"] = "雅昌能源耗盡",
     ["Binds.AnyKey"] = "按下任意鍵",
     ["Binds.Invalid"] = "無效",
     ["Binds.Key"] = "鍵",
