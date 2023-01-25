@@ -2,7 +2,7 @@
   "Name": "繁體中文",
   "Author": "ALexZekio",
   "Phrases": {
-    "Artron.Depleted": "",
+    "Artron.Depleted": "雅昌能源耗盡",
     "Binds.AnyKey": "按下任意鍵",
     "Binds.Invalid": "無效",
     "Binds.Key": "鍵",
@@ -61,7 +61,6 @@
     "Binds.Sections.ThirdPerson.TogglePhyslock.Description": "讓塔迪斯在空間中不可移動",
     "Binds.Sections.ThirdPerson.TogglePhyslock": "切換物理鎖定",
     "Binds.Sections.ThirdPerson": "第三人稱",
-    "Common.Artron": "",
     "Common.Cancel": "取消",
     "Common.Closed.Lower": "已關閉",
     "Common.ControlSequencesEnabledWarning": "控製序列已啟用，你必須使用序列",
