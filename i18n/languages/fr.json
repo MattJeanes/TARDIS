@@ -61,7 +61,6 @@
     "Binds.Sections.ThirdPerson.TogglePhyslock.Description": "Rendez le TARDIS statique et immobile dans l'espace",
     "Binds.Sections.ThirdPerson.TogglePhyslock": "Activer/Désactiver le Verrou Physique",
     "Binds.Sections.ThirdPerson": "Troisième personne",
-    "Common.Artron": "ARTRON",
     "Common.Cancel": "Annuler",
     "Common.Closed.Lower": "fermées",
     "Common.ControlSequencesEnabledWarning": "Les séquences de contrôle sont activées. Vous devez les utiliser",
