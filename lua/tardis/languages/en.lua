@@ -64,7 +64,6 @@ T.Phrases = {
     ["Binds.Sections.ThirdPerson.ToggleFloat.Description"] = "Lets the TARDIS fly as if there is no gravity",
     ["Binds.Sections.ThirdPerson.TogglePhyslock"] = "Toggle Physlock",
     ["Binds.Sections.ThirdPerson.TogglePhyslock.Description"] = "Make the TARDIS constant and unmovable in space",
-    ["Common.Artron"] = "ARTRON",
     ["Common.Cancel"] = "Cancel",
     ["Common.Closed.Lower"] = "closed",
     ["Common.ControlSequencesEnabledWarning"] = "Control Sequences are enabled. You must use the sequence",

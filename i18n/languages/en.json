@@ -61,7 +61,6 @@
     "Binds.Sections.ThirdPerson.TogglePhyslock.Description": "Make the TARDIS constant and unmovable in space",
     "Binds.Sections.ThirdPerson.TogglePhyslock": "Toggle Physlock",
     "Binds.Sections.ThirdPerson": "Third Person",
-    "Common.Artron": "ARTRON",
     "Common.Cancel": "Cancel",
     "Common.Closed.Lower": "closed",
     "Common.ControlSequencesEnabledWarning": "Control Sequences are enabled. You must use the sequence",
