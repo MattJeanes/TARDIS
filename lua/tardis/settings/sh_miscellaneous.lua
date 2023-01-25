@@ -129,6 +129,19 @@ TARDIS:AddSetting({
     name="UseWalkKeyThirdPerson",
 })
 
+TARDIS:AddSetting({
+    id="flight_interrupt_to_float",
+    type="bool",
+    value=true,
+
+    class="networked",
+
+    option=true,
+    section=SETTING_SECTION,
+    subsection="Flight",
+    name="FlightInterruptToFloat",
+})
+
 --------------------------------------------------------------------------------
 -- Tips
 

@@ -20,6 +20,10 @@ function ENT:ChangeHealth(newhealth)
         return
     end
     local maxhealth = TARDIS:GetSetting("health-max")
+    if not TARDIS:GetSetting("health-enabled") then
+        self:SetData("health-val", maxhealth, true)
+        return
+    end
     local oldhealth = self:GetHealth()
     if newhealth > oldhealth and oldhealth+newhealth > maxhealth then
         newhealth = maxhealth
@@ -345,6 +349,15 @@ if SERVER then
         end
     end)
 
+    ENT:AddHook("ShouldUpdateArtron", "repair", function(self)
+        if self:GetData("repair-primed") or self:GetData("repairing") then
+            return false
+        end
+    end)
+
+    ENT:AddHook("ShouldUpdateArtron", "health", function(self)
+        if self:GetHealth() == 0 then return false end
+    end)
 else
     ENT:OnMessage("health_warning_toggled", function(self, data, ply)
         self:CallCommonHook("HealthWarningToggled", data[1])
