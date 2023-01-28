@@ -61,8 +61,10 @@ if SERVER then
             if a:KeyDown(IN_WALK) or not IsValid(self.interior) then
                 if self.ExteriorPart then
                     self.exterior:PlayerEnter(a)
+                    a:ScreenFade(SCREENFADE.IN, Color(255,255,255,150), 1, 0,001)
                 else
                     self.exterior:PlayerExit(a)
+                    a:ScreenFade(SCREENFADE.IN, Color(255,255,255), 1, 0,001)
                 end
             else
                 if self.exterior.metadata.EnableClassicDoors == true and not self.ExteriorPart then return end
