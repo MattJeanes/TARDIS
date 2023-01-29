@@ -113,6 +113,7 @@ if SERVER then
 
     ENT:AddHook("CanTogglePower", "artron", function(self, on)
         if not TARDIS:GetSetting("artron_energy") then return end
+        if self:GetData("redecorate") then return end
 
         if self:GetData("artron-val") <= 0 and self:GetPower() == false then
             return false
