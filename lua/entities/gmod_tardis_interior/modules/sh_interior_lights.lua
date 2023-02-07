@@ -362,7 +362,7 @@ if CLIENT then
             local data = SelectLampTable(self, v)
             if not data then return end
             if data.sprite then
-                -- taken from https://github.com/Facepunch/garrysmod/blob/master/garrysmod/gamemodes/sandbox/entities/entities/gmod_lamp.lua
+                -- adapted from https://github.com/Facepunch/garrysmod/blob/master/garrysmod/gamemodes/sandbox/entities/entities/gmod_lamp.lua
 
                 local lightPos = data.pos_global
                 local viewNormal = lightPos - EyePos()
