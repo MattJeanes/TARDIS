@@ -362,23 +362,23 @@ if CLIENT then
             local data = SelectLampTable(self, v)
             if not data then return end
             if data.sprite then
-                -- inspired by https://github.com/Facepunch/garrysmod/blob/master/garrysmod/gamemodes/sandbox/entities/entities/gmod_lamp.lua
+                -- taken from https://github.com/Facepunch/garrysmod/blob/master/garrysmod/gamemodes/sandbox/entities/entities/gmod_lamp.lua
 
                 local lightPos = data.pos_global
                 local viewNormal = lightPos - EyePos()
                 local distance = viewNormal:Length()
 
                 render.SetMaterial( matLight )
-                local visible = util.PixelVisible( lightPos, 16, data.spritepixvis )
-                if ( not visible ) then return end
+                local visible = util.PixelVisible(lightPos, 16, data.spritepixvis)
+                if not visible then return end
 
-                local size = math.Clamp( distance * visible * 2, 64, 512 )
+                local size = math.Clamp(distance * visible * 2, 64, 512)
 
-                distance = math.Clamp( distance, 32, 800 )
-                local alpha = math.Clamp( ( 1000 - distance ) * visible * data.sprite_brightness, 0, 100 )
+                distance = math.Clamp(distance, 32, 800)
+                local alpha = math.Clamp((1000 - distance) * visible * data.sprite_brightness, 0, 100)
 
-                render.DrawSprite( lightPos, size, size, ColorAlpha(data.color, alpha) )
-                render.DrawSprite( lightPos, size * 0.4, size * 0.4, Color( 255, 255, 255, alpha ) )
+                render.DrawSprite(lightPos, size, size, ColorAlpha(data.color, alpha))
+                render.DrawSprite(lightPos, size * 0.4, size * 0.4, Color( 255, 255, 255, alpha ))
             end
         end
     end)
