@@ -353,7 +353,7 @@ if CLIENT then
         end
     end)
 
-    local matLight = Material( "sprites/light_ignorez" )
+    local matLight = Material("sprites/light_ignorez")
     ENT:AddHook("Draw", "lamps", function(self)
         if not TARDIS:GetSetting("lamps-enabled") then return end
         if not self.lamps_data then return end
