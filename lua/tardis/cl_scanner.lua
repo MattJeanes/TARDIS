@@ -18,11 +18,8 @@ hook.Add("RenderScene", "TARDISI_Scanner", function(pos,ang)
             end
         end
         for k,v in pairs(scanners) do
-            local oldRT = render.GetRenderTarget()
-            render.SetRenderTarget( v.rt )
-                render.Clear( 0, 0, 0, 255 )
-                render.ClearDepth()
-                render.ClearStencil()
+            render.PushRenderTarget( v.rt )
+                render.Clear( 0, 0, 0, 255, true, true )
 
                 if v.enabled then
                     local offset = ext.metadata.Exterior.ScannerOffset
@@ -53,7 +50,7 @@ hook.Add("RenderScene", "TARDISI_Scanner", function(pos,ang)
                         int:CallHook("PostScannerRender")
                     end
                 end
-            render.SetRenderTarget( oldRT )
+            render.PopRenderTarget()
         end
     end
 end)
