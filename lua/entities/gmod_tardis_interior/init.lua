@@ -51,8 +51,7 @@ function ENT:LSSupport()
 	if(IsValid(self)) then
 		for _,p in pairs(player.GetAll()) do -- Find all players
 			local pos = (p:GetPos()-ent_pos):Length(); -- Where they are in relation to the interior
-			if(pos<410 and p.suit) then -- If they're close enough
-                print("close nuff")
+			if(pos<500 and p.suit) then -- If they're close enough
 				if(not(CAF and CAF.GetAddon("Resource Distribution"))) then
 					if (p.suit.air<100) then p.suit.air = 100; end -- They get air
 					if (p.suit.energy<100) then p.suit.energy = 100; end -- and energy
