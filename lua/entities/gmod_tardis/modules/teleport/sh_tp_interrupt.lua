@@ -39,11 +39,15 @@ if SERVER then
 
         if not was_demating then
             self:Explode()
-            self.interior:Explode(20)
+            if IsValid(self.interior) then
+                self.interior:Explode(20)
+            end
 
             self:Timer("interrupt_teleport", 1, function()
                 self:Explode()
-                self.interior:Explode(20)
+                if IsValid(self.interior) then
+                    self.interior:Explode(20)
+                end
             end)
 
             self:ChangeHealth(self:GetHealth() * math.random(85, 95) * 0.01)
