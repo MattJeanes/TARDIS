@@ -285,6 +285,7 @@ if SERVER then
     function ENT:ForceAddArtron()
         self:Explode(30)
         self.interior:Explode(30)
+        self.interior:EmitSound(self.metadata.Interior.Sounds.Damage.Artron)
         self:AddArtron(TARDIS.artron_values.increase_engine_release)
 
         local decrease = math.random(53, 432) * TARDIS:GetSetting("health-max") / 1000
