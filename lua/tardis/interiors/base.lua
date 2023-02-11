@@ -23,6 +23,7 @@ T.Interior = {
             BigCrash = "jeredek/tardis/damage_bigcollision.wav",
             Explosion = "jeredek/tardis/damage_explode.wav",
             Death = "jeredek/tardis/damage_death.wav",
+            Artron = "p00gie/tardis/force_artron.wav",
         },
         Teleport = {}, -- uses exterior sounds if not specified
         Power = {
