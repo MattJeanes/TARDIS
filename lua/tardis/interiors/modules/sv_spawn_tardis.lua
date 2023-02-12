@@ -49,6 +49,7 @@ function TARDIS:SpawnTARDIS(ply, customData)
     end
     undo.SetCustomUndoText("Undone " .. printName)
     undo.Finish(printName)
+    entity:EmitSound(entity.metadata.Exterior.Sounds.Spawn)
 
     ply:AddCleanup("sents", entity)
     entity:SetVar("Player", ply)

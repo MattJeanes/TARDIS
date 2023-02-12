@@ -100,6 +100,7 @@ T.Exterior = {
         },
         RepairFinish = "drmatt/tardis/repairfinish.wav",
         Lock = "drmatt/tardis/lock.wav",
+        Spawn = "drmatt/tardis/repairfinish.wav",
         Door = {
             enabled = true,
             open = "drmatt/tardis/door_open.wav",
