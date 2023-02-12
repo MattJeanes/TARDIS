@@ -35,14 +35,6 @@ ENT:AddHook("CanUsePart","security",function(self,part,ply)
     end
 end)
 
-if CLIENT then
-    ENT:AddHook("ShouldDrawTips", "security", function(self)
-        if self:GetSecurity() and (LocalPlayer()~=self:GetCreator()) then
-            return false
-        end
-    end)
-end
-
 ENT:AddHook("CanUseTardisControl", "security", function(self, control, ply)
     if (not control.bypass_isomorphic) and (not self:CheckSecurity(ply)) then
         TARDIS:Message(ply, "Security.ControlUseDenied")

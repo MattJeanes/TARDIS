@@ -24,3 +24,11 @@ ENT:AddHook("CanUsePart","security",function(self,part,ply)
         return false,false
     end
 end)
+
+if CLIENT then
+    ENT:AddHook("ShouldDrawTips", "security", function(self)
+        if self:GetSecurity() and (LocalPlayer()~=self:GetCreator()) then
+            return false
+        end
+    end)
+end
