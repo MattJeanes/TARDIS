@@ -254,6 +254,8 @@ T.Exterior = {
             mat_damaged_fast = "p00gie/tardis/mat_damaged_fast.wav",
             fullflight = "drmatt/tardis/full.wav",
         },
+        Spawn = "drmatt/tardis/repairfinish.wav",
+        RepairFinish = "drmatt/tardis/repairfinish.wav",
     },
     Light = {
         warncolor = Color(255,200,200),
