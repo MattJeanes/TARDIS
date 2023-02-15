@@ -1,6 +1,63 @@
 -- Destination
 
 TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", menu=false, order=2, popuponly=true}, function(self,ext,int,frame,screen)
+    local a = frame:GetWide()
+    local b = frame:GetTall()
+    local d = 0.05 * math.min( a,b )
+--Panels--
+    local InputPanel = vgui.Create( "DPanel",frame )
+    InputPanel:SetPos(0.5 * a + 0.5 * d, d)
+    InputPanel:SetSize( (a - 4 * d) * 0.25, 0.25 * b -0.5*d )
+    InputPanel:SetBackgroundColor( Color(90,87,143))
+
+    local ip_a = InputPanel:GetWide()
+    local ip_b = InputPanel:GetTall()
+    local ip_d = 0.03 * math.min(a,b)
+
+    local ip_x = (ip_a - 4 * ip_d) / 3
+    local ip_y = (ip_b - 3 * ip_d) / 2
+
+    local x = vgui.Create("DTextEntry",InputPanel)
+    x:SetPlaceholderText("x")
+    x:SetPos(ip_d, ip_d)
+    x:SetSize(ip_x,ip_y)
+    local y = vgui.Create("DTextEntry",InputPanel)
+    y:SetPlaceholderText("y")
+    y:SetPos(ip_x + 2 * ip_d, ip_d )
+    y:SetSize(ip_x,ip_y)
+    local z = vgui.Create("DTextEntry",InputPanel)
+    z:SetPlaceholderText("z")
+    z:SetPos(ip_x*2 + 3 * ip_d, ip_d)
+    z:SetSize(ip_x,ip_y)
+
+    local pitch = vgui.Create("DTextEntry",InputPanel)
+    pitch:SetPlaceholderText("Pitch")
+    pitch:SetPos(ip_d, ip_y + 2 * ip_d)
+    pitch:SetSize(ip_x,ip_y)
+    local yaw = vgui.Create("DTextEntry",InputPanel)
+    yaw:SetPlaceholderText("Yaw")
+    yaw:SetPos(ip_x + 2 * ip_d, ip_y + 2 * ip_d)
+    yaw:SetSize(ip_x,ip_y)
+    local roll = vgui.Create("DTextEntry",InputPanel)
+    roll:SetPlaceholderText("Roll")
+    roll:SetPos(ip_x*2 + 3 * ip_d, ip_y + 2 * ip_d)
+    roll:SetSize(ip_x,ip_y)
+
+    x:SetNumeric(true)
+    y:SetNumeric(true)
+    z:SetNumeric(true)
+    pitch:SetNumeric(true)
+    yaw:SetNumeric(true)
+    roll:SetNumeric(true)
+
+
+--[[    local DLabel = vgui.Create( "DLabel", DPanel )
+    DLabel:SetPos( 10, 10 ) -- Set the position of the label
+    DLabel:SetTexte label to a darker one( "I'm a DLabel inside a DPanel! :)" ) --  Set the text of the label
+    DLabel:SizeToContents() -- Size the label to fit the text in it
+    DLabel:SetDark( 1 ) -- Set the colour of the text inside th
+]]
+
     local button=vgui.Create("DButton",frame)
     button:SetSize( frame:GetWide()*0.2, frame:GetTall()*0.1 )
     button:SetPos(frame:GetWide()*0.86 - button:GetWide()*0.5,frame:GetTall()*0.08 - button:GetTall()*0.5)
@@ -10,28 +67,6 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
         TARDIS:Control("destination", LocalPlayer())
         TARDIS:RemoveHUDScreen()
     end
-
-    local btnx,btny = button:GetPos()
-    local x = vgui.Create("DTextEntry",frame)
-    x:SetPlaceholderText(TARDIS:GetPhrase("Screens.Coordinates.X"))
-    x:SetPos(btnx*0.97,btny*5)
-    local y = vgui.Create("DTextEntry",frame)
-    y:SetPlaceholderText(TARDIS:GetPhrase("Screens.Coordinates.Y"))
-    y:SetPos(btnx*1.08,btny*5)
-    local z = vgui.Create("DTextEntry",frame)
-    z:SetPlaceholderText(TARDIS:GetPhrase("Screens.Coordinates.Z"))
-    z:SetPos(btnx*1.19,btny*5)
-
-
-    local pitch = vgui.Create("DTextEntry",frame)
-    pitch:SetPlaceholderText(TARDIS:GetPhrase("Screens.Coordinates.Pitch"))
-    pitch:SetPos(btnx*0.97,btny*7)
-    local yaw = vgui.Create("DTextEntry",frame)
-    yaw:SetPlaceholderText(TARDIS:GetPhrase("Screens.Coordinates.Yaw"))
-    yaw:SetPos(btnx*1.08,btny*7)
-    local roll = vgui.Create("DTextEntry",frame)
-    roll:SetPlaceholderText(TARDIS:GetPhrase("Screens.Coordinates.Roll"))
-    roll:SetPos(btnx*1.19,btny*7)
 
     x:SetNumeric(true)
     y:SetNumeric(true)
@@ -76,9 +111,7 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     end
 
     local pendingchanges = false
-    local a = frame:GetWide()
-    local b = frame:GetTall()
-    local d = 0.05 * math.min( a,b )
+
 
     local list = vgui.Create("DListView",frame)
     list:SetSize( (a-3*d)/2,(b-2*d) )
