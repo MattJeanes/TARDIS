@@ -1,63 +1,95 @@
 -- Destination
 
 TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", menu=false, order=2, popuponly=true}, function(self,ext,int,frame,screen)
-    local a = frame:GetWide()
-    local b = frame:GetTall()
-    local d = 0.05 * math.min( a,b )
+    local w = frame:GetWide()
+    local h = frame:GetTall()
+    local d = 0.05 * math.min( w,h )
 --Panels--
+    local llist = vgui.Create("DListView",frame)
+    llist:SetSize( (w - 4 * d) / 2,(h - 2 * d) )
+    llist:SetPos( d,d )
+    llist:AddColumn("LOCATIONS LIST")
+
+    local ip_w = (w - 4 * d) * 0.4
+    local ip_h = 0.33 * h - 0.5 * d
+    local ip_d = 0.02 * math.min(w,h)
+
+    local ip_x = (ip_w - 4 * ip_d) / 3
+    local ip_y = (ip_h - 4 * ip_d) / 3
+
+    local cp_h = ip_h
+    local cp_w = (w - 4 * d) * 0.1
+
+    local cp_d = ip_d
+    local cp_x = cp_w - 2 * cp_d
+    local cp_y = ip_y
+
     local InputPanel = vgui.Create( "DPanel",frame )
-    InputPanel:SetPos(0.5 * a + 0.5 * d, d)
-    InputPanel:SetSize( (a - 4 * d) * 0.25, 0.25 * b -0.5*d )
-    InputPanel:SetBackgroundColor( Color(90,87,143))
+    InputPanel:SetPos(0.5 * w, d)
+    InputPanel:SetSize(ip_w, ip_h)
+    InputPanel:SetBackgroundColor( Color(148,195,255))
 
-    local ip_a = InputPanel:GetWide()
-    local ip_b = InputPanel:GetTall()
-    local ip_d = 0.03 * math.min(a,b)
-
-    local ip_x = (ip_a - 4 * ip_d) / 3
-    local ip_y = (ip_b - 3 * ip_d) / 2
+    local ControlPanel = vgui.Create( "DPanel",frame )
+    ControlPanel:SetPos(0.5 * w + ip_w + d, d)
+    ControlPanel:SetSize(cp_w, cp_h)
+    ControlPanel:SetBackgroundColor( Color(148,195,255))
 
     local x = vgui.Create("DTextEntry",InputPanel)
-    x:SetPlaceholderText("x")
+    x:SetPlaceholderText(TARDIS:GetPhrase("Screens.Coordinates.X"))
     x:SetPos(ip_d, ip_d)
     x:SetSize(ip_x,ip_y)
+    x:SetNumeric(true)
     local y = vgui.Create("DTextEntry",InputPanel)
-    y:SetPlaceholderText("y")
+    y:SetPlaceholderText(TARDIS:GetPhrase("Screens.Coordinates.Y"))
     y:SetPos(ip_x + 2 * ip_d, ip_d )
     y:SetSize(ip_x,ip_y)
+    y:SetNumeric(true)
     local z = vgui.Create("DTextEntry",InputPanel)
-    z:SetPlaceholderText("z")
+    z:SetPlaceholderText(TARDIS:GetPhrase("Screens.Coordinates.Z"))
     z:SetPos(ip_x*2 + 3 * ip_d, ip_d)
     z:SetSize(ip_x,ip_y)
+    z:SetNumeric(true)
 
     local pitch = vgui.Create("DTextEntry",InputPanel)
-    pitch:SetPlaceholderText("Pitch")
+    pitch:SetPlaceholderText(TARDIS:GetPhrase("Screens.Coordinates.Pitch"))
     pitch:SetPos(ip_d, ip_y + 2 * ip_d)
     pitch:SetSize(ip_x,ip_y)
+    pitch:SetNumeric(true)
     local yaw = vgui.Create("DTextEntry",InputPanel)
-    yaw:SetPlaceholderText("Yaw")
+    yaw:SetPlaceholderText(TARDIS:GetPhrase("Screens.Coordinates.Yaw"))
     yaw:SetPos(ip_x + 2 * ip_d, ip_y + 2 * ip_d)
     yaw:SetSize(ip_x,ip_y)
+    yaw:SetNumeric(true)
     local roll = vgui.Create("DTextEntry",InputPanel)
-    roll:SetPlaceholderText("Roll")
+    roll:SetPlaceholderText(TARDIS:GetPhrase("Screens.Coordinates.Roll"))
     roll:SetPos(ip_x*2 + 3 * ip_d, ip_y + 2 * ip_d)
     roll:SetSize(ip_x,ip_y)
-
-    x:SetNumeric(true)
-    y:SetNumeric(true)
-    z:SetNumeric(true)
-    pitch:SetNumeric(true)
-    yaw:SetNumeric(true)
     roll:SetNumeric(true)
 
+    local namebox = vgui.Create("DTextEntry", InputPanel)
+    namebox:SetPlaceholderText(TARDIS:GetPhrase("Screens.Coordinates.Name"))
+    namebox:SetPos(ip_d, 2 * ip_y + 3 * ip_d)
+    namebox:SetSize(ip_w - 2 * ip_d, ip_y)
 
---[[    local DLabel = vgui.Create( "DLabel", DPanel )
-    DLabel:SetPos( 10, 10 ) -- Set the position of the label
-    DLabel:SetTexte label to a darker one( "I'm a DLabel inside a DPanel! :)" ) --  Set the text of the label
-    DLabel:SizeToContents() -- Size the label to fit the text in it
-    DLabel:SetDark( 1 ) -- Set the colour of the text inside th
-]]
+    local new = vgui.Create("DButton", ControlPanel)
+    new:SetSize( cp_x, cp_y )
+    new:SetPos( cp_d, cp_d )
+    new:SetText(TARDIS:GetPhrase("Common.New"))
+    new:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 
+    local remove = vgui.Create("DButton", ControlPanel)
+    remove:SetSize( cp_x, cp_y )
+    remove:SetPos(cp_d, cp_y + 2 * cp_d)
+    remove:SetText(TARDIS:GetPhrase("Common.Delete"))
+    remove:SetFont(TARDIS:GetScreenFont(screen, "Default"))
+
+    local confirm = vgui.Create("DButton", ControlPanel)
+    confirm:SetSize( cp_x, cp_y )
+    confirm:SetPos(cp_d, 2 * cp_y + 3 * cp_d)
+    confirm:SetText(TARDIS:GetPhrase("Common.Set"))
+    confirm:SetFont(TARDIS:GetScreenFont(screen, "Default"))
+
+    --[[
     local button=vgui.Create("DButton",frame)
     button:SetSize( frame:GetWide()*0.2, frame:GetTall()*0.1 )
     button:SetPos(frame:GetWide()*0.86 - button:GetWide()*0.5,frame:GetTall()*0.08 - button:GetTall()*0.5)
@@ -66,19 +98,8 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     button.DoClick = function()
         TARDIS:Control("destination", LocalPlayer())
         TARDIS:RemoveHUDScreen()
-    end
+    end]]
 
-    x:SetNumeric(true)
-    y:SetNumeric(true)
-    z:SetNumeric(true)
-    pitch:SetNumeric(true)
-    yaw:SetNumeric(true)
-    roll:SetNumeric(true)
-
-    local namebox = vgui.Create("DTextEntry", frame)
-    namebox:SetPos(pitch:GetPos()+5,frame:GetTall()*0.33 - button:GetTall()*0.5)
-    namebox:SetWide(frame:GetWide()*0.237)
-    namebox:SetPlaceholderText(TARDIS:GetPhrase("Screens.Coordinates.Name"))
 
     local function updatetextinputs(pos,ang,name)
         pitch:SetText(ang.p or 0.0)
@@ -89,6 +110,7 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
         z:SetText(pos.z or 0.0)
         if name then namebox:SetText(name) end
     end
+
     local function fetchtextinputs()
         local pos = 0
         local ang = 0
@@ -112,25 +134,19 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
 
     local pendingchanges = false
 
-
-    local list = vgui.Create("DListView",frame)
-    list:SetSize( (a-3*d)/2,(b-2*d) )
-    list:SetPos( d,d )
-    list:AddColumn("LOCATIONS LIST")
-
     local map = game.GetMap()
     local function updatelist()
-        list:Clear()
+        llist:Clear()
         if TARDIS.Locations[map] ~= nil then
             for k,v in pairs(TARDIS.Locations[map]) do
-                list:AddLine(v.name)
+                llist:AddLine(v.name)
             end
         end
-        list:AddLine(TARDIS:GetPhrase("Screens.Coordinates.RandomGround"))
-        list:AddLine(TARDIS:GetPhrase("Screens.Coordinates.Random"))
+        llist:AddLine(TARDIS:GetPhrase("Screens.Coordinates.RandomGround"))
+        llist:AddLine(TARDIS:GetPhrase("Screens.Coordinates.Random"))
     end
     updatelist()
-    function list:OnRowSelected(i,row)
+    function llist:OnRowSelected(i,row)
         local locations_num = 0
         if TARDIS.Locations[map] ~= nil then
             locations_num = #TARDIS.Locations[map]
@@ -159,11 +175,11 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
         updatetextinputs(pos,ang,name)
         namebox:SetEnabled(true)
     end
-    list:SetMultiSelect(false)
+    llist:SetMultiSelect(false)
 
     local gpos = vgui.Create("DButton", frame)
     gpos:SetSize( frame:GetWide()*0.247, frame:GetTall()*0.1 )
-    gpos:SetPos(pitch:GetPos(),frame:GetTall()*0.4 - button:GetTall()*0.5)
+    gpos:SetPos(pitch:GetPos(),frame:GetTall()*0.4 - frame:GetTall() * 0.1*0.5)
     gpos:SetFont(TARDIS:GetScreenFont(screen, "Default"))
     gpos:SetText(TARDIS:GetPhrase("Screens.Coordinates.GetCurrentPosition"))
 
@@ -171,11 +187,6 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
         updatetextinputs(ext:GetPos(), ext:GetAngles())
     end
 
-    local new = vgui.Create("DButton", frame)
-    new:SetSize( frame:GetWide()*0.08, frame:GetTall()*0.1 )
-    new:SetPos(pitch:GetPos(),frame:GetTall()*0.9 - button:GetTall()*0.5)
-    new:SetText(TARDIS:GetPhrase("Common.New"))
-    new:SetFont(TARDIS:GetScreenFont(screen, "Default"))
     function new:DoClick()
 
         local vortex = ext:GetData("vortex", false)
@@ -216,13 +227,8 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
         )
     end
 
-    local remove = vgui.Create("DButton", frame)
-    remove:SetSize( frame:GetWide()*0.08, frame:GetTall()*0.1 )
-    remove:SetPos(roll:GetPos(),frame:GetTall()*0.52 - button:GetTall()*0.5)
-    remove:SetText(TARDIS:GetPhrase("Common.Delete"))
-    remove:SetFont(TARDIS:GetScreenFont(screen, "Default"))
     function remove:DoClick()
-        local index = list:GetSelectedLine()
+        local index = llist:GetSelectedLine()
         if not index then return end
         Derma_Query(
             TARDIS:GetPhrase("Screens.Coordinates.ConfirmRemoveLocation"),
@@ -233,7 +239,7 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
         )
     end
     function remove:Think()
-        if list:GetSelectedLine() ~= nil then
+        if llist:GetSelectedLine() ~= nil then
             if self:IsEnabled() then return end
             self:SetEnabled(true)
         elseif self:IsEnabled() then
@@ -241,11 +247,6 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
         end
     end
 
-    local confirm = vgui.Create("DButton",frame)
-    confirm:SetSize( frame:GetWide()*0.1, frame:GetTall()*0.1 )
-    confirm:SetPos(yaw:GetPos()-15,frame:GetTall()*0.9 - button:GetTall()*0.5)
-    confirm:SetText(TARDIS:GetPhrase("Common.Set"))
-    confirm:SetFont(TARDIS:GetScreenFont(screen, "Default"))
     function confirm:DoClick()
         local pos,ang = fetchtextinputs()
         if pos ~= nil and pos ~= 0 then
