@@ -1,12 +1,14 @@
 T = {
     Exterior = {
-        Model="models/vtalanov98/hellbentext/exterior.mdl",
+        Model="models/artixc/exteriors/mk3.mdl",
         Mass=5000,
         Portal={
-            pos=Vector(16.76,0,52.22),
+            pos=Vector(19.5,0,52.25),
             ang=Angle(0,0,0),
-            width=30,
-            height=88
+            width=32,
+            height=87,
+            thickness = 25,
+            inverted = true,
         },
         Fallback={
             pos=Vector(44,0,7),
@@ -30,17 +32,17 @@ T = {
         },
         Parts={
             door={
-                model="models/vtalanov98/hellbentext/doorsext.mdl",
-                posoffset=Vector(-3,0,0),
-                angoffset=Angle(0,0,0)
+                model="models/artixc/exteriors/mk3_door.mdl",
+                posoffset=Vector(-6.5,12.5,-43.2),
+                angoffset=Angle(0,0,0),
             },
         }
     },
     Interior = {
         Parts={
             door={
-                model="models/vtalanov98/hellbentext/doors.mdl",
-                posoffset=Vector(3, 0, 0),
+                model="models/artixc/exteriors/mk3_door.mdl",
+                posoffset=Vector(6.5,-12.5,-43.2),
             },
         }
     },

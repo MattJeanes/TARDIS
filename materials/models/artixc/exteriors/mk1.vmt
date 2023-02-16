@@ -1,0 +1,10 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/artixc/exteriors/mk1"
+	"$envmap" "models/artixc/exteriors/environment"
+	"$envmaptint" "[0.6 0.6 0.6]"
+	"$nodecal" "1"
+	"$surfaceprop" "Glass"
+}
+
+
