@@ -36,6 +36,6 @@ jobs:
         shell: pwsh
         
       - name: Git Auto Commit
-        uses: stefanzweifel/git-auto-commit-action@v4.14.1
+        uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: "Update Generated Languages"

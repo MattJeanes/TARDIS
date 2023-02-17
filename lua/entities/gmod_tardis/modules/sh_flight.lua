@@ -13,6 +13,20 @@ TARDIS:AddKeyBind("flight-toggle",{
     serveronly=true,
     exterior=true
 })
+
+TARDIS:AddKeyBind("handbrake",{
+    name="Handbrake",
+    section="ThirdPerson",
+    func=function(self,down,ply)
+        if down and ply == self.pilot then
+            TARDIS:Control("handbrake", ply)
+        end
+    end,
+    key=KEY_J,
+    serveronly=true,
+    exterior=true
+})
+
 TARDIS:AddKeyBind("flight-forward",{
     name="Forward",
     section="Flight",
@@ -73,7 +87,6 @@ TARDIS:AddKeyBind("flight-spindir",{
     name="SpinDirection",
     section="Flight",
     func=function(self,down,ply)
-        if TARDIS:HUDScreenOpen(ply) then return end
         if down and ply==self.pilot then
             TARDIS:Control("spin_cycle", ply)
         end
@@ -87,6 +100,19 @@ if SERVER then
     function ENT:ToggleFlight()
         local on = not self:GetData("flight",false)
         return self:SetFlight(on)
+    end
+
+    function ENT:InterruptFlight()
+        if not self:GetData("flight") and not self:GetData("vortex") then return end
+
+        if TARDIS:GetSetting("flight_interrupt_to_float", self:GetCreator()) then
+            self:SetData("floatfirst", true)
+        end
+
+        self:ToggleFlight()
+        self:CallCommonHook("FlightInterrupted")
+
+        self:ExplodeIfFast()
     end
 
     function ENT:SetFlight(on)
@@ -170,10 +196,7 @@ if SERVER then
 
     ENT:AddHook("PilotChanged","flight",function(self,old,new)
         self:SetData("pilot",new,true)
-        self:SendMessage("PilotChanged",function()
-            net.WriteEntity(old)
-            net.WriteEntity(new)
-        end)
+        self:SendMessage("PilotChanged", {old, new} )
     end)
 
     ENT:AddHook("Think", "flight", function(self)
@@ -396,9 +419,9 @@ else
         end
     end)
 
-    ENT:OnMessage("PilotChanged",function(self)
-        local old=net.ReadEntity()
-        local new=net.ReadEntity()
+    ENT:OnMessage("PilotChanged", function(self, data, ply)
+        local old=data[1]
+        local new=data[2]
         self:CallHook("PilotChanged",old,new)
     end)
 end

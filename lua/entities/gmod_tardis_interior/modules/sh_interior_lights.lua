@@ -219,6 +219,10 @@ if CLIENT then
     function ENT:InitLampData(lmp)
         if not lmp or not lmp.pos then return end
         lmp.pos_global = self:LocalToWorld(lmp.pos)
+        if lmp.sprite then
+            lmp.spritepixvis = util.GetPixelVisibleHandle()
+            lmp.sprite_brightness = lmp.sprite_brightness or 1
+        end
         self:InitLampData(lmp.warn)
         self:InitLampData(lmp.off)
         self:InitLampData(lmp.off_warn)
@@ -349,6 +353,35 @@ if CLIENT then
         end
     end)
 
+    local matLight = Material("sprites/light_ignorez")
+    ENT:AddHook("Draw", "lamps", function(self)
+        if not TARDIS:GetSetting("lamps-enabled") then return end
+        if not self.lamps_data then return end
+
+        for k,v in pairs(self.lamps_data) do
+            local data = SelectLampTable(self, v)
+            if not data then return end
+            if data.sprite then
+                -- adapted from https://github.com/Facepunch/garrysmod/blob/master/garrysmod/gamemodes/sandbox/entities/entities/gmod_lamp.lua
+
+                local lightPos = data.pos_global
+                local viewNormal = lightPos - EyePos()
+                local distance = viewNormal:Length()
+
+                render.SetMaterial( matLight )
+                local visible = util.PixelVisible(lightPos, 16, data.spritepixvis)
+                if not visible then return end
+
+                local size = math.Clamp(distance * visible * 2, 64, 512)
+
+                distance = math.Clamp(distance, 32, 800)
+                local alpha = math.Clamp((1000 - distance) * visible * data.sprite_brightness, 0, 100)
+
+                render.DrawSprite(lightPos, size, size, ColorAlpha(data.color, alpha))
+                render.DrawSprite(lightPos, size * 0.4, size * 0.4, Color( 255, 255, 255, alpha ))
+            end
+        end
+    end)
 
 
     ENT:AddHook("SettingChanged", "lamps", function(self, id, val)
@@ -394,9 +427,7 @@ function ENT:ApplyLightState(state)
     self:CallHook("LightStateChanged", state)
 
     if SERVER then
-        self:SendMessage("light_state",function()
-            net.WriteString(state)
-        end)
+        self:SendMessage("light_state", {state} )
     else
         local ldata = self.light_data
         ChangeSingleLightState(ldata.main, state)
@@ -410,8 +441,8 @@ function ENT:ApplyLightState(state)
 end
 
 if CLIENT then
-    ENT:OnMessage("light_state", function(self)
-        self:ApplyLightState(net.ReadString())
+    ENT:OnMessage("light_state", function(self, data, ply)
+        self:ApplyLightState(data[1])
     end)
 end
 
@@ -545,7 +576,6 @@ if CLIENT then
     ENT:AddHook("SlowThink", "lights", function(self)
         local pos = self:GetPos()
         if self.lights_lastpos == pos then return end
-        print(pos)
         self.lights_lastpos = pos
         self:LoadLights()
         self:LoadLamps()

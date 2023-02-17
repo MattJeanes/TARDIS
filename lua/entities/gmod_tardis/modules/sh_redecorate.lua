@@ -9,7 +9,8 @@ local ext_saved_data_names = {
     "physlock",
     "demat-fast",
     "fastreturn-pos",
-    "fastreturn-ang"
+    "fastreturn-ang",
+    "artron-val",
 }
 local int_saved_data_names = {
     "security"
@@ -74,6 +75,7 @@ if SERVER then
         self:SetPos(parent:GetPos())
         self:SetAngles(parent:GetAngles())
         parent:SetParent(self)
+        self:SetData("is_redecorate_child", true, true)
     end)
 
     ENT:AddHook("StopMat", "redecorate_sync", function(self)
@@ -83,6 +85,8 @@ if SERVER then
             self:SetFastRemat(false)
             self:SetData("redecorate_parent_vortex", nil, true)
         end
+
+        self:SetData("is_redecorate_child", nil, true)
     end)
 
     ENT:AddHook("CustomData", "redecorate_child", function(self, customdata)
@@ -162,6 +166,16 @@ if SERVER then
         end
     end)
 
+    ENT:AddHook("ShouldUpdateArtron", "redecorate", function(self)
+        if self:GetData("redecorate")
+            or self:GetData("redecorate_parent")
+            or self:GetData("redecorate_child")
+            or self:GetData("is_redecorate_child")
+        then
+            return false
+        end
+    end)
+
     hook.Add("AllowPlayerPickup", "tardis_redecorate", function(ply, ent)
         if ent.TardisExterior and (ent:GetData("redecorate_parent") or ent:GetData("redecorate_mat_started")) then
             return false
@@ -176,7 +190,7 @@ else -- CLIENT
         end
     end)
 
-    ENT:OnMessage("redecorate-reset", function(self)
+    ENT:OnMessage("redecorate-reset", function(self, data, ply)
         if not IsValid(self) or (not LocalPlayer() == self:GetCreator()) then return end
         TARDIS:SetSetting("redecorate-interior", false)
     end)

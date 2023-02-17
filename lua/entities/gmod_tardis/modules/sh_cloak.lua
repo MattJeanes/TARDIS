@@ -34,9 +34,8 @@ if SERVER then
     function ENT:SetCloak(on)
         if self:CallHook("CanToggleCloak")==false then return false end
         self:SetData("cloak", on)
-        self:SendMessage("cloak", function()
-            net.WriteBool(on)
-        end)
+        self:SendMessage("cloak", { on })
+
         if (not self:GetData("teleport")) and (not self:GetData("vortex")) then
             self:DrawShadow(not on)
         end
@@ -203,8 +202,8 @@ else
         if self:GetData("cloak",false) and not self:GetData("cloak-animating",false) then return false end
     end)
 
-    ENT:OnMessage("cloak", function(self)
-        local on = net.ReadBool()
+    ENT:OnMessage("cloak", function(self, data, ply)
+        local on = data[1]
         self:SetData("cloak", on)
         local snd
         if on then

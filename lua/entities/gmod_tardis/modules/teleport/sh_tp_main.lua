@@ -4,7 +4,6 @@ TARDIS:AddKeyBind("teleport-demat",{
     name="Demat",
     section="Teleport",
     func=function(self,down,ply)
-        if TARDIS:HUDScreenOpen(ply) then return end
         local pilot = self:GetData("pilot")
         if SERVER then
             if ply==pilot and down then
@@ -39,7 +38,6 @@ TARDIS:AddKeyBind("teleport-mat",{
     name="Mat",
     section="Teleport",
     func=function(self,down,ply)
-        if TARDIS:HUDScreenOpen(ply) then return end
         if ply==self.pilot and down then
             if self:GetData("vortex") then
                 self:Mat()
@@ -122,10 +120,9 @@ if SERVER then
         pos=pos or self:GetData("demat-pos") or self:GetPos()
         ang=ang or self:GetData("demat-ang") or self:GetAngles()
         self:SetDestination(pos, ang)
-        self:SendMessage("demat", function() net.WriteVector(self:GetData("demat-pos",Vector())) end)
+
+        self:SendMessage("demat", { self:GetData("demat-pos",Vector()) } )
         self:SetData("demat",true)
-        self:SetData("fastreturn-pos",self:GetPos())
-        self:SetData("fastreturn-ang",self:GetAngles())
         self:SetData("step",1)
         self:SetData("teleport",true)
         self:SetCollisionGroup( COLLISION_GROUP_WORLD )
@@ -137,62 +134,17 @@ if SERVER then
         for k,v in pairs(self.parts) do
             v:DrawShadow(false)
         end
-        local constrained = constraint.GetAllConstrainedEntities(self)
-        local attached
-        if constrained then
-            for k,v in pairs(constrained) do
-                if not (k.TardisPart or k==self) then
-                    local a=k:GetColor().a
-                    if not attached then attached = {} end
-                    attached[k] = a
-                end
-            end
-        end
-        self:SetData("demat-attached",attached,true)
+
         if callback then callback(true) end
     end
 
     function ENT:ChangePosition(pos, ang, phys_enable)
-        local attached=self:GetData("demat-attached")
-        if attached then
-            for k,v in pairs(attached) do
-                if IsValid(k) and not IsValid(k:GetParent()) then
-                    k.telepos=k:GetPos()-self:GetPos()
-                    if k:GetClass()=="gmod_hoverball" then -- fixes hoverballs spazzing out
-                        k:SetTargetZ( (pos-self:GetPos()).z+k:GetTargetZ() )
-                    end
-                end
-            end
-        end
+        self:CallHook("PreTeleportPositionChange", pos, ang, phys_enable)
+
         self:SetPos(pos)
         self:SetAngles(ang)
-        if attached then
-            for k,v in pairs(attached) do
-                if IsValid(k) and not IsValid(k:GetParent()) then
-                    if k:IsRagdoll() then
-                        for i=0,k:GetPhysicsObjectCount() do
-                            local bone=k:GetPhysicsObjectNum(i)
-                            if IsValid(bone) then
-                                bone:SetPos(self:GetPos()+k.telepos)
-                            end
-                        end
-                    end
-                    k:SetPos(self:GetPos()+k.telepos)
-                    k.telepos=nil
-                    if phys_enable == true then
-                        local phys=k:GetPhysicsObject()
-                        if phys and IsValid(phys) then
-                            k:SetSolid(SOLID_VPHYSICS)
-                            if k.gravity~=nil then
-                                phys:EnableGravity(k.gravity)
-                                k.gravity = nil                               
-                            end
-                        end
-                        k.nocollide=nil
-                    end
-                end
-            end
-        end
+
+        self:CallHook("TeleportPositionChanged", pos, ang, phys_enable)
     end
 
 
@@ -210,7 +162,7 @@ if SERVER then
                 return
             end
 
-            self:SendMessage("premat",function() net.WriteVector(self:GetData("demat-pos",Vector())) end)
+            self:SendMessage("premat", { self:GetData("demat-pos",Vector()) } )
             self:SetData("teleport",true)
             self:CallHook("PreMatStart")
 
@@ -249,19 +201,6 @@ if SERVER then
         if not flight then
             self:SetFlight(true)
         end
-        local attached=self:GetData("demat-attached")
-        if attached then
-            for k,v in pairs(attached) do
-                if IsValid(k) and not IsValid(k:GetParent()) then
-                    local phys=k:GetPhysicsObject()
-                    if phys and IsValid(phys) then
-                        k:SetSolid(SOLID_NONE)
-                        k.gravity = phys:IsGravityEnabled()
-                        phys:EnableGravity(false)
-                    end
-                end
-            end
-        end
         self:CallHook("StopDemat")
     end
 
@@ -275,19 +214,6 @@ if SERVER then
             if not v.NoShadow then
                 v:DrawShadow(true)
             end
-        end
-        local attached=self:GetData("demat-attached")
-        if attached then
-            for k,v in pairs(attached) do
-                if IsValid(k) then
-                    k:SetColor(ColorAlpha(k:GetColor(),v))
-                end
-            end
-        end
-        self:SetData("demat-attached",nil,true)
-        if self:GetData("fastreturn",false) then
-            self:SetFastRemat(self:GetData("demat-fast-prev", false))
-            self:SetData("fastreturn",false)
         end
         self:CallHook("StopMat")
     end
@@ -318,7 +244,7 @@ if SERVER then
     end)
 
 else
-    ENT:OnMessage("demat", function(self)
+    ENT:OnMessage("demat", function(self, data, ply)
         self:SetData("demat",true)
         self:SetData("step",1)
         self:SetData("teleport",true)
@@ -343,7 +269,7 @@ else
                 sound_fullflight_int = int.fullflight_damaged or ext.fullflight_damaged
             end
 
-            local pos = net.ReadVector()
+            local pos = data[1]
             
             if LocalPlayer():GetTardisData("exterior")==self then
                 local intsound = int.demat or ext.demat
@@ -378,7 +304,7 @@ else
         self:CallHook("DematStart")
     end)
 
-    ENT:OnMessage("premat", function(self)
+    ENT:OnMessage("premat", function(self, data, ply)
         self:SetData("teleport",true)
         if TARDIS:GetSetting("teleport-sound") and TARDIS:GetSetting("sound") then
             local shouldPlayExterior = self:CallHook("ShouldPlayMatSound", false)~=false
@@ -386,7 +312,7 @@ else
             if not (shouldPlayExterior or shouldPlayInterior) then return end
             local ext = self.metadata.Exterior.Sounds.Teleport
             local int = self.metadata.Interior.Sounds.Teleport
-            local pos=net.ReadVector()
+            local pos=data[1]
             if LocalPlayer():GetTardisData("exterior")==self and (not self:GetData("demat-fast",false)) then
                 if self:GetData("health-warning", false) then
                     if shouldPlayExterior then
@@ -414,7 +340,7 @@ else
         self:CallHook("PreMatStart")
     end)
 
-    ENT:OnMessage("mat", function(self)
+    ENT:OnMessage("mat", function(self, data, ply)
         self:SetData("mat",true)
         self:SetData("step",1)
         self:SetData("vortex",false)
@@ -436,6 +362,9 @@ else
         self:CallHook("StopMat")
     end
 
+    ENT:OnMessage("stop_mat", function(self, data, ply)
+        self:StopMat()
+    end)
 end
 
 function ENT:GetRandomLocation(grounded)
@@ -508,19 +437,7 @@ ENT:AddHook("Think","teleport",function(self,delta)
     end
     alpha=math.Approach(alpha,target,delta*66*sequencespeed)
     self:SetData("alpha",alpha)
-    local attached=self:GetData("demat-attached")
-    if attached then
-        for k,v in pairs(attached) do
-            if IsValid(k) then
-                if not (v==0) then
-                    if not (k:GetRenderMode()==RENDERMODE_TRANSALPHA) then
-                        k:SetRenderMode(RENDERMODE_TRANSALPHA)
-                    end
-                    k:SetColor(ColorAlpha(k:GetColor(),alpha))
-                end
-            end
-        end
-    end
+    self:SetAttachedTransparency(alpha)
 end)
 
 

@@ -1,5 +1,18 @@
 -- Power Exterior
 
+TARDIS:AddKeyBind("power",{
+    name="Power",
+    section="ThirdPerson",
+    func=function(self,down,ply)
+        if down and ply == self.pilot then
+            TARDIS:Control("power", ply)
+        end
+    end,
+    key=KEY_P,
+    serveronly=true,
+    exterior=true
+})
+
 ENT:AddHook("Initialize","power-init", function(self)
     self:SetData("power-state",true,true)
 end)
@@ -23,9 +36,7 @@ if SERVER then
         if (self:CallCommonHook("CanTogglePower") == false) then return false end
         self:SetData("power-state",on,true)
         self:CallCommonHook("PowerToggled", on)
-        self:SendMessage("power_toggled", function()
-            net.WriteBool(on)
-        end)
+        self:SendMessage("power_toggled", {on})
         return true
     end
 
@@ -55,8 +66,8 @@ else
         if not self:GetPower() then return true end
     end)
 
-    ENT:OnMessage("power_toggled", function(self)
-        local on = net.ReadBool()
+    ENT:OnMessage("power_toggled", function(self, data, ply)
+        local on = data[1]
         self:CallCommonHook("PowerToggled", on)
     end)
 end

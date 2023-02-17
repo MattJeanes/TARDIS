@@ -19,6 +19,18 @@ end
 
 if CLIENT then return end
 
+function ENT:ExplodeIfFast()
+    local phys = self:GetPhysicsObject()
+    local vel = phys:GetVelocity():Length()
+
+    if vel > 50 and IsValid(self.interior) then
+        util.ScreenShake(self.interior:GetPos(), 1, 20, 0.3, 700)
+    end
+    if vel > 1600 then
+        self:Explode(math.max((vel - 2500) / 5, 0))
+    end
+end
+
 function ENT:SetPhyslock(on)
     if not on and self:CallHook("CanTurnOffPhyslock") == false then
         return false
@@ -30,12 +42,7 @@ function ENT:SetPhyslock(on)
     local phys = self:GetPhysicsObject()
     local vel = phys:GetVelocity():Length()
     if on then
-        if vel > 50 and IsValid(self.interior) then
-            util.ScreenShake(self.interior:GetPos(), 1, 20, 0.3, 700)
-        end
-        if vel > 1600 then
-            self:Explode(math.max((vel - 2500) / 5, 0))
-        end
+        self:ExplodeIfFast()
     end
     if self:GetPower() then
         self:SetData("physlock", on, true)

@@ -84,6 +84,15 @@ T.Interior = {
             fov = 90,
         }
     },
+    Sounds = {
+        Teleport = {
+            demat = "drmatt/tardis/demat.wav",
+            mat = "drmatt/tardis/mat.wav",
+            mat_fast = "p00gie/tardis/mat_fast.wav",
+            mat_damaged_fast = "p00gie/tardis/mat_damaged_fast.wav",
+            fullflight = "drmatt/tardis/full.wav",
+        },
+    },
     Sequences = "default_sequences",
     Parts = {
         door = {
@@ -236,6 +245,15 @@ T.Exterior = {
         door = {
             posoffset=Vector(-28,0,-54.6)
         }
+    },
+    Sounds = {
+        Teleport = {
+            demat = "drmatt/tardis/demat.wav",
+            mat = "drmatt/tardis/mat.wav",
+            mat_fast = "p00gie/tardis/mat_fast.wav",
+            mat_damaged_fast = "p00gie/tardis/mat_damaged_fast.wav",
+            fullflight = "drmatt/tardis/full.wav",
+        },
     },
     Light = {
         warncolor = Color(255,200,200),
