@@ -1,4 +1,4 @@
--- Default (TT Capsule)
+-- Default (TT Sidrat Capsule)
 
 local T = {}
 T.Base = "default"
@@ -31,7 +31,7 @@ T.Interior = {
 }
 
 T.Templates = {
-    ttsidrat = { override = true, fail = function() ErrorNoHalt("Failed to add tt_capsule default exterior") end, },
+    ttsidrat = { override = true, fail = function() ErrorNoHalt("Failed to add tt_sidrat default exterior") end, },
 }
 
 TARDIS:AddInterior(T)
