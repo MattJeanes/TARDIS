@@ -19,8 +19,20 @@ T.Versions = {
     },
     other = {
         {
-            name = "Interiors.Default.Versions.TTCapsule",
-            id = "default_tt_capsule",
+            name = "Interiors.Default.Versions.TTMk1",
+            id = "default_tt_mk1",
+        },
+        {
+            name = "Interiors.Default.Versions.TTMk2",
+            id = "default_tt_mk2",
+        },
+        {
+            name = "Interiors.Default.Versions.TTMk3",
+            id = "default_tt_mk3",
+        },
+        {
+            name = "Interiors.Default.Versions.TTSidrat",
+            id = "default_tt_sidrat",
         },
     },
 }
