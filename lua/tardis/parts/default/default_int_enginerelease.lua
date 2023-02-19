@@ -7,6 +7,6 @@ PART.Model = "models/drmatt/tardis/longflighttoggle.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 PART.Animate = true
-PART.Sound = "drmatt/tardis/default/control_handbrake.wav"
+PART.Sound = "p00gie/tardis/controls/lever2.wav"
 
 TARDIS:AddPart(PART)

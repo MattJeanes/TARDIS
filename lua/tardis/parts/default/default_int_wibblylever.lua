@@ -8,5 +8,6 @@ PART.Model = "models/drmatt/tardis/wibblylever.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 PART.Animate = true
+PART.Sound = "p00gie/tardis/controls/wibblylever.wav"
 
 TARDIS:AddPart(PART)
