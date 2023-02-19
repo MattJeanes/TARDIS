@@ -49,6 +49,18 @@ TARDIS:AddKeyBind("teleport-mat",{
     exterior=true
 })
 
+function ENT:GetDestination()
+    return self:GetData("demat-pos"), self:GetData("demat-ang")
+end
+
+function ENT:GetDestPos()
+    return self:GetData("demat-pos")
+end
+
+function ENT:GetDestAng()
+    return self:GetData("demat-ang")
+end
+
 if SERVER then
 
     function ENT:SetDestination(pos, ang)
@@ -66,10 +78,6 @@ if SERVER then
         else
             return false
         end
-    end
-
-    function ENT:GetDestination()
-        return self:GetData("demat-pos"), self:GetData("demat-ang")
     end
 
     function ENT:ForceDematState()

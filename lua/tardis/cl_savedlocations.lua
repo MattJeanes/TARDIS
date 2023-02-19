@@ -48,6 +48,7 @@ end
 
 function TARDIS:RemoveLocation(map,index)
     table.remove(TARDIS.Locations[map],index)
+    TARDIS:SaveLocations()
 end
 
 TARDIS:LoadLocations()
