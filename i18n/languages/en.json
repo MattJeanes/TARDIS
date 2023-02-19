@@ -530,6 +530,7 @@
     "TimeDistortionGenerator.Starting": "Starting the time distortion generator...",
     "TipStyles.Classic": "Classic (legacy)",
     "TipStyles.Default": "Default (set by interior)",
+    "Themes.InteriorDefault": "Set by interior",
     "TipStyles.WhiteOnBlue": "White on blue",
     "TipStyles.WhiteOnGrey": "White on grey",
     "Vortex.ModelMissing": "WARNING: Vortex model invalid - disabling vortex, are you missing a dependency?",

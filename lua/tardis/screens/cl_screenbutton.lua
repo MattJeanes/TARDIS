@@ -19,7 +19,7 @@ function TardisScreenButton:new(parent,screen)
 
     sb.is_toggle = false
 
-    sb.theme = TARDIS:GetSetting("visgui_theme")
+    sb.theme = TARDIS:GetScreenGUITheme(screen)
 
     sb.frame_off = TARDIS:GetGUIThemeElement(sb.theme, "frames", "off")
     sb.frame_on  = TARDIS:GetGUIThemeElement(sb.theme, "frames", "on")

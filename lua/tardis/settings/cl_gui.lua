@@ -72,10 +72,12 @@ TARDIS:AddSetting({
 TARDIS:AddSetting({
     id = "visgui_theme",
     type = "list",
-    value = "default",
+    value = "default_interior",
 
     get_values_func = function()
-        local values = {}
+        local values = {
+            {"Themes.InteriorDefault", "default_interior"},
+        }
         for k,v in pairs(TARDIS:GetGUIThemes()) do
             local name = "Themes."..v.name
             table.insert(values, {TARDIS:PhraseExists(name) and name or v.name, v.id})

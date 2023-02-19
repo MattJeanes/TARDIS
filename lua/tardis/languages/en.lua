@@ -522,6 +522,7 @@ T.Phrases = {
     ["Spin.Directions.None"] = "none",
     ["Templates.MissingTemplate"] = "Failed to find template %s required for interior %s",
     ["Themes.Default"] = "Default",
+    ["Themes.InteriorDefault"] = "Set by interior",
     ["Themes.TextOnly"] = "Text only",
     ["Themes.Transparent"] = "Transparent",
     ["ThirdPerson.KeyHint"] = "HINT: Use '%s + %s' keys to enter third person",

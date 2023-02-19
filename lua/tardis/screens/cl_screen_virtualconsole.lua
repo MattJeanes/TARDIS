@@ -7,7 +7,7 @@ local function new_virtual_console(self,ext,int,frame,screen)
 
     local background=vgui.Create("DImage", frame)
 
-    local theme = TARDIS:GetSetting("visgui_theme")
+    local theme = TARDIS:GetScreenGUITheme(screen)
     local background_img = TARDIS:GetGUIThemeElement(theme, "backgrounds", "virtualconsole")
     background:SetImage(background_img)
     background:SetSize(frame:GetWide(), frame:GetTall())
