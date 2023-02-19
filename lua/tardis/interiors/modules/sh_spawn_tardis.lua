@@ -60,11 +60,13 @@ if SERVER then
         end)
         undo.Finish(printName)
 
-        net.Start("TARDIS-Spawn_Delete_Sound")
-            net.WriteBool(true)
-            net.WriteEntity(entity)
-            net.WriteString(metadataID)
-        net.Broadcast()
+        if not customData.redecorate_parent then
+            net.Start("TARDIS-Spawn_Delete_Sound")
+                net.WriteBool(true)
+                net.WriteEntity(entity)
+                net.WriteString(metadataID)
+            net.Broadcast()
+        end
 
         ply:AddCleanup("sents", entity)
         entity:SetVar("Player", ply)
