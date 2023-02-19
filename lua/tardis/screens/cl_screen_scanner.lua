@@ -22,8 +22,8 @@ TARDIS:AddScreen("Scanner", {id="scanner",text="Screens.Scanner", menu=false, or
     screen.scannerfov=120
     
     local scanner=vgui.Create("DImage",frame)
-    scanner:SetSize(frame:GetWide()-screen.gap2,frame:GetTall()-screen.gap2)
-    scanner:SetPos(screen.gap,screen.gap)
+    scanner:SetSize(frame:GetWide(),frame:GetTall())
+    scanner:SetPos(0,0)
     scanner:SetMaterial(mat)
     scanner.OldPaint=scanner.Paint
     scanner.Paint=function()
@@ -54,30 +54,48 @@ TARDIS:AddScreen("Scanner", {id="scanner",text="Screens.Scanner", menu=false, or
         label:SetText(TARDIS:GetPhrase(text))
         label:DoLayout()
     end
-    
-    local back=vgui.Create("DButton",frame)
-    back:SetSize(frame:GetTall()*0.2-screen.gap,frame:GetTall()*0.15-screen.gap)
-    back:SetPos(screen.gap+1,frame:GetTall()-back:GetTall()-screen.gap-1)
-    back:SetText("<")
-    back:SetFont(TARDIS:GetScreenFont(screen, "Med"))
-    back.DoClick = function()
-        screen.scannerang.y=screen.scannerang.y+90
-        if screen.scannerang.y>=180 then
-            screen.scannerang.y=-180
+
+
+    if TARDIS:GetSetting("gui_old") then
+        local back=vgui.Create("DButton",frame)
+        back:SetSize(frame:GetTall()*0.2-screen.gap,frame:GetTall()*0.15-screen.gap)
+        back:SetPos(screen.gap+1,frame:GetTall()-back:GetTall()-screen.gap-1)
+        back:SetText("<")
+        back:SetFont(TARDIS:GetScreenFont(screen, "Med"))
+        back.DoClick = function()
+            screen.scannerang.y=screen.scannerang.y+90
+            if screen.scannerang.y>=180 then
+                screen.scannerang.y=-180
+            end
+            updatetext(screen.scannerang.y)
         end
-        updatetext(screen.scannerang.y)
-    end
-    
-    local nxt=vgui.Create("DButton",frame)
-    nxt:SetSize(frame:GetTall()*0.2-screen.gap,frame:GetTall()*0.15-screen.gap)
-    nxt:SetPos(frame:GetWide()-nxt:GetWide()-screen.gap-1,frame:GetTall()-nxt:GetTall()-screen.gap-1)
-    nxt:SetText(">")
-    nxt:SetFont(TARDIS:GetScreenFont(screen, "Med"))
-    nxt.DoClick = function()
-        screen.scannerang.y=screen.scannerang.y-90
-        if screen.scannerang.y<=-180 then
-            screen.scannerang.y=180
+
+        local nxt=vgui.Create("DButton",frame)
+        nxt:SetSize(frame:GetTall()*0.2-screen.gap,frame:GetTall()*0.15-screen.gap)
+        nxt:SetPos(frame:GetWide()-nxt:GetWide()-screen.gap-1,frame:GetTall()-nxt:GetTall()-screen.gap-1)
+        nxt:SetText(">")
+        nxt:SetFont(TARDIS:GetScreenFont(screen, "Med"))
+        nxt.DoClick = function()
+            screen.scannerang.y=screen.scannerang.y-90
+            if screen.scannerang.y<=-180 then
+                screen.scannerang.y=180
+            end
+            updatetext(screen.scannerang.y)
         end
-        updatetext(screen.scannerang.y)
+    else
+        frame.left_arrow_func = function()
+            screen.scannerang.y=screen.scannerang.y-90
+            if screen.scannerang.y<=-180 then
+                screen.scannerang.y=180
+            end
+            updatetext(screen.scannerang.y)
+        end
+        frame.right_arrow_func = function()
+            screen.scannerang.y=screen.scannerang.y+90
+            if screen.scannerang.y>=180 then
+                screen.scannerang.y=-180
+            end
+            updatetext(screen.scannerang.y)
+        end
     end
 end)

@@ -9,6 +9,7 @@ function TardisScreenButton:new(parent,screen)
     sb.parent = parent
     sb.clickable = true
     sb.text = ""
+    sb.click_time = 0.5
 
     sb.icon = vgui.Create("DImageButton", parent)
     sb.frame = vgui.Create("DImageButton", parent)
@@ -102,7 +103,7 @@ function TardisScreenButton:new(parent,screen)
                 sb.on = true
                 sb.icon:SetImage(sb.icon_on)
                 sb.frame:SetImage(sb.frame_on)
-                sb.click_end_time = CurTime() + 0.5
+                sb.click_end_time = CurTime() + sb.click_time
             end
         end
     end
@@ -256,6 +257,10 @@ function TardisScreenButton:SetPressed(on)
 end
 function TardisScreenButton:IsPressed()
     return self.on
+end
+
+function TardisScreenButton:SetClickTime(t)
+    self.click_time = t
 end
 
 function TardisScreenButton:SetVisible(visible)
