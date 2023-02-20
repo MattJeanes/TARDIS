@@ -1,12 +1,12 @@
 T = {
     Exterior = {
-        Model="models/artixc/exteriors/mk1.mdl",
+        Model="models/artixc/exteriors/sidrat.mdl",
         Mass=5000,
         Portal={
-            pos=Vector(30, 0, 46.63),
+            pos=Vector(29.75, 0, 46.5),
             ang=Angle(0,0,0),
-            width=40,
-            height=92,
+            width=25,
+            height=87,
             thickness = 25,
             inverted = true,
         },
@@ -32,8 +32,8 @@ T = {
         },
         Parts={
             door={
-                model="models/artixc/exteriors/mk1_door.mdl",
-                posoffset=Vector(-30.05,0,-46.45),
+                model="models/artixc/exteriors/sidrat_door.mdl",
+                posoffset=Vector(-29.85,0,-46.45),
                 angoffset=Angle(0,0,0),
             },
         }
@@ -41,11 +41,11 @@ T = {
     Interior = {
         Parts={
             door={
-                model="models/artixc/exteriors/mk1_door.mdl",
-                posoffset=Vector(30.05,0,-46.45),
+                model="models/artixc/exteriors/sidrat_door.mdl",
+                posoffset=Vector(29.85,0,-46.45),
             },
         }
     },
 }
 
-TARDIS:AddInteriorTemplate("ttmk1", T)
+TARDIS:AddInteriorTemplate("exterior_sidrat", T)
