@@ -482,6 +482,8 @@
     "Settings.Sections.SoundsAndMusic.Sounds.Idle.Description": "Si los sonidos en descanso se pueden escuchar en el interior o no",
     "Settings.Sections.SoundsAndMusic.Sounds.Lock": "Sonido de cerrojos",
     "Settings.Sections.SoundsAndMusic.Sounds.Lock.Description": "Controla si se hace un sonido al alternar los cerrojos",
+    "Settings.Sections.SoundsAndMusic.Sounds.SpawnDelete": "",
+    "Settings.Sections.SoundsAndMusic.Sounds.SpawnDelete.Description": "",
     "Settings.Sections.SoundsAndMusic.Sounds.Teleport": "Sonido de teletransporte",
     "Settings.Sections.SoundsAndMusic.Sounds.Teleport.Description": "Si los sonidos de teletransporte se pueden escuchar o no",
     "Spawnmenu.AddToFavourites": "Añadir a favoritos (es necesario recargar)",

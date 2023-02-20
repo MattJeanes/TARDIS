@@ -482,6 +482,8 @@
     "Settings.Sections.SoundsAndMusic.Sounds.Idle.Description": "Ob die Leerlaufgeräusche im Inneren zu hören sind oder nicht",
     "Settings.Sections.SoundsAndMusic.Sounds.Lock": "Ton sperren",
     "Settings.Sections.SoundsAndMusic.Sounds.Lock.Description": "Ob beim Umschalten des Schlosses ein Ton ertönt oder nicht",
+    "Settings.Sections.SoundsAndMusic.Sounds.SpawnDelete": "",
+    "Settings.Sections.SoundsAndMusic.Sounds.SpawnDelete.Description": "",
     "Settings.Sections.SoundsAndMusic.Sounds.Teleport": "Teleportieren Ton",
     "Settings.Sections.SoundsAndMusic.Sounds.Teleport.Description": "Ob die Teleporttöne zu hören sind oder nicht",
     "Spawnmenu.AddToFavourites": "Zu Favoriten hinzufügen (Neuladen erforderlich)",

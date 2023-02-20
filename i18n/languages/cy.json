@@ -482,6 +482,8 @@
     "Settings.Sections.SoundsAndMusic.Sounds.Idle.Description": "A ellir clywed y synau segur ar y tu mewn ai peidio",
     "Settings.Sections.SoundsAndMusic.Sounds.Lock": "Clo Sain",
     "Settings.Sections.SoundsAndMusic.Sounds.Lock.Description": "P'un a yw sain yn cael ei wneud wrth toglo'r clo ai peidio",
+    "Settings.Sections.SoundsAndMusic.Sounds.SpawnDelete": "",
+    "Settings.Sections.SoundsAndMusic.Sounds.SpawnDelete.Description": "",
     "Settings.Sections.SoundsAndMusic.Sounds.Teleport": "Sain Teleport",
     "Settings.Sections.SoundsAndMusic.Sounds.Teleport.Description": "A ellir clywed y synau teleport ai peidio",
     "Spawnmenu.AddToFavourites": "Ychwanegu at ffefrynnau (angen ail-lwytho)",

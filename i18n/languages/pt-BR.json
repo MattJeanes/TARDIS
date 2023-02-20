@@ -482,6 +482,8 @@
     "Settings.Sections.SoundsAndMusic.Sounds.Idle.Description": "Se os sons ociosos (idle) podem ser ouvidos do interior ou não",
     "Settings.Sections.SoundsAndMusic.Sounds.Lock": "Som da Tranca",
     "Settings.Sections.SoundsAndMusic.Sounds.Lock.Description": "Se um som é feito quando alternar a tranca ou não",
+    "Settings.Sections.SoundsAndMusic.Sounds.SpawnDelete": "",
+    "Settings.Sections.SoundsAndMusic.Sounds.SpawnDelete.Description": "",
     "Settings.Sections.SoundsAndMusic.Sounds.Teleport": "Som de Teleporte",
     "Settings.Sections.SoundsAndMusic.Sounds.Teleport.Description": "Se os sons de teleporte podem ser ouvidos ou não",
     "Spawnmenu.AddToFavourites": "Adicionar aos favoritos (é necessário recarregar)",

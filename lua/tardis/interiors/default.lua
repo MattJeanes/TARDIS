@@ -269,7 +269,11 @@ T.Exterior = {
             mat_fast = "p00gie/tardis/mat_fast.wav",
             mat_damaged_fast = "p00gie/tardis/mat_damaged_fast.wav",
             fullflight = "drmatt/tardis/full.wav",
+            interrupt = "drmatt/tardis/repairfinish.wav",
         },
+        Spawn = "drmatt/tardis/repairfinish.wav",
+        RepairFinish = "drmatt/tardis/repairfinish.wav",
+        Delete = "p00gie/tardis/base/tardis_delete.wav",
     },
     Light = {
         warncolor = Color(255,200,200),

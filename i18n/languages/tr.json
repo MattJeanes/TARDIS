@@ -482,6 +482,8 @@
     "Settings.Sections.SoundsAndMusic.Sounds.Idle.Description": "Boşta kalan seslerin içeriden duyulup duyulmadığı",
     "Settings.Sections.SoundsAndMusic.Sounds.Lock": "Kilit Sesi",
     "Settings.Sections.SoundsAndMusic.Sounds.Lock.Description": "Kilidi değiştirirken ses çıkarılıp çıkarılmadığı",
+    "Settings.Sections.SoundsAndMusic.Sounds.SpawnDelete": "",
+    "Settings.Sections.SoundsAndMusic.Sounds.SpawnDelete.Description": "",
     "Settings.Sections.SoundsAndMusic.Sounds.Teleport": "Işınlanma Sesi",
     "Settings.Sections.SoundsAndMusic.Sounds.Teleport.Description": "Teleport seslerinin duyulup duyulmayacağı",
     "Spawnmenu.AddToFavourites": "Favorilere ekle (yeniden yükleme gerekli)",
