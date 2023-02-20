@@ -1,4 +1,6 @@
 {
+  "Name": "Português (Brasil)",
+  "Author": "Cova (covauski3)",
   "Phrases": {
     "Artron.Depleted": "Energia artron esgotada",
     "Binds.AnyKey": "Aperte qualquer tecla",
@@ -534,7 +536,5 @@
     "Wiremod.Inputs.Mat": "Materializar a TARDIS",
     "Wiremod.Inputs.Pos": "X,Y,Z: Posição de teleporte",
     "Wiremod.Outputs.Health": "Saúde da TARDIS"
-  },
-  "Author": "Cova (covauski3)",
-  "Name": "Português (Brasil)"
+  }
 }

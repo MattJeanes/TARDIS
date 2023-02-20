@@ -1,4 +1,6 @@
 {
+  "Name": "繁體中文",
+  "Author": "ALexZekio",
   "Phrases": {
     "Artron.Depleted": "雅昌能源耗盡",
     "Binds.AnyKey": "按下任意鍵",
@@ -534,7 +536,5 @@
     "Wiremod.Inputs.Mat": "使塔迪斯降落",
     "Wiremod.Inputs.Pos": "X,Y,Z：傳送位置",
     "Wiremod.Outputs.Health": "塔迪斯生命值"
-  },
-  "Author": "ALexZekio",
-  "Name": "繁體中文"
+  }
 }
