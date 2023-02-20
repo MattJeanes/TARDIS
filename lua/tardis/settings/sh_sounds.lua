@@ -28,19 +28,6 @@ if CLIENT then
         name="SpawnDelete",
     })
 
---[[    TARDIS:AddSetting({
-        id="artron_sound",
-        type="bool",
-        value=true,
-
-        class="local",
-
-        option=true,
-        section=SETTING_SECTION,
-        subsection="Sounds",
-        name="ArtronRelease",
-    })]]
-
     TARDIS:AddSetting({
         id="external_hum",
         type="bool",
