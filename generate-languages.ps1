@@ -19,23 +19,27 @@ Get-ChildItem $sourceLanguageFolder | ForEach-Object {
         return
     }
 
-    $content = "-- AUTO GENERATED FILE - DO NOT EDIT --`n"
-    $content += "-- SOURCE FILE: i18n/languages/$($_.Name) --`n`n"
-    $content += "local T = {}`n"
-    $content += "T.Code = `"$code`"`n"
-    $content += "T.Name = `"$($language.Name)`"`n"
-    $content += "T.Phrases = {`n"
+    $content = [System.Text.StringBuilder]::new()
+
+    $null = $content.AppendLine("-- AUTO GENERATED FILE - DO NOT EDIT --")
+    $null = $content.AppendLine("-- SOURCE FILE: i18n/languages/$($_.Name) --")
+    $null = $content.AppendLine()
+    $null = $content.AppendLine("local T = {}")
+    $null = $content.AppendLine("T.Code = `"$code`"")
+    $null = $content.AppendLine("T.Name = `"$($language.Name)`"")
+    $null = $content.AppendLine("T.Phrases = {")
 
     $language.Phrases.Keys | Where-Object { $language.Phrases[$_] } | Sort-Object | ForEach-Object {
         $key = $_
         $phrase = $language.Phrases[$key]
         $phrase = $phrase.Replace("`n", "\n")
         $phrase = $phrase.Replace("`"", "\`"")
-        $content += "    [`"$key`"] = `"$phrase`",`n"
+        $null = $content.AppendLine("    [`"$key`"] = `"$phrase`",")
     }
 
-    $content += "}`n`n"
-    $content += "TARDIS:AddLanguage(T)`n"
+    $null = $content.AppendLine("}")
+    $null = $content.AppendLine()
+    $null = $content.AppendLine("TARDIS:AddLanguage(T)")
 
     Write-Host "Writing language $code to $targetFilename"
 
