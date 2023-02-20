@@ -2,7 +2,7 @@
 
 local T = {}
 T.Base = "default"
-T.Name = "Interiors.DefaultTT_Type50"
+T.Name = "Interiors.DefaultTTCapsuleType50"
 T.ID = "default_tt_type50"
 
 T.IsVersionOf = "default"
