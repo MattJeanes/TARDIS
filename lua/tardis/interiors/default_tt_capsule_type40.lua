@@ -11,8 +11,8 @@ T.Interior = {
     Portal = {
         pos = Vector(316.7, 334.9, -36.5),
         ang = Angle(0, 230, 0),
-        width = 40,
-        height = 92
+        width = 55,
+        height = 95
     },
     Parts = {
         default_doorframe = {
@@ -22,10 +22,10 @@ T.Interior = {
             matrixScale = Vector(1, 1, 1.118)
         },
         default_doorframe_bottom = {
-            matrixScale = Vector(0.53, 0.6, 1)
+            matrixScale = Vector(0.53, 1.02, 1)
         },
         default_doorframe_bottom2 = {
-            matrixScale = Vector(0.54, 0.6, 1)
+            matrixScale = Vector(0.54, 1.02, 1)
         },
     },
 }

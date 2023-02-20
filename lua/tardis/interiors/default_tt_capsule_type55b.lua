@@ -12,7 +12,7 @@ T.Interior = {
         pos = Vector(316.7, 334.9, -36.5),
         ang = Angle(0, 230, 0),
         width = 31,
-        height = 87
+        height = 91
     },
     Parts = {
         default_doorframe = {

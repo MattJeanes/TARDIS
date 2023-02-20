@@ -42,7 +42,7 @@ T = {
         Parts={
             door={
                 model="models/artixc/exteriors/mk2_door.mdl",
-                posoffset=Vector(27.95,0,-57),
+                posoffset=Vector(27.95,0,-56.2),
             },
         }
     },
