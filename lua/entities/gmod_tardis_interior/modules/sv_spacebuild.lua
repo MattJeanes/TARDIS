@@ -5,8 +5,6 @@ ENT:AddHook("Initialize", "spacebuild", function(self)
         return
     end
 
-    self:SetData("spacebuild", true)
-
     self.spacebuild_env = ents.Create("base_cube_environment")
     self.spacebuild_env:SetModel("models/props_lab/huladoll.mdl")
     self.spacebuild_env:SetPos(self:GetPos())
@@ -17,11 +15,14 @@ ENT:AddHook("Initialize", "spacebuild", function(self)
 
     local radius = self.metadata.Interior.ExitDistance
     self.spacebuild_env:CreateEnvironment(self, radius)
+
+    self:SetData("spacebuild", true)
+
     self:UpdateSpacebuildEnvironment()
 end)
 
 function ENT:UpdateSpacebuildEnvironment()
-    if not self:GetData("spacebuild", false) then
+    if not IsValid(self.spacebuild_env) then
         return
     end
 
@@ -72,6 +73,10 @@ function ENT:UpdateSpacebuildEnvironment()
 end
 
 function ENT:UpdateSpacebuildEnvironmentAir()
+    if not IsValid(self.spacebuild_env) then
+        return
+    end
+    
     local volume = self.spacebuild_env:GetVolume() / 1000
     local intenv = self.spacebuild_env.sbenvironment
     intenv.air.o2 = math.Round(intenv.air.o2per * 5 * volume * intenv.atmosphere)
