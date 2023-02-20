@@ -1,4 +1,5 @@
 {
+  "Name": "Português",
   "Phrases": {
     "Artron.Depleted": "Energia artron esgotada",
     "Binds.AnyKey": "Aperte qualquer tecla",
@@ -535,6 +536,5 @@
     "Wiremod.Inputs.Pos": "X,Y,Z: Posição de teleporte",
     "Wiremod.Outputs.Health": "Saúde da TARDIS"
   },
-  "Author": "Cova (covauski3)",
-  "Name": "Português"
+  "Author": "Cova (covauski3)"
 }

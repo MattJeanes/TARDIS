@@ -1,4 +1,5 @@
 {
+  "Name": "Français",
   "Phrases": {
     "Artron.Depleted": "Énergie artron épuisée",
     "Binds.AnyKey": "Appuyez sur une touche",
@@ -535,6 +536,5 @@
     "Wiremod.Inputs.Pos": "X,Y,Z: Position de téléportation",
     "Wiremod.Outputs.Health": "Santé du TARDIS"
   },
-  "Author": "Kirbe, Piquixel",
-  "Name": "Français"
+  "Author": "Kirbe, Piquixel"
 }
