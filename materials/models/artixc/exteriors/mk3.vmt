@@ -1,10 +1,22 @@
 "VertexlitGeneric"
 {
 	"$basetexture" "models/artixc/exteriors/mk3"
+	"$nodecal" "1"
+	"$surfaceprop" "Metal"
+
+	"$color2"	"[0.85 0.85 0.9]"
+
 	"$envmap" "models/artixc/exteriors/environment"
 	"$envmaptint" "[0.6 0.6 0.6]"
-	"$nodecal" "1"
-	"$surfaceprop" "Glass"
+
+	"$detail"				"detail/metal_detail_01"
+	"$detailscale"			"8.4"
+	"$detailblendfactor"	"0.1"
+	"$detailblendmode"		"0"
+
+	"$phong"					"1"
+	"$phongexponent"			"10"
+	"$phongboost"				"10"
 }
 
 
