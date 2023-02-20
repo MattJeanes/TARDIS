@@ -1,5 +1,5 @@
 {
-  "Author": "Equipo de Desarrollo de TARDIS",
+  "Name": "Español",
   "Phrases": {
     "Artron.Depleted": "Energía de Artron agotada",
     "Binds.AnyKey": "Presiona cualquier tecla",
@@ -536,5 +536,5 @@
     "Wiremod.Inputs.Pos": "X, Y, Z: Posición de teletransporte",
     "Wiremod.Outputs.Health": "Salud del TARDIS"
   },
-  "Name": "Español"
+  "Author": "Equipo de Desarrollo de TARDIS"
 }

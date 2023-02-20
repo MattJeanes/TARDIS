@@ -1,5 +1,5 @@
 {
-  "Author": "ALexZekio",
+  "Name": "简体中文",
   "Phrases": {
     "Artron.Depleted": "Artron能量减少",
     "Binds.AnyKey": "按下任意键",
@@ -536,5 +536,5 @@
     "Wiremod.Inputs.Pos": "X,Y,Z：传送位置",
     "Wiremod.Outputs.Health": "塔迪斯生命值"
   },
-  "Name": "简体中文"
+  "Author": "ALexZekio"
 }
