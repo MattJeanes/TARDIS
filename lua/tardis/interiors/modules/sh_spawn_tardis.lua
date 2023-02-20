@@ -1,5 +1,5 @@
 if SERVER then
-    util.AddNetworkString("TARDIS-Spawn_Delete_Sound")
+    util.AddNetworkString("TARDIS-Spawn-Delete-Sound")
 
     function TARDIS:SpawnTARDIS(ply, customData)
         local entityName = "gmod_tardis"
@@ -52,7 +52,7 @@ if SERVER then
         end
         undo.SetCustomUndoText("Undone " .. printName)
         undo.AddFunction(function()
-            net.Start("TARDIS-Spawn_Delete_Sound")
+            net.Start("TARDIS-Spawn-Delete-Sound")
                 net.WriteBool(false)
                 net.WriteVector(entity:GetPos())
                 net.WriteString(metadataID)
@@ -61,7 +61,7 @@ if SERVER then
         undo.Finish(printName)
 
         if not customData.redecorate_parent then
-            net.Start("TARDIS-Spawn_Delete_Sound")
+            net.Start("TARDIS-Spawn-Delete-Sound")
                 net.WriteBool(true)
                 net.WriteEntity(entity)
                 net.WriteString(metadataID)
@@ -105,7 +105,7 @@ if SERVER then
         TARDIS:SpawnTARDIS(ply, {metadataID = args[1]})
     end)
 else -- CLIENT
-    net.Receive("TARDIS-Spawn_Delete_Sound", function()
+    net.Receive("TARDIS-Spawn-Delete-Sound", function()
         local ent
         local pos
         local spawn = net.ReadBool()
