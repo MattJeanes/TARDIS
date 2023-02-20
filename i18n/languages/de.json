@@ -1,4 +1,6 @@
 {
+  "Name": "Deutsch",
+  "Author": "TARDIS-Entwicklungsteam",
   "Phrases": {
     "Artron.Depleted": "Artron Energie erschöpft",
     "Binds.AnyKey": "Drücken Sie eine beliebige Taste",
@@ -534,7 +536,5 @@
     "Wiremod.Inputs.Mat": "Materialisiere die TARDIS",
     "Wiremod.Inputs.Pos": "X,Y,Z: Teleport-Position",
     "Wiremod.Outputs.Health": "TARDIS Gesundheit"
-  },
-  "Author": "TARDIS-Entwicklungsteam",
-  "Name": "Deutsch"
+  }
 }
