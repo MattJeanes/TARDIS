@@ -3,10 +3,37 @@ $targetLanguageFolder = Join-Path $PSScriptRoot "lua/tardis/languages"
 
 $targetLanguageFolder | Get-ChildItem | Remove-Item
 
+$originLanguage = Get-Content -Raw (Join-Path $sourceLanguageFolder "en.json") | ConvertFrom-Json -AsHashtable
+
 Get-ChildItem $sourceLanguageFolder | ForEach-Object {
     $code = $_.BaseName
-    $languageFile = Get-Content -Raw $_.FullName
-    $language = $languageFile | ConvertFrom-Json -AsHashtable
+    $language = Get-Content -Raw $_.FullName | ConvertFrom-Json -AsHashtable
+
+    $sortedPhrases = [ordered]@{}
+    $language.Phrases.Keys | Where-Object { -not $originLanguage.Phrases.Contains($_) } | ForEach-Object {
+        Write-Warning "Removing orphaned phrase $_ from language $code"
+    }
+    $originLanguage.Phrases.Keys | Sort-Object | ForEach-Object {
+        $key = $_
+        if ($language.Phrases.Contains($key)) {
+            $phrase = $language.Phrases[$key]
+        }
+        else {
+            Write-Host "Adding placeholder for missing phrase $key in language $code"
+            $phrase = [string]::Empty
+        }
+        $phrase = $language.Phrases.Contains($key) ? $language.Phrases[$key] : [string]::Empty
+        $sortedPhrases[$key] = $phrase
+    }
+
+    $language.Phrases = $sortedPhrases
+
+    $language | ConvertTo-Json | Set-Content -Path $_.FullName
+}
+
+Get-ChildItem $sourceLanguageFolder | ForEach-Object {
+    $code = $_.BaseName
+    $language = Get-Content -Raw $_.FullName | ConvertFrom-Json -AsHashtable
     $targetFilename = Join-Path $targetLanguageFolder "$($code.ToLower()).lua"
 
     if (-not $language.Name) {
