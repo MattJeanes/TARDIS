@@ -64,6 +64,7 @@ if SERVER then
             net.Start("TARDIS-Spawn-Delete-Sound")
                 net.WriteBool(true)
                 net.WriteEntity(entity)
+                net.WriteVector(entity:GetPos())
                 net.WriteString(metadataID)
             net.Broadcast()
         end
@@ -111,6 +112,7 @@ else -- CLIENT
         local spawn = net.ReadBool()
         if spawn then
             ent = net.ReadEntity()
+            pos = net.ReadVector()
         else
             pos = net.ReadVector()
         end
@@ -118,7 +120,12 @@ else -- CLIENT
         local id = net.ReadString()
         if TARDIS:GetSetting("spawn_delete_sound") and TARDIS:GetSetting("sound") then
             if spawn then
-                ent:EmitSound(TARDIS.Metadata[id].Exterior.Sounds.Spawn)
+                local snd = TARDIS.Metadata[id].Exterior.Sounds.Spawn
+                if IsValid(ent) then
+                    ent:EmitSound(snd)
+                else
+                    sound.Play(snd, pos)
+                end
             else
                 sound.Play(TARDIS.Metadata[id].Exterior.Sounds.Delete, pos)
             end
