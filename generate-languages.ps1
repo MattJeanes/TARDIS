@@ -29,11 +29,7 @@ Get-ChildItem $sourceLanguageFolder | ForEach-Object {
     $language.Phrases = $sortedPhrases
 
     $language | ConvertTo-Json | Set-Content -Path $_.FullName
-}
-
-Get-ChildItem $sourceLanguageFolder | ForEach-Object {
-    $code = $_.BaseName
-    $language = Get-Content -Raw $_.FullName | ConvertFrom-Json -AsHashtable
+    
     $targetFilename = Join-Path $targetLanguageFolder "$($code.ToLower()).lua"
 
     if (-not $language.Name) {
