@@ -34,6 +34,10 @@ T.Versions = {
             name = "Interiors.Default.Versions.TTSidrat",
             id = "default_tt_sidrat",
         },
+        {
+            name = "Interiors.Default.Versions.TTCapsule",
+            id = "default_tt_capsule",
+        },
     },
 }
 
