@@ -14,8 +14,6 @@ if SERVER then
     function ENT:ToggleScanners()
         return self:SetScannersOn(not self:GetScannersOn())
     end
-
-    return
 end
 
 ENT:AddHook("Initialize", "scanner", function(self)
@@ -24,28 +22,31 @@ ENT:AddHook("Initialize", "scanner", function(self)
         for k,v in pairs(self.metadata.Interior.Scanners) do
             local scanner = {}
             scanner.uid = "tardisi_scanner_"..self:EntIndex().."_"..k.."_"..v.width.."_"..v.height.."_"..v.fov
-            scanner.mat=CreateMaterial(
-                scanner.uid,
-                "VertexLitGeneric",
-                {
-                    ["$model"] = "1",
-                    ["$nodecal"] = "1",
-                    ["$selfillum"] = "1",
-                }
-            )
-            local found=false
-            for i,mat in pairs(self:GetMaterials()) do
-                if mat==v.mat then
-                    self:SetSubMaterial(i-1,"!"..scanner.uid)
-                    found=true
-                    break
+            if SERVER then
+                local found=false
+                for i,mat in pairs(self:GetMaterials()) do
+                    if mat==v.mat then
+                        self:SetSubMaterial(i-1,"!"..scanner.uid)
+                        found=true
+                        break
+                    end
                 end
+                if not found then
+                    ErrorNoHalt("Could not find material "..v.mat.." for scanner on "..self:GetModel())
+                end
+            else
+                scanner.mat=CreateMaterial(
+                    scanner.uid,
+                    "VertexLitGeneric",
+                    {
+                        ["$model"] = "1",
+                        ["$nodecal"] = "1",
+                        ["$selfillum"] = "1",
+                    }
+                )
+                scanner.rt = GetRenderTarget(scanner.uid, v.width, v.height, false)
+                scanner.mat:SetTexture("$basetexture",scanner.rt)
             end
-            if not found then
-                ErrorNoHalt("Could not find material "..v.mat.." for scanner on "..self:GetModel())
-            end
-            scanner.rt = GetRenderTarget(scanner.uid, v.width, v.height, false)
-            scanner.mat:SetTexture("$basetexture",scanner.rt)
             scanner.ang = v.ang
             scanner.width = v.width
             scanner.height = v.height
@@ -54,6 +55,8 @@ ENT:AddHook("Initialize", "scanner", function(self)
         end
     end
 end)
+
+if SERVER then return end
 
 ENT:AddHook("ShouldDrawScanners", "scanner", function(self)
     if not (self:GetScannersOn() and self:GetPower() and (not LocalPlayer():GetTardisData("outside"))) then
