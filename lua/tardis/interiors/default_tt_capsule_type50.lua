@@ -2,8 +2,8 @@
 
 local T = {}
 T.Base = "default"
-T.Name = "Interiors.DefaultTTMk2"
-T.ID = "default_tt_mk2"
+T.Name = "Interiors.DefaultTT_Type50"
+T.ID = "default_tt_type50"
 
 T.IsVersionOf = "default"
 
@@ -31,7 +31,7 @@ T.Interior = {
 }
 
 T.Templates = {
-    ttmk2 = { override = true, fail = function() ErrorNoHalt("Failed to add tt_mk2 default exterior") end, },
+    exterior_ttcapsule_type50 = { override = true, fail = function() ErrorNoHalt("Failed to add ttcapsule_type50 default exterior") end, },
 }
 
 TARDIS:AddInterior(T)

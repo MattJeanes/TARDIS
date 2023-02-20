@@ -48,4 +48,4 @@ T = {
     },
 }
 
-TARDIS:AddInteriorTemplate("ttmk2", T)
+TARDIS:AddInteriorTemplate("exterior_ttcapsule_type50", T)

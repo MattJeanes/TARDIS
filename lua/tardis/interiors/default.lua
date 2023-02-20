@@ -19,24 +19,24 @@ T.Versions = {
     },
     other = {
         {
-            name = "Interiors.Default.Versions.TTMk1",
-            id = "default_tt_mk1",
+            name = "Interiors.Default.Versions.TT_Type40",
+            id = "default_tt_type40",
         },
         {
-            name = "Interiors.Default.Versions.TTMk2",
-            id = "default_tt_mk2",
+            name = "Interiors.Default.Versions.TT_Type50",
+            id = "default_tt_type50",
         },
         {
-            name = "Interiors.Default.Versions.TTMk3",
-            id = "default_tt_mk3",
+            name = "Interiors.Default.Versions.TT_Type55",
+            id = "default_tt_type55",
         },
         {
-            name = "Interiors.Default.Versions.TTSidrat",
-            id = "default_tt_sidrat",
+            name = "Interiors.Default.Versions.TT_Type55B",
+            id = "default_tt_type55b",
         },
         {
-            name = "Interiors.Default.Versions.TTCapsule",
-            id = "default_tt_capsule",
+            name = "Interiors.Default.Versions.SIDRAT",
+            id = "default_sidrat",
         },
     },
 }
