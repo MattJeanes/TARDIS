@@ -1,3 +1,5 @@
+$ErrorActionPreference = "Stop"
+
 $sourceLanguageFolder = Join-Path $PSScriptRoot "i18n/languages"
 $targetLanguageFolder = Join-Path $PSScriptRoot "lua/tardis/languages"
 
@@ -8,6 +10,22 @@ $originLanguage = Get-Content -Raw (Join-Path $sourceLanguageFolder "en.json") |
 Get-ChildItem $sourceLanguageFolder | ForEach-Object {
     $code = $_.BaseName
     $language = Get-Content -Raw $_.FullName | ConvertFrom-Json -AsHashtable
+
+    if (-not $language) {
+        $language = @{}
+    }
+
+    if (-not $language.Name) {
+        $language.Name = [string]::Empty
+    }
+
+    if (-not $language.Author) {
+        $language.Author = [string]::Empty
+    }
+
+    if (-not $language.Phrases) {
+        $language.Phrases = @{}
+    }
 
     $sortedPhrases = [ordered]@{}
     $language.Phrases.Keys | Where-Object { -not $originLanguage.Phrases.Contains($_) } | ForEach-Object {
@@ -26,19 +44,22 @@ Get-ChildItem $sourceLanguageFolder | ForEach-Object {
         $sortedPhrases[$key] = $phrase
     }
 
-    $language.Phrases = $sortedPhrases
+    $sortedLanguage = [ordered]@{}
+    $sortedLanguage.Name = $language.Name
+    $sortedLanguage.Author = $language.Author
+    $sortedLanguage.Phrases = $sortedPhrases
 
-    $language | ConvertTo-Json | Set-Content -Path $_.FullName
-    
+    $sortedLanguage | ConvertTo-Json | Set-Content -Path $_.FullName
+
     $targetFilename = Join-Path $targetLanguageFolder "$($code.ToLower()).lua"
 
     if (-not $language.Name) {
-        Write-Warning "Language $code has no name, skipping.."
+        Write-Warning "Language $code has no name, skipping Lua file generation.."
         return
     }
 
     if ((-not $language.Phrases) -or ($language.Phrases.Keys.Count -eq 0)) {
-        Write-Warning "Language $code has no phrases, skipping.."
+        Write-Warning "Language $code has no phrases, skipping Lua file generation.."
         return
     }
 
