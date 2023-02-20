@@ -40,7 +40,6 @@ Get-ChildItem $sourceLanguageFolder | ForEach-Object {
             Write-Host "Adding placeholder for missing phrase $key in language $code"
             $phrase = [string]::Empty
         }
-        $phrase = $language.Phrases.Contains($key) ? $language.Phrases[$key] : [string]::Empty
         $sortedPhrases[$key] = $phrase
     }
 
