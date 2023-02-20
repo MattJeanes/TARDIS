@@ -1,4 +1,5 @@
 {
+  "Author": "Tîm Datblygu TARDIS",
   "Phrases": {
     "Artron.Depleted": "Artron ynni disbyddu",
     "Binds.AnyKey": "Gwasgwch unrhyw cywair",
@@ -535,6 +536,5 @@
     "Wiremod.Inputs.Pos": "X,Y,Z: sefyllfa teleport",
     "Wiremod.Outputs.Health": "Iechyd TARDIS"
   },
-  "Name": "Saesneg",
-  "Author": "Tîm Datblygu TARDIS"
+  "Name": "Saesneg"
 }

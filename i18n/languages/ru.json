@@ -1,4 +1,5 @@
 {
+  "Author": "P00gie, parar020100",
   "Phrases": {
     "Artron.Depleted": "Энергия Артрона истощена",
     "Binds.AnyKey": "Нажмите любую клавишу",
@@ -535,6 +536,5 @@
     "Wiremod.Inputs.Pos": "X,Y,Z: Позиция телепортации",
     "Wiremod.Outputs.Health": "Здоровье ТАРДИС"
   },
-  "Name": "Русский",
-  "Author": "P00gie, parar020100"
+  "Name": "Русский"
 }

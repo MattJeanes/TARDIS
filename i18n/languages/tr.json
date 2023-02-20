@@ -1,4 +1,5 @@
 {
+  "Author": "TARDIS Geliştirme Ekibi",
   "Phrases": {
     "Artron.Depleted": "Artron enerjisi tükendi",
     "Binds.AnyKey": "Herhangi bir tuşa basın",
@@ -535,6 +536,5 @@
     "Wiremod.Inputs.Pos": "X,Y,Z: Işınlanma konumu",
     "Wiremod.Outputs.Health": "TARDIS Sağlık"
   },
-  "Name": "Türk",
-  "Author": "TARDIS Geliştirme Ekibi"
+  "Name": "Türk"
 }
