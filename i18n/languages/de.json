@@ -519,6 +519,7 @@
     "Spin.Directions.None": "Keine",
     "Templates.MissingTemplate": "Die für den Innenraum %s erforderliche Vorlage %s konnte nicht gefunden werden.",
     "Themes.Default": "Standard",
+    "Themes.InteriorDefault": "",
     "Themes.TextOnly": "Nur Text",
     "Themes.Transparent": "Transparent",
     "ThirdPerson.KeyHint": "TIPP: Verwenden Sie die Tasten '%s + %s', um die dritte Person einzugeben.",

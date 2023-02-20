@@ -519,6 +519,7 @@
     "Spin.Directions.None": "yok",
     "Templates.MissingTemplate": "%s iç mekanı için gerekli %s şablonu bulunamadı",
     "Themes.Default": "Varsayılan",
+    "Themes.InteriorDefault": "",
     "Themes.TextOnly": "Sadece yazı",
     "Themes.Transparent": "Şeffaf",
     "ThirdPerson.KeyHint": "İPUCU: Üçüncü kişiyi girmek için '%s + %s' tuşlarını kullanın",

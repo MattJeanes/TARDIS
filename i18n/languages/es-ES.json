@@ -519,6 +519,7 @@
     "Spin.Directions.None": "ninguno",
     "Templates.MissingTemplate": "No se pudo hallar la plantilla %s requerida para el interior %s",
     "Themes.Default": "Predeterminado",
+    "Themes.InteriorDefault": "",
     "Themes.TextOnly": "Solo texto",
     "Themes.Transparent": "Transparente",
     "ThirdPerson.KeyHint": "CONSEJO: Presiona '%s + %s' para entrar a tercera persona",

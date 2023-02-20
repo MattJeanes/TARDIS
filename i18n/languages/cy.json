@@ -519,6 +519,7 @@
     "Spin.Directions.None": "dim",
     "Templates.MissingTemplate": "Wedi methu dod o hyd i dempled %s sydd ei angen ar gyfer tu mewn %s",
     "Themes.Default": "Diofyn",
+    "Themes.InteriorDefault": "",
     "Themes.TextOnly": "Testun yn unig",
     "Themes.Transparent": "Tryloyw",
     "ThirdPerson.KeyHint": "AWGRYM: Defnyddiwch allweddi '%s + %s' i fynd i mewn i drydydd person",

@@ -519,6 +519,7 @@
     "Spin.Directions.None": "无",
     "Templates.MissingTemplate": "未找到模板 %s，%s 内部所需",
     "Themes.Default": "默认",
+    "Themes.InteriorDefault": "",
     "Themes.TextOnly": "仅文字",
     "Themes.Transparent": "透明",
     "ThirdPerson.KeyHint": "提示：使用 “%s + %s” 键进入第三人称",

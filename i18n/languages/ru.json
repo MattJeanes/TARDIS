@@ -519,6 +519,7 @@
     "Spin.Directions.None": "отсутствует",
     "Templates.MissingTemplate": "Не удалось найти шаблон %s, необходимый для интерьера %s",
     "Themes.Default": "По умолчанию",
+    "Themes.InteriorDefault": "",
     "Themes.TextOnly": "Только текст",
     "Themes.Transparent": "Прозрачная",
     "ThirdPerson.KeyHint": "ПОДСКАЗКА: Используйте '%s + %s' для перехода в вид от 3-ого лица",

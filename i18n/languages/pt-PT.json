@@ -519,6 +519,7 @@
     "Spin.Directions.None": "nenhum",
     "Templates.MissingTemplate": "Não foi possível encontrar o modelo %s necessário para o interior %s",
     "Themes.Default": "Padrão",
+    "Themes.InteriorDefault": "",
     "Themes.TextOnly": "Somente texto",
     "Themes.Transparent": "Transparente",
     "ThirdPerson.KeyHint": "DICA: Use as teclas '%s + %s' para entrar em terceira pessoa",
