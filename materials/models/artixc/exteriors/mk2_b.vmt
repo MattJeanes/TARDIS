@@ -7,7 +7,7 @@
 	"$color2"	"[0.85 0.85 0.9]"
 
 	"$envmap" "models/artixc/exteriors/environment"
-	"$envmaptint" "[0.6 0.6 0.6]"
+	"$envmaptint" "[0.3 0.3 0.3]"
 
 	"$detail"				"detail/metal_detail_01"
 	"$detailscale"			"8.4"

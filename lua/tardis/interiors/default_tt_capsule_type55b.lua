@@ -1,9 +1,9 @@
--- Default (TT Mk3 Capsule)
+-- Default (TT Capsule)
 
 local T = {}
 T.Base = "default"
-T.Name = "Interiors.DefaultTTMk1"
-T.ID = "default_tt_mk3"
+T.Name = "Interiors.DefaultTTCapsuleType55B"
+T.ID = "default_tt_type55b"
 
 T.IsVersionOf = "default"
 
@@ -12,7 +12,7 @@ T.Interior = {
         pos = Vector(316.7, 334.9, -36.5),
         ang = Angle(0, 230, 0),
         width = 31,
-        height = 87
+        height = 91
     },
     Parts = {
         default_doorframe = {
@@ -31,7 +31,7 @@ T.Interior = {
 }
 
 T.Templates = {
-    ttmk3 = { override = true, fail = function() ErrorNoHalt("Failed to add tt_mk3 default exterior") end, },
+    ttcapsule = { override = true, fail = function() ErrorNoHalt("Failed to add ttcapsule_type55b default exterior") end, },
 }
 
 TARDIS:AddInterior(T)

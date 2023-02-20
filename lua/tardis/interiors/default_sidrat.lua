@@ -1,9 +1,9 @@
--- Default (TT Capsule)
+-- Default (TT Sidrat Capsule)
 
 local T = {}
 T.Base = "default"
-T.Name = "Interiors.DefaultTTCapsule"
-T.ID = "default_tt_capsule"
+T.Name = "Interiors.DefaultSIDRAT"
+T.ID = "default_sidrat"
 
 T.IsVersionOf = "default"
 
@@ -16,7 +16,7 @@ T.Interior = {
     },
     Parts = {
         default_doorframe = {
-            pos = Vector(317, 336.3, -80),
+            pos = Vector(317, 336.3, -80.4),
             ang = Angle(0, -40, 0),
             scale = 0.764,
             matrixScale = Vector(0.58, 1, 1.083)
@@ -31,7 +31,7 @@ T.Interior = {
 }
 
 T.Templates = {
-    ttcapsule = { override = true, fail = function() ErrorNoHalt("Failed to add tt_capsule default exterior") end, },
+    exterior_sidrat = { override = true, fail = function() ErrorNoHalt("Failed to add SIDRAT default exterior") end, },
 }
 
 TARDIS:AddInterior(T)
