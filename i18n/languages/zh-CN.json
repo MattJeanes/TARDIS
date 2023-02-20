@@ -482,6 +482,8 @@
     "Settings.Sections.SoundsAndMusic.Sounds.Idle.Description": "是否在内部播放空闲音效",
     "Settings.Sections.SoundsAndMusic.Sounds.Lock": "锁定音效",
     "Settings.Sections.SoundsAndMusic.Sounds.Lock.Description": "开关锁时是否发出声音",
+    "Settings.Sections.SoundsAndMusic.Sounds.SpawnDelete": "",
+    "Settings.Sections.SoundsAndMusic.Sounds.SpawnDelete.Description": "",
     "Settings.Sections.SoundsAndMusic.Sounds.Teleport": "传送音效",
     "Settings.Sections.SoundsAndMusic.Sounds.Teleport.Description": "传送时是否发出声音",
     "Spawnmenu.AddToFavourites": "添加到收藏夹（需要重新加载）",
