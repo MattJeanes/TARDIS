@@ -144,13 +144,24 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     pos_save:SetPos(pos_elem_w * 3 + 4 * panel_d, pos_elem_h + 2 * panel_d)
     pos_save:SetText("Save") -- TODO
     pos_save:SetFont(font)
+    pos_save.Think = function(self)
+        if not IsValid(ext) then return end
+        if self:IsEnabled() == ext:GetData("vortex") then
+            self:SetEnabled(not ext:GetData("vortex"))
+        end
+    end
 
     local pos_copy = vgui.Create("DButton", PositionPanel)
     pos_copy:SetSize(pos_elem_w,pos_elem_h)
     pos_copy:SetPos(pos_elem_w * 3 + 4 * panel_d, 2 * pos_elem_h + 3 * panel_d)
     pos_copy:SetText("Copy")  -- TODO
     pos_copy:SetFont(font)
-
+    pos_copy.Think = function(self)
+        if not IsValid(ext) then return end
+        if self:IsEnabled() == ext:GetData("vortex") then
+            self:SetEnabled(not ext:GetData("vortex"))
+        end
+    end
 
 
 
@@ -350,31 +361,28 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
 
 
 
-    local new = vgui.Create("DButton", InputPanel)
-    new:SetSize(inp_elem_w,inp_elem_h)
-    new:SetPos( inp_elem_w * 3 + 4 * panel_d, panel_d )
-    new:SetText("Save") -- TODO
-    new:SetFont(font)
+    local input_save = vgui.Create("DButton", InputPanel)
+    input_save:SetSize(inp_elem_w,inp_elem_h)
+    input_save:SetPos( inp_elem_w * 3 + 4 * panel_d, panel_d )
+    input_save:SetText("Save") -- TODO
+    input_save:SetFont(font)
 
-    local remove = vgui.Create("DButton", InputPanel)
-    remove:SetSize(inp_elem_w,inp_elem_h)
-    remove:SetPos(inp_elem_w * 3 + 4 * panel_d, inp_elem_h + 2 * panel_d)
-    remove:SetText("Delete")  -- TODO
-    remove:SetFont(font)
+    local input_delete = vgui.Create("DButton", InputPanel)
+    input_delete:SetSize(inp_elem_w,inp_elem_h)
+    input_delete:SetPos(inp_elem_w * 3 + 4 * panel_d, inp_elem_h + 2 * panel_d)
+    input_delete:SetText("Delete")  -- TODO
+    input_delete:SetFont(font)
 
-    local confirm = vgui.Create("DButton", InputPanel)
-    confirm:SetSize(inp_elem_w,inp_elem_h)
-    confirm:SetPos(inp_elem_w * 3 + 4 * panel_d, 2 * inp_elem_h + 3 * panel_d)
-    confirm:SetText("Set")  -- TODO
-    confirm:SetFont(font)
-
-
+    local input_set = vgui.Create("DButton", InputPanel)
+    input_set:SetSize(inp_elem_w,inp_elem_h)
+    input_set:SetPos(inp_elem_w * 3 + 4 * panel_d, 2 * inp_elem_h + 3 * panel_d)
+    input_set:SetText("Set")  -- TODO
+    input_set:SetFont(font)
 
 
 
 
-
-
+    local map = game.GetMap()
 
     local function updatetextinputs(pos,ang,name)
         pitch:SetText(ang.p or 0.0)
@@ -403,11 +411,8 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
         return pos,ang,name
     end
 
-    local pendingchanges = false
-
-    local map = game.GetMap()
-
     local function updatelist()
+        local scr = llist:GetScroll()
         llist:Clear()
         if TARDIS.Locations[map] ~= nil then
             for k,v in pairs(TARDIS.Locations[map]) do
@@ -416,7 +421,11 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
         end
         llist:AddLine(TARDIS:GetPhrase("Screens.Coordinates.RandomGround"))
         llist:AddLine(TARDIS:GetPhrase("Screens.Coordinates.Random"))
+        llist:SetScroll(scr)
     end
+
+
+
 
     updatelist()
 
@@ -447,27 +456,63 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
             name = TARDIS.Locations[map][i].name
         end
         updatetextinputs(pos,ang,name)
-        namebox:SetEnabled(true)
     end
     llist:SetMultiSelect(false)
 
-    --[[
-    local gpos = vgui.Create("DButton", frame)
-    gpos:SetSize( frame:GetWide()*0.247, frame:GetTall()*0.1 )
-    gpos:SetPos(pitch:GetPos(),frame:GetTall()*0.4 - frame:GetTall() * 0.1*0.5)
-    gpos:SetFont(TARDIS:GetScreenFont(screen, "Default"))
-    gpos:SetText(TARDIS:GetPhrase("Screens.Coordinates.GetCurrentPosition"))
-
-    function gpos:DoClick()
+    function pos_copy:DoClick()
         updatetextinputs(ext:GetPos(), ext:GetAngles())
-    end]]
+    end
 
-    function new:DoClick()
+    function dst_copy:DoClick()
+        x:SetText(dst_x:GetText())
+        y:SetText(dst_y:GetText())
+        z:SetText(dst_z:GetText())
+        pitch:SetText(dst_pitch:GetText())
+        yaw:SetText(dst_yaw:GetText())
+        roll:SetText(dst_roll:GetText())
+    end
 
+    function pos_save:DoClick()
+        Derma_StringRequest(
+            TARDIS:GetPhrase("Screens.Coordinates.NewLocation"),
+            TARDIS:GetPhrase("Screens.Coordinates.NameNewLocation"),
+            TARDIS:GetPhrase("Screens.Coordinates.NewLocation"),
+            function(name)
+                pos = ext:GetPos()
+                ang = ext:GetAngles()
+                if name == "" then name = TARDIS:GetPhrase("Screens.Coordinates.Unnamed") end
+                TARDIS:AddLocation(pos,ang,name,map)
+                updatelist()
+            end
+        )
+    end
+
+    function dst_save:DoClick()
+        Derma_StringRequest(
+            TARDIS:GetPhrase("Screens.Coordinates.NewLocation"),
+            TARDIS:GetPhrase("Screens.Coordinates.NameNewLocation"),
+            TARDIS:GetPhrase("Screens.Coordinates.NewLocation"),
+            function(name)
+
+                local n_x = tonumber(dst_x:GetText()) or 0
+                local n_y = tonumber(dst_y:GetText()) or 0
+                local n_z = tonumber(dst_z:GetText()) or 0
+                local n_pitch = tonumber(dst_pitch:GetText()) or 0
+                local n_yaw = tonumber(dst_yaw:GetText()) or 0
+                local n_roll = tonumber(dst_roll:GetText()) or 0
+
+                pos = Vector(n_x, n_y, n_z)
+                ang = Angle(n_pitch, n_yaw, n_roll)
+                if name == "" then name = TARDIS:GetPhrase("Screens.Coordinates.Unnamed") end
+                TARDIS:AddLocation(pos,ang,name,map)
+                updatelist()
+            end
+        )
+    end
+
+    function input_save:DoClick()
         local vortex = ext:GetData("vortex", false)
-
         local request = vortex and "Screens.Coordinates.NameNewLocationFromInputs" or "Screens.Coordinates.NameNewLocation"
-
         local pos, ang, name = fetchtextinputs()
 
         Derma_StringRequest(
@@ -502,7 +547,7 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
         )
     end
 
-    function remove:DoClick()
+    function input_delete:DoClick()
         local index = llist:GetSelectedLine()
         if not index then return end
         if index > #TARDIS.Locations[map] then return end
@@ -517,8 +562,10 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
             TARDIS:GetPhrase("Common.No")
         )
     end
-    function remove:Think()
-        if llist:GetSelectedLine() ~= nil then
+
+    function input_delete:Think()
+        local line = llist:GetSelectedLine()
+        if line ~= nil and line <= #TARDIS.Locations[map] then
             if self:IsEnabled() then return end
             self:SetEnabled(true)
         elseif self:IsEnabled() then
@@ -526,7 +573,7 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
         end
     end
 
-    function confirm:DoClick()
+    function input_set:DoClick()
         local pos,ang = fetchtextinputs()
         if pos ~= nil and pos ~= 0 then
             ext:SendMessage("destination-demat", { pos, ang } )

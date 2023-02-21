@@ -14,6 +14,7 @@ function ListView3D:new(parent,screen,elem_height,col)
         selected_line = nil,
         bgcolor = col or Color(255,255,255),
         scroll = 0,
+        max_scroll = 0,
     }
 
     l.panel = vgui.Create("DPanel", parent)
@@ -145,6 +146,10 @@ function ListView3D:UpdateLayout()
         db:SetEnabled(self.scroll ~= max_scroll)
     end
 
+    self.up_button = ub
+    self.down_button = db
+    self.max_scroll = max_scroll
+
 end
 
 function ListView3D:SetSize(sizeX, sizeY)
@@ -193,6 +198,7 @@ end
 
 
 function ListView3D:Clear()
+    self.selected_line = nil
     self.lines = {}
     self:UpdateLayout()
 end
@@ -208,6 +214,16 @@ function ListView3D:ClearSelection()
         v:SetToggle(false)
     end
     self.selected_line = nil
+end
+
+function ListView3D:GetScroll()
+    return self.scroll
+end
+function ListView3D:SetScroll(s)
+    self.scroll = math.Clamp(s, 0, self.max_scroll)
+    self.scroll_panel:SetPos(0, -self.scroll)
+    self.up_button:SetEnabled(self.scroll ~= 0)
+    self.down_button:SetEnabled(self.scroll ~= self.max_scroll)
 end
 
 
