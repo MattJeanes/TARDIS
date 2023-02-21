@@ -16,6 +16,19 @@ if CLIENT then
     })
 
     TARDIS:AddSetting({
+        id="spawn_delete_sound",
+        type="bool",
+        value=true,
+
+        class="local",
+
+        option=true,
+        section=SETTING_SECTION,
+        subsection="Sounds",
+        name="SpawnDelete",
+    })
+
+    TARDIS:AddSetting({
         id="external_hum",
         type="bool",
         value=true,

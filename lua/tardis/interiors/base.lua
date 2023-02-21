@@ -23,6 +23,7 @@ T.Interior = {
             BigCrash = "jeredek/tardis/damage_bigcollision.wav",
             Explosion = "jeredek/tardis/damage_explode.wav",
             Death = "jeredek/tardis/damage_death.wav",
+            Artron = "p00gie/tardis/force_artron.wav",
         },
         Teleport = {}, -- uses exterior sounds if not specified
         Power = {
@@ -95,10 +96,12 @@ T.Exterior = {
             mat_damaged_fast = "p00gie/tardis/base/mat_damaged_fast.wav",
             fullflight = "p00gie/tardis/base/full.wav",
             fullflight_damaged = "drmatt/tardis/full_damaged.wav",
-            interrupt = "drmatt/tardis/repairfinish.wav",
+            interrupt = "p00gie/tardis/base/repairfinish.wav",
         },
-        RepairFinish = "drmatt/tardis/repairfinish.wav",
+        RepairFinish = "p00gie/tardis/base/repairfinish.wav",
         Lock = "drmatt/tardis/lock.wav",
+        Spawn = "p00gie/tardis/base/repairfinish.wav",
+        Delete = "p00gie/tardis/tardis_delete.wav",
         Door = {
             enabled = true,
             open = "drmatt/tardis/door_open.wav",

@@ -19,8 +19,24 @@ T.Versions = {
     },
     other = {
         {
-            name = "Interiors.Default.Versions.TTCapsule",
-            id = "default_tt_capsule",
+            name = "Interiors.Default.Versions.TTCapsuleType40",
+            id = "default_tt_type40",
+        },
+        {
+            name = "Interiors.Default.Versions.TTCapsuleType50",
+            id = "default_tt_type50",
+        },
+        {
+            name = "Interiors.Default.Versions.TTCapsuleType55",
+            id = "default_tt_type55",
+        },
+        {
+            name = "Interiors.Default.Versions.TTCapsuleType55B",
+            id = "default_tt_type55b",
+        },
+        {
+            name = "Interiors.Default.Versions.SIDRAT",
+            id = "default_sidrat",
         },
     },
 }
@@ -253,7 +269,11 @@ T.Exterior = {
             mat_fast = "p00gie/tardis/mat_fast.wav",
             mat_damaged_fast = "p00gie/tardis/mat_damaged_fast.wav",
             fullflight = "drmatt/tardis/full.wav",
+            interrupt = "drmatt/tardis/repairfinish.wav",
         },
+        Spawn = "drmatt/tardis/repairfinish.wav",
+        RepairFinish = "drmatt/tardis/repairfinish.wav",
+        Delete = "p00gie/tardis/base/tardis_delete.wav",
     },
     Light = {
         warncolor = Color(255,200,200),
