@@ -5,9 +5,6 @@ local function make_list_line_clickable(line, frame)
     l:SetTall(34)
     l:SetBGColor(Color(0,0,0,0))
     l:SetColor(Color(0,0,0,0))
-    --l:SetText("AAAAAAAAAAAAAAAAAAAAAA")
-    --l:SetDark(true)
-    --l:SetVisible(false)
 
     line.Columns[1]:SetFont("DermaLarge")
 
@@ -30,11 +27,8 @@ local function make_list_line_clickable(line, frame)
         l.scrollbar_pos = scrollbar:GetOffset()
         local pos1x, pos1y = line:GetPos()
         local pos2x, pos2y = line:GetParent():GetPos()
-        --local pos3x, pos3y = line:GetParent():GetParent():GetPos()
-        --local pos4x, pos4y = line:GetParent():GetParent():GetParent():GetPos()
-        local posx = pos1x + pos2x --+ pos3x + pos4x
-        local posy = pos1y + pos2y --+ pos3y + pos4y
-        l:SetPos(posx, posy)
+
+        l:SetPos(pos1x + pos2x, pos1y + pos2y)
     end
     l.DoClick = function()
         line:GetParent():GetParent():OnClickLine(line, true)
@@ -46,6 +40,18 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     local h = frame:GetTall()
     local d = 0.05 * math.min( w,h )
     local round_digits = 4
+    local font = TARDIS:GetScreenFont(screen, "Default")
+
+    local background=vgui.Create("DImage", frame)
+
+    local theme = TARDIS:GetScreenGUITheme(screen)
+    local background_img = TARDIS:GetGUIThemeElement(theme, "backgrounds", "coordinates")
+    background:SetImage(background_img)
+    background:SetSize(w, h)
+
+    local function randomize_coordinate(self)
+        self:SetText(math.random(-99999999, 99999999) * 0.0001)
+    end
 
     local llist = vgui.Create("DListView",frame)
     llist:SetSize( (w - 3 * d) / 2,(h - 2 * d) )
@@ -54,7 +60,7 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
 
     local panel_w = (w - 3 * d) / 2
     local panel_h = (h - 4 * d) / 3
-    local panel_d = 0.02 * math.min(w,h)
+    local panel_d = (screen.is3D2D and 0.01 or 0.02) * math.min(w,h)
     local panel_left = 0.5 * w + 0.5 * d
 
     local PositionPanel = vgui.Create( "DPanel",frame )
@@ -70,7 +76,7 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     pos_title:SetPos(panel_d, panel_d)
     pos_title:SetSize(panel_w - 2 * panel_d, pos_elem_h)
     pos_title:SetDark(true)
-    pos_title:SetFont("DermaDefaultBold")
+    pos_title:SetFont(font)
 
     local pos_x = vgui.Create("DTextEntry",PositionPanel)
     pos_x:SetPlaceholderText("")
@@ -78,10 +84,11 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     pos_x:SetSize(pos_elem_w,pos_elem_h)
     pos_x:SetNumeric(true)
     pos_x:SetEnabled(false)
-    pos_x.Think = function(self) 
+    pos_x:SetFont(font)
+    pos_x.Think = function(self)
         if IsValid(ext) then
             if ext:GetData("vortex") then
-                self:SetText(math.random(-99999999, 99999999) * 0.0001)
+                randomize_coordinate(self)
             else
                 self:SetText(math.Round(ext:GetPos().x, round_digits))
             end
@@ -94,10 +101,11 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     pos_y:SetSize(pos_elem_w,pos_elem_h)
     pos_y:SetNumeric(true)
     pos_y:SetEnabled(false)
-    pos_y.Think = function(self) 
+    pos_y:SetFont(font)
+    pos_y.Think = function(self)
         if IsValid(ext) then
             if ext:GetData("vortex") then
-                self:SetText(math.random(-99999999, 99999999) * 0.0001)
+                randomize_coordinate(self)
             else
                 self:SetText(math.Round(ext:GetPos().y, round_digits))
             end
@@ -110,10 +118,11 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     pos_z:SetSize(pos_elem_w,pos_elem_h)
     pos_z:SetNumeric(true)
     pos_z:SetEnabled(false)
-    pos_z.Think = function(self) 
+    pos_z:SetFont(font)
+    pos_z.Think = function(self)
         if IsValid(ext) then
             if ext:GetData("vortex") then
-                self:SetText(math.random(-99999999, 99999999) * 0.0001)
+                randomize_coordinate(self)
             else
                 self:SetText(math.Round(ext:GetPos().z, round_digits))
             end
@@ -126,7 +135,8 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     pos_pitch:SetSize(pos_elem_w,pos_elem_h)
     pos_pitch:SetNumeric(true)
     pos_pitch:SetEnabled(false)
-    pos_pitch.Think = function(self) 
+    pos_pitch:SetFont(font)
+    pos_pitch.Think = function(self)
         if IsValid(ext) then
             self:SetText(math.Round(ext:GetAngles().p, round_digits))
         end
@@ -138,7 +148,8 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     pos_yaw:SetSize(pos_elem_w,pos_elem_h)
     pos_yaw:SetNumeric(true)
     pos_yaw:SetEnabled(false)
-    pos_yaw.Think = function(self) 
+    pos_yaw:SetFont(font)
+    pos_yaw.Think = function(self)
         if IsValid(ext) then
             self:SetText(math.Round(ext:GetAngles().y, round_digits))
         end
@@ -150,7 +161,8 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     pos_roll:SetSize(pos_elem_w,pos_elem_h)
     pos_roll:SetNumeric(true)
     pos_roll:SetEnabled(false)
-    pos_roll.Think = function(self) 
+    pos_roll:SetFont(font)
+    pos_roll.Think = function(self)
         if IsValid(ext) then
             self:SetText(math.Round(ext:GetAngles().r, round_digits))
         end
@@ -160,14 +172,13 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     pos_save:SetSize(pos_elem_w,pos_elem_h)
     pos_save:SetPos(pos_elem_w * 3 + 4 * panel_d, pos_elem_h + 2 * panel_d)
     pos_save:SetText("Save") -- TODO
-    pos_save:SetFont(TARDIS:GetScreenFont(screen, "Default"))
+    pos_save:SetFont(font)
 
     local pos_copy = vgui.Create("DButton", PositionPanel)
     pos_copy:SetSize(pos_elem_w,pos_elem_h)
     pos_copy:SetPos(pos_elem_w * 3 + 4 * panel_d, 2 * pos_elem_h + 3 * panel_d)
-    pos_copy:SetText("Edit")  -- TODO
-    pos_copy:SetFont(TARDIS:GetScreenFont(screen, "Default"))
-
+    pos_copy:SetText("Copy")  -- TODO
+    pos_copy:SetFont(font)
 
 
 
@@ -185,7 +196,7 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     dst_title:SetPos(panel_d, panel_d)
     dst_title:SetSize(panel_w - 2 * panel_d, dst_elem_h)
     dst_title:SetDark(true)
-    dst_title:SetFont("DermaDefaultBold")
+    dst_title:SetFont(font)
 
     local dst_x = vgui.Create("DTextEntry",DestinationPanel)
     dst_x:SetPlaceholderText("")
@@ -193,6 +204,7 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     dst_x:SetSize(dst_elem_w,dst_elem_h)
     dst_x:SetNumeric(true)
     dst_x:SetEnabled(false)
+    dst_x:SetFont(font)
     dst_x.Think = function(self)
         if not IsValid(ext) then return end
         local dst = ext:GetDestPos()
@@ -206,6 +218,7 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     dst_y:SetSize(dst_elem_w,dst_elem_h)
     dst_y:SetNumeric(true)
     dst_y:SetEnabled(false)
+    dst_y:SetFont(font)
     dst_y.Think = function(self)
         if not IsValid(ext) then return end
         local dst = ext:GetDestPos()
@@ -219,6 +232,7 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     dst_z:SetSize(dst_elem_w,dst_elem_h)
     dst_z:SetNumeric(true)
     dst_z:SetEnabled(false)
+    dst_z:SetFont(font)
     dst_z.Think = function(self)
         if not IsValid(ext) then return end
         local dst = ext:GetDestPos()
@@ -226,12 +240,14 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
         self:SetText(math.Round(dst.z, round_digits))
     end
 
+
     local dst_pitch = vgui.Create("DTextEntry",DestinationPanel)
     dst_pitch:SetPlaceholderText("")
     dst_pitch:SetPos(panel_d, 2 * dst_elem_h + 3 * panel_d)
     dst_pitch:SetSize(dst_elem_w,dst_elem_h)
     dst_pitch:SetNumeric(true)
     dst_pitch:SetEnabled(false)
+    dst_pitch:SetFont(font)
     dst_pitch.Think = function(self)
         if not IsValid(ext) then return end
         local dst = ext:GetDestAng()
@@ -245,6 +261,7 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     dst_yaw:SetSize(dst_elem_w,dst_elem_h)
     dst_yaw:SetNumeric(true)
     dst_yaw:SetEnabled(false)
+    dst_yaw:SetFont(font)
     dst_yaw.Think = function(self)
         if not IsValid(ext) then return end
         local dst = ext:GetDestAng()
@@ -258,6 +275,7 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     dst_roll:SetSize(dst_elem_w,dst_elem_h)
     dst_roll:SetNumeric(true)
     dst_roll:SetEnabled(false)
+    dst_roll:SetFont(font)
     dst_roll.Think = function(self)
         if not IsValid(ext) then return end
         local dst = ext:GetDestAng()
@@ -275,16 +293,28 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
         local dst = ext:GetDestAng()
         self:SetEnabled(dst ~= nil)
     end
+    dst_save:SetFont(font)
 
     local dst_copy = vgui.Create("DButton", DestinationPanel)
     dst_copy:SetSize(dst_elem_w,dst_elem_h)
     dst_copy:SetPos(dst_elem_w * 3 + 4 * panel_d, 2 * dst_elem_h + 3 * panel_d)
-    dst_copy:SetText("Edit")  -- TODO
+    dst_copy:SetText("Copy")  -- TODO
     dst_copy:SetFont(TARDIS:GetScreenFont(screen, "Default"))
     dst_copy.Think = function(self)
         if not IsValid(ext) then return end
         local dst = ext:GetDestAng()
         self:SetEnabled(dst ~= nil)
+    end
+    dst_copy:SetFont(font)
+
+    local button=vgui.Create("DButton", DestinationPanel)
+    button:SetSize(dst_elem_w,dst_elem_h)
+    button:SetPos(dst_elem_w * 3 + 4 * panel_d, panel_d)
+    button:SetText("Select")
+    button:SetFont(font)
+    button.DoClick = function()
+        TARDIS:Control("destination", LocalPlayer())
+        TARDIS:RemoveHUDScreen()
     end
 
 
@@ -303,67 +333,70 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     x:SetPos(panel_d, panel_d)
     x:SetSize(inp_elem_w,inp_elem_h)
     x:SetNumeric(true)
+    x:SetFont(font)
     local y = vgui.Create("DTextEntry",InputPanel)
     y:SetPlaceholderText(TARDIS:GetPhrase("Screens.Coordinates.Y"))
     y:SetPos(inp_elem_w + 2 * panel_d, panel_d )
     y:SetSize(inp_elem_w,inp_elem_h)
     y:SetNumeric(true)
+    y:SetFont(font)
     local z = vgui.Create("DTextEntry",InputPanel)
     z:SetPlaceholderText(TARDIS:GetPhrase("Screens.Coordinates.Z"))
     z:SetPos(inp_elem_w*2 + 3 * panel_d, panel_d)
     z:SetSize(inp_elem_w,inp_elem_h)
     z:SetNumeric(true)
+    z:SetFont(font)
 
     local pitch = vgui.Create("DTextEntry",InputPanel)
     pitch:SetPlaceholderText(TARDIS:GetPhrase("Screens.Coordinates.Pitch"))
     pitch:SetPos(panel_d, inp_elem_h + 2 * panel_d)
     pitch:SetSize(inp_elem_w,inp_elem_h)
     pitch:SetNumeric(true)
+    pitch:SetFont(font)
     local yaw = vgui.Create("DTextEntry",InputPanel)
     yaw:SetPlaceholderText(TARDIS:GetPhrase("Screens.Coordinates.Yaw"))
     yaw:SetPos(inp_elem_w + 2 * panel_d, inp_elem_h + 2 * panel_d)
     yaw:SetSize(inp_elem_w,inp_elem_h)
     yaw:SetNumeric(true)
+    yaw:SetFont(font)
     local roll = vgui.Create("DTextEntry",InputPanel)
     roll:SetPlaceholderText(TARDIS:GetPhrase("Screens.Coordinates.Roll"))
     roll:SetPos(inp_elem_w * 2 + 3 * panel_d, inp_elem_h + 2 * panel_d)
     roll:SetSize(inp_elem_w,inp_elem_h)
     roll:SetNumeric(true)
+    roll:SetFont(font)
 
     local namebox = vgui.Create("DTextEntry", InputPanel)
     namebox:SetPlaceholderText(TARDIS:GetPhrase("Screens.Coordinates.Name"))
     namebox:SetPos(panel_d, 2 * inp_elem_h + 3 * panel_d)
     namebox:SetSize(panel_w - 3 * panel_d - inp_elem_w, inp_elem_h)
+    namebox:SetFont(font)
 
 
     local new = vgui.Create("DButton", InputPanel)
     new:SetSize(inp_elem_w,inp_elem_h)
     new:SetPos( inp_elem_w * 3 + 4 * panel_d, panel_d )
     new:SetText("Save") -- TODO
-    new:SetFont(TARDIS:GetScreenFont(screen, "Default"))
+    new:SetFont(font)
 
     local remove = vgui.Create("DButton", InputPanel)
     remove:SetSize(inp_elem_w,inp_elem_h)
     remove:SetPos(inp_elem_w * 3 + 4 * panel_d, inp_elem_h + 2 * panel_d)
     remove:SetText("Delete")  -- TODO
-    remove:SetFont(TARDIS:GetScreenFont(screen, "Default"))
+    remove:SetFont(font)
 
     local confirm = vgui.Create("DButton", InputPanel)
     confirm:SetSize(inp_elem_w,inp_elem_h)
     confirm:SetPos(inp_elem_w * 3 + 4 * panel_d, 2 * inp_elem_h + 3 * panel_d)
     confirm:SetText("Set")  -- TODO
-    confirm:SetFont(TARDIS:GetScreenFont(screen, "Default"))
+    confirm:SetFont(font)
 
-    --[[
-    local button=vgui.Create("DButton",frame)
-    button:SetSize( frame:GetWide()*0.2, frame:GetTall()*0.1 )
-    button:SetPos(frame:GetWide()*0.86 - button:GetWide()*0.5,frame:GetTall()*0.08 - button:GetTall()*0.5)
-    button:SetText(TARDIS:GetPhrase("Screens.Coordinates.SelectManually"))
-    button:SetFont(TARDIS:GetScreenFont(screen, "Default"))
-    button.DoClick = function()
-        TARDIS:Control("destination", LocalPlayer())
-        TARDIS:RemoveHUDScreen()
-    end]]
+
+
+
+
+
+
 
 
     local function updatetextinputs(pos,ang,name)
