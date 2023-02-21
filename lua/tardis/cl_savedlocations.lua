@@ -19,6 +19,27 @@ end
 
 function TARDIS:AddLocation(pos,ang,name,map)
     if TARDIS.Locations and TARDIS.Locations[map] then
+
+        local function location_exists(l_name)
+            for k,v in ipairs(TARDIS.Locations[map]) do
+                if v.name == l_name then
+                    return true
+                end
+            end
+            return false
+        end
+        local function name_copy(l_name, number)
+            return name .. "(" .. number .. ")"
+        end
+
+        if location_exists(name) then
+            local i = 1
+            while(location_exists(name_copy(name,i))) do
+                i = i + 1
+            end
+            name = name_copy(name,i)
+        end
+
         TARDIS.Locations[map][table.Count(TARDIS.Locations[map])+1] = {
             ["name"] = name,
             ["pos"] = pos,
