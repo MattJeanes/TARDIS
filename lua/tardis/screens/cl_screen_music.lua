@@ -89,13 +89,15 @@ TARDIS:AddScreen("Music", {id="music", text="Screens.Music", menu=false, order=1
     list_custom:AddColumn(TARDIS:GetPhrase("Screens.Music.CustomMusic"))
     list_custom:SetMultiSelect(false)
 
-    local url_bar = vgui.Create( "DTextEntry", frame )
+    local url_bar = vgui.Create( "DTextEntry3D2D", frame )
+    url_bar.is3D2D = screen.is3D2D
     url_bar:SetPlaceholderText(TARDIS:GetPhrase("Screens.Music.UrlPlaceholder"))
     url_bar:SetFont(TARDIS:GetScreenFont(screen, "Default"))
     url_bar:SetSize(tbW, tbT)
     url_bar:SetPos(midX, gap)
 
-    local name_bar = vgui.Create( "DTextEntry", frame )
+    local name_bar = vgui.Create( "DTextEntry3D2D", frame )
+    name_bar.is3D2D = screen.is3D2D
     name_bar:SetPlaceholderText(TARDIS:GetPhrase("Screens.Music.NamePlaceholder"))
     name_bar:SetFont(TARDIS:GetScreenFont(screen, "Default"))
     name_bar:SetSize(tbW, tbT)
@@ -214,6 +216,7 @@ TARDIS:AddScreen("Music", {id="music", text="Screens.Music", menu=false, order=1
 --------------------------------------------------------------------------------
 
     function name_bar:OnEnter()
+        if screen.is3D2D then return end
         TARDIS:AddCustomMusic(name_bar:GetText(), url_bar:GetText())
         list_custom:UpdateAll()
     end
@@ -251,6 +254,7 @@ TARDIS:AddScreen("Music", {id="music", text="Screens.Music", menu=false, order=1
 --------------------------------------------------------------------------------
 
     function url_bar:OnEnter()
+        if screen.is3D2D then return end
         if play_stop_button.disabled_time then return end
         ext:PlayMusic(url_bar:GetValue())
         play_stop_button:SetEnabled(false)

@@ -299,49 +299,55 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     local inp_elem_w = (panel_w - 5 * panel_d) / 4
     local inp_elem_h = (panel_h - 4 * panel_d) / 3
 
-    local x = vgui.Create("DTextEntry",InputPanel)
+    local namebox = vgui.Create("DTextEntry3D2D", InputPanel)
+    namebox.is3D2D = screen.is3D2D
+    namebox:SetPlaceholderText(TARDIS:GetPhrase("Screens.Coordinates.Name"))
+    namebox:SetPos(panel_d, panel_d)
+    namebox:SetSize(panel_w - 3 * panel_d - inp_elem_w, inp_elem_h)
+    namebox:SetFont(font)
+
+    local x = vgui.Create("DTextEntry3D2D",InputPanel)
+    x.is3D2D = screen.is3D2D
     x:SetPlaceholderText(TARDIS:GetPhrase("Screens.Coordinates.X"))
-    x:SetPos(panel_d, panel_d)
+    x:SetPos(panel_d, inp_elem_h + 2 * panel_d)
     x:SetSize(inp_elem_w,inp_elem_h)
     x:SetNumeric(true)
     x:SetFont(font)
-    local y = vgui.Create("DTextEntry",InputPanel)
+    local y = vgui.Create("DTextEntry3D2D",InputPanel)
+    y.is3D2D = screen.is3D2D
     y:SetPlaceholderText(TARDIS:GetPhrase("Screens.Coordinates.Y"))
-    y:SetPos(inp_elem_w + 2 * panel_d, panel_d )
+    y:SetPos(inp_elem_w + 2 * panel_d, inp_elem_h + 2 * panel_d)
     y:SetSize(inp_elem_w,inp_elem_h)
     y:SetNumeric(true)
     y:SetFont(font)
-    local z = vgui.Create("DTextEntry",InputPanel)
+    local z = vgui.Create("DTextEntry3D2D",InputPanel)
+    z.is3D2D = screen.is3D2D
     z:SetPlaceholderText(TARDIS:GetPhrase("Screens.Coordinates.Z"))
-    z:SetPos(inp_elem_w*2 + 3 * panel_d, panel_d)
+    z:SetPos(inp_elem_w*2 + 3 * panel_d, inp_elem_h + 2 * panel_d)
     z:SetSize(inp_elem_w,inp_elem_h)
     z:SetNumeric(true)
     z:SetFont(font)
 
-    local pitch = vgui.Create("DTextEntry",InputPanel)
+    local pitch = vgui.Create("DTextEntry3D2D",InputPanel)
     pitch:SetPlaceholderText(TARDIS:GetPhrase("Screens.Coordinates.Pitch"))
-    pitch:SetPos(panel_d, inp_elem_h + 2 * panel_d)
+    pitch:SetPos(panel_d, 2 * inp_elem_h + 3 * panel_d)
     pitch:SetSize(inp_elem_w,inp_elem_h)
     pitch:SetNumeric(true)
     pitch:SetFont(font)
-    local yaw = vgui.Create("DTextEntry",InputPanel)
+    local yaw = vgui.Create("DTextEntry3D2D",InputPanel)
     yaw:SetPlaceholderText(TARDIS:GetPhrase("Screens.Coordinates.Yaw"))
-    yaw:SetPos(inp_elem_w + 2 * panel_d, inp_elem_h + 2 * panel_d)
+    yaw:SetPos(inp_elem_w + 2 * panel_d, 2 * inp_elem_h + 3 * panel_d)
     yaw:SetSize(inp_elem_w,inp_elem_h)
     yaw:SetNumeric(true)
     yaw:SetFont(font)
-    local roll = vgui.Create("DTextEntry",InputPanel)
+    local roll = vgui.Create("DTextEntry3D2D",InputPanel)
     roll:SetPlaceholderText(TARDIS:GetPhrase("Screens.Coordinates.Roll"))
-    roll:SetPos(inp_elem_w * 2 + 3 * panel_d, inp_elem_h + 2 * panel_d)
+    roll:SetPos(inp_elem_w * 2 + 3 * panel_d, 2 * inp_elem_h + 3 * panel_d)
     roll:SetSize(inp_elem_w,inp_elem_h)
     roll:SetNumeric(true)
     roll:SetFont(font)
 
-    local namebox = vgui.Create("DTextEntry", InputPanel)
-    namebox:SetPlaceholderText(TARDIS:GetPhrase("Screens.Coordinates.Name"))
-    namebox:SetPos(panel_d, 2 * inp_elem_h + 3 * panel_d)
-    namebox:SetSize(panel_w - 3 * panel_d - inp_elem_w, inp_elem_h)
-    namebox:SetFont(font)
+
 
 
     local new = vgui.Create("DButton", InputPanel)
@@ -527,6 +533,14 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
             if TARDIS:GetSetting("dest-onsetdemat") then
                 TARDIS:RemoveHUDScreen()
             end
+            llist:ClearSelection()
+            namebox:SetText("")
+            x:SetText("")
+            y:SetText("")
+            z:SetText("")
+            pitch:SetText("")
+            yaw:SetText("")
+            roll:SetText("")
         else
             TARDIS:ErrorMessage(LocalPlayer(), "Screens.Coordinates.NoDestinationSet")
         end
