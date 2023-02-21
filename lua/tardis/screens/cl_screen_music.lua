@@ -45,7 +45,7 @@ end
 
 
 -- Music GUI
-TARDIS:AddScreen("Music", {id="music", text="Screens.Music", menu=false, order=10, popuponly=true}, function(self,ext,int,frame,screen)
+TARDIS:AddScreen("Music", {id="music", text="Screens.Music", menu=false, order=10, popuponly=false}, function(self,ext,int,frame,screen)
 
 --------------------------------------------------------------------------------
 -- Layout calculations
@@ -67,13 +67,23 @@ TARDIS:AddScreen("Music", {id="music", text="Screens.Music", menu=false, order=1
 --------------------------------------------------------------------------------
 -- Layout
 --------------------------------------------------------------------------------
-    local list_premade = vgui.Create("DListView",frame)
+    local list_premade
+    local list_custom
+
+    if screen.is3D2D then
+        list_premade = ListView3D:new(frame,screen,34,bgcolor)
+        list_custom = ListView3D:new(frame,screen,34,bgcolor)
+    else
+        list_premade = vgui.Create("DListView",frame)
+        list_custom = vgui.Create("DListView",frame)
+    end
+
+
     list_premade:SetSize(listW, listT)
     list_premade:SetPos(gap, gap)
     list_premade:AddColumn(TARDIS:GetPhrase("Screens.Music.DefaultMusic"))
     list_premade:SetMultiSelect(false)
 
-    local list_custom = vgui.Create("DListView",frame)
     list_custom:SetSize(listW, listT)
     list_custom:SetPos(2 * gap + listW, gap)
     list_custom:AddColumn(TARDIS:GetPhrase("Screens.Music.CustomMusic"))
