@@ -423,7 +423,7 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
         end
         llist:AddLine(TARDIS:GetPhrase("Screens.Coordinates.RandomGround"))
         llist:AddLine(TARDIS:GetPhrase("Screens.Coordinates.Random"))
-        if screen.is3D2D then
+        if screen.is3D2D and scr then
             llist:SetScroll(scr)
         end
     end
