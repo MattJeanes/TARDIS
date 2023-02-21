@@ -412,7 +412,9 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     end
 
     local function updatelist()
-        local scr = llist:GetScroll()
+        if screen.is3D2D then
+            local scr = llist:GetScroll()
+        end
         llist:Clear()
         if TARDIS.Locations[map] ~= nil then
             for k,v in pairs(TARDIS.Locations[map]) do
@@ -421,7 +423,9 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
         end
         llist:AddLine(TARDIS:GetPhrase("Screens.Coordinates.RandomGround"))
         llist:AddLine(TARDIS:GetPhrase("Screens.Coordinates.Random"))
-        llist:SetScroll(scr)
+        if screen.is3D2D then
+            llist:SetScroll(scr)
+        end
     end
 
 
