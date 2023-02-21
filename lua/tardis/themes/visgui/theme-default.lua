@@ -13,7 +13,8 @@ local theme = {
     backgrounds = {
         subfolder = "backgrounds",
         default = "default.png",
-        virtualconsole = "console.jpg",
+        virtualconsole = "console.png",
+        coordinates = "console.png",
         main = "default.png",
     },
     text_icons_off = {
