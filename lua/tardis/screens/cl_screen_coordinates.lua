@@ -398,12 +398,20 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
         local pos = 0
         local ang = 0
         local name = ""
+
+        local n_x = tonumber(x:GetText()) or 0
+        local n_y = tonumber(y:GetText()) or 0
+        local n_z = tonumber(z:GetText()) or 0
+        local n_pitch = tonumber(pitch:GetText()) or 0
+        local n_yaw = tonumber(yaw:GetText()) or 0
+        local n_roll = tonumber(roll:GetText()) or 0
+
         if x:GetText() ~= "" and y:GetText() ~= "" and z:GetText() ~= "" then
-            pos = Vector(x:GetText() or 0, y:GetText() or 0, z:GetText() or 0)
+            pos = Vector(n_x, n_y, n_z)
         end
-        if pitch:GetText() ~= "" and yaw:GetText() ~= "" and roll:GetText() ~= "" then
-            ang = Angle(pitch:GetText() or 0, yaw:GetText() or 0, roll:GetText() or 0)
-        end
+
+        ang = Angle(n_pitch, n_yaw, n_roll)
+
         if namebox:GetText() ~= "" then
             name = namebox:GetText()
         end
@@ -411,9 +419,21 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
         return pos,ang,name
     end
 
+    local function cleartextinputs()
+        llist:ClearSelection()
+        namebox:SetText("")
+        x:SetText("")
+        y:SetText("")
+        z:SetText("")
+        pitch:SetText("")
+        yaw:SetText("")
+        roll:SetText("")
+    end
+
     local function updatelist()
+        local scr
         if screen.is3D2D then
-            local scr = llist:GetScroll()
+            scr = llist:GetScroll()
         end
         llist:Clear()
         if TARDIS.Locations[map] ~= nil then
@@ -427,6 +447,7 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
             llist:SetScroll(scr)
         end
     end
+
 
 
 
@@ -519,41 +540,28 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
         local request = vortex and "Screens.Coordinates.NameNewLocationFromInputs" or "Screens.Coordinates.NameNewLocation"
         local pos, ang, name = fetchtextinputs()
 
-        Derma_StringRequest(
-            TARDIS:GetPhrase("Screens.Coordinates.NewLocation"),
-            TARDIS:GetPhrase(request),
-            TARDIS:GetPhrase("Screens.Coordinates.NewLocation"),
-            function(text)
-                name = text
-                if vortex then
-                    TARDIS:AddLocation(pos,ang,name,map)
-                    updatelist()
-                else
-                    Derma_Query(
-                        TARDIS:GetPhrase("Screens.Coordinates.NewLocationUseCurrentPos", "Common.No"),
-                        TARDIS:GetPhrase("Screens.Coordinates.NewLocation"),
-                        TARDIS:GetPhrase("Common.Yes"),
-                        function()
-                            pos = ext:GetPos()
-                            ang = ext:GetAngles()
-                            if name == "" then name = TARDIS:GetPhrase("Screens.Coordinates.Unnamed") end
-                            TARDIS:AddLocation(pos,ang,name,map)
-                            updatelist()
-                        end,
-                        TARDIS:GetPhrase("Common.No"),
-                        function()
-                            TARDIS:AddLocation(pos,ang,name,map)
-                            updatelist()
-                        end
-                    )
-                end
-            end
-        )
+        if name == "" then name = TARDIS:GetPhrase("Screens.Coordinates.Unnamed") end
+        TARDIS:AddLocation(pos,ang,name,map)
+        updatelist()
+        cleartextinputs()
+    end
+
+    function input_save:Think()
+        local empty = (namebox:GetText() == "")
+        empty = empty or (x:GetText() == "")
+        empty = empty or (y:GetText() == "")
+        empty = empty or (z:GetText() == "")
+        -- angles can just be 0 by default so we don't have to check for them
+
+        if self:IsEnabled() == empty then
+            self:SetEnabled(not empty)
+        end
     end
 
     function input_delete:DoClick()
         local index = llist:GetSelectedLine()
         if not index then return end
+        if not TARDIS.Locations[map] then return end
         if index > #TARDIS.Locations[map] then return end
         Derma_Query(
             TARDIS:GetPhrase("Screens.Coordinates.ConfirmRemoveLocation"),
@@ -569,7 +577,7 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
 
     function input_delete:Think()
         local line = llist:GetSelectedLine()
-        if line ~= nil and line <= #TARDIS.Locations[map] then
+        if line ~= nil and TARDIS.Locations[map] and line <= #TARDIS.Locations[map] then
             if self:IsEnabled() then return end
             self:SetEnabled(true)
         elseif self:IsEnabled() then
@@ -577,25 +585,29 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
         end
     end
 
-    function input_set:DoClick()
-        local pos,ang = fetchtextinputs()
-        if pos ~= nil and pos ~= 0 then
-            ext:SendMessage("destination-demat", { pos, ang } )
-            if TARDIS:GetSetting("dest-onsetdemat") then
-                TARDIS:RemoveHUDScreen()
-            end
-            llist:ClearSelection()
-            namebox:SetText("")
-            x:SetText("")
-            y:SetText("")
-            z:SetText("")
-            pitch:SetText("")
-            yaw:SetText("")
-            roll:SetText("")
-        else
-            TARDIS:ErrorMessage(LocalPlayer(), "Screens.Coordinates.NoDestinationSet")
+    function input_set:Think()
+        local empty = (x:GetText() == "")
+        empty = empty or (y:GetText() == "")
+        empty = empty or (z:GetText() == "")
+        -- angles can just be 0 by default so we don't have to check for them
+
+        if self:IsEnabled() == empty then
+            self:SetEnabled(not empty)
         end
     end
 
+    function input_set:DoClick()
+        local pos,ang = fetchtextinputs()
+
+        ext:SendMessage("destination-demat", { pos, ang } )
+        if TARDIS:GetSetting("dest-onsetdemat") then
+            TARDIS:RemoveHUDScreen()
+        end
+        cleartextinputs()
+    end
+
+    function namebox:OnChange()
+        llist:ClearSelection()
+    end
 
 end)
