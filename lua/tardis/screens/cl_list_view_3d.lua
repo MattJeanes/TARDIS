@@ -54,7 +54,6 @@ function ListView3D:UpdateLayout()
 
     self.list_panel = vgui.Create("DPanel", self.panel)
     self.list_panel:SetPaintBackground(false)
-    --self.list_panel:SetBackgroundColor(Color(255,0,0))
     self.list_panel:SetSize(w, self.size[2] - 2 * self.elem_h - 3 * d)
     self.list_panel:SetPos(d, 2 * d + self.elem_h)
 
@@ -129,7 +128,7 @@ function ListView3D:UpdateLayout()
     table.insert(self.elements, ubd)
     table.insert(self.elements, ubd)
 
-    local max_scroll = self.elem_h * (#self.lines + 1) - self.size[2]
+    local max_scroll = self.elem_h * (#self.lines + 1)
     local single_scroll = 0.5 * self.size[2]
 
     ub.DoClick = function()
@@ -195,6 +194,7 @@ end
 
 function ListView3D:Clear()
     self.lines = {}
+    self:UpdateLayout()
 end
 function ListView3D:AddLine(text)
     table.insert(self.lines, text)
