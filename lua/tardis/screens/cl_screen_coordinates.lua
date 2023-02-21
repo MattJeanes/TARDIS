@@ -1,46 +1,12 @@
 -- Destination
 
-local function make_list_line_clickable(line, frame)
-    local l = vgui.Create("DLabel", line:GetParent():GetParent())
-    l:SetTall(34)
-    l:SetBGColor(Color(0,0,0,0))
-    l:SetColor(Color(0,0,0,0))
-
-    line.Columns[1]:SetFont("DermaLarge")
-
-    local scrollbar = line:GetParent():GetParent().VBar
-
-    l.Think = function()
-        if not IsValid(line) then
-            l:Remove()
-            return
-        end
-        line:PerformLayout()
-        line:DataLayout(line:GetParent():GetParent())
-        local sb_wide = scrollbar:GetWide()
-        if l:GetWide() ~= line:GetWide() - sb_wide then
-            l:SetWide(line:GetWide() - sb_wide)
-        end
-
-        if l.scrollbar_pos == scrollbar:GetOffset() then return end
-
-        l.scrollbar_pos = scrollbar:GetOffset()
-        local pos1x, pos1y = line:GetPos()
-        local pos2x, pos2y = line:GetParent():GetPos()
-
-        l:SetPos(pos1x + pos2x, pos1y + pos2y)
-    end
-    l.DoClick = function()
-        line:GetParent():GetParent():OnClickLine(line, true)
-    end
-end
-
 TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", menu=false, order=2, popuponly=false}, function(self,ext,int,frame,screen)
     local w = frame:GetWide()
     local h = frame:GetTall()
     local d = 0.05 * math.min( w,h )
     local round_digits = 4
     local font = TARDIS:GetScreenFont(screen, "Default")
+    local bgcolor = Color(148,195,255,150)
 
     local background=vgui.Create("DImage", frame)
 
@@ -53,7 +19,12 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
         self:SetText(math.random(-99999999, 99999999) * 0.0001)
     end
 
-    local llist = vgui.Create("DListView",frame)
+    local llist
+    if screen.is3D2D then
+        llist = ListView3D:new(frame,screen,34,bgcolor)
+    else
+        llist = vgui.Create("DListView",frame)
+    end
     llist:SetSize( (w - 3 * d) / 2,(h - 2 * d) )
     llist:SetPos( d,d )
     llist:AddColumn("LOCATIONS LIST")
@@ -66,7 +37,7 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     local PositionPanel = vgui.Create( "DPanel",frame )
     PositionPanel:SetPos(panel_left, d)
     PositionPanel:SetSize(panel_w, panel_h)
-    PositionPanel:SetBackgroundColor( Color(148,195,255))
+    PositionPanel:SetBackgroundColor( bgcolor)
 
     local pos_elem_w = (panel_w - 5 * panel_d) / 4
     local pos_elem_h = (panel_h - 4 * panel_d) / 3
@@ -186,7 +157,7 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     local DestinationPanel = vgui.Create( "DPanel",frame )
     DestinationPanel:SetPos(panel_left, 2 * d + panel_h)
     DestinationPanel:SetSize(panel_w, panel_h)
-    DestinationPanel:SetBackgroundColor( Color(148,195,255))
+    DestinationPanel:SetBackgroundColor( bgcolor)
 
     local dst_elem_w = (panel_w - 5 * panel_d) / 4
     local dst_elem_h = (panel_h - 4 * panel_d) / 3
@@ -323,7 +294,7 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     local InputPanel = vgui.Create( "DPanel",frame )
     InputPanel:SetPos(panel_left, 3 * d + 2 * panel_h)
     InputPanel:SetSize(panel_w, panel_h)
-    InputPanel:SetBackgroundColor( Color(148,195,255))
+    InputPanel:SetBackgroundColor( bgcolor)
 
     local inp_elem_w = (panel_w - 5 * panel_d) / 4
     local inp_elem_h = (panel_h - 4 * panel_d) / 3
@@ -439,18 +410,6 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
         end
         llist:AddLine(TARDIS:GetPhrase("Screens.Coordinates.RandomGround"))
         llist:AddLine(TARDIS:GetPhrase("Screens.Coordinates.Random"))
-
-        if screen.is3D2D then
-            llist:SetDataHeight(34)
-            llist:SetHeaderHeight(0)
-            llist:SetHideHeaders(true)
-            llist:SetDirty( true )
-            llist:PerformLayout()
-
-            for k,v in pairs(llist:GetLines()) do
-                make_list_line_clickable(v, frame)
-            end
-        end
     end
 
     updatelist()
