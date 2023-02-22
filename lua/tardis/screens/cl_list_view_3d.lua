@@ -16,6 +16,7 @@ function ListView3D:new(parent,screen,elem_height,col)
         bgcolor = col or Color(255,255,255),
         scroll = 0,
         max_scroll = 0,
+        scroll_speed = 750,
     }
 
     l.panel = vgui.Create("DPanel", parent)
@@ -53,18 +54,25 @@ function ListView3D:UpdateLayout()
     self.panel:SetBackgroundColor(self.bgcolor)
 
     local d = self.size[2] * 0.01
-    local w = self.size[1] - 2 * d
+    local w = self.size[1] - 4 * d
 
     self.list_panel = vgui.Create("DPanel", self.panel)
     self.list_panel:SetPaintBackground(false)
-    self.list_panel:SetSize(w, self.size[2] - 2 * self.elem_h - 3 * d)
-    self.list_panel:SetPos(d, 2 * d + self.elem_h)
+    self.list_panel:SetSize(w, self.size[2] - 2 * self.elem_h - 6 * d)
+    self.list_panel:SetPos(2 * d, 3 * d + self.elem_h)
 
     self.scroll_panel = vgui.Create("DPanel", self.list_panel)
     self.scroll_panel:SetPaintBackground(false)
     self.scroll_panel:SetPos(0,0)
     self.scroll_panel:SetSize(w, #self.lines * (self.elem_h + d))
     self.scroll = 0
+
+    self.scroll_panel.Think = function(this)
+        if this:GetY() == -self.scroll then return end
+
+        local new_scroll = math.Approach(this:GetY(), -self.scroll, self.scroll_speed * FrameTime())
+        this:SetY(new_scroll)
+    end
 
     for i,v in ipairs(self.lines) do
         local bp = vgui.Create("DPanel", self.scroll_panel)
@@ -125,15 +133,15 @@ function ListView3D:UpdateLayout()
     dbd:SetPos(0, self.size[2] - self.elem_h - 2 * d)
 
     local ub = vgui.Create("DButton", self.panel)
-    ub:SetPos(0,0)
-    ub:SetSize(self.size[1], self.elem_h)
+    ub:SetPos(d,d)
+    ub:SetSize(self.size[1] - 2 * d, self.elem_h - d)
     ub:SetFont(self.font)
     ub:SetEnabled(false)
     ub:SetText("ʌ")
 
     local db = vgui.Create("DButton", self.panel)
-    db:SetPos(0,self.size[2] - self.elem_h)
-    db:SetSize(self.size[1], self.elem_h)
+    db:SetPos(d,self.size[2] - self.elem_h)
+    db:SetSize(self.size[1] - 2 * d, self.elem_h - d)
     db:SetFont(self.font)
     db:SetEnabled(true)
     db:SetText("V")
@@ -148,14 +156,12 @@ function ListView3D:UpdateLayout()
 
     ub.DoClick = function()
         self.scroll = math.Clamp(self.scroll - single_scroll, 0, max_scroll)
-        self.scroll_panel:SetPos(0, -self.scroll)
         ub:SetEnabled(self.scroll ~= 0)
         db:SetEnabled(self.scroll ~= max_scroll)
     end
 
     db.DoClick = function()
         self.scroll = math.Clamp(self.scroll + single_scroll, 0, max_scroll)
-        self.scroll_panel:SetPos(0, -self.scroll)
         ub:SetEnabled(self.scroll ~= 0)
         db:SetEnabled(self.scroll ~= max_scroll)
     end
@@ -240,9 +246,11 @@ function ListView3D:GetScroll()
 end
 function ListView3D:SetScroll(s)
     self.scroll = math.Clamp(s, 0, self.max_scroll)
-    self.scroll_panel:SetPos(0, -self.scroll)
     self.up_button:SetEnabled(self.scroll ~= 0)
     self.down_button:SetEnabled(self.scroll ~= self.max_scroll)
+end
+function ListView3D:SetScrollSpeed(s)
+    self.scroll_speed = s
 end
 
 
