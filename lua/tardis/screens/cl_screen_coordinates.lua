@@ -182,9 +182,9 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     dst_title:SetSize(panel_w - 2 * panel_d, dst_elem_h)
     dst_title:SetFont(font_important)
 
-    local dst_progress = vgui.Create("DProgress", DestinationPanel)
-    dst_progress:SetSize(dst_elem_w * 2 + panel_d, dst_elem_h / 3)
-    dst_progress:SetPos(dst_elem_w + 2 * panel_d, panel_d + dst_elem_h / 3)
+    local dst_progress = vgui.Create("DProgress", frame)
+    dst_progress:SetSize(panel_w, dst_elem_h / 4)
+    dst_progress:SetPos(panel_left, 2 * d + 2 * panel_h)
 
     dst_title.Think = function(self)
         if not IsValid(ext) then return end
