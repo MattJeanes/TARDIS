@@ -17,6 +17,9 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     background:SetSize(w, h)
 
     local function randomize_coordinate(self)
+        if not TARDIS:GetSetting("gui_animations") then
+            return self:SetText("???")
+        end
         self:SetText(math.random(-99999999, 99999999) * 0.0001)
     end
 
@@ -185,6 +188,10 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
 
     dst_title.Think = function(self)
         if not IsValid(ext) then return end
+        if not TARDIS:GetSetting("gui_animations") then
+            dst_progress:SetVisible(false)
+            return
+        end
 
         if not ext:GetData("teleport") and not ext:GetData("vortex") then
             if dst_progress:IsVisible() then

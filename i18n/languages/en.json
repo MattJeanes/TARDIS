@@ -447,6 +447,8 @@
     "Settings.Sections.Performance.DynamicExteriorLight.Description": "Should the exterior emit dynamic lighting?",
     "Settings.Sections.Performance.ExtraLights": "Interior Extra Lights",
     "Settings.Sections.Performance.ExtraLights.Description": "Have more than one light source per interior",
+    "Settings.Sections.Performance.GUIAnimations": "Enable GUI animations",
+    "Settings.Sections.Performance.GUIAnimations.Description": "Whether the elements of the UI should have animations",
     "Settings.Sections.Performance.Lamps": "Interior Lamps",
     "Settings.Sections.Performance.Lamps.Description": "Enable additional interior lamps",
     "Settings.Sections.Performance.LightingOverride": "Lighting Override",

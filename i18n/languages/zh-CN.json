@@ -447,6 +447,8 @@
     "Settings.Sections.Performance.DynamicExteriorLight.Description": "外部是否发出动态光源",
     "Settings.Sections.Performance.ExtraLights": "室内额外灯",
     "Settings.Sections.Performance.ExtraLights.Description": "每内部拥有一个以上的光源",
+    "Settings.Sections.Performance.GUIAnimations": "",
+    "Settings.Sections.Performance.GUIAnimations.Description": "",
     "Settings.Sections.Performance.Lamps": "内部灯",
     "Settings.Sections.Performance.Lamps.Description": "启用额外的内部灯",
     "Settings.Sections.Performance.LightingOverride": "照明覆盖",

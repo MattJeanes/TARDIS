@@ -447,6 +447,8 @@
     "Settings.Sections.Performance.DynamicExteriorLight.Description": "¿Debería el exterior emitir luz dinámica?",
     "Settings.Sections.Performance.ExtraLights": "Luces extra interiores",
     "Settings.Sections.Performance.ExtraLights.Description": "Tiene más de una fuente de luz por interior",
+    "Settings.Sections.Performance.GUIAnimations": "",
+    "Settings.Sections.Performance.GUIAnimations.Description": "",
     "Settings.Sections.Performance.Lamps": "Lámparas interiores",
     "Settings.Sections.Performance.Lamps.Description": "Activar lámparas interiores adicionales",
     "Settings.Sections.Performance.LightingOverride": "Cambio de Iluminación",

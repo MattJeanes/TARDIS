@@ -51,8 +51,8 @@ function TardisScreenButton:new(parent,screen)
     end
 
     sb.ThinkInternal = function()
-        sb.transparency = math.min(sb.transparency, 255)
-        sb.transparency = math.max(sb.transparency, 0)
+        sb.transparency = math.Clamp(sb.transparency, 0, 255)
+
         if not sb.is_toggle and sb.on and CurTime() > sb.click_end_time then
             sb.icon:SetImage(sb.icon_off)
             sb.frame:SetImage(sb.frame_off)
@@ -66,14 +66,17 @@ function TardisScreenButton:new(parent,screen)
             sb.clickable = (sb.transparency ~= 0)
         end
 
-        local realpos = { math.min(math.max(sb.pos[1], 0), sb.parent:GetWide() - sb.size[1]),
-                          math.min(math.max(sb.pos[2], 0), sb.parent:GetTall() - sb.size[2]) }
+        local realpos = { math.Clamp(sb.pos[1], 0, sb.parent:GetWide() - sb.size[1]),
+                          math.Clamp(sb.pos[2], 0, sb.parent:GetTall() - sb.size[2]) }
+
         sb.icon:SetPos(realpos[1], realpos[2])
         sb.frame:SetPos(realpos[1], realpos[2])
         sb.label:SetPos(sb.pos[1], sb.pos[2])
+
         sb.icon:SetSize(sb.size[1], sb.size[2])
         sb.frame:SetSize(sb.size[1], sb.size[2])
         sb.label:SetSize(sb.size[1], sb.size[2])
+
         if not sb.moving.now then
             sb.outside = (sb.pos[1] < 0) or (sb.pos[2] < 0)
                 or (sb.pos[1] + sb.size[1] > sb.parent:GetWide())
@@ -108,8 +111,6 @@ function TardisScreenButton:new(parent,screen)
         end
     end
 
-    sb.icon.Think = sb.ThinkInternal
-    sb.frame.Think = sb.ThinkInternal
     sb.label.Think = sb.ThinkInternal
 
     sb.icon.DoClick = sb.DoClickInternal
@@ -332,9 +333,17 @@ function TardisScreenButton:InitiateMove(x, y, relative, speed)
 
     moving.move = function()
         local sb = moving.parent
-        sb.pos[1] = math.Approach(sb.pos[1], moving.aim[1], moving.speed * FrameTime())
-        sb.pos[2] = math.Approach(sb.pos[2], moving.aim[2], moving.speed * FrameTime())
-        sb.transparency = math.Approach(sb.transparency, moving.transp_aim, moving.speed * FrameTime() * 1.5)
+
+        if TARDIS:GetSetting("gui_animations") then
+            sb.pos[1] = math.Approach(sb.pos[1], moving.aim[1], moving.speed * FrameTime())
+            sb.pos[2] = math.Approach(sb.pos[2], moving.aim[2], moving.speed * FrameTime())
+            sb.transparency = math.Approach(sb.transparency, moving.transp_aim, moving.speed * FrameTime() * 1.5)
+        else
+            self.pos[1] = moving.aim[1]
+            self.pos[2] = moving.aim[2]
+            self.transparency = moving.transp_aim
+        end
+
         if sb.pos[1] == moving.aim[1] and sb.pos[2] == moving.aim[2] and sb.transparency == moving.transp_aim then
             moving.now = false
             sb.icon:SetVisible(sb.transparency ~= 0)

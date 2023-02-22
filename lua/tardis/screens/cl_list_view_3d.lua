@@ -70,8 +70,12 @@ function ListView3D:UpdateLayout()
     self.scroll_panel.Think = function(this)
         if this:GetY() == -self.scroll then return end
 
-        local new_scroll = math.Approach(this:GetY(), -self.scroll, self.scroll_speed * FrameTime())
-        this:SetY(new_scroll)
+        if TARDIS:GetSetting("gui_animations") then
+            local new_scroll = math.Approach(this:GetY(), -self.scroll, self.scroll_speed * FrameTime())
+            this:SetY(new_scroll)
+        else
+            this:SetY(-self.scroll)
+        end
     end
 
     for i,v in ipairs(self.lines) do

@@ -447,6 +447,8 @@
     "Settings.Sections.Performance.DynamicExteriorLight.Description": "Dış kısım dinamik aydınlatma yaymalı mı?",
     "Settings.Sections.Performance.ExtraLights": "İç Ekstra Işıklar",
     "Settings.Sections.Performance.ExtraLights.Description": "İç mekan başına birden fazla ışık kaynağına sahip olun",
+    "Settings.Sections.Performance.GUIAnimations": "",
+    "Settings.Sections.Performance.GUIAnimations.Description": "",
     "Settings.Sections.Performance.Lamps": "İç Lambalar",
     "Settings.Sections.Performance.Lamps.Description": "İlave iç lambaları etkinleştirin",
     "Settings.Sections.Performance.LightingOverride": "Aydınlatma geçersiz kılma",
