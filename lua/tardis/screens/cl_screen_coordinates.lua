@@ -6,7 +6,8 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     local d = 0.05 * math.min( w,h )
     local round_digits = 4
     local font = TARDIS:GetScreenFont(screen, "Default")
-    local bgcolor = Color(148,195,255,150)
+    local font_important = TARDIS:GetScreenFont(screen, "DefaultBold")
+    local bgcolor = Color(1,1,100,150)
 
     local background=vgui.Create("DImage", frame)
 
@@ -46,8 +47,7 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     pos_title:SetText("Current position:")
     pos_title:SetPos(panel_d, panel_d)
     pos_title:SetSize(panel_w - 2 * panel_d, pos_elem_h)
-    pos_title:SetDark(true)
-    pos_title:SetFont(font)
+    pos_title:SetFont(font_important)
 
     local pos_x = vgui.Create("DTextEntry",PositionPanel)
     pos_x:SetPlaceholderText("")
@@ -177,8 +177,7 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     dst_title:SetText("Destination:")
     dst_title:SetPos(panel_d, panel_d)
     dst_title:SetSize(panel_w - 2 * panel_d, dst_elem_h)
-    dst_title:SetDark(true)
-    dst_title:SetFont(font)
+    dst_title:SetFont(font_important)
 
     local dst_progress = vgui.Create("DProgress", DestinationPanel)
     dst_progress:SetSize(dst_elem_w * 2 + panel_d, dst_elem_h / 3)

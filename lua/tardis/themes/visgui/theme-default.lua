@@ -12,9 +12,10 @@ local theme = {
     },
     backgrounds = {
         subfolder = "backgrounds",
-        default = "default.png",
+        default = "console.png",
         virtualconsole = "console.png",
         coordinates = "console.png",
+        music = "console.png",
         main = "default.png",
     },
     text_icons_off = {
