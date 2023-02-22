@@ -308,7 +308,7 @@ function TardisScreenButton:InitiateMove(x, y, relative, speed)
     local moving = {}
     moving.now = true
     moving.parent = self
-    moving.speed = speed or 100
+    moving.speed = speed or 300
 
     if relative then
         moving.aim = { self.pos[1] + x, self.pos[2] + y }
