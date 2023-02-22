@@ -5,6 +5,7 @@ function ListView3D:new(parent,screen,elem_height,col)
         parent = parent,
         screen = screen,
         font = TARDIS:GetScreenFont(screen, "Default"),
+        selection_font = TARDIS:GetScreenFont(screen, "DefaultBold"),
         pos = {0, 0},
         size = {100, 100},
         elem_h = elem_height or 17,
@@ -65,12 +66,16 @@ function ListView3D:UpdateLayout()
     self.scroll = 0
 
     for i,v in ipairs(self.lines) do
-        local b = vgui.Create("DButton", self.scroll_panel)
-        b:SetPos(0, (i - 1) * (d + self.elem_h))
+        local bp = vgui.Create("DPanel", self.scroll_panel)
+        bp:SetPos(0, (i - 1) * (d + self.elem_h))
+        bp:SetSize(w, self.elem_h)
+        bp:SetBackgroundColor(Color(255,255,255))
+        local b = vgui.Create("DLabel", bp)
+        b.panel = bp
         b:SetSize(w, self.elem_h)
+        b:SetPos(0,0)
         b:SetText(v)
         b:SetTextColor(Color(0,0,0))
-        b:SetBGColor(Color(255,255,255))
         b:SetFont(self.font)
         b:SetIsToggle(true)
         b.index = i
@@ -80,12 +85,18 @@ function ListView3D:UpdateLayout()
                 for k,another_line in pairs(self.line_elements) do
                     if another_line ~= this then
                         another_line:SetToggle(false)
+                        another_line:SetFont(self.font)
+                        another_line.panel:SetBackgroundColor(Color(255,255,255))
                     end
                 end
                 self:OnRowSelected(this.index, this)
                 self.selected_line = this.index
+                this:SetFont(self.selection_font)
+                this:GetParent():SetBackgroundColor(Color(50,100,255))
             else
                 self.selected_line = nil
+                this:SetFont(self.font)
+                this.panel:SetBackgroundColor(Color(255,255,255))
             end
         end
 
@@ -102,13 +113,13 @@ function ListView3D:UpdateLayout()
 
     local ubd = vgui.Create("DPanel", self.panel)
     ubd:SetBackgroundColor(div_color)
-    ubd:SetSize(self.size[1], 2 * d)
-    ubd:SetPos(0, self.elem_h - 0.5 * d)
+    ubd:SetSize(self.size[1], 2 * d + self.elem_h)
+    ubd:SetPos(0, 0)
 
     local dbd = vgui.Create("DPanel", self.panel)
     dbd:SetBackgroundColor(div_color)
-    dbd:SetSize(self.size[1], 2 * d)
-    dbd:SetPos(0, self.size[2] - self.elem_h - 0.5 * d)
+    dbd:SetSize(self.size[1], 2 * d + self.elem_h)
+    dbd:SetPos(0, self.size[2] - self.elem_h - 2 * d)
 
     local ub = vgui.Create("DButton", self.panel)
     ub:SetPos(0,0)
@@ -127,7 +138,7 @@ function ListView3D:UpdateLayout()
     table.insert(self.elements, db)
     table.insert(self.elements, ub)
     table.insert(self.elements, ubd)
-    table.insert(self.elements, ubd)
+    table.insert(self.elements, dbd)
 
     local max_scroll = self.elem_h * (#self.lines + 1)
     local single_scroll = 0.5 * self.size[2]
@@ -170,6 +181,9 @@ end
 
 function ListView3D:SetFont(font)
     self.font = font
+end
+function ListView3D:SetSelectionFont(font)
+    self.selection_font = font
 end
 
 function ListView3D:GetPos()

@@ -54,6 +54,12 @@ TARDIS:CreateScreenFont("Default", {
     size=13
 })
 
+TARDIS:CreateScreenFont("DefaultBold", {
+    font="Tahoma",
+    size=14,
+    weight = 1000,
+})
+
 TARDIS:CreateScreenFont("Main", {
     font="Roboto",
     size=50
