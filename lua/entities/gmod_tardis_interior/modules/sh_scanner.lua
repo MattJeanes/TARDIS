@@ -22,19 +22,18 @@ ENT:AddHook("Initialize", "scanner", function(self)
         for k,v in pairs(self.metadata.Interior.Scanners) do
             local scanner = {}
             scanner.uid = "tardisi_scanner_"..self:EntIndex().."_"..k.."_"..v.width.."_"..v.height.."_"..v.fov
-            if SERVER then
-                local found=false
-                for i,mat in pairs(self:GetMaterials()) do
-                    if mat==v.mat then
-                        self:SetSubMaterial(i-1,"!"..scanner.uid)
-                        found=true
-                        break
-                    end
+            local found=false
+            for i,mat in pairs(self:GetMaterials()) do
+                if mat==v.mat then
+                    self:SetSubMaterial(i-1,"!"..scanner.uid)
+                    found=true
+                    break
                 end
-                if not found then
-                    ErrorNoHalt("Could not find material "..v.mat.." for scanner on "..self:GetModel())
-                end
-            else
+            end
+            if not found then
+                ErrorNoHalt("Could not find material "..v.mat.." for scanner on "..self:GetModel())
+            end
+            if CLIENT then
                 scanner.mat=CreateMaterial(
                     scanner.uid,
                     "VertexLitGeneric",
