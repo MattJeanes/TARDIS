@@ -15,6 +15,8 @@ local theme = {
         default = "background.png",
         -- virtualconsole = "",
         -- main = "",
+        -- coordinates = "",
+        -- music = "",
     },
     text_icons_off = {
         subfolder = nil,
