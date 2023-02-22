@@ -179,15 +179,16 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     local dst_elem_w = (panel_w - 5 * panel_d) / 4
     local dst_elem_h = (panel_h - 4 * panel_d) / 3
 
+    local dst_progress = vgui.Create("DProgress", frame)
+    dst_progress:SetSize(panel_w, dst_elem_h / 4)
+    dst_progress:SetPos(panel_left, 2 * d + panel_h - dst_elem_h / 4)
+
     local dst_title = vgui.Create("DLabel",DestinationPanel)
     dst_title:SetText(TARDIS:GetPhrase("Screens.Coordinates.Destination"))
     dst_title:SetPos(panel_d, panel_d)
     dst_title:SetSize(panel_w - 2 * panel_d, dst_elem_h)
     dst_title:SetFont(font_important)
 
-    local dst_progress = vgui.Create("DProgress", frame)
-    dst_progress:SetSize(panel_w, dst_elem_h / 4)
-    dst_progress:SetPos(panel_left, 2 * d + 2 * panel_h)
 
     DestinationPanel.Think = function(self) -- progress bar behaviour
         if not IsValid(ext) then return end
