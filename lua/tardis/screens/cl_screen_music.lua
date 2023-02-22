@@ -53,13 +53,13 @@ TARDIS:AddScreen("Music", {id="music", text="Screens.Music", menu=false, order=1
     local frT = frame:GetTall()
 
     local gap = math.min(frT, frW) * 0.05 * 1.2
+    local gap2 = math.min(frT, frW) * 0.02
 
     local listW = frW * 0.3
     local listT = frT - 2 * gap
-    local pd = listW * 0.02
-    local tbW = frW - 4 * gap - 2 * listW - 2 * pd
+    local tbW = frW - 4 * gap - 2 * listW - 2 * gap2
     local tbT = frT * 0.1
-    local bW = 0.5 * (tbW - gap)
+    local bW = 0.5 * (tbW - gap2)
     local bT = frT * 0.1
 
     local midX = 3 * gap + 2 * listW
@@ -97,7 +97,7 @@ TARDIS:AddScreen("Music", {id="music", text="Screens.Music", menu=false, order=1
     list_custom:SetMultiSelect(false)
 
     local panel = vgui.Create( "DPanel", frame )
-    panel:SetSize(tbW + 2 * pd, listT)
+    panel:SetSize(tbW + 2 * gap2, listT)
     panel:SetPos(midX, gap)
     panel:SetBackgroundColor(bgcolor)
 
@@ -106,32 +106,46 @@ TARDIS:AddScreen("Music", {id="music", text="Screens.Music", menu=false, order=1
     url_bar:SetPlaceholderText(TARDIS:GetPhrase("Screens.Music.UrlPlaceholder"))
     url_bar:SetFont(TARDIS:GetScreenFont(screen, "Default"))
     url_bar:SetSize(tbW, tbT)
-    url_bar:SetPos(pd, pd)
+    url_bar:SetPos(gap2, gap2)
 
     local name_bar = vgui.Create( "DTextEntry3D2D", panel )
     name_bar.is3D2D = screen.is3D2D
     name_bar:SetPlaceholderText(TARDIS:GetPhrase("Screens.Music.NamePlaceholder"))
     name_bar:SetFont(TARDIS:GetScreenFont(screen, "Default"))
     name_bar:SetSize(tbW, tbT)
-    name_bar:SetPos(pd, pd + gap + tbT)
+    name_bar:SetPos(gap2, 2 * gap2 + tbT)
 
     local play_stop_button=vgui.Create("DButton", panel)
     play_stop_button:SetSize(tbW, bT * 1.3)
-    play_stop_button:SetPos(pd, listT - pd - bT * 1.3)
+    play_stop_button:SetPos(gap2, listT - gap2 - bT * 1.3)
     play_stop_button:SetText(TARDIS:GetPhrase("Screens.Music.PlayStop"))
     play_stop_button:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 
     local save_custom_button=vgui.Create("DButton", panel)
     save_custom_button:SetSize(bW, bT)
-    save_custom_button:SetPos(pd, pd + 2 * gap + 2 * tbT)
+    save_custom_button:SetPos(gap2, 3 * gap2 + 2 * tbT)
     save_custom_button:SetText(TARDIS:GetPhrase("Common.Save"))
     save_custom_button:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 
     local remove_custom_button=vgui.Create("DButton",panel)
     remove_custom_button:SetSize(bW, bT)
-    remove_custom_button:SetPos(pd + gap + bW, pd + 2 * gap + 2 * tbT)
+    remove_custom_button:SetPos(2 * gap2 + bW, 3 * gap2 + 2 * tbT)
     remove_custom_button:SetText(TARDIS:GetPhrase("Common.Remove"))
     remove_custom_button:SetFont(TARDIS:GetScreenFont(screen, "Default"))
+
+    if not screen.is3D2D then
+        local el1,el2 = TARDIS:CreateOptionInterface("music-volume", TARDIS:GetSettingData("music-volume"))
+        local volume_setting = vgui.Create("DPanel",panel)
+        volume_setting:SetPos(gap2, 4 * gap2 + 3 * tbT)
+        volume_setting:SetSize(tbW, el1:GetTall() + el2:GetTall() + 3 * gap2)
+
+        el1:SetParent(volume_setting)
+        el2:SetParent(volume_setting)
+        el2:SetWide(tbW)
+
+        el1:SetPos(gap2, gap2)
+        el2:SetPos(gap2, 2 * gap2 + el1:GetTall())
+    end
 
 --------------------------------------------------------------------------------
 -- Loading data
