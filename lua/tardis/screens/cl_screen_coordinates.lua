@@ -180,6 +180,79 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     dst_title:SetDark(true)
     dst_title:SetFont(font)
 
+    local dst_progress = vgui.Create("DProgress", DestinationPanel)
+    dst_progress:SetSize(dst_elem_w * 2 + panel_d, dst_elem_h / 3)
+    dst_progress:SetPos(dst_elem_w + 2 * panel_d, panel_d + dst_elem_h / 3)
+
+    dst_title.Think = function(self)
+        if not IsValid(ext) then return end
+
+        if not ext:GetData("teleport") and not ext:GetData("vortex") then
+            if dst_progress:IsVisible() then
+                dst_progress:SetVisible(false)
+                dst_progress:SetFraction(0)
+            end
+            return
+        end
+        dst_progress:SetVisible(true)
+
+        local tp_metadata = ext.metadata.Exterior.Teleport
+
+        if ext:GetData("demat") then
+            local steps = #tp_metadata.DematSequence - 1
+            local step = ext:GetData("step") - 1
+            if step >= steps then return end
+
+            local a_target = tp_metadata.DematSequence[step + 1]
+            local a_prev = tp_metadata.DematSequence[step]
+            if a_prev == nil then a_prev = 255 end
+
+            local a = ext:GetData("alpha",255)
+            if a_prev == a_target then return end
+
+
+            local progress = step / steps
+            progress = progress + (1 - math.abs((a - a_target) / (a_prev - a_target))) / steps
+
+            dst_progress:SetFraction(0.45 * progress)
+            return
+        end
+
+        if ext:GetData("mat") then
+            local steps = #tp_metadata.MatSequence - 1
+            local step = ext:GetData("step") - 1
+            if step >= steps then return end
+
+            local a_target = tp_metadata.MatSequence[step + 1]
+            local a_prev = tp_metadata.MatSequence[step]
+            if a_prev == nil then a_prev = 0 end
+
+            local a = ext:GetData("alpha",255)
+            if a_prev == a_target then return end
+
+            local progress = step / steps
+            progress = progress + (1 - math.abs((a - a_target) / (a_prev - a_target))) / steps
+
+            dst_progress:SetFraction(0.7 + 0.3 * progress)
+            return
+        end
+
+        if ext:GetData("vortex") and not ext:GetData("teleport") then
+            local progress = (CurTime() % 4) / 4
+            dst_progress:SetFraction(0.45 + 0.1 * progress)
+            return
+        end
+
+        if ext:GetData("teleport") and not ext:GetData("mat") then
+            local delay = (ext:GetData("demat-fast",false) and 1.9 or 8.5)
+            local time_passed = CurTime() - ext:GetData("premat_start_time")
+            local progress = time_passed / delay
+
+            dst_progress:SetFraction(0.55 + 0.15 * progress)
+            return
+        end
+    end
+
     local dst_x = vgui.Create("DTextEntry",DestinationPanel)
     dst_x:SetPlaceholderText("")
     dst_x:SetPos(panel_d, dst_elem_h + 2 * panel_d)

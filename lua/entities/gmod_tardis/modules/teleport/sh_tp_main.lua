@@ -314,6 +314,7 @@ else
 
     ENT:OnMessage("premat", function(self, data, ply)
         self:SetData("teleport",true)
+        self:SetData("premat_start_time", CurTime())
         if TARDIS:GetSetting("teleport-sound") and TARDIS:GetSetting("sound") then
             local shouldPlayExterior = self:CallHook("ShouldPlayMatSound", false)~=false
             local shouldPlayInterior = self:CallHook("ShouldPlayMatSound", true)~=false
@@ -419,16 +420,20 @@ ENT:AddHook("Think","teleport",function(self,delta)
     local alpha=self:GetData("alpha",255)
     local target=self:GetData("alphatarget",255)
     local step=self:GetData("step",1)
+
+    local teleport_md = self.metadata.Exterior.Teleport
+    local fast = self:GetData("demat-fast")
+
     if alpha==target then
         if demat then
-            if step>=#self.metadata.Exterior.Teleport.DematSequence then
+            if step>=#teleport_md.DematSequence then
                 self:StopDemat()
                 return
             else
                 self:SetData("step",step+1)
             end
         elseif mat then
-            if step>=#self.metadata.Exterior.Teleport.MatSequence then
+            if step>=#teleport_md.MatSequence then
                 self:StopMat()
                 return
             else
@@ -438,10 +443,10 @@ ENT:AddHook("Think","teleport",function(self,delta)
         target=self:GetTargetAlpha()
         self:SetData("alphatarget",target)
     end
-    local teleport_md = self.metadata.Exterior.Teleport
-    local sequencespeed = (self:GetData("demat-fast") and teleport_md.SequenceSpeedFast or teleport_md.SequenceSpeed)
-    if self:GetData("health-warning",false) then 
-        sequencespeed = (self:GetData("demat-fast") and teleport_md.SequenceSpeedWarnFast or teleport_md.SequenceSpeedWarning)
+
+    local sequencespeed = (fast and teleport_md.SequenceSpeedFast or teleport_md.SequenceSpeed)
+    if self:GetData("health-warning",false) then
+        sequencespeed = (fast and teleport_md.SequenceSpeedWarnFast or teleport_md.SequenceSpeedWarning)
     end
     alpha=math.Approach(alpha,target,delta*66*sequencespeed)
     self:SetData("alpha",alpha)
