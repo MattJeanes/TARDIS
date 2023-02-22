@@ -482,19 +482,25 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
         end
         updatetextinputs(pos,ang,name)
     end
+    function llist:OnRowSelectionRemoved(i,row)
+        cleartextinputs()
+    end
     llist:SetMultiSelect(false)
 
     function pos_copy:DoClick()
-        updatetextinputs(ext:GetPos(), ext:GetAngles())
+        llist:ClearSelection()
+        updatetextinputs(ext:GetPos(), ext:GetAngles(), "")
     end
 
     function dst_copy:DoClick()
+        llist:ClearSelection()
         x:SetText(dst_x:GetText())
         y:SetText(dst_y:GetText())
         z:SetText(dst_z:GetText())
         pitch:SetText(dst_pitch:GetText())
         yaw:SetText(dst_yaw:GetText())
         roll:SetText(dst_roll:GetText())
+        namebox:SetText("")
     end
 
     function pos_save:DoClick()
@@ -606,8 +612,16 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
         cleartextinputs()
     end
 
-    function namebox:OnChange()
+    local clr = function(self)
         llist:ClearSelection()
     end
+
+    namebox.OnChange = clr
+    x.OnChange = clr
+    y.OnChange = clr
+    z.OnChange = clr
+    pitch.OnChange = clr
+    yaw.OnChange = clr
+    roll.OnChange = clr
 
 end)

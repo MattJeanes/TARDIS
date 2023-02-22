@@ -26,6 +26,7 @@ function ListView3D:new(parent,screen,elem_height,col)
 
     l.OnRowSelected = function(i,row) end
     l.DoDoubleClick = function(rowIndex, row) end
+    l.OnRowSelectionRemoved = function(i,row) end
     l.Think = function() end
 
     setmetatable(l,self)
@@ -94,6 +95,7 @@ function ListView3D:UpdateLayout()
                 this:SetFont(self.selection_font)
                 this.panel:SetBackgroundColor(Color(50,100,255))
             else
+                self:OnRowSelectionRemoved(this.index, this)
                 self.selected_line = nil
                 this:SetFont(self.font)
                 this.panel:SetBackgroundColor(Color(255,255,255))
@@ -227,6 +229,8 @@ end
 function ListView3D:ClearSelection()
     for k,v in pairs(self.line_elements) do
         v:SetToggle(false)
+        v:SetFont(self.font)
+        v.panel:SetBackgroundColor(Color(255,255,255))
     end
     self.selected_line = nil
 end
