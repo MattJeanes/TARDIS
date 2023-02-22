@@ -92,7 +92,7 @@ function ListView3D:UpdateLayout()
                 self:OnRowSelected(this.index, this)
                 self.selected_line = this.index
                 this:SetFont(self.selection_font)
-                this:GetParent():SetBackgroundColor(Color(50,100,255))
+                this.panel:SetBackgroundColor(Color(50,100,255))
             else
                 self.selected_line = nil
                 this:SetFont(self.font)
@@ -105,6 +105,7 @@ function ListView3D:UpdateLayout()
         end
 
         table.insert(self.elements, b)
+        table.insert(self.elements, bp)
         table.insert(self.line_elements, b)
     end
 
