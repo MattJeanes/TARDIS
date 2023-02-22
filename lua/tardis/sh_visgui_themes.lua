@@ -26,14 +26,24 @@ function TARDIS:GetScreenGUITheme(screen)
     return "default"
 end
 
+function TARDIS:GetScreenGUIColor(screen, theme)
+    if theme == nil then
+        theme = self.visgui_themes[TARDIS:GetScreenGUITheme(screen)]
+    end
+    if theme.bgcolor then
+        return theme.bgcolor
+    end
+    if theme.base_id then
+        return TARDIS:GetScreenGUIColor(screen, theme.base_id)
+    end
+    return Color(0,0,0,255)
+end
+
 function TARDIS:GetGUIThemes()
     return self.visgui_themes
 end
 
 function TARDIS:GetGUITheme(id)
-    if self.visgui_themes[id] then
-        return self.visgui_themes[id]
-    end
     return self.visgui_themes[id]
 end
 

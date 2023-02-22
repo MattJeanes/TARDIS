@@ -2,6 +2,7 @@ local theme = {
     id = "default-transparent",
     name = "Transparent",
     base_id = "default",
+    bgcolor = Color(0,0,40,0),
 
     folder = "default-transparent",
     frames = {

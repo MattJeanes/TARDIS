@@ -322,7 +322,7 @@ function TARDIS:LoadScreenUI(screen)
     if not TARDIS:GetSetting("gui_old") then
         titlebar:SetSize(frame:GetWide(), frame:GetTall() * 0.15)
         titlebar:SetPos(0, frame:GetTall() - titlebar:GetTall() )
-        titlebar:SetBackgroundColor(Color(1, 1, 100, 255))
+        titlebar:SetBackgroundColor(TARDIS:GetScreenGUIColor(screen))
     else
         titlebar:SetSize(frame:GetWide(), frame:GetTall() * 0.1)
         titlebar:SetPos(0, 0)

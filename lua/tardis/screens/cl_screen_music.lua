@@ -72,7 +72,7 @@ TARDIS:AddScreen("Music", {id="music", text="Screens.Music", menu=false, order=1
     local background_img = TARDIS:GetGUIThemeElement(theme, "backgrounds", "music")
     background:SetImage(background_img)
     background:SetSize(frW, frT)
-    local bgcolor = Color(1,1,100,150)
+    local bgcolor = TARDIS:GetScreenGUIColor(screen)
 
     local list_premade
     local list_custom

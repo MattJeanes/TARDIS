@@ -2,6 +2,7 @@ local theme = {
     id = "base",
     name = "TextOnly",
     base_id = nil,
+    bgcolor = Color(1,1,1,150),
 
     folder = "base",
     frames = {

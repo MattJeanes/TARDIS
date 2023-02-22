@@ -13,7 +13,7 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     local round_digits = 4
     local font = TARDIS:GetScreenFont(screen, "Default")
     local font_important = TARDIS:GetScreenFont(screen, "DefaultBold")
-    local bgcolor = Color(1,1,100,150)
+    local bgcolor = TARDIS:GetScreenGUIColor(screen)
 
     local background=vgui.Create("DImage", frame)
 

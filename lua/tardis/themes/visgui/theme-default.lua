@@ -2,6 +2,7 @@ local theme = {
     id = "default",
     name = "Default",
     base_id = "base",
+    bgcolor = Color(1,1,100,150),
 
     folder = "default",
     frames = {
