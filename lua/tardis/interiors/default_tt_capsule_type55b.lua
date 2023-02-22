@@ -29,6 +29,11 @@ T.Interior = {
         },
     },
 }
+T.Exterior = {
+    Portal = {
+        thickness = 30
+    }
+}
 
 T.Templates = {
     ttcapsule = { override = true, fail = function() ErrorNoHalt("Failed to add ttcapsule_type55b default exterior") end, },
