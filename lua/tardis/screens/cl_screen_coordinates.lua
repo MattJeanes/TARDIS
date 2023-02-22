@@ -197,6 +197,7 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
         dst_progress:SetVisible(true)
 
         local tp_metadata = ext.metadata.Exterior.Teleport
+        local fast = ext:GetData("demat-fast")
 
         if ext:GetData("demat") then
             local steps = #tp_metadata.DematSequence - 1
@@ -214,7 +215,7 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
             local progress = step / steps
             progress = progress + (1 - math.abs((a - a_target) / (a_prev - a_target))) / steps
 
-            dst_progress:SetFraction(0.45 * progress)
+            dst_progress:SetFraction((fast and 0.55 or 0.45) * progress)
             return
         end
 
@@ -238,12 +239,16 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
         end
 
         if ext:GetData("vortex") and not ext:GetData("teleport") then
-            local progress = (CurTime() % 4) / 4
-            dst_progress:SetFraction(0.45 + 0.1 * progress)
+            if fast then
+                dst_progress:SetFraction(0.55)
+            else
+                local progress = (CurTime() % 4) / 4
+                dst_progress:SetFraction(0.45 + 0.1 * progress)
+            end
             return
         end
 
-        if ext:GetData("teleport") and not ext:GetData("mat") then
+        if ext:GetData("teleport") and not ext:GetData("mat") then -- premat
             local delay = (ext:GetData("demat-fast",false) and 1.9 or 8.5)
             local time_passed = CurTime() - ext:GetData("premat_start_time")
             local progress = time_passed / delay
