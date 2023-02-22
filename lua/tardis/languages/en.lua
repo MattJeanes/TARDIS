@@ -297,7 +297,6 @@ T.Phrases = {
     ["Screens.Coordinates.RemoveLocation"] = "Remove Location",
     ["Screens.Coordinates.Roll"] = "Roll",
     ["Screens.Coordinates.Save"] = "Save",
-    ["Screens.Coordinates.SelectManually"] = "Select Manually",
     ["Screens.Coordinates.Set"] = "Set",
     ["Screens.Coordinates.Unnamed"] = "Unnamed",
     ["Screens.Coordinates.X"] = "X",

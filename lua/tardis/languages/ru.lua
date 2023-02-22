@@ -291,7 +291,6 @@ T.Phrases = {
     ["Screens.Coordinates.RandomLocationGround"] = "Случайная позиция на поверхности",
     ["Screens.Coordinates.RemoveLocation"] = "Удалить локацию",
     ["Screens.Coordinates.Roll"] = "Крен",
-    ["Screens.Coordinates.SelectManually"] = "Ручной выбор",
     ["Screens.Coordinates.Unnamed"] = "Без названия",
     ["Screens.Coordinates.X"] = "X",
     ["Screens.Coordinates.Y"] = "Y",

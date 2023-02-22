@@ -281,7 +281,6 @@ T.Phrases = {
     ["Screens.Coordinates.RandomLocationGround"] = "Lleoliad ar hap ar y ddaear",
     ["Screens.Coordinates.RemoveLocation"] = "Dileu Lleoliad",
     ["Screens.Coordinates.Roll"] = "rholio",
-    ["Screens.Coordinates.SelectManually"] = "Dewiswch â Llaw",
     ["Screens.Coordinates.Unnamed"] = "Dienw",
     ["Screens.Coordinates.X"] = "X",
     ["Screens.Coordinates.Y"] = "Y",

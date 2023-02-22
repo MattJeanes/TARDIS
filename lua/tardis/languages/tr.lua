@@ -281,7 +281,6 @@ T.Phrases = {
     ["Screens.Coordinates.RandomLocationGround"] = "Yerde rastgele konum",
     ["Screens.Coordinates.RemoveLocation"] = "Konumu Kaldır",
     ["Screens.Coordinates.Roll"] = "Rulo",
-    ["Screens.Coordinates.SelectManually"] = "Manuel Olarak Seç",
     ["Screens.Coordinates.Unnamed"] = "Isimsiz",
     ["Screens.Coordinates.X"] = "X",
     ["Screens.Coordinates.Y"] = "Y",

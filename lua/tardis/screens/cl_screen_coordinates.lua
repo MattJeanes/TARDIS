@@ -375,17 +375,6 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     end
     dst_copy:SetFont(font)
 
-    local button=vgui.Create("DButton", DestinationPanel)
-    button:SetSize(panel_d + 2 * dst_elem_w,dst_elem_h)
-    button:SetPos(dst_elem_w * 2 + 3 * panel_d, panel_d)
-    button:SetText(TARDIS:GetPhrase("Screens.Coordinates.SelectManually"))
-    button:SetFont(font)
-    button.DoClick = function()
-        TARDIS:Control("destination", LocalPlayer())
-        TARDIS:RemoveHUDScreen()
-    end
-
-
 
 
     local InputPanel = vgui.Create( "DPanel",frame )

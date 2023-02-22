@@ -281,7 +281,6 @@ T.Phrases = {
     ["Screens.Coordinates.RandomLocationGround"] = "地面隨機位置",
     ["Screens.Coordinates.RemoveLocation"] = "移除位置",
     ["Screens.Coordinates.Roll"] = "翻滾",
-    ["Screens.Coordinates.SelectManually"] = "手動選擇",
     ["Screens.Coordinates.Unnamed"] = "未命名",
     ["Screens.Coordinates.X"] = "X",
     ["Screens.Coordinates.Y"] = "Y",

@@ -291,7 +291,6 @@ T.Phrases = {
     ["Screens.Coordinates.RandomLocationGround"] = "Emplacement aléatoire sur le sol",
     ["Screens.Coordinates.RemoveLocation"] = "Retirer l’emplacement",
     ["Screens.Coordinates.Roll"] = "Roulis",
-    ["Screens.Coordinates.SelectManually"] = "Sélectionner manuellement",
     ["Screens.Coordinates.Unnamed"] = "Sans nom",
     ["Screens.Coordinates.X"] = "X",
     ["Screens.Coordinates.Y"] = "Y",
