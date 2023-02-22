@@ -31,7 +31,7 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     end
     llist:SetSize( (w - 3 * d) / 2,(h - 2 * d) )
     llist:SetPos( d,d )
-    llist:AddColumn("LOCATIONS LIST")
+    llist:AddColumn(TARDIS:GetPhrase("Screens.Coordinates.LocationsList"))
 
     local panel_w = (w - 3 * d) / 2
     local panel_h = (h - 4 * d) / 3
@@ -47,7 +47,7 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     local pos_elem_h = (panel_h - 4 * panel_d) / 3
 
     local pos_title = vgui.Create("DLabel",PositionPanel)
-    pos_title:SetText("Current position:")
+    pos_title:SetText(TARDIS:GetPhrase("Screens.Coordinates.CurrentPosition"))
     pos_title:SetPos(panel_d, panel_d)
     pos_title:SetSize(panel_w - 2 * panel_d, pos_elem_h)
     pos_title:SetFont(font_important)
@@ -145,7 +145,7 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     local pos_save = vgui.Create("DButton", PositionPanel)
     pos_save:SetSize(pos_elem_w,pos_elem_h)
     pos_save:SetPos(pos_elem_w * 3 + 4 * panel_d, pos_elem_h + 2 * panel_d)
-    pos_save:SetText("Save") -- TODO
+    pos_save:SetText(TARDIS:GetPhrase("Screens.Coordinates.Save"))
     pos_save:SetFont(font)
     pos_save.Think = function(self)
         if not IsValid(ext) then return end
@@ -157,7 +157,7 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     local pos_copy = vgui.Create("DButton", PositionPanel)
     pos_copy:SetSize(pos_elem_w,pos_elem_h)
     pos_copy:SetPos(pos_elem_w * 3 + 4 * panel_d, 2 * pos_elem_h + 3 * panel_d)
-    pos_copy:SetText("Copy")  -- TODO
+    pos_copy:SetText(TARDIS:GetPhrase("Screens.Coordinates.Copy"))
     pos_copy:SetFont(font)
     pos_copy.Think = function(self)
         if not IsValid(ext) then return end
@@ -177,7 +177,7 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     local dst_elem_h = (panel_h - 4 * panel_d) / 3
 
     local dst_title = vgui.Create("DLabel",DestinationPanel)
-    dst_title:SetText("Destination:")
+    dst_title:SetText(TARDIS:GetPhrase("Screens.Coordinates.Destination"))
     dst_title:SetPos(panel_d, panel_d)
     dst_title:SetSize(panel_w - 2 * panel_d, dst_elem_h)
     dst_title:SetFont(font_important)
@@ -352,7 +352,7 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     local dst_save = vgui.Create("DButton", DestinationPanel)
     dst_save:SetSize(dst_elem_w,dst_elem_h)
     dst_save:SetPos(dst_elem_w * 3 + 4 * panel_d, dst_elem_h + 2 * panel_d)
-    dst_save:SetText("Save") -- TODO
+    dst_save:SetText(TARDIS:GetPhrase("Screens.Coordinates.Save"))
     dst_save:SetFont(TARDIS:GetScreenFont(screen, "Default"))
     dst_save.Think = function(self)
         if not IsValid(ext) then return end
@@ -364,7 +364,7 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     local dst_copy = vgui.Create("DButton", DestinationPanel)
     dst_copy:SetSize(dst_elem_w,dst_elem_h)
     dst_copy:SetPos(dst_elem_w * 3 + 4 * panel_d, 2 * dst_elem_h + 3 * panel_d)
-    dst_copy:SetText("Copy")  -- TODO
+    dst_copy:SetText(TARDIS:GetPhrase("Screens.Coordinates.Copy"))
     dst_copy:SetFont(TARDIS:GetScreenFont(screen, "Default"))
     dst_copy.Think = function(self)
         if not IsValid(ext) then return end
@@ -374,9 +374,9 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     dst_copy:SetFont(font)
 
     local button=vgui.Create("DButton", DestinationPanel)
-    button:SetSize(dst_elem_w,dst_elem_h)
-    button:SetPos(dst_elem_w * 3 + 4 * panel_d, panel_d)
-    button:SetText("Select")
+    button:SetSize(panel_d + 2 * dst_elem_w,dst_elem_h)
+    button:SetPos(dst_elem_w * 2 + 3 * panel_d, panel_d)
+    button:SetText(TARDIS:GetPhrase("Screens.Coordinates.SelectManually"))
     button:SetFont(font)
     button.DoClick = function()
         TARDIS:Control("destination", LocalPlayer())
@@ -448,19 +448,19 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     local input_save = vgui.Create("DButton", InputPanel)
     input_save:SetSize(inp_elem_w,inp_elem_h)
     input_save:SetPos( inp_elem_w * 3 + 4 * panel_d, panel_d )
-    input_save:SetText("Save") -- TODO
+    input_save:SetText(TARDIS:GetPhrase("Screens.Coordinates.Save"))
     input_save:SetFont(font)
 
     local input_delete = vgui.Create("DButton", InputPanel)
     input_delete:SetSize(inp_elem_w,inp_elem_h)
     input_delete:SetPos(inp_elem_w * 3 + 4 * panel_d, inp_elem_h + 2 * panel_d)
-    input_delete:SetText("Delete")  -- TODO
+    input_delete:SetText(TARDIS:GetPhrase("Screens.Coordinates.Delete"))
     input_delete:SetFont(font)
 
     local input_set = vgui.Create("DButton", InputPanel)
     input_set:SetSize(inp_elem_w,inp_elem_h)
     input_set:SetPos(inp_elem_w * 3 + 4 * panel_d, 2 * inp_elem_h + 3 * panel_d)
-    input_set:SetText("Set")  -- TODO
+    input_set:SetText(TARDIS:GetPhrase("Screens.Coordinates.Set"))
     input_set:SetFont(font)
 
 
@@ -627,7 +627,6 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
 
     function input_save:DoClick()
         local vortex = ext:GetData("vortex", false)
-        local request = vortex and "Screens.Coordinates.NameNewLocationFromInputs" or "Screens.Coordinates.NameNewLocation"
         local pos, ang, name = fetchtextinputs()
 
         if name == "" then name = TARDIS:GetPhrase("Screens.Coordinates.Unnamed") end
