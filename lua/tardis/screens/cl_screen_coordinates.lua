@@ -1,5 +1,11 @@
 -- Destination
 
+local function EnsureEnabled(self, on)
+    if self:IsEnabled() ~= on then
+        self:SetEnabled(on)
+    end
+end
+
 TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", menu=false, order=2, popuponly=false}, function(self,ext,int,frame,screen)
     local w = frame:GetWide()
     local h = frame:GetTall()
@@ -32,6 +38,7 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     llist:SetSize( (w - 3 * d) / 2,(h - 2 * d) )
     llist:SetPos( d,d )
     llist:AddColumn(TARDIS:GetPhrase("Screens.Coordinates.LocationsList"))
+    llist:SetMultiSelect(false)
 
     local panel_w = (w - 3 * d) / 2
     local panel_h = (h - 4 * d) / 3
@@ -149,9 +156,7 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     pos_save:SetFont(font)
     pos_save.Think = function(self)
         if not IsValid(ext) then return end
-        if self:IsEnabled() == ext:GetData("vortex") then
-            self:SetEnabled(not ext:GetData("vortex"))
-        end
+        EnsureEnabled(self, not ext:GetData("vortex"))
     end
 
     local pos_copy = vgui.Create("DButton", PositionPanel)
@@ -161,9 +166,7 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     pos_copy:SetFont(font)
     pos_copy.Think = function(self)
         if not IsValid(ext) then return end
-        if self:IsEnabled() == ext:GetData("vortex") then
-            self:SetEnabled(not ext:GetData("vortex"))
-        end
+        EnsureEnabled(self, not ext:GetData("vortex"))
     end
 
 
@@ -186,7 +189,7 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     dst_progress:SetSize(panel_w, dst_elem_h / 4)
     dst_progress:SetPos(panel_left, 2 * d + 2 * panel_h)
 
-    dst_title.Think = function(self)
+    DestinationPanel.Think = function(self) -- progress bar behaviour
         if not IsValid(ext) then return end
         if not TARDIS:GetSetting("gui_animations") then
             dst_progress:SetVisible(false)
@@ -356,8 +359,7 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     dst_save:SetFont(TARDIS:GetScreenFont(screen, "Default"))
     dst_save.Think = function(self)
         if not IsValid(ext) then return end
-        local dst = ext:GetDestAng()
-        self:SetEnabled(dst ~= nil)
+        EnsureEnabled(self, ext:GetDestPos() ~= nil)
     end
     dst_save:SetFont(font)
 
@@ -368,8 +370,7 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     dst_copy:SetFont(TARDIS:GetScreenFont(screen, "Default"))
     dst_copy.Think = function(self)
         if not IsValid(ext) then return end
-        local dst = ext:GetDestAng()
-        self:SetEnabled(dst ~= nil)
+        EnsureEnabled(self, ext:GetDestPos() ~= nil)
     end
     dst_copy:SetFont(font)
 
@@ -450,20 +451,40 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     input_save:SetPos( inp_elem_w * 3 + 4 * panel_d, panel_d )
     input_save:SetText(TARDIS:GetPhrase("Screens.Coordinates.Save"))
     input_save:SetFont(font)
+    input_save.Think = function(self)
+        local empty = (namebox:GetText() == "")
+        empty = empty or (x:GetText() == "")
+        empty = empty or (y:GetText() == "")
+        empty = empty or (z:GetText() == "")
+        -- angles can just be 0 by default so we don't have to check for them
+
+        EnsureEnabled(self, not empty)
+    end
 
     local input_delete = vgui.Create("DButton", InputPanel)
     input_delete:SetSize(inp_elem_w,inp_elem_h)
     input_delete:SetPos(inp_elem_w * 3 + 4 * panel_d, inp_elem_h + 2 * panel_d)
     input_delete:SetText(TARDIS:GetPhrase("Screens.Coordinates.Delete"))
     input_delete:SetFont(font)
+    input_delete.Think = function(self)
+        local line = llist:GetSelectedLine()
+        local loc = TARDIS.Locations[map]
+        EnsureEnabled(self, (line ~= nil and loc ~= nil and line <= #loc))
+    end
 
     local input_set = vgui.Create("DButton", InputPanel)
     input_set:SetSize(inp_elem_w,inp_elem_h)
     input_set:SetPos(inp_elem_w * 3 + 4 * panel_d, 2 * inp_elem_h + 3 * panel_d)
     input_set:SetText(TARDIS:GetPhrase("Screens.Coordinates.Set"))
     input_set:SetFont(font)
+    input_set.Think = function(self)
+        local empty = (x:GetText() == "")
+        empty = empty or (y:GetText() == "")
+        empty = empty or (z:GetText() == "")
+        -- angles can just be 0 by default so we don't have to check for them
 
-
+        EnsureEnabled(self, not empty)
+    end
 
 
     local map = game.GetMap()
@@ -479,9 +500,7 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     end
 
     local function fetchtextinputs()
-        local pos = 0
-        local ang = 0
-        local name = ""
+        local name = namebox:GetText()
 
         local n_x = tonumber(x:GetText()) or 0
         local n_y = tonumber(y:GetText()) or 0
@@ -490,15 +509,9 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
         local n_yaw = tonumber(yaw:GetText()) or 0
         local n_roll = tonumber(roll:GetText()) or 0
 
-        if x:GetText() ~= "" and y:GetText() ~= "" and z:GetText() ~= "" then
-            pos = Vector(n_x, n_y, n_z)
-        end
-
+        pos = Vector(n_x, n_y, n_z)
         ang = Angle(n_pitch, n_yaw, n_roll)
 
-        if namebox:GetText() ~= "" then
-            name = namebox:GetText()
-        end
         if name == "" then name = TARDIS:GetPhrase("Screens.Coordinates.Unnamed") end
         return pos,ang,name
     end
@@ -519,6 +532,7 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
         if screen.is3D2D then
             scr = llist:GetScroll()
         end
+
         llist:Clear()
         if TARDIS.Locations[map] ~= nil then
             for k,v in pairs(TARDIS.Locations[map]) do
@@ -527,6 +541,7 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
         end
         llist:AddLine(TARDIS:GetPhrase("Screens.Coordinates.RandomGround"))
         llist:AddLine(TARDIS:GetPhrase("Screens.Coordinates.Random"))
+
         if screen.is3D2D and scr then
             llist:SetScroll(scr)
         end
@@ -566,10 +581,10 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
         end
         updatetextinputs(pos,ang,name)
     end
+
     function llist:OnRowSelectionRemoved(i,row)
         cleartextinputs()
     end
-    llist:SetMultiSelect(false)
 
     function pos_copy:DoClick()
         llist:ClearSelection()
@@ -635,18 +650,6 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
         cleartextinputs()
     end
 
-    function input_save:Think()
-        local empty = (namebox:GetText() == "")
-        empty = empty or (x:GetText() == "")
-        empty = empty or (y:GetText() == "")
-        empty = empty or (z:GetText() == "")
-        -- angles can just be 0 by default so we don't have to check for them
-
-        if self:IsEnabled() == empty then
-            self:SetEnabled(not empty)
-        end
-    end
-
     function input_delete:DoClick()
         local index = llist:GetSelectedLine()
         if not index then return end
@@ -662,27 +665,6 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
             end,
             TARDIS:GetPhrase("Common.No")
         )
-    end
-
-    function input_delete:Think()
-        local line = llist:GetSelectedLine()
-        if line ~= nil and TARDIS.Locations[map] and line <= #TARDIS.Locations[map] then
-            if self:IsEnabled() then return end
-            self:SetEnabled(true)
-        elseif self:IsEnabled() then
-            self:SetEnabled(false)
-        end
-    end
-
-    function input_set:Think()
-        local empty = (x:GetText() == "")
-        empty = empty or (y:GetText() == "")
-        empty = empty or (z:GetText() == "")
-        -- angles can just be 0 by default so we don't have to check for them
-
-        if self:IsEnabled() == empty then
-            self:SetEnabled(not empty)
-        end
     end
 
     function input_set:DoClick()
