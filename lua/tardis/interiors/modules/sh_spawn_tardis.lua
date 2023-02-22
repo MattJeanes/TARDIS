@@ -52,6 +52,7 @@ if SERVER then
         end
         undo.SetCustomUndoText("Undone " .. printName)
         undo.AddFunction(function()
+            if not IsValid(entity) then return false end
             net.Start("TARDIS-Spawn-Delete-Sound")
                 net.WriteBool(false)
                 net.WriteVector(entity:GetPos())
