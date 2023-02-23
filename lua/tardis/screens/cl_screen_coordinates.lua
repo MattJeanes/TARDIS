@@ -7,6 +7,8 @@ local function EnsureEnabled(self, on)
 end
 
 TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", menu=false, order=2, popuponly=false}, function(self,ext,int,frame,screen)
+    local map = game.GetMap()
+
     local w = frame:GetWide()
     local h = frame:GetTall()
     local d = 0.05 * math.min( w,h )
@@ -21,13 +23,6 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     local background_img = TARDIS:GetGUIThemeElement(theme, "backgrounds", "coordinates")
     background:SetImage(background_img)
     background:SetSize(w, h)
-
-    local function randomize_coordinate(self)
-        if not TARDIS:GetSetting("gui_animations") then
-            return self:SetText("???")
-        end
-        self:SetText(math.random(-99999999, 99999999) * 0.0001)
-    end
 
     local llist
     if screen.is3D2D then
@@ -45,136 +40,116 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     local panel_d = (screen.is3D2D and 0.01 or 0.02) * math.min(w,h)
     local panel_left = 0.5 * w + 0.5 * d
 
-    local PositionPanel = vgui.Create( "DPanel",frame )
-    PositionPanel:SetPos(panel_left, d)
-    PositionPanel:SetSize(panel_w, panel_h)
-    PositionPanel:SetBackgroundColor( bgcolor)
+    local position_panel = vgui.Create( "DPanel",frame )
+    position_panel:SetPos(panel_left, d)
+    position_panel:SetSize(panel_w, panel_h)
+    position_panel:SetBackgroundColor( bgcolor)
 
     local pos_elem_w = (panel_w - 5 * panel_d) / 4
     local pos_elem_h = (panel_h - 4 * panel_d) / 3
 
-    local pos_title = vgui.Create("DLabel",PositionPanel)
+    local pos_title = vgui.Create("DLabel",position_panel)
     pos_title:SetText(TARDIS:GetPhrase("Screens.Coordinates.CurrentPosition"))
     pos_title:SetPos(panel_d, panel_d)
     pos_title:SetSize(panel_w - 2 * panel_d, pos_elem_h)
     pos_title:SetFont(font_important)
 
-    local pos_x = vgui.Create("DTextEntry",PositionPanel)
+    local pos_x = vgui.Create("DTextEntry",position_panel)
     pos_x:SetPlaceholderText("")
     pos_x:SetPos(panel_d, pos_elem_h + 2 * panel_d)
     pos_x:SetSize(pos_elem_w,pos_elem_h)
     pos_x:SetNumeric(true)
     pos_x:SetEnabled(false)
     pos_x:SetFont(font)
-    pos_x.Think = function(self)
-        if IsValid(ext) then
-            if ext:GetData("vortex") then
-                randomize_coordinate(self)
-            else
-                self:SetText(math.Round(ext:GetPos().x, round_digits))
-            end
-        end
-    end
 
-    local pos_y = vgui.Create("DTextEntry",PositionPanel)
+    local pos_y = vgui.Create("DTextEntry",position_panel)
     pos_y:SetPlaceholderText("")
     pos_y:SetPos(pos_elem_w + 2 * panel_d, pos_elem_h + 2 * panel_d)
     pos_y:SetSize(pos_elem_w,pos_elem_h)
     pos_y:SetNumeric(true)
     pos_y:SetEnabled(false)
     pos_y:SetFont(font)
-    pos_y.Think = function(self)
-        if IsValid(ext) then
-            if ext:GetData("vortex") then
-                randomize_coordinate(self)
-            else
-                self:SetText(math.Round(ext:GetPos().y, round_digits))
-            end
-        end
-    end
 
-    local pos_z = vgui.Create("DTextEntry",PositionPanel)
+    local pos_z = vgui.Create("DTextEntry",position_panel)
     pos_z:SetPlaceholderText("")
     pos_z:SetPos(pos_elem_w*2 + 3 * panel_d, pos_elem_h + 2 * panel_d)
     pos_z:SetSize(pos_elem_w,pos_elem_h)
     pos_z:SetNumeric(true)
     pos_z:SetEnabled(false)
     pos_z:SetFont(font)
-    pos_z.Think = function(self)
-        if IsValid(ext) then
-            if ext:GetData("vortex") then
-                randomize_coordinate(self)
-            else
-                self:SetText(math.Round(ext:GetPos().z, round_digits))
-            end
-        end
-    end
 
-    local pos_pitch = vgui.Create("DTextEntry",PositionPanel)
+    local pos_pitch = vgui.Create("DTextEntry",position_panel)
     pos_pitch:SetPlaceholderText("")
     pos_pitch:SetPos(panel_d, 2 * pos_elem_h + 3 * panel_d)
     pos_pitch:SetSize(pos_elem_w,pos_elem_h)
     pos_pitch:SetNumeric(true)
     pos_pitch:SetEnabled(false)
     pos_pitch:SetFont(font)
-    pos_pitch.Think = function(self)
-        if IsValid(ext) then
-            self:SetText(math.Round(ext:GetAngles().p, round_digits))
-        end
-    end
 
-    local pos_yaw = vgui.Create("DTextEntry",PositionPanel)
+    local pos_yaw = vgui.Create("DTextEntry",position_panel)
     pos_yaw:SetPlaceholderText("")
     pos_yaw:SetPos(pos_elem_w + 2 * panel_d, 2 * pos_elem_h + 3 * panel_d)
     pos_yaw:SetSize(pos_elem_w,pos_elem_h)
     pos_yaw:SetNumeric(true)
     pos_yaw:SetEnabled(false)
     pos_yaw:SetFont(font)
-    pos_yaw.Think = function(self)
-        if IsValid(ext) then
-            self:SetText(math.Round(ext:GetAngles().y, round_digits))
-        end
-    end
 
-    local pos_roll = vgui.Create("DTextEntry",PositionPanel)
+    local pos_roll = vgui.Create("DTextEntry",position_panel)
     pos_roll:SetPlaceholderText("")
     pos_roll:SetPos(pos_elem_w * 2 + 3 * panel_d, 2 * pos_elem_h + 3 * panel_d)
     pos_roll:SetSize(pos_elem_w,pos_elem_h)
     pos_roll:SetNumeric(true)
     pos_roll:SetEnabled(false)
     pos_roll:SetFont(font)
-    pos_roll.Think = function(self)
-        if IsValid(ext) then
-            self:SetText(math.Round(ext:GetAngles().r, round_digits))
-        end
-    end
 
-    local pos_save = vgui.Create("DButton", PositionPanel)
+    local pos_save = vgui.Create("DButton", position_panel)
     pos_save:SetSize(pos_elem_w,pos_elem_h)
     pos_save:SetPos(pos_elem_w * 3 + 4 * panel_d, pos_elem_h + 2 * panel_d)
     pos_save:SetText(TARDIS:GetPhrase("Screens.Coordinates.Save"))
     pos_save:SetFont(font)
-    pos_save.Think = function(self)
-        if not IsValid(ext) then return end
-        EnsureEnabled(self, not ext:GetData("vortex"))
-    end
 
-    local pos_copy = vgui.Create("DButton", PositionPanel)
+    local pos_copy = vgui.Create("DButton", position_panel)
     pos_copy:SetSize(pos_elem_w,pos_elem_h)
     pos_copy:SetPos(pos_elem_w * 3 + 4 * panel_d, 2 * pos_elem_h + 3 * panel_d)
     pos_copy:SetText(TARDIS:GetPhrase("Screens.Coordinates.Copy"))
     pos_copy:SetFont(font)
-    pos_copy.Think = function(self)
+
+    local function generate_vortex_coordinate()
+        if not TARDIS:GetSetting("gui_animations") then
+            return "???"
+        end
+        return math.random(-99999999, 99999999) * 0.0001
+    end
+
+    position_panel.Think = function(self)
         if not IsValid(ext) then return end
-        EnsureEnabled(self, not ext:GetData("vortex"))
+        if ext:GetData("vortex") then
+            pos_x:SetText(generate_vortex_coordinate())
+            pos_y:SetText(generate_vortex_coordinate())
+            pos_z:SetText(generate_vortex_coordinate())
+        else
+            local pos = ext:GetPos()
+            pos_x:SetText(math.Round(pos.x, round_digits))
+            pos_y:SetText(math.Round(pos.y, round_digits))
+            pos_z:SetText(math.Round(pos.z, round_digits))
+        end
+        local ang = ext:GetAngles()
+        pos_pitch:SetText(math.Round(ang.p, round_digits))
+        pos_yaw:SetText(math.Round(ang.y, round_digits))
+        pos_roll:SetText(math.Round(ang.r, round_digits))
+
+        EnsureEnabled(pos_save, not ext:GetData("vortex"))
+        EnsureEnabled(pos_copy, not ext:GetData("vortex"))
     end
 
 
 
-    local DestinationPanel = vgui.Create( "DPanel",frame )
-    DestinationPanel:SetPos(panel_left, 2 * d + panel_h)
-    DestinationPanel:SetSize(panel_w, panel_h)
-    DestinationPanel:SetBackgroundColor( bgcolor)
+
+
+    local destination_panel = vgui.Create( "DPanel",frame )
+    destination_panel:SetPos(panel_left, 2 * d + panel_h)
+    destination_panel:SetSize(panel_w, panel_h)
+    destination_panel:SetBackgroundColor( bgcolor)
 
     local dst_elem_w = (panel_w - 5 * panel_d) / 4
     local dst_elem_h = (panel_h - 4 * panel_d) / 3
@@ -183,230 +158,179 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     dst_progress:SetSize(panel_w, dst_elem_h / 4)
     dst_progress:SetPos(panel_left, 2 * d + panel_h - dst_elem_h / 4)
 
-    local dst_title = vgui.Create("DLabel",DestinationPanel)
+    local dst_title = vgui.Create("DLabel",destination_panel)
     dst_title:SetText(TARDIS:GetPhrase("Screens.Coordinates.Destination"))
     dst_title:SetPos(panel_d, panel_d)
     dst_title:SetSize(panel_w - 2 * panel_d, dst_elem_h)
     dst_title:SetFont(font_important)
 
-
-    DestinationPanel.Think = function(self) -- progress bar behaviour
-        if not IsValid(ext) then return end
-        if not TARDIS:GetSetting("gui_animations") then
-            dst_progress:SetVisible(false)
-            return
-        end
-
-        if not ext:GetData("teleport") and not ext:GetData("vortex") then
-            if dst_progress:IsVisible() then
-                dst_progress:SetVisible(false)
-                dst_progress:SetFraction(0)
-            end
-            return
-        end
-        dst_progress:SetVisible(true)
-
-        local tp_metadata = ext.metadata.Exterior.Teleport
-        local fast = ext:GetData("demat-fast")
-
-        if ext:GetData("demat") then
-            local steps = #tp_metadata.DematSequence - 1
-            local step = ext:GetData("step") - 1
-            if step >= steps then return end
-
-            local a_target = tp_metadata.DematSequence[step + 1]
-            local a_prev = tp_metadata.DematSequence[step]
-            if a_prev == nil then a_prev = 255 end
-
-            local a = ext:GetData("alpha",255)
-            if a_prev == a_target then return end
-
-
-            local progress = step / steps
-            progress = progress + (1 - math.abs((a - a_target) / (a_prev - a_target))) / steps
-
-            dst_progress:SetFraction((fast and 0.55 or 0.45) * progress)
-            return
-        end
-
-        if ext:GetData("mat") then
-            local steps = #tp_metadata.MatSequence - 1
-            local step = ext:GetData("step") - 1
-            if step >= steps then return end
-
-            local a_target = tp_metadata.MatSequence[step + 1]
-            local a_prev = tp_metadata.MatSequence[step]
-            if a_prev == nil then a_prev = 0 end
-
-            local a = ext:GetData("alpha",255)
-            if a_prev == a_target then return end
-
-            local progress = step / steps
-            progress = progress + (1 - math.abs((a - a_target) / (a_prev - a_target))) / steps
-
-            dst_progress:SetFraction(0.7 + 0.3 * progress)
-            return
-        end
-
-        if ext:GetData("vortex") and not ext:GetData("teleport") then
-            if fast then
-                dst_progress:SetFraction(0.55)
-            else
-                local progress = (CurTime() % 4) / 4
-                dst_progress:SetFraction(0.45 + 0.1 * progress)
-            end
-            return
-        end
-
-        if ext:GetData("teleport") and not ext:GetData("mat") then -- premat
-            local delay = (ext:GetData("demat-fast",false) and 1.9 or 8.5)
-            local time_passed = CurTime() - ext:GetData("premat_start_time")
-            local progress = time_passed / delay
-
-            dst_progress:SetFraction(0.55 + 0.15 * progress)
-            return
-        end
-    end
-
-    local dst_x = vgui.Create("DTextEntry",DestinationPanel)
+    local dst_x = vgui.Create("DTextEntry",destination_panel)
     dst_x:SetPlaceholderText("")
     dst_x:SetPos(panel_d, dst_elem_h + 2 * panel_d)
     dst_x:SetSize(dst_elem_w,dst_elem_h)
     dst_x:SetNumeric(true)
     dst_x:SetEnabled(false)
     dst_x:SetFont(font)
-    dst_x.Think = function(self)
-        if not IsValid(ext) then return end
-        local dst = ext:GetDestPos()
-        if not dst then return self:SetText("") end
-        self:SetText(math.Round(dst.x, round_digits))
-    end
 
-    local dst_y = vgui.Create("DTextEntry",DestinationPanel)
+    local dst_y = vgui.Create("DTextEntry",destination_panel)
     dst_y:SetPlaceholderText("")
     dst_y:SetPos(dst_elem_w + 2 * panel_d, dst_elem_h + 2 * panel_d)
     dst_y:SetSize(dst_elem_w,dst_elem_h)
     dst_y:SetNumeric(true)
     dst_y:SetEnabled(false)
     dst_y:SetFont(font)
-    dst_y.Think = function(self)
-        if not IsValid(ext) then return end
-        local dst = ext:GetDestPos()
-        if not dst then return self:SetText("") end
-        self:SetText(math.Round(dst.y, round_digits))
-    end
 
-    local dst_z = vgui.Create("DTextEntry",DestinationPanel)
+    local dst_z = vgui.Create("DTextEntry",destination_panel)
     dst_z:SetPlaceholderText("")
     dst_z:SetPos(dst_elem_w*2 + 3 * panel_d, dst_elem_h + 2 * panel_d)
     dst_z:SetSize(dst_elem_w,dst_elem_h)
     dst_z:SetNumeric(true)
     dst_z:SetEnabled(false)
     dst_z:SetFont(font)
-    dst_z.Think = function(self)
-        if not IsValid(ext) then return end
-        local dst = ext:GetDestPos()
-        if not dst then return self:SetText("") end
-        self:SetText(math.Round(dst.z, round_digits))
-    end
 
-
-    local dst_pitch = vgui.Create("DTextEntry",DestinationPanel)
+    local dst_pitch = vgui.Create("DTextEntry",destination_panel)
     dst_pitch:SetPlaceholderText("")
     dst_pitch:SetPos(panel_d, 2 * dst_elem_h + 3 * panel_d)
     dst_pitch:SetSize(dst_elem_w,dst_elem_h)
     dst_pitch:SetNumeric(true)
     dst_pitch:SetEnabled(false)
     dst_pitch:SetFont(font)
-    dst_pitch.Think = function(self)
-        if not IsValid(ext) then return end
-        local dst = ext:GetDestAng()
-        if not dst then return self:SetText("") end
-        self:SetText(math.Round(dst.p, round_digits))
-    end
 
-    local dst_yaw = vgui.Create("DTextEntry",DestinationPanel)
+    local dst_yaw = vgui.Create("DTextEntry",destination_panel)
     dst_yaw:SetPlaceholderText("")
     dst_yaw:SetPos(dst_elem_w + 2 * panel_d, 2 * dst_elem_h + 3 * panel_d)
     dst_yaw:SetSize(dst_elem_w,dst_elem_h)
     dst_yaw:SetNumeric(true)
     dst_yaw:SetEnabled(false)
     dst_yaw:SetFont(font)
-    dst_yaw.Think = function(self)
-        if not IsValid(ext) then return end
-        local dst = ext:GetDestAng()
-        if not dst then return self:SetText("") end
-        self:SetText(math.Round(dst.y, round_digits))
-    end
 
-    local dst_roll = vgui.Create("DTextEntry",DestinationPanel)
+    local dst_roll = vgui.Create("DTextEntry",destination_panel)
     dst_roll:SetPlaceholderText("")
     dst_roll:SetPos(dst_elem_w * 2 + 3 * panel_d, 2 * dst_elem_h + 3 * panel_d)
     dst_roll:SetSize(dst_elem_w,dst_elem_h)
     dst_roll:SetNumeric(true)
     dst_roll:SetEnabled(false)
     dst_roll:SetFont(font)
-    dst_roll.Think = function(self)
-        if not IsValid(ext) then return end
-        local dst = ext:GetDestAng()
-        if not dst then return self:SetText("") end
-        self:SetText(math.Round(dst.r, round_digits))
-    end
 
-    local dst_save = vgui.Create("DButton", DestinationPanel)
+    local dst_save = vgui.Create("DButton", destination_panel)
     dst_save:SetSize(dst_elem_w,dst_elem_h)
     dst_save:SetPos(dst_elem_w * 3 + 4 * panel_d, dst_elem_h + 2 * panel_d)
     dst_save:SetText(TARDIS:GetPhrase("Screens.Coordinates.Save"))
-    dst_save:SetFont(TARDIS:GetScreenFont(screen, "Default"))
-    dst_save.Think = function(self)
-        if not IsValid(ext) then return end
-        EnsureEnabled(self, ext:GetDestPos() ~= nil)
-    end
     dst_save:SetFont(font)
 
-    local dst_copy = vgui.Create("DButton", DestinationPanel)
+    local dst_copy = vgui.Create("DButton", destination_panel)
     dst_copy:SetSize(dst_elem_w,dst_elem_h)
     dst_copy:SetPos(dst_elem_w * 3 + 4 * panel_d, 2 * dst_elem_h + 3 * panel_d)
     dst_copy:SetText(TARDIS:GetPhrase("Screens.Coordinates.Copy"))
-    dst_copy:SetFont(TARDIS:GetScreenFont(screen, "Default"))
-    dst_copy.Think = function(self)
-        if not IsValid(ext) then return end
-        EnsureEnabled(self, ext:GetDestPos() ~= nil)
-    end
     dst_copy:SetFont(font)
 
 
 
-    local InputPanel = vgui.Create( "DPanel",frame )
-    InputPanel:SetPos(panel_left, 3 * d + 2 * panel_h)
-    InputPanel:SetSize(panel_w, panel_h)
-    InputPanel:SetBackgroundColor( bgcolor)
+
+    destination_panel.Think = function(self)
+        if not IsValid(ext) then return end
+
+        dst_progress:UpdateState()
+
+        local dst_pos = ext:GetDestPos()
+        local dst_ang = ext:GetDestAng()
+        EnsureEnabled(dst_save, dst_pos ~= nil)
+        EnsureEnabled(dst_copy, dst_pos ~= nil)
+
+        if not dst_pos then
+            dst_x:SetText("")
+            dst_y:SetText("")
+            dst_z:SetText("")
+            dst_pitch:SetText("")
+            dst_yaw:SetText("")
+            dst_roll:SetText("")
+            return
+        end
+
+        dst_x:SetText(math.Round(dst_pos.x, round_digits))
+        dst_y:SetText(math.Round(dst_pos.y, round_digits))
+        dst_z:SetText(math.Round(dst_pos.z, round_digits))
+        dst_pitch:SetText(math.Round(dst_ang.p, round_digits))
+        dst_yaw:SetText(math.Round(dst_ang.y, round_digits))
+        dst_roll:SetText(math.Round(dst_ang.r, round_digits))
+    end
+
+    dst_progress.UpdateState = function(self)
+        if not TARDIS:GetSetting("gui_animations")
+            or (not ext:GetData("teleport") and not ext:GetData("vortex"))
+        then
+            if dst_progress:IsVisible() then
+                dst_progress:SetVisible(false)
+            end
+            return
+        end
+
+        local function get_vortex_progress()
+            return ((CurTime() - ext:GetData("vortex_enter_time",0)) % 4) / 4
+        end
+
+        local tp_metadata = ext.metadata.Exterior.Teleport
+        local fast = ext:GetData("demat-fast")
+        dst_progress:SetVisible(true)
+
+        if ext:GetData("demat") then
+            dst_progress:SetFraction((fast and 0.55 or 0.45) * ext:GetSequenceProgress())
+            return
+        end
+
+        if ext:GetData("mat") then
+            dst_progress:SetFraction(0.7 + 0.3 * ext:GetSequenceProgress())
+            return
+        end
+
+        if ext:GetData("vortex") and not ext:GetData("teleport") then
+            dst_progress:SetFraction(0.45 + 0.1 * (fast and 1 or get_vortex_progress()))
+            return
+        end
+
+        if ext:GetData("teleport") and not ext:GetData("mat") then -- premat
+            local delay = (fast and 1.9 or 8.5)
+            local time_passed = CurTime() - ext:GetData("premat_start_time")
+
+            dst_progress:SetFraction(0.55 + 0.15 * time_passed / delay)
+            return
+        end
+    end
+
+
+
+
+
+    local input_panel = vgui.Create( "DPanel",frame )
+    input_panel:SetPos(panel_left, 3 * d + 2 * panel_h)
+    input_panel:SetSize(panel_w, panel_h)
+    input_panel:SetBackgroundColor( bgcolor)
 
     local inp_elem_w = (panel_w - 5 * panel_d) / 4
     local inp_elem_h = (panel_h - 4 * panel_d) / 3
 
-    local namebox = vgui.Create("DTextEntry3D2D", InputPanel)
+    local namebox = vgui.Create("DTextEntry3D2D", input_panel)
     namebox.is3D2D = screen.is3D2D
     namebox:SetPlaceholderText(TARDIS:GetPhrase("Screens.Coordinates.Name"))
     namebox:SetPos(panel_d, panel_d)
     namebox:SetSize(panel_w - 3 * panel_d - inp_elem_w, inp_elem_h)
     namebox:SetFont(font)
 
-    local x = vgui.Create("DTextEntry3D2D",InputPanel)
+    local x = vgui.Create("DTextEntry3D2D",input_panel)
     x.is3D2D = screen.is3D2D
     x:SetPlaceholderText(TARDIS:GetPhrase("Screens.Coordinates.X"))
     x:SetPos(panel_d, inp_elem_h + 2 * panel_d)
     x:SetSize(inp_elem_w,inp_elem_h)
     x:SetNumeric(true)
     x:SetFont(font)
-    local y = vgui.Create("DTextEntry3D2D",InputPanel)
+    local y = vgui.Create("DTextEntry3D2D",input_panel)
     y.is3D2D = screen.is3D2D
     y:SetPlaceholderText(TARDIS:GetPhrase("Screens.Coordinates.Y"))
     y:SetPos(inp_elem_w + 2 * panel_d, inp_elem_h + 2 * panel_d)
     y:SetSize(inp_elem_w,inp_elem_h)
     y:SetNumeric(true)
     y:SetFont(font)
-    local z = vgui.Create("DTextEntry3D2D",InputPanel)
+    local z = vgui.Create("DTextEntry3D2D",input_panel)
     z.is3D2D = screen.is3D2D
     z:SetPlaceholderText(TARDIS:GetPhrase("Screens.Coordinates.Z"))
     z:SetPos(inp_elem_w*2 + 3 * panel_d, inp_elem_h + 2 * panel_d)
@@ -414,70 +338,61 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     z:SetNumeric(true)
     z:SetFont(font)
 
-    local pitch = vgui.Create("DTextEntry3D2D",InputPanel)
+    local pitch = vgui.Create("DTextEntry3D2D",input_panel)
     pitch:SetPlaceholderText(TARDIS:GetPhrase("Screens.Coordinates.Pitch"))
     pitch:SetPos(panel_d, 2 * inp_elem_h + 3 * panel_d)
     pitch:SetSize(inp_elem_w,inp_elem_h)
     pitch:SetNumeric(true)
     pitch:SetFont(font)
-    local yaw = vgui.Create("DTextEntry3D2D",InputPanel)
+    local yaw = vgui.Create("DTextEntry3D2D",input_panel)
     yaw:SetPlaceholderText(TARDIS:GetPhrase("Screens.Coordinates.Yaw"))
     yaw:SetPos(inp_elem_w + 2 * panel_d, 2 * inp_elem_h + 3 * panel_d)
     yaw:SetSize(inp_elem_w,inp_elem_h)
     yaw:SetNumeric(true)
     yaw:SetFont(font)
-    local roll = vgui.Create("DTextEntry3D2D",InputPanel)
+    local roll = vgui.Create("DTextEntry3D2D",input_panel)
     roll:SetPlaceholderText(TARDIS:GetPhrase("Screens.Coordinates.Roll"))
     roll:SetPos(inp_elem_w * 2 + 3 * panel_d, 2 * inp_elem_h + 3 * panel_d)
     roll:SetSize(inp_elem_w,inp_elem_h)
     roll:SetNumeric(true)
     roll:SetFont(font)
 
-
-
-
-    local input_save = vgui.Create("DButton", InputPanel)
+    local input_save = vgui.Create("DButton", input_panel)
     input_save:SetSize(inp_elem_w,inp_elem_h)
     input_save:SetPos( inp_elem_w * 3 + 4 * panel_d, panel_d )
     input_save:SetText(TARDIS:GetPhrase("Screens.Coordinates.Save"))
     input_save:SetFont(font)
-    input_save.Think = function(self)
-        local empty = (namebox:GetText() == "")
-        empty = empty or (x:GetText() == "")
-        empty = empty or (y:GetText() == "")
-        empty = empty or (z:GetText() == "")
-        -- angles can just be 0 by default so we don't have to check for them
 
-        EnsureEnabled(self, not empty)
-    end
-
-    local input_delete = vgui.Create("DButton", InputPanel)
+    local input_delete = vgui.Create("DButton", input_panel)
     input_delete:SetSize(inp_elem_w,inp_elem_h)
     input_delete:SetPos(inp_elem_w * 3 + 4 * panel_d, inp_elem_h + 2 * panel_d)
     input_delete:SetText(TARDIS:GetPhrase("Screens.Coordinates.Delete"))
     input_delete:SetFont(font)
-    input_delete.Think = function(self)
-        local line = llist:GetSelectedLine()
-        local loc = TARDIS.Locations[map]
-        EnsureEnabled(self, (line ~= nil and loc ~= nil and line <= #loc))
-    end
 
-    local input_set = vgui.Create("DButton", InputPanel)
+    local input_set = vgui.Create("DButton", input_panel)
     input_set:SetSize(inp_elem_w,inp_elem_h)
     input_set:SetPos(inp_elem_w * 3 + 4 * panel_d, 2 * inp_elem_h + 3 * panel_d)
     input_set:SetText(TARDIS:GetPhrase("Screens.Coordinates.Set"))
     input_set:SetFont(font)
-    input_set.Think = function(self)
-        local empty = (x:GetText() == "")
-        empty = empty or (y:GetText() == "")
-        empty = empty or (z:GetText() == "")
+
+    input_panel.Think = function(self)
+        local line = llist:GetSelectedLine()
+        local loc = TARDIS.Locations[map]
+
+        local namebox_empty = (namebox:GetText() == "")
+        local coords_empty = (x:GetText() == "")
+        coords_empty = coords_empty or (y:GetText() == "")
+        coords_empty = coords_empty or (z:GetText() == "")
         -- angles can just be 0 by default so we don't have to check for them
 
-        EnsureEnabled(self, not empty)
+        EnsureEnabled(input_delete, (line ~= nil and loc ~= nil and line <= #loc))
+        EnsureEnabled(input_save, not namebox_empty and not coords_empty)
+        EnsureEnabled(input_set, not coords_empty)
     end
 
 
-    local map = game.GetMap()
+
+
 
     local function updatetextinputs(pos,ang,name)
         pitch:SetText(ang.p or 0.0)
@@ -552,12 +467,7 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
         if i > locations_num then
             local ground = (i == locations_num + 1)
             local ext = LocalPlayer():GetTardisData("exterior")
-            local randomLocation = ext:GetRandomLocation(ground)
-            if randomLocation then
-                pos = randomLocation
-            else
-                pos = ext:GetPos()
-            end
+            pos = ext:GetRandomLocation(ground) or ext:GetPos()
             ang = {p = 0, y = 0, r = 0}
             if ground then
                 name = TARDIS:GetPhrase("Screens.Coordinates.RandomLocationGround")

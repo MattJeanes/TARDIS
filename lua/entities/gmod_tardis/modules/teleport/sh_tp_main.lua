@@ -360,6 +360,7 @@ else
         self:SetData("demat",false)
         self:SetData("step",1)
         self:SetData("vortex",true)
+        self:SetData("vortex_enter_time",CurTime())
         self:SetData("teleport",false)
         self:CallHook("StopDemat")
     end
@@ -453,4 +454,26 @@ ENT:AddHook("Think","teleport",function(self,delta)
     self:SetAttachedTransparency(alpha)
 end)
 
+-- returns the progress of the current sequence on a scale from 0 to 1
+function ENT:GetSequenceProgress()
+    if not self:GetData("teleport") then return 1 end
 
+    local tp_metadata = self.metadata.Exterior.Teleport
+    local demat = self:GetData("demat")
+    local sequence = demat and tp_metadata.DematSequence or tp_metadata.MatSequence
+    local start_alpha = demat and 255 or 0
+
+    local steps = #sequence - 1
+    local step = self:GetData("step") - 1
+    if step >= steps then return 1 end
+
+    local a_target = sequence[step + 1]
+    local a_prev = sequence[step] or start_alpha
+    if a_prev == a_target then return 1 end
+
+    local a = self:GetData("alpha",255)
+
+    local progress = step / steps
+    progress = progress + (1 - math.abs((a - a_target) / (a_prev - a_target))) / steps
+    return progress
+end

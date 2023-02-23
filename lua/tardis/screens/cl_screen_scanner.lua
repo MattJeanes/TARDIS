@@ -23,7 +23,6 @@ TARDIS:AddScreen("Scanner", {id="scanner",text="Screens.Scanner", menu=false, or
     
     local scanner=vgui.Create("DImage",frame)
     scanner:SetSize(frame:GetWide(),frame:GetTall())
-    scanner:SetPos(0,0)
     scanner:SetMaterial(mat)
     scanner.OldPaint=scanner.Paint
     scanner.Paint=function()
