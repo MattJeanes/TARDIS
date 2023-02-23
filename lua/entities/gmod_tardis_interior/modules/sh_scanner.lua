@@ -14,6 +14,14 @@ if SERVER then
     function ENT:ToggleScanners()
         return self:SetScannersOn(not self:GetScannersOn())
     end
+
+    ENT:AddHook("ScannersToggled", "scanner", function(self, on)
+        for k,v in ipairs(self.scanners) do
+            if v.submatid then
+                self:SetSubMaterial(v.submatid, on and "!"..v.uid or "")
+            end
+        end
+    end)
 end
 
 ENT:AddHook("Initialize", "scanner", function(self)
@@ -24,9 +32,9 @@ ENT:AddHook("Initialize", "scanner", function(self)
             scanner.uid = "tardisi_scanner_"..self:EntIndex().."_"..k.."_"..v.width.."_"..v.height.."_"..v.fov
             if SERVER then
                 local found=false
-                for i,mat in pairs(self:GetMaterials()) do
+                for i,mat in ipairs(self:GetMaterials()) do
                     if mat==v.mat then
-                        self:SetSubMaterial(i-1,"!"..scanner.uid)
+                        scanner.submatid = i-1
                         found=true
                         break
                     end
