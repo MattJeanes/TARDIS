@@ -2,6 +2,7 @@ local theme = {
     id = "default",
     name = "Default",
     base_id = "base",
+    bgcolor = Color(1,1,100,150),
 
     folder = "default",
     frames = {
@@ -12,8 +13,10 @@ local theme = {
     },
     backgrounds = {
         subfolder = "backgrounds",
-        default = "default.png",
-        virtualconsole = "console.jpg",
+        default = "console.png",
+        virtualconsole = "console.png",
+        coordinates = "console.png",
+        music = "console.png",
         main = "default.png",
     },
     text_icons_off = {

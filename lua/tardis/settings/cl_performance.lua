@@ -97,3 +97,15 @@ TARDIS:AddSetting({
     section=SETTING_SECTION,
     name="BreakdownEffects",
 })
+
+TARDIS:AddSetting({
+    id="gui_animations",
+    type="bool",
+    value=true,
+
+    class="local",
+
+    option=true,
+    section=SETTING_SECTION,
+    name="GUIAnimations",
+})

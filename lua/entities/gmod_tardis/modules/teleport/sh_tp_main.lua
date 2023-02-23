@@ -49,6 +49,18 @@ TARDIS:AddKeyBind("teleport-mat",{
     exterior=true
 })
 
+function ENT:GetDestination()
+    return self:GetData("demat-pos"), self:GetData("demat-ang")
+end
+
+function ENT:GetDestPos()
+    return self:GetData("demat-pos")
+end
+
+function ENT:GetDestAng()
+    return self:GetData("demat-ang")
+end
+
 if SERVER then
 
     function ENT:SetDestination(pos, ang)
@@ -66,10 +78,6 @@ if SERVER then
         else
             return false
         end
-    end
-
-    function ENT:GetDestination()
-        return self:GetData("demat-pos"), self:GetData("demat-ang")
     end
 
     function ENT:ForceDematState()
@@ -306,6 +314,7 @@ else
 
     ENT:OnMessage("premat", function(self, data, ply)
         self:SetData("teleport",true)
+        self:SetData("premat_start_time", CurTime())
         if TARDIS:GetSetting("teleport-sound") and TARDIS:GetSetting("sound") then
             local shouldPlayExterior = self:CallHook("ShouldPlayMatSound", false)~=false
             local shouldPlayInterior = self:CallHook("ShouldPlayMatSound", true)~=false
@@ -351,6 +360,7 @@ else
         self:SetData("demat",false)
         self:SetData("step",1)
         self:SetData("vortex",true)
+        self:SetData("vortex_enter_time",CurTime())
         self:SetData("teleport",false)
         self:CallHook("StopDemat")
     end
@@ -411,16 +421,20 @@ ENT:AddHook("Think","teleport",function(self,delta)
     local alpha=self:GetData("alpha",255)
     local target=self:GetData("alphatarget",255)
     local step=self:GetData("step",1)
+
+    local teleport_md = self.metadata.Exterior.Teleport
+    local fast = self:GetData("demat-fast")
+
     if alpha==target then
         if demat then
-            if step>=#self.metadata.Exterior.Teleport.DematSequence then
+            if step>=#teleport_md.DematSequence then
                 self:StopDemat()
                 return
             else
                 self:SetData("step",step+1)
             end
         elseif mat then
-            if step>=#self.metadata.Exterior.Teleport.MatSequence then
+            if step>=#teleport_md.MatSequence then
                 self:StopMat()
                 return
             else
@@ -430,14 +444,36 @@ ENT:AddHook("Think","teleport",function(self,delta)
         target=self:GetTargetAlpha()
         self:SetData("alphatarget",target)
     end
-    local teleport_md = self.metadata.Exterior.Teleport
-    local sequencespeed = (self:GetData("demat-fast") and teleport_md.SequenceSpeedFast or teleport_md.SequenceSpeed)
-    if self:GetData("health-warning",false) then 
-        sequencespeed = (self:GetData("demat-fast") and teleport_md.SequenceSpeedWarnFast or teleport_md.SequenceSpeedWarning)
+
+    local sequencespeed = (fast and teleport_md.SequenceSpeedFast or teleport_md.SequenceSpeed)
+    if self:GetData("health-warning",false) then
+        sequencespeed = (fast and teleport_md.SequenceSpeedWarnFast or teleport_md.SequenceSpeedWarning)
     end
     alpha=math.Approach(alpha,target,delta*66*sequencespeed)
     self:SetData("alpha",alpha)
     self:SetAttachedTransparency(alpha)
 end)
 
+-- returns the progress of the current sequence on a scale from 0 to 1
+function ENT:GetSequenceProgress()
+    if not self:GetData("teleport") then return 1 end
 
+    local tp_metadata = self.metadata.Exterior.Teleport
+    local demat = self:GetData("demat")
+    local sequence = demat and tp_metadata.DematSequence or tp_metadata.MatSequence
+    local start_alpha = demat and 255 or 0
+
+    local steps = #sequence - 1
+    local step = self:GetData("step") - 1
+    if step >= steps then return 1 end
+
+    local a_target = sequence[step + 1]
+    local a_prev = sequence[step] or start_alpha
+    if a_prev == a_target then return 1 end
+
+    local a = self:GetData("alpha",255)
+
+    local progress = step / steps
+    progress = progress + (1 - math.abs((a - a_target) / (a_prev - a_target))) / steps
+    return progress
+end

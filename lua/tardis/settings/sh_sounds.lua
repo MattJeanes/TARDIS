@@ -164,7 +164,13 @@ TARDIS:AddSetting({
     type="number",
     value=100,
     min=0,
-    max=1000,
+    max=1500,
+    round_func = function(x)
+        if x > 1000 then return (x - x % 250) end
+        if x > 300 then return (x - x % 100) end
+        if x > 50 then return (x - x % 10) end
+        return (x - x % 5)
+    end,
 
     class="networked",
 
