@@ -35,5 +35,3 @@ T.Templates = {
 }
 
 TARDIS:AddInterior(T)
-
-
