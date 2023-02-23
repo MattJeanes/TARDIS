@@ -281,6 +281,7 @@ T.Phrases = {
     ["Screens.Common.Popup"] = "Popup",
     ["Screens.Coordinates"] = "Coordonnées",
     ["Screens.Coordinates.ConfirmRemoveLocation"] = "Ceci supprimera l'emplacement sélectionné de façon PERMANENTE! Êtes-vous sûr·e ?",
+    ["Screens.Coordinates.Copy"] = "Copier",
     ["Screens.Coordinates.Name"] = "Nom",
     ["Screens.Coordinates.NameNewLocation"] = "Entrez le nom du nouvel emplacement",
     ["Screens.Coordinates.NewLocation"] = "Nouvel emplacement",
