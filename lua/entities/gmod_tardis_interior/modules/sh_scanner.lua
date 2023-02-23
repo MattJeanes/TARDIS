@@ -18,7 +18,7 @@ if SERVER then
     ENT:AddHook("ScannersToggled", "scanner", function(self, on)
         for k,v in ipairs(self.scanners) do
             if v.submatid then
-                self:SetSubMaterial(v.submatid, on and "!"..v.uid or "")
+                v.ent:SetSubMaterial(v.submatid, on and "!"..v.uid or "")
             end
         end
     end)
@@ -30,9 +30,18 @@ ENT:AddHook("Initialize", "scanner", function(self)
         for k,v in pairs(self.metadata.Interior.Scanners) do
             local scanner = {}
             scanner.uid = "tardisi_scanner_"..self:EntIndex().."_"..k.."_"..v.width.."_"..v.height.."_"..v.fov
+
+            local ent = self
+            if v.part then
+                local part = self:GetPart(v.part)
+                if IsValid(part) then
+                    ent = part
+                end
+            end
+
             if SERVER then
                 local found=false
-                for i,mat in ipairs(self:GetMaterials()) do
+                for i,mat in ipairs(ent:GetMaterials()) do
                     if mat==v.mat then
                         scanner.submatid = i-1
                         found=true
@@ -40,7 +49,7 @@ ENT:AddHook("Initialize", "scanner", function(self)
                     end
                 end
                 if not found then
-                    ErrorNoHalt("Could not find material "..v.mat.." for scanner on "..self:GetModel())
+                    ErrorNoHalt("Could not find material "..v.mat.." for scanner on "..ent:GetModel())
                 end
             else
                 scanner.mat=CreateMaterial(
@@ -59,6 +68,7 @@ ENT:AddHook("Initialize", "scanner", function(self)
             scanner.width = v.width
             scanner.height = v.height
             scanner.fov = v.fov
+            scanner.ent = ent
             table.insert(self.scanners, scanner)
         end
     end
