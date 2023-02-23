@@ -278,7 +278,7 @@
     "Screens.Common.Popup": "Popup",
     "Screens.Coordinates": "Coordonnées",
     "Screens.Coordinates.ConfirmRemoveLocation": "Ceci supprimera l'emplacement sélectionné de façon PERMANENTE! Êtes-vous sûr·e ?",
-    "Screens.Coordinates.Copy": "",
+    "Screens.Coordinates.Copy": "Copier",
     "Screens.Coordinates.CurrentPosition": "",
     "Screens.Coordinates.Delete": "",
     "Screens.Coordinates.Destination": "",
