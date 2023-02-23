@@ -123,7 +123,8 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
 
     position_panel.Think = function(self)
         if not IsValid(ext) then return end
-        if ext:GetData("vortex") then
+        local vortex = ext:GetData("vortex")
+        if vortex then
             pos_x:SetText(generate_vortex_coordinate())
             pos_y:SetText(generate_vortex_coordinate())
             pos_z:SetText(generate_vortex_coordinate())
@@ -138,8 +139,8 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
         pos_yaw:SetText(math.Round(ang.y, round_digits))
         pos_roll:SetText(math.Round(ang.r, round_digits))
 
-        EnsureEnabled(pos_save, not ext:GetData("vortex"))
-        EnsureEnabled(pos_copy, not ext:GetData("vortex"))
+        EnsureEnabled(pos_save, not vortex)
+        EnsureEnabled(pos_copy, not vortex)
     end
 
 
@@ -256,8 +257,11 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     end
 
     dst_progress.UpdateState = function(self)
+        local teleport = ext:GetData("teleport")
+        local vortex = ext:GetData("vortex")
+
         if not TARDIS:GetSetting("gui_animations")
-            or (not ext:GetData("teleport") and not ext:GetData("vortex"))
+            or (not teleport and not vortex)
         then
             if dst_progress:IsVisible() then
                 dst_progress:SetVisible(false)
@@ -271,24 +275,25 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
 
         local tp_metadata = ext.metadata.Exterior.Teleport
         local fast = ext:GetData("demat-fast")
+        local mat, demat = ext:GetData("mat"), ext:GetData("demat")
         dst_progress:SetVisible(true)
 
-        if ext:GetData("demat") then
+        if demat then
             dst_progress:SetFraction((fast and 0.55 or 0.45) * ext:GetSequenceProgress())
             return
         end
 
-        if ext:GetData("mat") then
+        if mat then
             dst_progress:SetFraction(0.7 + 0.3 * ext:GetSequenceProgress())
             return
         end
 
-        if ext:GetData("vortex") and not ext:GetData("teleport") then
+        if vortex and not teleport then
             dst_progress:SetFraction(0.45 + 0.1 * (fast and 1 or get_vortex_progress()))
             return
         end
 
-        if ext:GetData("teleport") and not ext:GetData("mat") then -- premat
+        if teleport and not mat then -- premat
             local delay = (fast and 1.9 or 8.5)
             local time_passed = CurTime() - ext:GetData("premat_start_time")
 
