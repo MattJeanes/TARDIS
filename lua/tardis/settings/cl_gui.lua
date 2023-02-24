@@ -70,7 +70,7 @@ TARDIS:AddSetting({
 })
 
 TARDIS:AddSetting({
-    id = "visgui_theme",
+    id = "visgui_interface_theme",
     type = "list",
     value = "default_interior",
 
