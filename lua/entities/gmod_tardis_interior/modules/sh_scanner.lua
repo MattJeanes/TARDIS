@@ -31,15 +31,16 @@ ENT:AddHook("Initialize", "scanner", function(self)
             local scanner = {}
             scanner.uid = "tardisi_scanner_"..self:EntIndex().."_"..k.."_"..v.width.."_"..v.height.."_"..v.fov
 
-            local ent = self
-            if v.part then
-                local part = self:GetPart(v.part)
-                if IsValid(part) then
-                    ent = part
-                end
-            end
-
             if SERVER then
+                local ent = self
+                if v.part then
+                    local part = self:GetPart(v.part)
+                    if IsValid(part) then
+                        ent = part
+                    end
+                end
+                scanner.ent = ent
+
                 local found=false
                 for i,mat in ipairs(ent:GetMaterials()) do
                     if mat==v.mat then
@@ -68,7 +69,6 @@ ENT:AddHook("Initialize", "scanner", function(self)
             scanner.width = v.width
             scanner.height = v.height
             scanner.fov = v.fov
-            scanner.ent = ent
             table.insert(self.scanners, scanner)
         end
     end
