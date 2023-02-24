@@ -132,6 +132,7 @@ if SERVER then
         self:SendMessage("demat", { self:GetData("demat-pos",Vector()) } )
         self:SetData("demat",true)
         self:SetData("step",1)
+        self:SetStepDelay()
         self:SetData("teleport",true)
         self:SetCollisionGroup( COLLISION_GROUP_WORLD )
 
@@ -180,6 +181,7 @@ if SERVER then
                 self:SendMessage("mat")
                 self:SetData("mat",true)
                 self:SetData("step",1)
+                self:SetStepDelay()
                 self:SetData("vortex",false)
                 local flight=self:GetData("prevortex-flight")
                 if self:GetData("flight")~=flight then
@@ -199,6 +201,7 @@ if SERVER then
         self:SetData("demat",false)
         self:SetData("force-demat", false, true)
         self:SetData("step",1)
+        self:SetData("step-delay",nil)
         self:SetData("vortex",true)
         self:SetData("teleport",false)
         self:SetSolid(SOLID_NONE)
@@ -215,6 +218,7 @@ if SERVER then
     function ENT:StopMat()
         self:SetData("mat",false)
         self:SetData("step",1)
+        self:SetData("step-delay",nil)
         self:SetData("teleport",false)
         self:SetCollisionGroup(COLLISION_GROUP_NONE)
         self:DrawShadow(true)
@@ -255,6 +259,7 @@ else
     ENT:OnMessage("demat", function(self, data, ply)
         self:SetData("demat",true)
         self:SetData("step",1)
+        self:SetStepDelay()
         self:SetData("teleport",true)
         if TARDIS:GetSetting("teleport-sound") and TARDIS:GetSetting("sound") then
             local shouldPlayExterior = self:CallHook("ShouldPlayDematSound", false)~=false
@@ -352,6 +357,7 @@ else
     ENT:OnMessage("mat", function(self, data, ply)
         self:SetData("mat",true)
         self:SetData("step",1)
+        self:SetStepDelay()
         self:SetData("vortex",false)
         self:CallHook("MatStart")
     end)
@@ -359,6 +365,7 @@ else
     function ENT:StopDemat()
         self:SetData("demat",false)
         self:SetData("step",1)
+        self:SetData("step-delay",nil)
         self:SetData("vortex",true)
         self:SetData("vortex_enter_time",CurTime())
         self:SetData("teleport",false)
@@ -368,6 +375,7 @@ else
     function ENT:StopMat()
         self:SetData("mat",false)
         self:SetData("step",1)
+        self:SetData("step-delay",nil)
         self:SetData("teleport",false)
         self:CallHook("StopMat")
     end
@@ -401,6 +409,21 @@ function ENT:GetRandomLocation(grounded)
     end
 end
 
+function ENT:SetStepDelay()
+    local demat=self:GetData("demat")
+    local mat=self:GetData("mat")
+    if not (demat or mat) then return end
+
+    local teleport_md = self.metadata.Exterior.Teleport
+    local sequence_delays = demat and teleport_md.DematSequenceDelays or teleport_md.MatSequenceDelays
+    local step = self:GetData("step",1)
+    if sequence_delays and sequence_delays[step] then
+        self:SetData("step-delay",CurTime() + sequence_delays[step])
+    else
+        self:SetData("step-delay",nil)
+    end
+end
+
 function ENT:GetTargetAlpha()
     local demat=self:GetData("demat")
     local mat=self:GetData("mat")
@@ -419,7 +442,7 @@ ENT:AddHook("Think","teleport",function(self,delta)
     local mat=self:GetData("mat")
     if not (demat or mat) then return end
     local alpha=self:GetData("alpha",255)
-    local target=self:GetData("alphatarget",255)
+    local target=self:GetTargetAlpha()
     local step=self:GetData("step",1)
 
     local teleport_md = self.metadata.Exterior.Teleport
@@ -432,6 +455,7 @@ ENT:AddHook("Think","teleport",function(self,delta)
                 return
             else
                 self:SetData("step",step+1)
+                self:SetStepDelay()
             end
         elseif mat then
             if step>=#teleport_md.MatSequence then
@@ -439,12 +463,13 @@ ENT:AddHook("Think","teleport",function(self,delta)
                 return
             else
                 self:SetData("step",step+1)
+                self:SetStepDelay()
             end
         end
         target=self:GetTargetAlpha()
-        self:SetData("alphatarget",target)
     end
 
+    if self:GetData("step-delay") and self:GetData("step-delay")>CurTime() then return end
     local sequencespeed = (fast and teleport_md.SequenceSpeedFast or teleport_md.SequenceSpeed)
     if self:GetData("health-warning",false) then
         sequencespeed = (fast and teleport_md.SequenceSpeedWarnFast or teleport_md.SequenceSpeedWarning)
