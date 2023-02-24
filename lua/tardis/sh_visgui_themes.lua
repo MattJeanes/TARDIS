@@ -12,7 +12,7 @@ end
 TARDIS:LoadFolder("themes/visgui", nil, true)
 
 function TARDIS:GetScreenGUITheme(screen)
-    local setting = TARDIS:GetSetting("visgui_theme")
+    local setting = TARDIS:GetSetting("visgui_interface_theme")
     if setting ~= "default_interior" then
         return setting
     end
