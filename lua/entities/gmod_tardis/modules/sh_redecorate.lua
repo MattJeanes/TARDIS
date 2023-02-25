@@ -19,7 +19,7 @@ local int_saved_data_names = {
 if SERVER then
 
     ENT:AddHook("ShouldRedecorate", "redecorate_toggled", function(self)
-        return (self:GetData("redecorate",false) and self:GetData("redecorate-interior") ~= self.metadata.ID) and true or nil
+        return self:GetData("redecorate",false) and true or nil
     end)
 
     function ENT:Redecorate()
@@ -174,6 +174,11 @@ if SERVER then
         then
             return false
         end
+    end)
+
+    ENT:AddHook("ShouldTakeDamage", "redecorate", function(self, dmginfo)
+        if self:GetData("redecorate") then return false end
+        if IsValid(self:GetData("redecorate_parent")) then return false end -- while parent exists
     end)
 
     hook.Add("AllowPlayerPickup", "tardis_redecorate", function(ply, ent)

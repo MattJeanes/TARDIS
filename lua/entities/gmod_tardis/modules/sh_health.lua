@@ -259,8 +259,12 @@ if SERVER then
         end
     end)
 
-    ENT:AddHook("ShouldTakeDamage", "Health", function(self, dmginfo)
+    ENT:AddHook("ShouldTakeDamage", "health", function(self, dmginfo)
         if not TARDIS:GetSetting("health-enabled") then return false end
+    end)
+
+    ENT:AddHook("ShouldTakeDamage", "repair", function(self, dmginfo)
+        if self:GetData("repairing",false) then return false end
     end)
 
     ---------------------------------
