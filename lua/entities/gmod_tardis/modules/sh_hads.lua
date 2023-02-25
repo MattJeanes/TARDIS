@@ -22,9 +22,6 @@ if SERVER then
             if self:GetData("doorstatereal") then
                 self:ToggleDoor()
             end
-            if self:GetData("handbrake") then
-                self:ToggleHandbrake()
-            end
             self:SetData("hads-attempt", true)
             if self:CallHook("CanDemat", true) == false then
                 if not self:GetData("hads-failed-time") or CurTime() > self:GetData("hads-failed-time") + 10 then
