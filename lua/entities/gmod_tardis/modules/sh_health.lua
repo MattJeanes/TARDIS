@@ -30,7 +30,7 @@ function ENT:ChangeHealth(newhealth)
     end
     if newhealth <= 0 then
         newhealth = 0
-        if newhealth == 0 and not (newhealth == oldhealth) then
+        if newhealth ~= oldhealth then
             self:CallCommonHook("OnHealthDepleted")
         end
     end
@@ -301,6 +301,9 @@ if SERVER then
     end)
 
     ENT:AddHook("OnHealthDepleted", "death", function(self)
+        if self:GetData("teleport") or self:GetData("vortex") then
+            self:InterruptTeleport()
+        end
         self:SetPower(false)
         if IsValid(self.interior) then
             local int = self.metadata.Interior.Sounds.Damage
