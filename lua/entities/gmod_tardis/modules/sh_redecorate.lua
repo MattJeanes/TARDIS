@@ -1,4 +1,4 @@
-local ext_saved_data_names = {
+local saved_data_names = {
     "cloak",
     "floatfirst",
     "hads",
@@ -11,9 +11,7 @@ local ext_saved_data_names = {
     "fastreturn-pos",
     "fastreturn-ang",
     "artron-val",
-}
-local int_saved_data_names = {
-    "security"
+    "security",
 }
 
 if SERVER then
@@ -31,23 +29,16 @@ if SERVER then
         self:SetPower(true)
 
         -- save tardis state
-        local ext_saved_data = {}
-        local int_saved_data = {}
-        for k,v in ipairs(ext_saved_data_names) do
-            ext_saved_data[v] = self:GetData(v)
-        end
-        if IsValid(self.interior) then
-            for k,v in ipairs(int_saved_data_names) do
-                int_saved_data[v] = self.interior:GetData(v)
-            end
+        local saved_data = {}
+        for k,v in ipairs(saved_data_names) do
+            saved_data[v] = self:GetData(v)
         end
 
         local child = TARDIS:SpawnTARDIS(ply, {
             pos = self:GetPos(),
             metadataID = self:GetData("redecorate-interior") or "default",
             redecorate_parent = self,
-            ext_data = ext_saved_data,
-            int_data = int_saved_data,
+            saved_data = saved_data,
         })
 
         if not IsValid(child) then
@@ -98,8 +89,7 @@ if SERVER then
             self:SetPos(parent:GetPos())
             self:SetAngles(parent:GetAngles())
 
-            self:SetData("redecorate_parent_int_data", customdata.int_data, true)
-            self:SetData("redecorate_parent_ext_data", customdata.ext_data, true)
+            self:SetData("redecorate_parent_data", customdata.saved_data, true)
 
             local vortex = (not parent:GetData("demat-fast"))
             self:SetData("redecorate_parent_vortex", vortex, true)
@@ -122,13 +112,13 @@ if SERVER then
 
         self:ForceDematState()
 
-        local ext_saved_data = self:GetData("redecorate_parent_ext_data")
-        if ext_saved_data then
-            for name,value in pairs(ext_saved_data) do
+        local saved_data = self:GetData("redecorate_parent_data")
+        if saved_data then
+            for name,value in pairs(saved_data) do
                 self:SetData(name, value, true)
             end
         end
-        self:SetData("redecorate_parent_ext_data", nil, true)
+        self:SetData("redecorate_parent_data", nil, true)
         self:CallHook("MigrateData", parent)
 
         local phys = self:GetPhysicsObject()
