@@ -64,6 +64,11 @@ end
 if SERVER then
 
     function ENT:SetDestination(pos, ang)
+        if not isvector(pos) or not isangle(ang) then
+            self:SetData("demat-pos",nil,true)
+            self:SetData("demat-ang",nil,true)
+            return false
+        end
         self:SetData("demat-pos",pos,true)
         self:SetData("demat-ang",ang,true)
         return true
