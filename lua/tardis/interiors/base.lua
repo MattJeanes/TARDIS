@@ -2,6 +2,7 @@
 
 local T = {}
 T.Base = true
+T.BaseMerged = true
 T.Name = "Base"
 T.ID = "base"
 T.Interior = {
