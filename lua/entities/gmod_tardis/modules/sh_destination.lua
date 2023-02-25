@@ -179,7 +179,7 @@ if SERVER then
     end)
 else
     local defaultdist = 210
-    function ENT:GetDestinationPos(ply, pos, ang)
+    function ENT:GetDestinationPropPos(ply, pos, ang)
         local prop = self:GetData("destinationprop")
         if not IsValid(prop) then return end
         local pos=prop:LocalToWorld(Vector(0,0,60))
@@ -242,7 +242,7 @@ else
     end)
     ENT:AddHook("Outside-PosAng", "destination", function(self, ply, pos, ang)
         if LocalPlayer():GetTardisData("destination") then
-            return self:GetDestinationPos(ply, pos, ang)
+            return self:GetDestinationPropPos(ply, pos, ang)
         end
     end)
     ENT:AddHook("Destination", "destination", function(self, enabled)
