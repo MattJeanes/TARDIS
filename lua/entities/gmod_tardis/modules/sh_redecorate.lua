@@ -15,10 +15,49 @@ local saved_data_names = {
 }
 
 if SERVER then
+    function ENT:SetRedecoration(on)
+        if self:CallCommonHook("CanToggleRedecoration", on) == false
+            or self:CallHook("CanRepair", true) == false
+        then
+            return false
+        end
 
-    ENT:AddHook("ShouldRedecorate", "redecorate_toggled", function(self)
-        return self:GetData("redecorate",false) and true or nil
-    end)
+        if not on then
+            self:SetData("redecorate", false, true)
+            if self:GetData("repair-primed") then
+                self:SetRepair(false)
+                return true
+            end
+            return false
+        end
+
+        local ply = self:GetCreator()
+        local chosen_int = TARDIS:GetSetting("redecorate-interior", ply)
+        local random_int = false
+        if not chosen_int then
+            random_int = true
+            chosen_int = TARDIS:SelectNewRandomInterior(self.metadata.ID, ply)
+        end
+
+        self:SetData("redecorate-interior", chosen_int)
+        self:SetData("redecorate", true, true)
+        self:SendMessage("redecorate-selection-reset")
+
+        self:CallHook("RedecorateToggled", on)
+
+        if not self:GetData("repair-primed") and not self:SetRepair(true) then
+            return false
+        end
+        if random_int then
+            TARDIS:Message(ply, "Controls.Redecorate.RandomInteriorWarning")
+        end
+        return true
+    end
+
+    function ENT:ToggleRedecoration()
+        local on = self:GetData("redecorate", false)
+        return self:SetRedecoration(not on)
+    end
 
     function ENT:Redecorate()
 
@@ -157,6 +196,12 @@ if SERVER then
         end
     end)
 
+    ENT:AddHook("RepairCancelled", "redecorate", function(self,portal,ent)
+        if self:GetData("redecorate") then
+            self:SetData("redecorate", false)
+        end
+    end)
+
     ENT:AddHook("ShouldUpdateArtron", "redecorate", function(self)
         if self:GetData("redecorate")
             or self:GetData("redecorate_parent")
@@ -186,7 +231,7 @@ else -- CLIENT
         end
     end)
 
-    ENT:OnMessage("redecorate-reset", function(self, data, ply)
+    ENT:OnMessage("redecorate-selection-reset", function(self, data, ply)
         if not IsValid(self) or (not LocalPlayer() == self:GetCreator()) then return end
         TARDIS:SetSetting("redecorate-interior", false)
     end)

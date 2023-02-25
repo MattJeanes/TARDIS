@@ -73,11 +73,15 @@ if SERVER then
         return self:SetRepair(on)
     end
     function ENT:SetRepair(on)
-        if not TARDIS:GetSetting("health-enabled") and self:GetHealth()~=TARDIS:GetSetting("health-max") then 
+        if not TARDIS:GetSetting("health-enabled")
+            and self:GetHealth() ~= TARDIS:GetSetting("health-max")
+        then
             self:ChangeHealth(TARDIS:GetSetting("health-max"))
             return false
         end
-        if self:CallHook("CanRepair")==false then return false end
+
+        if self:CallHook("CanRepair") == false then return false end
+
         if on == true then
             for k,_ in pairs(self.occupants) do
                 TARDIS:Message(k, "Health.RepairActivated")
@@ -95,6 +99,7 @@ if SERVER then
             end
         else
             self:SetData("repair-primed",false,true)
+            self:CallCommonHook("RepairCancelled")
 
             local prev_power = self:GetData("power-before-repair")
             if (prev_power ~= nil) then
@@ -127,7 +132,7 @@ if SERVER then
     end
 
     function ENT:FinishRepair()
-        if self:CallHook("ShouldRedecorate") and self:Redecorate() then
+        if self:GetData("redecorate") and self:Redecorate() then
             return
         end
         self:EmitSound(self.metadata.Exterior.Sounds.RepairFinish)
@@ -175,10 +180,9 @@ if SERVER then
         end
     end
 
-    ENT:AddHook("CanRepair", "health", function(self)
-        if self:GetData("vortex", false) then return false end
+    ENT:AddHook("CanRepair", "health", function(self, ignore_health)
         if (self:GetHealth() >= TARDIS:GetSetting("health-max"))
-            and not self:CallHook("ShouldRedecorate")
+            and not ignore_health and not self:GetData("redecorate")
         then
             return false
         end
