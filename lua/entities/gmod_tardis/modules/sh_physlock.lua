@@ -81,6 +81,7 @@ ENT:AddHook("MatStart", "physlock", function(self)
 end)
 
 ENT:AddHook("PowerToggled", "physlock", function(self,on)
+    if self:GetData("redecorate") then return end
     if on and self:GetData("power-lastphyslock", false) == true then
         self:SetPhyslock(true)
     else

@@ -118,6 +118,7 @@ if SERVER then
                 self:SetData(name, value, true)
             end
         end
+        self:SetPhyslock(saved_data["physlock"])
         self:SetData("redecorate_parent_data", nil, true)
         self:CallHook("MigrateData", parent)
 
