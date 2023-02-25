@@ -18,12 +18,7 @@ if SERVER then
     ENT:AddHook("OnRemove","inside_entities",function(self)
         for i,v in ipairs(ents.FindInSphere(self:GetPos(), self.metadata.Interior.ExitDistance)) do
             local cl = v:GetClass()
-            if cl ~= "gmod_tardis_interior"
-                and cl ~= "linked_portal_door"
-                and cl ~= "prop_vehicle_prisoner_pod"
-                and cl ~= "base_cube_environment"
-                and not string.StartsWith(cl, "gmod_tardis_part")
-            then
+            if cl == "prop_physics" or v:IsNPC() then
                 v:Remove()
             end
         end
