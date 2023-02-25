@@ -11,7 +11,7 @@ TARDIS:AddKeyBind("teleport-demat",{
             end
             if ply==pilot and (not down) and ply:GetTardisData("teleport-demat-bind-down",false) then
                 if not self:GetData("vortex") then
-                    if self:GetData("demat-pos") then
+                    if self:GetDestinationPos() then
                         self:Demat()
                         return
                     end
@@ -49,42 +49,7 @@ TARDIS:AddKeyBind("teleport-mat",{
     exterior=true
 })
 
-function ENT:GetDestination()
-    return self:GetData("demat-pos"), self:GetData("demat-ang")
-end
-
-function ENT:GetDestPos()
-    return self:GetData("demat-pos")
-end
-
-function ENT:GetDestAng()
-    return self:GetData("demat-ang")
-end
-
 if SERVER then
-
-    function ENT:SetDestination(pos, ang)
-        if not isvector(pos) or not isangle(ang) then
-            self:SetData("demat-pos",nil,true)
-            self:SetData("demat-ang",nil,true)
-            return false
-        end
-        self:SetData("demat-pos",pos,true)
-        self:SetData("demat-ang",ang,true)
-        return true
-    end
-
-    function ENT:SetRandomDestination(grounded)
-        local randomLocation = self:GetRandomLocation(grounded)
-        if randomLocation then
-            self:CallHook("RandomDestinationSet", randomLocation)
-            self:SetDestination(randomLocation, Angle(0,0,0))
-            return true
-        else
-            return false
-        end
-    end
-
     function ENT:ForceDematState()
         self:SetDestination(self:GetPos(), self:GetAngles())
 
@@ -130,11 +95,11 @@ if SERVER then
             self.interior:Explode(20)
         end
 
-        pos=pos or self:GetData("demat-pos") or self:GetPos()
-        ang=ang or self:GetData("demat-ang") or self:GetAngles()
-        self:SetDestination(pos, ang)
+        pos = pos or self:GetDestinationPos(true)
+        ang = ang or self:GetDestinationAng(true)
+        self:SetDestination(pos, ang, true)
 
-        self:SendMessage("demat", { self:GetData("demat-pos",Vector()) } )
+        self:SendMessage("demat", { self:GetDestinationPos(true) } )
         self:SetData("demat",true)
         self:SetData("step",1)
         self:SetStepDelay()
@@ -163,8 +128,8 @@ if SERVER then
 
 
     function ENT:Mat(callback)
-        local pos = self:GetData("demat-pos", self:GetPos())
-        local ang = self:GetData("demat-ang", self:GetAngles())
+        local pos = self:GetDestinationPos(true)
+        local ang = self:GetDestinationAng(true)
 
         if self:CallHook("CanMat", pos, ang) == false then
             self:HandleNoMat(pos, ang, callback)
@@ -176,7 +141,7 @@ if SERVER then
                 return
             end
 
-            self:SendMessage("premat", { self:GetData("demat-pos",Vector()) } )
+            self:SendMessage("premat", { self:GetDestinationPos(true) } )
             self:SetData("teleport",true)
             self:CallHook("PreMatStart")
 
@@ -257,6 +222,12 @@ if SERVER then
             if randomLocation then
                 self:ChangePosition(randomLocation, self:GetAngles(), false)
             end
+        end
+    end)
+
+    ENT:AddHook("CanChangeDestination", "premat", function(self)
+        if self:GetData("teleport") and self:GetData("vortex") then
+            return false
         end
     end)
 
@@ -388,30 +359,6 @@ else
     ENT:OnMessage("stop_mat", function(self, data, ply)
         self:StopMat()
     end)
-end
-
-function ENT:GetRandomLocation(grounded)
-    local td = {}
-    td.mins = self:OBBMins()
-    td.maxs = self:OBBMaxs()
-    local max = 16384
-    local tries = 1000
-    local point
-    while tries > 0 do
-        tries = tries - 1
-        point=Vector(math.random(-max, max),math.random(-max, max),math.random(-max, max))
-        td.start=point
-        td.endpos=point
-        if not util.TraceHull(td).Hit
-        then
-            if grounded then
-                local down = util.QuickTrace(point + Vector(0, 0, 50), Vector(0, 0, -1) * 99999999).HitPos
-                return down, true
-            else
-                return point, false
-            end
-        end
-    end
 end
 
 function ENT:SetStepDelay()

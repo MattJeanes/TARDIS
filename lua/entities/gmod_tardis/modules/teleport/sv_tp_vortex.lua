@@ -23,7 +23,7 @@ function ENT:SetFastRemat(on)
 end
 
 ENT:AddHook("CanToggleFastRemat", "vortex", function(self)
-    if self:GetData("vortex",false) then
+    if self:GetData("vortex") or self:GetData("teleport") then
         return false
     end
 end)

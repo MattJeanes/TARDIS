@@ -12,10 +12,10 @@ ENT:AddHook("OnWireInput","teleport",function (self, name, value)
         self:Mat()
     elseif name == "Pos" then
         if not isvector(value) then return end
-        self:SetData("demat-pos",value,true)
+        self:SetDestinationPos(value)
     elseif name == "Ang" then
         if not isangle(value) then return end
-        self:SetData("demat-ang",value,true)
+        self:SetDestinationAng(value)
     end
 end)
 

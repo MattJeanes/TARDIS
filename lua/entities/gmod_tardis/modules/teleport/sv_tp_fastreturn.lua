@@ -23,3 +23,8 @@ ENT:AddHook("StopMat", "fastreturn", function(self)
     end
 end)
 
+ENT:AddHook("CanChangeDestination", "fastreturn", function(self)
+    if self:GetData("fastreturn") and (self:GetData("teleport") or self:GetData("vortex")) then
+        return false
+    end
+end)
