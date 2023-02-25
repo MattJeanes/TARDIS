@@ -129,7 +129,6 @@ T.Exterior = {
         SequenceSpeedFast = 0.935,
         SequenceSpeedWarnFast = 0.97,
         DematSequence = {
-            150,
             200,
             100,
             150,
@@ -138,7 +137,6 @@ T.Exterior = {
             0
         },
         MatSequence = {
-            100,
             50,
             150,
             100,
