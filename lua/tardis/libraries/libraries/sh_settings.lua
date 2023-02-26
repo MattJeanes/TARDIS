@@ -121,25 +121,11 @@ function TARDIS:GetSetting(id, src)
         ply = (src:IsPlayer() and src) or src:GetCreator()
     end
 
-    local function list_value_exists(setting_data, value)
-        local values = setting_data.get_values_func()
-        for k,v in pairs(values) do
-            if v[2] == value then
-                return true
-            end
-        end
-        return false
-    end
-
     if not id then error("Requested setting with no id") end
     local data = self.SettingsData[id]
     if not data then error("Requested setting " .. id .. " does not exist") end
 
     local function select_return_val(table_value)
-        if table_value ~= nil and data.type == "list" and not list_value_exists(data, table_value) then
-            self:SetSetting(id, nil)
-            return data.value
-        end
         if table_value ~= nil then
             return table_value
         end
