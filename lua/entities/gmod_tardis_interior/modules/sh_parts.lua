@@ -14,17 +14,6 @@ ENT:AddHook("Cordon","parts",function(self,class,ent)
     if ent.TardisPart then return false end
 end)
 
-if SERVER then
-    ENT:AddHook("OnRemove","inside_entities",function(self)
-        for i,v in ipairs(ents.FindInSphere(self:GetPos(), self.metadata.Interior.ExitDistance)) do
-            local cl = v:GetClass()
-            if cl == "prop_physics" or v:IsNPC() then
-                v:Remove()
-            end
-        end
-    end)
-end
-
 function ENT:GetPart(id)
     return self.parts and self.parts[id] or NULL
 end
