@@ -157,9 +157,8 @@ if SERVER then
                 self:SetData(name, value, true)
             end
         end
-        self:SetPhyslock(saved_data["physlock"])
+        self:CallHook("MigrateData", parent, saved_data)
         self:SetData("redecorate_parent_data", nil, true)
-        self:CallHook("MigrateData", parent)
 
         local phys = self:GetPhysicsObject()
 

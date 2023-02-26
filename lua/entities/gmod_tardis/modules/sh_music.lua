@@ -140,6 +140,6 @@ ENT:AddHook("PlayerExit", "stop-music-on-exit", function(self)
 end)
 
 
-ENT:AddHook("MigrateData", "music", function(self, parent)
+ENT:AddHook("MigrateData", "music", function(self, parent, parent_data)
     self.music = parent.music
 end)
