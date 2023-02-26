@@ -402,7 +402,9 @@ end
 function TARDIS:OnSettingChanged(id,value,ply)
     hook.Call("TARDIS_SettingChanged", GAMEMODE, id, value, ply)
     for k,v in pairs(ents.FindByClass("gmod_tardis")) do
-        v:CallCommonHook("SettingChanged", id, value)
+        if v.CallCommonHook then
+            v:CallCommonHook("SettingChanged", id, value)
+        end
     end
 end
 
