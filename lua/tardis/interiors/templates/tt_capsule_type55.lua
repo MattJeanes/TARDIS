@@ -43,6 +43,7 @@ T = {
             door={
                 model="models/artixc/exteriors/mk3_door.mdl",
                 posoffset=Vector(5,-12.54,-43.55),
+                use_exit_point_offset = true,
             },
         }
     },

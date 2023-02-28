@@ -233,8 +233,8 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
 
         dst_progress:UpdateState()
 
-        local dst_pos = ext:GetDestPos()
-        local dst_ang = ext:GetDestAng()
+        local dst_pos = ext:GetDestinationPos()
+        local dst_ang = ext:GetDestinationAng()
         EnsureEnabled(dst_save, dst_pos ~= nil)
         EnsureEnabled(dst_copy, dst_pos ~= nil)
 

@@ -81,6 +81,7 @@ ENT:AddHook("MatStart", "physlock", function(self)
 end)
 
 ENT:AddHook("PowerToggled", "physlock", function(self,on)
+    if self:GetData("redecorate") then return end
     if on and self:GetData("power-lastphyslock", false) == true then
         self:SetPhyslock(true)
     else
@@ -101,6 +102,11 @@ ENT:AddHook("HandleE2", "physlock", function(self, name, e2)
     elseif name == "Physlock" and TARDIS:CheckPP(e2.player, self) then
         return self:TogglePhyslock() and 1 or 0
     end
+end)
+
+
+ENT:AddHook("MigrateData", "music", function(self, parent, parent_data)
+    self:SetPhyslock(parent_data["physlock"])
 end)
 
 

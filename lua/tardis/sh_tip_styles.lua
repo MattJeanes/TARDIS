@@ -18,6 +18,7 @@ function TARDIS:GetTipStyle(id)
     if tip_styles[id] then
         return tip_styles[id]
     end
+    return tip_styles["white_on_grey"]
 end
 
 TARDIS:LoadFolder("themes/tips", nil, true)
