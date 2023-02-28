@@ -3,7 +3,7 @@ T = {
         Model="models/artixc/exteriors/mk1.mdl",
         Mass=5000,
         Portal={
-            pos=Vector(30, 0, 46.63),
+            pos=Vector(30, 0, 46.73),
             ang=Angle(0,0,0),
             width=40,
             height=92,
@@ -43,6 +43,7 @@ T = {
             door={
                 model="models/artixc/exteriors/mk1_door.mdl",
                 posoffset=Vector(30.05,0,-46.45),
+                use_exit_point_offset = true,
             },
         }
     },

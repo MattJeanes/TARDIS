@@ -26,8 +26,7 @@ if SERVER then
 
         self:SetData("demat", false, true)
         self:SetData("fastreturn",false)
-        self:SetData("demat-pos",nil,true)
-        self:SetData("demat-ang",nil,true)
+        self:SetDestination()
         self:SetData("vortex", false, true)
         self:SetSolid(SOLID_VPHYSICS)
 

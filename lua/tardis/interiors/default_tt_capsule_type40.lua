@@ -29,11 +29,12 @@ T.Interior = {
         },
     },
 }
+T.Exterior = {
+    ScannerOffset = Vector(30,0,50)
+}
 
 T.Templates = {
     exterior_ttcapsule_type40 = { override = true, fail = function() ErrorNoHalt("Failed to add ttcapsule_type40 default exterior") end, },
 }
 
 TARDIS:AddInterior(T)
-
-

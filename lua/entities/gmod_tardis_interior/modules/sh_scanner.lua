@@ -14,6 +14,14 @@ if SERVER then
     function ENT:ToggleScanners()
         return self:SetScannersOn(not self:GetScannersOn())
     end
+
+    ENT:AddHook("ScannersToggled", "scanner", function(self, on)
+        for k,v in ipairs(self.scanners) do
+            if v.submatid then
+                v.ent:SetSubMaterial(v.submatid, on and "!"..v.uid or "")
+            end
+        end
+    end)
 end
 
 ENT:AddHook("Initialize", "scanner", function(self)
@@ -22,17 +30,27 @@ ENT:AddHook("Initialize", "scanner", function(self)
         for k,v in pairs(self.metadata.Interior.Scanners) do
             local scanner = {}
             scanner.uid = "tardisi_scanner_"..self:EntIndex().."_"..k.."_"..v.width.."_"..v.height.."_"..v.fov
+
             if SERVER then
+                local ent = self
+                if v.part then
+                    local part = self:GetPart(v.part)
+                    if IsValid(part) then
+                        ent = part
+                    end
+                end
+                scanner.ent = ent
+
                 local found=false
-                for i,mat in pairs(self:GetMaterials()) do
+                for i,mat in ipairs(ent:GetMaterials()) do
                     if mat==v.mat then
-                        self:SetSubMaterial(i-1,"!"..scanner.uid)
+                        scanner.submatid = i-1
                         found=true
                         break
                     end
                 end
                 if not found then
-                    ErrorNoHalt("Could not find material "..v.mat.." for scanner on "..self:GetModel())
+                    ErrorNoHalt("Could not find material "..v.mat.." for scanner on "..ent:GetModel())
                 end
             else
                 scanner.mat=CreateMaterial(

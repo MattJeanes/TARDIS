@@ -125,9 +125,7 @@ if SERVER then
         if self:GetData("failing-demat", false) then
             if not open then
                 self:SetData("failing-demat", false, true)
-                local pos = pos or self:GetData("demat-pos") or self:GetPos()
-                local ang = ang or self:GetData("demat-ang") or self:GetAngles()
-                self:Demat(pos, ang, nil, false)
+                self:Demat(nil, nil, nil, false)
             end
         end
     end)

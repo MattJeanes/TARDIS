@@ -5,8 +5,10 @@ if SERVER then
         local entityName = "gmod_tardis"
 
         local metadataID = customData.metadataID
+        local interior = TARDIS:GetInterior(metadataID)
 
-        if not (TARDIS:GetInterior(metadataID) and IsValid(ply) and gamemode.Call("PlayerSpawnSENT", ply, entityName)) then return end
+        if not (interior and IsValid(ply) and gamemode.Call("PlayerSpawnSENT", ply, entityName)) then return end
+        if not interior.BaseMerged then return end
 
         local vStart = ply:EyePos()
         local vForward = ply:GetAimVector()
@@ -35,7 +37,6 @@ if SERVER then
 
         ClassName = nil
 
-        local interior = TARDIS:GetInterior(metadataID)
         local printName = TARDIS:GetPhrase("Common.TARDIS").." ("..TARDIS:GetPhrase(interior.Name)..")"
 
         if not IsValid(entity) then return end
@@ -52,6 +53,7 @@ if SERVER then
         end
         undo.SetCustomUndoText("Undone " .. printName)
         undo.AddFunction(function()
+            if not IsValid(entity) then return false end
             net.Start("TARDIS-Spawn-Delete-Sound")
                 net.WriteBool(false)
                 net.WriteVector(entity:GetPos())

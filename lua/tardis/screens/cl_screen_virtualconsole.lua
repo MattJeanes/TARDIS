@@ -7,7 +7,7 @@ local function new_virtual_console(self,ext,int,frame,screen)
 
     local background=vgui.Create("DImage", frame)
 
-    local theme = TARDIS:GetSetting("visgui_theme")
+    local theme = TARDIS:GetScreenGUITheme(screen)
     local background_img = TARDIS:GetGUIThemeElement(theme, "backgrounds", "virtualconsole")
     background:SetImage(background_img)
     background:SetSize(frame:GetWide(), frame:GetTall())
@@ -74,22 +74,20 @@ local function new_virtual_console(self,ext,int,frame,screen)
 
     layout.scroll_size = math.max(1, layout:GetCols() - 1)
 
-    frame.Think = function()
-        screen.left_arrow:SetVisible(true)
-        screen.right_arrow:SetVisible(true)
-        screen.right_arrow.DoClick = function()
-            if layout:CanMoveLeft()
-                and not screen.left_arrow:IsPressed()
-                and not screen.right_arrow:IsPressed() then
-                layout:ScrollButtons(-layout.scroll_size)
-            end
+    frame.left_arrow_func = function()
+        if layout:CanMoveRight()
+            and not screen.left_arrow:IsPressed()
+            and not screen.right_arrow:IsPressed()
+        then
+            layout:ScrollButtons(layout.scroll_size)
         end
-        screen.left_arrow.DoClick = function()
-            if layout:CanMoveRight()
-                and not screen.right_arrow:IsPressed()
-                and not screen.left_arrow:IsPressed() then
-                layout:ScrollButtons(layout.scroll_size)
-            end
+    end
+    frame.right_arrow_func = function()
+        if layout:CanMoveLeft()
+            and not screen.right_arrow:IsPressed()
+            and not screen.left_arrow:IsPressed()
+        then
+            layout:ScrollButtons(-layout.scroll_size)
         end
     end
 

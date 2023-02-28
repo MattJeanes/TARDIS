@@ -15,9 +15,37 @@ function TARDIS:FullReloadInteriors()
     TARDIS:MergeTextureSets()
 end
 
+function TARDIS:PreMergeMetadata(t)
+    if t.Exterior and t.Exterior.Teleport then
+        if t.Exterior.Teleport.DematSequence then
+            t.Exterior.Teleport.DematSequenceSaved = table.Copy(t.Exterior.Teleport.DematSequence)
+        end
+
+        if t.Exterior.Teleport.MatSequence then
+            t.Exterior.Teleport.MatSequenceSaved = table.Copy(t.Exterior.Teleport.MatSequence)
+        end
+    end
+end
+
+function TARDIS:PostMergeMetadata(t)
+    if t.Exterior and t.Exterior.Teleport then
+        if t.Exterior.Teleport.DematSequenceSaved then
+            t.Exterior.Teleport.DematSequence = t.Exterior.Teleport.DematSequenceSaved
+            t.Exterior.Teleport.DematSequenceSaved = nil
+        end
+
+        if t.Exterior.Teleport.MatSequenceSaved then
+            t.Exterior.Teleport.MatSequence = t.Exterior.Teleport.MatSequenceSaved
+            t.Exterior.Teleport.MatSequenceSaved = nil
+        end
+    end
+end
+
 function TARDIS:MergeMetadata(base, t)
     local copy=table.Copy(base)
+    self:PreMergeMetadata(t)
     table.Merge(copy,t)
+    self:PostMergeMetadata(copy)
     return copy
 end
 

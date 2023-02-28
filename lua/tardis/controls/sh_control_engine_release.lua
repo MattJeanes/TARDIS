@@ -1,9 +1,7 @@
 TARDIS:AddControl({
     id = "engine_release",
     ext_func=function(self, ply)
-        local pos = pos or self:GetData("demat-pos") or self:GetPos()
-        local ang = ang or self:GetData("demat-ang") or self:GetAngles()
-        self:EngineReleaseDemat(pos, ang, function(result)
+        self:EngineReleaseDemat(nil, nil, function(result)
             if result then
                 TARDIS:Message(ply, "Controls.EngineRelease.ForceDemat")
             elseif result == false then

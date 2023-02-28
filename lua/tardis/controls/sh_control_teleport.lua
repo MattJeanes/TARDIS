@@ -10,9 +10,7 @@ TARDIS:AddControl({
                 end
             end)
         else
-            local pos = pos or self:GetData("demat-pos") or self:GetPos()
-            local ang = ang or self:GetData("demat-ang") or self:GetAngles()
-            self:Demat(pos, ang, function(result)
+            self:Demat(nil, nil, function(result)
                 if result then
                     TARDIS:Message(ply, "Controls.Teleport.Demat")
                 else

@@ -12,6 +12,7 @@ if SERVER then
 
         --Cost of certain controls and stuff:
         cost_hads = -180 / 144,
+        cost_fast_return = -360 / 144,
         cost_failed_demat = -80 / 144,
 
         -- every 1 second:
@@ -93,6 +94,7 @@ if SERVER then
     ENT:AddHook("ShouldFailDemat", "artron", function(self, force)
         if not TARDIS:GetSetting("artron_energy") then return end
         if self:GetData("hads-attempt") then return end
+        if self:GetData("fastreturn") then return end
 
         if ArtronDematCheck(self) then
             return true
@@ -235,7 +237,13 @@ if SERVER then
         if not TARDIS:GetSetting("artron_energy") then return end
         if self:CallHook("ShouldUpdateArtron") == false then return end
 
-        if self:GetData("demat-fast", false) then
+        if self:GetData("fastreturn") then
+            if self:GetArtron() < -TARDIS.artron_values.cost_fast_return then
+                self:SetArtron(1)
+                return
+            end
+            self:AddArtron(TARDIS.artron_values.cost_fast_return)
+        elseif self:GetData("demat-fast", false) then
             self:AddArtron(TARDIS.artron_values.cost_full)
         else
             self:AddArtron(TARDIS.artron_values.cost_demat)
@@ -254,7 +262,7 @@ if SERVER then
     ENT:AddHook("HADSTrigger", "artron", function(self)
         if not TARDIS:GetSetting("artron_energy") then return end
 
-        if self:GetData("artron-val",0) < -TARDIS.artron_values.cost_hads then
+        if self:GetArtron() < -TARDIS.artron_values.cost_hads then
             self:SetArtron(1)
             return
         end
@@ -274,7 +282,7 @@ if SERVER then
     ENT:AddHook("SettingChanged", "maxartron-changed", function(self, id, val)
         if id ~= "artron_energy_max" then return end
 
-        if self:GetData("artron-val",0) > val then
+        if self:GetArtron() > val then
             self:SetArtron(val)
         end
     end)

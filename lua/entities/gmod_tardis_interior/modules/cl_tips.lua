@@ -65,9 +65,7 @@ function ENT:InitializeTips(style_name)
                 end
             end
         end
-        if not tip.text then
-            print("[TARDIS] WARNING: Tip at position "..tostring(tip.pos).." has no text set")
-        else
+        if tip.text then
             tip.colors.current = tip.colors.normal
             tip.highlighted = false
 
@@ -87,7 +85,6 @@ function ENT:InitializeTips(style_name)
                 tip.text = text_overrides[tip.text]
             end
 
-            
             tip.text = TARDIS:GetPhrase(tip.text)
             table.insert(tips, tip)
         end

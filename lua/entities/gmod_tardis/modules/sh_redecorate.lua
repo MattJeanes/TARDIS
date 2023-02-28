@@ -1,4 +1,4 @@
-local ext_saved_data_names = {
+local saved_data_names = {
     "cloak",
     "floatfirst",
     "hads",
@@ -11,16 +11,53 @@ local ext_saved_data_names = {
     "fastreturn-pos",
     "fastreturn-ang",
     "artron-val",
-}
-local int_saved_data_names = {
-    "security"
+    "security",
 }
 
 if SERVER then
+    function ENT:SetRedecoration(on)
+        if self:CallCommonHook("CanToggleRedecoration", on) == false
+            or self:CallHook("CanRepair", true) == false
+        then
+            return false
+        end
 
-    ENT:AddHook("ShouldRedecorate", "redecorate_toggled", function(self)
-        return (self:GetData("redecorate",false) and self:GetData("redecorate-interior") ~= self.metadata.ID) and true or nil
-    end)
+        if not on then
+            self:SetData("redecorate", false, true)
+            if self:GetData("repair-primed") then
+                self:SetRepair(false)
+                return true
+            end
+            return false
+        end
+
+        local ply = self:GetCreator()
+        local chosen_int = TARDIS:GetSetting("redecorate-interior", ply)
+        local random_int = false
+        if not chosen_int then
+            random_int = true
+            chosen_int = TARDIS:SelectNewRandomInterior(self.metadata.ID, ply)
+        end
+
+        self:SetData("redecorate-interior", chosen_int)
+        self:SetData("redecorate", true, true)
+        self:SendMessage("redecorate-selection-reset")
+
+        self:CallHook("RedecorateToggled", on)
+
+        if not self:GetData("repair-primed") and not self:SetRepair(true) then
+            return false
+        end
+        if random_int then
+            TARDIS:Message(ply, "Controls.Redecorate.RandomInteriorWarning")
+        end
+        return true
+    end
+
+    function ENT:ToggleRedecoration()
+        local on = self:GetData("redecorate", false)
+        return self:SetRedecoration(not on)
+    end
 
     function ENT:Redecorate()
 
@@ -31,23 +68,16 @@ if SERVER then
         self:SetPower(true)
 
         -- save tardis state
-        local ext_saved_data = {}
-        local int_saved_data = {}
-        for k,v in ipairs(ext_saved_data_names) do
-            ext_saved_data[v] = self:GetData(v)
-        end
-        if IsValid(self.interior) then
-            for k,v in ipairs(int_saved_data_names) do
-                int_saved_data[v] = self.interior:GetData(v)
-            end
+        local saved_data = {}
+        for k,v in ipairs(saved_data_names) do
+            saved_data[v] = self:GetData(v)
         end
 
         local child = TARDIS:SpawnTARDIS(ply, {
             pos = self:GetPos(),
             metadataID = self:GetData("redecorate-interior") or "default",
             redecorate_parent = self,
-            ext_data = ext_saved_data,
-            int_data = int_saved_data,
+            saved_data = saved_data,
         })
 
         if not IsValid(child) then
@@ -98,8 +128,7 @@ if SERVER then
             self:SetPos(parent:GetPos())
             self:SetAngles(parent:GetAngles())
 
-            self:SetData("redecorate_parent_int_data", customdata.int_data, true)
-            self:SetData("redecorate_parent_ext_data", customdata.ext_data, true)
+            self:SetData("redecorate_parent_data", customdata.saved_data, true)
 
             local vortex = (not parent:GetData("demat-fast"))
             self:SetData("redecorate_parent_vortex", vortex, true)
@@ -122,14 +151,14 @@ if SERVER then
 
         self:ForceDematState()
 
-        local ext_saved_data = self:GetData("redecorate_parent_ext_data")
-        if ext_saved_data then
-            for name,value in pairs(ext_saved_data) do
+        local saved_data = self:GetData("redecorate_parent_data")
+        if saved_data then
+            for name,value in pairs(saved_data) do
                 self:SetData(name, value, true)
             end
         end
-        self:SetData("redecorate_parent_ext_data", nil, true)
-        self:CallHook("MigrateData", parent)
+        self:CallHook("MigrateData", parent, saved_data)
+        self:SetData("redecorate_parent_data", nil, true)
 
         local phys = self:GetPhysicsObject()
 
@@ -166,6 +195,12 @@ if SERVER then
         end
     end)
 
+    ENT:AddHook("RepairCancelled", "redecorate", function(self,portal,ent)
+        if self:GetData("redecorate") then
+            self:SetData("redecorate", false)
+        end
+    end)
+
     ENT:AddHook("ShouldUpdateArtron", "redecorate", function(self)
         if self:GetData("redecorate")
             or self:GetData("redecorate_parent")
@@ -174,6 +209,11 @@ if SERVER then
         then
             return false
         end
+    end)
+
+    ENT:AddHook("ShouldTakeDamage", "redecorate", function(self, dmginfo)
+        if self:GetData("redecorate") then return false end
+        if IsValid(self:GetData("redecorate_parent")) then return false end -- while parent exists
     end)
 
     hook.Add("AllowPlayerPickup", "tardis_redecorate", function(ply, ent)
@@ -190,7 +230,7 @@ else -- CLIENT
         end
     end)
 
-    ENT:OnMessage("redecorate-reset", function(self, data, ply)
+    ENT:OnMessage("redecorate-selection-reset", function(self, data, ply)
         if not IsValid(self) or (not LocalPlayer() == self:GetCreator()) then return end
         TARDIS:SetSetting("redecorate-interior", false)
     end)

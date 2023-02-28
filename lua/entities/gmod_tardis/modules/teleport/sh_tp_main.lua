@@ -11,7 +11,7 @@ TARDIS:AddKeyBind("teleport-demat",{
             end
             if ply==pilot and (not down) and ply:GetTardisData("teleport-demat-bind-down",false) then
                 if not self:GetData("vortex") then
-                    if self:GetData("demat-pos") then
+                    if self:GetDestinationPos() then
                         self:Demat()
                         return
                     end
@@ -50,28 +50,6 @@ TARDIS:AddKeyBind("teleport-mat",{
 })
 
 if SERVER then
-
-    function ENT:SetDestination(pos, ang)
-        self:SetData("demat-pos",pos,true)
-        self:SetData("demat-ang",ang,true)
-        return true
-    end
-
-    function ENT:SetRandomDestination(grounded)
-        local randomLocation = self:GetRandomLocation(grounded)
-        if randomLocation then
-            self:CallHook("RandomDestinationSet", randomLocation)
-            self:SetDestination(randomLocation, Angle(0,0,0))
-            return true
-        else
-            return false
-        end
-    end
-
-    function ENT:GetDestination()
-        return self:GetData("demat-pos"), self:GetData("demat-ang")
-    end
-
     function ENT:ForceDematState()
         self:SetDestination(self:GetPos(), self:GetAngles())
 
@@ -117,13 +95,14 @@ if SERVER then
             self.interior:Explode(20)
         end
 
-        pos=pos or self:GetData("demat-pos") or self:GetPos()
-        ang=ang or self:GetData("demat-ang") or self:GetAngles()
-        self:SetDestination(pos, ang)
+        pos = pos or self:GetDestinationPos(true)
+        ang = ang or self:GetDestinationAng(true)
+        self:SetDestination(pos, ang, true)
 
-        self:SendMessage("demat", { self:GetData("demat-pos",Vector()) } )
+        self:SendMessage("demat", { self:GetDestinationPos(true) } )
         self:SetData("demat",true)
         self:SetData("step",1)
+        self:SetStepDelay()
         self:SetData("teleport",true)
         self:SetCollisionGroup( COLLISION_GROUP_WORLD )
 
@@ -149,8 +128,8 @@ if SERVER then
 
 
     function ENT:Mat(callback)
-        local pos = self:GetData("demat-pos", self:GetPos())
-        local ang = self:GetData("demat-ang", self:GetAngles())
+        local pos = self:GetDestinationPos(true)
+        local ang = self:GetDestinationAng(true)
 
         if self:CallHook("CanMat", pos, ang) == false then
             self:HandleNoMat(pos, ang, callback)
@@ -162,7 +141,7 @@ if SERVER then
                 return
             end
 
-            self:SendMessage("premat", { self:GetData("demat-pos",Vector()) } )
+            self:SendMessage("premat", { self:GetDestinationPos(true) } )
             self:SetData("teleport",true)
             self:CallHook("PreMatStart")
 
@@ -172,6 +151,7 @@ if SERVER then
                 self:SendMessage("mat")
                 self:SetData("mat",true)
                 self:SetData("step",1)
+                self:SetStepDelay()
                 self:SetData("vortex",false)
                 local flight=self:GetData("prevortex-flight")
                 if self:GetData("flight")~=flight then
@@ -191,6 +171,7 @@ if SERVER then
         self:SetData("demat",false)
         self:SetData("force-demat", false, true)
         self:SetData("step",1)
+        self:SetData("step-delay",nil)
         self:SetData("vortex",true)
         self:SetData("teleport",false)
         self:SetSolid(SOLID_NONE)
@@ -207,6 +188,7 @@ if SERVER then
     function ENT:StopMat()
         self:SetData("mat",false)
         self:SetData("step",1)
+        self:SetData("step-delay",nil)
         self:SetData("teleport",false)
         self:SetCollisionGroup(COLLISION_GROUP_NONE)
         self:DrawShadow(true)
@@ -243,10 +225,17 @@ if SERVER then
         end
     end)
 
+    ENT:AddHook("CanChangeDestination", "premat", function(self)
+        if self:GetData("teleport") and self:GetData("vortex") then
+            return false
+        end
+    end)
+
 else
     ENT:OnMessage("demat", function(self, data, ply)
         self:SetData("demat",true)
         self:SetData("step",1)
+        self:SetStepDelay()
         self:SetData("teleport",true)
         if TARDIS:GetSetting("teleport-sound") and TARDIS:GetSetting("sound") then
             local shouldPlayExterior = self:CallHook("ShouldPlayDematSound", false)~=false
@@ -306,6 +295,7 @@ else
 
     ENT:OnMessage("premat", function(self, data, ply)
         self:SetData("teleport",true)
+        self:SetData("premat_start_time", CurTime())
         if TARDIS:GetSetting("teleport-sound") and TARDIS:GetSetting("sound") then
             local shouldPlayExterior = self:CallHook("ShouldPlayMatSound", false)~=false
             local shouldPlayInterior = self:CallHook("ShouldPlayMatSound", true)~=false
@@ -343,6 +333,7 @@ else
     ENT:OnMessage("mat", function(self, data, ply)
         self:SetData("mat",true)
         self:SetData("step",1)
+        self:SetStepDelay()
         self:SetData("vortex",false)
         self:CallHook("MatStart")
     end)
@@ -350,7 +341,9 @@ else
     function ENT:StopDemat()
         self:SetData("demat",false)
         self:SetData("step",1)
+        self:SetData("step-delay",nil)
         self:SetData("vortex",true)
+        self:SetData("vortex_enter_time",CurTime())
         self:SetData("teleport",false)
         self:CallHook("StopDemat")
     end
@@ -358,6 +351,7 @@ else
     function ENT:StopMat()
         self:SetData("mat",false)
         self:SetData("step",1)
+        self:SetData("step-delay",nil)
         self:SetData("teleport",false)
         self:CallHook("StopMat")
     end
@@ -367,27 +361,18 @@ else
     end)
 end
 
-function ENT:GetRandomLocation(grounded)
-    local td = {}
-    td.mins = self:OBBMins()
-    td.maxs = self:OBBMaxs()
-    local max = 16384
-    local tries = 1000
-    local point
-    while tries > 0 do
-        tries = tries - 1
-        point=Vector(math.random(-max, max),math.random(-max, max),math.random(-max, max))
-        td.start=point
-        td.endpos=point
-        if not util.TraceHull(td).Hit
-        then
-            if grounded then
-                local down = util.QuickTrace(point + Vector(0, 0, 50), Vector(0, 0, -1) * 99999999).HitPos
-                return down, true
-            else
-                return point, false
-            end
-        end
+function ENT:SetStepDelay()
+    local demat=self:GetData("demat")
+    local mat=self:GetData("mat")
+    if not (demat or mat) then return end
+
+    local teleport_md = self.metadata.Exterior.Teleport
+    local sequence_delays = demat and teleport_md.DematSequenceDelays or teleport_md.MatSequenceDelays
+    local step = self:GetData("step",1)
+    if sequence_delays and sequence_delays[step] then
+        self:SetData("step-delay",CurTime() + sequence_delays[step])
+    else
+        self:SetData("step-delay",nil)
     end
 end
 
@@ -409,35 +394,63 @@ ENT:AddHook("Think","teleport",function(self,delta)
     local mat=self:GetData("mat")
     if not (demat or mat) then return end
     local alpha=self:GetData("alpha",255)
-    local target=self:GetData("alphatarget",255)
+    local target=self:GetTargetAlpha()
     local step=self:GetData("step",1)
+
+    local teleport_md = self.metadata.Exterior.Teleport
+    local fast = self:GetData("demat-fast")
+
     if alpha==target then
         if demat then
-            if step>=#self.metadata.Exterior.Teleport.DematSequence then
+            if step>=#teleport_md.DematSequence then
                 self:StopDemat()
                 return
             else
                 self:SetData("step",step+1)
+                self:SetStepDelay()
             end
         elseif mat then
-            if step>=#self.metadata.Exterior.Teleport.MatSequence then
+            if step>=#teleport_md.MatSequence then
                 self:StopMat()
                 return
             else
                 self:SetData("step",step+1)
+                self:SetStepDelay()
             end
         end
         target=self:GetTargetAlpha()
-        self:SetData("alphatarget",target)
     end
-    local teleport_md = self.metadata.Exterior.Teleport
-    local sequencespeed = (self:GetData("demat-fast") and teleport_md.SequenceSpeedFast or teleport_md.SequenceSpeed)
-    if self:GetData("health-warning",false) then 
-        sequencespeed = (self:GetData("demat-fast") and teleport_md.SequenceSpeedWarnFast or teleport_md.SequenceSpeedWarning)
+
+    if self:GetData("step-delay") and self:GetData("step-delay")>CurTime() then return end
+    local sequencespeed = (fast and teleport_md.SequenceSpeedFast or teleport_md.SequenceSpeed)
+    if self:GetData("health-warning",false) then
+        sequencespeed = (fast and teleport_md.SequenceSpeedWarnFast or teleport_md.SequenceSpeedWarning)
     end
     alpha=math.Approach(alpha,target,delta*66*sequencespeed)
     self:SetData("alpha",alpha)
     self:SetAttachedTransparency(alpha)
 end)
 
+-- returns the progress of the current sequence on a scale from 0 to 1
+function ENT:GetSequenceProgress()
+    if not self:GetData("teleport") then return 1 end
 
+    local tp_metadata = self.metadata.Exterior.Teleport
+    local demat = self:GetData("demat")
+    local sequence = demat and tp_metadata.DematSequence or tp_metadata.MatSequence
+    local start_alpha = demat and 255 or 0
+
+    local steps = #sequence - 1
+    local step = self:GetData("step") - 1
+    if step >= steps then return 1 end
+
+    local a_target = sequence[step + 1]
+    local a_prev = sequence[step] or start_alpha
+    if a_prev == a_target then return 1 end
+
+    local a = self:GetData("alpha",255)
+
+    local progress = step / steps
+    progress = progress + (1 - math.abs((a - a_target) / (a_prev - a_target))) / steps
+    return progress
+end

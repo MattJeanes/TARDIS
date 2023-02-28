@@ -1,14 +1,29 @@
 -- Fast return
 
 function ENT:FastReturn(callback)
-    if not self:GetData("fastreturn-pos") then callback(false) end
-    if self:CallHook("CanDemat", true) == false then callback(false) end
+    local retpos, retang = self:GetData("fastreturn-pos"), self:GetData("fastreturn-ang")
+
+    if not retpos then
+        if callback then callback(false) end
+        return
+    end
+
+    if self:GetData("vortex") and not self:GetData("fastreturn") then
+        self:SetDestination(retpos, retang)
+        self:Mat(callback)
+        return
+    end
+
+    if self:CallHook("CanDemat", true) == false then
+        if callback then callback(false) end
+        return
+    end
 
     self:SetData("demat-fast-prev", self:GetData("demat-fast", false));
     self:SetFastRemat(true)
     self:SetData("fastreturn",true)
     self:CallHook("FastReturnTriggered")
-    self:AutoDemat(self:GetData("fastreturn-pos"),self:GetData("fastreturn-ang"), callback)
+    self:AutoDemat(retpos, retang, callback)
 end
 
 ENT:AddHook("DematStart", "fastreturn", function(self)
@@ -23,3 +38,10 @@ ENT:AddHook("StopMat", "fastreturn", function(self)
     end
 end)
 
+ENT:AddHook("CanChangeDestination", "fastreturn", function(self, pos, ang)
+    if not self:GetData("fastreturn") then return end
+
+    if self:GetData("teleport") or self:GetData("vortex") then
+        return false
+    end
+end)
