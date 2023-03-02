@@ -97,7 +97,7 @@ end)
 ENT:AddHook("PreScannerRender", "scanner", function(self)
     for k,v in pairs(self.props) do
         if IsValid(k) then
-            k.olddraw=k:GetNoDraw()
+            k.olddrawscanner=k:GetNoDraw()
             k:SetNoDraw(true)
         end
     end
@@ -105,9 +105,9 @@ end)
 
 ENT:AddHook("PostScannerRender", "scanner", function(self)
     for k,v in pairs(self.props) do
-        if IsValid(k) and k.olddraw~=nil then
-            k:SetNoDraw(k.olddraw)
-            k.olddraw=nil
+        if IsValid(k) and k.olddrawscanner~=nil then
+            k:SetNoDraw(false)
+            k.olddrawscanner=nil
         end
     end
 end)
