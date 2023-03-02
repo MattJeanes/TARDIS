@@ -1,4 +1,4 @@
-local function AddInteriorPartsOffset(template, offset)
+function TARDIS:AddInteriorPartsOffset(template, offset)
     local moved = table.Copy(template)
 
     if istable(moved.Interior.Parts) then
@@ -39,7 +39,7 @@ local function AddInteriorPartsOffset(template, offset)
     return moved
 end
 
-local function AddInteriorPartsRotation(template, rotate_ang)
+function TARDIS:AddInteriorPartsRotation(template, rotate_ang)
     local rotated = table.Copy(template)
 
     if istable(rotated.Interior.Parts) then
@@ -111,10 +111,10 @@ function TARDIS:MergeInteriorTemplates(cur_metadata, apply_conditions, ent)
                 or (apply_conditions and template.condition and template.condition(id, ent:GetCreator(), ent)))
         then
             if template.parts_rotation then
-                template_metadata = AddInteriorPartsRotation(template_metadata, template.parts_rotation)
+                template_metadata = self:AddInteriorPartsRotation(template_metadata, template.parts_rotation)
             end
             if template.parts_offset then
-                template_metadata = AddInteriorPartsOffset(template_metadata, template.parts_offset)
+                template_metadata = self:AddInteriorPartsOffset(template_metadata, template.parts_offset)
             end
 
             if template.override then
