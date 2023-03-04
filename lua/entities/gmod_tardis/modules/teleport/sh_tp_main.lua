@@ -135,7 +135,8 @@ if SERVER then
             self:HandleNoMat(pos, ang, callback)
             return
         end
-        self:CloseDoor(function(state)
+
+        local continue_mat = function(state)
             if state then
                 if callback then callback(false) end
                 return
@@ -164,7 +165,12 @@ if SERVER then
                 self:SetDestination(nil, nil)
             end)
             if callback then callback(true) end
-        end)
+        end
+        if TARDIS:GetSetting("teleport-door-autoclose", self) then
+            self:CloseDoor(continue_mat)
+        else
+            continue_mat(self:GetData("doorstatereal"))
+        end
     end
 
     function ENT:StopDemat()

@@ -393,6 +393,8 @@
     "Settings.Sections.GUI.Theme": "Tema da interface gráfica",
     "Settings.Sections.GUI.Theme.Description": "Tema para a interface de usuário",
     "Settings.Sections.Misc": "Diversos",
+    "Settings.Sections.Misc.DoorCloseOnLock": "",
+    "Settings.Sections.Misc.DoorCloseOnLock.Description": "",
     "Settings.Sections.Misc.EnableControlSequences": "Ativar Sequências de Controle",
     "Settings.Sections.Misc.EnableControlSequences.Description": "As sequências de controle ou 'modo avançado' devem ser usadas?",
     "Settings.Sections.Misc.Flight": "Voo",

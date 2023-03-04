@@ -393,6 +393,8 @@
     "Settings.Sections.GUI.Theme": "界面主题",
     "Settings.Sections.GUI.Theme.Description": "用户界面的主题",
     "Settings.Sections.Misc": "杂项",
+    "Settings.Sections.Misc.DoorCloseOnLock": "",
+    "Settings.Sections.Misc.DoorCloseOnLock.Description": "",
     "Settings.Sections.Misc.EnableControlSequences": "启用控制序列",
     "Settings.Sections.Misc.EnableControlSequences.Description": "是否启用控制序列（以前的高级模式）",
     "Settings.Sections.Misc.Flight": "飞行",

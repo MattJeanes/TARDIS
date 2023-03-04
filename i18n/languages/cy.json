@@ -393,6 +393,8 @@
     "Settings.Sections.GUI.Theme": "Thema GUI",
     "Settings.Sections.GUI.Theme.Description": "Thema ar gyfer y rhyngwyneb defnyddiwr",
     "Settings.Sections.Misc": "Amrywiol",
+    "Settings.Sections.Misc.DoorCloseOnLock": "",
+    "Settings.Sections.Misc.DoorCloseOnLock.Description": "",
     "Settings.Sections.Misc.EnableControlSequences": "Galluogi Dilyniannau Rheoli",
     "Settings.Sections.Misc.EnableControlSequences.Description": "A ddylid defnyddio dilyniannau rheoli neu 'modd uwch'?",
     "Settings.Sections.Misc.Flight": "Hedfan",

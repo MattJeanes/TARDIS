@@ -393,6 +393,8 @@
     "Settings.Sections.GUI.Theme": "GUI Teması",
     "Settings.Sections.GUI.Theme.Description": "Kullanıcı arayüzü için tema",
     "Settings.Sections.Misc": "İpuçları",
+    "Settings.Sections.Misc.DoorCloseOnLock": "",
+    "Settings.Sections.Misc.DoorCloseOnLock.Description": "",
     "Settings.Sections.Misc.EnableControlSequences": "Kontrol Sıralarını Etkinleştir",
     "Settings.Sections.Misc.EnableControlSequences.Description": "Kontrol dizileri veya 'gelişmiş mod' kullanılmalı mı?",
     "Settings.Sections.Misc.Flight": "Uçuş",

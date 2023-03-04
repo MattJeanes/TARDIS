@@ -104,6 +104,14 @@ if SERVER then
         end
     end)
 
+    ENT:AddHook("ShouldFailMat", "doors", function(self, dest_pos, dest_ang)
+        if self:GetData("doorstatereal")
+            and not TARDIS:GetSetting("teleport-door-autoclose", self)
+        then
+            return true
+        end
+    end)
+
     function ENT:EngineReleaseDemat(pos, ang, callback)
         if not self:GetData("failing-demat", false) then return end
 
@@ -126,6 +134,15 @@ if SERVER then
             if not open then
                 self:SetData("failing-demat", false, true)
                 self:Demat(nil, nil, nil, false)
+            end
+        end
+    end)
+
+    ENT:AddHook("ToggleDoor", "failing-mat", function(self,open)
+        if self:GetData("failing-mat", false) then
+            if not open then
+                self:SetData("failing-mat", false, true)
+                self:Mat(nil)
             end
         end
     end)

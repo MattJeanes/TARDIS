@@ -45,6 +45,18 @@ TARDIS:AddSetting({
     name="IsomorphicSecurityDefault",
 })
 
+TARDIS:AddSetting({
+    id="lock_autoclose",
+    type="bool",
+    value=false,
+
+    class="networked",
+
+    option=true,
+    section=SETTING_SECTION,
+    name="DoorCloseOnLock",
+})
+
 --------------------------------------------------------------------------------
 -- Teleport
 
