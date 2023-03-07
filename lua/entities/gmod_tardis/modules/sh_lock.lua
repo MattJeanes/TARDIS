@@ -9,8 +9,8 @@ function ENT:Locking()
 end
 
 if SERVER then
-    function ENT:ToggleLocked(callback)
-        self:SetLocked(not self:Locked(),callback)
+    function ENT:ToggleLocked(callback, force)
+        self:SetLocked(not self:Locked(), callback, nil, force)
     end
 
     function ENT:ActualSetLocked(locked,callback,silent)
@@ -22,7 +22,7 @@ if SERVER then
         if callback then callback(true) end
     end
 
-    function ENT:SetLocked(locked,callback, silent)
+    function ENT:SetLocked(locked, callback, silent, force)
         if not self:CallHook("CanLock") then return end
         if locked then
             self:SetData("locking",true,true)
@@ -36,7 +36,7 @@ if SERVER then
                 end
             end
 
-            if TARDIS:GetSetting("lock_autoclose", self) then
+            if TARDIS:GetSetting("lock_autoclose", self) or force then
                 self:CloseDoor(dolock)
             else
                 dolock(self:GetData("doorstatereal"))
