@@ -393,6 +393,8 @@
     "Settings.Sections.GUI.Theme": "Thème de l'IGU",
     "Settings.Sections.GUI.Theme.Description": "Thème pour l'interface utilisateur",
     "Settings.Sections.Misc": "Divers",
+    "Settings.Sections.Misc.DoorCloseOnLock": "",
+    "Settings.Sections.Misc.DoorCloseOnLock.Description": "",
     "Settings.Sections.Misc.EnableControlSequences": "Activer les séquences de contrôle",
     "Settings.Sections.Misc.EnableControlSequences.Description": "Les séquences de contrôle ou 'Mode avancé' devraient-elles être utilisées ?",
     "Settings.Sections.Misc.Flight": "Vol",

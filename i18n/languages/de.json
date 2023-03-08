@@ -393,6 +393,8 @@
     "Settings.Sections.GUI.Theme": "GUI-Thema",
     "Settings.Sections.GUI.Theme.Description": "Thema für die Benutzeroberfläche",
     "Settings.Sections.Misc": "Sonstiges",
+    "Settings.Sections.Misc.DoorCloseOnLock": "",
+    "Settings.Sections.Misc.DoorCloseOnLock.Description": "",
     "Settings.Sections.Misc.EnableControlSequences": "Aktivieren von Steuersequenzen",
     "Settings.Sections.Misc.EnableControlSequences.Description": "Sollten Steuersequenzen oder der 'erweiterte Modus' verwendet werden?",
     "Settings.Sections.Misc.Flight": "Flug",

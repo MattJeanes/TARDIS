@@ -393,6 +393,8 @@
     "Settings.Sections.GUI.Theme": "Тема интерфейса",
     "Settings.Sections.GUI.Theme.Description": "Тема для пользовательского интерфейса",
     "Settings.Sections.Misc": "Разное",
+    "Settings.Sections.Misc.DoorCloseOnLock": "",
+    "Settings.Sections.Misc.DoorCloseOnLock.Description": "",
     "Settings.Sections.Misc.EnableControlSequences": "Включение управление последовательностями",
     "Settings.Sections.Misc.EnableControlSequences.Description": "Стоит ли использовать управление последовательностями / 'продвинутый режим'?",
     "Settings.Sections.Misc.Flight": "Полёт",
