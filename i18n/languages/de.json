@@ -418,6 +418,8 @@
     "Settings.Sections.Misc.NotificationType.Types.Disabled": "Behinderte",
     "Settings.Sections.Misc.NotificationType.Types.Inbuilt": "Eingebaute Benachrichtigungen",
     "Settings.Sections.Misc.Spawning": "Das Hervorbringen der TARDIS",
+    "Settings.Sections.Misc.Spawning.LegacyDoorType": "",
+    "Settings.Sections.Misc.Spawning.LegacyDoorType.Description": "",
     "Settings.Sections.Misc.Spawning.NoInterior": "Kein Innenraum",
     "Settings.Sections.Misc.Spawning.NoInterior.Description": "TARDIS wird ohne Innenraum spawnen, wenn aktiviert",
     "Settings.Sections.Misc.Spawning.PreferClassicDoor": "Bevorzugen Sie die klassische Innenausstattung von Türen",

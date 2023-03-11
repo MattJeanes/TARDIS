@@ -418,6 +418,8 @@
     "Settings.Sections.Misc.NotificationType.Types.Disabled": "禁用",
     "Settings.Sections.Misc.NotificationType.Types.Inbuilt": "內置通知",
     "Settings.Sections.Misc.Spawning": "生成塔迪斯",
+    "Settings.Sections.Misc.Spawning.LegacyDoorType": "",
+    "Settings.Sections.Misc.Spawning.LegacyDoorType.Description": "",
     "Settings.Sections.Misc.Spawning.NoInterior": "沒有內飾",
     "Settings.Sections.Misc.Spawning.NoInterior.Description": "啟用後，TARDIS 將在沒有內部的情況下生成",
     "Settings.Sections.Misc.Spawning.PreferClassicDoor": "經典門內飾",

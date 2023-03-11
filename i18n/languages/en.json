@@ -418,6 +418,8 @@
     "Settings.Sections.Misc.NotificationType.Types.Disabled": "Disabled",
     "Settings.Sections.Misc.NotificationType.Types.Inbuilt": "In-built notifications",
     "Settings.Sections.Misc.Spawning": "Spawning the TARDIS",
+    "Settings.Sections.Misc.Spawning.LegacyDoorType": "Spawn with legacy doors type",
+    "Settings.Sections.Misc.Spawning.LegacyDoorType.Description": "TARDIS doors will teleport the player inside when clicked on (instead of opening)",
     "Settings.Sections.Misc.Spawning.NoInterior": "No interior",
     "Settings.Sections.Misc.Spawning.NoInterior.Description": "TARDIS will spawn without an interior when enabled",
     "Settings.Sections.Misc.Spawning.PreferClassicDoor": "Prefer classic door interiors",
