@@ -5,7 +5,7 @@ if SERVER then
         local entityName = "gmod_tardis"
 
         local metadataID = customData.metadataID
-        local interior = TARDIS:GetInterior(metadataID)
+        local interior = TARDIS:CreateInteriorMetadata(metadataID)
 
         if not (interior and IsValid(ply) and gamemode.Call("PlayerSpawnSENT", ply, entityName)) then return end
         if not interior.BaseMerged then return end
@@ -108,6 +108,30 @@ if SERVER then
         TARDIS:SpawnTARDIS(ply, {metadataID = args[1]})
     end)
 else -- CLIENT
+
+    local function GetSpawnDeleteSound(id, is_spawn)
+        local snd_name = is_spawn and "Spawn" or "Delete"
+
+        if TARDIS.Metadata[id] then
+            return TARDIS.Metadata[id].Exterior.Sounds[snd_name]
+        end
+
+        local raw = TARDIS.MetadataRaw[id]
+        if not raw then
+            return TARDIS.MetadataRaw["base"].Exterior.Sounds[snd_name]
+        end
+
+        if raw.Exterior and raw.Exterior.Sounds and raw.Exterior.Sounds[snd_name] then
+            return raw.Exterior.Sounds[snd_name]
+        end
+
+        if raw.Base then
+            return GetSpawnDeleteSound(raw.Base, is_spawn)
+        end
+
+        return TARDIS.MetadataRaw["base"].Exterior.Sounds[snd_name]
+    end
+
     net.Receive("TARDIS-Spawn-Delete-Sound", function()
         local ent
         local pos
@@ -122,14 +146,14 @@ else -- CLIENT
         local id = net.ReadString()
         if TARDIS:GetSetting("spawn_delete_sound") and TARDIS:GetSetting("sound") then
             if spawn then
-                local snd = TARDIS.Metadata[id].Exterior.Sounds.Spawn
+                local snd = GetSpawnDeleteSound(id, true)
                 if IsValid(ent) then
                     ent:EmitSound(snd)
                 else
                     sound.Play(snd, pos)
                 end
             else
-                sound.Play(TARDIS.Metadata[id].Exterior.Sounds.Delete, pos)
+                sound.Play(GetSpawnDeleteSound(id, false), pos)
             end
         end
     end)

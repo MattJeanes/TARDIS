@@ -112,10 +112,8 @@ if CLIENT then
     local function AddSettingsSubmenu(parent, int_id)
         local int_id = TARDIS:GetMainVersionId(int_id)
 
-        local metadata = TARDIS:GetInterior(int_id)
-        if not metadata then return end
-        local versions = metadata.Versions
-        local custom_settings = metadata.CustomSettings
+        local versions = TARDIS.MetadataVersions[int_id]
+        local custom_settings = TARDIS.IntCustomSettings[int_id]
 
         local other_versions_exist = not table.IsEmpty(versions.other)
         local custom_versions_exist = not table.IsEmpty(versions.custom)
@@ -244,25 +242,27 @@ if CLIENT then
     
             icon.OpenMenu = function(self)
                 local dmenu = DermaMenu()
-                local versions = TARDIS:GetInterior(obj.spawnname).Versions
-    
-                AddMenuVersion(dmenu, versions.main)
-                dmenu:AddSpacer()
-    
-                if not table.IsEmpty(versions.other) then
-                    AddMenuLabel(dmenu, "Spawnmenu.AlternativeVersions")
-                    for k,v in SortedPairs(versions.other) do
-                        AddVersionSubMenu(dmenu, v)
-                    end
+                local versions = TARDIS.MetadataVersions[obj.spawnname]
+
+                if versions then
+                    AddMenuVersion(dmenu, versions.main)
                     dmenu:AddSpacer()
-                end
-    
-                if not table.IsEmpty(versions.custom) then
-                    AddMenuLabel(dmenu, "Spawnmenu.CustomVersions")
-                    for k,v in SortedPairs(versions.custom) do
-                        AddVersionSubMenu(dmenu, v)
+        
+                    if not table.IsEmpty(versions.other) then
+                        AddMenuLabel(dmenu, "Spawnmenu.AlternativeVersions")
+                        for k,v in SortedPairs(versions.other) do
+                            AddVersionSubMenu(dmenu, v)
+                        end
+                        dmenu:AddSpacer()
                     end
-                    dmenu:AddSpacer()
+        
+                    if not table.IsEmpty(versions.custom) then
+                        AddMenuLabel(dmenu, "Spawnmenu.CustomVersions")
+                        for k,v in SortedPairs(versions.custom) do
+                            AddVersionSubMenu(dmenu, v)
+                        end
+                        dmenu:AddSpacer()
+                    end
                 end
     
                 local favorite = dmenu:AddOption(TARDIS:GetPhrase("Spawnmenu.AddToFavourites"), function(self)
@@ -294,7 +294,7 @@ if CLIENT then
 
     hook.Add("TARDIS_LanguageChanged", "tardis-spawnmenu", function()
         for k,v in pairs(TARDIS:GetInteriors()) do
-            TARDIS:SetupSpawnmenuIcon(v)
+            TARDIS:SetupSpawnmenuIcon(k)
         end
         RunConsoleCommand("spawnmenu_reload")
     end)
@@ -304,7 +304,9 @@ TARDIS_OVERRIDES = TARDIS_OVERRIDES or {}
 local c_overrides = TARDIS_OVERRIDES.Categories or {}
 local n_overrides = TARDIS_OVERRIDES.Names or {}
 
-function TARDIS:SetupSpawnmenuIcon(t)
+function TARDIS:SetupSpawnmenuIcon(id)
+    local t = self.MetadataRaw[id]
+
     if t.Base == true or t.Hidden or t.IsVersionOf then
         return
     end
