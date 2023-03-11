@@ -93,14 +93,11 @@ function TARDIS:SetupTemplateUpdates(id)
     if not t.Templates then return end
 
     for template_id, template in pairs(t.Templates) do
-        if template and not template.condition then -- conditional templates are not cached
+        if template then
+            self.IntUpdatesPerTemplate[template_id] = self.IntUpdatesPerTemplate[template_id] or {}
+            local int_updates = self.IntUpdatesPerTemplate[template_id]
 
-            local int_updates = self.IntUpdatesPerTemplate[template_id] or {}
-            if not int_updates then
-                self.IntUpdatesPerTemplate[template_id] = {}
-            end
-
-            table.insert(int_updates, id)
+            int_updates[id] = true
         end
     end
 end
@@ -170,7 +167,6 @@ function TARDIS:AddInteriorTemplate(id, template)
     local int_updates = self.IntUpdatesPerTemplate[id]
     if int_updates then
         for i,int_id in ipairs(int_updates) do
-            self:ClearMetadata(int_id)
             if template.CustomSettings then
                 self:SetupCustomSettings(int_id)
             end
