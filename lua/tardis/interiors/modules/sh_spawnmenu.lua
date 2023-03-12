@@ -341,11 +341,20 @@ function TARDIS:SetupSpawnmenuIcon(id)
         end
     end
 
-    try_icon("tardis/" .. t.ID .. ".vmt")
-    try_icon("tardis/" .. t.ID .. ".vtf")
-    try_icon("tardis/" .. t.ID .. ".png")
-    try_icon("tardis/default/" .. t.ID .. ".png")
-    try_icon("tardis/gmod_tardis.vmt")
+    if CLIENT then
+        if TARDIS:GetSetting("spawnmenu_interior_icons") then
+            try_icon("tardis/interiors/" .. t.ID .. ".vmt")
+            try_icon("tardis/interiors/" .. t.ID .. ".vtf")
+            try_icon("tardis/interiors/" .. t.ID .. ".png")
+            try_icon("tardis/interiors/default/" .. t.ID .. ".png")
+        end
+
+        try_icon("tardis/" .. t.ID .. ".vmt")
+        try_icon("tardis/" .. t.ID .. ".vtf")
+        try_icon("tardis/" .. t.ID .. ".png")
+        try_icon("tardis/default/" .. t.ID .. ".png")
+        try_icon("tardis/gmod_tardis.vmt")
+    end
 
     ent.ScriptedEntityType="tardis"
     list.Set("SpawnableEntities", t.ID, ent)

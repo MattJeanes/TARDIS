@@ -428,6 +428,8 @@
     "Settings.Sections.Misc.Spawning.RandomizeSkins.Description": "Controla se a skin da TARDIS será aleatória quando for criada",
     "Settings.Sections.Misc.Spawning.UseWinterSkins": "Usar skins de inverno",
     "Settings.Sections.Misc.Spawning.UseWinterSkins.Description": "Controla se as skins de inverno da TARDIS serão usadas pelo modo aleatório",
+    "Settings.Sections.Misc.SpawnmenuInteriorIcons": "",
+    "Settings.Sections.Misc.SpawnmenuInteriorIcons.Description": "",
     "Settings.Sections.Misc.Teleport": "Teleportar",
     "Settings.Sections.Misc.Teleport.AutoCloseDoors": "Fechar portas ao desmaterializar",
     "Settings.Sections.Misc.Teleport.AutoCloseDoors.Description": "As portas da TARDIS devem fechar automaticamente antes de desmaterializar?",

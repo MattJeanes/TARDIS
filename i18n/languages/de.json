@@ -428,6 +428,8 @@
     "Settings.Sections.Misc.Spawning.RandomizeSkins.Description": "Ob der Skin der TARDIS beim Spawnen randomisiert wird oder nicht",
     "Settings.Sections.Misc.Spawning.UseWinterSkins": "Winterfelle verwenden",
     "Settings.Sections.Misc.Spawning.UseWinterSkins.Description": "Ob die Skins der TARDIS im Winter verwendet werden, während sie zufällig ausgewählt wird",
+    "Settings.Sections.Misc.SpawnmenuInteriorIcons": "",
+    "Settings.Sections.Misc.SpawnmenuInteriorIcons.Description": "",
     "Settings.Sections.Misc.Teleport": "Teleport",
     "Settings.Sections.Misc.Teleport.AutoCloseDoors": "Automatisch schließende Türen bei Demat",
     "Settings.Sections.Misc.Teleport.AutoCloseDoors.Description": "Sollte die TARDIS die Türen automatisch schließen, bevor sie entladen wird?",

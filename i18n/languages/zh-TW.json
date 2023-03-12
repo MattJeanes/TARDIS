@@ -428,6 +428,8 @@
     "Settings.Sections.Misc.Spawning.RandomizeSkins.Description": "生成塔迪斯時是否隨機皮膚",
     "Settings.Sections.Misc.Spawning.UseWinterSkins": "使用冬季皮膚",
     "Settings.Sections.Misc.Spawning.UseWinterSkins.Description": "隨機皮膚時是否會使用冬季皮膚",
+    "Settings.Sections.Misc.SpawnmenuInteriorIcons": "",
+    "Settings.Sections.Misc.SpawnmenuInteriorIcons.Description": "",
     "Settings.Sections.Misc.Teleport": "傳送",
     "Settings.Sections.Misc.Teleport.AutoCloseDoors": "起飛時自動關門",
     "Settings.Sections.Misc.Teleport.AutoCloseDoors.Description": "塔迪斯是否在起飛前自動關門",

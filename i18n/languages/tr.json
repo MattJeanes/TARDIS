@@ -428,6 +428,8 @@
     "Settings.Sections.Misc.Spawning.RandomizeSkins.Description": "TARDIS görünümünün ortaya çıktığında rastgele olup olmayacağı",
     "Settings.Sections.Misc.Spawning.UseWinterSkins": "Kış derileri kullanın",
     "Settings.Sections.Misc.Spawning.UseWinterSkins.Description": "Kış TARDIS görünümlerinin rastgele seçildiğinde kullanılıp kullanılmayacağı",
+    "Settings.Sections.Misc.SpawnmenuInteriorIcons": "",
+    "Settings.Sections.Misc.SpawnmenuInteriorIcons.Description": "",
     "Settings.Sections.Misc.Teleport": "Işınlanma",
     "Settings.Sections.Misc.Teleport.AutoCloseDoors": "Demat'ta Kapıları Otomatik Kapatın",
     "Settings.Sections.Misc.Teleport.AutoCloseDoors.Description": "TARDIS demattan önce kapıları otomatik olarak kapatmalı mı?",

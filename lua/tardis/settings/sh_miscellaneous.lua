@@ -22,6 +22,18 @@ TARDIS:AddSetting({
 })
 
 TARDIS:AddSetting({
+    id="spawnmenu_interior_icons",
+    type="bool",
+    value=false,
+
+    class="local",
+
+    option=true,
+    section=SETTING_SECTION,
+    name="SpawnmenuInteriorIcons",
+})
+
+TARDIS:AddSetting({
     id="csequences-enabled",
     type="bool",
     value=false,

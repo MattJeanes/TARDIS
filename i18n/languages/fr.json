@@ -428,6 +428,8 @@
     "Settings.Sections.Misc.Spawning.RandomizeSkins.Description": "Si oui ou non l'apparence du TARDIS sera randomisée lors de son apparition",
     "Settings.Sections.Misc.Spawning.UseWinterSkins": "Utiliser les apparences hivernales",
     "Settings.Sections.Misc.Spawning.UseWinterSkins.Description": "Si oui ou non les apparences hivernales du TARDIS seront utilisés lorsqu'il apparait",
+    "Settings.Sections.Misc.SpawnmenuInteriorIcons": "",
+    "Settings.Sections.Misc.SpawnmenuInteriorIcons.Description": "",
     "Settings.Sections.Misc.Teleport": "Téléportation",
     "Settings.Sections.Misc.Teleport.AutoCloseDoors": "Fermeture auto des portes à la dématérialisation",
     "Settings.Sections.Misc.Teleport.AutoCloseDoors.Description": "Le TARDIS doit-il fermer les portes automatiquement avant la dématérialisation?",
