@@ -1,5 +1,7 @@
 -- Interiors
 
+CreateConVar("tardis2_create_tool_id", "", {FCVAR_REPLICATED}, "TARDIS - selected interior to spawn with toolgun")
+
 TARDIS.Metadata = {}
 TARDIS.MetadataRaw = {}
 TARDIS.MetadataTemplates = {}
@@ -62,7 +64,7 @@ function TARDIS:AddInterior(t)
 
     -- setting up the stuff we need before spawning, e.g. in spawnmenu
     self:SetupVersions(id)
-    self:SetupSpawnmenuIcon(id)
+    self:AddSpawnmenuInterior(id)
     self:SetupTemplateUpdates(id)
     self:SetupCustomSettings(id)
 end
@@ -89,6 +91,13 @@ function TARDIS:SetupMetadata(id)
 end
 
 function TARDIS:CreateInteriorMetadata(id, ent)
+    if id == nil then
+        local cv_id = GetConVar("tardis2_create_tool_id"):GetString()
+        if cv_id ~= "" then
+            id = cv_id
+        end
+    end
+
     self:SetupMetadata(id)
 
     if self.Metadata[id] == nil then
