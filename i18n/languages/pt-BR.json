@@ -418,6 +418,8 @@
     "Settings.Sections.Misc.NotificationType.Types.Disabled": "Desativado",
     "Settings.Sections.Misc.NotificationType.Types.Inbuilt": "Notificações integradas",
     "Settings.Sections.Misc.Spawning": "Criando a TARDIS",
+    "Settings.Sections.Misc.Spawning.LegacyDoorType": "",
+    "Settings.Sections.Misc.Spawning.LegacyDoorType.Description": "",
     "Settings.Sections.Misc.Spawning.NoInterior": "Sem interior",
     "Settings.Sections.Misc.Spawning.NoInterior.Description": "A TARDIS será criada sem um interior quando ativado",
     "Settings.Sections.Misc.Spawning.PreferClassicDoor": "Preferir interiores com portas clássicas",
