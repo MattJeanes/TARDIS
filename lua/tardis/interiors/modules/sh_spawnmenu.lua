@@ -223,24 +223,31 @@ if CLIENT then
     end
 
     local function UpdateSpawnmenuMaterial(container)
-        if TARDIS:GetSetting("spawnmenu_interior_icons") then
+        local setting = TARDIS:GetSetting("spawnmenu_interior_icons")
+
+        if setting ~= container.interior_icons_applied then
+
             for k,v in pairs(container.tardis_icons) do
                 if v.is_tardis_icon then
-                    v:SetMaterial(v.interior_material or v.original_material)
-                end
-            end
-        else
-
-            for k,v in pairs(container.tardis_icons) do
-                if v.is_tardis_icon and v.original_material then
-                    v:SetMaterial(v.original_material)
+                    v:SetMaterial( (setting and v.interior_material) or v.original_material )
                 end
             end
 
-            local hovered = vgui.GetHoveredPanel()
-            if hovered and hovered.is_tardis_icon and hovered.interior_material then
-                hovered:SetMaterial(hovered.interior_material)
-            end
+            container.interior_icons_applied = setting
+        end
+
+        if setting then return end
+
+        local hovered = vgui.GetHoveredPanel()
+        if hovered == container.hovered then return end
+
+        if container.hovered then
+            container.hovered:SetMaterial(container.hovered.original_material)
+        end
+
+        if hovered and hovered.is_tardis_icon and hovered.interior_material then
+            container.hovered = hovered
+            hovered:SetMaterial(hovered.interior_material)
         end
     end
 
