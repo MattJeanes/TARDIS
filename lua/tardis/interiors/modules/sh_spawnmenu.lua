@@ -3,6 +3,8 @@ function TARDIS:SpawnByID(id)
     surface.PlaySound("ui/buttonclickrelease.wav")
 end
 
+TARDIS.InteriorIcons = {}
+
 if CLIENT then
     local function SelectForRedecoration(id)
         TARDIS:SetSetting("redecorate-interior", id)
@@ -220,13 +222,35 @@ if CLIENT then
 
     end
 
+    local function UpdateSpawnmenuMaterial(container)
+        if TARDIS:GetSetting("spawnmenu_interior_icons") then
+            for k,v in pairs(container.tardis_icons) do
+                if v.is_tardis_icon then
+                    v:SetMaterial(v.interior_material or v.original_material)
+                end
+            end
+        else
+
+            for k,v in pairs(container.tardis_icons) do
+                if v.is_tardis_icon and v.original_material then
+                    v:SetMaterial(v.original_material)
+                end
+            end
+
+            local hovered = vgui.GetHoveredPanel()
+            if hovered and hovered.is_tardis_icon and hovered.interior_material then
+                hovered:SetMaterial(hovered.interior_material)
+            end
+        end
+    end
+
     hook.Add("PostGamemodeLoaded", "tardis-interiors", function()
         if not spawnmenu then return end
         spawnmenu.AddContentType("tardis", function(container, obj)
             if not obj.material then return end
             if not obj.nicename then return end
             if not obj.spawnname then return end
-    
+
             local icon = vgui.Create("ContentIcon", container)
             icon:SetContentType("entity")
             icon:SetSpawnName(obj.spawnname)
@@ -234,12 +258,23 @@ if CLIENT then
             icon:SetMaterial(obj.material)
             icon:SetAdminOnly(obj.admin)
             icon:SetColor(Color(205, 92, 92, 255))
-    
+
+            icon.is_tardis_icon = true
+            icon.original_material = obj.material
+            icon.interior_material = TARDIS.InteriorIcons[obj.spawnname]
+
             icon.DoClick = function()
                 local id = TARDIS:SelectSpawnID(obj.spawnname, LocalPlayer())
                 TARDIS:SpawnByID(id)
             end
-    
+
+            if container.Think ~= UpdateSpawnmenuMaterial then
+                container.Think = UpdateSpawnmenuMaterial
+            end
+
+            container.tardis_icons = container.tardis_icons or {}
+            table.insert(container.tardis_icons, icon)
+
             icon.OpenMenu = function(self)
                 local dmenu = DermaMenu()
                 local versions = TARDIS.MetadataVersions[obj.spawnname]
@@ -247,7 +282,7 @@ if CLIENT then
                 if versions then
                     AddMenuVersion(dmenu, versions.main)
                     dmenu:AddSpacer()
-        
+
                     if not table.IsEmpty(versions.other) then
                         AddMenuLabel(dmenu, "Spawnmenu.AlternativeVersions")
                         for k,v in SortedPairs(versions.other) do
@@ -255,7 +290,7 @@ if CLIENT then
                         end
                         dmenu:AddSpacer()
                     end
-        
+
                     if not table.IsEmpty(versions.custom) then
                         AddMenuLabel(dmenu, "Spawnmenu.CustomVersions")
                         for k,v in SortedPairs(versions.custom) do
@@ -264,7 +299,7 @@ if CLIENT then
                         dmenu:AddSpacer()
                     end
                 end
-    
+
                 local favorite = dmenu:AddOption(TARDIS:GetPhrase("Spawnmenu.AddToFavourites"), function(self)
                     TARDIS:ToggleFavoriteInt(obj.spawnname)
                     TARDIS:Message(LocalPlayer(), "Spawnmenu.ReloadGame")
@@ -278,16 +313,16 @@ if CLIENT then
                     self:SetIcon("icon16/" .. fav_icon)
                     self:SetText(TARDIS:GetPhrase(fav_text))
                 end
-    
+
                 AddSettingsSubmenu(dmenu, obj.spawnname)
-    
+
                 dmenu:Open()
             end
-    
+
             if IsValid(container) then
                 container:Add(icon)
             end
-    
+
             return icon
         end)
     end)
@@ -310,7 +345,7 @@ function TARDIS:SetupSpawnmenuIcon(id)
     if t.Base == true or t.Hidden or t.IsVersionOf then
         return
     end
-    
+
     local ent={}
 
     local cat_override
@@ -334,25 +369,38 @@ function TARDIS:SetupSpawnmenuIcon(id)
         ent.PrintName = "  " .. ent.PrintName -- move to the top
     end
 
-    local function try_icon(filename)
-        if ent.IconOverride ~= nil then return end
-        if file.Exists("materials/vgui/entities/" .. filename, "GAME") then
-            ent.IconOverride="vgui/entities/" .. filename
-        end
-    end
-
     if CLIENT then
-        if TARDIS:GetSetting("spawnmenu_interior_icons") then
-            try_icon("tardis/interiors/" .. t.ID .. ".vmt")
-            try_icon("tardis/interiors/" .. t.ID .. ".vtf")
-            try_icon("tardis/interiors/" .. t.ID .. ".png")
-            try_icon("tardis/interiors/default/" .. t.ID .. ".jpg")
+
+        local function try_icon(filename)
+            if ent.IconOverride ~= nil then return end
+            if file.Exists("materials/vgui/entities/" .. filename, "GAME") then
+                ent.IconOverride="vgui/entities/" .. filename
+            end
         end
+
+        local function try_int_icon(filename)
+            if TARDIS.InteriorIcons[t.ID] ~= nil then return end
+            if file.Exists("materials/vgui/entities/" .. filename, "GAME") then
+                TARDIS.InteriorIcons[t.ID] = "vgui/entities/" .. filename
+            end
+        end
+
+        try_int_icon("tardis/interiors/" .. t.ID .. ".vmt")
+        try_int_icon("tardis/interiors/" .. t.ID .. ".vtf")
+        try_int_icon("tardis/interiors/" .. t.ID .. ".png")
+        try_int_icon("tardis/interiors/default/" .. t.ID .. ".jpg")
 
         try_icon("tardis/" .. t.ID .. ".vmt")
         try_icon("tardis/" .. t.ID .. ".vtf")
         try_icon("tardis/" .. t.ID .. ".png")
         try_icon("tardis/default/" .. t.ID .. ".png")
+
+        -- trying interior icons if we haven't found one for exterior mode
+        try_icon("tardis/interiors/" .. t.ID .. ".vmt")
+        try_icon("tardis/interiors/" .. t.ID .. ".vtf")
+        try_icon("tardis/interiors/" .. t.ID .. ".png")
+        try_icon("tardis/interiors/default/" .. t.ID .. ".jpg")
+
         try_icon("tardis/gmod_tardis.vmt")
     end
 
