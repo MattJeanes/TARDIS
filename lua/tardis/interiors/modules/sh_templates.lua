@@ -95,9 +95,7 @@ function TARDIS:SetupTemplateUpdates(id)
     for template_id, template in pairs(t.Templates) do
         if template then
             self.IntUpdatesPerTemplate[template_id] = self.IntUpdatesPerTemplate[template_id] or {}
-            local int_updates = self.IntUpdatesPerTemplate[template_id]
-
-            int_updates[id] = true
+            self.IntUpdatesPerTemplate[template_id][id] = true
         end
     end
 end
