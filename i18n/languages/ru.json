@@ -418,8 +418,6 @@
     "Settings.Sections.Misc.NotificationType.Types.Disabled": "Выключены",
     "Settings.Sections.Misc.NotificationType.Types.Inbuilt": "Встроенные уведомления игры",
     "Settings.Sections.Misc.Spawning": "Создание ТАРДИС",
-    "Settings.Sections.Misc.Spawning.LegacyDoorType": "",
-    "Settings.Sections.Misc.Spawning.LegacyDoorType.Description": "",
     "Settings.Sections.Misc.Spawning.NoInterior": "Без интерьера",
     "Settings.Sections.Misc.Spawning.NoInterior.Description": "Если включено, ТАРДИС будет создаваться без интерьера",
     "Settings.Sections.Misc.Spawning.PreferClassicDoor": "Предпочитать классические двери в интерьере",

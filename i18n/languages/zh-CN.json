@@ -418,8 +418,6 @@
     "Settings.Sections.Misc.NotificationType.Types.Disabled": "禁用",
     "Settings.Sections.Misc.NotificationType.Types.Inbuilt": "内置通知",
     "Settings.Sections.Misc.Spawning": "生成塔迪斯",
-    "Settings.Sections.Misc.Spawning.LegacyDoorType": "",
-    "Settings.Sections.Misc.Spawning.LegacyDoorType.Description": "",
     "Settings.Sections.Misc.Spawning.NoInterior": "没有内饰",
     "Settings.Sections.Misc.Spawning.NoInterior.Description": "启用后，塔迪斯将在没有内部的情况下生成",
     "Settings.Sections.Misc.Spawning.PreferClassicDoor": "经典内饰",
