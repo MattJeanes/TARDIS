@@ -56,13 +56,13 @@ local overrides={
             local think_ok = (int:CallHook("ShouldThink") ~= false)
 
             local function is_visible_through_door()
-                local door = ext:DoorOpen()
+                if not ext:DoorOpen() then return false end
+                if not self.ClientThinkOverride then return false end
                 local ply_pos = LocalPlayer():GetPos()
                 local ext_pos = ext:GetPos()
-                local think_override = self.ClientThinkOverride
                 local close_dist = TARDIS:GetSetting("portals-closedist")
 
-                return (door and think_override and ply_pos:Distance(ext_pos) < close_dist)
+                return ply_pos:Distance(ext_pos) < close_dist
             end
 
             if think_ok or self.ExteriorPart or is_visible_through_door() then
