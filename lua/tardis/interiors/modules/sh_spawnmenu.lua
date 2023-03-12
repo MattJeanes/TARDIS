@@ -346,7 +346,7 @@ function TARDIS:SetupSpawnmenuIcon(id)
             try_icon("tardis/interiors/" .. t.ID .. ".vmt")
             try_icon("tardis/interiors/" .. t.ID .. ".vtf")
             try_icon("tardis/interiors/" .. t.ID .. ".png")
-            try_icon("tardis/interiors/default/" .. t.ID .. ".png")
+            try_icon("tardis/interiors/default/" .. t.ID .. ".jpg")
         end
 
         try_icon("tardis/" .. t.ID .. ".vmt")
