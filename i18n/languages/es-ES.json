@@ -418,8 +418,6 @@
     "Settings.Sections.Misc.NotificationType.Types.Disabled": "Desactivado",
     "Settings.Sections.Misc.NotificationType.Types.Inbuilt": "Notificaciones integradas",
     "Settings.Sections.Misc.Spawning": "Creación del TARDIS",
-    "Settings.Sections.Misc.Spawning.LegacyDoorType": "Crear con puertas del tipo antiguo",
-    "Settings.Sections.Misc.Spawning.LegacyDoorType.Description": "Las puertas del TARDIS teletransportarán al jugador adentro cuando se haga clic en ellas (en lugar de abrirlas)",
     "Settings.Sections.Misc.Spawning.NoInterior": "Sin interior",
     "Settings.Sections.Misc.Spawning.NoInterior.Description": "Crear el TARDIS sin interior",
     "Settings.Sections.Misc.Spawning.PreferClassicDoor": "Preferir interiores con puertas clásicas",
