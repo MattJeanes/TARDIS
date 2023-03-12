@@ -446,7 +446,7 @@ function TARDIS:AddSpawnmenuInterior(id)
         try_icon("tardis/interiors/" .. t.ID .. ".jpg")
         try_icon("tardis/interiors/default/" .. t.ID .. ".jpg")
 
-        try_icon("tardis/gmod_tardis.vmt")
+        try_icon("gmod_tardis.vmt")
     end
 
     ent.ScriptedEntityType="tardis"
