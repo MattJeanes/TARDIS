@@ -6,12 +6,16 @@ if SERVER then
         local min, max = self:GetCollisionBounds()
         min = self:LocalToWorld(min)
         max = self:LocalToWorld(max)
+        local pos = self.interior:LocalToWorld(self.interior.Fallback.pos)
         local entities = ents.FindInBox(min, max)
         if #entities ~= 0 then
             for k,v in pairs(entities) do
                 if v:IsPlayer() and v:GetTardisData("exterior")~=self then
                     self:PlayerEnter(v)
                     v:ScreenFade(SCREENFADE.IN, Color(255,255,255,200), 1, 0.1)
+                elseif v:IsNPC() then
+                    local npos = self:WorldToLocal(v:GetPos())
+                    v:SetPos(pos + npos)
                 end
             end
         end
