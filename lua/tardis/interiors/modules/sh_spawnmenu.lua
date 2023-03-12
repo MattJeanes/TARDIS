@@ -387,18 +387,21 @@ function TARDIS:SetupSpawnmenuIcon(id)
 
         try_int_icon("tardis/interiors/" .. t.ID .. ".vmt")
         try_int_icon("tardis/interiors/" .. t.ID .. ".vtf")
+        try_int_icon("tardis/interiors/" .. t.ID .. ".jpg")
         try_int_icon("tardis/interiors/" .. t.ID .. ".png")
         try_int_icon("tardis/interiors/default/" .. t.ID .. ".jpg")
 
         try_icon("tardis/" .. t.ID .. ".vmt")
         try_icon("tardis/" .. t.ID .. ".vtf")
         try_icon("tardis/" .. t.ID .. ".png")
-        try_icon("tardis/default/" .. t.ID .. ".png")
+        try_icon("tardis/" .. t.ID .. ".jpg")
+        try_icon("tardis/default/" .. t.ID .. ".jpg")
 
         -- trying interior icons if we haven't found one for exterior mode
         try_icon("tardis/interiors/" .. t.ID .. ".vmt")
         try_icon("tardis/interiors/" .. t.ID .. ".vtf")
         try_icon("tardis/interiors/" .. t.ID .. ".png")
+        try_icon("tardis/interiors/" .. t.ID .. ".jpg")
         try_icon("tardis/interiors/default/" .. t.ID .. ".jpg")
 
         try_icon("tardis/gmod_tardis.vmt")
