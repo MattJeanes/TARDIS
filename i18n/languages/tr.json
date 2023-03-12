@@ -418,6 +418,8 @@
     "Settings.Sections.Misc.NotificationType.Types.Disabled": "Engelli",
     "Settings.Sections.Misc.NotificationType.Types.Inbuilt": "Dahili bildirimler",
     "Settings.Sections.Misc.Spawning": "TARDIS'i Yumurtlamak",
+    "Settings.Sections.Misc.Spawning.LegacyDoorType": "",
+    "Settings.Sections.Misc.Spawning.LegacyDoorType.Description": "",
     "Settings.Sections.Misc.Spawning.NoInterior": "İç mekan yok",
     "Settings.Sections.Misc.Spawning.NoInterior.Description": "TARDIS etkinleştirildiğinde bir iç mekan olmadan doğacak",
     "Settings.Sections.Misc.Spawning.PreferClassicDoor": "Klasik kapı iç mekanlarını tercih edin",

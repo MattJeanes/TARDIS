@@ -88,17 +88,26 @@ function TARDIS:AddInteriorPartsRotation(template, rotate_ang)
 end
 
 
-function TARDIS:MergeInteriorTemplates(cur_metadata, apply_conditions, ent)
-    if not cur_metadata.Templates then
-        return cur_metadata
+function TARDIS:SetupTemplateUpdates(id)
+    local t = self.MetadataRaw[id]
+    if not t.Templates then return end
+
+    for template_id, template in pairs(t.Templates) do
+        if template then
+            self.IntUpdatesPerTemplate[template_id] = self.IntUpdatesPerTemplate[template_id] or {}
+            self.IntUpdatesPerTemplate[template_id][id] = true
+        end
+    end
+end
+
+function TARDIS:MergeTemplates(metadata, ent)
+    if not metadata.Templates then
+        return metadata
     end
 
-    local id = cur_metadata.ID
-    local new_metadata = {}
-    table.Merge(new_metadata, cur_metadata)
-    -- we are not using table.Copy to avoid inheriting Vector and Angle objects
+    local id = metadata.ID
 
-    for template_id, template in pairs(cur_metadata.Templates) do
+    for template_id, template in pairs(metadata.Templates) do
 
         if template and template.realID then
             template_id = template.realID
@@ -107,8 +116,7 @@ function TARDIS:MergeInteriorTemplates(cur_metadata, apply_conditions, ent)
         local template_metadata = self.MetadataTemplates[template_id]
 
         if template and template_metadata
-            and ((not apply_conditions and not template.condition)
-                or (apply_conditions and template.condition and template.condition(id, ent:GetCreator(), ent)))
+            and (not template.condition or (ent and template.condition and template.condition(id, ent:GetCreator(), ent) ))
         then
             if template.parts_rotation then
                 template_metadata = self:AddInteriorPartsRotation(template_metadata, template.parts_rotation)
@@ -118,22 +126,25 @@ function TARDIS:MergeInteriorTemplates(cur_metadata, apply_conditions, ent)
             end
 
             if template.override then
-                new_metadata = TARDIS:MergeMetadata(new_metadata, template_metadata)
+                metadata = TARDIS:MergeMetadata(metadata, template_metadata)
             else
-                new_metadata = TARDIS:MergeMetadata(template_metadata, new_metadata)
+                metadata = TARDIS:MergeMetadata(template_metadata, metadata)
             end
 
         elseif not template_metadata then
+
+            local can_print = CLIENT and LocalPlayer() and LocalPlayer().ChatPrint
+
             if not template or not template.ignore_missing then
                 local err_notification = "[TARDIS] "..TARDIS:GetPhrase("Templates.MissingTemplate", template_id, id)
-                if CLIENT and LocalPlayer() and LocalPlayer().ChatPrint then
+                if can_print then
                     LocalPlayer():ChatPrint(err_notification)
                 else
                     ErrorNoHalt("\n" .. err_notification)
                 end
             end
             if template and template.fail_msg then
-                if CLIENT and LocalPlayer() and LocalPlayer().ChatPrint then
+                if can_print then
                     LocalPlayer():ChatPrint(template.fail_msg)
                 else
                     print("\n" .. template.fail_msg .. "\n")
@@ -145,65 +156,55 @@ function TARDIS:MergeInteriorTemplates(cur_metadata, apply_conditions, ent)
         end
     end
 
-    return new_metadata
-end
-
-function TARDIS:MergeTemplates()
-    if not self.Metadata then return end
-
-    for int_id, interior in pairs(self.Metadata) do
-        self.Metadata[int_id] = TARDIS:MergeInteriorTemplates(self.Metadata[int_id], false)
-    end
+    return metadata
 end
 
 function TARDIS:AddInteriorTemplate(id, template)
     if not id or not template then return end
 
-    if not template.NoFullReload and self.MetadataTemplates[id] ~= nil then
-        TARDIS:FullReloadInteriors()
-        return
+    local int_updates = self.IntUpdatesPerTemplate[id]
+    if int_updates then
+        for i,int_id in ipairs(int_updates) do
+            if template.CustomSettings then
+                self:SetupCustomSettings(int_id)
+            end
+        end
     end
 
-    template.NoFullReload = nil
     self.MetadataTemplates[id] = template
 end
 
 -- Texture set support of inherited params
 
-function TARDIS:MergeIntTextureSets(int_id)
-    local metadata = self.Metadata[int_id]
-    if not metadata or not metadata.Interior.TextureSets then return end
+function TARDIS:GetMergedTextureSets(texture_sets_table)
+    if not texture_sets_table then
+        return texture_sets_table
+    end
 
-    local TextureSetsMerged = {}
+    local texture_sets_merged = {}
 
     local function merge_texture_set(id)
-        local ts = metadata.Interior.TextureSets[id]
+        local ts = texture_sets_table[id]
 
         if not ts.base then
-            TextureSetsMerged[id] = ts
+            texture_sets_merged[id] = ts
             return
         end
 
-        if not TextureSetsMerged[ts.base] then
+        if not texture_sets_merged[ts.base] then
             merge_texture_set(ts.base)
         end
 
-        local base_merged = TextureSetsMerged[ts.base] or {}
+        local base_merged = texture_sets_merged[ts.base] or {}
         local merged = TARDIS:MergeMetadata(base_merged, ts)
-        TextureSetsMerged[id] = merged
+        texture_sets_merged[id] = merged
     end
 
-    for ts_id, ts in pairs(metadata.Interior.TextureSets) do
+    for ts_id, ts in pairs(texture_sets_table) do
         merge_texture_set(ts_id)
     end
 
-    self.Metadata[int_id].Interior.TextureSets = TextureSetsMerged
+    return texture_sets_merged
 end
 
-function TARDIS:MergeTextureSets()
-    if not self.Metadata then return end
-
-    for int_id, interior in pairs(self.Metadata) do
-        TARDIS:MergeIntTextureSets(int_id)
-    end
-end
+TARDIS:LoadFolder("interiors/templates", nil, true)

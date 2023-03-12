@@ -27,11 +27,7 @@ ENT:AddHook("CustomData", "metadata", function(self, customData)
 end)
 
 function ENT:Initialize()
-    self.metadata=TARDIS:GetInterior(self.metadataID, self)
-    if not self.metadata then
-        self.metadata=TARDIS:GetInterior("default", self)
-    end
-
+    self.metadata=TARDIS:CreateInteriorMetadata(self.metadataID, self)
     self.Model=self.metadata.Exterior.Model
     self.Portal=self.metadata.Exterior.Portal
     self.Fallback=self.metadata.Exterior.Fallback

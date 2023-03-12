@@ -12,11 +12,7 @@ end)
 
 function ENT:Initialize()
     if self.spacecheck then
-        self.metadata=TARDIS:GetInterior(self.exterior.metadataID, self)
-        if not self.metadata then
-            self.metadata=TARDIS:GetInterior("default", self)
-        end
-
+        self.metadata=TARDIS:CreateInteriorMetadata(self.exterior.metadataID, self)
         self.Model=self.metadata.Interior.Model
         self.Fallback=self.metadata.Interior.Fallback
         self.Portal=self.metadata.Interior.Portal

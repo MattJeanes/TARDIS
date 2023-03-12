@@ -53,7 +53,19 @@ local overrides={
         local int=self.interior
         local ext=self.exterior
         if self._init and IsValid(int) and IsValid(ext) then
-            if (int:CallHook("ShouldThink")~=false) or (ext:DoorOpen() and self.ClientThinkOverride and LocalPlayer():GetPos():Distance(ext:GetPos())<TARDIS:GetSetting("portals-closedist")) or self.ExteriorPart then -- TODO: Improve
+            local think_ok = (int:CallHook("ShouldThink") ~= false)
+
+            local function is_visible_through_door()
+                if not ext:DoorOpen() then return false end
+                if not self.ClientThinkOverride then return false end
+                local ply_pos = LocalPlayer():GetPos()
+                local ext_pos = ext:GetPos()
+                local close_dist = TARDIS:GetSetting("portals-closedist")
+
+                return ply_pos:Distance(ext_pos) < close_dist
+            end
+
+            if think_ok or self.ExteriorPart or is_visible_through_door() then
                 if self.Animate then
                     local target=self:GetOn() and 1 or 0
                     self.posepos=math.Approach(self.posepos,target,FrameTime()*(self.AnimateSpeed or 1.5))

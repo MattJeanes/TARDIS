@@ -2,9 +2,28 @@ function TARDIS:GetCustomSettings(ply)
     return TARDIS:GetSetting("interior_custom_settings", ply) or {} -- nil is never allowed
 end
 
+function TARDIS:SetupCustomSettings(int_id)
+    local csettings = {}
+
+    local t = self.MetadataRaw[int_id]
+
+    if t.CustomSettings then
+        table.Merge(csettings, t.CustomSettings)
+    end
+
+    if t.Templates then
+        for template_id, template in pairs(t.Templates) do
+            if template and template.CustomSettings then
+                table.Merge(csettings, template.CustomSettings)
+            end
+        end
+    end
+
+    self.IntCustomSettings[int_id] = csettings
+end
+
 function TARDIS:GetCustomSetting(int_id, setting_id, ply, default_val)
     local int_id = self:GetMainVersionId(int_id)
-    local metadata = self.Metadata[int_id]
 
     local custom_settings = self:GetCustomSettings(ply)
     local settings = custom_settings[int_id]
@@ -20,7 +39,7 @@ function TARDIS:GetCustomSetting(int_id, setting_id, ply, default_val)
     end
 
     -- getting the default setting value from metadata
-    local md_settings = metadata.CustomSettings
+    local md_settings = self.IntCustomSettings[int_id]
     if md_settings and md_settings[setting_id] and md_settings[setting_id].value ~= nil then
         local metadata_value = md_settings[setting_id].value
         return metadata_value

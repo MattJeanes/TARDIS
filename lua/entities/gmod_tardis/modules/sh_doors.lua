@@ -95,6 +95,17 @@ if SERVER then
         end
     end)
 
+    ENT:AddHook("Initialize", "legacy_door_type", function(self,open)
+        local islegacy = TARDIS:GetSetting("legacy_door_type", self)
+        self:SetData("legacy_door_type", islegacy, true)
+    end)
+
+    ENT:AddHook("CanToggleDoor","legacy_door_type",function(self,state)
+        if self:GetData("legacy_door_type") then
+            return false
+        end
+    end)
+
     ENT:AddHook("ToggleDoorReal", "classic_doors_collision", function(self,open)
         if self.metadata.EnableClassicDoors ~= true then return end
 
