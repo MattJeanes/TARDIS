@@ -421,7 +421,6 @@ T.Phrases = {
     ["Settings.Sections.Misc.NotificationType.Types.Disabled"] = "Desactivado",
     ["Settings.Sections.Misc.NotificationType.Types.Inbuilt"] = "Notificaciones integradas",
     ["Settings.Sections.Misc.Spawning"] = "Creación del TARDIS",
-    ["Settings.Sections.Misc.Spawning.LegacyDoorType"] = "Crear con puertas del tipo antiguo",
     ["Settings.Sections.Misc.Spawning.NoInterior"] = "Sin interiores",
     ["Settings.Sections.Misc.Spawning.NoInterior.Description"] = "La TARDIS aparecerá sin interior cuando esté habilitada",
     ["Settings.Sections.Misc.Spawning.PreferClassicDoor"] = "Preferir interiores con puertas clásicas",
