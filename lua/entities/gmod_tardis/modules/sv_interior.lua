@@ -1,7 +1,7 @@
 -- Interior
 
 ENT:AddHook("Use", "interior", function(self,a,c)
-    if a:KeyDown(IN_WALK) or not IsValid(self.interior) then
+    if a:KeyDown(IN_WALK) or not IsValid(self.interior) or self:GetData("legacy_door_type") then
         if self:CallHook("CanPlayerEnterDoor")~=false then
             self:PlayerEnter(a)
         end

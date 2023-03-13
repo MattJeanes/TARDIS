@@ -1,10 +1,17 @@
-function TARDIS:InitializeVersions(t)
+function TARDIS:SetupVersions(int_id)
+    local t = self.MetadataRaw[int_id]
+
     if t.Base == true or t.Hidden or t.IsVersionOf then
         return
     end
-    local int_id = t.ID
 
-    local versions = self.Metadata[int_id].Versions or {}
+    local versions
+
+    if t.Versions then
+        versions = table.Copy(t.Versions)
+    else
+        versions = {}
+    end
 
     versions.other = versions.other or {}
     versions.custom = versions.custom or {}
@@ -15,7 +22,14 @@ function TARDIS:InitializeVersions(t)
     versions.list_original.main = versions.main
     versions.list_all.main = versions.main
 
-    self.Metadata[int_id].Versions = versions
+    self.MetadataVersions[int_id] = versions
+
+    local custom_versions = self.MetadataCustomVersions[int_id]
+    if custom_versions then
+        for version_id,version in pairs(custom_versions) do
+            self:SetupCustomVersion(int_id, version_id, version)
+        end
+    end
 end
 
 function TARDIS:ShouldUseClassicDoors(ply)
@@ -23,7 +37,7 @@ function TARDIS:ShouldUseClassicDoors(ply)
 end
 
 function TARDIS:SelectDoorVersionID(x, ply)
-    local version = (istable(x) and x) or TARDIS:GetInterior(x).Versions.main
+    local version = (istable(x) and x) or self.MetadataVersions[x].main
     if not version then return end
 
     if not version.classic_doors_id then return version.id end
@@ -49,8 +63,7 @@ end
 
 function TARDIS:DefaultPreferredVersion(int_id)
     local int_id = TARDIS:GetMainVersionId(int_id)
-    local metadata = self.Metadata[int_id]
-    local versions = metadata and metadata.Versions
+    local versions = self.MetadataVersions[int_id]
 
     if versions and versions.randomize_custom and not table.IsEmpty(versions.custom) then
         return "random_custom"
@@ -64,8 +77,7 @@ function TARDIS:DefaultPreferredVersion(int_id)
 end
 
 function TARDIS:SelectSpawnID(id, ply)
-    local metadata = TARDIS:GetInterior(id)
-    local versions = metadata and metadata.Versions
+    local versions = self.MetadataVersions[id]
     if not versions then return id end
 
     local preferred_version = TARDIS:GetCustomSetting(id, "preferred_version", ply, "main")
@@ -91,18 +103,28 @@ function TARDIS:GetMainVersionId(int_id)
     return (self.Metadata[int_id] and self.Metadata[int_id].IsVersionOf) or int_id
 end
 
+function TARDIS:SetupCustomVersion(main_id, version_id, version)
+    local versions = self.MetadataVersions[main_id]
+
+    if versions and versions.allow_custom ~= false then
+        if versions.other[version_id] or versions.custom[version_id] then return end
+
+        versions.custom[version_id] = version
+        versions.list_all[version_id] = version
+    end
+end
+
 function TARDIS:AddCustomVersion(main_id, version_id, version)
-    if not self.Metadata[main_id] then return end
-
-    local versions = self.Metadata[main_id].Versions
-
-    if versions.allow_custom == false then return end
     if version_id == "main" then return end
-    if versions.other[version_id] or versions.custom[version_id] then return end
 
-    versions.custom[version_id] = version
+    self.MetadataCustomVersions[main_id] = self.MetadataCustomVersions[main_id] or {}
+    local custom_versions = self.MetadataCustomVersions[main_id]
 
-    versions.list_all[version_id] = version
+    custom_versions[version_id] = version
+    if self.MetadataVersions[main_id] then
+        self:SetupCustomVersion(main_id, version_id, version)
+    end
+
 end
 
 

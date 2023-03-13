@@ -247,6 +247,19 @@ TARDIS:AddSetting({
     name="NoInterior",
 })
 
+TARDIS:AddSetting({
+    id="legacy_door_type",
+    type="bool",
+    value=false,
+
+    class="networked",
+
+    option=true,
+    section=SETTING_SECTION,
+    subsection="Spawning",
+    name="LegacyDoorType",
+})
+
 --------------------------------------------------------------------------------
 -- Language
 

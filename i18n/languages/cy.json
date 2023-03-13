@@ -418,6 +418,8 @@
     "Settings.Sections.Misc.NotificationType.Types.Disabled": "Anabl",
     "Settings.Sections.Misc.NotificationType.Types.Inbuilt": "Hysbysiadau mewnol",
     "Settings.Sections.Misc.Spawning": "Silio'r TARDIS",
+    "Settings.Sections.Misc.Spawning.LegacyDoorType": "",
+    "Settings.Sections.Misc.Spawning.LegacyDoorType.Description": "",
     "Settings.Sections.Misc.Spawning.NoInterior": "Dim tu mewn",
     "Settings.Sections.Misc.Spawning.NoInterior.Description": "Bydd TARDIS yn silio heb du mewn pan fydd wedi'i alluogi",
     "Settings.Sections.Misc.Spawning.PreferClassicDoor": "Mae'n well gennym y tu mewn i ddrws clasurol",

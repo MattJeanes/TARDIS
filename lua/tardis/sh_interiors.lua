@@ -3,17 +3,12 @@
 TARDIS.Metadata = {}
 TARDIS.MetadataRaw = {}
 TARDIS.MetadataTemplates = {}
+TARDIS.MetadataVersions = {}
+TARDIS.MetadataCustomVersions = {}
 
-function TARDIS:FullReloadInteriors()
-    self.Metadata = {}
-    self.MetadataRaw = {}
-    self.MetadataTemplates = {}
-    TARDIS:LoadFolder("interiors/templates", nil, true)
-    TARDIS:LoadFolder("interiors", nil, true)
-    TARDIS:LoadFolder("interiors/versions", nil, true)
-    TARDIS:MergeTemplates()
-    TARDIS:MergeTextureSets()
-end
+TARDIS.IntCustomSettings = {}
+TARDIS.IntUpdatesPerTemplate = {}
+
 
 function TARDIS:PreMergeMetadata(t)
     if t.Exterior and t.Exterior.Teleport then
@@ -49,45 +44,75 @@ function TARDIS:MergeMetadata(base, t)
     return copy
 end
 
+function TARDIS:ClearMetadata(id)
+    self.Metadata[id] = nil
+    for k,v in pairs(self.MetadataRaw) do
+        if v.Base == id then
+            self:ClearMetadata(k)
+        end
+    end
+end
+
 function TARDIS:AddInterior(t)
     local id = t.ID
 
-    if not t.NoFullReload and (self.Metadata[id] ~= nil or self.MetadataRaw[id] ~= nil) then
-        TARDIS:FullReloadInteriors()
+    self.MetadataRaw[id] = t
+
+    self:ClearMetadata(id)
+
+    -- setting up the stuff we need before spawning, e.g. in spawnmenu
+    self:SetupVersions(id)
+    self:SetupSpawnmenuIcon(id)
+    self:SetupTemplateUpdates(id)
+    self:SetupCustomSettings(id)
+end
+
+function TARDIS:SetupMetadata(id)
+    if self.Metadata[id] then return end
+    local t = self.MetadataRaw[id]
+    if not t then return end
+
+    local base = t.Base
+
+    if base == true then
+        self.Metadata[id] = t
         return
     end
 
-    self.Metadata[id] = t
-    self.MetadataRaw[id] = t
-    if t.Base and self.Metadata[t.Base] then
-        self.Metadata[id] = TARDIS:MergeMetadata(TARDIS.Metadata[t.Base], t)
-        self.Metadata[id].Versions = self.MetadataRaw[id].Versions
-    end
-    for k,v in pairs(self.MetadataRaw) do
-        if id == v.Base then
-            self.Metadata[k] = TARDIS:MergeMetadata(TARDIS.Metadata[v.Base], v)
-            self.Metadata[k].Versions = self.MetadataRaw[k].Versions
-        end
-    end
+    self:SetupMetadata(base)
 
-    TARDIS:InitializeVersions(t)
-    TARDIS:SetupSpawnmenuIcon(t)
+    local m_base = self.Metadata[base]
+    if not m_base then return end
+
+    self.Metadata[id] = self:MergeMetadata(m_base, t)
+    self.Metadata[id].Versions = nil -- we don't want those mixing up anywhere
 end
 
-function TARDIS:GetInterior(id, ent)
-    if self.Metadata[id] == nil then return end
+function TARDIS:CreateInteriorMetadata(id, ent)
+    self:SetupMetadata(id)
 
-    if not ent then
-        return self.Metadata[id]
+    if self.Metadata[id] == nil then
+        return self:CreateInteriorMetadata("default", ent)
     end
 
-    local merged_metadata = TARDIS:MergeInteriorTemplates(self.Metadata[id], true, ent)
-    return merged_metadata
+    local metadata = TARDIS:CopyTable(self.Metadata[id])
+
+    metadata = TARDIS:MergeTemplates(metadata, ent)
+
+    metadata.Interior.TextureSets = TARDIS:GetMergedTextureSets(metadata.Interior.TextureSets)
+    metadata.Exterior.TextureSets = TARDIS:GetMergedTextureSets(metadata.Exterior.TextureSets)
+
+    return metadata
 end
 
 function TARDIS:GetInteriors()
-    return self.Metadata
+    return self.MetadataRaw
+end
+
+function TARDIS:GetInterior(id)
+    return self.Metadata[id] or self.MetadataRaw[id]
 end
 
 TARDIS:LoadFolder("interiors/modules")
-TARDIS:FullReloadInteriors()
+TARDIS:LoadFolder("interiors", nil, true)
+TARDIS:LoadFolder("interiors/versions", nil, true)

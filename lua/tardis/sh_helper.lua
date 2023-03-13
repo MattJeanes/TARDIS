@@ -59,7 +59,7 @@ end
 
 hook.Add("HUDPaint", "tardis-debug", function()
     local ply=LocalPlayer()
-    local int=TARDIS:GetInterior(ply)
+    local int=TARDIS:GetInteriorEnt(ply)
     if IsValid(int) then
         local portals=int.portals
         local e=ply:EyeAngles()
