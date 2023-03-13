@@ -163,9 +163,9 @@ function TARDIS:AddInteriorTemplate(id, template)
     if not id or not template then return end
 
     local int_updates = self.IntUpdatesPerTemplate[id]
-    if int_updates then
-        for i,int_id in ipairs(int_updates) do
-            if template.CustomSettings then
+    if int_updates and template.CustomSettings then
+        for int_id,upd in pairs(int_updates) do
+            if upd then
                 self:SetupCustomSettings(int_id)
             end
         end

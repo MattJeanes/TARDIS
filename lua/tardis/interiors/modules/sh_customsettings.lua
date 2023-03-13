@@ -13,8 +13,8 @@ function TARDIS:SetupCustomSettings(int_id)
 
     if t.Templates then
         for template_id, template in pairs(t.Templates) do
-            if template and template.CustomSettings then
-                table.Merge(csettings, template.CustomSettings)
+            if template and self.MetadataTemplates[template_id].CustomSettings then
+                table.Merge(csettings, self.MetadataTemplates[template_id].CustomSettings)
             end
         end
     end
