@@ -1,6 +1,6 @@
 -- Interiors
 
-CreateConVar("tardis2_create_tool_id", "", {FCVAR_REPLICATED}, "TARDIS - selected interior to spawn with toolgun")
+CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - selected interior to spawn with toolgun")
 
 TARDIS.Metadata = {}
 TARDIS.MetadataRaw = {}
@@ -92,7 +92,7 @@ end
 
 function TARDIS:CreateInteriorMetadata(id, ent)
     if id == nil then
-        local cv_id = GetConVar("tardis2_create_tool_id"):GetString()
+        local cv_id = GetConVar("tardis2_selected_interior"):GetString()
         if cv_id ~= "" then
             id = cv_id
         end

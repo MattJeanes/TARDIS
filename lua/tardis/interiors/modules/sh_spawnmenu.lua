@@ -56,7 +56,7 @@ if CLIENT then
             RunConsoleCommand( "gmod_tool", "creator" )
             RunConsoleCommand( "creator_type", "0" )
             RunConsoleCommand( "creator_name", "gmod_tardis" )
-            RunConsoleCommand( "tardis2_create_tool_id", id)
+            RunConsoleCommand( "tardis2_selected_interior", id)
         end)
         spawn_toolgun:SetIcon("icon16/brick_add.png")
     end
