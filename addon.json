@@ -9,6 +9,7 @@
         "*.git*",
         "*.fgd",
         "*.psd",
+        "upload*.sh",
         "CODEOWNERS",
         "LICENSE",
         ".vscode/*",
