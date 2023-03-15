@@ -1,6 +1,6 @@
 -- Interiors
 
-CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - selected interior to spawn with toolgun")
+CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - selected interior to spawn when not using the spawnmenu")
 
 TARDIS.Metadata = {}
 TARDIS.MetadataRaw = {}
