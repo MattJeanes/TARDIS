@@ -36,7 +36,7 @@ jobs:
             create -folder /addon -out "/addon/addon.gma"
 
       - name: Set workshop addon id
-        if: contains(fromJSON('["refs/heads/dev", "refs/heads/alpha"]'), github.ref) || github.event.inputs.publish == 'true'
+        if: (github.event_name == 'push' && contains(fromJSON('["refs/heads/dev", "refs/heads/alpha"]'), github.ref)) || github.event.inputs.publish == 'true'
         run: |
           if [[ "${{ github.event.inputs.addon }}" == "beta" || "${{ github.ref }}" == "refs/heads/dev" ]]; then
             WORKSHOP_ID=${{ vars.BETA_WORKSHOP_ID }}
@@ -51,7 +51,7 @@ jobs:
           echo "WORKSHOP_ID=$WORKSHOP_ID" >> $GITHUB_ENV
 
       - name: Publish to workshop
-        if: contains(fromJSON('["refs/heads/dev", "refs/heads/alpha"]'), github.ref) || github.event.inputs.publish == 'true'
+        if: env.WORKSHOP_ID
         run: |
           docker run --rm \
             -e STEAM_USER="${{ vars.STEAM_USERNAME }}" \
