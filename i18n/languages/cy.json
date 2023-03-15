@@ -428,6 +428,8 @@
     "Settings.Sections.Misc.Spawning.RandomizeSkins.Description": "A fydd croen TARDIS yn cael ei hapnodi ai peidio pan fydd wedi silio",
     "Settings.Sections.Misc.Spawning.UseWinterSkins": "Defnyddiwch grwyn gaeaf",
     "Settings.Sections.Misc.Spawning.UseWinterSkins.Description": "P'un a fydd crwyn TARDIS y gaeaf yn cael eu defnyddio ai peidio tra'i fod ar hap",
+    "Settings.Sections.Misc.SpawnmenuInteriorIcons": "",
+    "Settings.Sections.Misc.SpawnmenuInteriorIcons.Description": "",
     "Settings.Sections.Misc.Teleport": "Teleport",
     "Settings.Sections.Misc.Teleport.AutoCloseDoors": "Cau Drysau'n Awtomatig yn Demat",
     "Settings.Sections.Misc.Teleport.AutoCloseDoors.Description": "A ddylai TARDIS gau drysau yn awtomatig cyn demat?",

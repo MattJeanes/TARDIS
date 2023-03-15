@@ -428,6 +428,8 @@
     "Settings.Sections.Misc.Spawning.RandomizeSkins.Description": "Будут ли скины ТАРДИС выбираться случайным образом?",
     "Settings.Sections.Misc.Spawning.UseWinterSkins": "Использование зимних скинов",
     "Settings.Sections.Misc.Spawning.UseWinterSkins.Description": "Могут ли зимние скины ТАРДИС появляться при случайном выборе",
+    "Settings.Sections.Misc.SpawnmenuInteriorIcons": "",
+    "Settings.Sections.Misc.SpawnmenuInteriorIcons.Description": "",
     "Settings.Sections.Misc.Teleport": "Телепортация",
     "Settings.Sections.Misc.Teleport.AutoCloseDoors": "Авто-закрытие дверей при телепорте",
     "Settings.Sections.Misc.Teleport.AutoCloseDoors.Description": "Должны ли двери автоматически закрываться при дематериализации?",

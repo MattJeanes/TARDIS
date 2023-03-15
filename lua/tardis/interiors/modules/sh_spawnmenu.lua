@@ -3,8 +3,18 @@ function TARDIS:SpawnByID(id)
     surface.PlaySound("ui/buttonclickrelease.wav")
 end
 
+TARDIS.InteriorIcons = {}
+
 if CLIENT then
-    local function SelectForRedecoration(id)
+    -- this option would be very useful for developers but noone else
+    CreateClientConVar("tardis2_spawnmenu_copy_id", 0, {FCVAR_ARCHIVE}, "TARDIS - show 'copy id' option in the spawnmenu")
+    TARDIS.spawnmenu_copy_id = GetConVar("tardis2_spawnmenu_copy_id"):GetBool()
+
+    hook.Add("OnSpawnMenuOpen", "tardis-spawnmenu-copy-id-setting", function(ply,ent)
+        TARDIS.spawnmenu_copy_id = GetConVar("tardis2_spawnmenu_copy_id"):GetBool()
+    end)
+
+    function TARDIS:SelectForRedecoration(id)
         TARDIS:SetSetting("redecorate-interior", id)
         local current_tardis = LocalPlayer():GetTardisData("exterior")
 
@@ -15,56 +25,73 @@ if CLIENT then
         end
     end
 
-    local function AddMenuLabel(dmenu, text)
+    TARDIS.Spawnmenu = {}
+
+    function TARDIS.Spawnmenu.AddLabel(dmenu, text)
         local label = vgui.Create("DLabel", dmenu)
         label:SetText("  " .. TARDIS:GetPhrase(text))
         label:SetTextColor(Color(0,0,0))
         dmenu:AddPanel(label)
     end
 
-    local function AddMenuSingleVersion(dmenu, id)
+    function TARDIS.Spawnmenu.AddSingleVersion(dmenu, id)
+        if TARDIS.spawnmenu_copy_id then
+            local copy = dmenu:AddOption("#spawnmenu.menu.copy", function()
+                SetClipboardText(id)
+            end)
+            copy:SetIcon("icon16/page_copy.png")
+        end
+
         local spawn = dmenu:AddOption(TARDIS:GetPhrase("Spawnmenu.Spawn"), function()
             TARDIS:SpawnByID(id)
         end)
         spawn:SetIcon("icon16/add.png")
 
         local select_redecoration = dmenu:AddOption(TARDIS:GetPhrase("Spawnmenu.SelectForRedecoration"), function()
-            SelectForRedecoration(id)
+            TARDIS:SelectForRedecoration(id)
         end)
         select_redecoration:SetIcon("icon16/color_wheel.png")
+
+        local spawn_toolgun = dmenu:AddOption("#spawnmenu.menu.spawn_with_toolgun", function()
+            RunConsoleCommand( "gmod_tool", "creator" )
+            RunConsoleCommand( "creator_type", "0" )
+            RunConsoleCommand( "creator_name", "gmod_tardis" )
+            RunConsoleCommand( "tardis2_selected_interior", id)
+        end)
+        spawn_toolgun:SetIcon("icon16/brick_add.png")
     end
 
-    local function AddMenuDoubleVersion(dmenu, classic_doors_id, double_doors_id)
-        AddMenuLabel(dmenu, "Spawnmenu.ClassicDoorsVersion")
-        AddMenuSingleVersion(dmenu, classic_doors_id)
+    function TARDIS.Spawnmenu.AddDoubleVersion(dmenu, classic_doors_id, double_doors_id)
+        TARDIS.Spawnmenu.AddLabel(dmenu, "Spawnmenu.ClassicDoorsVersion")
+        TARDIS.Spawnmenu.AddSingleVersion(dmenu, classic_doors_id)
 
         dmenu:AddSpacer()
 
-        AddMenuLabel(dmenu, "Spawnmenu.DoubleDoorsVersion")
-        AddMenuSingleVersion(dmenu, double_doors_id)
+        TARDIS.Spawnmenu.AddLabel(dmenu, "Spawnmenu.DoubleDoorsVersion")
+        TARDIS.Spawnmenu.AddSingleVersion(dmenu, double_doors_id)
     end
 
-    local function AddMenuVersion(dmenu, version)
+    function TARDIS.Spawnmenu.AddVersion(dmenu, version)
         if version.classic_doors_id then
-            AddMenuDoubleVersion(dmenu, version.classic_doors_id, version.double_doors_id)
+            TARDIS.Spawnmenu.AddDoubleVersion(dmenu, version.classic_doors_id, version.double_doors_id)
         else
-            AddMenuSingleVersion(dmenu, version.id)
+            TARDIS.Spawnmenu.AddSingleVersion(dmenu, version.id)
         end
         dmenu:AddSpacer()
     end
 
-    local function AddVersionSubMenu(dmenu, version)
+    function TARDIS.Spawnmenu.AddVersionSubMenu(dmenu, version)
         if not version or not version.name then return end
 
         local submenu = dmenu:AddSubMenu(TARDIS:GetPhrase(version.name), function()
             TARDIS:SpawnByID( TARDIS:SelectDoorVersionID(version, LocalPlayer()) )
         end)
-        AddMenuVersion(submenu, version)
+        TARDIS.Spawnmenu.AddVersion(submenu, version)
 
         return submenu
     end
 
-    local function AddMenuBoolSetting(dmenu, int_id, setting_id, name)
+    function TARDIS.Spawnmenu.AddBoolSetting(dmenu, int_id, setting_id, name)
         local setting_button = dmenu:AddOption(TARDIS:GetPhrase(name), function(self)
             TARDIS:ToggleCustomSetting(int_id, setting_id)
         end)
@@ -80,7 +107,7 @@ if CLIENT then
         return setting_button
     end
 
-    local function AddMenuListSetting(dmenu, int_id, setting_id, name, options, compare_func)
+    function TARDIS.Spawnmenu.AddListSetting(dmenu, int_id, setting_id, name, options, compare_func)
         local submenu = dmenu:AddSubMenu(TARDIS:GetPhrase(name), nil)
 
         local option_buttons = {}
@@ -109,7 +136,7 @@ if CLIENT then
 
     end
 
-    local function AddSettingsSubmenu(parent, int_id)
+    function TARDIS.Spawnmenu.AddSettings(parent, int_id)
         local int_id = TARDIS:GetMainVersionId(int_id)
 
         local versions = TARDIS.MetadataVersions[int_id]
@@ -163,7 +190,7 @@ if CLIENT then
                 return ok
             end
 
-            AddMenuListSetting(dmenu, int_id, "preferred_version", "Spawnmenu.PreferredVersion", option_versions, versions_compare)
+            TARDIS.Spawnmenu.AddListSetting(dmenu, int_id, "preferred_version", "Spawnmenu.PreferredVersion", option_versions, versions_compare)
         end
 
         local function search_for_double_versions(version_list, current_val)
@@ -181,7 +208,7 @@ if CLIENT then
         has_double_versions = search_for_double_versions(versions.custom, has_double_versions)
 
         if has_double_versions then
-            AddMenuListSetting(dmenu, int_id, "preferred_door_type", "Spawnmenu.PreferredDoorType", {
+            TARDIS.Spawnmenu.AddListSetting(dmenu, int_id, "preferred_door_type", "Spawnmenu.PreferredDoorType", {
                 ["default"] = " ".. TARDIS:GetPhrase("Spawnmenu.PreferredDoorType.Default"),
                 ["random"] = " ".. TARDIS:GetPhrase("Spawnmenu.PreferredDoorType.Random"),
                 ["classic"] = " " .. TARDIS:GetPhrase("Spawnmenu.PreferredDoorType.Classic"),
@@ -189,7 +216,7 @@ if CLIENT then
             })
         end
 
-        AddMenuBoolSetting(dmenu, int_id, "redecoration_exclude", "Spawnmenu.RedecorationExclude")
+        TARDIS.Spawnmenu.AddBoolSetting(dmenu, int_id, "redecoration_exclude", "Spawnmenu.RedecorationExclude")
 
         if custom_settings then
             local custom_categories = {}
@@ -206,9 +233,9 @@ if CLIENT then
                 end
 
                 if custom_setting.value_type == "bool" then
-                    AddMenuBoolSetting(custom_dmenu, int_id, cust_setting_id, custom_setting.text)
+                    TARDIS.Spawnmenu.AddBoolSetting(custom_dmenu, int_id, cust_setting_id, custom_setting.text)
                 elseif custom_setting.value_type == "list" then
-                    AddMenuListSetting(custom_dmenu, int_id, cust_setting_id, custom_setting.text, custom_setting.options)
+                    TARDIS.Spawnmenu.AddListSetting(custom_dmenu, int_id, cust_setting_id, custom_setting.text, custom_setting.options)
                 end
             end
 
@@ -220,81 +247,132 @@ if CLIENT then
 
     end
 
-    hook.Add("PostGamemodeLoaded", "tardis-interiors", function()
-        if not spawnmenu then return end
-        spawnmenu.AddContentType("tardis", function(container, obj)
-            if not obj.material then return end
-            if not obj.nicename then return end
-            if not obj.spawnname then return end
-    
-            local icon = vgui.Create("ContentIcon", container)
-            icon:SetContentType("entity")
-            icon:SetSpawnName(obj.spawnname)
-            icon:SetName(obj.nicename)
-            icon:SetMaterial(obj.material)
-            icon:SetAdminOnly(obj.admin)
-            icon:SetColor(Color(205, 92, 92, 255))
-    
-            icon.DoClick = function()
-                local id = TARDIS:SelectSpawnID(obj.spawnname, LocalPlayer())
-                TARDIS:SpawnByID(id)
-            end
-    
-            icon.OpenMenu = function(self)
-                local dmenu = DermaMenu()
-                local versions = TARDIS.MetadataVersions[obj.spawnname]
+    function TARDIS.Spawnmenu.UpdateIconMaterial(container)
+        local setting = TARDIS:GetSetting("spawnmenu_interior_icons")
 
-                if versions then
-                    AddMenuVersion(dmenu, versions.main)
-                    dmenu:AddSpacer()
-        
-                    if not table.IsEmpty(versions.other) then
-                        AddMenuLabel(dmenu, "Spawnmenu.AlternativeVersions")
-                        for k,v in SortedPairs(versions.other) do
-                            AddVersionSubMenu(dmenu, v)
-                        end
-                        dmenu:AddSpacer()
-                    end
-        
-                    if not table.IsEmpty(versions.custom) then
-                        AddMenuLabel(dmenu, "Spawnmenu.CustomVersions")
-                        for k,v in SortedPairs(versions.custom) do
-                            AddVersionSubMenu(dmenu, v)
-                        end
-                        dmenu:AddSpacer()
-                    end
+        if setting ~= container.interior_icons_applied then
+
+            for k,v in pairs(container.tardis_icons) do
+                if v.is_tardis_icon then
+                    v:SetMaterial( (setting and v.interior_material) or v.original_material )
                 end
-    
-                local favorite = dmenu:AddOption(TARDIS:GetPhrase("Spawnmenu.AddToFavourites"), function(self)
-                    TARDIS:ToggleFavoriteInt(obj.spawnname)
-                    TARDIS:Message(LocalPlayer(), "Spawnmenu.ReloadGame")
-                    TARDIS:Message(LocalPlayer(), "Spawnmenu.FavoritesUpdated")
-                end)
-                favorite:SetIcon("icon16/heart_add.png")
-                function favorite:Think()
-                    local fav = TARDIS:IsFavoriteInt(obj.spawnname, LocalPlayer())
-                    local fav_icon = fav and "heart_delete.png" or "heart_add.png"
-                    local fav_text = fav and "Spawnmenu.RemoveFromFavourites" or "Spawnmenu.AddToFavourites"
-                    self:SetIcon("icon16/" .. fav_icon)
-                    self:SetText(TARDIS:GetPhrase(fav_text))
+            end
+
+            container.interior_icons_applied = setting
+        end
+
+        if setting then return end
+
+        local hovered = vgui.GetHoveredPanel()
+        if hovered == container.hovered then return end
+
+        if container.hovered then
+            container.hovered:SetMaterial(container.hovered.original_material)
+        end
+
+        if hovered and hovered.is_tardis_icon and hovered.interior_material then
+            container.hovered = hovered
+            hovered:SetMaterial(hovered.interior_material)
+        end
+    end
+
+    function TARDIS.Spawnmenu.DoToggleFavorite(obj)
+        TARDIS:ToggleFavoriteInt(obj.spawnname)
+        TARDIS:AddSpawnmenuInterior(obj.spawnname)
+        TARDIS:Message(LocalPlayer(), "Spawnmenu.FavoritesUpdated")
+        RunConsoleCommand("spawnmenu_reload")
+    end
+
+    function TARDIS.Spawnmenu.OpenRightClickMenu(obj)
+        local dmenu = DermaMenu()
+        local versions = TARDIS.MetadataVersions[obj.spawnname]
+
+        if versions then
+            TARDIS.Spawnmenu.AddVersion(dmenu, versions.main)
+            dmenu:AddSpacer()
+
+            if not table.IsEmpty(versions.other) then
+                TARDIS.Spawnmenu.AddLabel(dmenu, "Spawnmenu.AlternativeVersions")
+                for k,v in SortedPairs(versions.other) do
+                    TARDIS.Spawnmenu.AddVersionSubMenu(dmenu, v)
                 end
-    
-                AddSettingsSubmenu(dmenu, obj.spawnname)
-    
-                dmenu:Open()
+                dmenu:AddSpacer()
             end
-    
-            if IsValid(container) then
-                container:Add(icon)
+
+            if not table.IsEmpty(versions.custom) then
+                TARDIS.Spawnmenu.AddLabel(dmenu, "Spawnmenu.CustomVersions")
+                for k,v in SortedPairs(versions.custom) do
+                    TARDIS.Spawnmenu.AddVersionSubMenu(dmenu, v)
+                end
+                dmenu:AddSpacer()
             end
-    
-            return icon
+        end
+
+        local favorite = dmenu:AddOption(TARDIS:GetPhrase("Spawnmenu.AddToFavourites"), function(self)
+            TARDIS.Spawnmenu.DoToggleFavorite(obj)
         end)
-    end)
+
+        local fav = TARDIS:IsFavoriteInt(obj.spawnname, LocalPlayer())
+        local fav_icon = fav and "heart_delete.png" or "heart_add.png"
+        local fav_text = fav and "Spawnmenu.RemoveFromFavourites" or "Spawnmenu.AddToFavourites"
+        favorite:SetIcon("icon16/" .. fav_icon)
+        favorite:SetText(TARDIS:GetPhrase(fav_text))
+
+        TARDIS.Spawnmenu.AddSettings(dmenu, obj.spawnname)
+
+        dmenu:Open()
+    end
+
+    function TARDIS.Spawnmenu.CreateIcon(container, obj)
+        if not obj.material then return end
+        if not obj.nicename then return end
+        if not obj.spawnname then return end
+
+        local icon = vgui.Create("ContentIcon", container)
+        icon:SetContentType("entity")
+        icon:SetSpawnName(obj.spawnname)
+        icon:SetName(obj.nicename)
+        icon:SetMaterial(obj.material)
+        icon:SetAdminOnly(obj.admin)
+        icon:SetColor(Color(205, 92, 92, 255))
+
+        icon.is_tardis_icon = true
+        icon.original_material = obj.material
+        icon.interior_material = TARDIS.InteriorIcons[obj.spawnname]
+
+        icon.DoClick = function()
+            local id = TARDIS:SelectSpawnID(obj.spawnname, LocalPlayer())
+            TARDIS:SpawnByID(id)
+        end
+
+        if container.Think ~= TARDIS.Spawnmenu.UpdateIconMaterial then
+            container.Think = TARDIS.Spawnmenu.UpdateIconMaterial
+        end
+
+        container.tardis_icons = container.tardis_icons or {}
+        table.insert(container.tardis_icons, icon)
+
+        icon.OpenMenu = function()
+            TARDIS.Spawnmenu.OpenRightClickMenu(obj)
+        end
+
+        if IsValid(container) then
+            container:Add(icon)
+        end
+
+        return icon
+    end
+
+    function TARDIS.Spawnmenu.Populate()
+        if not spawnmenu then return end
+        spawnmenu.AddContentType("tardis", TARDIS.Spawnmenu.CreateIcon)
+    end
+
+    hook.Add("PostGamemodeLoaded", "tardis-interiors", TARDIS.Spawnmenu.Populate)
 
     hook.Add("TARDIS_LanguageChanged", "tardis-spawnmenu", function()
         for k,v in pairs(TARDIS:GetInteriors()) do
-            TARDIS:SetupSpawnmenuIcon(k)
+            TARDIS:AddSpawnmenuInterior(k)
         end
         RunConsoleCommand("spawnmenu_reload")
     end)
@@ -304,13 +382,13 @@ TARDIS_OVERRIDES = TARDIS_OVERRIDES or {}
 local c_overrides = TARDIS_OVERRIDES.Categories or {}
 local n_overrides = TARDIS_OVERRIDES.Names or {}
 
-function TARDIS:SetupSpawnmenuIcon(id)
+function TARDIS:AddSpawnmenuInterior(id)
     local t = self.MetadataRaw[id]
 
     if t.Base == true or t.Hidden or t.IsVersionOf then
         return
     end
-    
+
     local ent={}
 
     local cat_override
@@ -330,22 +408,46 @@ function TARDIS:SetupSpawnmenuIcon(id)
     ent.Category = cat_override or t.Category or default_category
     ent.PrintName = TARDIS:GetPhrase(name_override or t.Name)
 
-    if CLIENT and TARDIS:IsFavoriteInt(t.ID, LocalPlayer()) then
-        ent.PrintName = "  " .. ent.PrintName -- move to the top
-    end
-
-    local function try_icon(filename)
-        if ent.IconOverride ~= nil then return end
-        if file.Exists("materials/vgui/entities/" .. filename, "GAME") then
-            ent.IconOverride="vgui/entities/" .. filename
+    if CLIENT then
+        if TARDIS:IsFavoriteInt(t.ID, LocalPlayer()) then
+            ent.PrintName = "  " .. ent.PrintName -- move to the top
         end
-    end
 
-    try_icon("tardis/" .. t.ID .. ".vmt")
-    try_icon("tardis/" .. t.ID .. ".vtf")
-    try_icon("tardis/" .. t.ID .. ".png")
-    try_icon("tardis/default/" .. t.ID .. ".png")
-    try_icon("tardis/gmod_tardis.vmt")
+        local function try_icon(filename)
+            if ent.IconOverride ~= nil then return end
+            if file.Exists("materials/vgui/entities/" .. filename, "GAME") then
+                ent.IconOverride="vgui/entities/" .. filename
+            end
+        end
+
+        local function try_int_icon(filename)
+            if TARDIS.InteriorIcons[t.ID] ~= nil then return end
+            if file.Exists("materials/vgui/entities/" .. filename, "GAME") then
+                TARDIS.InteriorIcons[t.ID] = "vgui/entities/" .. filename
+            end
+        end
+
+        try_int_icon("tardis/interiors/" .. t.ID .. ".vmt")
+        try_int_icon("tardis/interiors/" .. t.ID .. ".vtf")
+        try_int_icon("tardis/interiors/" .. t.ID .. ".jpg")
+        try_int_icon("tardis/interiors/" .. t.ID .. ".png")
+        try_int_icon("tardis/interiors/default/" .. t.ID .. ".jpg")
+
+        try_icon("tardis/" .. t.ID .. ".vmt")
+        try_icon("tardis/" .. t.ID .. ".vtf")
+        try_icon("tardis/" .. t.ID .. ".png")
+        try_icon("tardis/" .. t.ID .. ".jpg")
+        try_icon("tardis/default/" .. t.ID .. ".jpg")
+
+        -- trying interior icons if we haven't found one for exterior mode
+        try_icon("tardis/interiors/" .. t.ID .. ".vmt")
+        try_icon("tardis/interiors/" .. t.ID .. ".vtf")
+        try_icon("tardis/interiors/" .. t.ID .. ".png")
+        try_icon("tardis/interiors/" .. t.ID .. ".jpg")
+        try_icon("tardis/interiors/default/" .. t.ID .. ".jpg")
+
+        try_icon("gmod_tardis.vmt")
+    end
 
     ent.ScriptedEntityType="tardis"
     list.Set("SpawnableEntities", t.ID, ent)
