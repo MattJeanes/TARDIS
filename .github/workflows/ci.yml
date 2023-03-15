@@ -1,15 +1,59 @@
 name: CI
 
 on:
+  pull_request_target:
+    branches:
+      - dev
   push:
-    branches: [ "dev" ]
+    branches:
+      - dev
   workflow_dispatch:
+    inputs:
+      publish:
+        type: boolean
+        description: Publish to workshop
+      addon:
+        type: choice
+        description: Workshop addon
+        options: 
+        - beta
 
 jobs:
   build:
+    name: Build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
-      - name: Run a one-line script
-        run: echo Hello, world!
+
+      - name: Create gma file
+        run: |
+          docker run --rm \
+            --mount type=bind,source="$(pwd)",target=/addon \
+            mattjeanes/gmad \
+            create -folder /addon -out "/addon/addon.gma"
+
+      - name: Set workshop addon id
+        if: github.ref == 'refs/heads/dev' || github.event.inputs.publish == 'true'
+        run: |
+          if [ "${{ github.event.inputs.addon }}" == "beta" ]; then
+            WORKSHOP_ID=${{ vars.BETA_WORKSHOP_ID }}
+          elif [ "${{ github.ref }}" == "refs/heads/dev" ]; then
+            WORKSHOP_ID=${{ vars.BETA_WORKSHOP_ID }}
+          else
+            echo "Unknown workshop ID" 1>&2
+            exit 1
+          fi
+
+          echo "Publishing to workshop ID $WORKSHOP_ID"
+          echo "WORKSHOP_ID=$WORKSHOP_ID" >> $GITHUB_ENV
+
+      - name: Publish to workshop
+        if: github.ref == 'refs/heads/dev' || github.event.inputs.publish == 'true'
+        run: |
+          docker run --rm \
+            -e STEAM_USER="${{ vars.STEAM_USERNAME }}" \
+            -e STEAM_PASSWORD="${{ secrets.STEAM_PASSWORD }}" \
+            --mount type=bind,source="$(pwd)",target=/home/gmodws/upload \
+            aperturedevelopment/gmodws:latest \
+            upload ${{ env.WORKSHOP_ID }} addon.gma \
+            "${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}"
