@@ -16,6 +16,10 @@ ENT:AddHook("Initialize", "spacebuild", function(self)
     local radius = self.metadata.Interior.ExitDistance
     self.spacebuild_env:CreateEnvironment(self, radius)
 
+    -- override the OnEnvironment function to use the radius-based one from base_sb_environment
+    local baseEnt = scripted_ents.Get("base_sb_environment")
+    self.spacebuild_env.OnEnvironment = baseEnt.OnEnvironment
+
     self:SetData("spacebuild", true)
 
     self:UpdateSpacebuildEnvironment()
