@@ -1,12 +1,21 @@
 -- Support for time distortion generator by parar020100 and JEREDEK
 
-local search_radius = 1000
+local search_radius = 2048
 local explode_radius = 300
 
 local function TimeDistortionsPresent(pos, radius)
     for i,v in ipairs(ents.FindInSphere(pos, radius)) do
-        if v:GetClass() == "gmod_time_distortion_generator" and v:GetEnabled() then
-            return true
+        if(v:GetClass() == "gmod_time_distortion_generator" and v.On) then
+            if(radius == search_radius) then
+                print(v:GetPos():Distance(pos))
+                if(v:GetPos():Distance(pos) <= v.Radius) then
+                    return true
+                end
+            else
+                if(v:GetPos():Distance(pos) <= radius) then
+                    return true
+                end
+            end
         end
     end
     return false
