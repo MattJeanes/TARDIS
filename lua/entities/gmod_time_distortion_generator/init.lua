@@ -29,10 +29,11 @@ function ENT:Initialize()
     if WireLib then
         local inNames = {"Activate","Radius"}
         local inTypes = {"NORMAL","NORMAL"}
-	WireLib.CreateSpecialInputs( self,inNames,inTypes)
-        Wire_CreateOutputs(self,{"Active","Radius","Health"})
 
-        Wire_TriggerOutput(self,"Radius",1000)
+        WireLib.CreateSpecialInputs( self,inNames,inTypes)
+        Wire_CreateOutputs(self,{"Active","Radius","Health"})
+        
+        Wire_TriggerOutput(self,"Radius",self.Radius)
         Wire_TriggerOutput(self,"Health",self.EntHealth)
     end
 end

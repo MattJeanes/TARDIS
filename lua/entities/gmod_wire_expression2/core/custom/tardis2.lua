@@ -19,12 +19,12 @@ end
 local function HandleE2(ent, type, name, e2, ...)
     if IsValid(getTardis(ent)) then
         if type == "Setter" and ent:CheckSecurity(e2.player) == false then
-            TARDIS:ErrorMessage(e2.player,"Security.E2.UseDenied")
+            TARDIS:ErrorMessage(e2.player,"Expression2.Security.UseDenied")
         else
             return ent:HandleE2(name, e2, ...)
         end
     else
-        error(TARDIS:GetPhrase("E2.Error"),0)
+        error(TARDIS:GetPhrase("Expression2.Error"),0)
     end
 end
 
@@ -133,7 +133,7 @@ end
 ]]
 
 e2function string entity:tardisGetData(string id)
-    return tostring(self.player, this:GetData(id,false))
+    return tostring(this, this:GetData(id,false))
 end
 
 --Teleport
