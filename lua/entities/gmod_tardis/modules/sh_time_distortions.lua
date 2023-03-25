@@ -3,18 +3,15 @@
 local search_radius = 2048
 local explode_radius = 300
 
-local function TimeDistortionsPresent(pos, radius)
-    for i,v in ipairs(ents.FindInSphere(pos, radius)) do
-        if(v:GetClass() == "gmod_time_distortion_generator" and v.On) then
-            if(radius == search_radius) then
-                print(v:GetPos():Distance(pos))
-                if(v:GetPos():Distance(pos) <= v.Radius) then
+local function TimeDistortionsPresent(pos, outside, int_radius)
+    for i,v in ipairs(ents.FindInSphere(pos, search_radius)) do
+        if v:GetClass() == "gmod_time_distortion_generator" and v:GetEnabled() then
+            if outside then
+                if v:GetPos():Distance(pos) <= v:GetRadius() then
                     return true
                 end
-            else
-                if(v:GetPos():Distance(pos) <= radius) then
+            elseif v:GetPos():Distance(pos) <= int_radius then
                     return true
-                end
             end
         end
     end
@@ -24,11 +21,11 @@ end
 local function DistortionsInside(ent)
     if not IsValid(ent) or not IsValid(ent.interior) then return end
     local int_radius = ent.metadata.Interior.ExitDistance
-    return TimeDistortionsPresent(ent.interior:GetPos(), int_radius)
+    return TimeDistortionsPresent(ent.interior:GetPos(), false, int_radius)
 end
 
 local function DistortionsOutside(ent)
-    return TimeDistortionsPresent(ent:GetPos(), search_radius)
+    return TimeDistortionsPresent(ent:GetPos(), true)
 end
 
 local function IsPlayerInside(ent, ply)
@@ -38,8 +35,7 @@ end
 
 
 if SERVER then
-
-    ENT:AddHook("PlayerEnter", "time_fistortions_inside", function(self, ply, notp)
+    ENT:AddHook("PlayerEnter", "time_distortions_inside", function(self, ply, notp)
         if DistortionsInside(self) then
             self:Timer("time_dist_inside_warning", 0, function() -- fix for the hook working when player exits
                 if IsPlayerInside(self.interior, ply) then
@@ -95,5 +91,4 @@ else
             return true
         end
     end)
-
 end

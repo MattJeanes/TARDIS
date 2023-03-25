@@ -16,15 +16,15 @@ local function getTardis(ent)
     end
 end
 
-local function HandleE2(owner, ent, name, ...)
+local function HandleE2(ent, type, name, e2, ...)
     if IsValid(getTardis(ent)) then
-        if(getTardis(ent):GetCreator() != owner and getTardis(ent):GetData("security") == true) then
-            error("Can't call TARDIS functions on another's TARDIS with Isomorphic Security active!",0)
+        if type == "Setter" and ent:CheckSecurity(e2.player) == false then
+            TARDIS:ErrorMessage(e2.player,"Security.E2.UseDenied")
         else
-            return ent:HandleE2(name, ...)
+            return ent:HandleE2(name, e2, ...)
         end
     else
-        error("Can't call TARDIS functions on something other than a TARDIS.",0)
+        error(TARDIS:GetPhrase("E2.Error"),0)
     end
 end
 
@@ -41,89 +41,89 @@ end
 --Teleport
 
 e2function number entity:tardisDemat(vector pos, angle rot)
-    return HandleE2(self.player, this, "Demat", self, pos, rot)
+    return HandleE2(this, "Setter", "Demat", self, pos, rot)
 end
 
 e2function number entity:tardisDemat(vector pos)
-    return HandleE2(self.player, this, "Demat", self, pos)
+    return HandleE2(this, "Setter", "Demat", self, pos)
 end
 
 e2function number entity:tardisFastDemat()
-    return HandleE2(self.player, this, "FastDemat", self)
+    return HandleE2(this, "Setter", "FastDemat", self)
 end
 
 e2function number entity:tardisMaterialise()
-    return HandleE2(self.player, this, "Mat", self)
+    return HandleE2(this, "Setter", "Mat", self)
 end
 
 e2function number entity:tardisSetDestination(vector pos, angle ang)
-    return HandleE2(self.player, this, "SetDestination", self, pos, ang)
+    return HandleE2(this, "Setter", "SetDestination", self, pos, ang)
 end
 
 e2function number entity:tardisSetDestination(vector pos)
-    return HandleE2(self.player, this, "SetDestination", self, pos)
+    return HandleE2(this, "Setter", "SetDestination", self, pos)
 end
 
 e2function number entity:tardisFastReturn()
-    return HandleE2(self.player, this, "FastReturn", self)
+    return HandleE2(this, "Setter", "FastReturn", self)
 end
 
 e2function number entity:tardisLongflight()
-    return HandleE2(self.player, this, "Longflight", self)
+    return HandleE2(this, "Setter", "Longflight", self)
 end
 
 e2function number entity:tardisHADS()
-    return HandleE2(self.player, this, "HADS", self)
+    return HandleE2(this, "Setter", "HADS", self)
 end
 
 --Flight
 
 e2function number entity:tardisFlightmode(normal on)
-    return HandleE2(self.player, this, "Flightmode", self, on)
+    return HandleE2(this, "Setter", "Flightmode", self, on)
 end
 
 e2function number entity:tardisFlightmode()
-    return HandleE2(self.player, this, "Flightmode", self)
+    return HandleE2(this, "Setter", "Flightmode", self)
 end
 
 e2function number entity:tardisPhyslock()
-    return HandleE2(self.player, this, "Physlock", self)
+    return HandleE2(this, "Setter", "Physlock", self)
 end
 
 e2function number entity:tardisSpinmode(number spinmode)
-    return HandleE2(self.player, this, "Spinmode", self, spinmode)
+    return HandleE2(this, "Setter", "Spinmode", self, spinmode)
 end
 
 e2function number entity:tardisTrack(entity ent)
-    return HandleE2(self.player, this, "Track", self, ent)
+    return HandleE2(this, "Setter", "Track", self, ent)
 end
 
 --Security
 
 e2function number entity:tardisLock()
-    return HandleE2(self.player, this, "Lock", self)
+    return HandleE2(this, "Setter", "Lock", self)
 end
 
 e2function number entity:tardisIsomorph()
-    return HandleE2(self.player, this, "Isomorph", self)
+    return HandleE2(this, "Setter", "Isomorph", self)
 end
 
 e2function number entity:tardisPhase()
-    return HandleE2(self.player, this, "Phase", self)
+    return HandleE2(this, "Setter", "Phase", self)
 end
 
 --Extra
 
 e2function number entity:tardisPower()
-    return HandleE2(self.player, this, "Power", self)
+    return HandleE2(this, "Setter", "Power", self)
 end
 
 e2function number entity:tardisSelfrepair()
-    return HandleE2(self.player, this, "Selfrepair", self)
+    return HandleE2(this, "Setter", "Selfrepair", self)
 end
 
 e2function number entity:tardisPhase()
-    return HandleE2(self.player, this, "Phase", self)
+    return HandleE2(this, "Setter", "Phase", self)
 end
 
 --[[
@@ -139,73 +139,73 @@ end
 --Teleport
 
 e2function number entity:tardisMoving()
-    return HandleE2(self.player, this, "GetMoving", self)
+    return HandleE2(this, "Getter", "GetMoving", self)
 end
 
 e2function number entity:tardisInVortex()
-    return HandleE2(self.player, this, "GetInVortex", self)
+    return HandleE2(this, "Getter", "GetInVortex", self)
 end
 
 e2function number entity:tardisLongflighted()
-    return HandleE2(self.player, this, "GetLongflight", self)
+    return HandleE2(this, "Getter", "GetLongflight", self)
 end
 
 e2function vector entity:tardisLastPos()
-    return HandleE2(self.player, this, "LastPos", self)
+    return HandleE2(this, "Getter", "LastPos", self)
 end
 
 e2function angle entity:tardisLastAng()
-    return HandleE2(self.player, this, "LastAng", self)
+    return HandleE2(this, "Getter", "LastAng", self)
 end
 
 e2function number entity:tardisIsHADS()
-    return HandleE2(self.player, this, "GetHADS", self)
+    return HandleE2(this, "Getter", "GetHADS", self)
 end
 
 --Flight
 
 e2function number entity:tardisFlying()
-    return HandleE2(self.player, this, "GetFlying", self)
+    return HandleE2(this, "Getter", "GetFlying", self)
 end
 
 e2function entity entity:tardisPilot()
-    return HandleE2(self.player, this, "GetPilot", self)
+    return HandleE2(this, "Getter", "GetPilot", self)
 end
 
 e2function entity entity:tardisTracking()
-    return HandleE2(self.player, this, "GetTracking", self)
+    return HandleE2(this, "Getter", "GetTracking", self)
 end
 
 e2function number entity:tardisPhyslocked()
-    return HandleE2(self.player, this, "GetPhyslocked", self)
+    return HandleE2(this, "Getter", "GetPhyslocked", self)
 end
 
 --Health
 
 e2function number entity:tardisHealth()
-    return HandleE2(self.player, this, "GetHealth", self)
+    return HandleE2(this, "Getter", "GetHealth", self)
 end
 
 e2function number entity:tardisSelfrepairing()
-    return HandleE2(self.player, this, "GetSelfrepairing", self)
+    return HandleE2(this, "Getter", "GetSelfrepairing", self)
 end
 
 --Security
 
 e2function number entity:tardisIsomorphic()
-    return HandleE2(self.player, this, "GetIsomorphic", self)
+    return HandleE2(this, "Getter", "GetIsomorphic", self)
 end
 
 e2function number entity:tardisLocked()
-    return HandleE2(self.player, this, "GetLocked", self)
+    return HandleE2(this, "Getter", "GetLocked", self)
 end
 
 --Extra
 
 e2function number entity:tardisVisible()
-    return HandleE2(self.player, this, "GetVisible", self)
+    return HandleE2(this, "Getter", "GetVisible", self)
 end
 
 e2function number entity:tardisPowered()
-    return HandleE2(self.player, this, "GetPowered", self)
+    return HandleE2(this, "Getter", "GetPowered", self)
 end
