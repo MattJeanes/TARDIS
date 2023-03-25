@@ -3,14 +3,16 @@
 local search_radius = 2048
 local explode_radius = 300
 
-local function TimeDistortionsPresent(pos, outside, int_radius)
-    for i,v in ipairs(ents.FindInSphere(pos, search_radius)) do
-        if v:GetClass() == "gmod_time_distortion_generator" and v:GetEnabled() then
-            if outside then
-                if v:GetPos():Distance(pos) <= v:GetRadius() then
+local function TimeDistortionsPresent(pos, radius)
+    for i,v in ipairs(ents.FindInSphere(pos, radius)) do
+        if(v:GetClass() == "gmod_time_distortion_generator" and v.On) then
+            if(radius == search_radius) then
+                print(v:GetPos():Distance(pos))
+                if(v:GetPos():Distance(pos) <= v.Radius) then
                     return true
                 end
-            elseif v:GetPos():Distance(pos) <= int_radius then
+            else
+                if(v:GetPos():Distance(pos) <= radius) then
                     return true
             end
         end
