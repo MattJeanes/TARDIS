@@ -215,6 +215,8 @@
     "Destination.LockedDemat": "Ziel gesperrt, Entmaterialisierung...",
     "Destination.LockedReadyToDemat": "Ziel erfasst, bereit zur Dematerialisierung",
     "Destination.LockedReadyToMat": "Ziel erfasst, bereit zur Verwirklichung",
+    "Expression2.Error": "",
+    "Expression2.Security.UseDenied": "",
     "Flight.DoorOpenNoBoost": "Boost funktioniert nicht bei offenen Türen",
     "Flight.NameIsNowThePilot": "%s ist jetzt der Pilot",
     "Flight.NameIsThePilot": "%s ist der Pilot",

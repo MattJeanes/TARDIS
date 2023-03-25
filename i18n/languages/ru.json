@@ -215,6 +215,8 @@
     "Destination.LockedDemat": "Маршрут построен, ТАРДИС дематериализуется!",
     "Destination.LockedReadyToDemat": "Маршрут построен, ТАРДИС готова к дематериализации!",
     "Destination.LockedReadyToMat": "Маршрут построен. ТАРДИС готова к материализации!",
+    "Expression2.Error": "",
+    "Expression2.Security.UseDenied": "",
     "Flight.DoorOpenNoBoost": "Ускорение не работает с открытыми дверями.",
     "Flight.NameIsNowThePilot": "%s теперь пилот",
     "Flight.NameIsThePilot": "%s является пилотом",

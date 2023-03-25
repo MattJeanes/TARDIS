@@ -215,6 +215,8 @@
     "Destination.LockedDemat": "目標鎖定，起飛……",
     "Destination.LockedReadyToDemat": "目標鎖定，準備起飛",
     "Destination.LockedReadyToMat": "目標鎖定，準備降落",
+    "Expression2.Error": "",
+    "Expression2.Security.UseDenied": "",
     "Flight.DoorOpenNoBoost": "門打開時無法加速",
     "Flight.NameIsNowThePilot": "%s 現在是飛行員",
     "Flight.NameIsThePilot": "%s 是飛行員",

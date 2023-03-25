@@ -215,6 +215,8 @@
     "Destination.LockedDemat": "Destino establecido, desmaterializando...",
     "Destination.LockedReadyToDemat": "Destino establecido, listo para desmaterializar",
     "Destination.LockedReadyToMat": "Destino establecido, listo para materializar",
+    "Expression2.Error": "",
+    "Expression2.Security.UseDenied": "",
     "Flight.DoorOpenNoBoost": "La aceleración no funciona con las puertas abiertas",
     "Flight.NameIsNowThePilot": "El piloto ahora es %s",
     "Flight.NameIsThePilot": "El piloto es %s",

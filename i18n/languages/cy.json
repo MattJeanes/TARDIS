@@ -215,6 +215,8 @@
     "Destination.LockedDemat": "Cyrchfan wedi'i chloi, yn diystyru...",
     "Destination.LockedReadyToDemat": "Cyrchfan wedi'i chloi, yn barod i'w dad-wneud",
     "Destination.LockedReadyToMat": "Cyrchfan ar glo, yn barod i'w gwireddu",
+    "Expression2.Error": "",
+    "Expression2.Security.UseDenied": "",
     "Flight.DoorOpenNoBoost": "Nid yw Boost yn gweithio gyda drysau ar agor",
     "Flight.NameIsNowThePilot": "%s yw'r peilot bellach",
     "Flight.NameIsThePilot": "%s yw'r peilot",

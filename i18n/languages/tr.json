@@ -215,6 +215,8 @@
     "Destination.LockedDemat": "Hedef kilitlendi, kaydileştiriliyor...",
     "Destination.LockedReadyToDemat": "Hedef kilitli, kaydileştirilmeye hazır",
     "Destination.LockedReadyToMat": "Hedef kilitlendi, gerçekleşmeye hazır",
+    "Expression2.Error": "",
+    "Expression2.Security.UseDenied": "",
     "Flight.DoorOpenNoBoost": "Boost, kapılar açıkken çalışmıyor",
     "Flight.NameIsNowThePilot": "%s artık pilot",
     "Flight.NameIsThePilot": "%s artık pilot",
