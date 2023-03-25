@@ -74,6 +74,7 @@ function ENT:UpdateSpacebuildEnvironment()
 
     self.spacebuild_env:UpdateEnvironment(nil, gravity, atmosphere, pressure, temperature, o2per, co2per, nper, hper)
     self.spacebuild_env.sbenvironment.atmosphere = atmosphere -- spacebuild bug: this value is not actually updated by UpdateEnvironment
+    self.spacebuild_env.GetTemperature = function() return temperature end -- normally it tries to calculate sunburn damage, but we don't want that
 end
 
 function ENT:UpdateSpacebuildEnvironmentAir()
