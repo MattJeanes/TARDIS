@@ -56,7 +56,7 @@ end
 
 function ENT:Repair(repair)
     if self.EntHealth >= 0 then
-        local hp = self.EntHealth + repair
+        local hp = math.Clamp(self.EntHealth + repair,0,self.EntMaxHealth)
         
         if self.Broken == true and hp >= 0 then
             self:SetColor(Color(255, 255, 255, self:GetColor().a))
