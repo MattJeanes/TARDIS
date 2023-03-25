@@ -16,9 +16,10 @@ ENT:AddHook("Initialize", "spacebuild", function(self)
     local radius = self.metadata.Interior.ExitDistance
     self.spacebuild_env:CreateEnvironment(self, radius)
 
-    -- override the OnEnvironment function to use the radius-based one from base_sb_environment
+    -- override functions on the cube environment to the simpler base ones
     local baseEnt = scripted_ents.Get("base_sb_environment")
-    self.spacebuild_env.OnEnvironment = baseEnt.OnEnvironment
+    self.spacebuild_env.OnEnvironment = baseEnt.OnEnvironment -- uses radius like the exit distance
+    self.spacebuild_env.GetTemperature = baseEnt.GetTemperature -- ignores sunburn damage
 
     self:SetData("spacebuild", true)
 
@@ -74,7 +75,6 @@ function ENT:UpdateSpacebuildEnvironment()
 
     self.spacebuild_env:UpdateEnvironment(nil, gravity, atmosphere, pressure, temperature, o2per, co2per, nper, hper)
     self.spacebuild_env.sbenvironment.atmosphere = atmosphere -- spacebuild bug: this value is not actually updated by UpdateEnvironment
-    self.spacebuild_env.GetTemperature = function() return temperature end -- normally it tries to calculate sunburn damage, but we don't want that
 end
 
 function ENT:UpdateSpacebuildEnvironmentAir()
