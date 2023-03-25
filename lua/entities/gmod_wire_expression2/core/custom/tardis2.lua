@@ -133,7 +133,7 @@ end
 ]]
 
 e2function string entity:tardisGetData(string id)
-    return tostring(this, this:GetData(id,false))
+    return tostring(this:GetData(id,false))
 end
 
 --Teleport

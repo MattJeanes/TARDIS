@@ -64,7 +64,7 @@ function ENT:TriggerInput(iname, value)
             self:TurnOn(false)
         end
     elseif iname == "Radius" then
-        self:SetRadius(math.Clamp(value,0,2048))
+        self:SetRadius(value)
     end
 end
 

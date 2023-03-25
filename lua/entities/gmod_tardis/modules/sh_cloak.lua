@@ -50,7 +50,7 @@ if SERVER then
 
     ENT:AddHook("HandleE2", "cloak", function(self,name,e2)
         if name == "Phase" and TARDIS:CheckPP(e2.player, self) then
-                return (self:GetPower() and self:ToggleCloak()) and 1 or 0
+            return (self:GetPower() and self:ToggleCloak()) and 1 or 0
         elseif name == "GetVisible" then
             return self:GetData("cloak",false) and 0 or 1
         end
