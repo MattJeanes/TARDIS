@@ -35,7 +35,7 @@ end
 
 
 if SERVER then
-    ENT:AddHook("PlayerEnter", "time_fistortions_inside", function(self, ply, notp)
+    ENT:AddHook("PlayerEnter", "time_distortions_inside", function(self, ply, notp)
         if DistortionsInside(self) then
             self:Timer("time_dist_inside_warning", 0, function() -- fix for the hook working when player exits
                 if IsPlayerInside(self.interior, ply) then
