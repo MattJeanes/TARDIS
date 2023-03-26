@@ -54,6 +54,20 @@ function ENT:SetRadius(radius)
     return self.Radius
 end
 
+function ENT:Repair(repair)
+    if self.EntHealth >= 0 then
+        local hp = self.EntHealth + repair
+        
+        if self.Broken == true and hp >= 0 then
+            self:SetColor(Color(255, 255, 255, self:GetColor().a))
+            self.Broken = false
+        end
+
+        self.EntHealth = math.Clamp(hp,0,self.EntMaxHealth)
+        self:TriggerWire("Health",self.EntHealth)
+    end
+end
+
 function ENT:TriggerInput(iname, value)
     if iname == "Activate" then
         if self.Broken then return end
@@ -74,7 +88,7 @@ function ENT:TurnOn(active)
     local phys = self:GetPhysicsObject()
 
     if active and self.FlyTime == nil then
-        self:SetColor(Color(255, 166, 0))
+        self:SetColor(Color(255, 166, 0, self:GetColor().a))
         phys:SetAngleVelocity(Vector(20, -20, -10))
         phys:EnableGravity(false)
         phys:SetVelocity(Vector(0, 0, 15))
@@ -92,7 +106,7 @@ function ENT:TurnOn(active)
         self.On = false
         self:SetEnabled(false)
         self:TriggerWire("Active",0)
-        self:SetColor(Color(255, 255, 255, 255))
+        self:SetColor(Color(255, 255, 255, self:GetColor().a))
 
         phys:EnableGravity(true)
 
@@ -140,7 +154,7 @@ function ENT:Think()
         self.LastActivator = nil
 
         self:GetPhysicsObject():SetVelocity(Vector(0, 0, 0))
-        self:SetColor(Color(164, 90, 250))
+        self:SetColor(Color(164, 90, 250, self:GetColor().a))
         self:TriggerWire("Active",1)
 
         sound.Play("drmatt/tardis/power_on.wav", self:GetPos())
@@ -162,7 +176,7 @@ function ENT:Break()
     self.FlyTime = nil
 
     self:SetEnabled(false)
-    self:SetColor(Color(100, 100, 100, 255))
+    self:SetColor(Color(100, 100, 100, self:GetColor().a))
     self:GetPhysicsObject():EnableGravity(true)
 
     self:TriggerWire("Active",0)
