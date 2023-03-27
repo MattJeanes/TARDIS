@@ -218,6 +218,7 @@ T.Phrases = {
     ["Destination.LockedDemat"] = "Destination verrouillée, décollage...",
     ["Destination.LockedReadyToDemat"] = "Destination verrouillée, prêt pour le décollage",
     ["Destination.LockedReadyToMat"] = "Destination verrouillée, prêt pour atterrir",
+    ["Expression2.Error"] = "Impossible d'appeler les fonctions TARDIS sur autre chose qu'un TARDIS",
     ["Flight.DoorOpenNoBoost"] = "L'accélération ne fonctionne pas avec les portes ouvertes",
     ["Flight.NameIsNowThePilot"] = "%s Contrôle désormais votre TARDIS",
     ["Flight.NameIsThePilot"] = "%s est le pilote",
