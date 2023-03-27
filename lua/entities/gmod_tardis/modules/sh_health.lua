@@ -118,7 +118,7 @@ if SERVER then
 
     function ENT:StartRepair()
         if not IsValid(self) then return end
-        self:SetLocked(true,nil,true)
+        self:SetLocked(true,nil,true,true)
         local maxhealth = TARDIS:GetSetting("health-max")
         local curhealth = self:GetData("health-val")
         local maxtime = TARDIS:GetSetting("long_repair") and 60 or 15

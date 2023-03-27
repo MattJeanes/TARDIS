@@ -22,6 +22,18 @@ TARDIS:AddSetting({
 })
 
 TARDIS:AddSetting({
+    id="spawnmenu_interior_icons",
+    type="bool",
+    value=false,
+
+    class="local",
+
+    option=true,
+    section=SETTING_SECTION,
+    name="SpawnmenuInteriorIcons",
+})
+
+TARDIS:AddSetting({
     id="csequences-enabled",
     type="bool",
     value=false,
@@ -43,6 +55,18 @@ TARDIS:AddSetting({
     option=true,
     section=SETTING_SECTION,
     name="IsomorphicSecurityDefault",
+})
+
+TARDIS:AddSetting({
+    id="lock_autoclose",
+    type="bool",
+    value=false,
+
+    class="networked",
+
+    option=true,
+    section=SETTING_SECTION,
+    name="DoorCloseOnLock",
 })
 
 --------------------------------------------------------------------------------
@@ -233,6 +257,19 @@ TARDIS:AddSetting({
     section=SETTING_SECTION,
     subsection="Spawning",
     name="NoInterior",
+})
+
+TARDIS:AddSetting({
+    id="legacy_door_type",
+    type="bool",
+    value=false,
+
+    class="networked",
+
+    option=true,
+    section=SETTING_SECTION,
+    subsection="Spawning",
+    name="LegacyDoorType",
 })
 
 --------------------------------------------------------------------------------

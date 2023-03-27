@@ -50,7 +50,7 @@ if SERVER then
 
     ENT:AddHook("HandleE2", "cloak", function(self,name,e2)
         if name == "Phase" and TARDIS:CheckPP(e2.player, self) then
-            return self:ToggleCloak() and 1 or 0
+            return (self:GetPower() and self:ToggleCloak()) and 1 or 0
         elseif name == "GetVisible" then
             return self:GetData("cloak",false) and 0 or 1
         end
@@ -99,10 +99,12 @@ else
         local target = self:GetData("cloak",false) and -0.5 or 1
         local animating = self:GetData("cloak-animating",false)
         local percent = self:GetData("phase-percent",1)
+
         if percent == target then
             if animating then
                 self:SetData("cloak-animating", false)
                 self:CallHook("CloakAnimationFinished")
+                self:SetData("phase-lastTick", nil)
             end
             return
         elseif not animating then
@@ -112,11 +114,8 @@ else
 
         local timepassed = CurTime() - self:GetData("phase-lastTick",CurTime())
         self:SetData("phase-lastTick", CurTime())
-        if self:GetData("cloak",false) then
-            self:SetData("phase-percent", math.Approach(percent, target, 0.5 * timepassed))
-        else
-            self:SetData("phase-percent", math.Approach(percent, target, 0.5 * timepassed))
-        end
+
+        self:SetData("phase-percent", math.Approach(percent, target, 0.5 * timepassed))
         self:SetData("phase-highPercent", math.Clamp(self:GetData("phase-percent",1) + 0.5, 0, 1))
 
         local pos = self:GetPos() + self:GetUp() * (self:GetData("modelmaxs").z - (self:GetData("modelheight") * self:GetData("phase-highPercent",1)))
