@@ -126,6 +126,10 @@ e2function number entity:tardisPhase()
     return HandleE2(this, "Setter", "Phase", self)
 end
 
+e2function number entity:tardisDoor()
+    return HandleE2(this, "Setter", "Door", self)
+end
+
 --[[
     ╔════════════╗
     ║Data getters║
@@ -208,4 +212,8 @@ end
 
 e2function number entity:tardisPowered()
     return HandleE2(this, "Getter", "GetPowered", self)
+end
+
+e2function number entity:tardisDoorOpen()
+    return HandleE2(this, "Getter", "GetDoor", self)
 end
