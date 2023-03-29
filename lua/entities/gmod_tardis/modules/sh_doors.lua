@@ -90,7 +90,7 @@ if SERVER then
         if name == "Door" and TARDIS:CheckPP(e2.player, self) then
             return self:ToggleDoor() and 1 or 0
         elseif name == "GetDoor" then
-            return self:DoorOpen(false) and 1 or 0
+            return self:DoorOpen(true) and 1 or 0
         end
     end)
 
