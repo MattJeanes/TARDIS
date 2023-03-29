@@ -59,8 +59,9 @@ if SERVER then
     function ENT:OpenDoor(callback)
         if self:GetData("doorstate",false) then
             delay(callback,true)
+            return true
         else
-            self:ToggleDoor(callback)
+            return self:ToggleDoor(callback)
         end
     end
 
@@ -68,10 +69,12 @@ if SERVER then
         if self:GetData("doorstate",false) ~= self:GetData("doorstatereal",false) then
             local callbacks=self:GetData("doorchangecallback")
             callbacks[callback]=true
+            return true
         elseif not self:GetData("doorstate",false) then
             delay(callback,false)
+            return false
         else
-            self:ToggleDoor(callback)
+            return self:ToggleDoor(callback)
         end
     end
 
