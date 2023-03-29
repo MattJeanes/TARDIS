@@ -10,7 +10,7 @@ end
 
 if SERVER then
     function ENT:ToggleLocked(callback, force)
-        self:SetLocked(not self:Locked(), callback, nil, force)
+        return self:SetLocked(not self:Locked(), callback, nil, force)
     end
 
     function ENT:ActualSetLocked(locked,callback,silent)
@@ -23,7 +23,7 @@ if SERVER then
     end
 
     function ENT:SetLocked(locked, callback, silent, force)
-        if not self:CallHook("CanLock") then return end
+        if not self:CallHook("CanLock") then return false end
         if locked then
             self:SetData("locking",true,true)
 
@@ -31,19 +31,22 @@ if SERVER then
                 if state then
                     self:SetData("locking",false,true)
                     if callback then callback(false) end
+                    return false
                 else
                     self:ActualSetLocked(true,callback,silent)
+                    return true
                 end
             end
 
-            if TARDIS:GetSetting("lock_autoclose", self) or force then
-                self:CloseDoor(dolock)
+            if self:DoorOpen() and (TARDIS:GetSetting("lock_autoclose", self) or force) then
+                return self:CloseDoor(dolock)
             else
-                dolock(self:GetData("doorstatereal"))
+                return dolock(self:GetData("doorstatereal"))
             end
         else
             self:ActualSetLocked(false,callback,silent)
         end
+        return true
     end
 
     ENT:AddHook("CanPlayerEnter","lock",function(self,ply)
@@ -75,8 +78,7 @@ if SERVER then
                 return 0
             end
         elseif name == "Lock" and TARDIS:CheckPP(e2.player, self) then
-            self:ToggleLocked()
-            return self:CallHook("CanLock") == true and 1 or 0
+            return self:ToggleLocked() and 1 or 0
         end
     end)
 else
