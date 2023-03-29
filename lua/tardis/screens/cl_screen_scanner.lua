@@ -20,7 +20,7 @@ TARDIS:AddScreen("Scanner", {id="scanner",text="Screens.Scanner", menu=false, or
     uid=uid+1
     screen.scannerang=Angle()
     screen.scannerfov=120
-    
+
     local scanner=vgui.Create("DImage",frame)
     scanner:SetSize(frame:GetWide(),frame:GetTall())
     scanner:SetMaterial(mat)
@@ -29,7 +29,7 @@ TARDIS:AddScreen("Scanner", {id="scanner",text="Screens.Scanner", menu=false, or
         mat:SetTexture( "$basetexture", screen.scanner )
         scanner:OldPaint()
     end
-    
+
     local label = vgui.Create("DLabel",frame)
     label:SetFont(TARDIS:GetScreenFont(screen, "Med"))
     label.DoLayout = function()
@@ -38,7 +38,7 @@ TARDIS:AddScreen("Scanner", {id="scanner",text="Screens.Scanner", menu=false, or
     end
     label:SetText(TARDIS:GetPhrase("Screens.Scanner.Front"))
     label:DoLayout()
-    
+
     local function updatetext(y)
         local text
         if y==-180 or y==180 then
@@ -83,16 +83,16 @@ TARDIS:AddScreen("Scanner", {id="scanner",text="Screens.Scanner", menu=false, or
         end
     else
         frame.left_arrow_func = function()
-            screen.scannerang.y=screen.scannerang.y-90
-            if screen.scannerang.y<=-180 then
-                screen.scannerang.y=180
+            screen.scannerang.y=screen.scannerang.y+90
+            if screen.scannerang.y>=180 then
+                screen.scannerang.y=-180
             end
             updatetext(screen.scannerang.y)
         end
         frame.right_arrow_func = function()
-            screen.scannerang.y=screen.scannerang.y+90
-            if screen.scannerang.y>=180 then
-                screen.scannerang.y=-180
+            screen.scannerang.y=screen.scannerang.y-90
+            if screen.scannerang.y<=-180 then
+                screen.scannerang.y=180
             end
             updatetext(screen.scannerang.y)
         end
