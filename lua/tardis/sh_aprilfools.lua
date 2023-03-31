@@ -2,6 +2,12 @@ CreateConVar("tardis2_aprilfools_2023", 1, {FCVAR_ARCHIVE, FCVAR_REPLICATED}, "0
 
 function TARDIS:IsAprilFools()
     local aprilFools = cvars.Number("tardis2_aprilfools_2023")
+
+    if CLIENT and aprilFools ~= self.aprilFoolsLast then
+        self.aprilFoolsLast = aprilFools
+        RunConsoleCommand("spawnmenu_reload")
+    end
+
     if aprilFools == 1 and os.date("%d/%m") == "01/04" then
         return true
     elseif aprilFools == 2 then
