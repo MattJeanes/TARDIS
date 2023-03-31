@@ -51,10 +51,7 @@ function TARDIS:Control(control_id, ply, part)
                 net.WriteString(control_id)
             net.SendToServer()
         end
-        ext:CallHook("TardisControlUsed", control_id, ply, part)
-        if IsValid(int) then
-            int:CallHook("TardisControlUsed", control_id, ply, part)
-        end
+        ext:CallCommonHook("TardisControlUsed", control_id, ply, part)
     end
 end
 

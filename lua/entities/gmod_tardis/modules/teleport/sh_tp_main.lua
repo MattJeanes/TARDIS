@@ -106,6 +106,7 @@ if SERVER then
         self:SetData("teleport",true)
         self:SetCollisionGroup( COLLISION_GROUP_WORLD )
 
+        self:CallHook("PreDematStart")
         self:CallHook("DematStart")
         if force then self:CallHook("ForceDematStart") end
 
@@ -296,6 +297,7 @@ else
                 end
             end
         end
+        self:CallHook("PreDematStart")
         self:CallHook("DematStart")
     end)
 
