@@ -21,13 +21,6 @@ local function HandleE2(ent, type, name, e2, ...)
         if type == "Setter" and ent:CheckSecurity(e2.player) == false then
             TARDIS:ErrorMessage(e2.player,"Expression2.Security.UseDenied")
         else
-            if type == "Setter" and name == "Phase" then
-                local ply = ent:GetCreator()
-                --local part = TARDIS:GetPart(ent.interior, "default_blacksticks")
-                local part = TARDIS:GetRegisteredPart("hads")
-                tardisdebug(part.source)
-                TARDIS:UsePart(part)
-            end
             return ent:HandleE2(name, e2, ...)
         end
     else
