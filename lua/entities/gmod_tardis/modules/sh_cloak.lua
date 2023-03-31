@@ -42,7 +42,7 @@ if SERVER then
         self:CallHook("CloakToggled", on)
         return true
     end
-    
+
     function ENT:ToggleCloak()
         local on = not self:GetData("cloak", false)
         return self:SetCloak(on)
@@ -50,6 +50,10 @@ if SERVER then
 
     ENT:AddHook("HandleE2", "cloak", function(self,name,e2)
         if name == "Phase" and TARDIS:CheckPP(e2.player, self) then
+            local part = TARDIS:GetPartByAction(self.interior, "cloak")
+            if part ~= nil then
+                TARDIS:UsePart(part)
+            end
             return (self:GetPower() and self:ToggleCloak()) and 1 or 0
         elseif name == "GetVisible" then
             return self:GetData("cloak",false) and 0 or 1

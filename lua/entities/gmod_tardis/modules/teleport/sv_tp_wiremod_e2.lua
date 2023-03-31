@@ -22,6 +22,14 @@ end)
 ENT:AddHook("HandleE2", "teleport_args", function(self, name, e2, pos, ang)
     if name == "Demat" and TARDIS:CheckPP(e2.player, self) then
         local success = self:CallHook("CanDemat")==false
+        local part = TARDIS:GetPartByAction(self.interior, "teleport")
+        if part ~= nil then
+            TARDIS:UsePart(part)
+        end
+        local part = TARDIS:GetPartByAction(self.interior, "teleport_double")
+        if part ~= nil then
+            TARDIS:UsePart(part)
+        end
         if not pos or not ang then
             self:Demat()
         else
@@ -37,16 +45,37 @@ end)
 
 ENT:AddHook("HandleE2", "teleport_noargs", function(self, name, e2)
     if name == "Mat" and TARDIS:CheckPP(e2.player, self) then
+        local part = TARDIS:GetPartByAction(self.interior, "teleport")
+        if part ~= nil then
+            TARDIS:UsePart(part)
+        end
+        local part = TARDIS:GetPartByAction(self.interior, "teleport_double")
+        if part ~= nil then
+            TARDIS:UsePart(part)
+        end
         local success = (self:GetData("vortex",false) and self:CallHook("CanMat"))==false
         self:Mat()
         return success and 0 or 1
     elseif name == "Longflight" and TARDIS:CheckPP(e2.player, self) then
         return self:ToggleFastRemat() and 1 or 0
     elseif name == "FastReturn" and TARDIS:CheckPP(e2.player, self) then
+        local part = TARDIS:GetPartByAction(self.interior, "fastreturn")
+        if part ~= nil then
+            TARDIS:UsePart(part)
+        end
         local success = self:CallHook("CanDemat")==false
         self:FastReturn()
         return success and 0 or 1
-    elseif name == "FastDemat" and TARDIS:CheckPP(e2.player, self)then
+    elseif name == "FastDemat" and TARDIS:CheckPP(e2.player, self) then
+        local success = self:CallHook("CanDemat")==false
+        local part = TARDIS:GetPartByAction(self.interior, "teleport")
+        if part ~= nil then
+            TARDIS:UsePart(part)
+        end
+        local part = TARDIS:GetPartByAction(self.interior, "teleport_double")
+        if part ~= nil then
+            TARDIS:UsePart(part)
+        end
         local success = self:CallHook("CanDemat")==false
         self:Demat()
         return success and 0 or 1

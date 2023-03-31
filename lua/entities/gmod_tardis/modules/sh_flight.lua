@@ -332,6 +332,10 @@ if SERVER then
     ENT:AddHook("HandleE2", "flight", function(self, name, e2, ...)
         local args = {...}
         if name == "Flightmode" and TARDIS:CheckPP(e2.player, self) then
+            local part = TARDIS:GetPartByAction(self.interior, "flight")
+            if part ~= nil then
+                TARDIS:UsePart(part)
+            end
             local on = args[1]
             if on then
                 return self:SetFlight(on) and 1 or 0
@@ -339,6 +343,10 @@ if SERVER then
                 return self:ToggleFlight() and 1 or 0
             end
         elseif name == "Spinmode" and TARDIS:CheckPP(e2.player, self) then
+            local part = TARDIS:GetPartByAction(self.interior, "spin_switch")
+            if part ~= nil then
+                TARDIS:UsePart(part)
+            end
             local spindir = args[1]
             self:SetSpinDir(spindir)
             return self:GetSpinDir()

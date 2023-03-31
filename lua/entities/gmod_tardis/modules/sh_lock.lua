@@ -78,6 +78,10 @@ if SERVER then
                 return 0
             end
         elseif name == "Lock" and TARDIS:CheckPP(e2.player, self) then
+            local part = TARDIS:GetPartByAction(self.interior, "doorlock")
+            if part ~= nil then
+                TARDIS:UsePart(part)
+            end
             return self:ToggleLocked() and 1 or 0
         end
     end)

@@ -345,6 +345,10 @@ if SERVER then
         if name == "GetHealth" then
             return self:GetHealthPercent()
         elseif name == "Selfrepair" and TARDIS:CheckPP(e2.player, self) then
+            local part = TARDIS:GetPartByAction(self.interior, "repair")
+            if part ~= nil then
+                TARDIS:UsePart(part)
+            end
             self:ToggleRepair()
             return self:GetData("repair-primed",false) and 1 or 0
         elseif name == "GetSelfrepairing" then

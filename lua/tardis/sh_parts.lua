@@ -39,6 +39,27 @@ function TARDIS.DrawOverride(self,override)
     end
 end
 
+function TARDIS:UsePart(part)
+    if part.PowerOffSound ~= false or part.interior:GetPower() then
+        local part_sound = nil
+
+        if part.SoundOff and on then
+            part_sound = part.SoundOff
+        elseif part.SoundOn and (not on) then
+            part_sound = part.SoundOn
+        elseif part.Sound then
+            part_sound = part.Sound
+        end
+
+        if part_sound and part.SoundPos then
+            sound.Play(part_sound, part:LocalToWorld(part.SoundPos))
+        elseif part_sound then
+            part:EmitSound(part_sound)
+        end
+    end
+    part:SetOn(not part:GetOn())
+end
+
 local overrides={
     ["Draw"]={TARDIS.DrawOverride, CLIENT},
     ["Initialize"]={function(self)
@@ -158,6 +179,15 @@ end
 
 function TARDIS:GetParts(ent)
     return IsValid(ent) and ent.parts
+end
+
+function TARDIS:GetPartByAction(ent, action)
+    -- Looks through the parts, and returns the ID of the part that does the action
+    for k,v in pairs(ent.metadata.Interior.Controls) do
+        if v == action then
+            return ent.parts[k]
+        end
+    end
 end
 
 local overridequeue={}

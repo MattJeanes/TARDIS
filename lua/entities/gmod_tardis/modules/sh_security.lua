@@ -51,6 +51,10 @@ end)
 ENT:AddHook("HandleE2", "security", function(self,name,e2)
     if IsValid(self.interior) then
         if name == "Isomorph" and TARDIS:CheckPP(e2.player, self) then
+            local part = TARDIS:GetPartByAction(self.interior, "isomorphic")
+            if part ~= nil then
+                TARDIS:UsePart(part)
+            end
             return self.interior:ToggleSecurity() and 1 or 0
         elseif name == "GetIsomorphic" then
             return self.interior:GetSecurity() and 1 or 0
