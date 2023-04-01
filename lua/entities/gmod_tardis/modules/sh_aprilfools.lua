@@ -5,9 +5,12 @@ if SERVER then
         if not TARDIS:IsAprilFools() then return end
 
         for ply, v in pairs(self.occupants) do
-            if v and IsValid(ply) and not ply.tardis_aprilfools then
-                ply.tardis_aprilfools = true
-                ply:ChatPrint("April fools! :) (tardis2_aprilfools_2023 0 in console to disable)")
+            if v and IsValid(ply) then
+                ply:ScreenFade(SCREENFADE.IN, color_black, 1, 0)
+                if not ply.tardis_aprilfools then
+                    ply.tardis_aprilfools = true
+                    ply:ChatPrint("April fools! :) (tardis2_aprilfools_2023 0 in console to disable)")
+                end
             end
         end
 
@@ -44,5 +47,15 @@ ENT:AddHook("Think", "april_fools", function(self,delta)
                 v:SetColor(ColorAlpha(v:GetColor(),alpha))
             end
         end
+    end
+end)
+
+local mat = Material("models/drmatt/tardis/black")
+hook.Add("PostDrawOpaqueRenderables", "tardis2_april_fools", function()
+    if not TARDIS:IsAprilFools() or wp.drawing then return end
+    local ext=TARDIS:GetExteriorEnt()
+    if IsValid(ext) and IsValid(ext.interior) and (not ext.interior.scannerrender) and (not LocalPlayer():GetTardisData("outside")) then
+        render.SetMaterial(mat)
+        render.DrawSphere(ext.interior:GetPos(), -ext.metadata.Interior.ExitDistance * 1.5, 50, 50)
     end
 end)
