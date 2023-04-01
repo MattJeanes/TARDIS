@@ -1,17 +1,6 @@
 -- April Fools
 
 if SERVER then
-    ENT:AddHook("PreDematStart", "april_fools", function(self, ignore_health)
-        if not TARDIS:IsAprilFools() then
-            return
-        end
-        if not IsValid(self.interior) then
-            return
-        end
-
-        constraint.Weld(self, self.interior, 0, 0, 0, false, false)
-    end)
-
     ENT:AddHook("DematStart", "april_fools", function(self)
         if (not TARDIS:IsAprilFools()) then
             return
@@ -24,12 +13,11 @@ if SERVER then
             end
         end
     end)
-
-    ENT:AddHook("StopDemat", "april_fools", function(self, ignore_health)
-        if not TARDIS:IsAprilFools() then
-            return
-        end
+    
+    ENT:AddHook("PreTeleportPositionChange", "april_fools", function(self)
+        if not TARDIS:IsAprilFools() then return end
         self:Remove()
+        return false
     end)
 else
     ENT:AddHook("PreDematStart", "april_fools", function(self, ignore_health)
@@ -48,13 +36,16 @@ else
     end)
 end
 
-ENT:AddHook("Think","teleport",function(self,delta)
+ENT:AddHook("Think", "april_fools", function(self,delta)
     if not TARDIS:IsAprilFools() then return end
     if IsValid(self.interior) then
         local alpha = self:GetData("alpha",255)
-        for k,v in pairs(self.interior:GetParts()) do
+        self.interior:SetColor(ColorAlpha(self.interior:GetColor(),alpha))
+        local parts = self.interior:GetParts()
+        if not parts then return end
+        for k,v in pairs(parts) do
             if IsValid(v) then
-                v:SetColor(Color(255,255,255,alpha))
+                v:SetColor(ColorAlpha(v:GetColor(),alpha))
             end
         end
     end

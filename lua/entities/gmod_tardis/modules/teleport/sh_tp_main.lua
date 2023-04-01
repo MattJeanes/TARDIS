@@ -119,14 +119,13 @@ if SERVER then
     end
 
     function ENT:ChangePosition(pos, ang, phys_enable)
-        self:CallHook("PreTeleportPositionChange", pos, ang, phys_enable)
+        if self:CallHook("PreTeleportPositionChange", pos, ang, phys_enable) == false then return end
 
         self:SetPos(pos)
         self:SetAngles(ang)
 
         self:CallHook("TeleportPositionChanged", pos, ang, phys_enable)
     end
-
 
     function ENT:Mat(callback)
         local pos = self:GetDestinationPos(true)
