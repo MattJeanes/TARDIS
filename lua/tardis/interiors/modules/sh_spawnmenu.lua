@@ -479,6 +479,8 @@ function TARDIS:AddSpawnmenuInterior(id)
             end
         end
 
+        TARDIS.InteriorIcons[t.ID] = nil
+
         try_int_icon("tardis/interiors/" .. t.ID .. ".vmt")
         try_int_icon("tardis/interiors/" .. t.ID .. ".vtf")
         try_int_icon("tardis/interiors/" .. t.ID .. ".jpg")
