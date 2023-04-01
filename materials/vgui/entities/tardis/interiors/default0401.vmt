@@ -1,6 +1,9 @@
-"VertexlitGeneric"
+"UnlitGeneric"
 {
 	"$basetexture"			"vgui/entities/tardis/interiors/default0401"
+	"$vertexcolor" "1"
+	"$vertexalpha" "1"
+	"$nolod" "1"
 
 	"Proxies"
 	{
@@ -8,7 +11,7 @@
 			{
 				"animatedTextureVar"			"$basetexture"
 				"animatedTextureFrameNumVar"	"$frame"
-				"animatedTextureFrameRate"		"25"
+				"animatedTextureFrameRate"		"5"
 			}
 	}
 }
