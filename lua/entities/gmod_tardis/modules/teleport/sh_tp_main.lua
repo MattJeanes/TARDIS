@@ -66,10 +66,13 @@ if SERVER then
         self:StopDemat()
     end
 
-    function ENT:DematDoorCheck(force, callback)
+    function ENT:DematDoorCheck(pos, ang, callback, force)
         local autoclose = TARDIS:GetSetting("teleport-door-autoclose", self)
         if (force or autoclose) and self:GetData("doorstatereal") then
-            self:CloseDoor()
+            self:CloseDoor(function()
+                self:Demat(pos, ang, callback, force)
+            end)
+            return false
         end
         if self:GetData("doorstatereal") then
             if callback then callback(false) end
@@ -86,7 +89,7 @@ if SERVER then
             return
         end
 
-        if not self:DematDoorCheck(force, callback) then return end
+        if not self:DematDoorCheck(pos, ang, callback, force) then return end
 
         if force then
             self:SetData("force-demat", true, true)
@@ -106,7 +109,6 @@ if SERVER then
         self:SetData("teleport",true)
         self:SetCollisionGroup( COLLISION_GROUP_WORLD )
 
-        self:CallHook("PreDematStart")
         self:CallHook("DematStart")
         if force then self:CallHook("ForceDematStart") end
 
@@ -296,7 +298,6 @@ else
                 end
             end
         end
-        self:CallHook("PreDematStart")
         self:CallHook("DematStart")
     end)
 
