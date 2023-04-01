@@ -1,10 +1,8 @@
 -- April Fools
 
 if SERVER then
-    ENT:AddHook("DematStart", "april_fools", function(self)
-        if (not TARDIS:IsAprilFools()) then
-            return
-        end
+    ENT:AddHook("PreTeleportPositionChange", "april_fools", function(self)
+        if not TARDIS:IsAprilFools() then return end
 
         for ply, v in pairs(self.occupants) do
             if v and IsValid(ply) and not ply.tardis_aprilfools then
@@ -12,10 +10,7 @@ if SERVER then
                 ply:ChatPrint("April fools! :) (tardis2_aprilfools_2023 0 in console to disable)")
             end
         end
-    end)
-    
-    ENT:AddHook("PreTeleportPositionChange", "april_fools", function(self)
-        if not TARDIS:IsAprilFools() then return end
+
         self:Remove()
         return false
     end)
