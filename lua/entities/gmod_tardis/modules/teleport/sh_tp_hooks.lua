@@ -49,10 +49,7 @@ if SERVER then
             return false
         end
     end)
-
-
 else
-
     ENT:AddHook("ShouldTurnOnLight","teleport",function(self)
         if self:GetData("teleport") then
             return true
