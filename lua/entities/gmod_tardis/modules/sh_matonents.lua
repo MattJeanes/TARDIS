@@ -13,7 +13,7 @@ if SERVER then
                 if v:IsPlayer() and v:GetTardisData("exterior")~=self then
                     self:PlayerEnter(v)
                     v:ScreenFade(SCREENFADE.IN, Color(255,255,255,200), 1, 0.1)
-                elseif v:IsNPC() then
+                elseif v:IsNPC() or v:IsNextBot() then
                     local npos = self:WorldToLocal(v:GetPos())
                     v:SetPos(pos + npos)
                 end
