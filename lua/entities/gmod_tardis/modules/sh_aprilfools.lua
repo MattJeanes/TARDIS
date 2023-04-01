@@ -57,7 +57,7 @@ local mat = Material("models/drmatt/tardis/black")
 hook.Add("PostDrawOpaqueRenderables", "tardis2_april_fools", function()
     if not TARDIS:IsAprilFools() or wp.drawing then return end
     local ext=TARDIS:GetExteriorEnt()
-    if IsValid(ext) and IsValid(ext.interior) and ext:GetData("teleport",false) and (not ext.interior.scannerrender) and (not LocalPlayer():GetTardisData("outside")) then
+    if IsValid(ext) and IsValid(ext.interior) and (ext:GetData("teleport",false) or ext:GetData("vortex",false)) and (not ext.interior.scannerrender) and (not LocalPlayer():GetTardisData("outside")) then
         render.SetMaterial(mat)
         render.DrawSphere(ext.interior:GetPos(), -ext.metadata.Interior.ExitDistance * 1.5, 50, 50)
     end
