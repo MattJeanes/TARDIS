@@ -3,7 +3,7 @@ function TARDIS:SpawnByID(id)
     surface.PlaySound("ui/buttonclickrelease.wav")
 end
 
-TARDIS.InteriorIcons = {}
+TARDIS.InteriorIcons = TARDIS.InteriorIcons or {}
 
 if CLIENT then
     -- this option would be very useful for developers but noone else
@@ -247,8 +247,28 @@ if CLIENT then
 
     end
 
-    function TARDIS.Spawnmenu.UpdateIconMaterial(container)
-        local setting = TARDIS:GetSetting("spawnmenu_interior_icons")
+    function TARDIS:AprilFools_RandomizeInteriorIcons(container)
+        local keys = table.GetKeys(TARDIS.InteriorIcons)
+        local total = table.Count(TARDIS.InteriorIcons)
+        local offset = math.random(total)
+
+        local spawnname_overrides = {}
+
+        for i,k in ipairs(keys) do
+            local n = (i - 1 + offset) % total + 1
+            spawnname_overrides[k] = keys[n]
+        end
+
+        for k,v in pairs(container.tardis_icons) do
+            if v.is_tardis_icon then
+                v.spawnname_override = spawnname_overrides[v.original_spawnname]
+                v.interior_material = TARDIS.InteriorIcons[v.spawnname_override]
+            end
+        end
+    end
+
+    function TARDIS.Spawnmenu.UpdateIconMaterial(container, update_current)
+        local setting = TARDIS:GetSetting("spawnmenu_interior_icons") and not TARDIS:IsAprilFools()
 
         if setting ~= container.interior_icons_applied then
 
@@ -264,10 +284,18 @@ if CLIENT then
         if setting then return end
 
         local hovered = vgui.GetHoveredPanel()
-        if hovered == container.hovered then return end
+        if hovered == container.hovered and not update_current then return end
+
+        if hovered and hovered.is_tardis_icon and TARDIS:IsAprilFools() then
+            TARDIS:AprilFools_RandomizeInteriorIcons(container)
+        end
 
         if container.hovered then
-            container.hovered:SetMaterial(container.hovered.original_material)
+            if TARDIS:IsAprilFools() and TARDIS:GetSetting("spawnmenu_interior_icons") then
+                container.hovered:SetMaterial(container.hovered.interior_material)
+            else
+                container.hovered:SetMaterial(container.hovered.original_material)
+            end
         end
 
         if hovered and hovered.is_tardis_icon and hovered.interior_material then
@@ -323,6 +351,20 @@ if CLIENT then
         dmenu:Open()
     end
 
+    function TARDIS.Spawnmenu.DoClickIconMenu(container, obj, icon)
+        local id = TARDIS:SelectSpawnID(icon.spawnname_override or obj.spawnname, LocalPlayer())
+        TARDIS:SpawnByID(id)
+    end
+
+    function TARDIS.Spawnmenu.OpenIconMenu(container, obj)
+        if TARDIS:IsAprilFools() then
+            TARDIS:AprilFools_RandomizeInteriorIcons(container)
+            TARDIS.Spawnmenu.UpdateIconMaterial(container, true)
+            return
+        end
+        TARDIS.Spawnmenu.OpenRightClickMenu(obj)
+    end
+
     function TARDIS.Spawnmenu.CreateIcon(container, obj)
         if not obj.material then return end
         if not obj.nicename then return end
@@ -338,11 +380,11 @@ if CLIENT then
 
         icon.is_tardis_icon = true
         icon.original_material = obj.material
+        icon.original_spawnname = obj.spawnname
         icon.interior_material = TARDIS.InteriorIcons[obj.spawnname]
 
         icon.DoClick = function()
-            local id = TARDIS:SelectSpawnID(obj.spawnname, LocalPlayer())
-            TARDIS:SpawnByID(id)
+            TARDIS.Spawnmenu.DoClickIconMenu(container, obj, icon)
         end
 
         if container.Think ~= TARDIS.Spawnmenu.UpdateIconMaterial then
@@ -353,7 +395,7 @@ if CLIENT then
         table.insert(container.tardis_icons, icon)
 
         icon.OpenMenu = function()
-            TARDIS.Spawnmenu.OpenRightClickMenu(obj)
+            TARDIS.Spawnmenu.OpenIconMenu(container, obj)
         end
 
         if IsValid(container) then
@@ -375,6 +417,12 @@ if CLIENT then
             TARDIS:AddSpawnmenuInterior(k)
         end
         RunConsoleCommand("spawnmenu_reload")
+    end)
+
+    hook.Add("PreReloadToolsMenu", "tardis-spawnmenu", function()
+        for k,v in pairs(TARDIS:GetInteriors()) do
+            TARDIS:AddSpawnmenuInterior(k)
+        end
     end)
 end
 
@@ -408,6 +456,10 @@ function TARDIS:AddSpawnmenuInterior(id)
     ent.Category = cat_override or t.Category or default_category
     ent.PrintName = TARDIS:GetPhrase(name_override or t.Name)
 
+    if TARDIS:IsAprilFools() then
+        ent.PrintName = TARDIS:GetPhrase("Common.TARDIS")
+    end
+
     if CLIENT then
         if TARDIS:IsFavoriteInt(t.ID, LocalPlayer()) then
             ent.PrintName = "  " .. ent.PrintName -- move to the top
@@ -426,6 +478,8 @@ function TARDIS:AddSpawnmenuInterior(id)
                 TARDIS.InteriorIcons[t.ID] = "vgui/entities/" .. filename
             end
         end
+
+        TARDIS.InteriorIcons[t.ID] = nil
 
         try_int_icon("tardis/interiors/" .. t.ID .. ".vmt")
         try_int_icon("tardis/interiors/" .. t.ID .. ".vtf")
@@ -447,9 +501,16 @@ function TARDIS:AddSpawnmenuInterior(id)
         try_icon("tardis/interiors/default/" .. t.ID .. ".jpg")
 
         try_icon("gmod_tardis.vmt")
+
+        if TARDIS:IsAprilFools() then
+            ent.IconOverride="vgui/entities/gmod_tardis.vmt"
+
+            if t.ID == "default" then
+                TARDIS.InteriorIcons[t.ID] = "vgui/entities/tardis/interiors/default0401.vmt"
+            end
+        end
     end
 
     ent.ScriptedEntityType="tardis"
     list.Set("SpawnableEntities", t.ID, ent)
 end
-

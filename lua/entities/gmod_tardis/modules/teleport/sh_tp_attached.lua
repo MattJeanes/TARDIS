@@ -93,15 +93,14 @@ end
 
 function ENT:SetAttachedTransparency(alpha)
     local attached=self:GetData("demat-attached")
+
     if attached then
         for k,v in pairs(attached) do
-            if IsValid(k) then
-                if not (v==0) then
-                    if not (k:GetRenderMode()==RENDERMODE_TRANSALPHA) then
-                        k:SetRenderMode(RENDERMODE_TRANSALPHA)
-                    end
-                    k:SetColor(ColorAlpha(k:GetColor(),alpha))
+            if IsValid(k) and not (v==0) then
+                if k:GetRenderMode() ~= RENDERMODE_TRANSALPHA then
+                    k:SetRenderMode(RENDERMODE_TRANSALPHA)
                 end
+                k:SetColor(ColorAlpha(k:GetColor(),alpha))
             end
         end
     end

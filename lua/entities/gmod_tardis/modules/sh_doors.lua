@@ -59,8 +59,9 @@ if SERVER then
     function ENT:OpenDoor(callback)
         if self:GetData("doorstate",false) then
             delay(callback,true)
+            return true
         else
-            self:ToggleDoor(callback)
+            return self:ToggleDoor(callback)
         end
     end
 
@@ -68,10 +69,12 @@ if SERVER then
         if self:GetData("doorstate",false) ~= self:GetData("doorstatereal",false) then
             local callbacks=self:GetData("doorchangecallback")
             callbacks[callback]=true
+            return true
         elseif not self:GetData("doorstate",false) then
             delay(callback,false)
+            return false
         else
-            self:ToggleDoor(callback)
+            return self:ToggleDoor(callback)
         end
     end
 
@@ -82,6 +85,14 @@ if SERVER then
             return self:GetData("doorstate",false)
         end
     end
+
+    ENT:AddHook("HandleE2", "door", function(self,name,e2)
+        if name == "Door" and TARDIS:CheckPP(e2.player, self) then
+            return self:ToggleDoor() and 1 or 0
+        elseif name == "GetDoor" then
+            return self:DoorOpen(true) and 1 or 0
+        end
+    end)
 
     ENT:AddHook("ToggleDoor", "intdoors", function(self,open)
         local intdoor=TARDIS:GetPart(self.interior,"door")
