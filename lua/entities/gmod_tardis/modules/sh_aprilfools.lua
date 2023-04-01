@@ -28,6 +28,7 @@ else
                 v.RenderGroup = RENDERGROUP_BOTH
             end
         end
+        self.interior.tips = {}
     end)
 end
 
