@@ -502,10 +502,13 @@ function TARDIS:AddSpawnmenuInterior(id)
 
         if TARDIS:IsAprilFools() then
             ent.IconOverride="vgui/entities/gmod_tardis.vmt"
+
+            if t.ID == "default" then
+                TARDIS.InteriorIcons[t.ID] = "vgui/entities/tardis/interiors/default0401.vmt"
+            end
         end
     end
 
     ent.ScriptedEntityType="tardis"
     list.Set("SpawnableEntities", t.ID, ent)
 end
-

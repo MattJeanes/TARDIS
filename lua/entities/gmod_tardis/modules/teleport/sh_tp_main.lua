@@ -224,7 +224,6 @@ if SERVER then
         if not self:GetData("demat-fast", false)
             and not self:GetData("redecorate")
             and not self:GetData("redecorate_parent")
-            and not TARDIS:IsAprilFools()
         then
             local randomLocation = self:GetRandomLocation(false)
             if randomLocation then
@@ -447,14 +446,6 @@ ENT:AddHook("Think","teleport",function(self,delta)
     alpha=math.Approach(alpha,target,delta*66*sequencespeed)
     self:SetData("alpha",alpha)
     self:SetAttachedTransparency(alpha)
-
-    if TARDIS:IsAprilFools() and IsValid(self.interior) then
-        for k,v in pairs(self.interior:GetParts()) do
-            if IsValid(v) then
-                v:SetColor(Color(255,255,255,alpha))
-            end
-        end
-    end
 end)
 
 -- returns the progress of the current sequence on a scale from 0 to 1

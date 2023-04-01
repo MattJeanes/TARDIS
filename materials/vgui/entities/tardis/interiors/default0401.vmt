@@ -1,0 +1,14 @@
+"VertexlitGeneric"
+{
+	"$basetexture"			"vgui/entities/tardis/interiors/default0401"
+
+	"Proxies"
+	{
+		"AnimatedTexture"
+			{
+				"animatedTextureVar"			"$basetexture"
+				"animatedTextureFrameNumVar"	"$frame"
+				"animatedTextureFrameRate"		"25"
+			}
+	}
+}
