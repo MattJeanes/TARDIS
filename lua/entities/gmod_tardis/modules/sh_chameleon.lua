@@ -112,10 +112,10 @@ function ENT:ChangeExterior(id, animate)
     end
 
     if self:CallCommonHook("CanChangeExterior", id) == false then
-        self:SetData("chameleon_trying_to_change", id)
+        self:SetData("chameleon_selected_exterior", id, true)
         return
     end
-    self:SetData("chameleon_trying_to_change", nil)
+    self:SetData("chameleon_selected_exterior", nil, true)
 
     if not IsValid(self.interior) then
         return
@@ -203,7 +203,7 @@ function ENT:ChangeExterior(id, animate)
 end
 
 function ENT:RetryChameleon(animate)
-    local id = self:GetData("chameleon_trying_to_change")
+    local id = self:GetData("chameleon_selected_exterior")
     if id then
         self:ChangeExterior(id, animate)
     end
