@@ -103,7 +103,7 @@ function ENT:ChangeExteriorMetadata(id)
         self.metadata.ExteriorOriginal = self.metadata.Exterior
     end
 
-    local ext_md = (id == "original") and original_md or TARDIS:CreateExteriorMetadata(id)
+    local ext_md = (id == nil and original_md) or TARDIS:CreateExteriorMetadata(id)
 
     local oldvortex = self.metadata.Exterior.Parts.vortex
     if oldvortex then
@@ -215,7 +215,7 @@ function ENT:ChangeExterior(id, animate)
         self:CallCommonHook("ExteriorChanged", id)
         self:SendMessage("exterior_changed", {id})
 
-        self:SetData("chameleon_active", (id ~= "original"), true)
+        self:SetData("chameleon_active", (id ~= nil), true)
     end)
 end
 

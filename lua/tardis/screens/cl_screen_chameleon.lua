@@ -32,6 +32,11 @@ TARDIS:AddScreen("Chameleon", {id="chameleon", text="Screens.Chameleon", menu=fa
         list_interiors = vgui.Create("DListView",frame)
     end
 
+    local panel = vgui.Create( "DPanel", frame )
+    panel:SetSize(listW, listT)
+    panel:SetPos(2 * listW + 3 * gap, gap)
+    panel:SetBackgroundColor(bgcolor)
+
     list_categories:SetSize(listW, listT)
     list_categories:SetPos(gap, gap)
     list_categories:AddColumn(TARDIS:GetPhrase("Screens.Chameleon.Categories"))
@@ -81,9 +86,16 @@ TARDIS:AddScreen("Chameleon", {id="chameleon", text="Screens.Chameleon", menu=fa
         end
     end
 
-    local change_id
-
     refresh_exteriors_list()
+
+    local change_id
+    local function select_exterior(id)
+        change_id = id
+        -- might add exterior previews in the future
+    end
+    local function unselect_exterior()
+        change_id = nil
+    end
 
     function list_categories:OnRowSelected(rowIndex, row)
         refresh_exteriors_list()
@@ -91,18 +103,37 @@ TARDIS:AddScreen("Chameleon", {id="chameleon", text="Screens.Chameleon", menu=fa
 
     function list_categories:OnRowSelectionRemoved(rowIndex, row)
         list_interiors:Clear()
+        unselect_exterior()
     end
 
     function list_interiors:OnRowSelected(rowIndex, row)
-        change_id = exteriors[rowIndex][1]
+        select_exterior(exteriors[rowIndex][1])
+    end
 
-        if list_interiors:GetSelectedLine() and change_id ~= nil then
+    function list_interiors:OnRowSelectionRemoved(rowIndex, row)
+        unselect_exterior()
+    end
+
+    local apply = vgui.Create("DButton", panel)
+    apply:SetSize(bW, bT)
+    apply:SetPos(gap2, listT - gap2 - bT)
+    apply:SetText(TARDIS:GetPhrase("Screens.Chameleon.Apply"))
+    apply:SetFont(TARDIS:GetScreenFont(screen, "Default"))
+
+    function apply:DoClick()
+        if change_id ~= nil then
             ext:ChangeExterior(change_id, true)
         end
     end
 
-    function list_interiors:DoDoubleClick(rowIndex, row)
+    local reset = vgui.Create("DButton", panel)
+    reset:SetSize(bW, bT)
+    reset:SetPos(2 * gap2 + bW, listT - gap2 - bT)
+    reset:SetText(TARDIS:GetPhrase("Screens.Chameleon.Reset"))
+    reset:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 
+    function reset:DoClick()
+        ext:ChangeExterior(nil, true)
     end
 
 end)

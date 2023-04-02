@@ -100,10 +100,4 @@ function TARDIS:GetExteriorCategories()
     return self.ExteriorCategories
 end
 
-TARDIS:AddExterior({
-	ID = "original",
-	Name = "Original (no disguise)",
-	Base = "base",
-})
-
 TARDIS:LoadInteriors()
