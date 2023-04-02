@@ -52,7 +52,7 @@ TARDIS:AddScreen("Music", {id="music", text="Screens.Music", menu=false, order=1
     local frW = frame:GetWide()
     local frT = frame:GetTall()
 
-    local gap = math.min(frT, frW) * 0.05 * 1.2
+    local gap = math.min(frT, frW) * 0.06
     local gap2 = math.min(frT, frW) * 0.02
 
     local listW = frW * 0.3

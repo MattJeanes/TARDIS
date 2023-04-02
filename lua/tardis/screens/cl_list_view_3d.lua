@@ -244,6 +244,12 @@ function ListView3D:ClearSelection()
     end
     self.selected_line = nil
 end
+function ListView3D:SelectFirstItem()
+    self:ClearSelection()
+    local first = self.line_elements[1]
+    first:SetToggle(true)
+    first:OnToggled(true)
+end
 
 function ListView3D:GetScroll()
     return self.scroll

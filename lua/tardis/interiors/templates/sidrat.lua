@@ -54,5 +54,6 @@ local E = TARDIS:CopyTable(T.Exterior)
 E.ID = "sidrat"
 E.Base = "base"
 E.Name = "SIDRAT"
+E.Category = "TT-capsules"
 
 TARDIS:AddExterior(E)
