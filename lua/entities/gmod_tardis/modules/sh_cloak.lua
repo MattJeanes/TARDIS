@@ -36,9 +36,7 @@ if SERVER then
         self:SetData("cloak", on)
         self:SendMessage("cloak", { on })
 
-        if (not self:GetData("teleport")) and (not self:GetData("vortex")) then
-            self:DrawShadow(not on)
-        end
+        self:UpdateShadow()
         self:CallHook("CloakToggled", on)
         return true
     end
@@ -76,6 +74,21 @@ if SERVER then
             if self:GetCloak() then
                 self:SetCloak(false)
             end
+        end
+    end)
+
+    function ENT:UpdateShadow()
+        local should_draw = (self:CallHook("ShouldDrawShadow") ~= false)
+        self:DrawShadow(should_draw)
+
+        for k,v in pairs(self.parts) do
+            v:DrawShadow(not v.NoShadow and should_draw)
+        end
+    end
+
+    ENT:AddHook("ShouldDrawShadow", "cloak", function(self)
+        if self:GetData("cloak") then
+            return false
         end
     end)
 else

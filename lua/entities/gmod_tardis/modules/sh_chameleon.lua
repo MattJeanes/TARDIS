@@ -125,13 +125,16 @@ function ENT:ChangeExterior(id, animate)
         self:SendMessage("chameleon_exterior_animation")
     end
 
-    local delay = (animate and self.metadata.Exterior.ChameleonAnimTime / 2) or 0
+    local anim_time = self.metadata.Exterior.ChameleonAnimTime
+    local delay = (animate and anim_time / 2) or 0
 
     if animate then
+        self:UpdateShadow()
         self:SetData("chameleon_changing", true, true)
 
-        self:Timer("chameleon_changing_reset", self.metadata.Exterior.ChameleonAnimTime, function()
+        self:Timer("chameleon_changing_reset", anim_time, function()
             self:SetData("chameleon_changing", false, true)
+            self:UpdateShadow()
         end)
     end
 
@@ -142,9 +145,10 @@ function ENT:ChangeExterior(id, animate)
         self:SetSolid(SOLID_VPHYSICS)
         self.phys = self:GetPhysicsObject()
 
-        self.phys:SetMass(ext_md.Mass)
-
-        if (self.phys:IsValid()) then
+        if (IsValid(self.phys)) then
+            self.phys:SetMass(ext_md.Mass)
+            self.phys:EnableGravity(not self:GetData("float"))
+            self.phys:EnableMotion(not self:GetPhyslock())
             self.phys:Wake()
         end
 
@@ -194,13 +198,25 @@ function ENT:ChangeExterior(id, animate)
     end)
 end
 
-ENT:AddHook("ToggleDoor", "chameleon", function(self,open)
-    if open then return end
-
+function ENT:RetryChameleon(animate)
     local id = self:GetData("chameleon_trying_to_change")
     if id then
-        self:ChangeExterior(id, true)
+        self:ChangeExterior(id, animate)
     end
+end
+
+ENT:AddHook("ToggleDoor", "chameleon", function(self,open)
+    if open then return end
+    self:RetryChameleon(true)
+end)
+
+ENT:AddHook("PowerToggled", "chameleon", function(self,on)
+    if not on then return end
+    self:RetryChameleon(true)
+end)
+
+ENT:AddHook("MatStart", "chameleon", function(self)
+    self:RetryChameleon(false)
 end)
 
 ENT:AddHook("CanToggleDoor", "chameleon", function(self)
@@ -209,16 +225,16 @@ ENT:AddHook("CanToggleDoor", "chameleon", function(self)
     end
 end)
 
-ENT:AddHook("CanChangeExterior", "chameleon", function(self)
+ENT:AddHook("ShouldDrawShadow", "chameleon", function(self)
     if self:GetData("chameleon_changing") then
         return false
     end
 end)
 
-ENT:AddHook("MatStart", "chameleon", function(self)
-    local id = self:GetData("chameleon_trying_to_change")
-    if id then
-        self:ChangeExterior(id, false)
+
+ENT:AddHook("CanChangeExterior", "chameleon", function(self)
+    if self:GetData("chameleon_changing") then
+        return false
     end
 end)
 
