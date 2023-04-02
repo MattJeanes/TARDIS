@@ -91,8 +91,6 @@ function ENT:ChangeExteriorMetadata(id)
         ext_md.Parts.vortex = TARDIS:CopyTable(oldvortex)
     end
 
-    tardisdebug("CEM", CLIENT and "CL" or "SV")
-
     self.metadata.Exterior = ext_md
     self.interior.metadata.Exterior = ext_md
 
@@ -128,6 +126,14 @@ function ENT:ChangeExterior(id, animate)
     end
 
     local delay = (animate and self.metadata.Exterior.ChameleonAnimTime / 2) or 0
+
+    if animate then
+        self:SetData("chameleon_changing", true, true)
+
+        self:Timer("chameleon_changing_reset", self.metadata.Exterior.ChameleonAnimTime, function()
+            self:SetData("chameleon_changing", false, true)
+        end)
+    end
 
     self:Timer("chameleon_change", delay, function()
         self:SetModel(ext_md.Model)
@@ -194,6 +200,18 @@ ENT:AddHook("ToggleDoor", "chameleon", function(self,open)
     local id = self:GetData("chameleon_trying_to_change")
     if id then
         self:ChangeExterior(id, true)
+    end
+end)
+
+ENT:AddHook("CanToggleDoor", "chameleon", function(self)
+    if self:GetData("chameleon_changing") then
+        return false
+    end
+end)
+
+ENT:AddHook("CanChangeExterior", "chameleon", function(self)
+    if self:GetData("chameleon_changing") then
+        return false
     end
 end)
 
