@@ -74,6 +74,10 @@ else
             return true
         end
     end)
+
+    ENT:AddHook("ExteriorChanged", "scale", function(self)
+        self:DisableMatrix("RenderMultiply")
+    end)
 end
 
 function ENT:ChangeExteriorMetadata(id)
