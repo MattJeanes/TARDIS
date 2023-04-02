@@ -27,23 +27,29 @@ function TARDIS:AddExterior(t)
     self:SetExteriorCategory(id, t.Category)
 end
 
-function TARDIS:ImportExterior(int_id, ext_id, category, name, base, modify_func)
-    if base == nil then base = "base" end
-
+--[[
+supported import_options:
+    ext_id
+    base
+    name
+    category
+    modify_func
+]]
+function TARDIS:ImportExterior(int_id, import_options)
     local T = self:GetInterior(int_id)
     if not T or not T.Exterior then return false end
 
     local E = self:CopyTable(T.Exterior)
-    E.ID = ext_id or int_id
-    E.Base = base
-    E.Name = name or T.Name or ext_id
+    E.ID = import_options.ext_id or int_id
+    E.Base = import_options.base or "base"
+    E.Name = import_options.name or T.Name or ext_id
 
-    if category then
-        E.Category = category
+    if import_options.category then
+        E.Category = import_options.category
     end
 
-    if modify_func then
-        E = modify_func(E) or E
+    if import_options.modify_func then
+        E = import_options.modify_func(E) or E
     end
 
     self:AddExterior(E)

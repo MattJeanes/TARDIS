@@ -346,11 +346,3 @@ T.Interior.CustomHooks = {
 }
 
 TARDIS:AddInterior(T)
-
-local E = TARDIS:CopyTable(T.Exterior)
-E.ID = "default"
-E.Base = "base"
-E.Name = "Default Police Box"
-E.Category = "Police boxes"
-
-TARDIS:AddExterior(E)
