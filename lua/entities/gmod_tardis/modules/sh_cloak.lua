@@ -82,7 +82,9 @@ if SERVER then
         self:DrawShadow(should_draw)
 
         for k,v in pairs(self.parts) do
-            v:DrawShadow(not v.NoShadow and should_draw)
+            if IsValid(v) then
+                v:DrawShadow(not v.NoShadow and should_draw)
+            end
         end
     end
 

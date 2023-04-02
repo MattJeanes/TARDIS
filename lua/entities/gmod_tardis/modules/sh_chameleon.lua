@@ -184,7 +184,9 @@ function ENT:ChangeExterior(id, animate)
         self:SetData("chameleon_intportal_z_offset", new_z_offset)
 
         for k,v in pairs(self:GetParts()) do
-            v:Remove()
+            if IsValid(v) then
+                v:Remove()
+            end
         end
 
         TARDIS:SetupParts(self)

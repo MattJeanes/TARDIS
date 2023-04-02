@@ -156,6 +156,6 @@ E.ID = "base"
 E.Base = true
 E.Name = "Base"
 
-E.Light.Enabled = false
+E.Light.enabled = false
 
 TARDIS:AddExterior(E)
