@@ -5,7 +5,7 @@ TARDIS:AddScreen("Chameleon", {id="chameleon", text="Screens.Chameleon", menu=fa
     local gap = math.min(frT, frW) * 0.05 * 1.2
     local gap2 = math.min(frT, frW) * 0.02
 
-    local listW = frW * 0.9
+    local listW = frW - 2 * gap
     local listT = frT - 2 * gap
     local tbW = frW - 4 * gap - 2 * listW - 2 * gap2
     local tbT = frT * 0.1
@@ -39,8 +39,10 @@ TARDIS:AddScreen("Chameleon", {id="chameleon", text="Screens.Chameleon", menu=fa
     local exteriors = {}
 
     list_interiors:Clear()
-    for k,v in pairs(TARDIS:GetInteriors()) do
-        table.insert(exteriors, {k, v.Name})
+    for k,v in pairs(TARDIS:GetExteriors()) do
+        if v.Base ~= true then
+            table.insert(exteriors, {k, v.Name or v.ID})
+        end
     end
 
     for i,v in ipairs(exteriors) do

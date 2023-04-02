@@ -148,3 +148,10 @@ T.Exterior = {
 }
 
 TARDIS:AddInterior(T)
+
+local E = TARDIS:CopyTable(T.Exterior)
+E.ID = "base"
+E.Base = true
+E.Name = "Base"
+
+TARDIS:AddExterior(E)
