@@ -106,3 +106,4 @@ TARDIS:AddExterior({
 	Base = "base",
 })
 
+TARDIS:LoadInteriors()

@@ -106,3 +106,5 @@ if CLIENT then
         self:ToggleCustomSetting(id, "is_favorite")
     end
 end
+
+TARDIS:LoadInteriors()

@@ -2,19 +2,30 @@
 
 CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - selected interior to spawn when not using the spawnmenu")
 
-TARDIS.Metadata = {}
-TARDIS.MetadataRaw = {}
-TARDIS.MetadataTemplates = {}
-TARDIS.MetadataVersions = {}
-TARDIS.MetadataCustomVersions = {}
+function TARDIS:LoadInteriors()
+    if TARDIS.InteriorsLoading then return end
 
-TARDIS.ExteriorsMetadata = {}
-TARDIS.ExteriorsMetadataRaw = {}
-TARDIS.ExteriorCategories = {}
+    TARDIS.Metadata = {}
+    TARDIS.MetadataRaw = {}
+    TARDIS.MetadataTemplates = {}
+    TARDIS.MetadataVersions = {}
+    TARDIS.MetadataCustomVersions = {}
 
-TARDIS.IntCustomSettings = {}
-TARDIS.IntUpdatesPerTemplate = {}
+    TARDIS.ExteriorsMetadata = {}
+    TARDIS.ExteriorsMetadataRaw = {}
+    TARDIS.ExteriorCategories = {}
 
+    TARDIS.IntCustomSettings = {}
+    TARDIS.IntUpdatesPerTemplate = {}
+
+    TARDIS.InteriorsLoading = true
+    TARDIS:LoadFolder("interiors/modules")
+    TARDIS:LoadFolder("interiors/templates", nil, true)
+    TARDIS:LoadFolder("interiors", nil, true)
+    TARDIS:LoadFolder("interiors/exteriors", nil, true)
+    TARDIS:LoadFolder("interiors/versions", nil, true)
+    TARDIS.InteriorsLoading = nil
+end
 
 function TARDIS:PreMergeExteriorMetadata(ext_m)
     if ext_m and ext_m.Teleport then
@@ -126,7 +137,4 @@ function TARDIS:GetInterior(id)
     return self.Metadata[id] or self.MetadataRaw[id]
 end
 
-TARDIS:LoadFolder("interiors/modules")
-TARDIS:LoadFolder("interiors", nil, true)
-TARDIS:LoadFolder("interiors/exteriors", nil, true)
-TARDIS:LoadFolder("interiors/versions", nil, true)
+TARDIS:LoadInteriors()

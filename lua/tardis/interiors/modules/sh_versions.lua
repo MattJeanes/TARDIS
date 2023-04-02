@@ -155,3 +155,5 @@ function TARDIS:SelectNewRandomInterior(current, ply)
 
     return TARDIS:SelectSpawnID(TARDIS:GetMainVersionId(chosen_int), ply)
 end
+
+TARDIS:LoadInteriors()
