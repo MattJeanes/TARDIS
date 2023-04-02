@@ -49,6 +49,12 @@ if SERVER then
             return false
         end
     end)
+
+    ENT:AddHook("CanChangeExterior","teleport",function(self)
+        if self:GetData("teleport") or self:GetData("vortex") then
+            return false
+        end
+    end)
 else
     ENT:AddHook("ShouldTurnOnLight","teleport",function(self)
         if self:GetData("teleport") then

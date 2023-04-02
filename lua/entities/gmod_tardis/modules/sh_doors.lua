@@ -209,6 +209,12 @@ if SERVER then
             intdoor:SetBodygroup(bodygroup,value)
         end
     end)
+
+    ENT:AddHook("CanChangeExterior","doors",function(self)
+        if self:DoorOpen() then
+            return false
+        end
+    end)
 else
     function ENT:DoorOpen(real)
         local door=self:GetPart("door")

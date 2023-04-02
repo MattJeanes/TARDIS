@@ -77,8 +77,10 @@ function ENT:ChangeExterior(id)
     end
 
     if self:CallCommonHook("CanChangeExterior", id) == false then
+        self:SetData("chameleon_trying_to_change", id)
         return
     end
+    self:SetData("chameleon_trying_to_change", nil)
 
     if not IsValid(self.interior) then
         return
@@ -157,6 +159,15 @@ function ENT:ChangeExterior(id)
         self:SetData("chameleon_active", (id ~= "original"), true)
     end)
 end
+
+ENT:AddHook("ToggleDoor", "chameleon", function(self,open)
+    if open then return end
+
+    local id = self:GetData("chameleon_trying_to_change")
+    if id then
+        self:ChangeExterior(id)
+    end
+end)
 
 ENT:AddHook("ShouldDraw", "chameleon", function(self)
     if IsValid(self.interior) and self:GetData("chameleon_active", false)
