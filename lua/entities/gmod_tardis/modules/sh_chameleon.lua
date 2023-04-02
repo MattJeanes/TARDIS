@@ -1,6 +1,6 @@
 if SERVER then
     ENT:OnMessage("chameleon_change_exterior", function(self,data,ply)
-        self:ChangeExterior(data[1])
+        self:ChangeExterior(data[1], data[2])
     end)
 else
     ENT:OnMessage("chameleon_exterior_animation", function(self,data,ply)
@@ -70,9 +70,9 @@ else
     end)
 end
 
-function ENT:ChangeExterior(id)
+function ENT:ChangeExterior(id, animate)
     if CLIENT then
-        self:SendMessage("chameleon_change_exterior", {id})
+        self:SendMessage("chameleon_change_exterior", {id, animate})
         return
     end
 
@@ -101,9 +101,12 @@ function ENT:ChangeExterior(id)
     self.metadata.Exterior = ext_md
     self.interior.metadata.Exterior = ext_md
 
-    self:SendMessage("chameleon_exterior_animation")
 
-    local delay = self.metadata.Exterior.ChameleonAnimTime / 2
+    if animate then
+        self:SendMessage("chameleon_exterior_animation")
+    end
+
+    local delay = (animate and self.metadata.Exterior.ChameleonAnimTime / 2) or 0
 
     self:Timer("chameleon_change", delay, function()
         self:SetModel(ext_md.Model)
@@ -165,7 +168,14 @@ ENT:AddHook("ToggleDoor", "chameleon", function(self,open)
 
     local id = self:GetData("chameleon_trying_to_change")
     if id then
-        self:ChangeExterior(id)
+        self:ChangeExterior(id, false)
+    end
+end)
+
+ENT:AddHook("MatStart", "chameleon", function(self)
+    local id = self:GetData("chameleon_trying_to_change")
+    if id then
+        self:ChangeExterior(id, false)
     end
 end)
 

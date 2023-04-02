@@ -55,7 +55,7 @@ TARDIS:AddScreen("Chameleon", {id="chameleon", text="Screens.Chameleon", menu=fa
         change_id = exteriors[rowIndex][1]
 
         if list_interiors:GetSelectedLine() and change_id ~= nil then
-            ext:ChangeExterior(change_id)
+            ext:ChangeExterior(change_id, true)
         end
     end
 

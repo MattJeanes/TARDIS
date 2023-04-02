@@ -51,7 +51,9 @@ if SERVER then
     end)
 
     ENT:AddHook("CanChangeExterior","teleport",function(self)
-        if self:GetData("teleport") or self:GetData("vortex") then
+        if self:GetData("demat") or self:GetData("vortex")
+            or (self:GetData("mat") and self:GetData("step") > 1)
+        then
             return false
         end
     end)
