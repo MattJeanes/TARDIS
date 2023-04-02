@@ -1,14 +1,18 @@
+function TARDIS:SetExteriorCategory(ext_id, category)
+    for k,v in pairs(self.ExteriorCategories) do
+        if v[ext_id] then
+            v[ext_id] = nil
+        end
+    end
+    self.ExteriorCategories[category] = self.ExteriorCategories[category] or {}
+    self.ExteriorCategories[category][ext_id] = true
+end
+
 function TARDIS:ClearExteriorMetadata(id)
     self.ExteriorsMetadata[id] = nil
     for k,v in pairs(self.ExteriorsMetadataRaw) do
         if v.Base == id then
             self:ClearExteriorMetadata(k)
-        end
-    end
-
-    for k,v in pairs(self.ExteriorCategories) do
-        if v[id] then
-            v[id] = nil
         end
     end
 end
@@ -20,8 +24,7 @@ function TARDIS:AddExterior(t)
     self:ClearExteriorMetadata(id)
     self.ExteriorsMetadataRaw[id] = t
 
-    self.ExteriorCategories[t.Category] = self.ExteriorCategories[t.Category] or {}
-    self.ExteriorCategories[t.Category][id] = true
+    self:SetExteriorCategory(id, t.Category)
 end
 
 function TARDIS:ImportExterior(int_id, ext_id, category, name, base, modify_func)
