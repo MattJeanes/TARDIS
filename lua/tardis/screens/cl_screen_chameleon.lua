@@ -89,6 +89,10 @@ TARDIS:AddScreen("Chameleon", {id="chameleon", text="Screens.Chameleon", menu=fa
         refresh_exteriors_list()
     end
 
+    function list_categories:OnRowSelectionRemoved(rowIndex, row)
+        list_interiors:Clear()
+    end
+
     function list_interiors:OnRowSelected(rowIndex, row)
         change_id = exteriors[rowIndex][1]
 

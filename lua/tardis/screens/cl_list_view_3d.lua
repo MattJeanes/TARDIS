@@ -102,13 +102,13 @@ function ListView3D:UpdateLayout()
                         another_line.panel:SetBackgroundColor(Color(255,255,255))
                     end
                 end
-                self:OnRowSelected(this.index, this)
                 self.selected_line = this.index
+                self:OnRowSelected(this.index, this)
                 this:SetFont(self.selection_font)
                 this.panel:SetBackgroundColor(Color(50,100,255))
             else
-                self:OnRowSelectionRemoved(this.index, this)
                 self.selected_line = nil
+                self:OnRowSelectionRemoved(this.index, this)
                 this:SetFont(self.font)
                 this.panel:SetBackgroundColor(Color(255,255,255))
             end
