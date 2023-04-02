@@ -115,11 +115,15 @@ else
         local timepassed = CurTime() - self:GetData("phase-lastTick",CurTime())
         self:SetData("phase-lastTick", CurTime())
 
-        self:SetData("phase-percent", math.Approach(percent, target, 0.5 * timepassed))
-        self:SetData("phase-highPercent", math.Clamp(self:GetData("phase-percent",1) + 0.5, 0, 1))
+        local new_percent = math.Approach(percent, target, 0.5 * timepassed)
+        local high_percent = math.Clamp(self:GetData("phase-percent",1) + 0.5, 0, 1)
+        self:SetData("phase-percent", new_percent)
+        self:SetData("phase-highPercent", high_percent)
 
-        local pos = self:GetPos() + self:GetUp() * (self:GetData("modelmaxs").z - (self:GetData("modelheight") * self:GetData("phase-highPercent",1)))
-        local pos2 = self:GetPos() + self:GetUp() * (self:GetData("modelmaxs").z - (self:GetData("modelheight") * self:GetData("phase-percent",1)))
+        local modelmaxs = self:GetData("modelmaxs")
+        local modelheight = self:GetData("modelheight")
+        local pos = self:GetPos() + self:GetUp() * (modelmaxs.z - (modelheight * high_percent))
+        local pos2 = self:GetPos() + self:GetUp() * (modelmaxs.z - (modelheight * new_percent))
 
         self:SetData("phase-highPos", pos)
         self:SetData("phase-pos", pos2)
@@ -127,9 +131,15 @@ else
 
     local oldClip
 
+    ENT:AddHook("ShouldDrawPhaseAnimation", "cloak", function(self)
+        if self:GetData("cloak-animating",false) then
+            return true
+        end
+    end)
+
     local function dodraw(self, ent)
         ent = ent or self
-        local animating = self:GetData("cloak-animating",false)
+        local animating = (self:CallHook("ShouldDrawPhaseAnimation") == true)
         if animating and not wp.drawing then
             ent:SetRenderClipPlaneEnabled(true)
         else
@@ -161,7 +171,7 @@ else
     end
 
     local function postdraw()
-        if not self:GetData("cloak-animating",false) then return end
+        if not (self:CallHook("ShouldDrawPhaseAnimation") == true) then return end
         render.EnableClipping(oldClip)
     end
 

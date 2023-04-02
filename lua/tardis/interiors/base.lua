@@ -114,7 +114,9 @@ T.Exterior = {
         Cloak = "drmatt/tardis/phase_enable.wav",
         CloakOff = "drmatt/tardis/phase_disable.wav",
         Hum = nil,
+        Chameleon = "drmatt/tardis/chameleon_circuit.wav",
     },
+    ChameleonAnimTime = 4,
     Parts = {
         vortex = {
             model = "models/doctorwho1200/toyota/2013timevortex.mdl",
