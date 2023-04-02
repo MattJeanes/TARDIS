@@ -3,6 +3,10 @@ if SERVER then
         self:ChangeExterior(data[1], data[2])
     end)
 else
+    ENT:OnMessage("exterior_changed", function(self,data,ply)
+        self:CallHook("ExteriorChanged", data[1])
+    end)
+
     ENT:OnMessage("chameleon_exterior_animation", function(self,data,ply)
         local csound = self.metadata.Exterior.Sounds.Chameleon
 
@@ -70,6 +74,37 @@ else
     end)
 end
 
+function ENT:ChangeExteriorMetadata(id)
+    if SERVER then
+        self:SendMessage("exterior_metadata_update", {id})
+    end
+
+    local original_md = self:GetData("chameleon_original_exterior")
+    if original_md == nil then
+        self:SetData("chameleon_original_exterior", self.metadata.Exterior)
+    end
+
+    local ext_md = (id == "original") and original_md or TARDIS:CreateExteriorMetadata(id)
+
+    local oldvortex = self.metadata.Exterior.Parts.vortex
+    if oldvortex then
+        ext_md.Parts.vortex = TARDIS:CopyTable(oldvortex)
+    end
+
+    tardisdebug("CEM", CLIENT and "CL" or "SV")
+
+    self.metadata.Exterior = ext_md
+    self.interior.metadata.Exterior = ext_md
+
+    return ext_md
+end
+
+if CLIENT then
+    ENT:OnMessage("exterior_metadata_update", function(self,data,ply)
+        self:ChangeExteriorMetadata(data[1])
+    end)
+end
+
 function ENT:ChangeExterior(id, animate)
     if CLIENT then
         self:SendMessage("chameleon_change_exterior", {id, animate})
@@ -86,21 +121,7 @@ function ENT:ChangeExterior(id, animate)
         return
     end
 
-    local original_md = self:GetData("chameleon_original_exterior")
-    if original_md == nil then
-        self:SetData("chameleon_original_exterior", self.metadata.Exterior)
-    end
-
-    local ext_md = (id == "original") and original_md or TARDIS:CreateExteriorMetadata(id)
-
-    local oldvortex = self.metadata.Exterior.Parts.vortex
-    if oldvortex then
-        ext_md.Parts.vortex = TARDIS:CopyTable(oldvortex)
-    end
-
-    self.metadata.Exterior = ext_md
-    self.interior.metadata.Exterior = ext_md
-
+    local ext_md = self:ChangeExteriorMetadata(id)
 
     if animate then
         self:SendMessage("chameleon_exterior_animation")
@@ -158,6 +179,10 @@ function ENT:ChangeExterior(id, animate)
 
         TARDIS:SetupParts(self)
         TARDIS:SetupRandomSkin(self)
+        self.Fallback=self.metadata.Exterior.Fallback
+
+        self:CallHook("ExteriorChanged", id)
+        self:SendMessage("exterior_changed", {id})
 
         self:SetData("chameleon_active", (id ~= "original"), true)
     end)
