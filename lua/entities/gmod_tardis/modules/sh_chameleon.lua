@@ -2,6 +2,19 @@ if SERVER then
     ENT:OnMessage("chameleon_change_exterior", function(self,data,ply)
         self:ChangeExterior(data[1], data[2])
     end)
+
+    ENT:AddHook("PostInitialize", "chameleon", function(self)
+        local id = self.metadata.ID
+        local ply = self:GetCreator()
+
+        local default_ext = TARDIS:GetCustomSetting(id, "exterior_default", ply, nil)
+        if not default_ext then return end
+
+        local ext_enabled = TARDIS:GetCustomSetting(id, "exterior_enabled", ply, true)
+        if not ext_enabled then return end
+
+        self:ChangeExterior(default_ext, false)
+    end)
 else
     ENT:OnMessage("exterior_changed", function(self,data,ply)
         self:CallHook("ExteriorChanged", data[1])
@@ -85,9 +98,9 @@ function ENT:ChangeExteriorMetadata(id)
         self:SendMessage("exterior_metadata_update", {id})
     end
 
-    local original_md = self:GetData("chameleon_original_exterior")
+    local original_md = self.metadata.ExteriorOriginal
     if original_md == nil then
-        self:SetData("chameleon_original_exterior", self.metadata.Exterior)
+        self.metadata.ExteriorOriginal = self.metadata.Exterior
     end
 
     local ext_md = (id == "original") and original_md or TARDIS:CreateExteriorMetadata(id)

@@ -6,7 +6,7 @@ function TARDIS:ClearExteriorMetadata(id)
         end
     end
 
-    for k,v in pairs(self.ExteriorsCategories) do
+    for k,v in pairs(self.ExteriorCategories) do
         if v[id] then
             v[id] = nil
         end
@@ -20,8 +20,8 @@ function TARDIS:AddExterior(t)
     self:ClearExteriorMetadata(id)
     self.ExteriorsMetadataRaw[id] = t
 
-    self.ExteriorsCategories[t.Category] = self.ExteriorsCategories[t.Category] or {}
-    self.ExteriorsCategories[t.Category][id] = true
+    self.ExteriorCategories[t.Category] = self.ExteriorCategories[t.Category] or {}
+    self.ExteriorCategories[t.Category][id] = true
 end
 
 function TARDIS:ImportExterior(int_id, ext_id, category, name, base, modify_func)
@@ -91,6 +91,10 @@ end
 
 function TARDIS:GetExteriors()
     return self.ExteriorsMetadataRaw
+end
+
+function TARDIS:GetExteriorCategories()
+    return self.ExteriorCategories
 end
 
 TARDIS:AddExterior({

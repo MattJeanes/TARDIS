@@ -38,7 +38,7 @@ TARDIS:AddScreen("Chameleon", {id="chameleon", text="Screens.Chameleon", menu=fa
     list_categories:SetMultiSelect(false)
 
     local categories = {}
-    for k,v in pairs(TARDIS.ExteriorsCategories) do
+    for k,v in pairs(TARDIS:GetExteriorCategories()) do
         if not table.IsEmpty(v) then
             table.insert(categories, k)
         end
@@ -69,7 +69,7 @@ TARDIS:AddScreen("Chameleon", {id="chameleon", text="Screens.Chameleon", menu=fa
         local cat = categories[cat_i]
 
         for k,v in pairs(TARDIS:GetExteriors()) do
-            if v.Base ~= true and v.Category == cat then
+            if v.Base ~= true and v.Hide ~= true and v.Category == cat then
                 table.insert(exteriors, {k, v.Name or v.ID})
             end
         end

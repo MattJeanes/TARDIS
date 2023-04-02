@@ -10,7 +10,7 @@ TARDIS.MetadataCustomVersions = {}
 
 TARDIS.ExteriorsMetadata = {}
 TARDIS.ExteriorsMetadataRaw = {}
-TARDIS.ExteriorsCategories = {}
+TARDIS.ExteriorCategories = {}
 
 TARDIS.IntCustomSettings = {}
 TARDIS.IntUpdatesPerTemplate = {}

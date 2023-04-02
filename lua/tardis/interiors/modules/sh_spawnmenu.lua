@@ -216,6 +216,25 @@ if CLIENT then
             })
         end
 
+
+        local exterior_setting_submenu = dmenu:AddSubMenu(TARDIS:GetPhrase("Spawnmenu.Chameleon"), nil)
+
+        TARDIS.Spawnmenu.AddBoolSetting(exterior_setting_submenu, int_id, "exterior_enabled", "Spawnmenu.Chameleon.Enable")
+
+        for category,exteriors in pairs(TARDIS:GetExteriorCategories()) do
+            if not table.IsEmpty(exteriors) then
+                local exteriors_tbl = {}
+                for id,v in pairs(exteriors) do
+                    local ext_md = TARDIS:GetExteriors()[id]
+                    if v and ext_md.Base ~= true and ext_md.Hide ~= true then
+                        exteriors_tbl[id] = ext_md.Name or id
+                    end
+                end
+                TARDIS.Spawnmenu.AddListSetting(exterior_setting_submenu, int_id, "exterior_default", category, exteriors_tbl)
+            end
+        end
+
+
         TARDIS.Spawnmenu.AddBoolSetting(dmenu, int_id, "redecoration_exclude", "Spawnmenu.RedecorationExclude")
 
         if custom_settings then
