@@ -50,3 +50,10 @@ T = {
 }
 
 TARDIS:AddInteriorTemplate("exterior_ttcapsule_type40", T)
+
+local E = TARDIS:CopyTable(T.Exterior)
+E.ID = "ttcapsule_type40"
+E.Base = "base"
+E.Name = "TT-capsule type 40"
+
+TARDIS:AddExterior(E)
