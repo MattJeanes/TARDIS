@@ -84,4 +84,3 @@ TARDIS:AddExterior({
 	Base = "base",
 })
 
-TARDIS:LoadFolder("interiors/exteriors", nil, true)

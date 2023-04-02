@@ -127,4 +127,5 @@ end
 
 TARDIS:LoadFolder("interiors/modules")
 TARDIS:LoadFolder("interiors", nil, true)
+TARDIS:LoadFolder("interiors/exteriors", nil, true)
 TARDIS:LoadFolder("interiors/versions", nil, true)
