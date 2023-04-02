@@ -24,7 +24,7 @@ TARDIS:ImportExterior("Bill and Ted Tardis")
 TARDIS:ImportExterior("ambient")
 TARDIS:ImportExterior("HomestucktardisVM")
 
-TARDIS:ImportExterior("72alt")
+TARDIS:ImportExterior("72alt", nil, "Computer bank")
 TARDIS:ImportExterior("jorj_whittaker")
 
 TARDIS:ImportExterior("win-quartertardis", nil, nil, nil, function(E)

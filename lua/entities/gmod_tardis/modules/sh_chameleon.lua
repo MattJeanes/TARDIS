@@ -9,9 +9,11 @@ else
 
     ENT:OnMessage("chameleon_exterior_animation", function(self,data,ply)
         local csound = self.metadata.Exterior.Sounds.Chameleon
+        local csound_int = self.metadata.Interior.Sounds.Chameleon or csound
 
         if TARDIS:GetSetting("sound") and csound then
             self:EmitSound(csound)
+            self.interior:EmitSound(csound_int)
         end
 
         local delay = self.metadata.Exterior.ChameleonAnimTime / 2
