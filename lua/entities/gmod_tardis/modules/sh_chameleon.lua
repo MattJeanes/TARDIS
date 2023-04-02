@@ -21,6 +21,11 @@ function ENT:ChangeExterior(id)
 
     local ext_md = (id == "original") and original_md or TARDIS:CreateExteriorMetadata(id)
 
+    local oldvortex = self.metadata.Exterior.Parts.vortex
+    if oldvortex then
+        ext_md.Parts.vortex = TARDIS:CopyTable(oldvortex)
+    end
+
     self.metadata.Exterior = ext_md
     self.interior.metadata.Exterior = ext_md
 
