@@ -19,7 +19,7 @@ TARDIS:AddSetting({
     min=0.25,
     max=1.75,
     round_func = function(x)
-        return (x - x % 0.25)
+        return (x - x % 0.05)
     end,
 
     class="local",
