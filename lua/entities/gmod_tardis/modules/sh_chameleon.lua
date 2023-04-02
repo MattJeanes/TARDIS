@@ -168,7 +168,7 @@ ENT:AddHook("ToggleDoor", "chameleon", function(self,open)
 
     local id = self:GetData("chameleon_trying_to_change")
     if id then
-        self:ChangeExterior(id, false)
+        self:ChangeExterior(id, true)
     end
 end)
 
