@@ -1,13 +1,13 @@
 if SERVER then
     util.AddNetworkString("TARDIS-Spawn-Delete-Sound")
 
-    function TARDIS:SpawnTARDIS(ply, customData)
+    function TARDIS:SpawnTARDIS(ply, customData, force)
         local entityName = "gmod_tardis"
 
         local metadataID = customData.metadataID
         local interior = TARDIS:CreateInteriorMetadata(metadataID)
 
-        if not (interior and IsValid(ply) and gamemode.Call("PlayerSpawnSENT", ply, entityName)) then return end
+        if not (interior and IsValid(ply) and (force or gamemode.Call("PlayerSpawnSENT", ply, entityName))) then return end
         if not interior.BaseMerged then return end
 
         local vStart = ply:EyePos()
