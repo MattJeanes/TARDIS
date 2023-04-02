@@ -36,6 +36,8 @@ supported import_options:
     modify_func
 ]]
 function TARDIS:ImportExterior(int_id, import_options)
+    import_options = import_options or {}
+
     local T = self:GetInterior(int_id)
     if not T or not T.Exterior then return false end
 
