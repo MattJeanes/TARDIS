@@ -10,7 +10,7 @@ function ENT:ChangeExterior(id)
         return
     end
 
-    if self.metadata.EnableClassicDoors ~= true or not IsValid(self.interior) then
+    if not IsValid(self.interior) then
         return
     end
 
@@ -73,11 +73,22 @@ function ENT:ChangeExterior(id)
 
     TARDIS:SetupParts(self)
 
-    local intdoor = self.interior:GetPart("door")
-    if IsValid(intdoor) then
-        intdoor:SetVisible(id == "original")
-    end
-
-
-
+    self:SetData("chameleon_active", (id ~= "original"), true)
 end
+
+ENT:AddHook("ShouldDraw", "chameleon", function(self)
+    if IsValid(self.interior) and self:GetData("chameleon_active", false)
+        and wp.drawing and wp.drawingent == self.interior.portals.interior
+    then
+        return false
+    end
+end)
+
+ENT:AddHook("ShouldDrawPart", "chameleon", function(self, part)
+    if IsValid(self.interior) and self:GetData("chameleon_active", false) and part ~= nil
+        and wp.drawing and wp.drawingent == self.interior.portals.interior
+        and part == TARDIS:GetPart(self, "door")
+    then
+        return false
+    end
+end)
