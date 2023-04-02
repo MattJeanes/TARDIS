@@ -410,7 +410,7 @@ function TARDIS:LoadScreenUI(screen)
         left_arrow:SetText("<<<")
         left_arrow:SetClickTime(0.1)
         screen.left_arrow = left_arrow
-        
+
         local right_arrow = TardisScreenButton:new(titlebar,screen)
         right_arrow:SetID("right_arrow")
         right_arrow:SetFrameType(0, 1)

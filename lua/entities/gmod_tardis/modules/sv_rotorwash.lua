@@ -18,7 +18,7 @@ end
 ENT:AddHook("Think", "rotorwash", function(self)
     local shouldon=self:CallHook("ShouldTurnOnRotorwash")
     local shouldoff=self:CallHook("ShouldTurnOffRotorwash")
-    
+
     if shouldon and (not shouldoff) then
         if not self.rotorwash then
             self:CreateRotorWash()

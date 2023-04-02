@@ -3,11 +3,11 @@
 
 AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
- 
+
 include('shared.lua')
- 
+
 function ENT:Initialize()
- 
+
     self:SetModel(self.model or "models/brundoob/precision.mdl" )
     self:SetModelScale(self.scale or 1)
 
@@ -37,6 +37,6 @@ function ENT:Use( activator, caller )
     end
     return
 end
- 
+
 function ENT:Think()
 end

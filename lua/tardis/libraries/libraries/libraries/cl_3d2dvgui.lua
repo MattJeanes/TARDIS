@@ -1,5 +1,5 @@
 --[[
-    
+
 3D2D VGUI Wrapper
 Copyright (c) 2015-2017 Alexander Overvoorde, Matt Stevens
 
@@ -61,13 +61,13 @@ end
 local function absolutePanelPos(pnl)
     local x, y = pnl:GetPos()
     local parents = getParents(pnl)
-    
+
     for _, parent in ipairs(parents) do
         local px, py = parent:GetPos()
         x = x + px
         y = y + py
     end
-    
+
     return x, y
 end
 
@@ -96,14 +96,14 @@ local function postPanelEvent(pnl, event, ...)
     if not IsValid(pnl) or not pnl:IsVisible() or not pointInsidePanel(pnl, getCursorPos()) then return false end
 
     local handled = false
-    
+
     for i, child in pairs(table.Reverse(pnl:GetChildren())) do
         if postPanelEvent(child, event, ...) then
             handled = true
             break
         end
     end
-    
+
     if not handled and pnl[event] then
         pnl[event](pnl, ...)
         usedpanel[pnl] = {...}
@@ -160,7 +160,7 @@ hook.Add("KeyPress", "VGUI3D2DMousePress", function(_, key)
                 normal = pnl.Normal
 
                 local key = input.IsKeyDown(KEY_LSHIFT) and MOUSE_RIGHT or MOUSE_LEFT
-                
+
                 postPanelEvent(pnl, "OnMousePressed", key)
             end
         end
@@ -192,7 +192,7 @@ function vgui.Start3D2D(pos, ang, res)
     angle = ang
     normal = ang:Up()
     maxrange = 0
-    
+
     cam.Start3D2D(pos, ang, res)
 end
 
@@ -212,7 +212,7 @@ end
 local Panel = FindMetaTable("Panel")
 function Panel:Paint3D2D()
     if not self:IsValid() then return end
-    
+
     -- Add it to the list of windows to receive input
     inputWindows[self] = true
 
@@ -227,32 +227,32 @@ function Panel:Paint3D2D()
     function gui.MouseY()
         return (cy or 0) / scale
     end
-    
+
     -- Override think of DFrame's to correct the mouse pos by changing the active orientation
     if self.Think then
         if not self.OThink then
             self.OThink = self.Think
-            
+
             self.Think = function()
                 origin = self.Origin
                 scale = self.Scale
                 angle = self.Angle
                 normal = self.Normal
-                
+
                 self:OThink()
             end
         end
     end
-    
+
     -- Update the hover state of controls
     local _, tab = checkHover(self)
-    
+
     -- Store the orientation of the window to calculate the position outside the render loop
     self.Origin = origin
     self.Scale = scale
     self.Angle = angle
     self.Normal = normal
-    
+
     -- Draw it manually
     self:SetPaintedManually(false)
         self:PaintManual()

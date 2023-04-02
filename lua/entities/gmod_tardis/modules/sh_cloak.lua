@@ -42,7 +42,7 @@ if SERVER then
         self:CallHook("CloakToggled", on)
         return true
     end
-    
+
     function ENT:ToggleCloak()
         local on = not self:GetData("cloak", false)
         return self:SetCloak(on)
@@ -151,12 +151,12 @@ else
 
         render.PushCustomClipPlane(normal, dist)
         render.MaterialOverride(self.PhaseMaterial)
-        
+
         render.PushCustomClipPlane(normal2, dist2)
             ent:DrawModel()
         render.PopCustomClipPlane()
         render.PopCustomClipPlane()
-        
+
         render.MaterialOverride(restoreT)
     end
 

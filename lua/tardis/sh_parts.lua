@@ -190,7 +190,7 @@ function TARDIS:GetRegisteredPart(id)
     return scripted_ents.Get(parts[id].class)
 end
 
-hook.Add("InitPostEntity", "tardis-parts", function() 
+hook.Add("InitPostEntity", "tardis-parts", function()
     for k,v in pairs(overridequeue) do
         SetupOverrides(v)
     end
@@ -223,7 +223,7 @@ end
 local function AutoSetup(self,e,id)
     local data=GetData(self,e,id)
     if not data then return end
-    
+
     e:SetModel(e.model or e.Model)
     e:PhysicsInit( SOLID_VPHYSICS )
     e:SetMoveType( MOVETYPE_VPHYSICS )

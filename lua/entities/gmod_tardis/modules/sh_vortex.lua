@@ -21,7 +21,7 @@ if SERVER then
             local vel=ph:GetVelocity()
             local brake=vel*-(self:GetData("vortexready") and 1 or 0.02)
             ph:AddVelocity(brake)
-            
+
             if IsValid(self.pilot) and self:IsVortexEnabled(self.pilot) then
                 local up=self:GetUp()
                 local ri2=self:GetRight()
@@ -29,7 +29,7 @@ if SERVER then
                 local ang=self:GetAngles()
                 local cen=ph:GetMassCenter()
                 local lev=ph:GetInertia():Length()
-                
+
                 local vel=0
                 local rforce=2
                 local mul=3
@@ -69,25 +69,25 @@ if SERVER then
             end
         end
     end)
-    
+
     ENT:AddHook("FlightControl","vortex",function(self)
         if self:GetData("vortex") then
             return false
         end
     end)
-    
+
     ENT:AddHook("CanTurnOffFlight", "flight", function(self)
         if self:GetData("vortex") then
             return false
         end
     end)
-    
+
     ENT:AddHook("DoorCollisionOverride","vortex",function(self)
         if self:GetData("vortex") and self:IsVortexEnabled() then
             return true -- forces door collision to stay on
         end
     end)
-    
+
     ENT:AddHook("CanToggleDoor","vortex",function(self,state)
         if self:GetData("vortex") and (not self:IsVortexEnabled()) then
             return false
@@ -113,7 +113,7 @@ else
             end
         end
     end)
-    
+
     local function dopredraw(self,part)
         local vortexpart = (part and part.ID=="vortex")
         local target = self:GetData("vortex") and 1 or 0
@@ -132,7 +132,7 @@ else
             end
         end
     end
-    
+
     local function dodraw(self,part)
         render.SetBlend(1)
         local vortexalpha = self:GetData("vortexalpha",0)
@@ -162,13 +162,13 @@ else
     ENT:AddHook("DrawPart","vortex",dodraw)
     ENT:AddHook("PreDrawPortal","vortex",dopredraw)
     ENT:AddHook("PostDrawPortal","vortex",dodraw)
-    
+
     ENT:AddHook("ShouldNotRenderPortal","vortex",function(self,parent,portal,exit)
         if self:GetData("vortex") and (TARDIS:GetExteriorEnt()~=self or (not self:IsVortexEnabled())) then
             return true, self~=parent
         end
     end)
-    
+
     ENT:AddHook("StopDemat","vortex",function(self)
         local vortex=self:GetPart("vortex")
         local valid = false
@@ -181,7 +181,7 @@ else
         end
         self:SetData("vortexmodelvalid",valid)
     end)
-    
+
     ENT:AddHook("ShouldTurnOffLight","vortex",function(self)
         if self:GetData("vortex") and (TARDIS:GetExteriorEnt()~=self or (not self:IsVortexEnabled())) then
             return true

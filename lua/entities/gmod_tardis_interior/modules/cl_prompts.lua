@@ -1,7 +1,7 @@
 --Prompts
 
 ENT:AddHook("PlayerEnter", "lightingoverride_prompt", function(self)
-    local require_override = (self.metadata.Interior.RequireLightOverride == true) 
+    local require_override = (self.metadata.Interior.RequireLightOverride == true)
     local light_override = TARDIS:GetSetting("lightoverride-enabled")
     local noshow = TARDIS:GetSetting("light_override_prompt_noshow")
     if require_override and not light_override and not noshow then

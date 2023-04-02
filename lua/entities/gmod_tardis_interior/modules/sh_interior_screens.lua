@@ -82,7 +82,7 @@ function ENT:LoadScreens()
             })
             self.screens3D[k].pos3D=v.pos
             self.screens3D[k].ang3D=v.ang
-        end 
+        end
     end
 end
 
@@ -105,13 +105,13 @@ function ENT:ShouldRenderScreen(screen)
     local ang = self:LocalToWorldAngles(screen.ang3D)
     local distance = camOrigin:Distance(pos)
     local disappearDist = self.metadata.Interior.ScreenDistance
-    
+
     if not (disappearDist <= 0) and distance > disappearDist then return false end
-    
+
     --don't render if the view is behind the portal
     local behind = TARDIS:IsBehind( camOrigin, pos, ang:Up() )
     if behind then return false end
-    
+
     return true, pos, ang
 end
 

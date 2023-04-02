@@ -22,7 +22,7 @@ local function ChooseFlightSound(ent)
 end
 
 ENT:AddHook("Think", "flight", function(self)
-    if self.exterior:GetData("flight") and TARDIS:GetSetting("flight-internalsound") 
+    if self.exterior:GetData("flight") and TARDIS:GetSetting("flight-internalsound")
         and TARDIS:GetSetting("sound")
     then
         if self.flightsound and self.flightsound:IsPlaying() then
