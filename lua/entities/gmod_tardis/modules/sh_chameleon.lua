@@ -195,7 +195,7 @@ function ENT:ChangeExterior(id, animate)
         TARDIS:SetupRandomSkin(self)
         self.Fallback=self.metadata.Exterior.Fallback
 
-        self:CallHook("ExteriorChanged", id)
+        self:CallCommonHook("ExteriorChanged", id)
         self:SendMessage("exterior_changed", {id})
 
         self:SetData("chameleon_active", (id ~= "original"), true)
