@@ -372,7 +372,7 @@ else
                 print("\tinverted = " .. tostring(inverted) .. ",")
             end
 
-            print("),")
+            print("},")
         end
     end
 
