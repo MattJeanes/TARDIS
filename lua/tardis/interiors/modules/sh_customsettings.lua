@@ -24,7 +24,8 @@ end
 
 local default_custom_setting_values = {
     ["preferred_door_type"] = "default",
-    ["exterior_enabled"] = true,
+    ["exterior_enabled"] = false,
+    ["exterior_default"] = "ttcapsule_type40",
 }
 
 function TARDIS:GetCustomSetting(int_id, setting_id, ply, default_val)
