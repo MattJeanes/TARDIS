@@ -55,11 +55,11 @@ ENT:AddHook("Initialize", "scanner", function(self)
             else
                 scanner.mat=CreateMaterial(
                     scanner.uid,
-                    "VertexLitGeneric",
+                    "UnlitGeneric",
                     {
                         ["$model"] = "1",
-                        ["$nodecal"] = "1",
-                        ["$selfillum"] = "1",
+                        ["$receiveflashlight"] = "1",
+                        ["$nodecal"] = "1"
                     }
                 )
                 scanner.rt = GetRenderTarget(scanner.uid, v.width, v.height, false)
