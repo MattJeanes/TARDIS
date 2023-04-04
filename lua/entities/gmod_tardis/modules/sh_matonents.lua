@@ -3,6 +3,9 @@ if SERVER then
 
     ENT:AddHook("StopMat", "player-enterontp", function(self)
         if not convar:GetBool() then return end
+        local classes = {
+            ["prop_physics"] = true,
+        }
         local min, max = self:GetCollisionBounds()
         min = self:LocalToWorld(min)
         max = self:LocalToWorld(max)
@@ -13,7 +16,7 @@ if SERVER then
                 if v:IsPlayer() and v:GetTardisData("exterior")~=self then
                     self:PlayerEnter(v)
                     v:ScreenFade(SCREENFADE.IN, Color(255,255,255,200), 1, 0.1)
-                elseif v:IsNPC() then
+                elseif v:IsNPC() or v:IsNextBot() or classes[v:GetClass()] then
                     local npos = self:WorldToLocal(v:GetPos())
                     v:SetPos(pos + npos)
                 end
