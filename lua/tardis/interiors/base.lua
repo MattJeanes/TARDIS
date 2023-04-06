@@ -116,7 +116,9 @@ T.Exterior = {
         Hum = nil,
         Chameleon = "drmatt/tardis/chameleon_circuit.wav",
     },
-    ChameleonAnimTime = 4,
+    Chameleon = {
+        AnimTime = 4,
+    },
     Parts = {
         vortex = {
             model = "models/doctorwho1200/toyota/2013timevortex.mdl",

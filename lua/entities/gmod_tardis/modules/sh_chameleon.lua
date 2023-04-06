@@ -31,7 +31,7 @@ else
             self.interior:EmitSound(csound_int)
         end
 
-        local delay = self.metadata.Exterior.ChameleonAnimTime / 2
+        local delay = self.metadata.Exterior.Chameleon.AnimTime / 2
         self:SetData("chameleon_animation", true, false)
         self:SetData("chameleon_animation_start", CurTime(), false)
         self:SetData("chameleon_animation_delay", delay, false)
@@ -146,7 +146,7 @@ function ENT:ChangeExterior(id, animate)
         self:SendMessage("chameleon_exterior_animation")
     end
 
-    local anim_time = self.metadata.Exterior.ChameleonAnimTime
+    local anim_time = self.metadata.Exterior.Chameleon.AnimTime
     local delay = (animate and anim_time / 2) or 0
 
     if animate then
