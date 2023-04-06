@@ -53,7 +53,7 @@ TARDIS:AddInteriorTemplate("exterior_sidrat", T)
 local E = TARDIS:CopyTable(T.Exterior)
 E.ID = "sidrat"
 E.Base = "base"
-E.Name = "SIDRAT"
-E.Category = "TT-capsules"
+E.Name = "Exteriors.SIDRAT"
+E.Category = "Exteriors.Categories.TTCapsules"
 
 TARDIS:AddExterior(E)

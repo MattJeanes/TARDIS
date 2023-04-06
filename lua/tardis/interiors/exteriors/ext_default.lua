@@ -1,4 +1,4 @@
 TARDIS:ImportExterior("default", {
-    category = "Police boxes",
-    name = "Default Police Box",
+    category = "Exteriors.Categories.PoliceBoxes",
+    name = "Exteriors.DefaultPoliceBox",
 })
