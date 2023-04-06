@@ -13,7 +13,7 @@ TARDIS:AddSetting({
 })
 
 TARDIS:AddSetting({
-    id="visgui_popup_scale",
+    id="gui_popup_scale",
     type="number",
     value=1.0,
     min=0.25,
@@ -30,7 +30,7 @@ TARDIS:AddSetting({
 })
 
 TARDIS:AddSetting({
-    id="visgui_screen_numrows",
+    id="gui_screen_numrows",
     type="integer",
     value=3,
     min=2,
@@ -44,7 +44,7 @@ TARDIS:AddSetting({
 })
 
 TARDIS:AddSetting({
-    id="visgui_override_numrows",
+    id="gui_override_numrows",
     type="bool",
     value=false,
 
@@ -56,7 +56,7 @@ TARDIS:AddSetting({
 })
 
 TARDIS:AddSetting({
-    id="visgui_popup_numrows",
+    id="gui_popup_numrows",
     type="integer",
     value=4,
     min=2,
@@ -70,7 +70,7 @@ TARDIS:AddSetting({
 })
 
 TARDIS:AddSetting({
-    id = "visgui_interface_theme",
+    id = "gui_interface_theme",
     type = "list",
     value = "default_interior",
 
