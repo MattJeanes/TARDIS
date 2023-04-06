@@ -9,10 +9,10 @@ if SERVER then
         local id = self.metadata.ID
         local ply = self:GetCreator()
 
-        local default_ext = TARDIS:GetCustomSetting(id, "exterior_default", ply, nil)
+        local default_ext = TARDIS:GetCustomSetting(id, "exterior_default", ply)
         if not default_ext then return end
 
-        local ext_enabled = TARDIS:GetCustomSetting(id, "exterior_enabled", ply, true)
+        local ext_enabled = TARDIS:GetCustomSetting(id, "exterior_enabled", ply)
         if not ext_enabled then return end
 
         self:ChangeExterior(default_ext, false)
