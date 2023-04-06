@@ -22,7 +22,6 @@ TARDIS:AddControl({
         toggle = true,
         frame_type = {2, 1},
         text = "Controls.Isomorphic",
-        pressed_state_from_interior = true,
         pressed_state_data = "security",
         order = 15,
     },

@@ -589,8 +589,7 @@ function TARDIS:LoadButtons(screen, frame, func, isvgui)
                         button:SetText(TARDIS:GetPhrase(options.text))
                     end
                     if options.pressed_state_data ~= nil then
-                        local src = options.pressed_state_from_interior and screen.int or screen.ext
-                        button:SetPressedStateData(src, options.pressed_state_data)
+                        button:SetPressedStateData(screen.ext, options.pressed_state_data)
                     end
                     if options.order ~= nil then
                         button:SetOrder(options.order)

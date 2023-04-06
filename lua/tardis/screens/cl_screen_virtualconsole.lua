@@ -51,8 +51,7 @@ local function new_virtual_console(self,ext,int,frame,screen)
                 button:SetText(TARDIS:GetPhrase(options.text))
             end
             if options.pressed_state_data ~= nil then
-                local src = options.pressed_state_from_interior and int or ext
-                button:SetPressedStateData(src, options.pressed_state_data)
+                button:SetPressedStateData(ext, options.pressed_state_data)
             end
             if options.order ~= nil then
                 button:SetOrder(options.order)
