@@ -1,6 +1,8 @@
 if SERVER then
     ENT:OnMessage("chameleon_change_exterior", function(self,data,ply)
-        self:ChangeExterior(data[1], data[2])
+        if self:CheckSecurity(ply) then
+            self:ChangeExterior(data[1], data[2])
+        end
     end)
 
     ENT:AddHook("PostInitialize", "chameleon", function(self)
