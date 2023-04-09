@@ -11,7 +11,6 @@ TARDIS:AddControl({
         toggle = true,
         frame_type = {2, 1},
         text = "Controls.HADS",
-        pressed_state_from_interior = false,
         pressed_state_data = "hads",
         order = 14,
     },

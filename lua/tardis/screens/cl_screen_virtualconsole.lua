@@ -14,13 +14,13 @@ local function new_virtual_console(self,ext,int,frame,screen)
 
     local layout_rows
     if screen.is3D2D then
-        if screen.visgui_rows == nil or TARDIS:GetSetting("visgui_override_numrows") then
-            layout_rows = math.floor(TARDIS:GetSetting("visgui_screen_numrows"))
+        if screen.gui_rows == nil or TARDIS:GetSetting("gui_override_numrows") then
+            layout_rows = math.floor(TARDIS:GetSetting("gui_screen_numrows"))
         else
-            layout_rows = math.floor(screen.visgui_rows)
+            layout_rows = math.floor(screen.gui_rows)
         end
     else
-        layout_rows = math.floor(TARDIS:GetSetting("visgui_popup_numrows"))
+        layout_rows = math.floor(TARDIS:GetSetting("gui_popup_numrows"))
     end
     local layout = HexagonalLayout:new(frame, layout_rows, 0.2)
 
@@ -51,8 +51,7 @@ local function new_virtual_console(self,ext,int,frame,screen)
                 button:SetText(TARDIS:GetPhrase(options.text))
             end
             if options.pressed_state_data ~= nil then
-                local src = options.pressed_state_from_interior and int or ext
-                button:SetPressedStateData(src, options.pressed_state_data)
+                button:SetPressedStateData(ext, options.pressed_state_data)
             end
             if options.order ~= nil then
                 button:SetOrder(options.order)

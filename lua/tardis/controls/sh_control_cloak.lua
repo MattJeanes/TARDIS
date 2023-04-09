@@ -15,7 +15,6 @@ TARDIS:AddControl({
         toggle = true,
         frame_type = {0, 1},
         text = "Controls.Cloak",
-        pressed_state_from_interior = false,
         pressed_state_data = "cloak",
         order = 12,
     },

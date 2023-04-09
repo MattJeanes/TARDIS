@@ -12,7 +12,6 @@ TARDIS:AddControl({
         toggle = false,
         frame_type = {0, 1},
         text = "Controls.SpinCycle",
-        pressed_state_from_interior = false,
         pressed_state_data = nil,
         order = 16,
     },

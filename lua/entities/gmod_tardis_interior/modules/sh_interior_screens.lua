@@ -77,7 +77,7 @@ function ENT:LoadScreens()
                 height = v.height,
                 ext = self.exterior,
                 int = self,
-                visgui_rows = v.visgui_rows,
+                gui_rows = v.gui_rows,
                 power_off_black = black,
             })
             self.screens3D[k].pos3D=v.pos
@@ -91,6 +91,19 @@ ENT:AddHook("Initialize", "screens", function(self)
 end)
 
 ENT:AddHook("LanguageChanged", "screens", function(self)
+    self:LoadScreens()
+end)
+
+local settings_upd_screen = {
+    ["gui_old"] = true,
+    ["gui_screen_numrows"] = true,
+    ["gui_override_numrows"] = true,
+    ["gui_interface_theme"] = true,
+}
+
+ENT:AddHook("SettingChanged", "screen_settings", function(self, id, val)
+    if not settings_upd_screen[id] then return end
+
     self:LoadScreens()
 end)
 

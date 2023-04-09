@@ -52,7 +52,7 @@ TARDIS:AddScreen("Chameleon", {id="chameleon", text="Screens.Chameleon", menu=fa
 
     list_categories:Clear()
     for k,v in ipairs(categories) do
-        list_categories:AddLine(v)
+        list_categories:AddLine(TARDIS:GetPhrase(v))
     end
 
     list_categories:SelectFirstItem()
@@ -82,7 +82,7 @@ TARDIS:AddScreen("Chameleon", {id="chameleon", text="Screens.Chameleon", menu=fa
         table.SortByMember(exteriors, 2, true)
         list_interiors:Clear()
         for i,v in ipairs(exteriors) do
-            list_interiors:AddLine(v[2])
+            list_interiors:AddLine(TARDIS:GetPhrase(v[2]))
         end
     end
 

@@ -259,7 +259,7 @@ function TARDIS:HUDScreen(window)
     screen.width=700
     screen.height=425
 
-    local sscale = TARDIS:GetSetting("visgui_popup_scale")
+    local sscale = TARDIS:GetSetting("gui_popup_scale")
     if not TARDIS:GetSetting("gui_old") then
         screen.width = screen.width * sscale
         screen.height = screen.height * sscale
@@ -530,13 +530,13 @@ function TARDIS:LoadButtons(screen, frame, func, isvgui)
     if isvgui ~= nil and isvgui then
         local layout_rows
         if screen.is3D2D then
-            if screen.visgui_rows == nil or TARDIS:GetSetting("visgui_override_numrows") then
-                layout_rows = math.floor(TARDIS:GetSetting("visgui_screen_numrows"))
+            if screen.gui_rows == nil or TARDIS:GetSetting("gui_override_numrows") then
+                layout_rows = math.floor(TARDIS:GetSetting("gui_screen_numrows"))
             else
-                layout_rows = math.floor(screen.visgui_rows)
+                layout_rows = math.floor(screen.gui_rows)
             end
         else
-            layout_rows = math.floor(TARDIS:GetSetting("visgui_popup_numrows"))
+            layout_rows = math.floor(TARDIS:GetSetting("gui_popup_numrows"))
         end
 
         local layout = HexagonalLayout:new(frame, layout_rows, 0.2)
@@ -589,8 +589,7 @@ function TARDIS:LoadButtons(screen, frame, func, isvgui)
                         button:SetText(TARDIS:GetPhrase(options.text))
                     end
                     if options.pressed_state_data ~= nil then
-                        local src = options.pressed_state_from_interior and screen.int or screen.ext
-                        button:SetPressedStateData(src, options.pressed_state_data)
+                        button:SetPressedStateData(screen.ext, options.pressed_state_data)
                     end
                     if options.order ~= nil then
                         button:SetOrder(options.order)
@@ -753,7 +752,7 @@ function TARDIS:LoadScreen(id, options)
     screen.res=screen.width / options.width
     screen.ext=options.ext
     screen.int=options.int
-    screen.visgui_rows=options.visgui_rows
+    screen.gui_rows=options.gui_rows
     screen.power_off_black = options.power_off_black
     screen.crosshair=6 * screen.res
     screen.gap=10

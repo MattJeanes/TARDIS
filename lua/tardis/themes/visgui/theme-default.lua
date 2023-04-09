@@ -47,6 +47,7 @@ local theme = {
         coordinates = "screen_coords.png",
         music = "screen_music.png",
         scanner = "screen_scanner.png",
+        chameleon = "screen_chameleon.png",
         settings = "screen_settings.png",
         ["TARDIS Status"] = "screen_status.png",
 

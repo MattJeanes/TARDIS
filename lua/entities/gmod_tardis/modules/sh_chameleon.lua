@@ -1,16 +1,18 @@
 if SERVER then
     ENT:OnMessage("chameleon_change_exterior", function(self,data,ply)
-        self:ChangeExterior(data[1], data[2])
+        if self:CheckSecurity(ply) then
+            self:ChangeExterior(data[1], data[2])
+        end
     end)
 
     ENT:AddHook("PostInitialize", "chameleon", function(self)
         local id = self.metadata.ID
         local ply = self:GetCreator()
 
-        local default_ext = TARDIS:GetCustomSetting(id, "exterior_default", ply, nil)
+        local default_ext = TARDIS:GetCustomSetting(id, "exterior_default", ply)
         if not default_ext then return end
 
-        local ext_enabled = TARDIS:GetCustomSetting(id, "exterior_enabled", ply, true)
+        local ext_enabled = TARDIS:GetCustomSetting(id, "exterior_enabled", ply)
         if not ext_enabled then return end
 
         self:ChangeExterior(default_ext, false)
@@ -29,7 +31,7 @@ else
             self.interior:EmitSound(csound_int)
         end
 
-        local delay = self.metadata.Exterior.ChameleonAnimTime / 2
+        local delay = self.metadata.Exterior.Chameleon.AnimTime / 2
         self:SetData("chameleon_animation", true, false)
         self:SetData("chameleon_animation_start", CurTime(), false)
         self:SetData("chameleon_animation_delay", delay, false)
@@ -144,7 +146,7 @@ function ENT:ChangeExterior(id, animate)
         self:SendMessage("chameleon_exterior_animation")
     end
 
-    local anim_time = self.metadata.Exterior.ChameleonAnimTime
+    local anim_time = self.metadata.Exterior.Chameleon.AnimTime
     local delay = (animate and anim_time / 2) or 0
 
     if animate then

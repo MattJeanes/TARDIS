@@ -15,7 +15,6 @@ TARDIS:AddControl({
         toggle = true,
         frame_type = {0, 2},
         text = "Controls.Handbrake",
-        pressed_state_from_interior = false,
         pressed_state_data = "handbrake", -- can be changed
         order = 7,
     },
