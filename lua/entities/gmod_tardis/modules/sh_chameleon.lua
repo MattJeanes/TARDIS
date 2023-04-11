@@ -100,10 +100,10 @@ function ENT:ChangeExteriorMetadata(id)
         self:SendMessage("exterior_metadata_update", {id})
     end
 
-    local original_md = self.metadata.ExteriorOriginal
-    if original_md == nil then
+    if self.metadata.ExteriorOriginal == nil then
         self.metadata.ExteriorOriginal = self.metadata.Exterior
     end
+    local original_md = self.metadata.ExteriorOriginal
 
     local ext_md = (id == nil and original_md) or TARDIS:CreateExteriorMetadata(id)
 
@@ -111,6 +111,9 @@ function ENT:ChangeExteriorMetadata(id)
     if oldvortex then
         ext_md.Parts.vortex = TARDIS:CopyTable(oldvortex)
     end
+
+    ext_md.Teleport = TARDIS:CopyTable(original_md.Teleport)
+    ext_md.Sounds.Teleport = TARDIS:CopyTable(original_md.Sounds.Teleport)
 
     self.metadata.Exterior = ext_md
     self.interior.metadata.Exterior = ext_md
