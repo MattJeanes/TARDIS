@@ -139,7 +139,7 @@ function ENT:ChangeExterior(id, animate, ply)
         if select_failed then
             TARDIS:ErrorMessage(ply, "Chameleon.FailedExteriorSelect")
         else
-            self:SetData("chameleon_selected_exterior", id, true)
+            self:SetData("chameleon_selected_exterior", id or false, true)
             self:SetData("chameleon_exterior_last_selector", ply, true)
             TARDIS:Message(ply, "Chameleon.ExteriorSelected")
         end
@@ -250,7 +250,7 @@ end
 function ENT:RetryChameleon(animate)
     local id = self:GetData("chameleon_selected_exterior")
     local ply = self:GetData("chameleon_exterior_last_selector")
-    if id then
+    if id ~= nil then
         self:ChangeExterior(id, animate, ply)
     end
 end
