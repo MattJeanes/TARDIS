@@ -15,6 +15,8 @@ function TARDIS:LoadInteriors()
     TARDIS.ExteriorsMetadataRaw = {}
     TARDIS.ExteriorCategories = {}
 
+    TARDIS.ImportedExteriors = {}
+
     TARDIS.IntCustomSettings = {}
     TARDIS.IntUpdatesPerTemplate = {}
 
@@ -82,6 +84,10 @@ function TARDIS:AddInterior(t)
     self:AddSpawnmenuInterior(id)
     self:SetupTemplateUpdates(id)
     self:SetupCustomSettings(id)
+
+    if self.ImportedExteriors and self.ImportedExteriors[id] then
+        self:ImportExterior(id, self.ImportedExteriors[id])
+    end
 end
 
 function TARDIS:SetupMetadata(id)
