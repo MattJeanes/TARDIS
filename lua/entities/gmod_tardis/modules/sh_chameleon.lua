@@ -1,7 +1,7 @@
 if SERVER then
     ENT:OnMessage("chameleon_change_exterior", function(self,data,ply)
         if self:CheckSecurity(ply) then
-            self:ChangeExterior(data[1], data[2])
+            self:ChangeExterior(data[1], data[2], data[3] or ply)
         end
     end)
 
@@ -124,17 +124,35 @@ if CLIENT then
     end)
 end
 
-function ENT:ChangeExterior(id, animate)
+function ENT:ChangeExterior(id, animate, ply)
     if CLIENT then
-        self:SendMessage("chameleon_change_exterior", {id, animate})
+        self:SendMessage("chameleon_change_exterior", {id, animate, ply})
         return
     end
 
-    if self:CallCommonHook("CanChangeExterior", id) == false then
-        self:SetData("chameleon_selected_exterior", id, true)
+    local can_apply,select_failed,msg,msg_is_err = self:CallCommonHook("CanChangeExterior", id)
+
+    if can_apply == false then
+        if select_failed then
+            TARDIS:ErrorMessage(ply, "Chameleon.FailedExteriorSelect")
+        else
+            self:SetData("chameleon_selected_exterior", id, true)
+            self:SetData("chameleon_exterior_last_selector", ply, true)
+            TARDIS:Message(ply, "Chameleon.ExteriorSelected")
+        end
+
+        if msg then
+            if msg_is_err then
+                TARDIS:ErrorMessage(ply, msg)
+            else
+                TARDIS:Message(ply, msg)
+            end
+        end
+
         return
     end
     self:SetData("chameleon_selected_exterior", nil, true)
+    self:SetData("chameleon_exterior_last_selector", nil, true)
 
     if not IsValid(self.interior) then
         return
@@ -160,6 +178,9 @@ function ENT:ChangeExterior(id, animate)
     end
 
     self:Timer("chameleon_change", delay, function()
+        self:SetMaterial()
+        self:SetSubMaterial()
+        -- reset submaterials etc.
         self:SetModel(ext_md.Model)
         self:PhysicsInit(SOLID_VPHYSICS)
         self:SetMoveType(MOVETYPE_VPHYSICS)
@@ -218,13 +239,16 @@ function ENT:ChangeExterior(id, animate)
         self:SendMessage("exterior_changed", {id})
 
         self:SetData("chameleon_active", (id ~= nil), true)
+
+        TARDIS:StatusMessage(ply, "Chameleon.Status", (id ~= nil), "Chameleon.Status.Activated", "Chameleon.Status.Deactivated")
     end)
 end
 
 function ENT:RetryChameleon(animate)
     local id = self:GetData("chameleon_selected_exterior")
+    local ply = self:GetData("chameleon_exterior_last_selector")
     if id then
-        self:ChangeExterior(id, animate)
+        self:ChangeExterior(id, animate, ply)
     end
 end
 
@@ -257,7 +281,7 @@ end)
 
 ENT:AddHook("CanChangeExterior", "chameleon", function(self)
     if self:GetData("chameleon_changing") then
-        return false
+        return false,true,"Chameleon.FailReasons.AlreadyChanging",true
     end
 end)
 

@@ -54,7 +54,7 @@ if SERVER then
         if self:GetData("demat") or self:GetData("vortex")
             or (self:GetData("mat") and self:GetData("step") > 1)
         then
-            return false
+            return false,false,"Chameleon.FailReasons.Teleporting",false
         end
     end)
 

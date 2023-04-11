@@ -164,12 +164,12 @@ TARDIS:AddScreen("Chameleon", {id="chameleon", text="Screens.Chameleon", menu=fa
 
     function apply:DoClick()
         if change_id ~= nil then
-            ext:ChangeExterior(change_id, true)
+            ext:ChangeExterior(change_id, true, LocalPlayer())
         end
     end
 
     function reset:DoClick()
-        ext:ChangeExterior(nil, true)
+        ext:ChangeExterior(nil, true, LocalPlayer())
     end
 
 end)

@@ -117,6 +117,13 @@ if SERVER then
         end
     end)
 
+    ENT:AddHook("ShouldFailDemat", "door", function(self, force)
+        -- preventing stack overflow if doors can't get closed during force demat
+        if self:DoorOpen() and self:CallHook("CanToggleDoor",false) == false then
+            return false
+        end
+    end)
+
     ENT:AddHook("ToggleDoorReal", "classic_doors_collision", function(self,open)
         if self.metadata.EnableClassicDoors ~= true then return end
 
@@ -212,7 +219,7 @@ if SERVER then
 
     ENT:AddHook("CanChangeExterior","doors",function(self)
         if self:DoorOpen() then
-            return false
+            return false,false,"Chameleon.FailReasons.DoorsOpen",false
         end
     end)
 else
