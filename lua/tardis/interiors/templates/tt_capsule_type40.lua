@@ -36,7 +36,8 @@ T = {
                 posoffset=Vector(-30.05,0,-46.45),
                 angoffset=Angle(0,0,0),
             },
-        }
+        },
+        ScannerOffset = Vector(30,0,50),
     },
     Interior = {
         Parts={
