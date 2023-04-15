@@ -445,6 +445,8 @@
     "Settings.Sections.Misc.Tips": "Cynghorion",
     "Settings.Sections.Misc.Tips.Enabled": "Cynghorion",
     "Settings.Sections.Misc.Tips.Enabled.Description": "A ddylid dangos awgrymiadau ar gyfer rheolaethau TARDIS?",
+    "Settings.Sections.Misc.Tips.ShowAll": "",
+    "Settings.Sections.Misc.Tips.ShowAll.Description": "",
     "Settings.Sections.Misc.Tips.Style": "Arddull Awgrymiadau",
     "Settings.Sections.Misc.Tips.Style.Description": "Pa arddull ddylai awgrymiadau TARDIS ei ddefnyddio?",
     "Settings.Sections.Other": "Arall",

@@ -445,6 +445,8 @@
     "Settings.Sections.Misc.Tips": "İpuçları",
     "Settings.Sections.Misc.Tips.Enabled": "İpuçları",
     "Settings.Sections.Misc.Tips.Enabled.Description": "TARDIS kontrolleri için ipuçları gösterilmeli mi?",
+    "Settings.Sections.Misc.Tips.ShowAll": "",
+    "Settings.Sections.Misc.Tips.ShowAll.Description": "",
     "Settings.Sections.Misc.Tips.Style": "İpuçları Stili",
     "Settings.Sections.Misc.Tips.Style.Description": "TARDIS uçları hangi stili kullanmalıdır?",
     "Settings.Sections.Other": "Başka",

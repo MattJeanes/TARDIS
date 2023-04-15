@@ -445,6 +445,8 @@
     "Settings.Sections.Misc.Tips": "Astuces",
     "Settings.Sections.Misc.Tips.Enabled": "Astuces",
     "Settings.Sections.Misc.Tips.Enabled.Description": "Faut-il afficher les astuces pour les contrôles du TARDIS ?",
+    "Settings.Sections.Misc.Tips.ShowAll": "",
+    "Settings.Sections.Misc.Tips.ShowAll.Description": "",
     "Settings.Sections.Misc.Tips.Style": "Style d'Astuces",
     "Settings.Sections.Misc.Tips.Style.Description": "Quel style doivent utiliser les astuces du TARDIS ?",
     "Settings.Sections.Other": "Autre",

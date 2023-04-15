@@ -445,6 +445,8 @@
     "Settings.Sections.Misc.Tips": "Etiquetas",
     "Settings.Sections.Misc.Tips.Enabled": "Etiquetas de controles",
     "Settings.Sections.Misc.Tips.Enabled.Description": "¿Deberían mostrarse las etiquetas de los controles del TARDIS?",
+    "Settings.Sections.Misc.Tips.ShowAll": "",
+    "Settings.Sections.Misc.Tips.ShowAll.Description": "",
     "Settings.Sections.Misc.Tips.Style": "Estilo de Etiquetas de Controles",
     "Settings.Sections.Misc.Tips.Style.Description": "¿Qué estilo deberían utilizar las etiquetas de los controles?",
     "Settings.Sections.Other": "Otros",

@@ -445,6 +445,8 @@
     "Settings.Sections.Misc.Tips": "Tipps",
     "Settings.Sections.Misc.Tips.Enabled": "Tipps",
     "Settings.Sections.Misc.Tips.Enabled.Description": "Sollten Tipps für die Steuerung der TARDIS angezeigt werden?",
+    "Settings.Sections.Misc.Tips.ShowAll": "",
+    "Settings.Sections.Misc.Tips.ShowAll.Description": "",
     "Settings.Sections.Misc.Tips.Style": "Tipps Stil",
     "Settings.Sections.Misc.Tips.Style.Description": "Welchen Stil sollten die TARDIS-Spitzen haben?",
     "Settings.Sections.Other": "Andere",

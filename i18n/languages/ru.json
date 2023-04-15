@@ -445,6 +445,8 @@
     "Settings.Sections.Misc.Tips": "Подсказки",
     "Settings.Sections.Misc.Tips.Enabled": "Подсказки",
     "Settings.Sections.Misc.Tips.Enabled.Description": "Будут ли показаны подсказки для элементов управления ТАРДИС?",
+    "Settings.Sections.Misc.Tips.ShowAll": "",
+    "Settings.Sections.Misc.Tips.ShowAll.Description": "",
     "Settings.Sections.Misc.Tips.Style": "Стиль подсказок",
     "Settings.Sections.Misc.Tips.Style.Description": "Какой стиль подсказок будет появляться в ТАРДИС?",
     "Settings.Sections.Other": "Другое",
