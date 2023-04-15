@@ -178,12 +178,13 @@ hook.Add("HUDPaint", "TARDIS-DrawTips", function()
             tip:SetHighlight(cseq_enabled and tip.part == cseq_next)
         end
 
-        local partok = (not tip.part or IsValid(interior:GetPart(tip.part)))
-        local shoulddraw = TARDIS:GetSetting("tips_show_all") or tip:GetHighlight() or (partok and interior:GetPart(tip.part):BeingLookedAtByLocalPlayer())
+        local part = tip.part and interior:GetPart(tip.part)
+        local partok = IsValid(part)
+        local shoulddraw = TARDIS:GetSetting("tips_show_all") or tip:GetHighlight() or (partok and part:BeingLookedAtByLocalPlayer())
         local pos = interior:LocalToWorld(tip.pos or Vector(0,0,0))
         local dist = pos:Distance(player_pos)
 
-        if dist <= view_range_max and partok then
+        if dist <= view_range_max and partok and shoulddraw then
             surface.SetFont(tip.font)
             local alpha = tip.colors.current.background.a
             if dist > view_range_min then
