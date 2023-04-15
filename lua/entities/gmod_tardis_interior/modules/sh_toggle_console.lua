@@ -11,11 +11,18 @@ if SERVER then
     function ENT:ToggleConsole()
         return self:SetConsoleEnabled(not self:GetConsoleEnabled())
     end
+
+    ENT:AddHook("Initialize", "console_on", function(self)
+        self:SetData("console_on", true, true)
+    end)
+
 end
 
 
+
 ENT:AddHook("CanUseTardisControl", "console_on", function(self, control, ply, part)
-    if self:GetData("console_on") and IsValid(part) and not control.bypass_console_toggle then
+    if not self:GetData("console_on") and IsValid(part) and not control.bypass_console_toggle then
         return false
     end
 end)
+

@@ -1,8 +1,7 @@
 TARDIS:AddControl({
     id = "toggle_console",
     int_func=function(self,ply)
-        if self:ToggleConsole() then
-            TARDIS:StatusMessage(ply, "Controls.ToggleConsole.Status")
+        TARDIS:StatusMessage(ply, "Controls.ToggleConsole.Status", self:ToggleConsole())
     end,
     serveronly=true,
     power_independent = true,
