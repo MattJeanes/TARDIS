@@ -33,9 +33,7 @@ function TARDIS:Control(control_id, ply, part)
     local ext=ply:GetTardisData("exterior")
     if control and IsValid(ext) then
         local int=ply:GetTardisData("interior")
-        if ext:CallHook("CanUseTardisControl", control, ply, part) == false
-            or (IsValid(int) and int:CallHook("CanUseTardisControl", control, ply, part) == false)
-        then
+        if ext:CallCommonHook("CanUseTardisControl", control, ply, part) == false then
             return
         end
         local res_ext, res_int
