@@ -8,6 +8,7 @@ if SERVER then
     function ENT:SetScannersOn(on)
         self:SetData("scanners_on", on, true)
         self:CallHook("ScannersToggled", on)
+        self:CallHook("PostScannersToggled", on)
         return true
     end
 
