@@ -1,9 +1,10 @@
 -- Phase Animation
 
 local function dodraw(self, ent)
+	if not self:CallHook("ShouldDrawPhaseAnimation") then return end
+
 	ent = ent or self
-	local animating = (self:CallHook("ShouldDrawPhaseAnimation") == true)
-	if not animating then return end
+	
 	local oldClip = render.EnableClipping(true)
 
 	local normal = self:GetUp()
