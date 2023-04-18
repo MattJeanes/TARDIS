@@ -29,7 +29,6 @@ local function dodraw(self, ent)
 
 	render.EnableClipping(oldClip)
 
-
 	return false
 end
 
