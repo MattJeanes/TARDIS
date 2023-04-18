@@ -8,7 +8,7 @@ function TARDIS.DrawOverride(self,override)
     if self.NoDraw then return end
     local int=self.interior
     local ext=self.exterior
-
+    
     if IsValid(ext) then
 
         if (self.InteriorPart and IsValid(int)
@@ -23,8 +23,9 @@ function TARDIS.DrawOverride(self,override)
                 or self.ShouldDrawOverride
             )
         then
+           
             if self.parent:CallHook("ShouldDrawPart", self) == false then return end
-            self.parent:CallHook("PreDrawPart",self)
+            if self.parent:CallHook("PreDrawPart",self) == false then return end
             if self.PreDraw then self:PreDraw() end
             if self.UseTransparencyFix and (not override) then
                 render.SetBlend(0)
@@ -34,7 +35,7 @@ function TARDIS.DrawOverride(self,override)
                 self.o.Draw(self)
             end
             if self.PostDraw then self:PostDraw() end
-            self.parent:CallHook("DrawPart",self)
+            self.parent:CallHook("PostDrawPart",self)
         end
     end
 end
