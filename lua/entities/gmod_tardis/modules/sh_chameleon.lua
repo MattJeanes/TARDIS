@@ -115,6 +115,11 @@ function ENT:ChangeExteriorMetadata(id)
     ext_md.Teleport = TARDIS:CopyTable(original_md.Teleport)
     ext_md.Sounds.Teleport = TARDIS:CopyTable(original_md.Sounds.Teleport)
 
+    if original_md.ProjectedLight and original_md.ProjectedLight.color then
+        ext_md.ProjectedLight = ext_md.ProjectedLight or {}
+        ext_md.ProjectedLight.color = original_md.ProjectedLight.color
+    end
+
     self.metadata.Exterior = ext_md
     self.interior.metadata.Exterior = ext_md
 
