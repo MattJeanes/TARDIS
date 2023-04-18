@@ -1,7 +1,7 @@
 if SERVER then
     ENT:OnMessage("chameleon_change_exterior", function(self,data,ply)
         if self:CheckSecurity(ply) then
-            self:ChangeExterior(data[1], data[2], data[3] or ply)
+            self:ChangeExterior(data[1], data[2], data[3], data[4])
         end
     end)
 
@@ -105,7 +105,7 @@ function ENT:ChangeExteriorMetadata(id)
     end
     local original_md = self.metadata.ExteriorOriginal
 
-    local ext_md = (id == nil and original_md) or TARDIS:CreateExteriorMetadata(id)
+    local ext_md = (id == false and original_md) or TARDIS:CreateExteriorMetadata(id)
 
     local oldvortex = self.metadata.Exterior.Parts.vortex
     if oldvortex then
@@ -127,19 +127,23 @@ if CLIENT then
     end)
 end
 
-function ENT:ChangeExterior(id, animate, ply)
+function ENT:ChangeExterior(id, animate, ply, retry)
     if CLIENT then
-        self:SendMessage("chameleon_change_exterior", {id, animate, ply})
+        self:SendMessage("chameleon_change_exterior", {id, animate, ply, retry})
         return
     end
 
-    local can_apply,select_failed,msg,msg_is_err = self:CallCommonHook("CanChangeExterior", id)
+    if id == nil then
+        id = false
+    end
+
+    local can_apply,select_failed,msg,msg_is_err = self:CallCommonHook("CanChangeExterior", id, retry)
 
     if can_apply == false then
         if select_failed then
             TARDIS:ErrorMessage(ply, "Chameleon.FailedExteriorSelect")
         else
-            self:SetData("chameleon_selected_exterior", id or false, true)
+            self:SetData("chameleon_selected_exterior", id, true)
             self:SetData("chameleon_exterior_last_selector", ply, true)
             TARDIS:Message(ply, "Chameleon.ExteriorSelected")
         end
@@ -181,6 +185,8 @@ function ENT:ChangeExterior(id, animate, ply)
     end
 
     self:Timer("chameleon_change", delay, function()
+        self:SetData("chameleon_current_exterior", id, true)
+
         self:SetMaterial()
         self:SetSubMaterial()
         -- reset submaterials etc.
@@ -197,37 +203,72 @@ function ENT:ChangeExterior(id, animate, ply)
             self.phys:Wake()
         end
 
-        local portal = self.interior.portals.exterior
+        local extportal = self.interior.portals.exterior
         local portal_md = ext_md.Portal
 
-        if not IsValid(portal) then return end
+        if not IsValid(extportal) then return end
 
-        portal:SetParent(nil)
-        portal:SetPos(self:LocalToWorld(portal_md.pos))
-        portal:SetAngles(self:LocalToWorldAngles(portal_md.ang))
-        portal:SetWidth(portal_md.width)
-        portal:SetHeight(portal_md.height)
-        portal:SetThickness(portal_md.thickness or 0)
-        portal:SetInverted(portal_md.inverted)
-        portal:SetParent(self)
+        extportal:SetParent(nil)
+        extportal:SetPos(self:LocalToWorld(portal_md.pos))
+        extportal:SetAngles(self:LocalToWorldAngles(portal_md.ang))
+        extportal:SetWidth(portal_md.width)
+        extportal:SetHeight(portal_md.height)
+        extportal:SetThickness(portal_md.thickness or 0)
+        extportal:SetInverted(portal_md.inverted)
+        extportal:SetParent(self)
 
 
+        -- aligning interior portal
         local intportal = self.interior.portals.interior
         local fallback = self.interior.Fallback.pos
 
-        local floor = util.QuickTrace(self.interior:LocalToWorld(fallback) + Vector(0, 0, 30), Vector(0, 0, -0.1) * 99999999).HitPos
-        floor = self.interior:WorldToLocal(floor)
+        local floor_z
 
-        local prev_z_offset = self:GetData("chameleon_intportal_z_offset", 0)
+        if self.metadata.Interior.FloorLevel then
+            floor_z = self.metadata.Interior.FloorLevel
+        else
+            local floor = util.QuickTrace(self.interior:LocalToWorld(fallback) + Vector(0, 0, 30), Vector(0, 0, -0.1) * 99999999).HitPos
+            floor = self.interior:WorldToLocal(floor)
+            floor_z = floor.z
+        end
+
+        local prev_int_z_offset = self:GetData("chameleon_intportal_z_offset", 0)
 
         local intp_offset = intportal:GetExitPosOffset()
-        local intp_offset_real_z = intp_offset.z - prev_z_offset
+        local intp_offset_real_z = intp_offset.z - prev_int_z_offset
 
-        local new_z_offset = 0.5 * portal:GetHeight() - self.interior:WorldToLocal(intportal:GetPos()).z + floor.z
+        local intp_midtofloor = self.interior:WorldToLocal(intportal:GetPos()).z - floor_z
 
-        intportal:SetExitPosOffset(Vector(intp_offset.x, intp_offset.y, intp_offset_real_z + new_z_offset))
-        self:SetData("chameleon_intportal_z_offset", new_z_offset)
+        local new_int_z_offset
 
+        if id == false then
+            new_int_z_offset = 0
+        else
+            new_int_z_offset = 0.5 * extportal:GetHeight() - intp_midtofloor
+        end
+
+        intportal:SetExitPosOffset(Vector(intp_offset.x, intp_offset.y, intp_offset_real_z + new_int_z_offset))
+        self:SetData("chameleon_intportal_z_offset", new_int_z_offset)
+
+
+        -- aligning exterior portal
+
+        local prev_ext_z_offset = self:GetData("chameleon_extportal_z_offset", 0)
+
+        local extp_offset = extportal:GetExitPosOffset()
+        local extp_offset_real_z = extp_offset.z - prev_ext_z_offset
+
+        local new_ext_z_offset
+        if id == false then
+            new_ext_z_offset = 0
+        else
+            new_ext_z_offset = intp_midtofloor - 0.5 * extportal:GetHeight()
+        end
+
+        extportal:SetExitPosOffset(Vector(extp_offset.x, extp_offset.y, extp_offset_real_z + new_ext_z_offset))
+        self:SetData("chameleon_extportal_z_offset", new_ext_z_offset)
+
+        -- exterior parts replacement
         for k,v in pairs(self:GetParts()) do
             if IsValid(v) then
                 v:Remove()
@@ -241,9 +282,9 @@ function ENT:ChangeExterior(id, animate, ply)
         self:CallCommonHook("ExteriorChanged", id)
         self:SendMessage("exterior_changed", {id})
 
-        self:SetData("chameleon_active", (id ~= nil), true)
+        self:SetData("chameleon_active", (id ~= false), true)
 
-        TARDIS:StatusMessage(ply, "Chameleon.Status", (id ~= nil), "Chameleon.Status.Activated", "Chameleon.Status.Deactivated")
+        TARDIS:StatusMessage(ply, "Chameleon.Status", (id ~= false), "Chameleon.Status.Activated", "Chameleon.Status.Deactivated")
     end)
 end
 
@@ -251,7 +292,7 @@ function ENT:RetryChameleon(animate)
     local id = self:GetData("chameleon_selected_exterior")
     local ply = self:GetData("chameleon_exterior_last_selector")
     if id ~= nil then
-        self:ChangeExterior(id, animate, ply)
+        self:ChangeExterior(id, animate, ply, true)
     end
 end
 
@@ -282,9 +323,20 @@ ENT:AddHook("ShouldDrawShadow", "chameleon", function(self)
 end)
 
 
-ENT:AddHook("CanChangeExterior", "chameleon", function(self)
+ENT:AddHook("CanChangeExterior", "chameleon", function(self, id, retry)
     if self:GetData("chameleon_changing") then
         return false,true,"Chameleon.FailReasons.AlreadyChanging",true
+    end
+
+    if not retry then
+        local selected = self:GetData("chameleon_selected_exterior")
+        local current = self:GetData("chameleon_current_exterior", nil)
+
+        if id == selected then
+            return false,true,"Chameleon.FailReasons.AlreadySelected",true
+        elseif selected == nil and id == current then
+            return false,true,"Chameleon.FailReasons.SameSelected",true
+        end
     end
 end)
 
