@@ -95,6 +95,7 @@ TARDIS:AddKeyBind("tp-openscreen",{
 
 local screens={}
 function TARDIS:AddScreen(name,options,func)
+    if options.id == nil then options.id = name end
     screens[name]={options,func}
 end
 TARDIS:LoadFolder("screens")
