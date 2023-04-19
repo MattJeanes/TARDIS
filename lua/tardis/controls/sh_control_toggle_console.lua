@@ -15,7 +15,7 @@ TARDIS:AddControl({
         text = "Controls.ToggleConsole",
         pressed_state_from_interior = true,
         pressed_state_data = "console_on",
-        order = 1,
+        order = 17,
     },
     tip_text = "Controls.ToggleConsole.Tip",
 })
