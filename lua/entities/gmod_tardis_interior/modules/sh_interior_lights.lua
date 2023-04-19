@@ -395,7 +395,7 @@ if CLIENT then
         end
     end)
 
-    ENT:AddHook("PostInitialize", "lamps", function(self) 
+    ENT:AddHook("PostInitialize", "lamps", function(self)
         self:RunLampUpdate()
     end)
 

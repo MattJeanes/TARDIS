@@ -13,7 +13,6 @@ TARDIS:AddControl({
         toggle = true,
         frame_type = {0, 1},
         text = "Controls.Repair",
-        pressed_state_from_interior = false,
         pressed_state_data = "repair-primed",
         order = 3,
     },

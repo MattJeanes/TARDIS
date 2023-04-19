@@ -9,7 +9,7 @@ end)
 
 ENT:AddHook("SettingChanged","maxhealth-changed", function(self, id, val)
     if id ~= "health-max" then return end
-    
+
     if self:GetHealth() > val then
         self:ChangeHealth(val)
     end
@@ -92,7 +92,7 @@ if SERVER then
             self:SetData("repair-primed", true, true)
 
             if table.IsEmpty(self.occupants) then
-                self:Timer("repair-nooccupants", 0, function() 
+                self:Timer("repair-nooccupants", 0, function()
                     self:SetData("repair-shouldstart", true)
                     self:SetData("repair-delay", CurTime()+0.3)
                 end)
@@ -276,7 +276,11 @@ if SERVER then
     ---------------------------------
 
     ENT:AddHook("OnTakeDamage", "Health", function(self, dmginfo)
-        if dmginfo:GetInflictor():GetClass() == "env_fire" then return end
+        if IsValid(dmginfo:GetInflictor())
+            and dmginfo:GetInflictor():GetClass() == "env_fire"
+        then
+            return
+        end
         if dmginfo:GetDamage() <= 0 then return end
         local newhealth = self:GetHealth() - (dmginfo:GetDamage()/2)
         self:ChangeHealth(newhealth)

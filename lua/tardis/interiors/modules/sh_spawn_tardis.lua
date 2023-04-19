@@ -1,6 +1,35 @@
 if SERVER then
     util.AddNetworkString("TARDIS-Spawn-Delete-Sound")
 
+    function TARDIS:SetupRandomSkin(entity)
+        if not TARDIS:GetSetting("randomize_skins", entity) then return end
+
+        local total_skins = entity:SkinCount()
+        if total_skins <= 0 then return end
+
+        local chosen_skin = math.random(total_skins)
+        local excluded = entity.metadata.Exterior.ExcludedSkins
+        local winter = entity.metadata.Exterior.WinterSkins
+        local winter_ok = TARDIS:GetSetting("winter_skins", entity)
+
+        local function cannot_use_skin(chosen_skin)
+            local is_excluded = table.HasValue(excluded, chosen_skin)
+            return is_excluded or (not winter_ok and winter and table.HasValue(winter, chosen_skin) )
+        end
+
+        if excluded then
+            local attempts = 1
+            while cannot_use_skin(chosen_skin) and attempts < 30 do
+                chosen_skin = math.random(total_skins)
+                attempts = attempts + 1
+            end
+        end
+        if not excluded or not table.HasValue(excluded, chosen_skin) then
+            entity:SetSkin(chosen_skin)
+            entity:SetData("intdoor_skin_needs_update", true, true)
+        end
+    end
+
     function TARDIS:SpawnTARDIS(ply, customData, force)
         local entityName = "gmod_tardis"
 
@@ -74,33 +103,7 @@ if SERVER then
         ply:AddCleanup("sents", entity)
         entity:SetVar("Player", ply)
 
-        if TARDIS:GetSetting("randomize_skins", entity) then
-            local total_skins = entity:SkinCount()
-            if total_skins then
-                local chosen_skin = math.random(total_skins)
-
-                local excluded = entity.metadata.Exterior.ExcludedSkins
-                local winter = entity.metadata.Exterior.WinterSkins
-                local winter_ok = TARDIS:GetSetting("winter_skins", entity)
-
-                local function cannot_use_skin(chosen_skin)
-                    local is_excluded = table.HasValue(excluded, chosen_skin)
-                    return is_excluded or (not winter_ok and winter and table.HasValue(winter, chosen_skin) )
-                end
-
-                if excluded then
-                    local attempts = 1
-                    while cannot_use_skin(chosen_skin) and attempts < 30 do
-                        chosen_skin = math.random(total_skins)
-                        attempts = attempts + 1
-                    end
-                end
-                if not excluded or not table.HasValue(excluded, chosen_skin) then
-                    entity:SetSkin(chosen_skin)
-                    entity:SetData("intdoor_skin_needs_update", true, true)
-                end
-            end
-        end
+        TARDIS:SetupRandomSkin(entity)
 
         return entity
     end

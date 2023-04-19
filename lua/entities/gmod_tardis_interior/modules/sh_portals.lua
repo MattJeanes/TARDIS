@@ -38,7 +38,7 @@ else
             end
         end
     end)
-    
+
     -- Smoothly closes door (if open) as player reaches render limit
     ENT:AddHook("Think", "portals", function(self)
         local ext=self.exterior

@@ -51,7 +51,7 @@ ENT:AddHook("CanStartControlSequence", "conditions", function(self,id)
     local seq = cseqs[id]
     if not seq then return end
     if not seq.Condition then return end
-    
+
     if not seq.Condition(self) then
         return false
     end

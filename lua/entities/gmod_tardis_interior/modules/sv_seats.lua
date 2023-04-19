@@ -15,29 +15,29 @@ end)
 function ENT:MakeVehicle( Pos, Ang, Model, Class, VName, VTable )
     local ent = ents.Create( Class )
     if not ent then return NULL end
-    
+
     ent:SetModel( Model )
-    
+
     -- Fill in the keyvalues if we have them
     if VTable and VTable.KeyValues then
         for k, v in pairs( VTable.KeyValues ) do
             ent:SetKeyValue( k, v )
         end
     end
-        
+
     ent:SetPos( Pos )
     ent:SetAngles( Ang )
-        
+
     ent:Spawn()
     ent:Activate()
-    
+
     ent.VehicleName     = VName
     ent.VehicleTable    = VTable
-    
-    -- We need to override the class in the case of the Jeep, because it 
+
+    -- We need to override the class in the case of the Jeep, because it
     -- actually uses a different class than is reported by GetClass
     ent.ClassOverride   = Class
-    
+
     ent.TardisPart=true
     ent:GetPhysicsObject():EnableMotion(false)
     ent:SetRenderMode(RENDERMODE_TRANSALPHA)

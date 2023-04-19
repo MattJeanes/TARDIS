@@ -49,7 +49,7 @@ else
 
     ENT:AddHook("Draw", "light", function(self)
         local light = self.metadata.Exterior.Light
-        if not light.enabled then return end
+        if not light or not light.enabled then return end
 
         local shouldon=self:CallHook("ShouldTurnOnLight")
         local shouldpulse=self:CallHook("ShouldPulseLight")
@@ -89,7 +89,7 @@ else
 
     ENT:AddHook("Think", "light", function(self)
         local light = self.metadata.Exterior.Light
-        if not (light.enabled and TARDIS:GetSetting("extlight-dynamic")) then return end
+        if not (light and light.enabled and TARDIS:GetSetting("extlight-dynamic")) then return end
 
         local shouldon=self:CallHook("ShouldTurnOnLight")
         local shouldoff=self:CallHook("ShouldTurnOffLight")

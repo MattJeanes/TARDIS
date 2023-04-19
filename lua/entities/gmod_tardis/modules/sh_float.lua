@@ -72,7 +72,7 @@ if SERVER then
         self:CallCommonHook("FloatToggled", on)
         return true
     end
-    
+
     function ENT:ToggleFloat()
         local on=not self:GetData("float",false)
         if self:GetData("flight") then
@@ -82,7 +82,7 @@ if SERVER then
         end
         return self:SetFloat(on)
     end
-    
+
     ENT:AddHook("CanTurnOffFloat", "float", function(self)
         if self:GetData("floatfirst") then return false end
     end)
@@ -90,19 +90,19 @@ if SERVER then
     ENT:AddHook("CanTurnOnFloat", "float", function(self)
         if not self:GetPower() then return false end
     end)
-    
+
     ENT:AddHook("Think", "float", function(self)
         if self:GetData("float") then
             self.phys:Wake()
         end
     end)
-    
+
     ENT:AddHook("OnHealthDepleted","float",function(self)
         if self:GetData("float") and self:GetData("floatfirst") then
             self:ToggleFloat()
         end
     end)
-    
+
     ENT:AddHook("PhysicsUpdate", "float", function(self,ph)
         if self:GetData("float") then
             if ph:IsGravityEnabled() then
@@ -157,7 +157,7 @@ if SERVER then
                         ph:AddAngleVelocity(vec)
                     end
                 end
-                
+
                 if TARDIS:IsBindDown(self.pilot,"float-brake") then
                     ph:AddAngleVelocity(ph:GetAngleVelocity()*-0.05)
                 end

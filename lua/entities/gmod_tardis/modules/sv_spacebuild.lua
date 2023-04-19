@@ -13,7 +13,7 @@ ENT:AddHook("FloatToggled", "spacebuild", function(self, on)
         return
     end
 
-    if not on then 
+    if not on then
         self.gravity = nil
         self.environment:UpdateGravity(self)
     end

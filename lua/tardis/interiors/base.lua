@@ -57,6 +57,7 @@ T.Exterior = {
     Mass = 5000,
     DoorAnimationTime = 0.5,
     ScannerOffset = Vector(22,0,50),
+    PhaseMaterial = "models/drmatt/tardis/exterior/phase_noise.vmt",
     Portal = {
         pos = Vector(26,0,51.65),
         ang = Angle(0,0,0),
@@ -114,6 +115,10 @@ T.Exterior = {
         Cloak = "drmatt/tardis/phase_enable.wav",
         CloakOff = "drmatt/tardis/phase_disable.wav",
         Hum = nil,
+        Chameleon = "drmatt/tardis/chameleon_circuit.wav",
+    },
+    Chameleon = {
+        AnimTime = 4,
     },
     Parts = {
         vortex = {
@@ -148,3 +153,14 @@ T.Exterior = {
 }
 
 TARDIS:AddInterior(T)
+
+local E = TARDIS:CopyTable(T.Exterior)
+E.ID = "base"
+E.Base = true
+E.Name = "Base"
+E.Category = "Exteriors.Categories.PoliceBoxes"
+-- to prevent it generating other empty categories
+
+E.Light.enabled = false
+
+TARDIS:AddExterior(E)

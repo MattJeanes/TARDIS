@@ -57,6 +57,12 @@ if SERVER then
             return self:GetPower() and 1 or 0
         end
     end)
+
+    ENT:AddHook("CanChangeExterior","power",function(self)
+        if not self:GetPower() then
+            return false,true,"Chameleon.FailReasons.NoPower",true
+        end
+    end)
 else
     ENT:AddHook("ShouldNotDrawProjectedLight", "power", function(self)
         if not self:GetPower() then return true end

@@ -67,26 +67,26 @@ else
             cmd:ClearMovement()
         end
     end)
-    
+
     hook.Add("SetupMove", "tardis-outside", function(ply, mv, cmd)
         if ply:GetTardisData("outside") then
             mv:SetButtons(0)
             mv:SetMoveAngles(ply:GetTardisData("outsideang", Angle(0,0,0)))
         end
     end)
-    
+
     ENT:AddHook("Initialize", "outside", function(self)
         self.thpprop=ents.CreateClientProp("models/props_junk/PopCan01a.mdl")
         self.thpprop:SetNoDraw(true)
     end)
-    
+
     ENT:AddHook("OnRemove", "outside", function(self)
         if IsValid(self.thpprop) then
             self.thpprop:Remove()
             self.thpprop=nil
         end
     end)
-    
+
     ENT:OnMessage("Outside", function(self, data, ply)
         local ply = data[1]
         local enabled = data[2]
@@ -98,7 +98,7 @@ else
             return true
         end
     end)
-    
+
     oldgetviewentity=oldgetviewentity or GetViewEntity
     function GetViewEntity(...)
         if LocalPlayer():GetTardisData("outside") then
@@ -109,7 +109,7 @@ else
         end
         return oldgetviewentity(...)
     end
-    
+
     local meta=FindMetaTable("Player")
     oldgetviewentity2=oldgetviewentity2 or meta.GetViewEntity
     function meta:GetViewEntity(...)
@@ -136,17 +136,17 @@ else
                 view.origin = pos
                 view.angles = ang
                 view.fov = fov
-                
+
                 if IsValid(ext.thpprop) then
                     ext.thpprop:SetPos(view.origin)
                     ext.thpprop:SetAngles(view.angles)
                 end
-                
+
                 return view
             end
         end
     end)
-    
+
     local hudblock={
         CHudAmmo = true,
         CHudBattery = true,
@@ -161,7 +161,7 @@ else
             return false
         end
     end)
-    
+
     hook.Add("Initialize", "tardis-outside", function(name)
         oldtargetid=oldtargetid or GAMEMODE.HUDDrawTargetID
         GAMEMODE.HUDDrawTargetID = function(...)
@@ -169,14 +169,14 @@ else
             oldtargetid(...)
         end
     end)
-    
+
     hook.Add("PrePlayerDraw", "tardis-outside", function(ply)
         if ply:GetTardisData("outside") then
             ply.angtemp=ply:EyeAngles()
             ply:SetRenderAngles(Angle(0,ply:GetTardisData("outsideang",0).y,0))
         end
     end)
-    
+
     hook.Add("ShouldDrawLocalPlayer", "tardis-outside", function(ply)
         if ply:GetTardisData("outside") then
             return true

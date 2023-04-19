@@ -207,4 +207,4 @@ function TARDIS:GetMergedTextureSets(texture_sets_table)
     return texture_sets_merged
 end
 
-TARDIS:LoadFolder("interiors/templates", nil, true)
+TARDIS:LoadInteriors()

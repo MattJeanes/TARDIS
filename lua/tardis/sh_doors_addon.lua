@@ -14,7 +14,7 @@ if CLIENT then
         DoorsFrame:SetSize(ScrW()*0.95, ScrH()*0.95)
         DoorsFrame:SetPos((ScrW() - DoorsFrame:GetWide()) / 2, (ScrH() - DoorsFrame:GetTall()) / 2)
         DoorsFrame:MakePopup()
-        
+
         local h=vgui.Create('DHTML')
         h:SetParent(DoorsFrame)
         h:SetPos(DoorsFrame:GetWide()*0.005, DoorsFrame:GetTall()*0.03)
