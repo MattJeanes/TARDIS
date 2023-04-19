@@ -36,7 +36,8 @@ T = {
                 posoffset=Vector(-30.05,0,-46.45),
                 angoffset=Angle(0,0,0),
             },
-        }
+        },
+        ScannerOffset = Vector(30,0,50),
     },
     Interior = {
         Parts={
@@ -50,3 +51,11 @@ T = {
 }
 
 TARDIS:AddInteriorTemplate("exterior_ttcapsule_type40", T)
+
+local E = TARDIS:CopyTable(T.Exterior)
+E.ID = "ttcapsule_type40"
+E.Base = "base"
+E.Name = "Exteriors.TTCapsuleType40"
+E.Category = "Exteriors.Categories.TTCapsules"
+
+TARDIS:AddExterior(E)

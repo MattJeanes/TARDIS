@@ -19,7 +19,7 @@ if SERVER then
 end
 
 ENT:AddHook("CanUsePart","security",function(self,part,ply)
-    if self:GetSecurity() and (ply~=self:GetCreator()) and not part.BypassIsomorphic then
+    if not self:CheckSecurity(ply) and not part.BypassIsomorphic then
         TARDIS:Message(ply, "Security.ControlUseDenied")
         return false,false
     end
@@ -27,7 +27,7 @@ end)
 
 if CLIENT then
     ENT:AddHook("ShouldDrawTips", "security", function(self)
-        if self:GetSecurity() and (LocalPlayer()~=self:GetCreator()) then
+        if not self:CheckSecurity(LocalPlayer()) then
             return false
         end
     end)

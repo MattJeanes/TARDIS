@@ -13,7 +13,7 @@ function TARDIS:SetupCustomSettings(int_id)
 
     if t.Templates then
         for template_id, template in pairs(t.Templates) do
-            if template and self.MetadataTemplates[template_id].CustomSettings then
+            if template and self.MetadataTemplates[template_id] and self.MetadataTemplates[template_id].CustomSettings then
                 table.Merge(csettings, self.MetadataTemplates[template_id].CustomSettings)
             end
         end
@@ -21,6 +21,12 @@ function TARDIS:SetupCustomSettings(int_id)
 
     self.IntCustomSettings[int_id] = csettings
 end
+
+local default_custom_setting_values = {
+    ["preferred_door_type"] = "default",
+    ["exterior_enabled"] = false,
+    ["exterior_default"] = "ttcapsule_type40",
+}
 
 function TARDIS:GetCustomSetting(int_id, setting_id, ply, default_val)
     local int_id = self:GetMainVersionId(int_id)
@@ -34,8 +40,11 @@ function TARDIS:GetCustomSetting(int_id, setting_id, ply, default_val)
     if setting_id == "preferred_version" then
         return self:DefaultPreferredVersion(int_id)
     end
-    if setting_id == "preferred_door_type" then
-        return "default"
+
+    for k,v in pairs(default_custom_setting_values) do
+        if setting_id == k then
+            return v
+        end
     end
 
     -- getting the default setting value from metadata
@@ -97,3 +106,5 @@ if CLIENT then
         self:ToggleCustomSetting(id, "is_favorite")
     end
 end
+
+TARDIS:LoadInteriors()

@@ -229,11 +229,13 @@ else
         return tr.HitPos+(ang:Forward()*10), Angle(ang.p,ang.y,0)
     end
 
-    local function setup(ent)
+    local function setup(ent, model, pos, ang)
         local prop = ents.CreateClientProp()
-        prop:SetModel(ent:GetModel())
-        prop:SetPos(ent:GetPos())
-        prop:SetAngles(ent:GetAngles())
+
+        prop:SetModel(model or ent:GetModel())
+        prop:SetPos((pos and ent:LocalToWorld(pos)) or ent:GetPos())
+        prop:SetAngles((ang and ent:LocalToWorldAngles(ang)) or ent:GetAngles())
+
         local col = prop:GetColor()
         prop:SetColor(Color(col.r, col.g, col.b, 100))
         prop:SetRenderMode(RENDERMODE_TRANSALPHA)
@@ -251,10 +253,47 @@ else
     function ENT:CreateDestinationProp()
         self:RemoveDestinationProp()
 
-        local prop = setup(self)
+        local cham_ext = self:GetData("chameleon_selected_exterior")
+        local md
+        if cham_ext then
+            md = TARDIS:CreateExteriorMetadata(cham_ext)
+        end
+
+        local prop = setup(self, (md and md.Model))
+
+        if md and md.Portal and md.Parts and md.Parts["door"] then
+            local d = md.Parts["door"]
+            local portal = md.Portal
+
+            local pos, ang = d.posoffset or Vector(0,0,0), d.angoffset or Angle(0,0,0)
+
+            local portal_pos = portal.pos or Vector(0,0,0)
+            local portal_ang = portal.ang or Angle(0,0,0)
+
+            if d.use_exit_point_offset and portal.exit_point_offset then
+                portal_pos = portal_pos + portal.exit_point_offset.pos
+                portal_ang = portal_ang + portal.exit_point_offset.ang
+            elseif d.use_exit_point_offset and portal.exit_point then
+                portal_pos = portal.exit_point.pos
+                portal_ang = portal.exit_point.ang
+            end
+
+            pos,ang=LocalToWorld(pos,ang,portal_pos,portal_ang)
+            d.pos = pos
+            d.ang = ang
+        end
+
         for k,v in pairs(self.parts) do
-            if not v.NoShadowCopy then
-                local attachment = setup(v)
+            if not v.NoShadowCopy and (not md or (md.Parts and md.Parts[k]))
+            then
+                local attachment
+                if md then
+                    local p = md.Parts[k]
+                    attachment = setup(v, p.model, p.pos, p.ang)
+                else
+                    attachment = setup(v)
+                end
+
                 attachment:SetParent(prop)
             end
         end

@@ -37,7 +37,7 @@ end)
 function TARDIS:IsBehind( object_pos, plane_pos, plane_forward )
     local vec = object_pos - plane_pos
 
-    if plane_forward:Dot( vec ) < 0 then 
+    if plane_forward:Dot( vec ) < 0 then
         return true
     end
     return false

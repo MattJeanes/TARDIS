@@ -2,47 +2,64 @@
 
 CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - selected interior to spawn when not using the spawnmenu")
 
-TARDIS.Metadata = {}
-TARDIS.MetadataRaw = {}
-TARDIS.MetadataTemplates = {}
-TARDIS.MetadataVersions = {}
-TARDIS.MetadataCustomVersions = {}
+function TARDIS:LoadInteriors()
+    if TARDIS.InteriorsLoading then return end
 
-TARDIS.IntCustomSettings = {}
-TARDIS.IntUpdatesPerTemplate = {}
+    TARDIS.Metadata = {}
+    TARDIS.MetadataRaw = {}
+    TARDIS.MetadataTemplates = {}
+    TARDIS.MetadataVersions = {}
+    TARDIS.MetadataCustomVersions = {}
 
+    TARDIS.ExteriorsMetadata = {}
+    TARDIS.ExteriorsMetadataRaw = {}
+    TARDIS.ExteriorCategories = {}
 
-function TARDIS:PreMergeMetadata(t)
-    if t.Exterior and t.Exterior.Teleport then
-        if t.Exterior.Teleport.DematSequence then
-            t.Exterior.Teleport.DematSequenceSaved = table.Copy(t.Exterior.Teleport.DematSequence)
+    TARDIS.ImportedExteriors = {}
+
+    TARDIS.IntCustomSettings = {}
+    TARDIS.IntUpdatesPerTemplate = {}
+
+    TARDIS.InteriorsLoading = true
+    TARDIS:LoadFolder("interiors/modules")
+    TARDIS:LoadFolder("interiors/templates", nil, true)
+    TARDIS:LoadFolder("interiors", nil, true)
+    TARDIS:LoadFolder("interiors/exteriors", nil, true)
+    TARDIS:LoadFolder("interiors/versions", nil, true)
+    TARDIS.InteriorsLoading = nil
+end
+
+function TARDIS:PreMergeExteriorMetadata(ext_m)
+    if ext_m and ext_m.Teleport then
+        if ext_m.Teleport.DematSequence then
+            ext_m.Teleport.DematSequenceSaved = table.Copy(ext_m.Teleport.DematSequence)
         end
 
-        if t.Exterior.Teleport.MatSequence then
-            t.Exterior.Teleport.MatSequenceSaved = table.Copy(t.Exterior.Teleport.MatSequence)
+        if ext_m.Teleport.MatSequence then
+            ext_m.Teleport.MatSequenceSaved = table.Copy(ext_m.Teleport.MatSequence)
         end
     end
 end
 
-function TARDIS:PostMergeMetadata(t)
-    if t.Exterior and t.Exterior.Teleport then
-        if t.Exterior.Teleport.DematSequenceSaved then
-            t.Exterior.Teleport.DematSequence = t.Exterior.Teleport.DematSequenceSaved
-            t.Exterior.Teleport.DematSequenceSaved = nil
+function TARDIS:PostMergeExteriorMetadata(ext_m)
+    if ext_m and ext_m.Teleport then
+        if ext_m.Teleport.DematSequenceSaved then
+            ext_m.Teleport.DematSequence = ext_m.Teleport.DematSequenceSaved
+            ext_m.Teleport.DematSequenceSaved = nil
         end
 
-        if t.Exterior.Teleport.MatSequenceSaved then
-            t.Exterior.Teleport.MatSequence = t.Exterior.Teleport.MatSequenceSaved
-            t.Exterior.Teleport.MatSequenceSaved = nil
+        if ext_m.Teleport.MatSequenceSaved then
+            ext_m.Teleport.MatSequence = ext_m.Teleport.MatSequenceSaved
+            ext_m.Teleport.MatSequenceSaved = nil
         end
     end
 end
 
 function TARDIS:MergeMetadata(base, t)
     local copy=table.Copy(base)
-    self:PreMergeMetadata(t)
+    self:PreMergeExteriorMetadata(t.Exterior)
     table.Merge(copy,t)
-    self:PostMergeMetadata(copy)
+    self:PostMergeExteriorMetadata(copy.Exterior)
     return copy
 end
 
@@ -67,6 +84,10 @@ function TARDIS:AddInterior(t)
     self:AddSpawnmenuInterior(id)
     self:SetupTemplateUpdates(id)
     self:SetupCustomSettings(id)
+
+    if self.ImportedExteriors and self.ImportedExteriors[id] then
+        self:ImportExterior(id, self.ImportedExteriors[id])
+    end
 end
 
 function TARDIS:SetupMetadata(id)
@@ -122,6 +143,4 @@ function TARDIS:GetInterior(id)
     return self.Metadata[id] or self.MetadataRaw[id]
 end
 
-TARDIS:LoadFolder("interiors/modules")
-TARDIS:LoadFolder("interiors", nil, true)
-TARDIS:LoadFolder("interiors/versions", nil, true)
+TARDIS:LoadInteriors()

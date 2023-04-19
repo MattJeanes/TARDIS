@@ -10,13 +10,13 @@ if SERVER then
             for ply, _ in pairs(self.occupants) do
                 self:SendMessage("play-music", {url}, ply)
             end
-    
+
             self.music = url
 
             return true
         end
     end
-    
+
     function ENT:StopMusic()
         if self.music then
             for ply, _ in pairs(self.occupants) do
@@ -25,11 +25,11 @@ if SERVER then
             self.music = nil
         end
     end
-    
+
     ENT:OnMessage("play-music", function(self, data, ply)
         self:PlayMusic(data[1], ply)
     end)
-    
+
     ENT:OnMessage("stop-music", function(self, data, ply)
         self:StopMusic()
     end)
@@ -99,7 +99,7 @@ ENT:OnMessage("play-music", function(self, data, ply)
     local url = data[1]
 
     self:StopMusic(false)
-    
+
     sound.PlayURL(url, "", function(station,errorid,errorname)
         if station then
             station:SetVolume(1)

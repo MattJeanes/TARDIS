@@ -15,7 +15,6 @@ TARDIS:AddControl({
         toggle = true,
         frame_type = {0, 2},
         text = "Controls.Physlock",
-        pressed_state_from_interior = false,
         pressed_state_data = "physlock",
         order = 12,
     },

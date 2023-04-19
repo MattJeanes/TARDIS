@@ -81,7 +81,7 @@ function ENT:UpdateSpacebuildEnvironmentAir()
     if not IsValid(self.spacebuild_env) then
         return
     end
-    
+
     local volume = self.spacebuild_env:GetVolume() / 1000
     local intenv = self.spacebuild_env.sbenvironment
     intenv.air.o2 = math.Round(intenv.air.o2per * 5 * volume * intenv.atmosphere)

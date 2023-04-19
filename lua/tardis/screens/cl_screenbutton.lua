@@ -178,7 +178,7 @@ end
 
 function TardisScreenButton:SetOrder(order)
     self.order = order
-end 
+end
 
 function TardisScreenButton:SetText(text)
     if not self.id then error("You must set button id before calling SetText") end

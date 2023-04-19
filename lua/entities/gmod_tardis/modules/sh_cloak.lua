@@ -36,13 +36,11 @@ if SERVER then
         self:SetData("cloak", on)
         self:SendMessage("cloak", { on })
 
-        if (not self:GetData("teleport")) and (not self:GetData("vortex")) then
-            self:DrawShadow(not on)
-        end
+        self:UpdateShadow()
         self:CallHook("CloakToggled", on)
         return true
     end
-    
+
     function ENT:ToggleCloak()
         local on = not self:GetData("cloak", false)
         return self:SetCloak(on)
@@ -78,11 +76,24 @@ if SERVER then
             end
         end
     end)
-else
-    ENT:AddHook("Initialize", "cloak-material", function(self)
-        self.PhaseMaterial = Material(self.metadata.Exterior.PhaseMaterial or "models/drmatt/tardis/exterior/phase_noise.vmt")
-    end)
 
+    function ENT:UpdateShadow()
+        local should_draw = (self:CallHook("ShouldDrawShadow") ~= false)
+        self:DrawShadow(should_draw)
+
+        for k,v in pairs(self.parts) do
+            if IsValid(v) then
+                v:DrawShadow(not v.NoShadow and should_draw)
+            end
+        end
+    end
+
+    ENT:AddHook("ShouldDrawShadow", "cloak", function(self)
+        if self:GetData("cloak") then
+            return false
+        end
+    end)
+else
     ENT:AddHook("ShouldThinkFast", "cloak", function(self)
         if self:GetData("cloak-animating",false) then return true end
     end)
@@ -115,11 +126,15 @@ else
         local timepassed = CurTime() - self:GetData("phase-lastTick",CurTime())
         self:SetData("phase-lastTick", CurTime())
 
-        self:SetData("phase-percent", math.Approach(percent, target, 0.5 * timepassed))
-        self:SetData("phase-highPercent", math.Clamp(self:GetData("phase-percent",1) + 0.5, 0, 1))
+        local new_percent = math.Approach(percent, target, 0.5 * timepassed)
+        local high_percent = math.Clamp(self:GetData("phase-percent",1) + 0.5, 0, 1)
+        self:SetData("phase-percent", new_percent)
+        self:SetData("phase-highPercent", high_percent)
 
-        local pos = self:GetPos() + self:GetUp() * (self:GetData("modelmaxs").z - (self:GetData("modelheight") * self:GetData("phase-highPercent",1)))
-        local pos2 = self:GetPos() + self:GetUp() * (self:GetData("modelmaxs").z - (self:GetData("modelheight") * self:GetData("phase-percent",1)))
+        local modelmaxs = self:GetData("modelmaxs")
+        local modelheight = self:GetData("modelheight")
+        local pos = self:GetPos() + self:GetUp() * (modelmaxs.z - (modelheight * high_percent))
+        local pos2 = self:GetPos() + self:GetUp() * (modelmaxs.z - (modelheight * new_percent))
 
         self:SetData("phase-highPos", pos)
         self:SetData("phase-pos", pos2)
@@ -127,57 +142,9 @@ else
 
     local oldClip
 
-    local function dodraw(self, ent)
-        ent = ent or self
-        local animating = self:GetData("cloak-animating",false)
-        if animating and not wp.drawing then
-            ent:SetRenderClipPlaneEnabled(true)
-        else
-            ent:SetRenderClipPlaneEnabled(false)
-            return
-        end
-        oldClip = render.EnableClipping(true)
-        local restoreT = ent:GetMaterial()
-
-        local normal = self:GetUp()
-        local pos = self:GetData("phase-highPos",Vector(0,0,0))
-        local dist = normal:Dot(pos)
-
-        local normal2 = self:GetUp() * -1
-        local pos2 = self:GetData("phase-pos",Vector(0,0,0))
-        local dist2 = normal2:Dot(pos2)
-
-        ent:SetRenderClipPlane(normal, dist)
-
-        render.PushCustomClipPlane(normal, dist)
-        render.MaterialOverride(self.PhaseMaterial)
-        
-        render.PushCustomClipPlane(normal2, dist2)
-            ent:DrawModel()
-        render.PopCustomClipPlane()
-        render.PopCustomClipPlane()
-        
-        render.MaterialOverride(restoreT)
-    end
-
-    local function postdraw()
-        if not self:GetData("cloak-animating",false) then return end
-        render.EnableClipping(oldClip)
-    end
-
-    ENT:AddHook("Draw", "cloak", dodraw)
-
-    ENT:AddHook("PostDraw", "cloak", postdraw)
-
-    ENT:AddHook("DrawPart", "cloak", function(self,part)
-        if part.NoCloak~=true then
-            dodraw(self,part)
-        end
-    end)
-
-    ENT:AddHook("PostDrawPart", "ID", function(self,part)
-        if part.NoCloak~=true then
-            dodraw(self,part)
+    ENT:AddHook("ShouldDrawPhaseAnimation", "cloak", function(self)
+        if self:GetData("cloak-animating",false) then
+            return true
         end
     end)
 

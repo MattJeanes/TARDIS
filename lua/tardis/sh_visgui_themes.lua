@@ -1,18 +1,18 @@
-TARDIS.visgui_themes={}
+TARDIS.gui_themes={}
 
 local theme_basefolder = "materials/vgui/tardis-themes/"
 
 function TARDIS:AddGUITheme(theme)
-    self.visgui_themes[theme.id] = table.Copy(theme)
+    self.gui_themes[theme.id] = table.Copy(theme)
     if theme.folder ~= nil then
-        self.visgui_themes[theme.id].folder = theme_basefolder .. theme.folder .. "/"
+        self.gui_themes[theme.id].folder = theme_basefolder .. theme.folder .. "/"
     end
 end
 
 TARDIS:LoadFolder("themes/visgui", nil, true)
 
 function TARDIS:GetScreenGUITheme(screen)
-    local setting = TARDIS:GetSetting("visgui_interface_theme")
+    local setting = TARDIS:GetSetting("gui_interface_theme")
     if setting ~= "default_interior" then
         return setting
     end
@@ -28,7 +28,7 @@ end
 
 function TARDIS:GetScreenGUIColor(screen, theme)
     if theme == nil then
-        theme = self.visgui_themes[TARDIS:GetScreenGUITheme(screen)]
+        theme = self.gui_themes[TARDIS:GetScreenGUITheme(screen)]
     end
     if theme.bgcolor then
         return theme.bgcolor
@@ -40,15 +40,15 @@ function TARDIS:GetScreenGUIColor(screen, theme)
 end
 
 function TARDIS:GetGUIThemes()
-    return self.visgui_themes
+    return self.gui_themes
 end
 
 function TARDIS:GetGUITheme(id)
-    return self.visgui_themes[id]
+    return self.gui_themes[id]
 end
 
 function TARDIS:GetGUIThemeFolder(id)
-    local theme = self.visgui_themes[id]
+    local theme = self.gui_themes[id]
     if not theme then
         return nil
     end
@@ -68,7 +68,7 @@ function TARDIS:GetGUIThemeElement(theme_id, section, element, no_defaults)
     if theme_id == nil then
         error("Attempt to access theme without id")
     end
-    local theme = self.visgui_themes[theme_id]
+    local theme = self.gui_themes[theme_id]
     if theme == nil then
         error("Attempt to access non-existing theme"..theme_id)
         return nil

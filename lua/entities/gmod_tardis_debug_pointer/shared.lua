@@ -3,7 +3,7 @@
 
 ENT.Type = "anim"
 ENT.Base = "base_gmodentity"
- 
+
 ENT.PrintName       = "TARDIS Debug Pointer"
 ENT.Author          = "Brundoob"
 ENT.Purpose         = "Print locations in the TARDIS"

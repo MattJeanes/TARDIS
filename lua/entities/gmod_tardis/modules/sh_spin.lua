@@ -61,7 +61,7 @@ if SERVER then
         if TARDIS:GetSetting("opened-door-no-spin", self) then
             local current = self:GetData("spindir", -1)
             local before = self:GetData("spindir_before_door", nil)
-    
+
             if open and self:GetSpinDir() ~= 0 then
                 self:SetData("spindir_before_door", current, true)
                 self:SetData("spindir_prev", current, true)

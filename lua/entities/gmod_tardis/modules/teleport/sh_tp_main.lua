@@ -57,11 +57,7 @@ if SERVER then
         self:SetData("vortexalpha", 1)
         self:SetData("teleport",true)
         self:SetData("alpha", 0)
-
-        self:DrawShadow(false)
-        for k,v in pairs(self.parts) do
-            v:DrawShadow(false)
-        end
+        self:UpdateShadow()
 
         self:StopDemat()
     end
@@ -111,11 +107,7 @@ if SERVER then
 
         self:CallHook("DematStart")
         if force then self:CallHook("ForceDematStart") end
-
-        self:DrawShadow(false)
-        for k,v in pairs(self.parts) do
-            v:DrawShadow(false)
-        end
+        self:UpdateShadow()
 
         if callback then callback(true) end
     end
@@ -199,12 +191,7 @@ if SERVER then
         self:SetData("step-delay",nil)
         self:SetData("teleport",false)
         self:SetCollisionGroup(COLLISION_GROUP_NONE)
-        self:DrawShadow(true)
-        for k,v in pairs(self.parts) do
-            if not v.NoShadow then
-                v:DrawShadow(true)
-            end
-        end
+        self:UpdateShadow()
         self:CallHook("StopMat")
     end
 
@@ -267,7 +254,7 @@ else
             end
 
             local pos = data[1]
-            
+
             if LocalPlayer():GetTardisData("exterior")==self then
                 local intsound = int.demat or ext.demat
                 local extsound = ext.demat

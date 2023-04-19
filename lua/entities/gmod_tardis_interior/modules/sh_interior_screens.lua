@@ -77,12 +77,12 @@ function ENT:LoadScreens()
                 height = v.height,
                 ext = self.exterior,
                 int = self,
-                visgui_rows = v.visgui_rows,
+                gui_rows = v.gui_rows,
                 power_off_black = black,
             })
             self.screens3D[k].pos3D=v.pos
             self.screens3D[k].ang3D=v.ang
-        end 
+        end
     end
 end
 
@@ -91,6 +91,19 @@ ENT:AddHook("Initialize", "screens", function(self)
 end)
 
 ENT:AddHook("LanguageChanged", "screens", function(self)
+    self:LoadScreens()
+end)
+
+local settings_upd_screen = {
+    ["gui_old"] = true,
+    ["gui_screen_numrows"] = true,
+    ["gui_override_numrows"] = true,
+    ["gui_interface_theme"] = true,
+}
+
+ENT:AddHook("SettingChanged", "screen_settings", function(self, id, val)
+    if not settings_upd_screen[id] then return end
+
     self:LoadScreens()
 end)
 
@@ -105,13 +118,13 @@ function ENT:ShouldRenderScreen(screen)
     local ang = self:LocalToWorldAngles(screen.ang3D)
     local distance = camOrigin:Distance(pos)
     local disappearDist = self.metadata.Interior.ScreenDistance
-    
+
     if not (disappearDist <= 0) and distance > disappearDist then return false end
-    
+
     --don't render if the view is behind the portal
     local behind = TARDIS:IsBehind( camOrigin, pos, ang:Up() )
     if behind then return false end
-    
+
     return true, pos, ang
 end
 

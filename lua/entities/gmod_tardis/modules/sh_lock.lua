@@ -60,7 +60,7 @@ if SERVER then
             return false
         end
     end)
-    
+
     ENT:AddHook("Use", "lock", function(self,a,c)
         if self:GetData("locked") and IsValid(a) and a:IsPlayer() then
             if self:CallHook("LockedUse",a,c)==nil then

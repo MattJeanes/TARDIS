@@ -49,6 +49,20 @@ if SERVER then
             return false
         end
     end)
+
+    ENT:AddHook("CanChangeExterior","teleport",function(self)
+        if self:GetData("demat") or self:GetData("vortex")
+            or (self:GetData("mat") and self:GetData("step") > 1)
+        then
+            return false,false,"Chameleon.FailReasons.Teleporting",false
+        end
+    end)
+
+    ENT:AddHook("ShouldDrawShadow", "teleport", function(self)
+        if self:GetData("teleport") or self:GetData("vortex") then
+            return false
+        end
+    end)
 else
     ENT:AddHook("ShouldTurnOnLight","teleport",function(self)
         if self:GetData("teleport") then

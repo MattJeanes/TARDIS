@@ -33,7 +33,6 @@ TARDIS:AddControl({
         toggle = true,
         frame_type = {0, 1},
         text = "Controls.Teleport",
-        pressed_state_from_interior = false,
         pressed_state_data = {"teleport", "vortex"},
         order = 6,
     },

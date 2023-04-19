@@ -20,7 +20,7 @@ ENT:AddHook("FindingPositionFailed", "interior", function(self,e,ply,err)
     if err then
         TARDIS:ErrorMessage(ply, "Interior.FindingPositionFailed.Generic", err)
     else
-        TARDIS:Message(ply, "Interior.FindingPositionFailed.NoSpace") 
+        TARDIS:Message(ply, "Interior.FindingPositionFailed.NoSpace")
     end
     return true
 end)
