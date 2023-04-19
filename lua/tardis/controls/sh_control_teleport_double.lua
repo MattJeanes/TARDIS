@@ -14,6 +14,7 @@ TARDIS:AddControl({
         end
     end,
     serveronly=true,
+    bypass_console_toggle = true,
     power_independent = false,
     screen_button = false,
     tip_text = "Controls.Teleport.Tip",
