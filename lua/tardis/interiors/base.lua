@@ -157,6 +157,8 @@ local E = TARDIS:CopyTable(T.Exterior)
 E.ID = "base"
 E.Base = true
 E.Name = "Base"
+E.Category = "Exteriors.Categories.PoliceBoxes"
+-- to prevent it generating other empty categories
 
 E.Light.enabled = false
 

@@ -5,6 +5,10 @@ if SERVER then
         end
     end)
 
+    ENT:AddHook("Initialize", "chameleon", function(self)
+        self:SetData("chameleon_current_exterior", false, true)
+    end)
+
     ENT:AddHook("PostInitialize", "chameleon", function(self)
         local id = self.metadata.ID
         local ply = self:GetCreator()

@@ -232,6 +232,7 @@ T.Phrases = {
     ["Destination.LockedReadyToMat"] = "Destination locked, ready to materialise",
     ["Expression2.Error"] = "Can't call TARDIS functions on something other than a TARDIS",
     ["Expression2.Security.UseDenied"] = "Can't call TARDIS set functions on another's TARDIS with Isomorphic Security active",
+    ["Exteriors.Categories.Misc"] = "Miscellaneous",
     ["Exteriors.Categories.PoliceBoxes"] = "Police boxes",
     ["Exteriors.Categories.TTCapsules"] = "TT-Capsules",
     ["Exteriors.DefaultPoliceBox"] = "Default Police Box",

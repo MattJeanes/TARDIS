@@ -229,6 +229,7 @@
     "Destination.LockedReadyToMat": "Destino establecido, listo para materializar",
     "Expression2.Error": "No se pueden cargar funciones en otra cosa que no sea el TARDIS",
     "Expression2.Security.UseDenied": "No se pueden cargar las funciones fijadas en el TARDIS de otra persona con la Seguridad Isomórfica activada",
+    "Exteriors.Categories.Misc": "",
     "Exteriors.Categories.PoliceBoxes": "",
     "Exteriors.Categories.TTCapsules": "",
     "Exteriors.DefaultPoliceBox": "",
