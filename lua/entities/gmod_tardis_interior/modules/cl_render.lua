@@ -70,4 +70,4 @@ ENT:AddHook("Draw", "customlighting", postdraw_o)
 
 ENT:AddHook("PreDrawPart", "customlighting", predraw_o)
 
-ENT:AddHook("DrawPart", "customlighting", postdraw_o)
+ENT:AddHook("PostDrawPart", "customlighting", postdraw_o)

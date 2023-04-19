@@ -32,7 +32,6 @@ TARDIS:AddControl({
         toggle = true,
         frame_type = {0, 1},
         text = "Controls.Door",
-        pressed_state_from_interior = false,
         pressed_state_data = "doorstate",
         order = 10,
     },

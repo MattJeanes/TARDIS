@@ -176,12 +176,12 @@ function TARDIS:UpdateLanguage()
         self:CompileLanguage(langCode)
     end
 
-    if language then 
+    if language then
         for k,v in pairs(self.LanguageCache[langCode]) do
             language.Add("TARDIS."..k, v)
         end
     end
-    
+
     if oldLangCode == langCode then return end
 
     hook.Call("TARDIS_LanguageChanged", GAMEMODE, langCode, oldLangCode)

@@ -183,6 +183,19 @@ TARDIS:AddSetting({
 })
 
 TARDIS:AddSetting({
+    id="tips_show_all",
+    type="bool",
+    value=false,
+
+    class="local",
+
+    option=true,
+    section=SETTING_SECTION,
+    subsection="Tips",
+    name="ShowAll",
+})
+
+TARDIS:AddSetting({
     id="tips_style",
     type="list",
     value="default",

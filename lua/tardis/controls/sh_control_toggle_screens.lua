@@ -15,7 +15,6 @@ TARDIS:AddControl({
         toggle = true,
         frame_type = {2, 1},
         text = "Controls.ToggleScreens",
-        pressed_state_from_interior = true,
         pressed_state_data = "screens_on",
         order = 1,
     },

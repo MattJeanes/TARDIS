@@ -14,7 +14,7 @@ function TARDIS:ChangeKeyBind(id,data)
     local section = "Binds.Sections."..(data.section or "Other")
     local name = section .. "." .. (data.name or id)
     local desc = name .. ".Description"
-    
+
     local text = vgui.Create("DLabel",frame)
     text:SetAutoStretchVertical(true)
     text:SetMultiline(true)
@@ -23,7 +23,7 @@ function TARDIS:ChangeKeyBind(id,data)
     text:SetWide(frame:GetWide()-20)
     text:SetPos(10,30)
     text:SetTextColor( color_white )
-    
+
     local keybutton = vgui.Create("DButton", frame)
     keybutton:SetSize(frame:GetWide()*0.6-30, 40)
     keybutton:SetPos((frame:GetWide()*0.5)-(keybutton:GetWide()*0.5),frame:GetTall()-keybutton:GetTall()-10)

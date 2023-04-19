@@ -15,7 +15,6 @@ TARDIS:AddControl({
         toggle = true,
         frame_type = {1, 2},
         text = "Controls.VortexFlight",
-        pressed_state_from_interior = false,
         pressed_state_data = "demat-fast",
         order = 8,
     },

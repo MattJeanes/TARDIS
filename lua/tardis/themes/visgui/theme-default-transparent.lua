@@ -32,6 +32,7 @@ local theme = {
         music = "screen_music.png",
         scanner = "screen_scanner.png",
         settings = "screen_settings.png",
+        chameleon = "screen_chameleon.png",
         isomorphic = "control_isomorphic.png",
         ["TARDIS Status"] = "screen_status.png",
         cloak = "control_cloak.png",

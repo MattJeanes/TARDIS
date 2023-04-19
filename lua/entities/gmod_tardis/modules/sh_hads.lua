@@ -12,12 +12,12 @@ if SERVER then
     end
 
     function ENT:TriggerHADS()
-        if self:CallHook("CanTriggerHads") == false then 
-            return false 
+        if self:CallHook("CanTriggerHads") == false then
+            return false
         end
         if (self:GetData("hads",false) == true
-            and self:GetData("hads-triggered",false)==false)  
-            and (not self:GetData("teleport",false)) 
+            and self:GetData("hads-triggered",false)==false)
+            and (not self:GetData("teleport",false))
         then
             if self:GetData("doorstatereal") then
                 self:ToggleDoor()

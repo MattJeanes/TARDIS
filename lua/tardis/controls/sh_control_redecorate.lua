@@ -20,7 +20,6 @@ TARDIS:AddControl({
         toggle = true,
         frame_type = {0, 1},
         text = "Controls.Redecorate",
-        pressed_state_from_interior = false,
         pressed_state_data = "redecorate",
         order = 4,
     },

@@ -33,14 +33,16 @@ else
                 if not TARDIS:GetSetting("sound") then return end
                 self:EmitSound(state and sound_on or sound_off)
             end
-            if self.idlesounds then
-                if state == false then
-                    for _,v in pairs(self.idlesounds) do
-                        v:Stop()
-                    end
-                else
-                    for _,v in pairs(self.idlesounds) do
-                        v:Play()
+            local idle_sounds = self.metadata.Interior.Sounds.Idle or self.metadata.Interior.IdleSound
+            if idle_sounds and self.idlesounds then
+                for k,v in pairs(idle_sounds) do
+                    if self.idlesounds[k] then
+                        if state then
+                            self.idlesounds[k]:Play()
+                            self.idlesounds[k]:ChangeVolume(v.volume or 1,0)
+                        else
+                            self.idlesounds[k]:Stop()
+                        end
                     end
                 end
             end

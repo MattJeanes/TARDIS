@@ -3,7 +3,7 @@ if WireLib then
     ENT.Base            = "base_wire_entity"
 else
     ENT.Base            = "base_gmodentity"
-end 
+end
 ENT.PrintName       = "TARDIS Part"
 ENT.Author          = "Dr. Matt"
 ENT.Spawnable       = false

@@ -3,11 +3,11 @@
 
 AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
- 
+
 include('shared.lua')
- 
+
 function ENT:Initialize()
- 
+
     self:SetModel(self.model or "models/brundoob/precision.mdl" )
     self:SetModelScale(self.scale or 1)
 
@@ -30,13 +30,13 @@ function ENT:Use( activator, caller )
     if activator:GetTardisData("interior") then
         local pos,ang = TARDIS:GetLocalPos(self, activator)
         local decimals = 3
-        local text =   "  Vector("..math.Round(pos.x,decimals)..", "..math.Round(pos.y,decimals)..", "..math.Round(pos.z,decimals).."),"
-        text = text .. "  Angle("..math.Round(ang.p,decimals)..", "..math.Round(ang.y,decimals)..", "..math.Round(ang.r,decimals)..")"
+        local text =   "  pos = Vector("..math.Round(pos.x,decimals)..", "..math.Round(pos.y,decimals)..", "..math.Round(pos.z,decimals).."),"
+        text = text .. "  ang = Angle("..math.Round(ang.p,decimals)..", "..math.Round(ang.y,decimals)..", "..math.Round(ang.r,decimals)..")"
         activator:ChatPrint(" \nCurrent pointer position:")
         activator:ChatPrint(text)
     end
     return
 end
- 
+
 function ENT:Think()
 end

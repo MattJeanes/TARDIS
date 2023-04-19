@@ -87,7 +87,7 @@ T.Interior = {
             ang = Angle(0, 84.5, 91),
             width = 227.75,
             height = 140,
-            visgui_rows = 2,
+            gui_rows = 2,
             power_off_black = true
         }
     },

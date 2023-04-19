@@ -12,6 +12,7 @@ if SERVER then
 
         --Cost of certain controls and stuff:
         cost_hads = -180 / 144,
+        cost_chameleon = -560 / 144,
         cost_fast_return = -360 / 144,
         cost_failed_demat = -80 / 144,
 
@@ -267,6 +268,21 @@ if SERVER then
             return
         end
         self:AddArtron(TARDIS.artron_values.cost_hads)
+    end)
+
+    ENT:AddHook("ExteriorChanged", "artron", function(self)
+        if not TARDIS:GetSetting("artron_energy") then return end
+        if self:GetData("teleport") then return end
+
+        self:AddArtron(TARDIS.artron_values.cost_chameleon)
+    end)
+
+    ENT:AddHook("CanChangeExterior", "artron", function(self)
+        if not TARDIS:GetSetting("artron_energy") then return end
+
+        if self:GetData("artron-val") + TARDIS.artron_values.cost_chameleon < 1 then
+            return false,false,"Chameleon.FailReasons.NotEnoughArtron",true
+        end
     end)
 
     ENT:AddHook("HandbrakeToggled", "artron", function(self, on)

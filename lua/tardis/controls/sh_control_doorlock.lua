@@ -26,7 +26,6 @@ TARDIS:AddControl({
         toggle = true,
         frame_type = {1, 2},
         text = "Controls.DoorLock",
-        pressed_state_from_interior = false,
         pressed_state_data = "locked",
         order = 10,
     },

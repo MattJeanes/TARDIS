@@ -136,6 +136,25 @@ if CLIENT then
 
     end
 
+    function TARDIS.Spawnmenu.AddChameleonSetting(parent, int_id)
+        local exterior_setting_submenu = parent:AddSubMenu(TARDIS:GetPhrase("Spawnmenu.Chameleon"), nil)
+
+        TARDIS.Spawnmenu.AddBoolSetting(exterior_setting_submenu, int_id, "exterior_enabled", "Spawnmenu.Chameleon.Enable")
+
+        for category,exteriors in pairs(TARDIS:GetExteriorCategories()) do
+            if not table.IsEmpty(exteriors) then
+                local exteriors_tbl = {}
+                for id,v in pairs(exteriors) do
+                    local ext_md = TARDIS:GetExteriors()[id]
+                    if v and ext_md.Base ~= true and ext_md.Hide ~= true then
+                        exteriors_tbl[id] = TARDIS:GetPhrase(ext_md.Name or id)
+                    end
+                end
+                TARDIS.Spawnmenu.AddListSetting(exterior_setting_submenu, int_id, "exterior_default", TARDIS:GetPhrase(category), exteriors_tbl)
+            end
+        end
+    end
+
     function TARDIS.Spawnmenu.AddSettings(parent, int_id)
         local int_id = TARDIS:GetMainVersionId(int_id)
 
@@ -346,6 +365,7 @@ if CLIENT then
         favorite:SetIcon("icon16/" .. fav_icon)
         favorite:SetText(TARDIS:GetPhrase(fav_text))
 
+        TARDIS.Spawnmenu.AddChameleonSetting(dmenu, obj.spawnname)
         TARDIS.Spawnmenu.AddSettings(dmenu, obj.spawnname)
 
         dmenu:Open()
