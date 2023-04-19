@@ -196,6 +196,11 @@ function ENT:ChangeExterior(id, animate, ply, retry)
     self:Timer("chameleon_change", delay, function()
         self:SetData("chameleon_current_exterior", id, true)
 
+        local oldVelocity
+        if IsValid(self.phys) then
+            oldVelocity = self.phys:GetVelocity()
+        end
+
         self:SetMaterial()
         self:SetSubMaterial()
         -- reset submaterials etc.
@@ -210,6 +215,9 @@ function ENT:ChangeExterior(id, animate, ply, retry)
             self.phys:EnableGravity(not self:GetData("float"))
             self.phys:EnableMotion(not self:GetPhyslock())
             self.phys:Wake()
+            if oldVelocity then
+                self.phys:SetVelocity(oldVelocity)
+            end
         end
 
         local extportal = self.interior.portals.exterior
