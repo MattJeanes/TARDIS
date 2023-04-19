@@ -19,7 +19,7 @@ end
 
 function TARDIS:AddExterior(t)
     local id = t.ID
-    t.Category = t.Category or "Miscellaneous"
+    t.Category = t.Category or "Exteriors.Categories.Misc"
 
     self:ClearExteriorMetadata(id)
     self.ExteriorsMetadataRaw[id] = t
