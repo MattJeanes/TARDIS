@@ -16,7 +16,7 @@ end
 ENT:AddHook("PreDraw","teleport",dopredraw)
 ENT:AddHook("PreDrawPart","teleport",dopredraw)
 ENT:AddHook("Draw","teleport",dodraw)
-ENT:AddHook("DrawPart","teleport",dodraw)
+ENT:AddHook("PostDrawPart","teleport",dodraw)
 
 ENT:AddHook("ShouldAllowThickPortal", "teleport", function(self, portal)
     if self.interior and portal==self.interior.portals.exterior then

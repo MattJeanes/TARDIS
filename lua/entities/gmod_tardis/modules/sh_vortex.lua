@@ -159,7 +159,7 @@ else
     ENT:AddHook("PreDraw","vortex",dopredraw)
     ENT:AddHook("PreDrawPart","vortex",dopredraw)
     ENT:AddHook("Draw","vortex",dodraw)
-    ENT:AddHook("DrawPart","vortex",dodraw)
+    ENT:AddHook("PostDrawPart","vortex",dodraw)
     ENT:AddHook("PreDrawPortal","vortex",dopredraw)
     ENT:AddHook("PostDrawPortal","vortex",dodraw)
 
