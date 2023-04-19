@@ -40,3 +40,11 @@ ENT:AddHook("PreDrawPart", "phase_animation", function(self,part)
 		return dodraw(self,part)
 	end
 end)
+
+ENT:AddHook("Initialize", "phase_animation", function(self)
+	self.PhaseMaterial = Material(self.metadata.Exterior.PhaseMaterial)
+end)
+
+ENT:AddHook("ExteriorChanged", "phase_animation", function(self)
+	self.PhaseMaterial = Material(self.metadata.Exterior.PhaseMaterial)
+end)

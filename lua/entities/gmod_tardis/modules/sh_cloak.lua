@@ -94,10 +94,6 @@ if SERVER then
         end
     end)
 else
-    ENT:AddHook("Initialize", "cloak-material", function(self)
-        self.PhaseMaterial = Material(self.metadata.Exterior.PhaseMaterial or "models/drmatt/tardis/exterior/phase_noise.vmt")
-    end)
-
     ENT:AddHook("ShouldThinkFast", "cloak", function(self)
         if self:GetData("cloak-animating",false) then return true end
     end)

@@ -57,6 +57,7 @@ T.Exterior = {
     Mass = 5000,
     DoorAnimationTime = 0.5,
     ScannerOffset = Vector(22,0,50),
+    PhaseMaterial = "models/drmatt/tardis/exterior/phase_noise.vmt",
     Portal = {
         pos = Vector(26,0,51.65),
         ang = Angle(0,0,0),
