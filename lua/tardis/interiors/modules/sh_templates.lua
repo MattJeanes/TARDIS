@@ -100,14 +100,70 @@ function TARDIS:SetupTemplateUpdates(id)
     end
 end
 
+function TARDIS:HandleMissingTemplate(template_id, id, template)
+    local can_print = CLIENT and LocalPlayer() and LocalPlayer().ChatPrint
+
+    if not template or not template.ignore_missing then
+        local err_notification = "[TARDIS] "..TARDIS:GetPhrase("Templates.MissingTemplate", template_id, id)
+        if can_print then
+            LocalPlayer():ChatPrint(err_notification)
+        else
+            ErrorNoHalt("\n" .. err_notification)
+        end
+    end
+    if template.fail_msg then
+        if can_print then
+            LocalPlayer():ChatPrint(template.fail_msg)
+        else
+            print("\n" .. template.fail_msg .. "\n")
+        end
+    end
+    if template.fail then
+        template.fail()
+    end
+end
+
 function TARDIS:MergeTemplates(metadata, ent)
     if not metadata.Templates then
         return metadata
     end
 
     local id = metadata.ID
+    local templates_todo
 
-    for template_id, template in pairs(metadata.Templates) do
+    if not ent or not IsValid(ent) then
+        templates_todo = {}
+        for template_id, template in pairs(metadata.Templates) do
+            if not template.condition then
+                templates_todo[template_id] = template
+            end
+        end
+    elseif SERVER then
+        ent.templates = {}
+
+        for template_id, template in pairs(metadata.Templates) do
+            if template and istable(template) and (not template.condition or template.condition(id, ent:GetCreator(), ent)) then
+                ent.templates[template_id] = TARDIS:CopyTable(template)
+                ent.templates[template_id].condition = nil
+            end
+        end
+
+        templates_todo = ent.templates
+    elseif CLIENT and ent.templates then
+        if ent.TardisExterior and ent.interior and ent.interior.templates then
+            ent.templates = ent.interior.templates
+        end
+        if ent.TardisInterior and ent.exterior and ent.exterior.templates then
+            ent.templates = ent.exterior.templates
+        end
+
+        templates_todo = ent.templates
+    else
+        error("Missing clientside template information" .. tostring(ent))
+    end
+
+
+    for template_id, template in pairs(templates_todo) do
 
         if template and template.realID then
             template_id = template.realID
@@ -115,9 +171,7 @@ function TARDIS:MergeTemplates(metadata, ent)
 
         local template_metadata = self.MetadataTemplates[template_id]
 
-        if template and template_metadata
-            and (not template.condition or (ent and template.condition and template.condition(id, ent:GetCreator(), ent) ))
-        then
+        if template and template_metadata then
             if template.parts_rotation then
                 template_metadata = self:AddInteriorPartsRotation(template_metadata, template.parts_rotation)
             end
@@ -132,27 +186,7 @@ function TARDIS:MergeTemplates(metadata, ent)
             end
 
         elseif not template_metadata then
-
-            local can_print = CLIENT and LocalPlayer() and LocalPlayer().ChatPrint
-
-            if not template or not template.ignore_missing then
-                local err_notification = "[TARDIS] "..TARDIS:GetPhrase("Templates.MissingTemplate", template_id, id)
-                if can_print then
-                    LocalPlayer():ChatPrint(err_notification)
-                else
-                    ErrorNoHalt("\n" .. err_notification)
-                end
-            end
-            if template and template.fail_msg then
-                if can_print then
-                    LocalPlayer():ChatPrint(template.fail_msg)
-                else
-                    print("\n" .. template.fail_msg .. "\n")
-                end
-            end
-            if template and template.fail then
-                template.fail()
-            end
+            TARDIS:HandleMissingTemplate(template_id, id, template)
         end
     end
 
