@@ -34,10 +34,9 @@ if SERVER then
         local entityName = "gmod_tardis"
 
         local metadataID = customData.metadataID
-        local interior = TARDIS:CreateInteriorMetadata(metadataID)
+        local interior = TARDIS:GetInterior(metadataID)
 
         if not (interior and IsValid(ply) and (force or gamemode.Call("PlayerSpawnSENT", ply, entityName))) then return end
-        if not interior.BaseMerged then return end
 
         local vStart = ply:EyePos()
         local vForward = ply:GetAimVector()

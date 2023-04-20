@@ -4,6 +4,11 @@ include('shared.lua')
 
 ENT:AddHook("PlayerInitialize", "interior", function(self)
     net.WriteString(self.metadata.ID)
+
+    net.WriteBool(self.templates ~= nil)
+    if self.templates ~= nil then
+        net.WriteString(TARDIS.von.serialize(self.templates))
+    end
 end)
 
 ENT:AddHook("PostPlayerInitialize", "senddata", function(self,ply)
