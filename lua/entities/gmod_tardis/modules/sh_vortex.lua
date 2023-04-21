@@ -114,54 +114,48 @@ else
         end
     end)
 
-    local function dopredraw(self,part)
-        local vortexpart = (part and part.ID=="vortex")
+    ENT:AddHook("PreDrawPart","vortex",function(self,part)
+        if not (part and part.ID=="vortex") then return end
         local target = self:GetData("vortex") and 1 or 0
-        local alpha = self:GetData("vortexalpha",0)
+        local vortexalpha = self:GetData("vortexalpha",0)
         local enabled = self:IsVortexEnabled()
         if TARDIS:GetExteriorEnt()==self and enabled then
-            if (not (target == 0 and alpha == 0)) or vortexpart then
-                render.SetBlend(alpha)
-                if alpha>0 and self:CallHook("ShouldVortexIgnoreZ") then
-                    cam.IgnoreZ(true)
-                end
+            render.SetBlend(vortexalpha)
+            if vortexalpha>0 and self:CallHook("ShouldVortexIgnoreZ") then
+                cam.IgnoreZ(true)
             end
         else
-            if vortexpart or self:GetData("vortex") then
-                render.SetBlend(0)
-            end
+            render.SetBlend(0)
         end
-    end
+    end)
 
-    local function dodraw(self,part)
+    ENT:AddHook("PostDrawPart","vortex",function(self,part)
+        if not (part and part.ID=="vortex") then return end
         render.SetBlend(1)
         local vortexalpha = self:GetData("vortexalpha",0)
         if vortexalpha>0 then
-            if not part and TARDIS:GetExteriorEnt()==self then
-                local attached = self:GetData("demat-attached")
-                if attached then
-                    local oldblend = render.GetBlend()
-                    render.SetBlend(vortexalpha)
-                    for k,v in pairs(attached) do
-                        if IsValid(k) and k.DrawModel and v>0 then
-                            local oldc = k:GetColor()
-                            k:SetColor(ColorAlpha(oldc,v))
-                            k:DrawModel()
-                            k:SetColor(oldc)
-                        end
-                    end
-                    render.SetBlend(oldblend)
-                end
-            end
             cam.IgnoreZ(false)
         end
-    end
-    ENT:AddHook("PreDraw","vortex",dopredraw)
-    ENT:AddHook("PreDrawPart","vortex",dopredraw)
-    ENT:AddHook("Draw","vortex",dodraw)
-    ENT:AddHook("PostDrawPart","vortex",dodraw)
-    ENT:AddHook("PreDrawPortal","vortex",dopredraw)
-    ENT:AddHook("PostDrawPortal","vortex",dodraw)
+    end)
+
+    ENT:AddHook("Draw","vortex",function(self)
+        if TARDIS:GetExteriorEnt()==self then
+            local attached = self:GetData("demat-attached")
+            if attached then
+                local oldblend = render.GetBlend()
+                render.SetBlend(vortexalpha)
+                for k,v in pairs(attached) do
+                    if IsValid(k) and k.DrawModel and v>0 then
+                        local oldc = k:GetColor()
+                        k:SetColor(ColorAlpha(oldc,v))
+                        k:DrawModel()
+                        k:SetColor(oldc)
+                    end
+                end
+                render.SetBlend(oldblend)
+            end
+        end
+    end)
 
     ENT:AddHook("ShouldNotRenderPortal","vortex",function(self,parent,portal,exit)
         if self:GetData("vortex") and (TARDIS:GetExteriorEnt()~=self or (not self:IsVortexEnabled())) then

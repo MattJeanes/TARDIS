@@ -68,10 +68,17 @@ else
                 local alpha = shouldpulse and (math.sin(CurTime() * 3.7) + 0.2) * (255 / 4) + (255 / 2) - 70 or 100
                 render.SetMaterial(mat)
                 local fallback=false
-                for k,v in pairs(wp.portals) do -- not ideal but does the job
-                    if wp.shouldrender(v) then
-                        fallback=true
-                        break
+
+                if self:GetData("vortex",false) then
+                    fallback=true
+                end
+
+                if not fallback then
+                    for k,v in pairs(wp.portals) do -- not ideal but does the job
+                        if wp.shouldrender(v) then
+                            fallback=true
+                            break
+                        end
                     end
                 end
 
