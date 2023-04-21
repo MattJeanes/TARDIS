@@ -143,6 +143,7 @@ else
             local attached = self:GetData("demat-attached")
             if attached then
                 local oldblend = render.GetBlend()
+                local vortexalpha = self:GetData("vortexalpha",0)
                 render.SetBlend(vortexalpha)
                 for k,v in pairs(attached) do
                     if IsValid(k) and k.DrawModel and v>0 then
