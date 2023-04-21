@@ -27,6 +27,9 @@ function TARDIS:LoadInteriors()
     TARDIS:LoadFolder("interiors/exteriors", nil, true)
     TARDIS:LoadFolder("interiors/versions", nil, true)
     TARDIS.InteriorsLoading = nil
+
+    hook.Call("TARDIS_MetadataLoaded", GAMEMODE)
+    hook.Call("TARDIS_PostMetadataLoaded", GAMEMODE)
 end
 
 function TARDIS:PreMergeExteriorMetadata(ext_m)
@@ -112,6 +115,21 @@ function TARDIS:SetupMetadata(id)
 end
 
 function TARDIS:CreateInteriorMetadata(id, ent)
+    if ent then
+        if ent.TardisExterior and ent.interior and ent.interior.metadata then
+            if ent.interior.templates then
+                ent.templates = ent.interior.templates
+            end
+            return ent.interior.metadata
+        end
+        if ent.TardisInterior and ent.exterior and ent.exterior.metadata then
+            if ent.exterior.templates then
+                ent.templates = ent.exterior.templates
+            end
+            return ent.exterior.metadata
+        end
+    end
+
     if id == nil then
         local cv_id = GetConVar("tardis2_selected_interior"):GetString()
         if cv_id ~= "" then
@@ -121,7 +139,7 @@ function TARDIS:CreateInteriorMetadata(id, ent)
 
     self:SetupMetadata(id)
 
-    if self.Metadata[id] == nil then
+    if self.Metadata[id] == nil or self.Metadata[id].BaseMerged ~= true then
         return self:CreateInteriorMetadata("default", ent)
     end
 
