@@ -1,14 +1,23 @@
 -- Draw and render teleport-related functions
 
+local function shouldapply(self,part)
+    if
+        (self:GetData("teleport") or self:GetData("teleport-trace")) 
+        and not (self:GetData("vortexalpha",0)>0 and TARDIS:GetExteriorEnt()==self)
+        and ((not part) or (part and (not part.CustomAlpha)))
+    then
+        return true
+    end
+end
 
 local function dopredraw(self,part)
-    if (self:GetData("teleport") or self:GetData("teleport-trace")) and ((not part) or (part and (not part.CustomAlpha))) then
+    if shouldapply(self,part) then
         render.SetBlend((self:GetData("teleport-trace") and 20 or self:GetData("alpha",255))/255)
     end
 end
 
 local function dodraw(self,part)
-    if (self:GetData("teleport") or self:GetData("teleport-trace")) and ((not part) or (part and (not part.CustomAlpha))) then
+    if shouldapply(self,part) then
         render.SetBlend(1)
     end
 end
