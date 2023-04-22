@@ -135,7 +135,7 @@ function TARDIS:MergeTemplates(metadata, ent)
         templates_todo = {}
         for template_id, template in pairs(metadata.Templates) do
             if not template.condition then
-                templates_todo[template_id] = template
+                table.insert(templates_todo, template_id)
             end
         end
     elseif SERVER then
@@ -143,8 +143,7 @@ function TARDIS:MergeTemplates(metadata, ent)
 
         for template_id, template in pairs(metadata.Templates) do
             if template and istable(template) and (not template.condition or template.condition(id, ent:GetCreator(), ent)) then
-                ent.templates[template_id] = TARDIS:CopyTable(template)
-                ent.templates[template_id].condition = nil
+                table.insert(ent.templates, template_id)
             end
         end
 
@@ -163,7 +162,8 @@ function TARDIS:MergeTemplates(metadata, ent)
     end
 
 
-    for template_id, template in pairs(templates_todo) do
+    for i,template_id in ipairs(templates_todo) do
+        local template = metadata.Templates[template_id]
 
         if template and template.realID then
             template_id = template.realID
