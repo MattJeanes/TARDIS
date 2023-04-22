@@ -16,6 +16,16 @@ local function dodraw(self, ent)
 	local dist2 = normal2:Dot(pos2)
 	local dist3 = normal:Dot(pos2)
 
+	local alpha = self:GetAlpha()
+	
+	local ignorez = self:CallHook("ShouldVortexIgnoreZ")
+	if ignorez then
+		cam.IgnoreZ(true)
+	end
+
+	local oldblend = render.GetBlend()
+	render.SetBlend(alpha)
+
 	render.PushCustomClipPlane(normal, dist)
 		render.MaterialOverride(self.PhaseMaterial)
 		render.PushCustomClipPlane(normal2, dist2)
@@ -29,6 +39,12 @@ local function dodraw(self, ent)
 	render.PopCustomClipPlane()
 
 	render.EnableClipping(oldClip)
+	
+	render.SetBlend(oldblend)
+	
+	if ignorez then
+		cam.IgnoreZ(false)
+	end
 
 	return false
 end
