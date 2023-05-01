@@ -7,6 +7,13 @@ ENT:AddHook("OnRemove", "externalhum", function(self)
     end
 end)
 
+ENT:AddHook("ExteriorChanged", "externalhum", function(self)
+    if self.ExternalHum then
+        self.ExternalHum:Stop()
+        self.ExternalHum = nil
+    end
+end)
+
 ENT:AddHook("Think", "externalhum", function(self)
     local hum_sound = self.metadata.Exterior.Sounds.Hum
     if hum_sound then
@@ -24,8 +31,5 @@ ENT:AddHook("Think", "externalhum", function(self)
             self.ExternalHum:Stop()
             self.ExternalHum=nil
         end
-    elseif self.ExternalHum then
-        self.ExternalHum:Stop()
-        self.ExternalHum=nil
     end
 end)
