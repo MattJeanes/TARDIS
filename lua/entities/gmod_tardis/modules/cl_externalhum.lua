@@ -24,5 +24,8 @@ ENT:AddHook("Think", "externalhum", function(self)
             self.ExternalHum:Stop()
             self.ExternalHum=nil
         end
+    elseif self.ExternalHum then
+        self.ExternalHum:Stop()
+        self.ExternalHum=nil
     end
 end)
