@@ -2,9 +2,8 @@
 
 -- Binds
 TARDIS:AddKeyBind("float-toggle",{
-    name="Float Toggle",
-    section="Third Person",
-    desc="Lets the TARDIS fly as if there is no gravity",
+    name="ToggleFloat",
+    section="ThirdPerson",
     func=function(self,down,ply)
         if ply==self.pilot and down then
             TARDIS:Control("float", ply)
@@ -45,7 +44,6 @@ TARDIS:AddKeyBind("float-right",{
 TARDIS:AddKeyBind("float-boost",{
     name="Boost",
     section="Float",
-    desc="Hold this key while floating to speed up rotation",
     key=KEY_LSHIFT,
     serveronly=true,
     exterior=true
@@ -53,7 +51,6 @@ TARDIS:AddKeyBind("float-boost",{
 TARDIS:AddKeyBind("float-rotate",{
     name="Rotate",
     section="Float",
-    desc="Hold this key while using left and right to rotate on yaw axis",
     key=KEY_LALT,
     serveronly=true,
     exterior=true
@@ -61,7 +58,6 @@ TARDIS:AddKeyBind("float-rotate",{
 TARDIS:AddKeyBind("float-brake",{
     name="Brake",
     section="Float",
-    desc="Hold this key to slow rotation in float mode",
     key=KEY_SPACE,
     serveronly=true,
     exterior=true
@@ -73,9 +69,10 @@ if SERVER then
         if (on) and self:CallHook("CanTurnOnFloat")==false then return end
         self:SetData("float",on,true)
         self.phys:EnableGravity(not on)
+        self:CallCommonHook("FloatToggled", on)
         return true
     end
-    
+
     function ENT:ToggleFloat()
         local on=not self:GetData("float",false)
         if self:GetData("flight") then
@@ -85,7 +82,7 @@ if SERVER then
         end
         return self:SetFloat(on)
     end
-    
+
     ENT:AddHook("CanTurnOffFloat", "float", function(self)
         if self:GetData("floatfirst") then return false end
     end)
@@ -93,19 +90,19 @@ if SERVER then
     ENT:AddHook("CanTurnOnFloat", "float", function(self)
         if not self:GetPower() then return false end
     end)
-    
+
     ENT:AddHook("Think", "float", function(self)
         if self:GetData("float") then
             self.phys:Wake()
         end
     end)
-    
+
     ENT:AddHook("OnHealthDepleted","float",function(self)
         if self:GetData("float") and self:GetData("floatfirst") then
             self:ToggleFloat()
         end
     end)
-    
+
     ENT:AddHook("PhysicsUpdate", "float", function(self,ph)
         if self:GetData("float") then
             if ph:IsGravityEnabled() then
@@ -120,7 +117,7 @@ if SERVER then
                 local fwd=eye:Forward()
                 local ri=eye:Right()
                 local ang=self:WorldToLocalAngles(eye)
-                
+
                 local force=1
                 local rforce=2
                 local offset=-1*eye
@@ -160,7 +157,7 @@ if SERVER then
                         ph:AddAngleVelocity(vec)
                     end
                 end
-                
+
                 if TARDIS:IsBindDown(self.pilot,"float-brake") then
                     ph:AddAngleVelocity(ph:GetAngleVelocity()*-0.05)
                 end

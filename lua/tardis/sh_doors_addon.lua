@@ -10,11 +10,11 @@ TARDIS.DoorsFound=found
 if CLIENT then
     function TARDIS:ShowDoorsPopup()
         local DoorsFrame=vgui.Create('DFrame')
-        DoorsFrame:SetTitle("Doors is not installed")
+        DoorsFrame:SetTitle(TARDIS:GetPhrase("Common.DoorsNotInstalled"))
         DoorsFrame:SetSize(ScrW()*0.95, ScrH()*0.95)
         DoorsFrame:SetPos((ScrW() - DoorsFrame:GetWide()) / 2, (ScrH() - DoorsFrame:GetTall()) / 2)
         DoorsFrame:MakePopup()
-        
+
         local h=vgui.Create('DHTML')
         h:SetParent(DoorsFrame)
         h:SetPos(DoorsFrame:GetWide()*0.005, DoorsFrame:GetTall()*0.03)
@@ -31,7 +31,7 @@ timer.Simple(5,function()
         if CLIENT then
             TARDIS:ShowDoorsPopup()
         elseif SERVER then
-            timer.Create("Doors-NotInstalled", 10, 0, function() print("Doors is not installed!") end)
+            timer.Create("Doors-NotInstalled", 10, 0, function() print(TARDIS:GetPhrase("Common.DoorsNotInstalled")) end)
         end
     end
 end)

@@ -4,8 +4,7 @@
 
 TARDIS:AddKeyBind("destination-open",{
     name="Destination",
-    section="Third Person",
-    desc="Enter destination select state",
+    section="ThirdPerson",
     func=function(self,down,ply)
         if down and ply == self.pilot then
             TARDIS:Control("destination", ply)
@@ -60,7 +59,6 @@ TARDIS:AddKeyBind("destination-down",{
 TARDIS:AddKeyBind("destination-boost",{
     name="Boost",
     section="Destination",
-    desc="Hold this key while navigating to speed up",
     key=KEY_LSHIFT,
     clientonly=true,
     exterior=true
@@ -68,7 +66,6 @@ TARDIS:AddKeyBind("destination-boost",{
 TARDIS:AddKeyBind("destination-slow",{
     name="Slow",
     section="Destination",
-    desc="Hold this key to slow movement",
     key=KEY_LALT,
     clientonly=true,
     exterior=true
@@ -76,7 +73,6 @@ TARDIS:AddKeyBind("destination-slow",{
 TARDIS:AddKeyBind("destination-rotate",{
     name="Rotate",
     section="Destination",
-    desc="Hold this with the boost and left or right keys to rotate",
     key=KEY_LALT,
     clientonly=true,
     exterior=true
@@ -85,14 +81,10 @@ TARDIS:AddKeyBind("destination-demat",{
     name="Set",
     section="Teleport",
     func=function(self,down,ply)
-        if TARDIS:HUDScreenOpen(ply) then return end
         if ply:GetTardisData("destination") then
             local prop = self:GetData("destinationprop")
             if IsValid(prop) then
-                self:SendMessage("destination-demat", function()
-                    net.WriteVector(prop:GetPos())
-                    net.WriteAngle(prop:GetAngles())
-                end)
+                self:SendMessage("destination-demat", {prop:GetPos(), prop:GetAngles()})
             end
         end
     end,
@@ -101,11 +93,9 @@ TARDIS:AddKeyBind("destination-demat",{
     exterior=true
 })
 TARDIS:AddKeyBind("destination-snaptofloor",{
-    name="Snap To Floor",
+    name="SnapToFloor",
     section="Destination",
-    desc="Press this key to snap to the nearest floor",
     func=function(self,down,ply)
-        if TARDIS:HUDScreenOpen(ply) then return end
         if ply:GetTardisData("destination") then
             local prop = self:GetData("destinationprop")
             if IsValid(prop) then
@@ -120,6 +110,41 @@ TARDIS:AddKeyBind("destination-snaptofloor",{
 })
 
 if SERVER then
+    function ENT:SetDestination(pos, ang)
+        if self:CallCommonHook("CanChangeDestination", pos, ang) == false then
+            return false
+        end
+
+        if not isvector(pos) or not isangle(ang) then
+            self:SetData("destination_pos",nil,true)
+            self:SetData("destination_ang",nil,true)
+            return false
+        end
+        self:SetData("destination_pos",pos,true)
+        self:SetData("destination_ang",ang,true)
+        self:CallCommonHook("DestinationChanged", pos, ang)
+        return true
+    end
+
+    function ENT:SetDestinationPos(pos)
+        return self:SetDestination(pos, self:GetData("destination_ang"))
+    end
+
+    function ENT:SetDestinationAng(ang)
+        return self:SetDestination(self:GetData("destination_pos"), ang)
+    end
+
+    function ENT:SetRandomDestination(grounded)
+        local randomLocation = self:GetRandomLocation(grounded)
+        if randomLocation then
+            self:CallHook("RandomDestinationSet", randomLocation)
+            self:SetDestination(randomLocation, Angle(0,0,0))
+            return true
+        else
+            return false
+        end
+    end
+
     function ENT:SelectDestination(ply, enabled)
         if IsValid(ply) and ply:IsPlayer() and self.occupants[ply] then
             if ply:GetTardisData("thirdperson") then
@@ -135,63 +160,63 @@ if SERVER then
 
                 ply:SetTardisData("destination", false, true)
                 self:CallHook("Destination", ply, false)
-                self:SendMessage("destination",function()
-                    net.WriteBool(false)
-                end, ply)
+                self:SendMessage("destination", {false}, ply)
                 return true
             elseif self:SetOutsideView(ply, enabled) then
                 ply:SetTardisData("destination", enabled, true)
                 self:CallHook("Destination", ply, enabled)
-                self:SendMessage("destination",function()
-                    net.WriteBool(enabled)
-                end,ply)
+                self:SendMessage("destination", {enabled}, ply)
                 return true
             end
         end
         return false
     end
+
     ENT:AddHook("Outside", "destination", function(self, ply, enabled)
         if not enabled then
             ply:SetTardisData("destination", enabled, true)
             self:CallHook("Destination", ply, enabled)
-            self:SendMessage("destination",function()
-                net.WriteBool(enabled)
-            end,ply)
+            self:SendMessage("destination", {enabled}, ply)
         end
     end)
-    ENT:OnMessage("destination-demat", function(self, ply)
-        local pos = net.ReadVector()
-        local ang = net.ReadAngle()
+
+    ENT:OnMessage("destination-demat", function(self, data, ply)
+        if not self:CheckSecurity(ply) then
+            TARDIS:Message(ply, "Security.ControlUseDenied")
+            return
+        end
+        local pos = data[1]
+        local ang = data[2]
         if ply:GetTardisData("destination") then
             self:SelectDestination(ply, false)
         end
         if self:GetData("vortex") or self:GetData("teleport") then
             if self:SetDestination(pos,ang) then
-                TARDIS:Message(ply, "Destination locked, ready to materialise")
+                TARDIS:Message(ply, "Destination.LockedReadyToMat")
             else
-                TARDIS:Message(ply, "Failed to set destination, may be transitioning")
+                TARDIS:ErrorMessage(ply, "Destination.FailedSetDestinationMaybeTransitioning")
             end
         else
-            if TARDIS:GetSetting("dest-onsetdemat",false,ply) then
+            if TARDIS:GetSetting("dest-onsetdemat", ply) then
                 self:Demat(pos,ang,function(success)
                     if success then
-                        TARDIS:Message(ply, "Destination locked, dematerialising...")
+                        TARDIS:Message(ply, "Destination.LockedDemat")
                     else
-                        TARDIS:Message(ply, "Failed to dematerialise")
+                        TARDIS:ErrorMessage(ply, "Destination.FailedDemat")
                     end
                 end)
             else
                 if self:SetDestination(pos,ang) then
-                    TARDIS:Message(ply, "Destination locked, ready to dematerialise")
+                    TARDIS:Message(ply, "Destination.LockedReadyToDemat")
                 else
-                    TARDIS:Message(ply, "Failed to set destination")
+                    TARDIS:ErrorMessage(ply, "Destination.FailedSetDestination")
                 end
             end
         end
     end)
 else
     local defaultdist = 210
-    function ENT:GetDestinationPos(ply, pos, ang)
+    function ENT:GetDestinationPropPos(ply, pos, ang)
         local prop = self:GetData("destinationprop")
         if not IsValid(prop) then return end
         local pos=prop:LocalToWorld(Vector(0,0,60))
@@ -203,11 +228,14 @@ else
         })
         return tr.HitPos+(ang:Forward()*10), Angle(ang.p,ang.y,0)
     end
-    local function setup(ent)
+
+    local function setup(ent, model, pos, ang)
         local prop = ents.CreateClientProp()
-        prop:SetModel(ent:GetModel())
-        prop:SetPos(ent:GetPos())
-        prop:SetAngles(ent:GetAngles())
+
+        prop:SetModel(model or ent:GetModel())
+        prop:SetPos((pos and ent:LocalToWorld(pos)) or ent:GetPos())
+        prop:SetAngles((ang and ent:LocalToWorldAngles(ang)) or ent:GetAngles())
+
         local col = prop:GetColor()
         prop:SetColor(Color(col.r, col.g, col.b, 100))
         prop:SetRenderMode(RENDERMODE_TRANSALPHA)
@@ -221,13 +249,51 @@ else
         end
         return prop
     end
+
     function ENT:CreateDestinationProp()
         self:RemoveDestinationProp()
 
-        local prop = setup(self)
+        local cham_ext = self:GetData("chameleon_selected_exterior")
+        local md
+        if cham_ext then
+            md = TARDIS:CreateExteriorMetadata(cham_ext)
+        end
+
+        local prop = setup(self, (md and md.Model))
+
+        if md and md.Portal and md.Parts and md.Parts["door"] then
+            local d = md.Parts["door"]
+            local portal = md.Portal
+
+            local pos, ang = d.posoffset or Vector(0,0,0), d.angoffset or Angle(0,0,0)
+
+            local portal_pos = portal.pos or Vector(0,0,0)
+            local portal_ang = portal.ang or Angle(0,0,0)
+
+            if d.use_exit_point_offset and portal.exit_point_offset then
+                portal_pos = portal_pos + portal.exit_point_offset.pos
+                portal_ang = portal_ang + portal.exit_point_offset.ang
+            elseif d.use_exit_point_offset and portal.exit_point then
+                portal_pos = portal.exit_point.pos
+                portal_ang = portal.exit_point.ang
+            end
+
+            pos,ang=LocalToWorld(pos,ang,portal_pos,portal_ang)
+            d.pos = pos
+            d.ang = ang
+        end
+
         for k,v in pairs(self.parts) do
-            if not v.NoShadowCopy then
-                local attachment = setup(v)
+            if not v.NoShadowCopy and (not md or (md.Parts and md.Parts[k]))
+            then
+                local attachment
+                if md then
+                    local p = md.Parts[k]
+                    attachment = setup(v, p.model, p.pos, p.ang)
+                else
+                    attachment = setup(v)
+                end
+
                 attachment:SetParent(prop)
             end
         end
@@ -236,6 +302,7 @@ else
 
         self:SetData("destinationprop", prop)
     end
+
     function ENT:RemoveDestinationProp()
         local prop = self:GetData("destinationprop")
         if IsValid(prop) then
@@ -247,26 +314,19 @@ else
             prop:Remove()
         end
     end
-    TARDIS:AddSetting({
-        id="dest-onsetdemat",
-        name="Destination - Demat on Set",
-        desc="Should the TARDIS dematerialise immediately after destination is set?",
-        section="Misc",
-        value=false,
-        type="bool",
-        option=true,
-        networked=true
-    })
+
     ENT:AddHook("Outside-StartCommand", "destination", function(self, ply, cmd)
         if LocalPlayer():GetTardisData("destination") and cmd:GetMouseWheel()~=0 then
             ply:SetTardisData("destinationdist",math.Clamp(ply:GetTardisData("destinationdist",defaultdist)-cmd:GetMouseWheel()*0.03*(1.1+ply:GetTardisData("destinationdist",defaultdist)),90,500))
         end
     end)
+
     ENT:AddHook("Outside-PosAng", "destination", function(self, ply, pos, ang)
         if LocalPlayer():GetTardisData("destination") then
-            return self:GetDestinationPos(ply, pos, ang)
+            return self:GetDestinationPropPos(ply, pos, ang)
         end
     end)
+
     ENT:AddHook("Destination", "destination", function(self, enabled)
         if enabled then
             self:CreateDestinationProp()
@@ -274,18 +334,22 @@ else
             self:RemoveDestinationProp()
         end
     end)
-    ENT:OnMessage("destination", function(self)
-        local enabled = net.ReadBool()
+
+    ENT:OnMessage("destination", function(self, data, ply)
+        local enabled = data[1]
         self:CallHook("Destination", enabled)
     end)
+
     ENT:AddHook("OnRemove", "destination", function(self)
         self:RemoveDestinationProp()
     end)
+
     ENT:AddHook("VortexEnabled", "destination", function(self)
         if LocalPlayer():GetTardisData("destination") then
             return false
         end
     end)
+
     ENT:AddHook("Think", "destination", function(self)
         if LocalPlayer():GetTardisData("destination") then
             local prop=self:GetData("destinationprop")
@@ -312,7 +376,7 @@ else
             elseif TARDIS:IsBindDown("destination-backward") then
                 mv:Add(force*fwd*-1*dt)
             end
-            
+
             if TARDIS:IsBindDown("destination-rotate") and TARDIS:IsBindDown("destination-boost") then
                 if TARDIS:IsBindDown("destination-left") then
                     rt = rt + Angle(0,angforce*dt,0)
@@ -334,7 +398,7 @@ else
             elseif TARDIS:IsBindDown("destination-down") then
                 mv:Add(force*up*-1*dt)
             end
-            
+
             if TARDIS:IsBindDown("destination-slow") then
                 mv=mv*slowmul
                 rt=rt*angslowmul
@@ -351,4 +415,40 @@ else
             end
         end
     end)
+end
+
+function ENT:GetDestination()
+    return self:GetData("destination_pos"), self:GetData("destination_ang")
+end
+
+function ENT:GetDestinationPos(auto)
+    return self:GetData("destination_pos") or (auto and self:GetPos() or nil)
+end
+
+function ENT:GetDestinationAng(auto)
+    return self:GetData("destination_ang") or (auto and self:GetAngles() or nil)
+end
+
+function ENT:GetRandomLocation(grounded)
+    local td = {}
+    td.mins = self:OBBMins()
+    td.maxs = self:OBBMaxs()
+    local max = 16384
+    local tries = 1000
+    local point
+    while tries > 0 do
+        tries = tries - 1
+        point=Vector(math.random(-max, max),math.random(-max, max),math.random(-max, max))
+        td.start=point
+        td.endpos=point
+        if not util.TraceHull(td).Hit
+        then
+            if grounded then
+                local down = util.QuickTrace(point + Vector(0, 0, 50), Vector(0, 0, -1) * 99999999).HitPos
+                return down, true
+            else
+                return point, false
+            end
+        end
+    end
 end

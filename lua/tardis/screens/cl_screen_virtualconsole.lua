@@ -7,20 +7,20 @@ local function new_virtual_console(self,ext,int,frame,screen)
 
     local background=vgui.Create("DImage", frame)
 
-    local theme = TARDIS:GetSetting("visgui_theme")
+    local theme = TARDIS:GetScreenGUITheme(screen)
     local background_img = TARDIS:GetGUIThemeElement(theme, "backgrounds", "virtualconsole")
     background:SetImage(background_img)
     background:SetSize(frame:GetWide(), frame:GetTall())
 
     local layout_rows
     if screen.is3D2D then
-        if screen.visgui_rows == nil or TARDIS:GetSetting("visgui_override_numrows") then
-            layout_rows = math.floor(TARDIS:GetSetting("visgui_screen_numrows"))
+        if screen.gui_rows == nil or TARDIS:GetSetting("gui_override_numrows") then
+            layout_rows = math.floor(TARDIS:GetSetting("gui_screen_numrows"))
         else
-            layout_rows = math.floor(screen.visgui_rows)
+            layout_rows = math.floor(screen.gui_rows)
         end
     else
-        layout_rows = math.floor(TARDIS:GetSetting("visgui_popup_numrows"))
+        layout_rows = math.floor(TARDIS:GetSetting("gui_popup_numrows"))
     end
     local layout = HexagonalLayout:new(frame, layout_rows, 0.2)
 
@@ -48,11 +48,10 @@ local function new_virtual_console(self,ext,int,frame,screen)
                 button:SetFrameType(options.frame_type[1], options.frame_type[2])
             end
             if options.text ~= nil then
-                button:SetText(options.text)
+                button:SetText(TARDIS:GetPhrase(options.text))
             end
             if options.pressed_state_data ~= nil then
-                local src = options.pressed_state_from_interior and int or ext
-                button:SetPressedStateData(src, options.pressed_state_data)
+                button:SetPressedStateData(ext, options.pressed_state_data)
             end
             if options.order ~= nil then
                 button:SetOrder(options.order)
@@ -74,22 +73,20 @@ local function new_virtual_console(self,ext,int,frame,screen)
 
     layout.scroll_size = math.max(1, layout:GetCols() - 1)
 
-    frame.Think = function()
-        screen.left_arrow:SetVisible(true)
-        screen.right_arrow:SetVisible(true)
-        screen.right_arrow.DoClick = function()
-            if layout:CanMoveLeft()
-                and not screen.left_arrow:IsPressed()
-                and not screen.right_arrow:IsPressed() then
-                layout:ScrollButtons(-layout.scroll_size)
-            end
+    frame.left_arrow_func = function()
+        if layout:CanMoveRight()
+            and not screen.left_arrow:IsPressed()
+            and not screen.right_arrow:IsPressed()
+        then
+            layout:ScrollButtons(layout.scroll_size)
         end
-        screen.left_arrow.DoClick = function()
-            if layout:CanMoveRight()
-                and not screen.right_arrow:IsPressed()
-                and not screen.left_arrow:IsPressed() then
-                layout:ScrollButtons(layout.scroll_size)
-            end
+    end
+    frame.right_arrow_func = function()
+        if layout:CanMoveLeft()
+            and not screen.right_arrow:IsPressed()
+            and not screen.left_arrow:IsPressed()
+        then
+            layout:ScrollButtons(-layout.scroll_size)
         end
     end
 
@@ -99,7 +96,7 @@ local function old_virtual_console(self,ext,int,frame,screen)
     local power=vgui.Create("DButton",frame)
     power:SetSize( frame:GetWide()*0.2, frame:GetTall()*0.2 )
     power:SetPos(frame:GetWide()*0.13 - power:GetWide()*0.5,frame:GetTall()*0.15 - power:GetTall()*0.5)
-    power:SetText("Toggle Power")
+    power:SetText(TARDIS:GetPhrase("Screens.VirtualConsole.Old.TogglePower"))
     power:SetFont(TARDIS:GetScreenFont(screen, "Default"))
     power.DoClick = function()
         TARDIS:Control("power", LocalPlayer())
@@ -108,7 +105,7 @@ local function old_virtual_console(self,ext,int,frame,screen)
     local repair=vgui.Create("DButton",frame)
     repair:SetSize( frame:GetWide()*0.2, frame:GetTall()*0.2 )
     repair:SetPos(frame:GetWide()*0.35 - repair:GetWide()*0.5,frame:GetTall()*0.15 - repair:GetTall()*0.5)
-    repair:SetText("Repair TARDIS")
+    repair:SetText(TARDIS:GetPhrase("Screens.VirtualConsole.Old.Repair"))
     repair:SetFont(TARDIS:GetScreenFont(screen, "Default"))
     repair.DoClick = function()
         TARDIS:Control("repair", LocalPlayer())
@@ -117,7 +114,7 @@ local function old_virtual_console(self,ext,int,frame,screen)
     local vortex_flight=vgui.Create("DButton",frame)
     vortex_flight:SetSize( frame:GetWide()*0.2, frame:GetTall()*0.2 )
     vortex_flight:SetPos(frame:GetWide()*0.13 - vortex_flight:GetWide()*0.5,frame:GetTall()*0.4 - vortex_flight:GetTall()*0.5)
-    vortex_flight:SetText("Fast Remat "..(ext:GetData("demat-fast") and "on" or "off"))
+    vortex_flight:SetText(TARDIS:GetPhrase("Screens.VirtualConsole.Old.FastRemat").." "..TARDIS:GetPhrase(ext:GetData("demat-fast") and "Common.Enabled.Lower" or "Common.Disabled.Lower"))
     vortex_flight:SetFont(TARDIS:GetScreenFont(screen, "Default"))
     vortex_flight.DoClick = function(self)
         TARDIS:Control("vortex_flight", LocalPlayer())
@@ -127,9 +124,9 @@ local function old_virtual_console(self,ext,int,frame,screen)
         local on = ext:GetData("demat-fast")
         if self.oldon == on then return end
         if on then
-            self:SetText("Fast Remat on")
+            self:SetText(TARDIS:GetPhrase("Screens.VirtualConsole.Old.FastRemat").." "..TARDIS:GetPhrase("Common.Enabled.Lower"))
         else
-            self:SetText("Fast Remat off")
+            self:SetText(TARDIS:GetPhrase("Screens.VirtualConsole.Old.FastRemat").." "..TARDIS:GetPhrase("Common.Disabled.Lower"))
         end
         self.oldon = on
     end
@@ -138,7 +135,7 @@ local function old_virtual_console(self,ext,int,frame,screen)
     physlock:SetSize( frame:GetWide()*0.2, frame:GetTall()*0.2)
     physlock:SetFont(TARDIS:GetScreenFont(screen, "Default"))
     physlock:SetPos((frame:GetWide()*0.35)-(physlock:GetWide()*0.5),(frame:GetTall()*0.4)-(physlock:GetTall()*0.5))
-    physlock:SetText("Physlock "..(ext:GetPhyslock() and "on" or "off"))
+    physlock:SetText(TARDIS:GetPhrase("Screens.VirtualConsole.Old.Physlock").." "..TARDIS:GetPhrase(ext:GetPhyslock() and "Common.Enabled.Lower" or "Common.Disabled.Lower"))
     physlock.DoClick = function()
         TARDIS:Control("physlock", LocalPlayer())
     end
@@ -147,9 +144,9 @@ local function old_virtual_console(self,ext,int,frame,screen)
         local on = ext:GetPhyslock()
         if self.oldon == on then return end
         if on then
-            self:SetText("Physlock on")
+            self:SetText(TARDIS:GetPhrase("Screens.VirtualConsole.Old.Physlock").." "..TARDIS:GetPhrase("Common.Enabled.Lower"))
         else
-            self:SetText("Physlock off")
+            self:SetText(TARDIS:GetPhrase("Screens.VirtualConsole.Old.Physlock").." "..TARDIS:GetPhrase("Common.Disabled.Lower"))
         end
         self.oldon = on
     end
@@ -157,7 +154,7 @@ local function old_virtual_console(self,ext,int,frame,screen)
     local fastreturn=vgui.Create("DButton",frame)
     fastreturn:SetSize( frame:GetWide()*0.2, frame:GetTall()*0.2 )
     fastreturn:SetPos(frame:GetWide()*0.13 - fastreturn:GetWide()*0.5,frame:GetTall()*0.65 - fastreturn:GetTall()*0.5)
-    fastreturn:SetText("Fast Return")
+    fastreturn:SetText(TARDIS:GetPhrase("Screens.VirtualConsole.Old.FastReturn"))
     fastreturn:SetFont(TARDIS:GetScreenFont(screen, "Default"))
     fastreturn.DoClick = function()
         TARDIS:Control("fastreturn", LocalPlayer())
@@ -166,7 +163,7 @@ local function old_virtual_console(self,ext,int,frame,screen)
     local hads=vgui.Create("DButton",frame)
     hads:SetSize( frame:GetWide()*0.2, frame:GetTall()*0.2 )
     hads:SetPos(frame:GetWide()*0.35 - power:GetWide()*0.5,frame:GetTall()*0.65 - power:GetTall()*0.5)
-    hads:SetText("HADS "..(ext:GetData("hads") and "on" or "off"))
+    hads:SetText(TARDIS:GetPhrase("Screens.VirtualConsole.Old.HADS").." "..TARDIS:GetPhrase(ext:GetData("hads") and "Common.Enabled.Lower" or "Common.Disabled.Lower"))
     hads:SetFont(TARDIS:GetScreenFont(screen, "Default"))
     hads.DoClick = function()
         TARDIS:Control("hads", LocalPlayer())
@@ -176,9 +173,9 @@ local function old_virtual_console(self,ext,int,frame,screen)
         local on = ext:GetData("hads", false)
         if self.oldon == on then return end
         if on then
-            self:SetText("HADS on")
+            self:SetText(TARDIS:GetPhrase("Screens.VirtualConsole.Old.HADS").." "..TARDIS:GetPhrase("Common.Enabled.Lower"))
         else
-            self:SetText("HADS off")
+            self:SetText(TARDIS:GetPhrase("Screens.VirtualConsole.Old.HADS").." "..TARDIS:GetPhrase("Common.Disabled.Lower"))
         end
         self.oldon = on
     end
@@ -189,12 +186,12 @@ local function old_virtual_console(self,ext,int,frame,screen)
     doorswitch:SetSize( frame:GetWide()*0.2, frame:GetTall()*0.1)
     doorswitch:SetFont(TARDIS:GetScreenFont(screen, "Default"))
     doorswitch:SetPos((frame:GetWide()*0.57)-(doorswitch:GetWide()*0.5),(frame:GetTall()*0.15)-(doorswitch:GetTall()*1))
-    doorswitch:SetText(ext:DoorOpen() and "Close door" or "Open door")
+    doorswitch:SetText(TARDIS:GetPhrase(ext:DoorOpen() and "Screens.VirtualConsole.Old.CloseDoor" or "Screens.VirtualConsole.Old.OpenDoor"))
 
     doorlock:SetSize( frame:GetWide()*0.2, frame:GetTall()*0.1)
     doorlock:SetFont(TARDIS:GetScreenFont(screen, "Default"))
     doorlock:SetPos((frame:GetWide()*0.57)-(doorlock:GetWide()*0.5),(frame:GetTall()*0.15)-(doorlock:GetTall()*0))
-    doorlock:SetText(ext:Locked() and "Unlock door" or "Lock door")
+    doorlock:SetText(TARDIS:GetPhrase(ext:Locked() and "Screens.VirtualConsole.Old.UnlockDoor" or "Screens.VirtualConsole.Old.LockDoor"))
 
     doorswitch.DoClick = function(doorswitch)
         TARDIS:Control("door", LocalPlayer())
@@ -210,9 +207,9 @@ local function old_virtual_console(self,ext,int,frame,screen)
             doorswitch.first = true
             if not doorswitch:GetDisabled() then
                 if doorswitch.open then
-                    doorswitch:SetText("Door closing")
+                    doorswitch:SetText(TARDIS:GetPhrase("Screens.VirtualConsole.Old.DoorClosing"))
                 else
-                    doorswitch:SetText("Door opening")
+                    doorswitch:SetText(TARDIS:GetPhrase("Screens.VirtualConsole.Old.DoorOpening"))
                 end
                 doorswitch:SetDisabled(true)
             end
@@ -225,13 +222,13 @@ local function old_virtual_console(self,ext,int,frame,screen)
             if not doorswitch.moving then
                 doorswitch.open = true
             end
-            doorswitch:SetText("Close door")
+            doorswitch:SetText(TARDIS:GetPhrase("Screens.VirtualConsole.Old.CloseDoor"))
             if doorswitch.first then
                 doorswitch.first=nil
             end
         elseif not ext:DoorOpen() and doorswitch.open or doorswitch.first then
             doorswitch.open=false
-            doorswitch:SetText("Open door")
+            doorswitch:SetText(TARDIS:GetPhrase("Screens.VirtualConsole.Old.OpenDoor"))
             if doorswitch.first then
                 doorswitch.first=nil
             end
@@ -242,9 +239,9 @@ local function old_virtual_console(self,ext,int,frame,screen)
         if ext:Locking() then
             if not doorlock:GetDisabled() then
                 if ext:Locked() then
-                    doorlock:SetText("Lock: Unlocking")
+                    doorlock:SetText(TARDIS:GetPhrase("Screens.VirtualConsole.Old.LockUnlocking"))
                 else
-                    doorlock:SetText("Lock: Locking")
+                    doorlock:SetText(TARDIS:GetPhrase("Screens.VirtualConsole.Old.LockLocking"))
                 end
                 doorlock:SetDisabled(true)
             end
@@ -252,14 +249,14 @@ local function old_virtual_console(self,ext,int,frame,screen)
             doorlock:SetDisabled(false)
         elseif ext:Locked() and (not doorlock.lock) or doorlock.first then
             doorlock.lock=true
-            doorlock:SetText("Unlock door")
+            doorlock:SetText(TARDIS:GetPhrase("Screens.VirtualConsole.Old.UnlockDoor"))
             doorswitch:SetDisabled(true)
             if doorlock.first then
                 doorlock.first=nil
             end
         elseif not ext:Locked() and doorlock.lock or doorlock.first then
             doorlock.lock=false
-            doorlock:SetText("Lock door")
+            doorlock:SetText(TARDIS:GetPhrase("Screens.VirtualConsole.Old.LockDoor"))
             doorswitch:SetDisabled(false)
             if doorlock.first then
                 doorlock.first=nil
@@ -268,8 +265,8 @@ local function old_virtual_console(self,ext,int,frame,screen)
     end
 end
 
-TARDIS:AddScreen("Virtual Console", {id="virtualconsole",menu=false, order=1}, function(self,ext,int,frame,screen)
-    if TARDIS:GetSetting("visgui_enabled") then
+TARDIS:AddScreen("Virtual Console", {id="virtualconsole",text="Screens.VirtualConsole",menu=false, order=1}, function(self,ext,int,frame,screen)
+    if not TARDIS:GetSetting("gui_old") then
         new_virtual_console(self,ext,int,frame,screen)
     else
         old_virtual_console(self,ext,int,frame,screen)

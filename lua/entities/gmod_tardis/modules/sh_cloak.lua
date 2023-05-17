@@ -2,8 +2,8 @@
 
 
 TARDIS:AddKeyBind("cloak-toggle",{
-    name="Toggle",
-    section="Cloak",
+    name="ToggleCloak",
+    section="ThirdPerson",
     func=function(self,down,ply)
         if ply == self.pilot and down then
             TARDIS:Control("cloak", ply)
@@ -34,15 +34,13 @@ if SERVER then
     function ENT:SetCloak(on)
         if self:CallHook("CanToggleCloak")==false then return false end
         self:SetData("cloak", on)
-        self:SendMessage("cloak", function()
-            net.WriteBool(on)
-        end)
-        if (not self:GetData("teleport")) and (not self:GetData("vortex")) then
-            self:DrawShadow(not on)
-        end
+        self:SendMessage("cloak", { on })
+
+        self:UpdateShadow()
+        self:CallHook("CloakToggled", on)
         return true
     end
-    
+
     function ENT:ToggleCloak()
         local on = not self:GetData("cloak", false)
         return self:SetCloak(on)
@@ -50,7 +48,7 @@ if SERVER then
 
     ENT:AddHook("HandleE2", "cloak", function(self,name,e2)
         if name == "Phase" and TARDIS:CheckPP(e2.player, self) then
-            return self:ToggleCloak() and 1 or 0
+            return (self:GetPower() and self:ToggleCloak()) and 1 or 0
         elseif name == "GetVisible" then
             return self:GetData("cloak",false) and 0 or 1
         end
@@ -67,49 +65,76 @@ if SERVER then
             self:SetCloak(false)
         end
     end)
-else
-    TARDIS:AddSetting({
-        id = "cloaksound-enabled",
-        name = "Cloak Sound",
-        desc = "Toggles whether or not sounds play when TARDIS cloaking is toggled",
-        section = "Sound",
-        value = true,
-        type = "bool",
-        option = true
-    })
 
-    ENT:AddHook("Initialize", "cloak-material", function(self)
-        self.PhaseMaterial = Material(self.metadata.Exterior.PhaseMaterial or "models/drmatt/tardis/exterior/phase_noise.vmt")
+    ENT:AddHook("PowerToggled", "cloak", function(self,on)
+        if on and self:GetData("power_last_cloak", false) then
+            self:SetCloak(true)
+        elseif not on then
+            self:SetData("power_last_cloak", self:GetCloak())
+            if self:GetCloak() then
+                self:SetCloak(false)
+            end
+        end
     end)
 
+    function ENT:UpdateShadow()
+        local should_draw = (self:CallHook("ShouldDrawShadow") ~= false)
+        self:DrawShadow(should_draw)
+
+        for k,v in pairs(self.parts) do
+            if IsValid(v) then
+                v:DrawShadow(not v.NoShadow and should_draw)
+            end
+        end
+    end
+
+    ENT:AddHook("ShouldDrawShadow", "cloak", function(self)
+        if self:GetData("cloak") then
+            return false
+        end
+    end)
+else
     ENT:AddHook("ShouldThinkFast", "cloak", function(self)
         if self:GetData("cloak-animating",false) then return true end
+    end)
+
+    ENT:AddHook("ShouldAllowThickPortal", "cloak", function(self, portal)
+        if self.interior and portal==self.interior.portals.exterior then
+            if self:GetCloak() or self:GetData("cloak-animating") then
+                return false
+            end
+        end
     end)
 
     ENT:AddHook("Think", "cloak", function(self)
         local target = self:GetData("cloak",false) and -0.5 or 1
         local animating = self:GetData("cloak-animating",false)
         local percent = self:GetData("phase-percent",1)
+
         if percent == target then
             if animating then
                 self:SetData("cloak-animating", false)
+                self:CallHook("CloakAnimationFinished")
+                self:SetData("phase-lastTick", nil)
             end
             return
         elseif not animating then
             self:SetData("cloak-animating", true)
+            self:CallHook("CloakAnimationStarted")
         end
 
         local timepassed = CurTime() - self:GetData("phase-lastTick",CurTime())
         self:SetData("phase-lastTick", CurTime())
-        if self:GetData("cloak",false) then
-            self:SetData("phase-percent", math.Approach(percent, target, 0.5 * timepassed))
-        else
-            self:SetData("phase-percent", math.Approach(percent, target, 0.5 * timepassed))
-        end
-        self:SetData("phase-highPercent", math.Clamp(self:GetData("phase-percent",1) + 0.5, 0, 1))
 
-        local pos = self:GetPos() + self:GetUp() * (self:GetData("modelmaxs").z - (self:GetData("modelheight") * self:GetData("phase-highPercent",1)))
-        local pos2 = self:GetPos() + self:GetUp() * (self:GetData("modelmaxs").z - (self:GetData("modelheight") * self:GetData("phase-percent",1)))
+        local new_percent = math.Approach(percent, target, 0.5 * timepassed)
+        local high_percent = math.Clamp(self:GetData("phase-percent",1) + 0.5, 0, 1)
+        self:SetData("phase-percent", new_percent)
+        self:SetData("phase-highPercent", high_percent)
+
+        local modelmaxs = self:GetData("modelmaxs")
+        local modelheight = self:GetData("modelheight")
+        local pos = self:GetPos() + self:GetUp() * (modelmaxs.z - (modelheight * high_percent))
+        local pos2 = self:GetPos() + self:GetUp() * (modelmaxs.z - (modelheight * new_percent))
 
         self:SetData("phase-highPos", pos)
         self:SetData("phase-pos", pos2)
@@ -117,57 +142,9 @@ else
 
     local oldClip
 
-    local function dodraw(self, ent)
-        ent = ent or self
-        local animating = self:GetData("cloak-animating",false)
-        if animating and not wp.drawing then
-            ent:SetRenderClipPlaneEnabled(true)
-        else
-            ent:SetRenderClipPlaneEnabled(false)
-            return
-        end
-        oldClip = render.EnableClipping(true)
-        local restoreT = ent:GetMaterial()
-
-        local normal = self:GetUp()
-        local pos = self:GetData("phase-highPos",Vector(0,0,0))
-        local dist = normal:Dot(pos)
-
-        local normal2 = self:GetUp() * -1
-        local pos2 = self:GetData("phase-pos",Vector(0,0,0))
-        local dist2 = normal2:Dot(pos2)
-
-        ent:SetRenderClipPlane(normal, dist)
-
-        render.PushCustomClipPlane(normal, dist)
-        render.MaterialOverride(self.PhaseMaterial)
-        
-        render.PushCustomClipPlane(normal2, dist2)
-            ent:DrawModel()
-        render.PopCustomClipPlane()
-        render.PopCustomClipPlane()
-        
-        render.MaterialOverride(restoreT)
-    end
-
-    local function postdraw()
-        if not self:GetData("cloak-animating",false) then return end
-        render.EnableClipping(oldClip)
-    end
-
-    ENT:AddHook("Draw", "cloak", dodraw)
-
-    ENT:AddHook("PostDraw", "cloak", postdraw)
-
-    ENT:AddHook("DrawPart", "cloak", function(self,part)
-        if part.NoCloak~=true then
-            dodraw(self,part)
-        end
-    end)
-
-    ENT:AddHook("PostDrawPart", "ID", function(self,part)
-        if part.NoCloak~=true then
-            dodraw(self,part)
+    ENT:AddHook("ShouldDrawPhaseAnimation", "cloak", function(self)
+        if self:GetData("cloak-animating",false) then
+            return true
         end
     end)
 
@@ -191,10 +168,9 @@ else
         if self:GetData("cloak",false) and not self:GetData("cloak-animating",false) then return false end
     end)
 
-    ENT:OnMessage("cloak", function(self)
-        local on = net.ReadBool()
+    ENT:OnMessage("cloak", function(self, data, ply)
+        local on = data[1]
         self:SetData("cloak", on)
-        self:SetData("cloak-animating", true)
         local snd
         if on then
             snd = self.metadata.Exterior.Sounds.Cloak

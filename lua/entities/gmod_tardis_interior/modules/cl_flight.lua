@@ -1,15 +1,5 @@
 -- Flight
 
-TARDIS:AddSetting({
-    id="flight-internalsound",
-    name="Flightmode Internal Sound",
-    section="Sounds",
-    desc="Whether the flight sound can be heard on the inside or not",
-    value=true,
-    type="bool",
-    option=true
-})
-
 ENT:AddHook("OnRemove", "flight", function(self)
     if self.flightsound then
         self.flightsound:Stop()
@@ -32,7 +22,7 @@ local function ChooseFlightSound(ent)
 end
 
 ENT:AddHook("Think", "flight", function(self)
-    if self.exterior:GetData("flight") and TARDIS:GetSetting("flight-internalsound") 
+    if self.exterior:GetData("flight") and TARDIS:GetSetting("flight-internalsound")
         and TARDIS:GetSetting("sound")
     then
         if self.flightsound and self.flightsound:IsPlaying() then

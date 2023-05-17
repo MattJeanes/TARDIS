@@ -37,7 +37,7 @@ end)
 function TARDIS:IsBehind( object_pos, plane_pos, plane_forward )
     local vec = object_pos - plane_pos
 
-    if plane_forward:Dot( vec ) < 0 then 
+    if plane_forward:Dot( vec ) < 0 then
         return true
     end
     return false
@@ -59,7 +59,7 @@ end
 
 hook.Add("HUDPaint", "tardis-debug", function()
     local ply=LocalPlayer()
-    local int=TARDIS:GetInterior(ply)
+    local int=TARDIS:GetInteriorEnt(ply)
     if IsValid(int) then
         local portals=int.portals
         local e=ply:EyeAngles()

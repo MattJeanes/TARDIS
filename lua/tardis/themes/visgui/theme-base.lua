@@ -1,7 +1,8 @@
 local theme = {
     id = "base",
-    name = "Text only",
+    name = "TextOnly",
     base_id = nil,
+    bgcolor = Color(1,1,1,150),
 
     folder = "base",
     frames = {
@@ -15,6 +16,8 @@ local theme = {
         default = "background.png",
         -- virtualconsole = "",
         -- main = "",
+        -- coordinates = "",
+        -- music = "",
     },
     text_icons_off = {
         subfolder = nil,

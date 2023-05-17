@@ -2,9 +2,9 @@ TARDIS:AddControl({
     id = "physlock",
     ext_func=function(self,ply)
         if self:TogglePhyslock() then
-            TARDIS:StatusMessage(ply, "Locking-down mechanism", self:GetPhyslock(), "engaged", "disengaged")
+            TARDIS:StatusMessage(ply, "Controls.Physlock.Status", self:GetPhyslock(), "Common.Engaged.Lower", "Common.Disengaged.Lower")
         else
-            TARDIS:ErrorMessage(ply, "Failed to toggle locking-down mechanism")
+            TARDIS:ErrorMessage(ply, "Controls.Physlock.FailedToggle")
         end
     end,
     serveronly=true,
@@ -14,10 +14,9 @@ TARDIS:AddControl({
         mmenu = false,
         toggle = true,
         frame_type = {0, 2},
-        text = "Physlock",
-        pressed_state_from_interior = false,
+        text = "Controls.Physlock",
         pressed_state_data = "physlock",
         order = 12,
     },
-    tip_text = "Locking-Down Mechanism",
+    tip_text = "Controls.Physlock.Tip",
 })

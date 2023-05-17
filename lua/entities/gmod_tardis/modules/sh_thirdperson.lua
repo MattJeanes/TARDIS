@@ -1,8 +1,8 @@
 -- Third person
 
 TARDIS:AddKeyBind("tp-toggledoor",{
-    name="Toggle Door",
-    section="Third Person",
+    name="ToggleDoor",
+    section="ThirdPerson",
     func=function(self,down,ply)
         if ply==self.pilot and down then
             TARDIS:Control("door", ply)
@@ -11,17 +11,6 @@ TARDIS:AddKeyBind("tp-toggledoor",{
     key=KEY_F,
     serveronly=true,
     exterior=true
-})
-
-TARDIS:AddSetting({
-    id="thirdperson_careful_enabled",
-    name="Use walk key to enter third person",
-    desc="Should the WALK ('ALT' by default) key be pressed to enter third person when pressing USE ('E' by default) key on the console?",
-    section="Misc",
-    value=true,
-    type="bool",
-    option=true,
-    networked=true
 })
 
 hook.Add("PlayerSwitchFlashlight", "tardis-thirdperson", function(ply,enabled)
@@ -54,7 +43,7 @@ end
 if SERVER then
     function ENT:PlayerThirdPerson(ply, enabled, careful)
 
-        if careful and TARDIS:GetSetting("thirdperson_careful_enabled", true, ply) and not ply:KeyDown(IN_WALK) then
+        if careful and TARDIS:GetSetting("thirdperson_careful_enabled", ply) and not ply:KeyDown(IN_WALK) then
             self:SendMessage("thirdperson-careful-hint", nil, ply)
             return
         end
@@ -84,9 +73,11 @@ else
         end
     end)
 
-    ENT:OnMessage("thirdperson-careful-hint", function(self)
-        local use = string.upper(input.LookupBinding("+use", true)) or "USE"
-        local walk = string.upper(input.LookupBinding("+walk", true)) or "WALK"
-        TARDIS:Message(ply, "HINT: Use \'" .. walk .. " + " .. use .. "\' keys to enter third person")
+    ENT:OnMessage("thirdperson-careful-hint", function(self, data, ply)
+        local use_binding = input.LookupBinding("+use", true)
+        local walk_binding = input.LookupBinding("+walk", true)
+        local use = string.upper(use_binding or "USE")
+        local walk = string.upper(walk_binding or "WALK")
+        TARDIS:Message(LocalPlayer(), "ThirdPerson.KeyHint", walk, use)
     end)
 end

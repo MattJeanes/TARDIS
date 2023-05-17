@@ -1,5 +1,18 @@
 -- Power Exterior
 
+TARDIS:AddKeyBind("power",{
+    name="Power",
+    section="ThirdPerson",
+    func=function(self,down,ply)
+        if down and ply == self.pilot then
+            TARDIS:Control("power", ply)
+        end
+    end,
+    key=KEY_P,
+    serveronly=true,
+    exterior=true
+})
+
 ENT:AddHook("Initialize","power-init", function(self)
     self:SetData("power-state",true,true)
 end)
@@ -8,9 +21,9 @@ function ENT:GetPower()
     return self:GetData("power-state", false)
 end
 
-ENT:AddHook("CanUseTardisControl", "power", function(self, control_id, ply)
-    if not self:GetPower() and not TARDIS:GetControl(control_id).power_independent then
-        TARDIS:ErrorMessage(ply, "Power is disabled. This doesn't work.")
+ENT:AddHook("CanUseTardisControl", "power", function(self, control, ply)
+    if not self:GetPower() and not control.power_independent then
+        TARDIS:ErrorMessage(ply, "Common.PowerDisabledControl")
         return false
     end
 end)
@@ -20,12 +33,10 @@ if SERVER then
         return self:SetPower(not self:GetPower())
     end
     function ENT:SetPower(on)
-        if (self:CallHook("CanTogglePower")==false or self.interior:CallHook("CanTogglePower")==false) then return false end
+        if (self:CallCommonHook("CanTogglePower") == false) then return false end
         self:SetData("power-state",on,true)
-        self:CallHook("PowerToggled",on)
-        if self.interior then
-            self.interior:CallHook("PowerToggled",on)
-        end
+        self:CallCommonHook("PowerToggled", on)
+        self:SendMessage("power_toggled", {on})
         return true
     end
 
@@ -47,9 +58,9 @@ if SERVER then
         end
     end)
 
-    ENT:AddHook("CanToggleCloak", "power", function(self)
-        if not self:GetPower() and not self:GetCloak() then 
-            return false 
+    ENT:AddHook("CanChangeExterior","power",function(self)
+        if not self:GetPower() then
+            return false,true,"Chameleon.FailReasons.NoPower",true
         end
     end)
 else
@@ -59,5 +70,10 @@ else
 
     ENT:AddHook("ShouldTurnOffLight", "power", function(self)
         if not self:GetPower() then return true end
+    end)
+
+    ENT:OnMessage("power_toggled", function(self, data, ply)
+        local on = data[1]
+        self:CallCommonHook("PowerToggled", on)
     end)
 end

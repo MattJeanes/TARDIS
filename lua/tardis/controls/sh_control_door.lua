@@ -1,40 +1,39 @@
 TARDIS:AddControl({
     id = "door",
-    ext_func=function(self,ply)
+    ext_func = function(self,ply)
         local oldstate = self:GetData("doorstate")
 
         if self:GetData("locked", false) then
-            TARDIS:ErrorMessage(ply, "The doors are locked.")
+            TARDIS:ErrorMessage(ply, "Controls.Door.Locked")
             return
         end
 
         if not self:GetPower() then
             if not self.metadata.EnableClassicDoors or oldstate then
-                TARDIS:ErrorMessage(ply, "The door switch doesn't work.")
-                TARDIS:ErrorMessage(ply, "Power is disabled.")
+                TARDIS:ErrorMessage(ply, "Controls.Door.NoSwitch")
+                TARDIS:ErrorMessage(ply, "Common.PowerDisabled")
                 return
             end
-            TARDIS:Message(ply, "Using emergency power to open the door...")
-            TARDIS:ErrorMessage(ply, "Power is disabled.")
+            TARDIS:Message(ply, "Controls.Door.UsingEmergencyPower")
+            TARDIS:ErrorMessage(ply, "Common.PowerDisabled")
         end
 
         if self:ToggleDoor() then
-            TARDIS:StatusMessage(ply, "Door", not oldstate, "opened", "closed")
+            TARDIS:StatusMessage(ply, "Controls.Door.Status", not oldstate, "Common.Opened.Lower", "Common.Closed.Lower")
         else
-            TARDIS:ErrorMessage(ply, "Failed to ".. (oldstate and "close" or "open").." door")
+            TARDIS:ErrorMessage(ply, oldstate and "Controls.Door.FailedClose" or "Controls.Door.FailedOpen")
         end
     end,
-    serveronly=true,
+    serveronly = true,
     power_independent = true,
     screen_button = {
         virt_console = true,
         mmenu = false,
         toggle = true,
         frame_type = {0, 1},
-        text = "Door",
-        pressed_state_from_interior = false,
+        text = "Controls.Door",
         pressed_state_data = "doorstate",
         order = 10,
     },
-    tip_text = "Door Switch",
+    tip_text = "Controls.Door.Tip",
 })

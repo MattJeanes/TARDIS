@@ -12,14 +12,6 @@ if TARDIS_OVERRIDES and TARDIS_OVERRIDES.MainCategory then
     ENT.Category = TARDIS_OVERRIDES.MainCategory
 end
 
-if SERVER then
-    ENT.Spawnable = true
-else
-    local spawnEntity = table.Copy(ENT)
-    spawnEntity.PrintName = "    TARDIS    " -- Spaces used for ordering
-    spawnEntity.Spawnable = true
-    list.Set("SpawnableEntities", "gmod_tardis", spawnEntity)
-end
 
 local class=string.sub(ENT.Folder,string.find(ENT.Folder, "/[^/]*$")+1) -- only works if in a folder
 
@@ -51,6 +43,22 @@ function ENT:ListHooks(listInteriorHooks)
     if listInteriorHooks then self.interior:ListHooks() end
 end
 
+function ENT:CallCommonHook(name, ...)
+    local a,b,c,d,e,f
+
+    a,b,c,d,e,f = self:CallHook(name, ...)
+    if a~=nil then
+        return a,b,c,d,e,f
+    end
+
+    if IsValid(self.interior) then
+        a,b,c,d,e,f = self.interior:CallHook(name, ...)
+        if a~=nil then
+            return a,b,c,d,e,f
+        end
+    end
+end
+
 function ENT:CallHook(name,...)
     local a,b,c,d,e,f
     a,b,c,d,e,f=self.BaseClass.CallHook(self,name,...)
@@ -67,9 +75,19 @@ function ENT:CallHook(name,...)
     end
     if self.metadata and self.metadata.Exterior and self.metadata.Exterior.CustomHooks then
         for hook_id,body in pairs(self.metadata.Exterior.CustomHooks) do
-            if body and (body[1] == name) or (istable(body[1]) and body[1][name]) then
+            if body and istable(body) and ((body[1] == name) or (istable(body[1]) and body[1][name])) then
                 local func = body[2]
                 a,b,c,d,e,f = func(self, ...)
+                if a~=nil then
+                    return a,b,c,d,e,f
+                end
+            end
+        end
+    end
+    if self.metadata and self.metadata.CustomHooks then
+        for hook_id,body in pairs(self.metadata.CustomHooks) do
+            if body and istable(body) and body.exthooks and body.exthooks[name] then
+                a,b,c,d,e,f = body.func(self, self.interior, ...)
                 if a~=nil then
                     return a,b,c,d,e,f
                 end

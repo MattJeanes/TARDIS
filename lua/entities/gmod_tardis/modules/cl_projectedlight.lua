@@ -1,51 +1,5 @@
 --Fake light bleeding
 
---Settings
-
-TARDIS:AddSetting({
-    id="extprojlight-enabled",
-    name="Light Enabled",
-    section="Exterior Door",
-    desc="Should light shine out through the doors when they're open?",
-    value=true,
-    type="bool",
-    option=true,
-})
-
-TARDIS:AddSetting({
-    id="extprojlight-brightness-override",
-    name="Light Brightness Override",
-    section="Exterior Door",
-    desc="Override brightness of light, reset for default",
-    value=false,
-    type="number",
-    min=0,
-    max=10,
-    option=true,
-})
-
-TARDIS:AddSetting({
-    id="extprojlight-distance-override",
-    name="Light Distance Override",
-    section="Exterior Door",
-    desc="Override distance of light, reset for default",
-    value=false,
-    min=0,
-    max=5000,
-    type="number",
-    option=true,
-})
-
-TARDIS:AddSetting({
-    id="extprojlight-color-override",
-    name="Light Color Override",
-    section="Exterior Door",
-    desc="Override color of light, reset for default",
-    value=false,
-    type="color",
-    option=true,
-})
-
 --Methods
 
 function ENT:CalcLightBrightness(pos)
@@ -58,21 +12,33 @@ function ENT:CalcLightBrightness(pos)
 end
 
 function ENT:PickProjectedLightColor()
-    local override = TARDIS:GetSetting("extprojlight-color-override")
-    if override then return override end
+    local override = TARDIS:GetSetting("extprojlight-override-color")
+    if override then return TARDIS:GetSetting("extprojlight-color") end
+
     local warning = self:GetData("health-warning",false)
-    local color = self.metadata.Exterior.ProjectedLight.color or self.metadata.Interior.Light.color
-    local warncolor = self.metadata.Exterior.ProjectedLight.warncolor or self.metadata.Interior.Light.warncolor
-    local pickedcolor = warning and (warncolor or color) or color
+
+    local pl = self.metadata.Exterior.ProjectedLight
+    local ld = self.interior.light_data
+    local int_color_data = ld and ld.main or self.metadata.Interior.Light
+    local pickedcolor
+
+    if warning then
+        pickedcolor = pl.warncolor or int_color_data.warn_color
+    end
+
+    pickedcolor = pickedcolor or pl.color or int_color_data.color
+
     return pickedcolor
 end
 
 function ENT:PickProjectedLightBrightness()
-    return TARDIS:GetSetting("extprojlight-brightness-override") or self.metadata.Exterior.ProjectedLight.brightness
+    local override = TARDIS:GetSetting("extprojlight-override-brightness")
+    return override and TARDIS:GetSetting("extprojlight-brightness") or self.metadata.Exterior.ProjectedLight.brightness
 end
 
 function ENT:PickProjectedLightDistance()
-    return TARDIS:GetSetting("extprojlight-distance-override") or self.metadata.Exterior.ProjectedLight.farz
+    local override = TARDIS:GetSetting("extprojlight-override-distance")
+    return override and TARDIS:GetSetting("extprojlight-distance") or self.metadata.Exterior.ProjectedLight.farz
 end
 
 function ENT:CreateProjectedLight()
@@ -130,9 +96,10 @@ ENT:AddHook("ShouldDrawProjectedLight", "projectedlight", function(self)
 end)
 
 ENT:AddHook("ShouldNotDrawProjectedLight","projectedlight",function(self)
-    if (not TARDIS:GetSetting("extprojlight-enabled")) or (not self.interior) then return true end
-    if self:GetData("vortex",false)==true then return true end
-    if not self.metadata.Interior.Light then return true end
+    if not TARDIS:GetSetting("extprojlight-enabled") then return true end
+    if not IsValid(self.interior) then return true end
+    if self:GetData("vortex",false) == true then return true end
+    if not self.interior.light_data or not self.interior.light_data.main then return true end
 end)
 
 ENT:AddHook("Think", "projectedlight", function(self)

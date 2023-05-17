@@ -8,8 +8,42 @@ local function SonicModelExists()
 end
 
 local T = {}
+
+T.Versions = {
+    randomize = false,
+    allow_custom = false,
+    randomize_custom = false,
+
+    main = {
+        id = "default",
+    },
+    other = {
+        {
+            name = "Interiors.Default.Versions.TTCapsuleType40",
+            id = "default_tt_type40",
+        },
+        {
+            name = "Interiors.Default.Versions.TTCapsuleType50",
+            id = "default_tt_type50",
+        },
+        {
+            name = "Interiors.Default.Versions.TTCapsuleType55",
+            id = "default_tt_type55",
+        },
+        {
+            name = "Interiors.Default.Versions.TTCapsuleType55B",
+            id = "default_tt_type55b",
+        },
+        {
+            name = "Interiors.Default.Versions.SIDRAT",
+            id = "default_sidrat",
+        },
+    },
+}
+
+
 T.Base = "base"
-T.Name = "Default"
+T.Name = "Interiors.Default"
 T.ID = "default"
 T.Interior = {
     Model = "models/drmatt/tardis/interior.mdl",
@@ -38,7 +72,7 @@ T.Interior = {
         }
     },
     Portal = {
-        pos = Vector(316.7, 334.9, -36.5),
+        pos = Vector(316.7, 334.9, -33.7),
         ang = Angle(0, 230, 0),
         width = 45,
         height = 91
@@ -53,14 +87,32 @@ T.Interior = {
             ang = Angle(0, 84.5, 91),
             width = 227.75,
             height = 140,
-            visgui_rows = 2,
+            gui_rows = 2,
             power_off_black = true
         }
+    },
+    Scanners = {
+        {
+            mat = "models/drmatt/tardis/tardisscanner",
+            width = 1024,
+            height = 1024,
+            ang = Angle(0,0,0),
+            fov = 90,
+        }
+    },
+    Sounds = {
+        Teleport = {
+            demat = "drmatt/tardis/demat.wav",
+            mat = "drmatt/tardis/mat.wav",
+            mat_fast = "p00gie/tardis/mat_fast.wav",
+            mat_damaged_fast = "p00gie/tardis/mat_damaged_fast.wav",
+            fullflight = "drmatt/tardis/full.wav",
+        },
     },
     Sequences = "default_sequences",
     Parts = {
         door = {
-            pos = Vector(300, 315, -88.1),
+            posoffset=Vector(28,0,-54.6),
             ang = Angle(0, 50, 0),
             width = 443,
             height = 335
@@ -70,6 +122,7 @@ T.Interior = {
         default_flightlever         =   {pos = Vector(-0.431641, 44.75, 6.4),               ang = Angle(-63.913, 137.035, 136.118), },
         default_screen              =   {pos = Vector(42, 0.75, 27.1),                      ang = Angle(0, -5, 0),                  },
         default_screenbutton        =   {pos = Vector(44.5, 9.75, 38.2),                    ang = Angle(215, 85, 90),               },
+        default_scannerbutton       =   {pos = Vector(42, -31.5, 1.4),                      ang = Angle(-25, 150, -10)              },
         default_wibblylever         =   {pos = Vector(-48, 18, 5.4),                        ang = Angle(335, 347, 6),               },
         default_enginerelease       =   {pos = Vector(-61.229, 21.622, -4.514),             ang = Angle(180, 90.911, -90),          },
         default_doorbutton          =   {pos = Vector(-60.782, -25.129, -6.108),            ang = Angle(0, 65.911, -81.515),        },
@@ -114,10 +167,11 @@ T.Interior = {
         },
     },
     Controls = {
-        default_throttle            = "teleport",
+        default_throttle            = "teleport_double",
         default_flightlever         = "flight",
         default_screen              = nil,
         default_screenbutton        = "toggle_screens",
+        default_scannerbutton       = "toggle_scanners",
         default_wibblylever         = "doorlock",
         default_enginerelease       = "engine_release",
         default_doorbutton          = "door",
@@ -156,31 +210,32 @@ T.Interior = {
     },
     PartTips = {
 
-        default_throttle            =   {pos = Vector(-8.87, -50, 5.5),         down = true},
-        default_flightlever         =   {pos = Vector(-1, 59, 2),                   down = true},
-        default_screen              =   {pos = Vector(42, 0.75, 29.1),           down = true},
-        default_screenbutton        =   {pos = Vector(47, 10, 38),               right = true},
-        default_wibblylever         =   {pos = Vector(-48, 18, 5.4),               right = true},
+        default_throttle            =   {pos = Vector(-8.87, -50, 5.5), down = true},
+        default_flightlever         =   {pos = Vector(-1, 59, 2), down = true},
+        default_screen              =   {pos = Vector(42, 0.75, 29.1), down = true},
+        default_screenbutton        =   {pos = Vector(47, 10, 38), right = true},
+        default_scannerbutton        =  {pos = Vector(43, -32, 3.5), down = true},
+        default_wibblylever         =   {pos = Vector(-48, 18, 5.4), right = true},
         default_enginerelease       =   {pos = Vector(-61.229, 21.622, -4.514), down = true},
         default_doorbutton          =   {pos = Vector(-62.699, -24.23, -5.506), down = true},
-        default_powerlever          =   {pos = Vector(44, -18, 5.5),               right = true},
-        default_keyboard            =   {pos = Vector(29, -53, -8),             right = true, down = true},
-        default_hads                =   {pos = Vector(52, 31, 1),                   down = true},
-        default_typewriter          =   {pos = Vector(19, 48.80, 2.07)           },
-        default_repairlever         =   {pos = Vector(-8, 45, 9),                   right = true},
-        default_redecoratebutton    =   {pos = Vector(-6.542, 54.408, 3.081),     down = true, right = true},
-        default_handbrake           =   {pos = Vector(-52, -29, 2),             down = true},
-        default_gramophone          =   {pos = Vector(-26, -1.50, 40),           right = true, down = true},
-        default_biglever            =   {pos = Vector(-9.94, -65, -12)           },
-        default_physlock            =   {pos = Vector(52, -30, 0),               down = true},
-        default_isomorphic          =   {pos = Vector(-52, 29, 2),               down = true},
-        default_atomaccel           =   {pos = Vector(20, -38, 6),               right = true},
-        default_directionalpointer  =   {pos = Vector(12.5, -24.5, 23)           },
-        default_float               =   {pos = Vector(-2, -60, 1),               right = true, down = true},
-        default_blacksticks         =   {pos = Vector(4.48, -43.9, 7)             },
-        default_longflighttoggle    =   {pos = Vector(-37.24, -27.91, 7.42)     },
-        default_dematcircuit        =   {pos = Vector(-43.16, -31.01, 4.7),     right = true, down = true},
-        default_sonicdispenser      =   {pos = Vector(-26.048, 42.31, 3.15),       right = true, down = false},
+        default_powerlever          =   {pos = Vector(44, -18, 5.5), right = true},
+        default_keyboard            =   {pos = Vector(29, -53, -8), right = true, down = true},
+        default_hads                =   {pos = Vector(52, 31, 1), down = true},
+        default_typewriter          =   {pos = Vector(19, 48.80, 2.07) },
+        default_repairlever         =   {pos = Vector(-8, 45, 9), right = true},
+        default_redecoratebutton    =   {pos = Vector(-6.542, 54.408, 3.081), down = true, right = true},
+        default_handbrake           =   {pos = Vector(-52, -29, 2), down = true},
+        default_gramophone          =   {pos = Vector(-26, -1.50, 40), right = true, down = true},
+        default_biglever            =   {pos = Vector(-9.94, -65, -12) },
+        default_physlock            =   {pos = Vector(52, -30, 0), down = true},
+        default_isomorphic          =   {pos = Vector(-52, 29, 2), down = true},
+        default_atomaccel           =   {pos = Vector(20, -38, 6), right = true},
+        default_directionalpointer  =   {pos = Vector(12.5, -24.5, 23) },
+        default_float               =   {pos = Vector(-2, -60, 1), right = true, down = true},
+        default_blacksticks         =   {pos = Vector(4.48, -43.9, 7) },
+        default_longflighttoggle    =   {pos = Vector(-37.24, -27.91, 7.42) },
+        default_dematcircuit        =   {pos = Vector(-43.16, -31.01, 4.7), right = true, down = true},
+        default_sonicdispenser      =   {pos = Vector(-26.048, 42.31, 3.15), right = true, down = false},
         default_helmic = {
             pos = Vector(-26, -41, 4),
             right = true,
@@ -198,12 +253,96 @@ T.Interior = {
             ang = Angle(0, 135, 0)
         }
     },
-    BreakdownEffectPos = Vector(0, 0, 40)
+    BreakdownEffectPos = Vector(0, 0, 40),
 }
+
 T.Exterior = {
     Parts = {
-        door = true
+        door = {
+            posoffset=Vector(-28,0,-54.6)
+        }
     },
-    PhaseMaterial = "models/drmatt/tardis/exterior/phase.vmt"
+    Sounds = {
+        Teleport = {
+            demat = "drmatt/tardis/demat.wav",
+            mat = "drmatt/tardis/mat.wav",
+            mat_fast = "p00gie/tardis/mat_fast.wav",
+            mat_damaged_fast = "p00gie/tardis/mat_damaged_fast.wav",
+            fullflight = "drmatt/tardis/full.wav",
+            interrupt = "drmatt/tardis/repairfinish.wav",
+        },
+        Spawn = "drmatt/tardis/repairfinish.wav",
+        RepairFinish = "drmatt/tardis/repairfinish.wav",
+        Delete = "p00gie/tardis/base/tardis_delete.wav",
+    },
+    Light = {
+        warncolor = Color(255,200,200),
+    },
+    PhaseMaterial = "models/drmatt/tardis/exterior/phase.vmt",
+    Portal = {
+        pos = Vector(28,0,54.6),
+        ang = Angle(0,0,0),
+        width = 45,
+        height = 92,
+        thickness = 42,
+        inverted = true,
+    },
 }
+
+local function playerlookingat(self,ply,vec,fov,width)
+    local disp = vec - self:WorldToLocal(ply:GetPos()+Vector(0,0,64))
+    local dist = disp:Length()
+
+    local maxcos = math.abs( math.cos( math.acos( dist / math.sqrt( dist * dist + width * width ) ) + fov * ( math.pi / 180 ) ) )
+    disp:Normalize()
+
+    if disp:Dot( ply:EyeAngles():Forward() ) > maxcos then
+        return true
+    end
+
+    return false
+end
+
+T.Interior.CustomHooks = {
+    init_rotor = {
+        "Initialize",
+        function(self)
+            self.timerotor={}
+            self.timerotor.pos=0
+            self.timerotor.mode=1
+        end
+    },
+    think_rotor = {
+        "Think",
+        function(self)
+            local moving = self.exterior:GetData("teleport",false)
+            local flightmode = self.exterior:GetData("flight",false)
+            local active = (moving or flightmode)
+            if not CLIENT then return end
+            if active or self.timerotor.pos > 0 then
+                if self.timerotor.pos==1 then
+                    self.timerotor.mode=0
+                elseif active and self.timerotor.pos==0 then
+                    self.timerotor.mode=1
+                end
+                self.timerotor.pos=math.Approach( self.timerotor.pos, self.timerotor.mode, FrameTime()*1.1 )
+                self:SetPoseParameter( "glass", self.timerotor.pos )
+            end
+        end,
+    },
+    use_console = {
+        "Use",
+        function(self,a,c)
+            if SERVER and a:IsPlayer() and (not a:GetTardisData("outside")) and CurTime() > a:GetTardisData("outsidecool",0) then
+                local pos=Vector(0,0,0)
+                local pos2=self:WorldToLocal(a:GetPos())
+                local distance=pos:Distance(pos2)
+                if distance < 110 and playerlookingat(self,a,pos,10,10) then
+                    TARDIS:Control("thirdperson_careful", a)
+                end
+            end
+        end,
+    },
+}
+
 TARDIS:AddInterior(T)

@@ -3,7 +3,9 @@
 function ENT:IsVortexEnabled(pilot)
     local hookResult = self:CallHook("VortexEnabled", pilot)
     if hookResult ~= nil then return hookResult end
-    return ((not pilot and SERVER) or TARDIS:GetSetting("vortex-enabled",false,pilot)) and IsValid(self:GetPart("vortex")) and (SERVER or self:GetData("vortexmodelvalid"))
+    return ( ((not pilot and SERVER) or TARDIS:GetSetting("vortex-enabled", pilot))
+            and IsValid(self:GetPart("vortex"))
+            and (SERVER or self:GetData("vortexmodelvalid")) )
 end
 
 ENT:AddHook("VortexEnabled", "demat-fast", function(self, pilot)
@@ -19,7 +21,7 @@ if SERVER then
             local vel=ph:GetVelocity()
             local brake=vel*-(self:GetData("vortexready") and 1 or 0.02)
             ph:AddVelocity(brake)
-            
+
             if IsValid(self.pilot) and self:IsVortexEnabled(self.pilot) then
                 local up=self:GetUp()
                 local ri2=self:GetRight()
@@ -27,7 +29,7 @@ if SERVER then
                 local ang=self:GetAngles()
                 local cen=ph:GetMassCenter()
                 local lev=ph:GetInertia():Length()
-                
+
                 local vel=0
                 local rforce=2
                 local mul=3
@@ -67,42 +69,31 @@ if SERVER then
             end
         end
     end)
-    
+
     ENT:AddHook("FlightControl","vortex",function(self)
         if self:GetData("vortex") then
             return false
         end
     end)
-    
+
     ENT:AddHook("CanTurnOffFlight", "flight", function(self)
         if self:GetData("vortex") then
             return false
         end
     end)
-    
+
     ENT:AddHook("DoorCollisionOverride","vortex",function(self)
         if self:GetData("vortex") and self:IsVortexEnabled() then
             return true -- forces door collision to stay on
         end
     end)
-    
+
     ENT:AddHook("CanToggleDoor","vortex",function(self,state)
         if self:GetData("vortex") and (not self:IsVortexEnabled()) then
             return false
         end
     end)
 else
-    TARDIS:AddSetting({
-        id="vortex-enabled",
-        name="Show Vortex",
-        desc="Whether the vortex is shown during vortex flight",
-        section="Misc",
-        value=true,
-        type="bool",
-        option=true,
-        networked=true
-    })
-    
     ENT:AddHook("Think","vortex",function(self)
         local alpha = self:GetData("vortexalpha",0)
         local enabled = self:IsVortexEnabled()
@@ -122,62 +113,57 @@ else
             end
         end
     end)
-    
-    local function dopredraw(self,part)
-        local vortexpart = (part and part.ID=="vortex")
+
+    ENT:AddHook("PreDrawPart","vortex",function(self,part)
+        if not (part and part.ID=="vortex") then return end
         local target = self:GetData("vortex") and 1 or 0
-        local alpha = self:GetData("vortexalpha",0)
+        local vortexalpha = self:GetData("vortexalpha",0)
         local enabled = self:IsVortexEnabled()
         if TARDIS:GetExteriorEnt()==self and enabled then
-            if (not (target == 0 and alpha == 0)) or vortexpart then
-                render.SetBlend(alpha)
-                if alpha>0 and self:CallHook("ShouldVortexIgnoreZ") then
-                    cam.IgnoreZ(true)
-                end
+            render.SetBlend(vortexalpha)
+            if vortexalpha>0 and self:CallHook("ShouldVortexIgnoreZ") then
+                cam.IgnoreZ(true)
             end
         else
-            if vortexpart or self:GetData("vortex") then
-                render.SetBlend(0)
-            end
+            render.SetBlend(0)
         end
-    end
-    
-    local function dodraw(self,part)
+    end)
+
+    ENT:AddHook("PostDrawPart","vortex",function(self,part)
+        if not (part and part.ID=="vortex") then return end
         render.SetBlend(1)
         local vortexalpha = self:GetData("vortexalpha",0)
         if vortexalpha>0 then
-            if not part and TARDIS:GetExteriorEnt()==self then
-                local attached = self:GetData("demat-attached")
-                if attached then
-                    local oldblend = render.GetBlend()
-                    render.SetBlend(vortexalpha)
-                    for k,v in pairs(attached) do
-                        if IsValid(k) and k.DrawModel and v>0 then
-                            local oldc = k:GetColor()
-                            k:SetColor(ColorAlpha(oldc,v))
-                            k:DrawModel()
-                            k:SetColor(oldc)
-                        end
-                    end
-                    render.SetBlend(oldblend)
-                end
-            end
             cam.IgnoreZ(false)
         end
-    end
-    ENT:AddHook("PreDraw","vortex",dopredraw)
-    ENT:AddHook("PreDrawPart","vortex",dopredraw)
-    ENT:AddHook("Draw","vortex",dodraw)
-    ENT:AddHook("DrawPart","vortex",dodraw)
-    ENT:AddHook("PreDrawPortal","vortex",dopredraw)
-    ENT:AddHook("PostDrawPortal","vortex",dodraw)
-    
+    end)
+
+    ENT:AddHook("Draw","vortex",function(self)
+        if TARDIS:GetExteriorEnt()==self then
+            local attached = self:GetData("demat-attached")
+            if attached then
+                local oldblend = render.GetBlend()
+                local vortexalpha = self:GetData("vortexalpha",0)
+                render.SetBlend(vortexalpha)
+                for k,v in pairs(attached) do
+                    if IsValid(k) and k.DrawModel and v>0 then
+                        local oldc = k:GetColor()
+                        k:SetColor(ColorAlpha(oldc,v))
+                        k:DrawModel()
+                        k:SetColor(oldc)
+                    end
+                end
+                render.SetBlend(oldblend)
+            end
+        end
+    end)
+
     ENT:AddHook("ShouldNotRenderPortal","vortex",function(self,parent,portal,exit)
         if self:GetData("vortex") and (TARDIS:GetExteriorEnt()~=self or (not self:IsVortexEnabled())) then
             return true, self~=parent
         end
     end)
-    
+
     ENT:AddHook("StopDemat","vortex",function(self)
         local vortex=self:GetPart("vortex")
         local valid = false
@@ -185,12 +171,12 @@ else
             valid = util.IsValidModel(vortex.model)
         end
         if not valid and self:GetData("hasvortex") and (not self:GetData("vortexmodelwarn")) then
-            TARDIS:Message(LocalPlayer(), "WARNING: Vortex model invalid - disabling vortex, are you missing a dependency?")
+            TARDIS:Message(LocalPlayer(), "Vortex.ModelMissing")
             self:SetData("vortexmodelwarn",true)
         end
         self:SetData("vortexmodelvalid",valid)
     end)
-    
+
     ENT:AddHook("ShouldTurnOffLight","vortex",function(self)
         if self:GetData("vortex") and (TARDIS:GetExteriorEnt()~=self or (not self:IsVortexEnabled())) then
             return true

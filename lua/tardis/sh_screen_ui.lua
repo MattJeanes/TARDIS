@@ -1,13 +1,5 @@
 -- Adds screens
 
-function TARDIS:HUDScreenOpen(ply)
-    if SERVER then
-        return ply.TARDISHUDScreen
-    else
-        return self.HUDScreenActive
-    end
-end
-
 function TARDIS:PopToScreen(name, ply)
     if SERVER then
         if IsValid(ply) and ply:IsPlayer() then
@@ -17,7 +9,10 @@ function TARDIS:PopToScreen(name, ply)
         end
     else
         self:HUDScreen()
-        self:SwitchScreen(self.screenpop, self:GetScreenByName(name))
+        local screen = self:GetScreenByName(name)
+        if screen then
+            self:SwitchScreen(self.screenpop, screen)
+        end
     end
 end
 
@@ -59,6 +54,12 @@ TARDIS:CreateScreenFont("Default", {
     size=13
 })
 
+TARDIS:CreateScreenFont("DefaultBold", {
+    font="Tahoma",
+    size=14,
+    weight = 1000,
+})
+
 TARDIS:CreateScreenFont("Main", {
     font="Roboto",
     size=50
@@ -80,9 +81,8 @@ TARDIS:CreateScreenFont("PageName", {
 })
 
 TARDIS:AddKeyBind("tp-openscreen",{
-    name="Open Screen",
-    section="Third Person",
-    desc="Toggles the HUD screen",
+    name="OpenScreen",
+    section="ThirdPerson",
     func=function(self,down,ply)
         if down and ply:GetTardisData("outside") then
             TARDIS:HUDScreen()
@@ -95,6 +95,7 @@ TARDIS:AddKeyBind("tp-openscreen",{
 
 local screens={}
 function TARDIS:AddScreen(name,options,func)
+    if options.id == nil then options.id = name end
     screens[name]={options,func}
 end
 TARDIS:LoadFolder("screens")
@@ -124,12 +125,12 @@ function TARDIS:ScreenActive(name)
     end
 end
 
-function TARDIS:GetScreenFrames()
+function TARDIS:GetScreens()
     if not self.HUDScreenActive or not IsValid(self.screenpop) then return end
     local tab = {}
 
     for k,v in pairs(self.screenpop.screens) do
-        tab[v[1]] = v[2]
+        tab[v.name] = v
     end
 
     return tab
@@ -137,31 +138,54 @@ end
 
 function TARDIS:GetScreenByName(name)
     if not self.HUDScreenActive or not IsValid(self.screenpop) then return end
-    local screen = self:GetScreenFrames()[name]
-    if not IsValid(screen) then return end
+    local screen = self:GetScreens()[name]
+    if not screen then return end
     return screen
 end
 
-function TARDIS:SwitchScreen(screen,newscreen)
-    if IsValid(newscreen) then
-        if #screen.backstack>0 then
-            self:PopScreen(screen,true)
-        end
-        if IsValid(screen.curscreen) then
-            screen.curscreen:SetVisible(false)
-        end
-        newscreen:SetVisible(true)
-        screen.curscreen=newscreen
-        screen.pagename:SetText(tostring(newscreen._name))
-        screen.pagename:DoLayout()
-        if IsValid(screen.mmenu) then
-            screen.mmenu:SetVisible(false)
-            if TARDIS:GetSetting("visgui_enabled") then
-                screen.left_arrow:SetVisible(false)
-                screen.right_arrow:SetVisible(false)
-            end
-        end
+function TARDIS:RefreshArrowFunctions(screen)
+    if TARDIS:GetSetting("gui_old") then return end
+    local frame = screen.curscreen
+
+    if frame.left_arrow_func or frame.right_arrow_func then
+        screen.left_arrow.DoClick = frame.left_arrow_func
+        screen.right_arrow.DoClick = frame.right_arrow_func
+        screen.left_arrow:SetVisible(true)
+        screen.right_arrow:SetVisible(true)
+    else
+        screen.left_arrow.DoClick = nil
+        screen.right_arrow.DoClick = nil
+        screen.left_arrow:SetVisible(false)
+        screen.right_arrow:SetVisible(false)
     end
+end
+
+function TARDIS:SwitchScreen(screen,newscreen)
+    if not newscreen then return false end
+    local frame = newscreen.frame
+    if not IsValid(frame) then return false end
+
+    if #screen.backstack>0 then
+        self:PopScreen(screen,true)
+    end
+    if IsValid(screen.curscreen) then
+        screen.curscreen:SetVisible(false)
+    end
+
+    if not frame._loaded then
+        newscreen.func(TARDIS,screen.ext,screen.int,frame,screen)
+        frame._loaded = true
+    end
+    frame:SetVisible(true)
+
+    screen.curscreen=frame
+    screen.pagename:SetText(TARDIS:GetPhrase(frame._text))
+    screen.pagename:DoLayout()
+    if IsValid(screen.mmenu) then
+        screen.mmenu:SetVisible(false)
+    end
+    self:RefreshArrowFunctions(screen)
+    return true
 end
 
 net.Receive("TARDIS-PopToScreen", function(len)
@@ -182,30 +206,6 @@ function TARDIS:PopScreen(screen,all)
             screen.backbutton:SetVisible(false)
         elseif all then
             self:PopScreen(screen,all)
-        end
-    end
-end
-
-function TARDIS:PushScreen(name,screen,f,f2)
-    local titlebar=screen.titlebar
-    local pagename=screen.pagename
-    local oldname=pagename:GetText()
-    f:SetVisible(false)
-    f2:SetVisible(true)
-    pagename:SetText(oldname.."/"..name)
-    pagename:DoLayout()
-    table.insert(screen.backstack,
-        {
-            f=f,
-            f2=f2,
-            oldname=oldname
-        }
-    )
-    if not screen.backbutton:IsVisible() then
-        screen.backbutton:SetVisible(true)
-        if TARDIS:GetSetting("visgui_enabled") then
-            screen.left_arrow:SetVisible(false)
-            screen.right_arrow:SetVisible(false)
         end
     end
 end
@@ -233,28 +233,37 @@ function TARDIS:RemoveHUDScreen()
     end
 end
 
-function TARDIS:HUDScreen()
+function TARDIS:HUDScreen(window)
     if IsValid(self.screenpopframe) then
         self:RemoveHUDScreen()
-        return
+        if not self.screen_in_context_menu then
+            return
+        end
+        self.screen_in_context_menu = nil
     end
 
-    local frame=vgui.Create("DFrame")
+    local frame = window or vgui.Create("DFrame")
     frame:SetSkin("TARDIS")
-    frame:SetTitle("TARDIS Interface")
+    frame:SetTitle(TARDIS:GetPhrase("Common.Interface"))
     frame:SetDraggable(true)
-    frame:ShowCloseButton(false)
-    frame:MakePopup()
+
+    if not window then
+        frame:ShowCloseButton(false)
+        frame:MakePopup()
+    end
+
     self.screenpopframe=frame
+    self.screen_in_context_menu = (window ~= nil)
 
     local screen = vgui.Create("DPanel",frame)
     screen.id="pop"
-    screen.width=825
+    screen.width=700
     screen.height=425
 
-    if TARDIS:GetSetting("visgui_enabled") and TARDIS:GetSetting("visgui_bigpopup") then
-        screen.width=screen.width*1.5
-        screen.height=screen.height*1.5
+    local sscale = TARDIS:GetSetting("gui_popup_scale")
+    if not TARDIS:GetSetting("gui_old") then
+        screen.width = screen.width * sscale
+        screen.height = screen.height * sscale
     end
 
     screen.resscale = 0.7
@@ -264,6 +273,13 @@ function TARDIS:HUDScreen()
     screen.gap2=screen.gap*2
     screen.ext=TARDIS:GetExteriorEnt()
     screen.int=TARDIS:GetInteriorEnt()
+
+    screen.Think = function(self)
+        if not IsValid(screen.ext) then
+            TARDIS:RemoveHUDScreen()
+        end
+    end
+
     screen:SetSize(screen.width,screen.height)
     screen:SetPos(2,25)
     self:LoadScreenUI(screen)
@@ -287,7 +303,7 @@ concommand.Add("tardis2_toggleui", function()
 end)
 
 function TARDIS:LoadScreenUI(screen)
-    local theme = TARDIS:GetSetting("visgui_theme")
+    local theme = TARDIS:GetScreenGUITheme(screen)
     local background_img = TARDIS:GetGUIThemeElement(theme, "backgrounds", "main")
 
     local frame = vgui.Create("DPanel", screen)
@@ -296,7 +312,7 @@ function TARDIS:LoadScreenUI(screen)
 
     screen.backstack={}
 
-    if TARDIS:GetSetting("visgui_enabled") then
+    if not TARDIS:GetSetting("gui_old") then
         frame:SetBackgroundColor(Color(0,0,0,255))
         local frame_background=vgui.Create("DImage", frame)
         frame_background:SetImage(background_img)
@@ -304,10 +320,10 @@ function TARDIS:LoadScreenUI(screen)
     end
 
     local titlebar = vgui.Create("DPanel",frame)
-    if TARDIS:GetSetting("visgui_enabled") then
+    if not TARDIS:GetSetting("gui_old") then
         titlebar:SetSize(frame:GetWide(), frame:GetTall() * 0.15)
         titlebar:SetPos(0, frame:GetTall() - titlebar:GetTall() )
-        titlebar:SetBackgroundColor(Color(1, 1, 100, 255))
+        titlebar:SetBackgroundColor(TARDIS:GetScreenGUIColor(screen))
     else
         titlebar:SetSize(frame:GetWide(), frame:GetTall() * 0.1)
         titlebar:SetPos(0, 0)
@@ -315,7 +331,7 @@ function TARDIS:LoadScreenUI(screen)
     end
 
     local pagename = vgui.Create("DLabel",titlebar)
-    if TARDIS:GetSetting("visgui_enabled") then
+    if not TARDIS:GetSetting("gui_old") then
         pagename:SetTextColor(Color(255,255,255))
     else
         pagename:SetTextColor(Color(0,0,0))
@@ -331,7 +347,7 @@ function TARDIS:LoadScreenUI(screen)
 
     local main = vgui.Create("DPanel",frame)
     main:SetSize(frame:GetWide(),frame:GetTall() - titlebar:GetTall())
-    if TARDIS:GetSetting("visgui_enabled") then
+    if not TARDIS:GetSetting("gui_old") then
         main:SetPos(0,0)
         main:SetBackgroundColor(Color(0,0,0,255))
     else
@@ -350,7 +366,7 @@ function TARDIS:LoadScreenUI(screen)
 
     local backbutton, menubutton, popup_button
 
-    if TARDIS:GetSetting("visgui_enabled") then
+    if not TARDIS:GetSetting("gui_old") then
         titlebar.button_size = math.min(titlebar:GetTall() * 0.8, titlebar:GetWide() * 0.25)
         titlebar.button_posY = titlebar:GetTall() * 0.5 - titlebar.button_size * 0.5
 
@@ -374,7 +390,7 @@ function TARDIS:LoadScreenUI(screen)
         backbutton:SetIsToggle(false)
 
         popup_button = TardisScreenButton:new(titlebar,screen)
-        if screen.is3D2D then
+        if screen.is3D2D or self.screen_in_context_menu then
             popup_button:SetID("popup")
         else
             popup_button:SetID("exit")
@@ -393,6 +409,7 @@ function TARDIS:LoadScreenUI(screen)
         left_arrow:SetPos(left2, titlebar.button_posY)
         left_arrow:SetIsToggle(false)
         left_arrow:SetText("<<<")
+        left_arrow:SetClickTime(0.1)
         screen.left_arrow = left_arrow
 
         local right_arrow = TardisScreenButton:new(titlebar,screen)
@@ -402,6 +419,7 @@ function TARDIS:LoadScreenUI(screen)
         right_arrow:SetPos(right2, titlebar.button_posY)
         right_arrow:SetIsToggle(false)
         right_arrow:SetText(">>>")
+        right_arrow:SetClickTime(0.1)
         screen.right_arrow = right_arrow
     else
         menubutton = vgui.Create("DButton", titlebar)
@@ -418,7 +436,7 @@ function TARDIS:LoadScreenUI(screen)
     end
     screen.titlebar=titlebar
 
-    backbutton:SetText("Back")
+    backbutton:SetText(TARDIS:GetPhrase("Screens.Common.Back"))
     backbutton:SetFont(TARDIS:GetScreenFont(screen, "Default"))
     backbutton:SetVisible(false)
     backbutton.DoClick = function()
@@ -426,7 +444,7 @@ function TARDIS:LoadScreenUI(screen)
     end
     screen.backbutton=backbutton
 
-    menubutton:SetText("Menu")
+    menubutton:SetText(TARDIS:GetPhrase("Screens.Common.Menu"))
     menubutton:SetFont(TARDIS:GetScreenFont(screen, "Default"))
     menubutton.DoClick = function(self)
         if IsValid(screen.curscreen) or not mmenu:IsVisible() then
@@ -434,11 +452,11 @@ function TARDIS:LoadScreenUI(screen)
             if IsValid(screen.curscreen) then
                 screen.curscreen:SetVisible(not mmenu:IsVisible())
             end
-            if TARDIS:GetSetting("visgui_enabled") then
-                screen.left_arrow:SetVisible(mmenu:IsVisible())
-                screen.right_arrow:SetVisible(mmenu:IsVisible())
+            if not TARDIS:GetSetting("gui_old") then
                 if mmenu:IsVisible() then
                     screen.RestoreHexLayout()
+                else
+                    TARDIS:RefreshArrowFunctions(screen)
                 end
             end
             pagename:SetText("")
@@ -452,13 +470,13 @@ function TARDIS:LoadScreenUI(screen)
     screen.menubutton=menubutton
 
     popup_button:SetFont(TARDIS:GetScreenFont(screen, "Default"))
-    if not screen.is3D2D then
-        popup_button:SetText("Exit")
+    if popup_button.id == "exit" then
+        popup_button:SetText(TARDIS:GetPhrase("Screens.Common.Exit"))
         popup_button.DoClick = function()
             TARDIS:RemoveHUDScreen()
         end
     else
-        popup_button:SetText("Popup")
+        popup_button:SetText(TARDIS:GetPhrase("Screens.Common.Popup"))
         popup_button.DoClick = function()
             self:PopToScreen(screen.pagename:GetText())
         end
@@ -469,37 +487,42 @@ function TARDIS:LoadScreenUI(screen)
     local int=screen.int
     for k,v in pairs(screens) do
         if not ((v[1].intonly and (not IsValid(int)))
-            or (v[1].menu==false and (not (IsValid(ext) and IsValid(int)))))
+            or (v[1].menu==false and (not (IsValid(ext)))))
         then
             local frame = vgui.Create("DPanel",main)
             frame:SetVisible(false)
             frame:SetSize(main:GetSize())
             frame:SetPos(0,0)
             frame._name=k
-            v[2](self,ext,int,frame,screen)
-            table.insert(screen.screens,{k,frame,v[1]})
+            frame._text=v[1].text or k
+            frame._loaded=false
+            table.insert(screen.screens,{name=k,frame=frame,options=v[1],func=v[2]})
         end
     end
-    table.SortByMember(screen.screens,1,true)
+    table.SortByMember(screen.screens,"name",true)
 
     self:LoadButtons(screen, mmenu, function(parent)
         local buttons={}
         for k,v in ipairs(screen.screens) do
-            local options = v[3]
             local button = vgui.Create("DButton")
-            button:SetText(v[1])
+            button:SetText(v.options and v.options.id)
             button:SetFont(TARDIS:GetScreenFont(screen, "Default"))
             button.DoClick = function()
-                if options and options.popuponly and screen.is3D2D then
-                    self:PopToScreen(v[1])
+                if v.options and v.options.popuponly and screen.is3D2D then
+                    self:PopToScreen(v.id)
                 else
-                    self:SwitchScreen(screen, v[2])
+                    self:SwitchScreen(screen, v)
+                end
+            end
+            if v.options ~= nil then
+                if v.options.text then
+                    button:SetText(TARDIS:GetPhrase(v.options.text))
                 end
             end
             table.insert(buttons,button)
         end
         return buttons
-    end, TARDIS:GetSetting("visgui_enabled"))
+    end, not TARDIS:GetSetting("gui_old"))
 
     return main
 end
@@ -508,38 +531,36 @@ function TARDIS:LoadButtons(screen, frame, func, isvgui)
     if isvgui ~= nil and isvgui then
         local layout_rows
         if screen.is3D2D then
-            if screen.visgui_rows == nil or TARDIS:GetSetting("visgui_override_numrows") then
-                layout_rows = math.floor(TARDIS:GetSetting("visgui_screen_numrows"))
+            if screen.gui_rows == nil or TARDIS:GetSetting("gui_override_numrows") then
+                layout_rows = math.floor(TARDIS:GetSetting("gui_screen_numrows"))
             else
-                layout_rows = math.floor(screen.visgui_rows)
+                layout_rows = math.floor(screen.gui_rows)
             end
         else
-            layout_rows = math.floor(TARDIS:GetSetting("visgui_popup_numrows"))
+            layout_rows = math.floor(TARDIS:GetSetting("gui_popup_numrows"))
         end
 
         local layout = HexagonalLayout:new(frame, layout_rows, 0.2)
 
         for k,v in ipairs(screen.screens) do
-            local name = v[1]
-            local options = v[3]
             local button = TardisScreenButton:new(frame,screen)
-            button:SetID(options and options.id or name)
+            button:SetID(v.options and v.options.id or v.name)
             button:SetFrameType(0, 1)
             button:SetIsToggle(false)
             button:SetFont(TARDIS:GetScreenFont(screen, "Default"))
-            button:SetText(name)
+            button:SetText(v.name)
             button.DoClick = function()
-                if screen.is3D2D and options and options.popuponly then
-                    self:PopToScreen(name)
+                if screen.is3D2D and v.options and v.options.popuponly then
+                    self:PopToScreen(v.name)
                 else
-                    self:SwitchScreen(screen, v[2])
+                    self:SwitchScreen(screen, v)
                 end
             end
-            if options ~= nil then
-                if options.text then
-                    button:SetText(options.text)
+            if v.options ~= nil then
+                if v.options.text then
+                    button:SetText(TARDIS:GetPhrase(v.options.text))
                 end
-                button:SetOrder(options.order)
+                button:SetOrder(v.options.order)
             end
             layout:AddNewButton(button)
         end
@@ -566,11 +587,10 @@ function TARDIS:LoadButtons(screen, frame, func, isvgui)
                         button:SetFrameType(options.frame_type[1], options.frame_type[2])
                     end
                     if options.text ~= nil then
-                        button:SetText(options.text)
+                        button:SetText(TARDIS:GetPhrase(options.text))
                     end
                     if options.pressed_state_data ~= nil then
-                        local src = options.pressed_state_from_interior and screen.int or screen.ext
-                        button:SetPressedStateData(src, options.pressed_state_data)
+                        button:SetPressedStateData(screen.ext, options.pressed_state_data)
                     end
                     if options.order ~= nil then
                         button:SetOrder(options.order)
@@ -611,6 +631,8 @@ function TARDIS:LoadButtons(screen, frame, func, isvgui)
         end
 
         screen.RestoreHexLayout = function()
+            screen.left_arrow:SetVisible(true)
+            screen.right_arrow:SetVisible(true)
             screen.left_arrow.DoClick = DoClickLeft
             screen.right_arrow.DoClick = DoClickRight
         end
@@ -668,7 +690,7 @@ function TARDIS:LoadButtons(screen, frame, func, isvgui)
                 label:SizeToContents()
                 label:SetPos(frame:GetWide()/2-label:GetWide()/2-screen.gap,frame:GetTall()-label:GetTall()-screen.gap)
             end
-            label:SetText("Page "..curpage.." of "..#pages)
+            label:SetText(TARDIS:GetPhrase("Screens.Common.CurrentPage", curpage, #pages))
             label:DoLayout()
 
             local nxt
@@ -684,7 +706,7 @@ function TARDIS:LoadButtons(screen, frame, func, isvgui)
                     pages[curpage]:SetVisible(false)
                     curpage=curpage-1
                     pages[curpage]:SetVisible(true)
-                    label:SetText("Page "..curpage.." of "..#pages)
+                    label:SetText(TARDIS:GetPhrase("Screens.Common.CurrentPage", curpage, #pages))
                     if curpage==1 then
                         back:SetVisible(false)
                     end
@@ -703,7 +725,7 @@ function TARDIS:LoadButtons(screen, frame, func, isvgui)
                     pages[curpage]:SetVisible(false)
                     curpage=curpage+1
                     pages[curpage]:SetVisible(true)
-                    label:SetText("Page "..curpage.." of "..#pages)
+                    label:SetText(TARDIS:GetPhrase("Screens.Common.CurrentPage", curpage, #pages))
                     if curpage==#pages then
                         nxt:SetVisible(false)
                     end
@@ -731,7 +753,7 @@ function TARDIS:LoadScreen(id, options)
     screen.res=screen.width / options.width
     screen.ext=options.ext
     screen.int=options.int
-    screen.visgui_rows=options.visgui_rows
+    screen.gui_rows=options.gui_rows
     screen.power_off_black = options.power_off_black
     screen.crosshair=6 * screen.res
     screen.gap=10

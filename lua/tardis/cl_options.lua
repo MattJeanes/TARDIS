@@ -1,93 +1,106 @@
 -- Options
 
-local value
+function TARDIS:CreateOptionInterface(id, data)
 
-hook.Add("TARDIS-UpdateCustomOption", "custom_option_value_change", function(newData)
-    value = newData
-end)
+    local section = "Settings.Sections."..(data.section or "Other")
+    local subsection = data.subsection and section .. "." .. data.subsection or section
+    local name = subsection .. "." .. (data.name or id)
+    local desc = name .. ".Description"
+    local text = TARDIS:GetPhrase(name)
+    local tooltip = TARDIS:GetPhraseIfExists(desc) or ""
+    if data.value ~= nil then
+        tooltip = tooltip .. "\n\n".. TARDIS:GetPhrase("Common.Default") .. ": " .. tostring(data.value)
+    end
 
-function TARDIS:ChangeOption(id,data)
-    local frame = vgui.Create("DFrame")
-    frame:SetSkin("TARDIS")
-    frame:SetTitle("TARDIS Interface")
-    frame:SetSize(250,150)
-    frame:SetDraggable(false)
-    frame:SetBackgroundBlur(true)
-    
-    local text = vgui.Create("DLabel",frame)
-    text:SetAutoStretchVertical(true)
-    text:SetMultiline(true)
-    text:SetWrap(true)
-    text:SetText((data.section and "["..data.section.."]" or "").." "..(data.name or id)..(data.desc and ": "..data.desc or ""))
-    text:SetWide(frame:GetWide()-20)
-    text:SetPos(10,30)
-    text:SetTextColor(color_white)
-    
-    value=TARDIS:GetSetting(id,data.value,data.networked and LocalPlayer() or nil)
-    
-    local update
-    if data.type=="number" then
-        local textentry,option
-        function update(v)
-            if not v then
-                v = 0
+    local elem
+    local elem2 = nil
+
+    if data.type == "bool" then
+        elem = vgui.Create("DCheckBoxLabel")
+        elem.OnChange = function(self, val)
+            TARDIS:SetSetting(id, val)
+            self.lastchange = CurTime()
+        end
+        elem.Think = function(self)
+            if self.lastchange and CurTime() - self.lastchange > 0.2 then
+                self.lastchange = nil
+                self:SetChecked(TARDIS:GetSetting(id))
             end
-            option:SetSlideX((v)/(data.max-data.min))
-            textentry:SetText(v)
         end
-        textentry = vgui.Create("DTextEntry",frame)
-        textentry:SetWide(frame:GetWide()*0.6-50)
-        textentry:SetPos((frame:GetWide()*0.5)-(textentry:GetWide()*0.5),frame:GetTall()-textentry:GetTall()-16-15)
-        textentry:SetDrawBackground(true)
-        textentry:SetNumeric(true)
-        textentry.OnEnter = function(s,v)
-            value=math.Clamp(tonumber(textentry:GetText()),data.min,data.max)
-            textentry:SetText(value)
+
+        elem.RefreshVal = function(self)
+            local setting = TARDIS:GetSetting(id)
+            elem:SetChecked(setting)
         end
-        
-        option = vgui.Create("DSlider",frame)
-        option:SetLockY(0.5)
-        option:SetSize(frame:GetWide()*0.6-50, 16)
-        option:SetPos((frame:GetWide()*0.5)-(option:GetWide()*0.5),frame:GetTall()-option:GetTall()-10)
-        option:SetTrapInside(true)
-        option:SetHeight(16)
-        option:SetNotches(option:GetWide()/4)
-        option.TranslateValues = function(s,x,y)
-            value=math.Round(data.min+(x*(data.max-data.min)))
-            textentry:SetText(value)
-            return x,y
+
+
+
+    elseif data.type == "number" or data.type == "integer" then
+        elem = vgui.Create("DLabel")
+
+        elem2 = vgui.Create("DNumSlider")
+        elem2:SetMinMax(data.min, data.max)
+        elem2.Label:SetVisible(false)
+
+        elem.Scratch = elem:Add( "DNumberScratch" )
+        elem.Scratch:SetImageVisible( false )
+        elem.Scratch:Dock( FILL )
+        elem.Scratch:SetMin(data.min)
+        elem.Scratch:SetMax(data.max)
+        elem.Scratch.OnValueChanged = function()
+            elem2:ValueChanged(elem.Scratch:GetFloatValue())
         end
-        Derma_Hook(option,"Paint","Paint","NumSlider")
-    elseif data.type=="bool" then
-        local checkbox=vgui.Create("DCheckBox",frame)
-        checkbox:SetSize(32,32)
-        checkbox:SetPos((frame:GetWide()*0.5)-(checkbox:GetWide()*0.5),frame:GetTall()-checkbox:GetTall()-15)
-        checkbox.OnChange = function(s,v) value=v end
-        function update(v)
-            checkbox:SetChecked(v)
+
+        if data.type == "integer" then
+            elem2:SetDecimals(0)
+            elem.Scratch:SetDecimals(0)
         end
+
+        elem2.OnValueChanged = function(self, val)
+            self.lastchange = CurTime()
+            self.lastchange_val = val
+        end
+        elem2.Think = function(self)
+            if self.lastchange_val and CurTime() - self.lastchange > 0.1 then
+                TARDIS:SetSetting(id, self.lastchange_val)
+                self.lastchange_val = nil
+            end
+            if self.lastchange and CurTime() - self.lastchange > 0.3 then
+                self.lastchange = nil
+                self:SetValue(TARDIS:GetSetting(id))
+                self:GetTextArea():SetText(tostring(TARDIS:GetSetting(id)))
+            end
+        end
+
+        elem.RefreshVal = function(self)
+            local setting = TARDIS:GetSetting(id)
+            elem2:SetValue(setting)
+            elem.Scratch:SetValue(setting)
+            elem2:GetTextArea():SetText(tostring(setting))
+        end
+
+
+
     elseif data.type=="color" then
-        frame:SetTall(frame:GetTall()+100)
-        local mixer = vgui.Create("DColorMixer",frame)
-        mixer:SetSize(frame:GetWide()-20,100)
-        mixer:SetPos((frame:GetWide()*0.5)-(mixer:GetWide()*0.5),frame:GetTall()-mixer:GetTall()-60)
+        elem = vgui.Create("DForm")
+        elem:SetLabel(text)
+        elem:SetExpanded(true)
+
+        local mixer = vgui.Create("DColorMixer")
+        mixer:SetText(text)
         mixer:SetPalette(false)
         mixer:SetAlphaBar(false)
         mixer:SetWangs(true)
-        mixer.ValueChanged = function(s,v) value=v end
-        function update(v)
-            if v then
-                mixer:SetColor(v)
-            else
-                mixer:SetColor(Color(0,0,0))
-            end
+
+        mixer.ValueChanged = function(self, val)
+            TARDIS:SetSetting(id, val)
+            self.lastchange = CurTime()
         end
-    elseif data.type == "custom" then
-        --print("Custom button has been called!")
-        local customUpdate = hook.Run("TARDIS-CustomOption", frame, value)
-        
-        function update(v)
-            customUpdate(v)
+        elem.Think = function(self)
+            if self.lastchange and CurTime() - self.lastchange > 0.2 then
+                self.lastchange = nil
+                self:SetColor(TARDIS:GetSetting(id))
+            end
         end
     end
     
@@ -109,70 +122,47 @@ function TARDIS:ChangeOption(id,data)
     frame:MakePopup()
 end
 
-TARDIS:AddGUISetting("Options", function(self,frame,screen)
-    local options={}
-    local sections={}
-    for k,v in pairs(TARDIS:GetSettingsData()) do
-        if v.option then
-            table.insert(options,{v.name,v.id,v})
-            if v.section and not table.HasValue(sections,v.section) then
-                table.insert(sections,v.section)
+        if data.get_values_func ~= nil then
+            for k,v in pairs(data.get_values_func()) do
+                elem2:AddChoice(TARDIS:GetPhrase(v[1]), v[2])
             end
         end
+
+        tooltip = tooltip .. " (\"" .. elem2:GetOptionTextByData(data.value) .. "\")"
+
+        elem2.OnSelect = function(self, index, value, selected_data)
+            TARDIS:SetSetting(id, selected_data)
+            self.lastchange = CurTime()
+        end
+        elem2.Think = function(self)
+            if self.lastchange and CurTime() - self.lastchange > 0.2 then
+                self.lastchange = nil
+                local setting = TARDIS:GetSetting(id)
+                self:SetText(self:GetOptionTextByData(setting))
+            end
+        end
+
+        elem.RefreshVal = function(self)
+            local setting = TARDIS:GetSetting(id)
+            elem2:SetText(elem2:GetOptionTextByData(setting))
+        end
+
+
+
+    else
+        elem = vgui.Create("DLabel")
     end
-    table.SortByMember(options,1,true)
-    table.SortByMember(sections,1,true)
-    
-    for k,v in ipairs(sections) do
-        local f=vgui.Create("DPanel",frame)
-        f.name=v
-        f:SetVisible(false)
-        f:SetSize(frame:GetSize())
-        self:LoadButtons(screen,f,function(frame)
-            local buttons={}
-            for a,b in ipairs(options) do
-                local name,id,data=b[1],b[2],b[3]
-                if data.section==v then
-                    local button = vgui.Create("DButton",frame)
-                    button:SetText(name or id)
-                    button:SetFont(TARDIS:GetScreenFont(screen, "Default"))
-                    button.DoClick = function()
-                        self:ChangeOption(id,data)
-                    end
-                    table.insert(buttons,button)
-                end
-            end
-            return buttons
-        end)
-        sections[k]=f
+
+    if elem.SetText then elem:SetText(text) end
+    if elem.SetDark then elem:SetDark(true) end
+    if elem2 and elem2.SetDark then elem2:SetDark(true) end
+
+    elem:SetTooltip(tooltip)
+    if elem2 then
+        elem2:SetTooltip(tooltip)
     end
-    
-    local mainf=vgui.Create("DPanel",frame)
-    mainf:SetSize(frame:GetSize())
-    
-    self:LoadButtons(screen,mainf,function(frame)
-        local buttons={}
-        for k,v in ipairs(sections) do
-            local button = vgui.Create("DButton",frame)
-            button:SetText(v.name)
-            button:SetFont(TARDIS:GetScreenFont(screen, "Default"))
-            button.DoClick = function()
-                self:PushScreen(v.name,screen,frame,v)
-            end
-            table.insert(buttons,button)
-        end
-        for k,v in ipairs(options) do
-            local name,id,data=v[1],v[2],v[3]
-            if not data.section then
-                local button = vgui.Create("DButton",frame)
-                button:SetText(name or id)
-                button:SetFont(TARDIS:GetScreenFont(screen, "Default"))
-                button.DoClick = function()
-                    self:ChangeOption(id,data)
-                end
-                table.insert(buttons,button)
-            end
-        end
-        return buttons
-    end)
-end)
+
+    elem:RefreshVal()
+
+    return elem, elem2
+end

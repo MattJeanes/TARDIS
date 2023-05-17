@@ -1,22 +1,12 @@
 -- Draw and render teleport-related functions
 
-
-local function dopredraw(self,part)
-    if (self:GetData("teleport") or self:GetData("teleport-trace")) and ((not part) or (part and (not part.CustomAlpha))) then
-        render.SetBlend((self:GetData("teleport-trace") and 20 or self:GetData("alpha",255))/255)
+ENT:AddHook("ShouldAllowThickPortal", "teleport", function(self, portal)
+    if self.interior and portal==self.interior.portals.exterior then
+        if self:GetData("teleport-trace") then
+            return false
+        end
     end
-end
-
-local function dodraw(self,part)
-    if (self:GetData("teleport") or self:GetData("teleport-trace")) and ((not part) or (part and (not part.CustomAlpha))) then
-        render.SetBlend(1)
-    end
-end
-
-ENT:AddHook("PreDraw","teleport",dopredraw)
-ENT:AddHook("PreDrawPart","teleport",dopredraw)
-ENT:AddHook("Draw","teleport",dodraw)
-ENT:AddHook("DrawPart","teleport",dodraw)
+end)
 
 hook.Add("PostDrawTranslucentRenderables", "tardis-trace", function()
     local ext=TARDIS:GetExteriorEnt()

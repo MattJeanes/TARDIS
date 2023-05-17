@@ -1,72 +1,46 @@
 -- Music
 
 if SERVER then
-    function ENT:PlayMusic(url)
+    function ENT:PlayMusic(url, ply)
         if url then
-            for ply, _ in pairs(self.occupants) do
-                self:SendMessage("play-music", function() 
-                    net.WriteString(url)
-                end, ply)
+            if ply and (not self:CheckSecurity(ply)) then
+                TARDIS:Message(ply, "Security.ControlUseDenied")
+                return false
             end
-    
+            for ply, _ in pairs(self.occupants) do
+                self:SendMessage("play-music", {url}, ply)
+            end
+
             self.music = url
+
+            return true
         end
     end
-    
+
     function ENT:StopMusic()
         if self.music then
             for ply, _ in pairs(self.occupants) do
-                self:SendMessage("stop-music", function() end, ply)
+                self:SendMessage("stop-music", nil, ply)
             end
             self.music = nil
         end
     end
-    
-    ENT:OnMessage("play-music", function(self) 
-        self:PlayMusic(net.ReadString())
+
+    ENT:OnMessage("play-music", function(self, data, ply)
+        self:PlayMusic(data[1], ply)
     end)
-    
-    ENT:OnMessage("stop-music", function(self) 
+
+    ENT:OnMessage("stop-music", function(self, data, ply)
         self:StopMusic()
     end)
 
     return
 end
 
-TARDIS:AddSetting({
-    id="music-enabled",
-    name="Enabled",
-    desc="Whether music is played through the screens or not",
-    section="Music",
-    value=true,
-    type="bool",
-    option=true
-})
-TARDIS:AddSetting({
-    id="music-volume",
-    name="Volume",
-    desc="The volume of the music played through the screens",
-    section="Music",
-    value=100,
-    type="number",
-    min=0,
-    max=100,
-    option=true
-})
-TARDIS:AddSetting({
-    id="music-exit",
-    name="Stop on exit",
-    desc="Whether music is stopped when leaving the TARDIS",
-    section="Music",
-    value=true,
-    type="bool",
-    option=true
-})
-
 function ENT:StopMusic(network)
     if IsValid(self.music) then
         if self.music:GetState() == GMOD_CHANNEL_PLAYING then
-            TARDIS:Message(LocalPlayer(), "Music stopped")
+            TARDIS:Message(LocalPlayer(), "Music.Stopped")
         end
         self.music:Stop()
         self.music = nil
@@ -90,21 +64,21 @@ function ENT:ResolveMusicURL(url)
                     local tbl=util.JSONToTable(body)
                     if tbl then
                         if tbl.success then
-                            TARDIS:Message(LocalPlayer(), "Playing: " ..tbl.title)
+                            TARDIS:Message(LocalPlayer(), "Music.Playing", tbl.title)
                             self:PlayMusic(api.."play?id="..id,true)
                         else
-                            TARDIS:ErrorMessage(LocalPlayer(), "ERROR: Failed to load ("..(tbl.err and tbl.err or "Unknown reason")..")")
+                            TARDIS:ErrorMessage(LocalPlayer(), "Music.LoadFailed", tbl.err and tbl.err or "Common.UnknownError")
                         end
                     else
-                        TARDIS:ErrorMessage(LocalPlayer(), "ERROR: Failed to load API response")
+                        TARDIS:ErrorMessage(LocalPlayer(), "Music.LoadFailedResponse")
                     end
                 end,
                 function(err)
-                    TARDIS:ErrorMessage(LocalPlayer(), "ERROR: Failed to resolve url ("..err..")")
+                    TARDIS:ErrorMessage(LocalPlayer(), "Music.LoadFailedResolve", err)
                 end
             )
         else
-            TARDIS:ErrorMessage(LocalPlayer(), "ERROR: Couldn't find video ID inside url")
+            TARDIS:ErrorMessage(LocalPlayer(), "Music.LoadFailedMissingId")
         end
     else
         return url
@@ -113,33 +87,31 @@ end
 
 function ENT:PlayMusic(url,resolved)
     if not resolved then
-        TARDIS:Message(LocalPlayer(), "Loading music...")
+        TARDIS:Message(LocalPlayer(), "Music.Loading")
         url=self:ResolveMusicURL(url)
     end
     if url and TARDIS:GetSetting("music-enabled") and TARDIS:GetSetting("sound") then
-        self:SendMessage("play-music", function() 
-            net.WriteString(url)
-        end)
+        self:SendMessage("play-music", {url})
     end
 end
 
-ENT:OnMessage("play-music", function(self)
-    local url = net.ReadString()
+ENT:OnMessage("play-music", function(self, data, ply)
+    local url = data[1]
 
     self:StopMusic(false)
-    
+
     sound.PlayURL(url, "", function(station,errorid,errorname)
         if station then
             station:SetVolume(1)
             station:Play()
             self.music=station
         else
-            TARDIS:ErrorMessage(LocalPlayer(), "ERROR: Failed to load song (Error ID: "..errorid..", "..errorname..")")
+            TARDIS:ErrorMessage(LocalPlayer(), "Music.LoadFailedBass", errorid, errorname)
         end
     end)
 end)
 
-ENT:OnMessage("stop-music", function(self)
+ENT:OnMessage("stop-music", function(self, data, ply)
     if self.music then
         self.music:Stop()
         self.music=nil
@@ -168,6 +140,6 @@ ENT:AddHook("PlayerExit", "stop-music-on-exit", function(self)
 end)
 
 
-ENT:AddHook("MigrateData", "music", function(self, parent)
+ENT:AddHook("MigrateData", "music", function(self, parent, parent_data)
     self.music = parent.music
 end)

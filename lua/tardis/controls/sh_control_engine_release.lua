@@ -1,25 +1,27 @@
 TARDIS:AddControl({
     id = "engine_release",
     ext_func=function(self, ply)
-        local pos = pos or self:GetData("demat-pos") or self:GetPos()
-        local ang = ang or self:GetData("demat-ang") or self:GetAngles()
-        self:EngineReleaseDemat(pos, ang, function(result)
+        self:EngineReleaseDemat(nil, nil, function(result)
             if result then
-                TARDIS:Message(ply, "Force dematerialisation triggered")
+                TARDIS:Message(ply, "Controls.EngineRelease.ForceDemat")
             elseif result == false then
-                TARDIS:ErrorMessage(ply, "Failed to dematerialise")
+                TARDIS:ErrorMessage(ply, "Controls.EngineRelease.FailedDemat")
             end
         end)
+        if self:EngineReleaseVortexArtron() then
+            TARDIS:Message(ply, "Controls.EngineRelease.ArtronAdded")
+        end
+        self:EngineReleaseFreePower()
     end,
     serveronly=true,
-    power_independent = false,
+    power_independent = true,
     screen_button = {
         virt_console = true,
         mmenu = false,
         toggle = false,
         frame_type = {0, 1},
-        text = "Engine Release",
+        text = "Controls.EngineRelease",
         order = 8,
     },
-    tip_text = "Engine Release",
+    tip_text = "Controls.EngineRelease.Tip",
 })

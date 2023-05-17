@@ -1,9 +1,8 @@
 -- Physical Lock
 
 TARDIS:AddKeyBind("physlock-toggle",{
-    name="Physlock Toggle",
-    section="Third Person",
-    desc="Make the TARDIS constant and unmovable in space",
+    name="TogglePhyslock",
+    section="ThirdPerson",
     func=function(self,down,ply)
         if ply==self.pilot and down then
             TARDIS:Control("physlock", ply)
@@ -20,6 +19,18 @@ end
 
 if CLIENT then return end
 
+function ENT:ExplodeIfFast()
+    local phys = self:GetPhysicsObject()
+    local vel = phys:GetVelocity():Length()
+
+    if vel > 50 and IsValid(self.interior) then
+        util.ScreenShake(self.interior:GetPos(), 1, 20, 0.3, 700)
+    end
+    if vel > 1600 then
+        self:Explode(math.max((vel - 2500) / 5, 0))
+    end
+end
+
 function ENT:SetPhyslock(on)
     if not on and self:CallHook("CanTurnOffPhyslock") == false then
         return false
@@ -31,12 +42,7 @@ function ENT:SetPhyslock(on)
     local phys = self:GetPhysicsObject()
     local vel = phys:GetVelocity():Length()
     if on then
-        if vel > 50 then
-            util.ScreenShake(self.interior:GetPos(), 1, 20, 0.3, 700)
-        end
-        if vel > 1600 then
-            self:Explode(math.max((vel - 2500) / 5, 0))
-        end
+        self:ExplodeIfFast()
     end
     if self:GetPower() then
         self:SetData("physlock", on, true)
@@ -46,6 +52,7 @@ function ENT:SetPhyslock(on)
         phys:EnableMotion(true)
     end
     phys:Wake()
+    self:CallCommonHook("PhyslockToggled", on)
     return true
 end
 
@@ -55,8 +62,8 @@ function ENT:TogglePhyslock()
 end
 
 hook.Add("PlayerUnfrozeObject", "tardis-physlock", function(ply,ent,phys)
-    if ent:GetClass()=="gmod_tardis" and ent:GetPhyslock()==true then 
-        phys:EnableMotion(false) 
+    if ent:GetClass()=="gmod_tardis" and ent:GetPhyslock()==true then
+        phys:EnableMotion(false)
     end
 end)
 
@@ -74,6 +81,7 @@ ENT:AddHook("MatStart", "physlock", function(self)
 end)
 
 ENT:AddHook("PowerToggled", "physlock", function(self,on)
+    if self:GetData("redecorate") then return end
     if on and self:GetData("power-lastphyslock", false) == true then
         self:SetPhyslock(true)
     else
@@ -94,6 +102,11 @@ ENT:AddHook("HandleE2", "physlock", function(self, name, e2)
     elseif name == "Physlock" and TARDIS:CheckPP(e2.player, self) then
         return self:TogglePhyslock() and 1 or 0
     end
+end)
+
+
+ENT:AddHook("MigrateData", "music", function(self, parent, parent_data)
+    self:SetPhyslock(parent_data["physlock"])
 end)
 
 

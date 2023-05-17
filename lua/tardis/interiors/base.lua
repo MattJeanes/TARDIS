@@ -2,6 +2,7 @@
 
 local T = {}
 T.Base = true
+T.BaseMerged = true
 T.Name = "Base"
 T.ID = "base"
 T.Interior = {
@@ -18,6 +19,13 @@ T.Interior = {
         ang = Angle(0,90,0)
     },
     Sounds = {
+        Damage = {
+            Crash = "jeredek/tardis/damage_collision.wav",
+            BigCrash = "jeredek/tardis/damage_bigcollision.wav",
+            Explosion = "jeredek/tardis/damage_explode.wav",
+            Death = "jeredek/tardis/damage_death.wav",
+            Artron = "p00gie/tardis/force_artron.wav",
+        },
         Teleport = {}, -- uses exterior sounds if not specified
         Power = {
             On = "drmatt/tardis/power_on.wav",
@@ -49,6 +57,7 @@ T.Exterior = {
     Mass = 5000,
     DoorAnimationTime = 0.5,
     ScannerOffset = Vector(22,0,50),
+    PhaseMaterial = "models/drmatt/tardis/exterior/phase_noise.vmt",
     Portal = {
         pos = Vector(26,0,51.65),
         ang = Angle(0,0,0),
@@ -79,18 +88,22 @@ T.Exterior = {
     },
     Sounds = {
         Teleport = {
-            demat = "drmatt/tardis/demat.wav",
+            demat = "p00gie/tardis/base/demat.wav",
             demat_damaged = "drmatt/tardis/demat_damaged.wav",
             demat_fail = "drmatt/tardis/demat_fail.wav",
-            mat = "drmatt/tardis/mat.wav",
-            mat_damaged = "drmatt/tardis/mat_damaged.wav",
-            mat_fail = "drmatt/tardis/mat_fail.wav",
-            fullflight = "drmatt/tardis/full.wav",
+            mat = "p00gie/tardis/base/mat.wav",
+            mat_damaged = "jeredek/tardis/mat_damaged.wav",
+            mat_fail = "p00gie/tardis/mat_fail.wav",
+            mat_fast = "p00gie/tardis/base/mat_fast.wav",
+            mat_damaged_fast = "p00gie/tardis/base/mat_damaged_fast.wav",
+            fullflight = "p00gie/tardis/base/full.wav",
             fullflight_damaged = "drmatt/tardis/full_damaged.wav",
-            interrupt = "drmatt/tardis/repairfinish.wav",
+            interrupt = "p00gie/tardis/base/repairfinish.wav",
         },
-        RepairFinish = "drmatt/tardis/repairfinish.wav",
+        RepairFinish = "p00gie/tardis/base/repairfinish.wav",
         Lock = "drmatt/tardis/lock.wav",
+        Spawn = "p00gie/tardis/base/repairfinish.wav",
+        Delete = "p00gie/tardis/tardis_delete.wav",
         Door = {
             enabled = true,
             open = "drmatt/tardis/door_open.wav",
@@ -101,6 +114,11 @@ T.Exterior = {
         FlightLoopDamaged = "drmatt/tardis/flight_loop_damaged.wav",
         Cloak = "drmatt/tardis/phase_enable.wav",
         CloakOff = "drmatt/tardis/phase_disable.wav",
+        Hum = nil,
+        Chameleon = "drmatt/tardis/chameleon_circuit.wav",
+    },
+    Chameleon = {
+        AnimTime = 4,
     },
     Parts = {
         vortex = {
@@ -112,9 +130,10 @@ T.Exterior = {
     },
     Teleport = {
         SequenceSpeed = 0.77,
+        SequenceSpeedWarning = 0.6,
         SequenceSpeedFast = 0.935,
+        SequenceSpeedWarnFast = 0.97,
         DematSequence = {
-            150,
             200,
             100,
             150,
@@ -123,7 +142,6 @@ T.Exterior = {
             0
         },
         MatSequence = {
-            100,
             50,
             150,
             100,
@@ -135,3 +153,14 @@ T.Exterior = {
 }
 
 TARDIS:AddInterior(T)
+
+local E = TARDIS:CopyTable(T.Exterior)
+E.ID = "base"
+E.Base = true
+E.Name = "Base"
+E.Category = "Exteriors.Categories.PoliceBoxes"
+-- to prevent it generating other empty categories
+
+E.Light.enabled = false
+
+TARDIS:AddExterior(E)

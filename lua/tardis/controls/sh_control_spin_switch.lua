@@ -3,9 +3,9 @@ TARDIS:AddControl({
     ext_func=function(self,ply)
         self:SwitchSpinDir()
         if self:GetSpinDir() ~= 0 then
-            TARDIS:Message(ply, "Spin direction set to " .. self:GetSpinDirText())
+            TARDIS:Message(ply, "Spin.Changed", self:GetSpinDirText())
         else
-            TARDIS:Message(ply, "Spin is disabled, but spin direction set to " .. self:GetSpinDirText(true))
+            TARDIS:Message(ply, "Controls.SpinSwitch.ChangedDisabled", self:GetSpinDirText(true))
         end
     end,
     serveronly=true,
@@ -14,5 +14,5 @@ TARDIS:AddControl({
         virt_console = false,
         mmenu = false,
     },
-    tip_text = "Spin direction",
+    tip_text = "Controls.SpinSwitch.Tip",
 })

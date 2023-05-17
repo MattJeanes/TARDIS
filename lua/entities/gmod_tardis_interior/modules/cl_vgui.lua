@@ -1,16 +1,31 @@
 -- VGUI overrides
 
+local function number_ok(pnl, text)
+    return (not pnl:GetNumeric()) or (text == "") or (tonumber(text) ~= nil)
+end
+
 local textpnl
 local function RequestInput( pnl )
     if not textpnl then
         textpnl=pnl
-        Derma_StringRequest("TARDIS Interface",pnl.sub3D2D or pnl.strTooltipText or "Enter text input",pnl:GetText(),function(text)
-            pnl:SetText( text )
-            pnl:SetCaretPos( text:len() )
-            pnl:OnTextChanged()
-            pnl:OnEnter()
-            textpnl=nil
-        end,function() textpnl=nil end)
+        local old_text = pnl:GetText()
+        Derma_StringRequest(TARDIS:GetPhrase("Common.Interface"),
+            pnl.sub3D2D or pnl.strTooltipText or TARDIS:GetPhrase("Common.EnterTextInput"),
+            pnl:GetText(),
+            function(text)
+                if text ~= old_text and number_ok(pnl, text) then
+                    pnl:SetText(text)
+                    pnl:OnTextChanged()
+                    pnl:OnChange()
+                end
+                pnl:SetCaretPos(0)
+                pnl:OnEnter()
+                textpnl=nil
+            end,
+            function()
+                textpnl=nil
+            end
+        )
     end
 end
 

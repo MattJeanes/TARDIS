@@ -3,12 +3,11 @@ if WireLib then
     ENT.Base            = "base_wire_entity"
 else
     ENT.Base            = "base_gmodentity"
-end 
+end
 ENT.PrintName       = "TARDIS Part"
 ENT.Author          = "Dr. Matt"
 ENT.Spawnable       = false
 ENT.AdminSpawnable  = false
-ENT.RenderGroup     = RENDERGROUP_BOTH
 ENT.Category        = "Doctor Who"
 ENT.TardisPart      = true
 ENT.AllowedProperties = {
@@ -38,3 +37,11 @@ end)
 hook.Add("CanDrive", "tardis-part", function(ply,ent)
     if ent.TardisPart then return false end
 end)
+
+function ENT:SetData(k,v,network)
+    return self.exterior and self.exterior:SetData(k, v, network)
+end
+
+function ENT:GetData(k,default)
+    return self.exterior and self.exterior:GetData(k, default)
+end

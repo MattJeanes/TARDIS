@@ -41,19 +41,9 @@ available on the first followup control. This might change five minutes after.
 Full documentation for control sequences will be available on the wiki.
 ]]
 
-TARDIS:AddSetting({
-    id="csequences-enabled",
-    name="Enable Control Sequences",
-    desc="Should control sequences or 'advanced mode' be used?",
-    section="Misc",
-    value=false,
-    type="bool",
-    option=true,
-    networked=true
-})
 
 function ENT:GetSequencesEnabled()
-    return TARDIS:GetSetting("csequences-enabled",false,self:GetCreator())
+    return TARDIS:GetSetting("csequences-enabled", self)
 end
 
 ENT:AddHook("CanStartControlSequence", "conditions", function(self,id)
@@ -61,7 +51,7 @@ ENT:AddHook("CanStartControlSequence", "conditions", function(self,id)
     local seq = cseqs[id]
     if not seq then return end
     if not seq.Condition then return end
-    
+
     if not seq.Condition(self) then
         return false
     end

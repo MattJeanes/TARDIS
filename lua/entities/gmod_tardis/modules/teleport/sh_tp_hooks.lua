@@ -1,4 +1,4 @@
--- Teleport
+-- Teleport hooks
 
 if SERVER then
 
@@ -38,28 +38,32 @@ if SERVER then
         end
     end)
 
-    ENT:AddHook("ShouldTurnOffRotorwash", "teleport", function(self)
-        if self:GetData("vortex") then
-            return true
-        end
-    end)
-
-    ENT:AddHook("ShouldStopSmoke", "vortex", function(self)
-        if self:GetData("vortex") then return true end
-    end)
-
-    ENT:AddHook("ShouldTakeDamage", "vortex", function(self)
-        if self:GetData("vortex",false) then return false end
-    end)
-
     ENT:AddHook("ShouldExteriorDoorCollide", "teleport", function(self,open)
         if self:GetData("teleport") or self:GetData("vortex") then
             return false
         end
     end)
 
-else
+    ENT:AddHook("CanRepair", "teleport", function(self, ignore_health)
+        if self:GetData("teleport") or self:GetData("vortex") then
+            return false
+        end
+    end)
 
+    ENT:AddHook("CanChangeExterior","teleport",function(self)
+        if self:GetData("demat") or self:GetData("vortex")
+            or (self:GetData("mat") and self:GetData("step") > 1)
+        then
+            return false,false,"Chameleon.FailReasons.Teleporting",false
+        end
+    end)
+
+    ENT:AddHook("ShouldDrawShadow", "teleport", function(self)
+        if self:GetData("teleport") or self:GetData("vortex") then
+            return false
+        end
+    end)
+else
     ENT:AddHook("ShouldTurnOnLight","teleport",function(self)
         if self:GetData("teleport") then
             return true
@@ -83,7 +87,5 @@ else
             self:SetData("teleport-trace",false)
         end
     end)
-
-
 end
 

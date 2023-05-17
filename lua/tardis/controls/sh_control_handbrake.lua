@@ -2,9 +2,9 @@ TARDIS:AddControl({
     id = "handbrake",
     ext_func=function(self, ply)
         if self:ToggleHandbrake() then
-            TARDIS:StatusMessage(ply, "Time Rotor Handbrake", self:GetData("handbrake"), "engaged", "disengaged")
+            TARDIS:StatusMessage(ply, "Controls.Handbrake.Status", self:GetData("handbrake"), "Common.Engaged.Lower", "Common.Disengaged.Lower")
         else
-            TARDIS:ErrorMessage(ply, "Failed to toggle the Time Rotor Handbrake")
+            TARDIS:ErrorMessage(ply, "Controls.Handbrake.FailedToggle")
         end
     end,
     serveronly=true,
@@ -14,10 +14,9 @@ TARDIS:AddControl({
         mmenu = false,
         toggle = true,
         frame_type = {0, 2},
-        text = "Time Rotor Handbrake",
-        pressed_state_from_interior = false,
+        text = "Controls.Handbrake",
         pressed_state_data = "handbrake", -- can be changed
         order = 7,
     },
-    tip_text = "Time Rotor Handbrake",
+    tip_text = "Controls.Handbrake.Tip",
 })

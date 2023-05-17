@@ -2,6 +2,7 @@ local theme = {
     id = "default",
     name = "Default",
     base_id = "base",
+    bgcolor = Color(1,1,100,150),
 
     folder = "default",
     frames = {
@@ -12,14 +13,17 @@ local theme = {
     },
     backgrounds = {
         subfolder = "backgrounds",
-        default = "default.png",
-        virtualconsole = "console.jpg",
+        default = "console.png",
+        virtualconsole = "console.png",
+        coordinates = "console.png",
+        music = "console.png",
         main = "default.png",
     },
     text_icons_off = {
         subfolder = "off",
         default = "empty.png",
         toggle_screens = "control_screens.png",
+        toggle_scanners = "control_togglescanners.png",
         door = "control_door.png",
         doorlock = "control_lock.png",
         power = "control_power.png",
@@ -43,6 +47,7 @@ local theme = {
         coordinates = "screen_coords.png",
         music = "screen_music.png",
         scanner = "screen_scanner.png",
+        chameleon = "screen_chameleon.png",
         settings = "screen_settings.png",
         ["TARDIS Status"] = "screen_status.png",
 
@@ -57,6 +62,7 @@ local theme = {
         subfolder = "on",
         default = "empty.png",
         toggle_screens = "control_screens.png",
+        toggle_scanners = "control_togglescanners.png",
         door = "control_door.png",
         doorlock = "control_lock.png",
         power = "control_power.png",

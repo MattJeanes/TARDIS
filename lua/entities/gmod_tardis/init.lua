@@ -4,6 +4,11 @@ include('shared.lua')
 
 ENT:AddHook("PlayerInitialize", "interior", function(self)
     net.WriteString(self.metadata.ID)
+
+    net.WriteBool(self.templates ~= nil)
+    if self.templates ~= nil then
+        net.WriteString(TARDIS.von.serialize(self.templates))
+    end
 end)
 
 ENT:AddHook("PostPlayerInitialize", "senddata", function(self,ply)
@@ -13,7 +18,7 @@ end)
 if not TARDIS.DoorsFound then
     function ENT:SpawnFunction(ply,...)
         if not scripted_ents.GetStored(self.Base) then
-            TARDIS:ErrorMessage(ply, "Doors is not installed!")
+            TARDIS:ErrorMessage(ply, "Common.DoorsNotInstalled")
             ply:SendLua('TARDIS:ShowDoorsPopup()')
             return
         end
@@ -27,13 +32,7 @@ ENT:AddHook("CustomData", "metadata", function(self, customData)
 end)
 
 function ENT:Initialize()
-    if not self.metadataID then
-        self.metadataID = TARDIS:GetSetting("interior","default",self:GetCreator())
-    end
-    self.metadata=TARDIS:GetInterior(self.metadataID)
-    if not self.metadata then
-        self.metadata=TARDIS:GetInterior("default")
-    end
+    self.metadata=TARDIS:CreateInteriorMetadata(self.metadataID, self)
     self.Model=self.metadata.Exterior.Model
     self.Portal=self.metadata.Exterior.Portal
     self.Fallback=self.metadata.Exterior.Fallback

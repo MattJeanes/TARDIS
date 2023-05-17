@@ -3,7 +3,7 @@
 if SERVER then
     util.AddNetworkString("TARDIS-Data")
     util.AddNetworkString("TARDIS-DataClear")
-    
+
     function ENT:SendData(ply)
         if self.data then
             net.Start("TARDIS-Data")
@@ -17,7 +17,7 @@ if SERVER then
             end
         end
     end
-    
+
     hook.Add("PlayerInitialSpawn", "TARDIS-Data", function(ply)
         for k,v in pairs(ents.FindByClass("gmod_tardis")) do
             v:SendData(ply)
@@ -51,7 +51,7 @@ function ENT:SetData(k,v,network)
     if not self.data then self.data = {} end
     self.data[k]=v
     self:CallHook("DataChanged",k,v)
-    
+
     if SERVER and network then
         net.Start("TARDIS-Data")
             net.WriteEntity(self)
@@ -64,7 +64,10 @@ function ENT:SetData(k,v,network)
 end
 
 function ENT:GetData(k,default)
-    return (self.data and self.data[k]~=nil) and self.data[k] or default
+    if self.data and self.data[k] ~= nil then
+        return self.data[k]
+    end
+    return default
 end
 
 function ENT:ClearData()

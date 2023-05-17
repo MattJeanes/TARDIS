@@ -2,19 +2,19 @@ TARDIS:AddControl({
     id = "doorlock",
     ext_func=function(self,ply)
         if not self:GetPower() and not self:GetData("locked", false) then
-            TARDIS:ErrorMessage(ply, "The door lock doesn't work.")
-            TARDIS:ErrorMessage(ply, "Power is disabled.")
+            TARDIS:ErrorMessage(ply, "Controls.DoorLock.NotWorking")
+            TARDIS:ErrorMessage(ply, "Common.PowerDisabled")
             return
         elseif not self:GetPower() then
-            TARDIS:Message(ply, "Using emergency power to disengage the lock...")
-            TARDIS:ErrorMessage(ply, "Power is disabled.")
+            TARDIS:Message(ply, "Controls.DoorLock.UsingEmergencyPower")
+            TARDIS:ErrorMessage(ply, "Common.PowerDisabled")
         end
 
         self:ToggleLocked(function(result)
             if result then
-                TARDIS:StatusMessage(ply, "Door", self:GetData("locked"), "locked", "unlocked")
+                TARDIS:StatusMessage(ply, "Controls.Door.Status", self:GetData("locked"), "Common.Locked.Lower", "Common.Unlocked.Lower")
             else
-                TARDIS:ErrorMessage(ply, "Failed to toggle door lock")
+                TARDIS:ErrorMessage(ply, "Controls.DoorLock.FailedToggle")
             end
         end)
     end,
@@ -25,10 +25,9 @@ TARDIS:AddControl({
         mmenu = false,
         toggle = true,
         frame_type = {1, 2},
-        text = "Door Lock",
-        pressed_state_from_interior = false,
+        text = "Controls.DoorLock",
         pressed_state_data = "locked",
         order = 10,
     },
-    tip_text = "Door Lock",
+    tip_text = "Controls.DoorLock.Tip",
 })

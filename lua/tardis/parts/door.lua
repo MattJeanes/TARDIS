@@ -1,5 +1,3 @@
--- Adds matching interior door
-
 local PART={}
 PART.ID = "door"
 PART.Name = "Door"
@@ -32,7 +30,19 @@ if SERVER then
         if portal then
             local pos=(self.posoffset or Vector(26*(self.InteriorPart and 1 or -1),0,-51.65))
             local ang=(self.angoffset or Angle(0,self.InteriorPart and 180 or 0,0))
-            pos,ang=LocalToWorld(pos,ang,portal.pos,portal.ang)
+
+            local portal_pos = portal.pos
+            local portal_ang = portal.ang
+
+            if self.use_exit_point_offset and portal.exit_point_offset then
+                portal_pos = portal_pos + portal.exit_point_offset.pos
+                portal_ang = portal_ang + portal.exit_point_offset.ang
+            elseif self.use_exit_point_offset and portal.exit_point then
+                portal_pos = portal.exit_point.pos
+                portal_ang = portal.exit_point.ang
+            end
+
+            pos,ang=LocalToWorld(pos,ang,portal_pos,portal_ang)
             self:SetPos(self.parent:LocalToWorld(pos))
             self:SetAngles(self.parent:LocalToWorldAngles(ang))
             self:SetParent(self.parent)
@@ -43,16 +53,18 @@ if SERVER then
         if self.exterior:GetData("locked") then
             if IsValid(a) and a:IsPlayer() then
                 if self.exterior:CallHook("LockedUse",a)==nil then
-                    TARDIS:Message(a, "The doors are locked.")
+                    TARDIS:Message(a, "Parts.Door.Locked")
                 end
                 self:EmitSound(self.exterior.metadata.Exterior.Sounds.Door.locked)
             end
         else
-            if a:KeyDown(IN_WALK) then
+            if a:KeyDown(IN_WALK) or not IsValid(self.interior) or self:GetData("legacy_door_type") then
                 if self.ExteriorPart then
                     self.exterior:PlayerEnter(a)
+                    a:ScreenFade(SCREENFADE.IN, color_black, 1, 0)
                 else
                     self.exterior:PlayerExit(a)
+                    a:ScreenFade(SCREENFADE.IN, color_black, 1, 0)
                 end
             else
                 if self.exterior.metadata.EnableClassicDoors == true and not self.ExteriorPart then return end

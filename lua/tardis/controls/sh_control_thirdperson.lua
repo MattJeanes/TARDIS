@@ -5,13 +5,14 @@ TARDIS:AddControl({
     end,
     serveronly=true,
     power_independent = true,
+    bypass_isomorphic = true,
     screen_button = {
         virt_console = false,
         mmenu = true,
         toggle = false,
         frame_type = {0, 1},
-        text = "Flight Control",
+        text = "Controls.ThirdPerson",
         order = 5,
     },
-    tip_text = "Manual Flight Control",
+    tip_text = "Controls.ThirdPerson.Tip",
 })

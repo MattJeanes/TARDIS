@@ -1,15 +1,5 @@
 -- Cloisterbells
 if CLIENT then
-    TARDIS:AddSetting({
-        id="cloistersound",
-        name="Cloister bells",
-        desc="Whether the warning bells can be heard on the interior or not",
-        section="Sounds",
-        value=true,
-        type="bool",
-        option=true
-    })
-
     ENT:AddHook("OnRemove","Cloisters",function(self)
         if self.CloisterLoop then
             self.CloisterLoop:Stop()

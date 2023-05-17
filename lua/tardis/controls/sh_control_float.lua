@@ -2,9 +2,9 @@ TARDIS:AddControl({
     id = "float",
     ext_func=function(self,ply)
         if self:ToggleFloat() or self:GetData("flight") then
-            TARDIS:StatusMessage(ply, "Anti-gravs", self:GetData("floatfirst"))
+            TARDIS:StatusMessage(ply, "Controls.Float.Status", self:GetData("floatfirst"))
         else
-            TARDIS:ErrorMessage(ply, "Failed to toggle anti-gravs")
+            TARDIS:ErrorMessage(ply, "Controls.Float.FailedToggle")
         end
     end,
     serveronly=true,
@@ -14,10 +14,9 @@ TARDIS:AddControl({
         mmenu = false,
         toggle = true,
         frame_type = {2, 1},
-        text = "Anti-Gravs",
-        pressed_state_from_interior = false,
+        text = "Controls.Float",
         pressed_state_data = "float",
         order = 11,
     },
-    tip_text = "Anti-Gravs",
+    tip_text = "Controls.Float.Tip",
 })

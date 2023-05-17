@@ -1,4 +1,4 @@
--- Adds screens
+-- Interior screens
 
 ENT:AddHook("Initialize", "screens-toggle", function(self)
     local screens_on = self.metadata.Interior.ScreensEnabled
@@ -17,7 +17,7 @@ ENT:AddHook("CanEnableScreens", "power", function(self)
     end
 end)
 
-function ENT:GetScreensOn(on)
+function ENT:GetScreensOn()
     return self:GetData("screens_on", false)
 end
 
@@ -52,7 +52,18 @@ function ENT:GetScreens()
     return screens
 end
 
-ENT:AddHook("Initialize", "screens", function(self)
+function ENT:RemoveScreens()
+    if self.screens3D then
+        for k,v in pairs(self.screens3D) do
+            if IsValid(v) then
+                v:Remove()
+            end
+        end
+    end
+end
+
+function ENT:LoadScreens()
+    self:RemoveScreens()
     local screens=self.metadata.Interior.Screens
     if screens then
         self.screens3D={}
@@ -66,23 +77,38 @@ ENT:AddHook("Initialize", "screens", function(self)
                 height = v.height,
                 ext = self.exterior,
                 int = self,
-                visgui_rows = v.visgui_rows,
+                gui_rows = v.gui_rows,
                 power_off_black = black,
             })
             self.screens3D[k].pos3D=v.pos
             self.screens3D[k].ang3D=v.ang
-        end 
+        end
     end
+end
+
+ENT:AddHook("Initialize", "screens", function(self)
+    self:LoadScreens()
+end)
+
+ENT:AddHook("LanguageChanged", "screens", function(self)
+    self:LoadScreens()
+end)
+
+local settings_upd_screen = {
+    ["gui_old"] = true,
+    ["gui_screen_numrows"] = true,
+    ["gui_override_numrows"] = true,
+    ["gui_interface_theme"] = true,
+}
+
+ENT:AddHook("SettingChanged", "screen_settings", function(self, id, val)
+    if not settings_upd_screen[id] then return end
+
+    self:LoadScreens()
 end)
 
 ENT:AddHook("OnRemove", "screens", function(self)
-    if self.screens3D then
-        for k,v in pairs(self.screens3D) do
-            if IsValid(v) then
-                v:Remove()
-            end
-        end
-    end
+    self:RemoveScreens()
 end)
 
 -- Thanks world-portals
@@ -92,13 +118,13 @@ function ENT:ShouldRenderScreen(screen)
     local ang = self:LocalToWorldAngles(screen.ang3D)
     local distance = camOrigin:Distance(pos)
     local disappearDist = self.metadata.Interior.ScreenDistance
-    
+
     if not (disappearDist <= 0) and distance > disappearDist then return false end
-    
+
     --don't render if the view is behind the portal
     local behind = TARDIS:IsBehind( camOrigin, pos, ang:Up() )
     if behind then return false end
-    
+
     return true, pos, ang
 end
 

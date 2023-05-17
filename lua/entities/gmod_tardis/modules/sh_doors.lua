@@ -59,8 +59,9 @@ if SERVER then
     function ENT:OpenDoor(callback)
         if self:GetData("doorstate",false) then
             delay(callback,true)
+            return true
         else
-            self:ToggleDoor(callback)
+            return self:ToggleDoor(callback)
         end
     end
 
@@ -68,10 +69,12 @@ if SERVER then
         if self:GetData("doorstate",false) ~= self:GetData("doorstatereal",false) then
             local callbacks=self:GetData("doorchangecallback")
             callbacks[callback]=true
+            return true
         elseif not self:GetData("doorstate",false) then
             delay(callback,false)
+            return false
         else
-            self:ToggleDoor(callback)
+            return self:ToggleDoor(callback)
         end
     end
 
@@ -83,8 +86,12 @@ if SERVER then
         end
     end
 
-    ENT:AddHook("Initialize", "doors", function(self)
-        self:SetBodygroup(1,1)
+    ENT:AddHook("HandleE2", "door", function(self,name,e2)
+        if name == "Door" and TARDIS:CheckPP(e2.player, self) then
+            return self:ToggleDoor() and 1 or 0
+        elseif name == "GetDoor" then
+            return self:DoorOpen(true) and 1 or 0
+        end
     end)
 
     ENT:AddHook("ToggleDoor", "intdoors", function(self,open)
@@ -96,6 +103,24 @@ if SERVER then
             elseif override or override==nil then
                 intdoor:SetCollisionGroup( COLLISION_GROUP_NONE )
             end
+        end
+    end)
+
+    ENT:AddHook("Initialize", "legacy_door_type", function(self,open)
+        local islegacy = TARDIS:GetSetting("legacy_door_type", self)
+        self:SetData("legacy_door_type", islegacy, true)
+    end)
+
+    ENT:AddHook("CanToggleDoor","legacy_door_type",function(self,state)
+        if self:GetData("legacy_door_type") then
+            return false
+        end
+    end)
+
+    ENT:AddHook("ShouldFailDemat", "door", function(self, force)
+        -- preventing stack overflow if doors can't get closed during force demat
+        if self:DoorOpen() and self:CallHook("CanToggleDoor",false) == false then
+            return false
         end
     end)
 
@@ -130,9 +155,7 @@ if SERVER then
     end)
 
     ENT:AddHook("ToggleDoorReal", "doors", function(self,open)
-        self:SendMessage("ToggleDoorReal",function()
-            net.WriteBool(open)
-        end)
+        self:SendMessage("ToggleDoorReal", {open})
     end)
 
     ENT:AddHook("Think", "doors", function(self)
@@ -193,17 +216,13 @@ if SERVER then
             intdoor:SetBodygroup(bodygroup,value)
         end
     end)
-else
-    TARDIS:AddSetting({
-        id="doorsounds-enabled",
-        name="Door Sound",
-        desc="Whether a sound is made when toggling the door or not",
-        section="Sounds",
-        value=true,
-        type="bool",
-        option=true
-    })
 
+    ENT:AddHook("CanChangeExterior","doors",function(self)
+        if self:DoorOpen() then
+            return false,false,"Chameleon.FailReasons.DoorsOpen",false
+        end
+    end)
+else
     function ENT:DoorOpen(real)
         local door=self:GetPart("door")
         if real and IsValid(door) then
@@ -222,8 +241,8 @@ else
         end
     end
 
-    ENT:OnMessage("ToggleDoorReal",function(self)
-        self:CallHook("ToggleDoorReal",net.ReadBool())
+    ENT:OnMessage("ToggleDoorReal", function(self, data, ply)
+        self:CallHook("ToggleDoorReal", data[1])
     end)
 
     ENT:AddHook("ToggleDoorReal","doorsounds",function(self,open)

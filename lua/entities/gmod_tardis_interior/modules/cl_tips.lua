@@ -1,26 +1,5 @@
 -- Tips
 
-TARDIS:AddSetting({
-    id="tips",
-    name="Tips",
-    desc="Should tips be shown for TARDIS controls?",
-    section="Misc",
-    value=true,
-    type="bool",
-    option=true,
-    networked=false
-})
-
-TARDIS:AddSetting({
-    id="tips_style",
-    name="Tips Style",
-    desc="Which style should the TARDIS tips use?",
-    section="Misc",
-    value="default",
-    option=false,
-    networked=false
-})
-
 function ENT:InitializeTips(style_name)
     local int_metadata = self.metadata.Interior
     local text_overrides = int_metadata.TipSettings.TextOverrides
@@ -86,9 +65,7 @@ function ENT:InitializeTips(style_name)
                 end
             end
         end
-        if not tip.text then
-            print("[TARDIS] WARNING: Tip at position "..tostring(tip.pos).." has no text set")
-        else
+        if tip.text then
             tip.colors.current = tip.colors.normal
             tip.highlighted = false
 
@@ -103,11 +80,15 @@ function ENT:InitializeTips(style_name)
             tip.ToggleHighlight = function(self)
                 self:SetHighlight(not tip.highlighted)
             end
+            tip.GetHighlight = function(self)
+                return self.highlighted
+            end
 
             if text_overrides and text_overrides[tip.text] then
                 tip.text = text_overrides[tip.text]
             end
 
+            tip.text = TARDIS:GetPhrase(tip.text)
             table.insert(tips, tip)
         end
     end
@@ -145,7 +126,7 @@ ENT:AddHook("Initialize", "tips", function(self)
         end
     end
 
-    local style_name = TARDIS:GetSetting("tips_style", "default")
+    local style_name = TARDIS:GetSetting("tips_style")
     self:InitializeTips(style_name)
 end)
 
@@ -155,11 +136,15 @@ ENT:AddHook("ShouldDrawTips", "tips", function(self)
     end
 end)
 
+ENT:AddHook("LanguageChanged", "tips", function(self, code)
+    self.tip_style_name = nil
+end)
+
 hook.Add("HUDPaint", "TARDIS-DrawTips", function()
     local interior = TARDIS:GetInteriorEnt(LocalPlayer())
-    if not (interior and interior.tips and TARDIS:GetSetting("tips") and (interior:CallHook("ShouldDrawTips")~=false)) then return end
+    if not (IsValid(interior) and interior.tips and TARDIS:GetSetting("tips") and (interior:CallHook("ShouldDrawTips")~=false)) then return end
 
-    local selected_tip_style = TARDIS:GetSetting("tips_style", "default")
+    local selected_tip_style = TARDIS:GetSetting("tips_style")
     if interior.tip_style_name ~= selected_tip_style then
         interior:InitializeTips(selected_tip_style)
     end
@@ -179,6 +164,7 @@ hook.Add("HUDPaint", "TARDIS-DrawTips", function()
     end
 
     local player_pos = LocalPlayer():EyePos()
+    local should_randomize = (interior:CallCommonHook("RandomizeTips") == true)
     for k,tip in ipairs(interior.tips)
     do
         local view_range_min = tip.view_range_min
@@ -192,9 +178,13 @@ hook.Add("HUDPaint", "TARDIS-DrawTips", function()
             tip:SetHighlight(cseq_enabled and tip.part == cseq_next)
         end
 
-        local pos = interior:LocalToWorld(tip.pos)
+        local part = tip.part and interior:GetPart(tip.part)
+        local partok = IsValid(part)
+        local shoulddraw = TARDIS:GetSetting("tips_show_all") or tip:GetHighlight() or (partok and part:BeingLookedAtByLocalPlayer())
+        local pos = interior:LocalToWorld(tip.pos or Vector(0,0,0))
         local dist = pos:Distance(player_pos)
-        if dist <= view_range_max then
+
+        if dist <= view_range_max and partok and shoulddraw then
             surface.SetFont(tip.font)
             local alpha = tip.colors.current.background.a
             if dist > view_range_min then
@@ -206,7 +196,19 @@ hook.Add("HUDPaint", "TARDIS-DrawTips", function()
             local frame_color = ColorAlpha(tip.colors.current.frame, alpha)
             local text_color = ColorAlpha(tip.colors.current.text, alpha)
 
-            local w, h = surface.GetTextSize( tip.text )
+            if should_randomize and not tip.randtext then
+                local should = (math.random(1,3) == 3)
+                local another = table.Random(interior.tips)
+                if another and another.text then
+                    tip.randtext = should and another.text or tip.text
+                end
+            elseif not should_randomize and tip.randtext then
+                tip.randtext = nil
+            end
+
+            local printtext = tip.randtext or tip.text
+
+            local w, h = surface.GetTextSize( printtext )
             local pos = pos:ToScreen()
             local padding = tip.padding or 10
             local offset = tip.offset or 30
@@ -266,7 +268,7 @@ hook.Add("HUDPaint", "TARDIS-DrawTips", function()
             draw.NoTexture()
             surface.DrawPoly( verts )
 
-            draw.DrawText( tip.text, tip.font, x + w/2, y, text_color, TEXT_ALIGN_CENTER )
+            draw.DrawText( printtext, tip.font, x + w/2, y, text_color, TEXT_ALIGN_CENTER )
         end
     end
 end)

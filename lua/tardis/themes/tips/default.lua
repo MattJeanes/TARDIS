@@ -1,5 +1,5 @@
 local style = {
     style_id="default",
-    style_name="Default (set by interior)"
+    style_name="Default"
 }
 TARDIS:AddTipStyle(style)

@@ -31,3 +31,5 @@ E2Helper.Descriptions["tardisTracking"] = "Returns the entity the TARDIS is trac
 E2Helper.Descriptions["tardisInVortex"] = "Returns 1 if in vortex, or 0 if not."
 E2Helper.Descriptions["tardisIsHADS"] = "Returns 1 if HADS is enabled, or 0 if not."
 E2Helper.Descriptions["tardisPilot"] = "Returns the pilot if valid."
+E2Helper.Descriptions["tardisDoor"] = "Toggles the TARDIS doors. Returns a 1 if successful, or a 0 if not."
+E2Helper.Descriptions["tardisDoorOpen"] = "Returns 1 if the TARDIS doors are open, or 0 if not."

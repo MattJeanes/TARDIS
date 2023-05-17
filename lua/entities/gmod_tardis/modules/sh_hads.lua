@@ -2,6 +2,7 @@
 
 if SERVER then
     function ENT:SetHADS(on)
+        self:CallCommonHook("HadsToggled", on)
         return self:SetData("hads",on,true)
     end
 
@@ -10,35 +11,86 @@ if SERVER then
         return self:SetHADS(on)
     end
 
-    ENT:AddHook("OnTakeDamage", "hads", function(self)
-        if self:CallHook("CanTriggerHads") == false then return end
-        if (self:GetData("hads",false) == true and self:GetData("hads-triggered",false)==false) and (not self:GetData("teleport",false)) then
+    function ENT:TriggerHADS()
+        if self:CallHook("CanTriggerHads") == false then
+            return false
+        end
+        if (self:GetData("hads",false) == true
+            and self:GetData("hads-triggered",false)==false)
+            and (not self:GetData("teleport",false))
+        then
             if self:GetData("doorstatereal") then
                 self:ToggleDoor()
             end
-            if self:GetData("handbrake") then
-                self:ToggleHandbrake()
-            end
+            self:SetData("hads-attempt", true)
             if self:CallHook("CanDemat", true) == false then
                 if not self:GetData("hads-failed-time") or CurTime() > self:GetData("hads-failed-time") + 10 then
                     self:SetData("hads-failed-time", CurTime())
-                    TARDIS:ErrorMessage(self:GetCreator(), "Something stopped H.A.D.S. from dematerialising the TARDIS!")
-                    TARDIS:ErrorMessage(self:GetCreator(), "Your TARDIS is under attack!")
+                    TARDIS:ErrorMessage(self:GetCreator(), "HADS.DematError")
+                    TARDIS:ErrorMessage(self:GetCreator(), "HADS.UnderAttack")
                 end
-                return
+                self:SetData("hads-attempt", nil)
+                return false
             end
-            TARDIS:Message(self:GetCreator(), "H.A.D.S. has been triggered!")
-            TARDIS:Message(self:GetCreator(), "Your TARDIS is under attack!")
+            self:SetData("hads-attempt", nil)
+            TARDIS:Message(self:GetCreator(), "HADS.Triggered")
+            TARDIS:Message(self:GetCreator(), "HADS.UnderAttack")
             self:SetData("hads-triggered", true)
             self:SetFastRemat(false)
+            self:SetRandomDestination(true)
             self:AutoDemat()
             self:CallHook("HADSTrigger")
+            self:SetData("hads-need-remat", true, true)
+            self:Timer("HadsRematTime", math.random(10,25), function()
+                if self:GetData("hads-need-remat", false) then
+                    self:SetData("hads-auto-remat", true, true)
+                    self:Mat(function(result)
+                        if result then
+                            TARDIS:Message(self:GetCreator(), "HADS.Mat")
+                        end
+                    end)
+                end
+            end)
+            return true
         end
+    end
+
+    ENT:AddHook("OnTakeDamage", "hads", function(self)
+        self:TriggerHADS()
+    end)
+
+    ENT:AddHook("MatStart", "hads-cancel-remat", function(self)
+        self:SetData("hads-need-remat", nil, true)
     end)
 
     ENT:AddHook("StopDemat","hads",function(self)
         if self:GetData("hads-triggered",false) then
             self:SetData("hads-triggered",false,true)
+        end
+    end)
+
+    ENT:AddHook("StopMat", "hads", function(self)
+        self:SetData("hads-auto-remat", nil, true)
+    end)
+
+    ENT:AddHook("InterruptTeleport", "hads-data", function(self)
+        self:SetData("hads-triggered",false,true)
+        self:SetData("hads-need-remat", nil, true)
+        self:SetData("hads-auto-remat", nil, true)
+    end)
+
+    hook.Add("OnPhysgunPickup", "tardis-hads", function(ply,ent)
+        if ent:GetClass()=="gmod_tardis" and ent:TriggerHADS() then
+            ent:ForcePlayerDrop()
+        end
+    end)
+
+    ENT:AddHook("ShouldUpdateArtron", "hads", function(self)
+        if self:GetData("hads-triggered")
+            or self:GetData("hads-need-remat")
+            or self:GetData("hads-auto-remat")
+        then
+            return false
         end
     end)
 

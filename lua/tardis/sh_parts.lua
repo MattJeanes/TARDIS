@@ -8,7 +8,7 @@ function TARDIS.DrawOverride(self,override)
     if self.NoDraw then return end
     local int=self.interior
     local ext=self.exterior
-
+    
     if IsValid(ext) then
 
         if (self.InteriorPart and IsValid(int)
@@ -23,8 +23,9 @@ function TARDIS.DrawOverride(self,override)
                 or self.ShouldDrawOverride
             )
         then
+           
             if self.parent:CallHook("ShouldDrawPart", self) == false then return end
-            self.parent:CallHook("PreDrawPart",self)
+            if self.parent:CallHook("PreDrawPart",self) == false then return end
             if self.PreDraw then self:PreDraw() end
             if self.UseTransparencyFix and (not override) then
                 render.SetBlend(0)
@@ -34,7 +35,7 @@ function TARDIS.DrawOverride(self,override)
                 self.o.Draw(self)
             end
             if self.PostDraw then self:PostDraw() end
-            self.parent:CallHook("DrawPart",self)
+            self.parent:CallHook("PostDrawPart",self)
         end
     end
 end
@@ -53,7 +54,19 @@ local overrides={
         local int=self.interior
         local ext=self.exterior
         if self._init and IsValid(int) and IsValid(ext) then
-            if (int:CallHook("ShouldThink")~=false) or (ext:DoorOpen() and self.ClientThinkOverride and LocalPlayer():GetPos():Distance(ext:GetPos())<TARDIS:GetSetting("portals-closedist")) or self.ExteriorPart then -- TODO: Improve
+            local think_ok = (int:CallHook("ShouldThink") ~= false)
+
+            local function is_visible_through_door()
+                if not ext:DoorOpen() then return false end
+                if not self.ClientThinkOverride then return false end
+                local ply_pos = LocalPlayer():GetPos()
+                local ext_pos = ext:GetPos()
+                local close_dist = TARDIS:GetSetting("portals-closedist")
+
+                return ply_pos:Distance(ext_pos) < close_dist
+            end
+
+            if think_ok or self.ExteriorPart or is_visible_through_door() then
                 if self.Animate then
                     local target=self:GetOn() and 1 or 0
                     self.posepos=math.Approach(self.posepos,target,FrameTime()*(self.AnimateSpeed or 1.5))
@@ -76,14 +89,14 @@ local overrides={
         end
 
         if self.PowerOffUse == false and not self.interior:GetPower() then
-            TARDIS:ErrorMessage(a, "Power is disabled. This control is blocked.")
+            TARDIS:ErrorMessage(a, "Common.PowerDisabledControl")
         else
             if allowed~=false then
                 if self.HasUseBasic then
                     self.UseBasic(self,a,...)
                 end
                 if SERVER and self.Control and (not self.HasUse) then
-                    TARDIS:Control(self.Control,a)
+                    TARDIS:Control(self.Control,a,self)
                 else
                     res=self.o.Use(self,a,...)
                 end
@@ -141,13 +154,22 @@ end
 local parts={}
 
 function TARDIS:GetPart(ent,id)
-    return ent.parts and ent.parts[id] or NULL
+    return IsValid(ent) and ent.parts and ent.parts[id] or NULL
+end
+
+function TARDIS:GetParts(ent)
+    return IsValid(ent) and ent.parts
 end
 
 local overridequeue={}
 postinit=postinit or false -- local vars cannot stay on autorefresh
 function TARDIS:AddPart(e)
     local source = debug.getinfo(2).short_src
+
+    if string.lower(e.ID) ~= e.ID then
+        error("The part ID \"" .. e.ID .. "\" contains uppercase symbols. All part IDs have to be lowercase.")
+    end
+
     if parts[e.ID] and parts[e.ID].source ~= source then
         error("Duplicate part ID registered: " .. e.ID .. " (exists in both " .. parts[e.ID].source .. " and " .. source .. ")")
     end
@@ -169,7 +191,7 @@ function TARDIS:GetRegisteredPart(id)
     return scripted_ents.Get(parts[id].class)
 end
 
-hook.Add("InitPostEntity", "tardis-parts", function() 
+hook.Add("InitPostEntity", "tardis-parts", function()
     for k,v in pairs(overridequeue) do
         SetupOverrides(v)
     end
@@ -202,7 +224,7 @@ end
 local function AutoSetup(self,e,id)
     local data=GetData(self,e,id)
     if not data then return end
-    
+
     e:SetModel(e.model or e.Model)
     e:PhysicsInit( SOLID_VPHYSICS )
     e:SetMoveType( MOVETYPE_VPHYSICS )
@@ -336,6 +358,10 @@ else
             local data=GetData(parent,e,name)
             if type(data)=="table" then
                 table.Merge(e,data)
+            end
+
+            if e.ExteriorPart then
+                e.RenderGroup = RENDERGROUP_BOTH
             end
 
             SetupPartMetadataControl(e)

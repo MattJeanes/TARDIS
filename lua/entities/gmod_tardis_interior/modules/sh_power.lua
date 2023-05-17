@@ -4,9 +4,9 @@ function ENT:GetPower()
     return self.exterior:GetPower()
 end
 
-ENT:AddHook("CanUseTardisControl", "power", function(self, control_id, ply)
-    if not self:GetPower() and not TARDIS:GetControl(control_id).power_independent then
-        TARDIS:ErrorMessage(ply, "Power is disabled. This doesn't work.")
+ENT:AddHook("CanUseTardisControl", "power", function(self, control, ply)
+    if not self:GetPower() and not control.power_independent then
+        TARDIS:ErrorMessage(ply, "Common.PowerDisabledControl")
         return false
     end
 end)
@@ -21,13 +21,11 @@ if SERVER then
     end
 
     ENT:AddHook("PowerToggled", "interior-power", function(self, state)
-        self:SendMessage("power-toggled", function()
-            net.WriteBool(state)
-        end)
+        self:SendMessage("power-toggled", {state} )
     end)
 else
-    ENT:OnMessage("power-toggled", function(self)
-        local state = net.ReadBool()
+    ENT:OnMessage("power-toggled", function(self, data, ply)
+        local state = data[1]
         if TARDIS:GetSetting("sound") then
             local sound_on = self.metadata.Interior.Sounds.Power.On
             local sound_off = self.metadata.Interior.Sounds.Power.Off
@@ -35,14 +33,16 @@ else
                 if not TARDIS:GetSetting("sound") then return end
                 self:EmitSound(state and sound_on or sound_off)
             end
-            if self.idlesounds then
-                if state == false then
-                    for _,v in pairs(self.idlesounds) do
-                        v:Stop()
-                    end
-                else
-                    for _,v in pairs(self.idlesounds) do
-                        v:Play()
+            local idle_sounds = self.metadata.Interior.Sounds.Idle or self.metadata.Interior.IdleSound
+            if idle_sounds and self.idlesounds then
+                for k,v in pairs(idle_sounds) do
+                    if self.idlesounds[k] then
+                        if state then
+                            self.idlesounds[k]:Play()
+                            self.idlesounds[k]:ChangeVolume(v.volume or 1,0)
+                        else
+                            self.idlesounds[k]:Stop()
+                        end
                     end
                 end
             end

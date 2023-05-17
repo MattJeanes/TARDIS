@@ -4,6 +4,11 @@ include('shared.lua')
 
 ENT:AddHook("PlayerInitialize", "interior", function(self)
     net.WriteString(self.metadata.ID)
+
+    net.WriteBool(self.templates ~= nil)
+    if self.templates ~= nil then
+        net.WriteString(TARDIS.von.serialize(self.templates))
+    end
 end)
 
 ENT:AddHook("PostPlayerInitialize", "senddata", function(self,ply)
@@ -12,11 +17,7 @@ end)
 
 function ENT:Initialize()
     if self.spacecheck then
-        self.metadata=TARDIS:GetInterior(self.exterior.metadataID)
-        if not self.metadata then
-            self.metadata=TARDIS:GetInterior("default")
-        end
-        
+        self.metadata=TARDIS:CreateInteriorMetadata(self.exterior.metadataID, self)
         self.Model=self.metadata.Interior.Model
         self.Fallback=self.metadata.Interior.Fallback
         self.Portal=self.metadata.Interior.Portal

@@ -1,49 +1,9 @@
 -- Flight
 
--- Settings
-
-TARDIS:AddSetting({
-    id="opened-door-no-boost",
-    name="Disable boost with opened doors",
-    desc="Should the TARDIS boost stop working when doors are opened in flight?",
-    section="Misc",
-    value=false,
-    type="bool",
-    option=true,
-    networked=true
-})
-
-TARDIS:AddSetting({
-    id="boost-speed",
-    name="Boost Speed",
-    desc="The increase of speed the TARDIS gets with the boost key enabled",
-    section="Misc",
-    type="number",
-    value=2.5,
-    min=1.0,
-    max=4.0,
-    networked=true
-})
-
-CreateConVar("tardis2_boost_speed", 2.5, {FCVAR_ARCHIVE, FCVAR_REPLICATED}, "TARDIS - Boost Speed")
-
-if SERVER then
-    cvars.AddChangeCallback("tardis2_boost_speed", function(cvname, oldvalue, newvalue)
-        local nvnum = tonumber(newvalue)
-        if nvnum < 1.0 or nvnum > 4.0 then
-            nvnum = math.max(1.0, math.min(4.0, nvnum))
-            GetConVar("tardis2_boost_speed"):SetFloat(nvnum)
-            return
-        end
-        print("TARDIS boost speed has been set to "..nvnum)
-        TARDIS:SetSetting("boost-speed", nvnum, true)
-    end, "UpdateOnChange")
-end
-
 -- Binds
 TARDIS:AddKeyBind("flight-toggle",{
-    name="Toggle Flight",
-    section="Third Person",
+    name="ToggleFlight",
+    section="ThirdPerson",
     func=function(self,down,ply)
         if ply==self.pilot and down then
             TARDIS:Control("flight", ply)
@@ -53,6 +13,20 @@ TARDIS:AddKeyBind("flight-toggle",{
     serveronly=true,
     exterior=true
 })
+
+TARDIS:AddKeyBind("handbrake",{
+    name="Handbrake",
+    section="ThirdPerson",
+    func=function(self,down,ply)
+        if down and ply == self.pilot then
+            TARDIS:Control("handbrake", ply)
+        end
+    end,
+    key=KEY_J,
+    serveronly=true,
+    exterior=true
+})
+
 TARDIS:AddKeyBind("flight-forward",{
     name="Forward",
     section="Flight",
@@ -98,7 +72,6 @@ TARDIS:AddKeyBind("flight-down",{
 TARDIS:AddKeyBind("flight-boost",{
     name="Boost",
     section="Flight",
-    desc="Hold this key while flying to speed up",
     key=KEY_LSHIFT,
     serveronly=true,
     exterior=true
@@ -106,17 +79,14 @@ TARDIS:AddKeyBind("flight-boost",{
 TARDIS:AddKeyBind("flight-rotate",{
     name="Rotate",
     section="Flight",
-    desc="Hold this key while using left and right to rotate",
     key=KEY_LALT,
     serveronly=true,
     exterior=true
 })
 TARDIS:AddKeyBind("flight-spindir",{
-    name="Spin Direction",
+    name="SpinDirection",
     section="Flight",
-    desc="Changes which way the TARDIS rotates while flying",
     func=function(self,down,ply)
-        if TARDIS:HUDScreenOpen(ply) then return end
         if down and ply==self.pilot then
             TARDIS:Control("spin_cycle", ply)
         end
@@ -126,11 +96,23 @@ TARDIS:AddKeyBind("flight-spindir",{
     exterior=true
 })
 
-
 if SERVER then
     function ENT:ToggleFlight()
         local on = not self:GetData("flight",false)
         return self:SetFlight(on)
+    end
+
+    function ENT:InterruptFlight()
+        if not self:GetData("flight") and not self:GetData("vortex") then return end
+
+        if TARDIS:GetSetting("flight_interrupt_to_float", self:GetCreator()) then
+            self:SetData("floatfirst", true)
+        end
+
+        self:ToggleFlight()
+        self:CallCommonHook("FlightInterrupted")
+
+        self:ExplodeIfFast()
     end
 
     function ENT:SetFlight(on)
@@ -143,10 +125,11 @@ if SERVER then
         if on and self:GetPhyslock()==true then
             local pilot = self:GetData("pilot",nil)
             if IsValid(pilot) and pilot:IsPlayer() then
-                TARDIS:Message(pilot, "WARNING: Physical lock engaged")
+                TARDIS:Message(pilot, "Flight.WarnPhyslockEngaged")
             end
         end
         self:SetData("flight",on,true)
+        self:CallCommonHook("FlightToggled", on)
         self:SetFloat(on)
         return true
     end
@@ -179,10 +162,10 @@ if SERVER then
     ENT:AddHook("ThirdPerson", "flight", function(self,ply,enabled)
         if enabled then
             if IsValid(self.pilot) then
-                TARDIS:Message(ply, self.pilot:Nick().." is the pilot.")
+                TARDIS:Message(ply, "Flight.NameIsThePilot", self.pilot:Nick())
             elseif self:CallHook("CanChangePilot",ply)~=false then
                 self.pilot=ply
-                TARDIS:Message(ply, "You are now the pilot.")
+                TARDIS:Message(ply, "Flight.YouAreNowThePilot")
                 self:CallHook("PilotChanged",nil,ply)
             end
         else
@@ -192,19 +175,19 @@ if SERVER then
                 for k,v in pairs(self.occupants) do
                     if k:GetTardisData("thirdperson") then
                         if IsValid(self.pilot) then
-                            TARDIS:Message(k, self.pilot:Nick().." is now the pilot.")
+                            TARDIS:Message(k, "Flight.NameIsNowThePilot", self.pilot:Nick())
                         else
                             self.pilot=k
-                            TARDIS:Message(k, "You are now the pilot.")
+                            TARDIS:Message(k, "Flight.YouAreNowThePilot")
                         end
                     end
                 end
             end
             if waspilot then
                 if IsValid(self.pilot) then
-                    TARDIS:Message(ply, self.pilot:Nick().." is now the pilot.")
+                    TARDIS:Message(ply, "Flight.NameIsNowThePilot", self.pilot:Nick())
                 else
-                    TARDIS:Message(ply, "You are no longer the pilot.")
+                    TARDIS:Message(ply, "Flight.NoLongerPilot")
                 end
                 self:CallHook("PilotChanged",ply,self.pilot)
             end
@@ -213,10 +196,7 @@ if SERVER then
 
     ENT:AddHook("PilotChanged","flight",function(self,old,new)
         self:SetData("pilot",new,true)
-        self:SendMessage("PilotChanged",function()
-            net.WriteEntity(old)
-            net.WriteEntity(new)
-        end)
+        self:SendMessage("PilotChanged", {old, new} )
     end)
 
     ENT:AddHook("Think", "flight", function(self)
@@ -265,13 +245,13 @@ if SERVER then
                     local force_mult
                     local door = self:GetData("doorstatereal", false)
 
-                    if door and TARDIS:GetSetting("opened-door-no-boost", true, self:GetCreator()) then
+                    if door and TARDIS:GetSetting("opened-door-no-boost", self) then
                         force_mult = 0.25
                         brakes = true -- no spin, no tilt
                         local lastmsg = self.bad_flight_boost_msg
                         if lastmsg == nil or (lastmsg ~= nil and CurTime() - lastmsg > 5.5) then
                             self.bad_flight_boost_msg = CurTime()
-                            TARDIS:ErrorMessage(self.pilot, "Boost doesn't work with doors open")
+                            TARDIS:ErrorMessage(self.pilot, "Flight.DoorOpenNoBoost")
                         end
                     else
                         if self.bad_flight_boost_msg ~= nil then
@@ -377,16 +357,6 @@ if SERVER then
         end
     end)
 else
-    TARDIS:AddSetting({
-        id="flight-externalsound",
-        name="Flightmode External Sound",
-        section="Sounds",
-        desc="Whether the flight sound can be heard on the outside or not",
-        value=true,
-        type="bool",
-        option=true
-    })
-
     ENT:AddHook("OnRemove", "flight", function(self)
         if self.flightsound then
             self.flightsound:Stop()
@@ -449,9 +419,9 @@ else
         end
     end)
 
-    ENT:OnMessage("PilotChanged",function(self)
-        local old=net.ReadEntity()
-        local new=net.ReadEntity()
+    ENT:OnMessage("PilotChanged", function(self, data, ply)
+        local old=data[1]
+        local new=data[2]
         self:CallHook("PilotChanged",old,new)
     end)
 end
