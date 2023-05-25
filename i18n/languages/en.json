@@ -386,6 +386,8 @@
     "Settings.Sections.Exterior.ProjectedLight.ColorOverride.Description": "Override color of projected light",
     "Settings.Sections.Exterior.ProjectedLight.DistanceOverride": "Distance Override",
     "Settings.Sections.Exterior.ProjectedLight.DistanceOverride.Description": "Override distance of projected light",
+    "Settings.Sections.Exterior.Light.LightSize": "Light Size",
+    "Settings.Sections.Exterior.Light.LightSize.Description": "Size of the exterior light",
     "Settings.Sections.Exterior.ProjectedLight.EnableBrightnessOverride": "Enable Brightness Override",
     "Settings.Sections.Exterior.ProjectedLight.EnableBrightnessOverride.Description": "Whether the override of projected light brightness is enabled",
     "Settings.Sections.Exterior.ProjectedLight.EnableColorOverride": "Enable Color Override",
