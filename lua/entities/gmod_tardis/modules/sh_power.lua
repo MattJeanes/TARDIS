@@ -50,17 +50,23 @@ if SERVER then
         if not self:GetPower() then return false end
     end)
 
-    ENT:AddHook("HandleE2", "power", function(self,name,e2)
+    ENT:AddHook("HandleE2", "power", function(self, name, e2, ...)
+        local args = {...}
         if name == "Power" and TARDIS:CheckPP(e2.player, self) then
             return self:TogglePower() and 1 or 0
         elseif name == "GetPowered" then
             return self:GetPower() and 1 or 0
-        end
-    end)
-
-    ENT:AddHook("CanChangeExterior","power",function(self)
-        if not self:GetPower() then
-            return false,true,"Chameleon.FailReasons.NoPower",true
+        elseif name == "SetPower" and TARDIS:CheckPP(e2.player, self) then
+            local on = args[1]
+            if on == 1 then
+                if self:GetData("power-state",false) == false then
+                    return self:SetPower(true) and 1 or 0
+                end
+            else
+                if self:GetData("power-state",false) == true then
+                    return self:SetPower(false) and 1 or 0
+                end
+            end
         end
     end)
 else

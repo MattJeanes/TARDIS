@@ -35,21 +35,35 @@ ENT:AddHook("HandleE2", "teleport_args", function(self, name, e2, pos, ang)
     end
 end)
 
-ENT:AddHook("HandleE2", "teleport_noargs", function(self, name, e2)
-    if name == "Mat" and TARDIS:CheckPP(e2.player, self) then
-        local success = (self:GetData("vortex",false) and self:CallHook("CanMat"))==false
-        self:Mat()
-        return success and 0 or 1
-    elseif name == "Longflight" and TARDIS:CheckPP(e2.player, self) then
-        return self:ToggleFastRemat() and 1 or 0
-    elseif name == "FastReturn" and TARDIS:CheckPP(e2.player, self) then
-        local success = self:CallHook("CanDemat")==false
-        self:FastReturn()
-        return success and 0 or 1
-    elseif name == "FastDemat" and TARDIS:CheckPP(e2.player, self)then
-        local success = self:CallHook("CanDemat")==false
-        self:Demat()
-        return success and 0 or 1
+ENT:AddHook("HandleE2", "teleport_noargs", function(self, name, e2, ...)
+    if TARDIS:CheckPP(e2.player, self) then
+        local args = {...}
+        if name == "Mat" then
+            local success = (self:GetData("vortex",false) and self:CallHook("CanMat"))==false
+            self:Mat()
+            return success and 0 or 1
+        elseif name == "Longflight" then
+            return self:ToggleFastRemat() and 1 or 0
+        elseif name == "FastReturn" then
+            local success = self:CallHook("CanDemat")==false
+            self:FastReturn()
+            return success and 0 or 1
+        elseif name == "FastDemat" then
+            local success = self:CallHook("CanDemat")==false
+            self:Demat()
+            return success and 0 or 1
+        elseif name == "SetLongflight" then
+            local on = args[1]
+            if on == 1 then --longfly on
+                if self:GetData("demat-fast",false) == true then
+                    return self:SetFastRemat(false) and 1 or 0
+                end
+            else
+                if self:GetData("demat-fast",false) == false then
+                    return self:SetFastRemat(true) and 1 or 0
+                end
+            end
+        end
     end
 end)
 

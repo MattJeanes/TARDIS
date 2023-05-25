@@ -94,11 +94,23 @@ if SERVER then
         end
     end)
 
-    ENT:AddHook("HandleE2", "hads", function(self,name,e2)
+    ENT:AddHook("HandleE2", "hads", function(self, name, e2, ...)
+        local args = {...}
         if name == "GetHADS" then
             return self:GetData("hads",false) and 1 or 0
         elseif name == "HADS" and TARDIS:CheckPP(e2.player, self) then
-            return self:ToggleHADS()
+            return self:ToggleHADS() and 1 or 0
+        elseif name == "SetHADS" and TARDIS:CheckPP(e2.player, self) then
+            local on = args[1]
+            if on == 1 then
+                if self:GetData("hads",false) == false then
+                    return self:SetHADS(true) and 1 or 0
+                end
+            else
+                if self:GetData("hads",false) == true then
+                    return self:SetHADS(false) and 1 or 0
+                end
+            end
         end
     end)
 end

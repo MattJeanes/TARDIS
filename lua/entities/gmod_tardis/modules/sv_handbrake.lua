@@ -35,3 +35,23 @@ ENT:AddHook("CanTurnOnFlight", "handbrake", function(self)
         return false
     end
 end)
+
+ENT:AddHook("HandleE2", "handbrake", function(self, name, e2, ...)
+    local args = {...}
+    if name == "SetBrake" and TARDIS:CheckPP(e2.player, self) then
+        local on = args[1]
+        if on == 1 then
+            if self:GetData("handbrake",false) == false then
+                return self:SetHandbrake(true) and 1 or 0
+            end
+        else
+            if self:GetData("handbrake",false) == true then 
+                return self:SetHandbrake(false) and 1 or 0
+            end
+        end
+    elseif name == "ToggleBrake" and TARDIS:CheckPP(e2.player, self) then
+        return self:ToggleHandbrake() and 1 or 0
+    elseif name == "GetBrake" then
+        return self:GetData("handbrake",false) and 1 or 0
+    end
+end)

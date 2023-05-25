@@ -345,12 +345,24 @@ if SERVER then
         self:SendMessage("health_warning_toggled", {on})
     end)
 
-    ENT:AddHook("HandleE2", "health", function(self,name,e2)
+    ENT:AddHook("HandleE2", "health", function(self, name, e2, ...)
+        local args = {...}
         if name == "GetHealth" then
             return self:GetHealthPercent()
         elseif name == "Selfrepair" and TARDIS:CheckPP(e2.player, self) then
             self:ToggleRepair()
             return self:GetData("repair-primed",false) and 1 or 0
+        elseif name == "SetSelfrepair" and TARDIS:CheckPP(e2.player, self) then
+            local on = args[1]
+            if on == 1 then
+                if self:GetData("repair-primed",false) == false then
+                    return self:SetRepair(true) and 1 or 0
+                end
+            else
+                if self:GetData("repair-primed",false) == true then
+                    return self:SetRepair(false) and 1 or 0
+                end
+            end
         elseif name == "GetSelfrepairing" then
             local repairing = self:GetData("repairing",false)
             local primed = self:GetData("repair-primed",false)
@@ -360,6 +372,10 @@ if SERVER then
                 return 2
             else
                 return 0
+            end
+        elseif name == "GetRepairTime" then
+            if self:GetData("repairing",false) then
+                return self:GetRepairTime()
             end
         end
     end)

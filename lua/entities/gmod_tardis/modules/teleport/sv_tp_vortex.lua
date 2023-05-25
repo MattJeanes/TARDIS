@@ -17,9 +17,11 @@ function ENT:ToggleFastRemat()
 end
 
 function ENT:SetFastRemat(on)
-    self:SetData("demat-fast",on,true)
-    self:CallHook("FastRematToggled", on)
-    return true
+    if self:CallHook("CanToggleFastRemat") ~= false then
+        self:SetData("demat-fast",on,true)
+        self:CallHook("FastRematToggled", on)
+        return true
+    end
 end
 
 ENT:AddHook("CanToggleFastRemat", "vortex", function(self)

@@ -48,12 +48,26 @@ ENT:AddHook("CanChangePilot", "flight", function(self, ply)
     end
 end)
 
-ENT:AddHook("HandleE2", "security", function(self,name,e2)
+ENT:AddHook("HandleE2", "security", function(self, name, e2, ...)
+    local args = {...}
     if IsValid(self.interior) then
         if name == "Isomorph" and TARDIS:CheckPP(e2.player, self) then
-            return self:ToggleSecurity() and 1 or 0
+            return self.interior:ToggleSecurity() and 1 or 0
         elseif name == "GetIsomorphic" then
-            return self:GetSecurity() and 1 or 0
+            return self.interior:GetSecurity() and 1 or 0
+        elseif name == "SetIsomorph" and TARDIS:CheckPP(e2.player, self) then
+            local on = args[1]
+            if on == 1 then
+                if self:GetData("security",false) == false then
+                    self:SetSecurity(true)
+                    return 1
+                end
+            else
+                if self:GetData("security",false) == true then
+                    self:SetSecurity(false)
+                    return 1
+                end
+            end
         end
     else
         if name == "Isomorph" or name == "GetIsomorphic" then
