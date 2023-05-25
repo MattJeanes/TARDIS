@@ -379,6 +379,8 @@
     "Settings.Sections.Exterior.Light.ColorOverride.Description": "外部燈光的覆蓋顏色",
     "Settings.Sections.Exterior.Light.EnableColorOverride": "啟用顏色覆蓋",
     "Settings.Sections.Exterior.Light.EnableColorOverride.Description": "是否啟用外部燈光顏色覆蓋",
+    "Settings.Sections.Exterior.Light.LightSize": "",
+    "Settings.Sections.Exterior.Light.LightSize.Description": "",
     "Settings.Sections.Exterior.ProjectedLight": "光源投射",
     "Settings.Sections.Exterior.ProjectedLight.BrightnessOverride": "亮度覆蓋",
     "Settings.Sections.Exterior.ProjectedLight.BrightnessOverride.Description": "覆蓋投射光的亮度",

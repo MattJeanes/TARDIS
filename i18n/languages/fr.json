@@ -379,6 +379,8 @@
     "Settings.Sections.Exterior.Light.ColorOverride.Description": "La couleur de remplacement de la lumière extérieure",
     "Settings.Sections.Exterior.Light.EnableColorOverride": "Activer le remplacement de couleur",
     "Settings.Sections.Exterior.Light.EnableColorOverride.Description": "Si le remplacement de la couleur de la lumière extérieure est activé",
+    "Settings.Sections.Exterior.Light.LightSize": "",
+    "Settings.Sections.Exterior.Light.LightSize.Description": "",
     "Settings.Sections.Exterior.ProjectedLight": "Lumière projetée",
     "Settings.Sections.Exterior.ProjectedLight.BrightnessOverride": "Remplacement de la luminosité",
     "Settings.Sections.Exterior.ProjectedLight.BrightnessOverride.Description": "Remplacer la luminosité de la lumière projetée",

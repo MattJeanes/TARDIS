@@ -379,6 +379,8 @@
     "Settings.Sections.Exterior.Light.ColorOverride.Description": "Dış ışığın geçersiz kılma rengi",
     "Settings.Sections.Exterior.Light.EnableColorOverride": "Açık Renk Geçersiz Kılmayı Etkinleştir",
     "Settings.Sections.Exterior.Light.EnableColorOverride.Description": "Dış ışık renginin geçersiz kılınmasının etkinleştirilip etkinleştirilmediği",
+    "Settings.Sections.Exterior.Light.LightSize": "",
+    "Settings.Sections.Exterior.Light.LightSize.Description": "",
     "Settings.Sections.Exterior.ProjectedLight": "Yansıtılan ışık",
     "Settings.Sections.Exterior.ProjectedLight.BrightnessOverride": "Parlaklık Geçersiz Kılma",
     "Settings.Sections.Exterior.ProjectedLight.BrightnessOverride.Description": "Yansıtılan ışığın parlaklığını geçersiz kıl",

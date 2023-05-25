@@ -379,6 +379,8 @@
     "Settings.Sections.Exterior.Light.ColorOverride.Description": "Substitui a cor da luz externa",
     "Settings.Sections.Exterior.Light.EnableColorOverride": "Ativar Substituição de Cor da Luz",
     "Settings.Sections.Exterior.Light.EnableColorOverride.Description": "Controla a cor da luz externa",
+    "Settings.Sections.Exterior.Light.LightSize": "",
+    "Settings.Sections.Exterior.Light.LightSize.Description": "",
     "Settings.Sections.Exterior.ProjectedLight": "Luz projetada pela porta",
     "Settings.Sections.Exterior.ProjectedLight.BrightnessOverride": "Substituir Brilho",
     "Settings.Sections.Exterior.ProjectedLight.BrightnessOverride.Description": "Substitui o brilho da luz projetada",

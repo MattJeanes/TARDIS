@@ -379,6 +379,8 @@
     "Settings.Sections.Exterior.Light.ColorOverride.Description": "Пользовательский цвет лампы экстерьера",
     "Settings.Sections.Exterior.Light.EnableColorOverride": "Включить пользовательский цвет",
     "Settings.Sections.Exterior.Light.EnableColorOverride.Description": "Используется ли пользовательский свет лампы экстерьера",
+    "Settings.Sections.Exterior.Light.LightSize": "",
+    "Settings.Sections.Exterior.Light.LightSize.Description": "",
     "Settings.Sections.Exterior.ProjectedLight": "Проецируемый свет",
     "Settings.Sections.Exterior.ProjectedLight.BrightnessOverride": "Пользовательская яркость",
     "Settings.Sections.Exterior.ProjectedLight.BrightnessOverride.Description": "Пользовательская яркость проецируемого света",
