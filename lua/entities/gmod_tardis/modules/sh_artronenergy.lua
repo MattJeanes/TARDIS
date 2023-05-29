@@ -281,7 +281,7 @@ if SERVER then
         if not TARDIS:GetSetting("artron_energy") then return end
 
         if self:GetData("artron-val") + TARDIS.artron_values.cost_chameleon < 1 then
-            return false,false,"Chameleon.FailReasons.NotEnoughArtron",true
+            return false,true,"Chameleon.FailReasons.NotEnoughArtron",true
         end
     end)
 
