@@ -377,8 +377,6 @@
     "Settings.Sections.Exterior.Light.AlwaysOn.Description": "A ddylai'r golau allanol gael ei oleuo bob amser oni bai bod rheolydd yn ei analluogi?",
     "Settings.Sections.Exterior.Light.ColorOverride": "Diystyru Lliw",
     "Settings.Sections.Exterior.Light.ColorOverride.Description": "Lliw gwrthwneud y golau allanol",
-    "Settings.Sections.Exterior.Light.DynamicLightSize": "",
-    "Settings.Sections.Exterior.Light.DynamicLightSize.Description": "",
     "Settings.Sections.Exterior.Light.EnableColorOverride": "Galluogi Diystyru Lliw Golau",
     "Settings.Sections.Exterior.Light.EnableColorOverride.Description": "A yw gwrthwneud lliw golau allanol wedi'i alluogi",
     "Settings.Sections.Exterior.ProjectedLight": "Golau rhagamcanol",

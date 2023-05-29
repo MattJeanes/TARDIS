@@ -377,8 +377,6 @@
     "Settings.Sections.Exterior.Light.AlwaysOn.Description": "除非通過控件禁用，否則外部燈是否應該始終點亮？",
     "Settings.Sections.Exterior.Light.ColorOverride": "顏色覆蓋",
     "Settings.Sections.Exterior.Light.ColorOverride.Description": "外部燈光的覆蓋顏色",
-    "Settings.Sections.Exterior.Light.DynamicLightSize": "",
-    "Settings.Sections.Exterior.Light.DynamicLightSize.Description": "",
     "Settings.Sections.Exterior.Light.EnableColorOverride": "啟用顏色覆蓋",
     "Settings.Sections.Exterior.Light.EnableColorOverride.Description": "是否啟用外部燈光顏色覆蓋",
     "Settings.Sections.Exterior.ProjectedLight": "光源投射",
