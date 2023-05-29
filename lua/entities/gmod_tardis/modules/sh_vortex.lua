@@ -97,7 +97,7 @@ else
     ENT:AddHook("Think","vortex",function(self)
         local alpha = self:GetData("vortexalpha",0)
         local enabled = self:IsVortexEnabled()
-        local target = self:GetData("vortex") and 1 or 0
+        local target = (self:GetData("vortex") and enabled) and 1 or 0
         if TARDIS:GetExteriorEnt()==self and enabled then
             if alpha ~= target then
                 if alpha==0 and target==1 then
