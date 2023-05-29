@@ -377,6 +377,8 @@
     "Settings.Sections.Exterior.Light.AlwaysOn.Description": "外光是否总是被照亮，除非被控制禁用？",
     "Settings.Sections.Exterior.Light.ColorOverride": "颜色覆盖",
     "Settings.Sections.Exterior.Light.ColorOverride.Description": "外部灯光的覆盖颜色",
+    "Settings.Sections.Exterior.Light.DynamicLightSize": "",
+    "Settings.Sections.Exterior.Light.DynamicLightSize.Description": "",
     "Settings.Sections.Exterior.Light.EnableColorOverride": "启用颜色覆盖",
     "Settings.Sections.Exterior.Light.EnableColorOverride.Description": "是否启用外部灯光颜色覆盖",
     "Settings.Sections.Exterior.ProjectedLight": "光源投射",
