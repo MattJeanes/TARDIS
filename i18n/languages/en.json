@@ -377,6 +377,8 @@
     "Settings.Sections.Exterior.Light.AlwaysOn.Description": "Should the exterior light always be lit unless disabled by a control?",
     "Settings.Sections.Exterior.Light.ColorOverride": "Color Override",
     "Settings.Sections.Exterior.Light.ColorOverride.Description": "The override color of the exterior light",
+    "Settings.Sections.Exterior.Light.DynamicLightSize": "Dynamic Light Size",
+    "Settings.Sections.Exterior.Light.DynamicLightSize.Description": "Size of the dynamic exterior light",
     "Settings.Sections.Exterior.Light.EnableColorOverride": "Enable Light Color Override",
     "Settings.Sections.Exterior.Light.EnableColorOverride.Description": "Whether the override of exterior light color is enabled",
     "Settings.Sections.Exterior.ProjectedLight": "Projected light",

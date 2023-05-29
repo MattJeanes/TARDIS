@@ -377,6 +377,8 @@
     "Settings.Sections.Exterior.Light.AlwaysOn.Description": "Следует ли всегда освещать внешний свет, если он не отключен регулятором?",
     "Settings.Sections.Exterior.Light.ColorOverride": "Пользовательский цвет",
     "Settings.Sections.Exterior.Light.ColorOverride.Description": "Пользовательский цвет лампы экстерьера",
+    "Settings.Sections.Exterior.Light.DynamicLightSize": "",
+    "Settings.Sections.Exterior.Light.DynamicLightSize.Description": "",
     "Settings.Sections.Exterior.Light.EnableColorOverride": "Включить пользовательский цвет",
     "Settings.Sections.Exterior.Light.EnableColorOverride.Description": "Используется ли пользовательский свет лампы экстерьера",
     "Settings.Sections.Exterior.ProjectedLight": "Проецируемый свет",

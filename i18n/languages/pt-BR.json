@@ -377,6 +377,8 @@
     "Settings.Sections.Exterior.Light.AlwaysOn.Description": "A luz externa deve sempre estar acesa a menos que desativada pelo controle?",
     "Settings.Sections.Exterior.Light.ColorOverride": "Substituir Cor",
     "Settings.Sections.Exterior.Light.ColorOverride.Description": "Substitui a cor da luz externa",
+    "Settings.Sections.Exterior.Light.DynamicLightSize": "",
+    "Settings.Sections.Exterior.Light.DynamicLightSize.Description": "",
     "Settings.Sections.Exterior.Light.EnableColorOverride": "Ativar Substituição de Cor da Luz",
     "Settings.Sections.Exterior.Light.EnableColorOverride.Description": "Controla a cor da luz externa",
     "Settings.Sections.Exterior.ProjectedLight": "Luz projetada pela porta",
