@@ -121,7 +121,7 @@ else
                 dlight.g = c.g
                 dlight.b = c.b
                 dlight.Brightness = light.dynamicbrightness
-                dlight.Decay = light.dynamicsize * light.dynamicbrightness * mult * size
+                dlight.Decay = 1500
                 dlight.Size = light.dynamicsize * mult * size
                 dlight.DieTime = CurTime() + 1
             end
