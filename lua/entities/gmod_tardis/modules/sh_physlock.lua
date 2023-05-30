@@ -104,15 +104,17 @@ ENT:AddHook("HandleE2", "physlock", function(self, name, e2, ...)
         return self:TogglePhyslock() and 1 or 0
     elseif name == "SetPhyslock" and TARDIS:CheckPP(e2.player, self) then
         local on = args[1]
+        local physlocked = self:GetPhyslock()
         if on == 1 then
-            if self:GetData("physlock",false) == false then
-                return self:SetPhyslock(true) and 1 or 0
+            if (not physlocked) and self:SetPhyslock(true) then
+                return 1
             end
         else
-            if self:GetData("physlock",false) == true then
-                return self:SetPhyslock(false) and 1 or 0
+            if physlocked and self:SetPhyslock(false) then
+                return 1
             end
         end
+        return 0
     end
 end)
 

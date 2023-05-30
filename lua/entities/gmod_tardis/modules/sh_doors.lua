@@ -90,20 +90,21 @@ if SERVER then
         local args = {...}
         if name == "SetDoors" and TARDIS:CheckPP(e2.player, self) then
             local on = args[1]
+            local open = self:DoorOpen(true)
             if on == 1 then
-                if self:GetData("doorstatereal",false) == false then
-                    return self:OpenDoor() and 1 or 0
+                if (not open) and self:OpenDoor() then
+                    return 1
                 end
             else
-                if self:GetData("doorstatereal",false) == true then 
-                    return self:CloseDoor() and 1 or 0
+                if open and self:CloseDoor() then 
+                    return 1
                 end
             end
+            return 0
         elseif name == "ToggleDoors" and TARDIS:CheckPP(e2.player, self) then
-            self:ToggleDoor()
-            return self:GetData("doorstatereal") and 1 or 0
+            return self:ToggleDoor() and 1 or 0
         elseif name == "GetDoors" then
-            return self:DoorOpen() and 1 or 0
+            return self:DoorOpen(true) and 1 or 0
         end
     end)
 

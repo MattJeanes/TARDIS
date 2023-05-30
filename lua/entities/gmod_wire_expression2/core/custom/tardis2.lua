@@ -17,11 +17,12 @@ local function getTardis(ent)
 end
 
 local function HandleE2(ent, type, name, e2, ...)
-    if IsValid(getTardis(ent)) then
-        if type == "Setter" and ent:CheckSecurity(e2.player) == false and e2.player:IsAdmin() == false then
+    local tardis = getTardis(ent)
+    if IsValid(tardis) then
+        if type == "Setter" and tardis:CheckSecurity(e2.player) == false then
             TARDIS:ErrorMessage(e2.player,"Expression2.Security.UseDenied")
         else
-            return ent:HandleE2(name, e2, ...)
+            return tardis:HandleE2(name, e2, ...)
         end
     else
         error(TARDIS:GetPhrase("Expression2.Error"),0)

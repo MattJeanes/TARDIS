@@ -51,18 +51,20 @@ if SERVER then
         if name == "Phase" and TARDIS:CheckPP(e2.player, self) then
             return (self:GetPower() and self:ToggleCloak()) and 1 or 0
         elseif name == "GetVisible" then
-            return self:GetData("cloak",false) and 0 or 1
+            return self:GetCloak() and 0 or 1
         elseif name == "SetPhase" and TARDIS:CheckPP(e2.player, self) then
             local on = args[1]
+            local cloak = self:GetCloak()
             if on == 1 then
-                if self:GetData("cloak",false) == false then
-                    return self:SetCloak(true) and 1 or 0
+                if (not cloak) and self:SetCloak(true) then
+                    return 1
                 end
             else
-                if self:GetData("cloak",false) == true then
-                    return self:SetCloak(false) and 1 or 0
+                if cloak and self:SetCloak(false) then
+                    return 1
                 end
             end
+            return 0
         end
     end)
 

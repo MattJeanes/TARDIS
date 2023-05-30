@@ -274,7 +274,7 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
         end
 
         local tp_metadata = ext.metadata.Exterior.Teleport
-        local fast = ext:GetData("demat-fast")
+        local fast = ext:GetFastRemat()
         local mat, demat = ext:GetData("mat"), ext:GetData("demat")
         dst_progress:SetVisible(true)
 

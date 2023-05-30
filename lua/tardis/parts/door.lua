@@ -68,7 +68,7 @@ if SERVER then
                 end
             else
                 if self.exterior.metadata.EnableClassicDoors == true and not self.ExteriorPart then return end
-                if (self.exterior:GetData("repair-primed",false) or self.exterior:GetData("repairing",false)) and self.ExteriorPart then return end
+                if (self.exterior:GetRepairPrimed() or self.exterior:GetRepairing()) and self.ExteriorPart then return end
                 self.exterior:ToggleDoor()
             end
         end

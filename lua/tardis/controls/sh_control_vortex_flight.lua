@@ -2,7 +2,7 @@ TARDIS:AddControl({
     id = "vortex_flight",
     ext_func = function(self,ply)
         if self:ToggleFastRemat() then
-            TARDIS:StatusMessage(ply, "Controls.VortexFlight.Status", self:GetData("demat-fast"), "Common.Disabled.Lower", "Common.Enabled.Lower")
+            TARDIS:StatusMessage(ply, "Controls.VortexFlight.Status", self:GetFastRemat(), "Common.Disabled.Lower", "Common.Enabled.Lower")
         else
             TARDIS:ErrorMessage(ply, "Controls.VortexFlight.FailedToggle")
         end

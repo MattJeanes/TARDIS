@@ -1,7 +1,15 @@
 -- Vortex / fast remat related functions
 
+function ENT:GetFastRemat()
+    return self:GetData("demat-fast",false)
+end
+
+if CLIENT then
+    return
+end
+
 ENT:AddHook("StopDemat", "no_vortex", function(self)
-    if self:GetData("demat-fast",false) then
+    if self:GetFastRemat() then
         self:Timer("fastremat", 0.3, function()
             if not IsValid(self) then return end
             self:Mat()
@@ -10,18 +18,18 @@ ENT:AddHook("StopDemat", "no_vortex", function(self)
 end)
 
 function ENT:ToggleFastRemat()
-    if self:CallHook("CanToggleFastRemat") ~= false then
-        local on = not self:GetData("demat-fast",false)
-        return self:SetFastRemat(on)
-    end
+    local on = not self:GetFastRemat()
+    return self:SetFastRemat(on)
 end
 
 function ENT:SetFastRemat(on)
-    if self:CallHook("CanToggleFastRemat") ~= false then
-        self:SetData("demat-fast",on,true)
-        self:CallHook("FastRematToggled", on)
-        return true
+    if self:CallHook("CanToggleFastRemat") == false then
+        return false
     end
+
+    self:SetData("demat-fast",on,true)
+    self:CallHook("FastRematToggled", on)
+    return true
 end
 
 ENT:AddHook("CanToggleFastRemat", "vortex", function(self)

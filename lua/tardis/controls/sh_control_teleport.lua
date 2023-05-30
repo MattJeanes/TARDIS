@@ -16,7 +16,7 @@ TARDIS:AddControl({
                 else
                     if self:GetData("doorstatereal", false) and not TARDIS:GetSetting("teleport-door-autoclose", self) then
                         TARDIS:ErrorMessage(ply, "Controls.Teleport.FailedDematDoorsOpen")
-                    elseif self:GetData("handbrake", false) then
+                    elseif self:GetHandbrake() then
                         TARDIS:ErrorMessage(ply, "Controls.Teleport.FailedDematHandbrake")
                     else
                         TARDIS:ErrorMessage(ply, "Controls.Teleport.FailedDemat")

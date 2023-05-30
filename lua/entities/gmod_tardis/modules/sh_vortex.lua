@@ -9,7 +9,7 @@ function ENT:IsVortexEnabled(pilot)
 end
 
 ENT:AddHook("VortexEnabled", "demat-fast", function(self, pilot)
-    if self:GetData("demat-fast", false) then
+    if self:GetFastRemat() then
         return false
     end
 end)
