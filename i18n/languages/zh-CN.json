@@ -395,6 +395,8 @@
     "Settings.Sections.Exterior.ProjectedLight.EnableDistanceOverride": "启用光距覆盖",
     "Settings.Sections.Exterior.ProjectedLight.EnableDistanceOverride.Description": "是否启用投射光光距覆盖",
     "Settings.Sections.Global": "管理员选项",
+    "Settings.Sections.Global.AdminSecurityBypass": "",
+    "Settings.Sections.Global.AdminSecurityBypass.Description": "",
     "Settings.Sections.Global.ArtronEnergy": "Artron 能源",
     "Settings.Sections.Global.ArtronEnergy.ArtronEnergyChargeFrequency": "无手制的充电频率(秒)",
     "Settings.Sections.Global.ArtronEnergy.ArtronEnergyChargeFrequency.Description": "在没有手持手枪的情况下，多长时间发生引爆引爆装置的情况？",

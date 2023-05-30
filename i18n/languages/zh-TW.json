@@ -395,6 +395,8 @@
     "Settings.Sections.Exterior.ProjectedLight.EnableDistanceOverride": "啟用光距覆蓋",
     "Settings.Sections.Exterior.ProjectedLight.EnableDistanceOverride.Description": "是否啟用投射光光距覆蓋",
     "Settings.Sections.Global": "管理員選項",
+    "Settings.Sections.Global.AdminSecurityBypass": "",
+    "Settings.Sections.Global.AdminSecurityBypass.Description": "",
     "Settings.Sections.Global.ArtronEnergy": "雅昌能源",
     "Settings.Sections.Global.ArtronEnergy.ArtronEnergyChargeFrequency": "無手剎時的充電頻率（以秒為單位）",
     "Settings.Sections.Global.ArtronEnergy.ArtronEnergyChargeFrequency.Description": "在沒有手剎的情況下，雅昌能量的充電頻率是多少？",

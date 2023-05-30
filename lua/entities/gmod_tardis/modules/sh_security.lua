@@ -5,7 +5,7 @@ function ENT:GetSecurity()
 end
 
 function ENT:CheckSecurity(ply)
-    return (not self:GetSecurity()) or (ply==self:GetCreator()) or ply:IsAdmin()
+    return (not self:GetSecurity()) or (ply==self:GetCreator()) or (TARDIS:GetSetting("admin_security_bypass") and ply:IsAdmin())
 end
 
 if SERVER then

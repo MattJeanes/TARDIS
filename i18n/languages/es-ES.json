@@ -395,6 +395,8 @@
     "Settings.Sections.Exterior.ProjectedLight.EnableDistanceOverride": "Habilitar anulación de distancia",
     "Settings.Sections.Exterior.ProjectedLight.EnableDistanceOverride.Description": "Control si el reemplazo de la distancia de la luz proyectada está activado",
     "Settings.Sections.Global": "Opciones de Administrador",
+    "Settings.Sections.Global.AdminSecurityBypass": "",
+    "Settings.Sections.Global.AdminSecurityBypass.Description": "",
     "Settings.Sections.Global.ArtronEnergy": "Energía Artron",
     "Settings.Sections.Global.ArtronEnergy.ArtronEnergyChargeFrequency": "Frecuencia de carga sin frenos (en segundos)",
     "Settings.Sections.Global.ArtronEnergy.ArtronEnergyChargeFrequency.Description": "¿Con qué frecuencia ocurre la carga de la energía artron sin frenos?",

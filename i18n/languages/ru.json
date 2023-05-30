@@ -395,6 +395,8 @@
     "Settings.Sections.Exterior.ProjectedLight.EnableDistanceOverride": "Включить пользовательское расстояние",
     "Settings.Sections.Exterior.ProjectedLight.EnableDistanceOverride.Description": "Включено ли пользовательское расстояние световой проекции",
     "Settings.Sections.Global": "Настройки администратора",
+    "Settings.Sections.Global.AdminSecurityBypass": "",
+    "Settings.Sections.Global.AdminSecurityBypass.Description": "",
     "Settings.Sections.Global.ArtronEnergy": "Артронная Энергия",
     "Settings.Sections.Global.ArtronEnergy.ArtronEnergyChargeFrequency": "Частота зарядки без ручного тормоза (в секундах)",
     "Settings.Sections.Global.ArtronEnergy.ArtronEnergyChargeFrequency.Description": "Как часто без ручного тормоза происходит зарядка энергии артрона?",

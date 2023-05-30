@@ -395,6 +395,8 @@
     "Settings.Sections.Exterior.ProjectedLight.EnableDistanceOverride": "Mesafe Geçersiz Kılmayı Etkinleştir",
     "Settings.Sections.Exterior.ProjectedLight.EnableDistanceOverride.Description": "Yansıtılan ışık mesafesinin geçersiz kılınmasının etkinleştirilip etkinleştirilmediği",
     "Settings.Sections.Global": "Yönetici Seçenekleri",
+    "Settings.Sections.Global.AdminSecurityBypass": "",
+    "Settings.Sections.Global.AdminSecurityBypass.Description": "",
     "Settings.Sections.Global.ArtronEnergy": "Artron Enerji",
     "Settings.Sections.Global.ArtronEnergy.ArtronEnergyChargeFrequency": "El freni olmadan şarj frekansı (saniye cinsinden)",
     "Settings.Sections.Global.ArtronEnergy.ArtronEnergyChargeFrequency.Description": "Artron enerjisinin şarjı ne sıklıkla el freni olmadan gerçekleşir?",
