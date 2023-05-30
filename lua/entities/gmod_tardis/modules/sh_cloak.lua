@@ -46,11 +46,25 @@ if SERVER then
         return self:SetCloak(on)
     end
 
-    ENT:AddHook("HandleE2", "cloak", function(self,name,e2)
+    ENT:AddHook("HandleE2", "cloak", function(self, name, e2, ...)
+        local args = {...}
         if name == "Phase" and TARDIS:CheckPP(e2.player, self) then
             return (self:GetPower() and self:ToggleCloak()) and 1 or 0
         elseif name == "GetVisible" then
-            return self:GetData("cloak",false) and 0 or 1
+            return self:GetCloak() and 0 or 1
+        elseif name == "SetPhase" and TARDIS:CheckPP(e2.player, self) then
+            local on = args[1]
+            local cloak = self:GetCloak()
+            if on == 1 then
+                if (not cloak) and self:SetCloak(true) then
+                    return 1
+                end
+            else
+                if cloak and self:SetCloak(false) then
+                    return 1
+                end
+            end
+            return 0
         end
     end)
 

@@ -24,7 +24,7 @@ if SERVER then
 
         if not on then
             self:SetData("redecorate", false, true)
-            if self:GetData("repair-primed") then
+            if self:GetRepairPrimed() then
                 self:SetRepair(false)
                 return true
             end
@@ -45,7 +45,7 @@ if SERVER then
 
         self:CallHook("RedecorateToggled", on)
 
-        if not self:GetData("repair-primed") and not self:SetRepair(true) then
+        if not self:GetRepairPrimed() and not self:SetRepair(true) then
             return false
         end
         if random_int then
@@ -130,7 +130,7 @@ if SERVER then
 
             self:SetData("redecorate_parent_data", customdata.saved_data, true)
 
-            local vortex = (not parent:GetData("demat-fast"))
+            local vortex = (not parent:GetFastRemat())
             self:SetData("redecorate_parent_vortex", vortex, true)
         end
     end)

@@ -33,7 +33,7 @@ if SERVER then
             return
         end
 
-        if self:GetData("demat-fast", false) then
+        if self:GetFastRemat() then
             if pos == self:GetPos() or pos == nil then
                 if callback then callback(false) end
                 return

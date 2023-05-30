@@ -16,7 +16,7 @@ ENT:AddHook("SettingChanged","maxhealth-changed", function(self, id, val)
 end)
 
 function ENT:ChangeHealth(newhealth)
-    if self:GetData("repairing", false) then
+    if self:GetRepairing() then
         return
     end
     local maxhealth = TARDIS:GetSetting("health-max")
@@ -68,8 +68,16 @@ if SERVER then
         explode:Fire("Explode", 0, 0 )
     end
 
+    function ENT:GetRepairPrimed()
+        return self:GetData("repair-primed",false)
+    end
+
+    function ENT:GetRepairing()
+        return self:GetData("repairing",false)
+    end
+
     function ENT:ToggleRepair()
-        local on = not self:GetData("repair-primed",false)
+        local on = not self:GetRepairPrimed()
         return self:SetRepair(on)
     end
     function ENT:SetRepair(on)
@@ -189,37 +197,37 @@ if SERVER then
     end)
 
     ENT:AddHook("CanTogglePower", "health", function(self)
-        if (not (self:GetData("health-val", 0) > 0)) or (self:GetData("repairing",false) or self:GetData("repair-primed", false)) then
+        if (not (self:GetData("health-val", 0) > 0)) or (self:GetRepairing() or self:GetRepairPrimed()) then
             return false
         end
     end)
 
     ENT:AddHook("CanLock", "repair", function(self)
-        if (not self:GetData("repairing",false)) then return true end
+        if (not self:GetRepairing()) then return true end
     end)
 
     ENT:AddHook("PostPlayerExit", "repair", function(self,ply,forced,notp)
-        if (self:GetData("repair-primed",false)==true) and (table.IsEmpty(self.occupants)) then
+        if (self:GetRepairPrimed()==true) and (table.IsEmpty(self.occupants)) then
             self:SetData("repair-shouldstart", true)
             self:SetData("repair-delay", CurTime()+0.3)
         end
     end)
 
     ENT:AddHook("PlayerEnter", "repair", function(self,ply,forced,notp)
-        if (self:GetData("repair-primed",false)==true) and table.Count(self.occupants)>=0 then
+        if (self:GetRepairPrimed()==true) and table.Count(self.occupants)>=0 then
             self:SetData("repair-shouldstart", false)
         end
     end)
 
     ENT:AddHook("LockedUse", "repair", function(self, a)
-        if self:GetData("repairing") then
+        if self:GetRepairing() then
             TARDIS:Message(a, "Health.Repairing", math.floor(self:GetRepairTime()))
             return true
         end
     end)
 
     ENT:AddHook("Think", "repair", function(self)
-        if self:GetData("repair-primed", false) and self:CallHook("CanRepair") == false then
+        if self:GetRepairPrimed() and self:CallHook("CanRepair") == false then
             self:SetData("repair-primed", false, true)
             self:SetPower(true)
             for k,_ in pairs(self.occupants) do
@@ -227,12 +235,12 @@ if SERVER then
             end
         end
 
-        if self:GetData("repair-primed",false) and self:GetData("repair-shouldstart") and CurTime() > self:GetData("repair-delay") then
+        if self:GetRepairPrimed() and self:GetData("repair-shouldstart") and CurTime() > self:GetData("repair-delay") then
             self:SetData("repair-shouldstart", false)
             self:StartRepair()
         end
 
-        if (self:GetData("repairing",false) and CurTime()>self:GetData("repair-time",0)) then
+        if (self:GetRepairing() and CurTime()>self:GetData("repair-time",0)) then
             self:FinishRepair()
         end
     end)
@@ -268,7 +276,7 @@ if SERVER then
     end)
 
     ENT:AddHook("ShouldTakeDamage", "repair", function(self, dmginfo)
-        if self:GetData("repairing",false) then return false end
+        if self:GetRepairing() then return false end
     end)
 
     ---------------------------------
@@ -345,15 +353,28 @@ if SERVER then
         self:SendMessage("health_warning_toggled", {on})
     end)
 
-    ENT:AddHook("HandleE2", "health", function(self,name,e2)
+    ENT:AddHook("HandleE2", "health", function(self, name, e2, ...)
+        local args = {...}
         if name == "GetHealth" then
             return self:GetHealthPercent()
         elseif name == "Selfrepair" and TARDIS:CheckPP(e2.player, self) then
-            self:ToggleRepair()
-            return self:GetData("repair-primed",false) and 1 or 0
+            return self:ToggleRepair() and 1 or 0
+        elseif name == "SetSelfrepair" and TARDIS:CheckPP(e2.player, self) then
+            local on = args[1]
+            local primed = self:GetRepairPrimed()
+            if on == 1 then
+                if (not primed) and self:SetRepair(true) then
+                    return 1
+                end
+            else
+                if primed and self:SetRepair(false) then
+                    return 1
+                end
+            end
+            return 0
         elseif name == "GetSelfrepairing" then
-            local repairing = self:GetData("repairing",false)
-            local primed = self:GetData("repair-primed",false)
+            local repairing = self:GetRepairing()
+            local primed = self:GetRepairPrimed()
             if repairing then
                 return 1
             elseif primed then
@@ -361,11 +382,17 @@ if SERVER then
             else
                 return 0
             end
+        elseif name == "GetRepairTime" then
+            if self:GetRepairing() then
+                return self:GetRepairTime()
+            else
+                return 0
+            end
         end
     end)
 
     ENT:AddHook("ShouldUpdateArtron", "repair", function(self)
-        if self:GetData("repair-primed") or self:GetData("repairing") then
+        if self:GetRepairPrimed() or self:GetRepairing() then
             return false
         end
     end)

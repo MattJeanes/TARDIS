@@ -86,10 +86,24 @@ if SERVER then
         end
     end
 
-    ENT:AddHook("HandleE2", "door", function(self,name,e2)
-        if name == "Door" and TARDIS:CheckPP(e2.player, self) then
+    ENT:AddHook("HandleE2", "doors", function(self, name, e2, ...)
+        local args = {...}
+        if name == "SetDoors" and TARDIS:CheckPP(e2.player, self) then
+            local on = args[1]
+            local open = self:DoorOpen(true)
+            if on == 1 then
+                if (not open) and self:OpenDoor() then
+                    return 1
+                end
+            else
+                if open and self:CloseDoor() then 
+                    return 1
+                end
+            end
+            return 0
+        elseif name == "ToggleDoors" and TARDIS:CheckPP(e2.player, self) then
             return self:ToggleDoor() and 1 or 0
-        elseif name == "GetDoor" then
+        elseif name == "GetDoors" then
             return self:DoorOpen(true) and 1 or 0
         end
     end)

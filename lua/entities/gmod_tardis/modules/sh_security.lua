@@ -5,13 +5,14 @@ function ENT:GetSecurity()
 end
 
 function ENT:CheckSecurity(ply)
-    return (not self:GetSecurity()) or (ply==self:GetCreator())
+    return (not self:GetSecurity()) or (ply==self:GetCreator()) or ply:IsAdmin()
 end
 
 if SERVER then
     function ENT:SetSecurity(on)
         self:CallHook("SecurityToggled", on)
-        return self:SetData("security", on, true)
+        self:SetData("security", on, true)
+        return true
     end
 
     function ENT:ToggleSecurity()
@@ -48,16 +49,24 @@ ENT:AddHook("CanChangePilot", "flight", function(self, ply)
     end
 end)
 
-ENT:AddHook("HandleE2", "security", function(self,name,e2)
-    if IsValid(self.interior) then
-        if name == "Isomorph" and TARDIS:CheckPP(e2.player, self) then
-            return self:ToggleSecurity() and 1 or 0
-        elseif name == "GetIsomorphic" then
-            return self:GetSecurity() and 1 or 0
+ENT:AddHook("HandleE2", "security", function(self, name, e2, ...)
+    local args = {...}
+    if name == "Isomorph" and TARDIS:CheckPP(e2.player, self) then
+        return self:ToggleSecurity() and 1 or 0
+    elseif name == "GetIsomorphic" then
+        return self:GetSecurity() and 1 or 0
+    elseif name == "SetIsomorph" and TARDIS:CheckPP(e2.player, self) then
+        local on = args[1]
+        local security = self:GetSecurity()
+        if on == 1 then
+            if (not security) and self:SetSecurity(true) then
+                return 1
+            end
+        else
+            if security and self:SetSecurity(false) then
+                return 1
+            end
         end
-    else
-        if name == "Isomorph" or name == "GetIsomorphic" then
-            return 0
-        end
+        return 0
     end
 end)

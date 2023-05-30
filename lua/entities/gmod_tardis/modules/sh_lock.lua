@@ -70,7 +70,8 @@ if SERVER then
         end
     end)
 
-    ENT:AddHook("HandleE2", "lock", function(self,name,e2)
+    ENT:AddHook("HandleE2", "lock", function(self, name, e2, ...)
+        local args = {...}
         if name == "GetLocked" then
             if self:Locked() or self:Locking() then
                 return 1
@@ -79,6 +80,19 @@ if SERVER then
             end
         elseif name == "Lock" and TARDIS:CheckPP(e2.player, self) then
             return self:ToggleLocked() and 1 or 0
+        elseif name == "SetLock" and TARDIS:CheckPP(e2.player, self) then
+            local on = args[1]
+            local locked = self:Locked()
+            if on == 1 then
+                if (not locked) and self:SetLocked(true) then
+                    return 1
+                end
+            else
+                if locked and self:SetLocked(false) then
+                    return 1
+                end
+            end
+            return 0
         end
     end)
 else

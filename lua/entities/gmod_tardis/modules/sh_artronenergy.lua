@@ -79,7 +79,7 @@ if SERVER then
     end)
 
     local function ArtronDematCheck(self)
-        local fast = self:GetData("demat-fast", false)
+        local fast = self:GetFastRemat()
         local artron = self:GetData("artron-val", 0)
 
         if self:CallHook("ShouldUpdateArtron") == false then return end
@@ -106,7 +106,7 @@ if SERVER then
         if not TARDIS:GetSetting("artron_energy") then return end
         if self:CallHook("ShouldUpdateArtron") == false then return end
 
-        local fast = self:GetData("demat-fast", false)
+        local fast = self:GetFastRemat()
         local artron = self:GetData("artron-val", 0)
         if not fast and artron < -TARDIS.artron_values.cost_mat then
             return true
@@ -142,7 +142,7 @@ if SERVER then
         local vortex = self:GetData("vortex")
         local teleport = self:GetData("teleport")
         local flight = self:GetData("flight")
-        local handbrake = self:GetData("handbrake")
+        local handbrake = self:GetHandbrake()
         local cloak = self:GetCloak()
         local float = self:GetData("floatfirst")
         local warning = self:GetData("health-warning")
@@ -244,7 +244,7 @@ if SERVER then
                 return
             end
             self:AddArtron(TARDIS.artron_values.cost_fast_return)
-        elseif self:GetData("demat-fast", false) then
+        elseif self:GetFastRemat() then
             self:AddArtron(TARDIS.artron_values.cost_full)
         else
             self:AddArtron(TARDIS.artron_values.cost_demat)
@@ -255,7 +255,7 @@ if SERVER then
         if not TARDIS:GetSetting("artron_energy") then return end
         if self:CallHook("ShouldUpdateArtron") == false then return end
 
-        if self:GetData("demat-fast",false) ~= true then
+        if self:GetFastRemat() ~= true then
             self:AddArtron(TARDIS.artron_values.cost_mat)
         end
     end)

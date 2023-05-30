@@ -114,14 +114,14 @@ local function old_virtual_console(self,ext,int,frame,screen)
     local vortex_flight=vgui.Create("DButton",frame)
     vortex_flight:SetSize( frame:GetWide()*0.2, frame:GetTall()*0.2 )
     vortex_flight:SetPos(frame:GetWide()*0.13 - vortex_flight:GetWide()*0.5,frame:GetTall()*0.4 - vortex_flight:GetTall()*0.5)
-    vortex_flight:SetText(TARDIS:GetPhrase("Screens.VirtualConsole.Old.FastRemat").." "..TARDIS:GetPhrase(ext:GetData("demat-fast") and "Common.Enabled.Lower" or "Common.Disabled.Lower"))
+    vortex_flight:SetText(TARDIS:GetPhrase("Screens.VirtualConsole.Old.FastRemat").." "..TARDIS:GetPhrase(ext:GetFastRemat() and "Common.Enabled.Lower" or "Common.Disabled.Lower"))
     vortex_flight:SetFont(TARDIS:GetScreenFont(screen, "Default"))
     vortex_flight.DoClick = function(self)
         TARDIS:Control("vortex_flight", LocalPlayer())
     end
-    vortex_flight.oldon = ext:GetData("demat-fast")
+    vortex_flight.oldon = ext:GetFastRemat()
     function vortex_flight:Think()
-        local on = ext:GetData("demat-fast")
+        local on = ext:GetFastRemat()
         if self.oldon == on then return end
         if on then
             self:SetText(TARDIS:GetPhrase("Screens.VirtualConsole.Old.FastRemat").." "..TARDIS:GetPhrase("Common.Enabled.Lower"))
