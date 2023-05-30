@@ -240,6 +240,7 @@ else
             local int = self.metadata.Interior.Sounds.Teleport
 
             local sound_demat_ext = ext.demat
+            local sound_demat_fast_ext = ext.demat_fast
             local sound_demat_int = int.demat or ext.demat
             local sound_fullflight_ext = ext.fullflight
             local sound_fullflight_int = int.fullflight or ext.fullflight
@@ -248,6 +249,7 @@ else
                 and not self:GetData("redecorate")
             then
                 sound_demat_ext = ext.demat_damaged
+                sound_demat_fast_ext = ext.demat_damaged
                 sound_demat_int = int.demat_damaged or ext.demat_damaged
                 sound_fullflight_ext = ext.fullflight_damaged
                 sound_fullflight_int = int.fullflight_damaged or ext.fullflight_damaged
@@ -274,7 +276,7 @@ else
                     end
                 end
             elseif shouldPlayExterior then
-                sound.Play(sound_demat_ext,self:GetPos())
+                sound.Play(sound_demat_fast_ext,self:GetPos())
                 if pos and self:GetFastRemat() then
                     if not IsValid(self) then return end
                     if self:GetData("health-warning", false) and (self:GetFastRemat())==true then

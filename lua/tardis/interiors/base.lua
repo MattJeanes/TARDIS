@@ -90,6 +90,7 @@ T.Exterior = {
         Teleport = {
             demat = "p00gie/tardis/base/demat.wav",
             demat_damaged = "drmatt/tardis/demat_damaged.wav",
+            demat_fast = "p00gie/tardis/base/demat.wav",
             demat_fail = "drmatt/tardis/demat_fail.wav",
             mat = "p00gie/tardis/base/mat.wav",
             mat_damaged = "jeredek/tardis/mat_damaged.wav",
