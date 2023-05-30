@@ -260,7 +260,7 @@ else
             if LocalPlayer():GetTardisData("exterior")==self then
                 local intsound = int.demat or ext.demat
                 local extsound = ext.demat
-                if (self:GetFastRemat())==true then
+                if self:GetFastRemat() then
                     if shouldPlayInterior then
                         self.interior:EmitSound(sound_fullflight_int)
                     end
@@ -276,7 +276,11 @@ else
                     end
                 end
             elseif shouldPlayExterior then
-                sound.Play(sound_demat_fast_ext,self:GetPos())
+                if self:GetFastRemat() then
+                    sound.Play(sound_demat_fast_ext,self:GetPos())
+                else
+                    sound.Play(sound_demat_ext,self:GetPos())
+                end
                 if pos and self:GetFastRemat() then
                     if not IsValid(self) then return end
                     if self:GetData("health-warning", false) and (self:GetFastRemat())==true then
