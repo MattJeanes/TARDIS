@@ -81,12 +81,12 @@ if SERVER then
     ENT:AddHook("StopDemat","hads",function(self)
         if self:GetData("hads-triggered",false) then
             self:SetData("hads-triggered",false,true)
+            self:UpdateWarning()
         end
     end)
 
     ENT:AddHook("StopMat", "hads", function(self)
         self:SetData("hads-auto-remat", nil, true)
-        self:UpdateWarning()
     end)
 
     ENT:AddHook("InterruptTeleport", "hads-data", function(self)
