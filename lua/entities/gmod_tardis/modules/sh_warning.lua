@@ -17,7 +17,7 @@ if SERVER then
     end
 
     function ENT:UpdateWarning()
-        if (self:CallCommonHook("ShouldWarningBeEnabled") == true) != self:GetWarning() then
+        if (self:CallCommonHook("ShouldWarningBeEnabled") == true) ~= self:GetWarning() then
             self:ToggleWarning()
         end
     end
