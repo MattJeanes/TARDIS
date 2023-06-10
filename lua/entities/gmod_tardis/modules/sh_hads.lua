@@ -64,6 +64,16 @@ if SERVER then
         self:TriggerHADS()
     end)
 
+    ENT:AddHook("HADSTrigger", "warning", function(self)
+        self:UpdateWarning()
+    end)
+
+    ENT:AddHook("ShouldWarningBeEnabled","hads", function(self)
+        if self:GetData("hads-triggered") then
+            return true
+        end
+    end)
+
     ENT:AddHook("MatStart", "hads-cancel-remat", function(self)
         self:SetData("hads-need-remat", nil, true)
     end)
@@ -71,6 +81,7 @@ if SERVER then
     ENT:AddHook("StopDemat","hads",function(self)
         if self:GetData("hads-triggered",false) then
             self:SetData("hads-triggered",false,true)
+            self:UpdateWarning()
         end
     end)
 
