@@ -7,12 +7,14 @@ cvars.AddChangeCallback("tardis2_debug", function()
 end)
 
 CreateConVar("tardis2_debug_chat", 0, {FCVAR_ARCHIVE, FCVAR_REPLICATED}, "TARDIS - print debug to chat as well")
+
 cvars.AddChangeCallback("tardis2_debug_chat", function()
     TARDIS.debug_chat = GetConVar("tardis2_debug_chat"):GetBool()
 end)
 
 CreateConVar("tardis2_debug_textures", 0, {FCVAR_ARCHIVE, FCVAR_REPLICATED},
     "TARDIS - print the list of textures in TextureSet / ChangeTexture form")
+
 cvars.AddChangeCallback("tardis2_debug_textures", function()
     TARDIS.debug_textures = GetConVar("tardis2_debug_textures"):GetBool()
 end)
@@ -23,7 +25,7 @@ TARDIS.debug_textures = GetConVar("tardis2_debug_textures"):GetBool()
 
 concommand.Add("tardis2_debug_warning", function(ply,cmd,args)
     local ext = ply:GetTardisData("exterior")
-    if not ext or not ply:IsAdmin() then return end
+    if not IsValid(ext) or not ply:IsAdmin() then return end
 
     local oldval = ext:GetData("health-val", 0)
 
@@ -37,9 +39,16 @@ end)
 
 concommand.Add("tardis2_debug_power", function(ply,cmd,args)
     local ext = ply:GetTardisData("exterior")
-    if not ext or not ply:IsAdmin() then return end
+    if not IsValid(ext) or not ply:IsAdmin() then return end
 
     ext:TogglePower()
+end)
+
+concommand.Add("tardis2_debug_ply_pos", function(ply,cmd,args)
+    local int = ply:GetTardisData("interior")
+    if not IsValid(int) then return end
+
+    print(tostring(int:WorldToLocal(ply:GetPos())))
 end)
 
 if SERVER then
