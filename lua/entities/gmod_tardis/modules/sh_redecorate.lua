@@ -163,7 +163,7 @@ if SERVER then
         local phys = self:GetPhysicsObject()
 
         constraint.RemoveAll(parent) -- drop everything attached
-        parent:SetFastRemat(true)
+        parent:SetFastRemat(true, true)
 
         parent:SetPhyslock(true)
         parent:ForcePlayerDrop()
@@ -175,7 +175,7 @@ if SERVER then
             parent:SetData("redecorate_mat_started", true)
 
             phys:Wake()
-            self:SetFastRemat(true)
+            self:SetFastRemat(true, true)
             self:Mat()
 
             local ply = self:GetCreator()
