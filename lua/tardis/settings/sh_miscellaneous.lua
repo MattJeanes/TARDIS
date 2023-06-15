@@ -185,7 +185,7 @@ TARDIS:AddSetting({
 TARDIS:AddSetting({
     id="tips_show_all",
     type="bool",
-    value=false,
+    value=true,
 
     class="local",
 
