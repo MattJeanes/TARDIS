@@ -115,6 +115,7 @@ T.Exterior = {
         FlightLoopDamaged = "drmatt/tardis/flight_loop_damaged.wav",
         FlightLand = "p00gie/tardis/base/tardis_landing.wav",
         FlightFall = "p00gie/tardis/fall.wav",
+        FlightFallWind = "p00gie/tardis/falling_wind.wav",
         Cloak = "drmatt/tardis/phase_enable.wav",
         CloakOff = "drmatt/tardis/phase_disable.wav",
         Hum = nil,
