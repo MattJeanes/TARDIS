@@ -230,6 +230,7 @@ else
     end
 
     local function setup(ent, model, pos, ang)
+        if not IsValid(ent) then return end
         local prop = ents.CreateClientProp()
 
         prop:SetModel(model or ent:GetModel())
@@ -294,7 +295,9 @@ else
                     attachment = setup(v)
                 end
 
-                attachment:SetParent(prop)
+                if IsValid(attachment) then
+                    attachment:SetParent(prop)
+                end
             end
         end
 
