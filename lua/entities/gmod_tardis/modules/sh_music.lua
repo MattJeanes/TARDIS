@@ -100,7 +100,7 @@ ENT:OnMessage("play-music", function(self, data, ply)
 
     self:StopMusic(false)
 
-    sound.PlayURL(url, "noblock", function(station,errorid,errorname)
+    sound.PlayURL(url, "", function(station,errorid,errorname)
         if station then
             station:SetVolume(1)
             station:Play()
