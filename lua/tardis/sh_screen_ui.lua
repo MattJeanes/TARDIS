@@ -212,9 +212,8 @@ end
 
 function TARDIS:RemoveHUDScreen()
     if IsValid(self.screenpopframe) then
-        local curscreen = self.screenpop.curscreen
-        if IsValid(curscreen) and curscreen.OnCloseScreen then
-            local result = curscreen:OnCloseScreen()
+        if self.screenpop and IsValid(self.screenpop.curscreen) and self.screenpop.curscreen.OnCloseScreen then
+            local result = self.screenpop.curscreen:OnCloseScreen()
             if result == false then
                 return
             end
