@@ -371,6 +371,7 @@ T.Phrases = {
     ["Screens.VirtualConsole.Old.Repair"] = "Repair TARDIS",
     ["Screens.VirtualConsole.Old.TogglePower"] = "Toggle Power",
     ["Screens.VirtualConsole.Old.UnlockDoor"] = "Unlock door",
+    ["Screens.CompanionSystem"] = "Companions",
     ["Security.ControlUseDenied"] = "This TARDIS uses Isomorphic Security. You may not use any controls",
     ["Settings.NoPermissionGlobalSettings"] = "You don't have permissions to edit global settings",
     ["Settings.Sections.Binds"] = "Binds",

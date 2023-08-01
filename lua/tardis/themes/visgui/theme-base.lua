@@ -18,6 +18,7 @@ local theme = {
         -- main = "",
         -- coordinates = "",
         -- music = "",
+        -- companions = "",
     },
     text_icons_off = {
         subfolder = nil,

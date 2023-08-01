@@ -18,6 +18,7 @@ local theme = {
         coordinates = "console.png",
         music = "console.png",
         main = "default.png",
+        companions = "console.png",
     },
     text_icons_off = {
         subfolder = "off",
