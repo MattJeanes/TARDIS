@@ -241,10 +241,15 @@ if SERVER then
     end)
 
     ENT:AddHook("PhysicsCollide", "Health", function(self, data, collider)
+
         if self:IsPlayerHolding() then
-            self:SetVelocity(Vector(0,0,0))
-            self:ForcePlayerDrop()
+            local last_dmg = self:GetData("damage_last_by_ply", 0)
+            if CurTime() - last_dmg < 1 then return end
+            self:SetData("damage_last_by_ply", CurTime())
+        else
+            self:SetData("damage_last_by_ply", 0)
         end
+
         if not TARDIS:GetSetting("health-enabled") then return end
         if (data.Speed < 300) then return end
         local newhealth = self:GetHealth() - (data.Speed / 23)
