@@ -51,6 +51,10 @@ function ENT:GetHealth()
     return self:GetData("health-val", 0)
 end
 
+function ENT:IsAlive()
+    return (self:GetHealth() ~= 0)
+end
+
 function ENT:GetRepairPrimed()
     return self:GetData("repair-primed",false)
 end
