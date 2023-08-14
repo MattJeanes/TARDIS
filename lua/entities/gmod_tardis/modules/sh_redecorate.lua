@@ -171,8 +171,10 @@ if SERVER then
         parent:SetCollisionGroup(COLLISION_GROUP_IN_VEHICLE)
 
         self:Timer("redecorate_materialise", 1, function()
-            parent:ForcePlayerDrop()
-            parent:SetData("redecorate_mat_started", true)
+            if IsValid(parent) then
+                parent:ForcePlayerDrop()
+                parent:SetData("redecorate_mat_started", true)
+            end
 
             phys:Wake()
             self:SetFastRemat(true, true)
