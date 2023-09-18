@@ -154,7 +154,7 @@ TARDIS:AddSetting({
 TARDIS:AddSetting({
     id="admin_security_bypass",
     type="bool",
-    value=true,
+    value=false,
 
     class="global",
     convar = {
