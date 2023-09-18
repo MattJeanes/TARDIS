@@ -140,7 +140,7 @@ if SERVER then
             self:SetData("teleport",true)
             self:CallHook("PreMatStart")
 
-            local timerdelay = (self:GetData("demat-fast",false) and 1.9 or 8.5)
+            local timerdelay = (self:GetFastRemat() and 1.9 or 8.5)
             self:Timer("matdelay", timerdelay, function()
                 if not IsValid(self) then return end
                 self:SendMessage("mat")
@@ -209,7 +209,7 @@ if SERVER then
     end)
 
     ENT:AddHook("StopDemat", "vortex-random-pos", function(self)
-        if not self:GetData("demat-fast", false)
+        if not self:GetFastRemat()
             and not self:GetData("redecorate")
             and not self:GetData("redecorate_parent")
         then
@@ -240,6 +240,7 @@ else
             local int = self.metadata.Interior.Sounds.Teleport
 
             local sound_demat_ext = ext.demat
+            local sound_demat_fast_ext = ext.demat_fast
             local sound_demat_int = int.demat or ext.demat
             local sound_fullflight_ext = ext.fullflight
             local sound_fullflight_int = int.fullflight or ext.fullflight
@@ -248,6 +249,7 @@ else
                 and not self:GetData("redecorate")
             then
                 sound_demat_ext = ext.demat_damaged
+                sound_demat_fast_ext = ext.demat_damaged
                 sound_demat_int = int.demat_damaged or ext.demat_damaged
                 sound_fullflight_ext = ext.fullflight_damaged
                 sound_fullflight_int = int.fullflight_damaged or ext.fullflight_damaged
@@ -258,7 +260,7 @@ else
             if LocalPlayer():GetTardisData("exterior")==self then
                 local intsound = int.demat or ext.demat
                 local extsound = ext.demat
-                if (self:GetData("demat-fast",false))==true then
+                if self:GetFastRemat() then
                     if shouldPlayInterior then
                         self.interior:EmitSound(sound_fullflight_int)
                     end
@@ -274,10 +276,14 @@ else
                     end
                 end
             elseif shouldPlayExterior then
-                sound.Play(sound_demat_ext,self:GetPos())
-                if pos and self:GetData("demat-fast",false) then
+                if self:GetFastRemat() then
+                    sound.Play(sound_demat_fast_ext,self:GetPos())
+                else
+                    sound.Play(sound_demat_ext,self:GetPos())
+                end
+                if pos and self:GetFastRemat() then
                     if not IsValid(self) then return end
-                    if self:GetData("health-warning", false) and (self:GetData("demat-fast",false))==true then
+                    if self:GetData("health-warning", false) and (self:GetFastRemat())==true then
                         sound.Play(ext.mat_damaged_fast, pos)
                     else
                         sound.Play(ext.mat_fast, pos)
@@ -298,7 +304,7 @@ else
             local ext = self.metadata.Exterior.Sounds.Teleport
             local int = self.metadata.Interior.Sounds.Teleport
             local pos=data[1]
-            if LocalPlayer():GetTardisData("exterior")==self and (not self:GetData("demat-fast",false)) then
+            if LocalPlayer():GetTardisData("exterior")==self and (not self:GetFastRemat()) then
                 if self:GetData("health-warning", false) then
                     if shouldPlayExterior then
                         self:EmitSound(ext.mat_damaged)
@@ -314,7 +320,7 @@ else
                         self.interior:EmitSound(int.mat or ext.mat)
                     end
                 end
-            elseif not self:GetData("demat-fast",false) and shouldPlayExterior then
+            elseif not self:GetFastRemat() and shouldPlayExterior then
                 if self:GetData("health-warning", false) then
                     sound.Play(ext.mat_damaged,pos)
                 else
@@ -402,7 +408,7 @@ ENT:AddHook("Think","teleport",function(self,delta)
     local step=self:GetData("step",1)
 
     local teleport_md = self.metadata.Exterior.Teleport
-    local fast = self:GetData("demat-fast")
+    local fast = self:GetFastRemat()
 
     if alpha==target then
         if demat then

@@ -152,6 +152,23 @@ TARDIS:AddSetting({
 })
 
 TARDIS:AddSetting({
+    id="admin_security_bypass",
+    type="bool",
+    value=true,
+
+    class="global",
+    convar = {
+        name = "tardis2_admin_security_bypass",
+        flags = CONVAR_FLAGS,
+        desc = "TARDIS - Admins bypass security (1 enables, 0 disables)",
+    },
+
+    option = true,
+    section=SETTING_SECTION,
+    name="AdminSecurityBypass",
+})
+
+TARDIS:AddSetting({
     id="boost-speed",
     type="number",
     value=2.5,

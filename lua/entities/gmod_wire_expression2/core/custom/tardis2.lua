@@ -17,11 +17,12 @@ local function getTardis(ent)
 end
 
 local function HandleE2(ent, type, name, e2, ...)
-    if IsValid(getTardis(ent)) then
-        if type == "Setter" and ent:CheckSecurity(e2.player) == false then
+    local tardis = getTardis(ent)
+    if IsValid(tardis) then
+        if type == "Setter" and tardis:CheckSecurity(e2.player) == false then
             TARDIS:ErrorMessage(e2.player,"Expression2.Security.UseDenied")
         else
-            return ent:HandleE2(name, e2, ...)
+            return tardis:HandleE2(name, e2, ...)
         end
     else
         error(TARDIS:GetPhrase("Expression2.Error"),0)
@@ -72,8 +73,16 @@ e2function number entity:tardisLongflight()
     return HandleE2(this, "Setter", "Longflight", self)
 end
 
+e2function number entity:tardisLongflight(on)
+    return HandleE2(this, "Setter", "SetLongflight", self, on)
+end
+
 e2function number entity:tardisHADS()
     return HandleE2(this, "Setter", "HADS", self)
+end
+
+e2function number entity:tardisHADS(on)
+    return HandleE2(this, "Setter", "SetHADS", self, on)
 end
 
 --Flight
@@ -90,6 +99,10 @@ e2function number entity:tardisPhyslock()
     return HandleE2(this, "Setter", "Physlock", self)
 end
 
+e2function number entity:tardisPhyslock(on)
+    return HandleE2(this, "Setter", "SetPhyslock", self, on)
+end
+
 e2function number entity:tardisSpinmode(number spinmode)
     return HandleE2(this, "Setter", "Spinmode", self, spinmode)
 end
@@ -104,12 +117,16 @@ e2function number entity:tardisLock()
     return HandleE2(this, "Setter", "Lock", self)
 end
 
+e2function number entity:tardisLock(on)
+    return HandleE2(this, "Setter", "SetLock", self, on)
+end
+
 e2function number entity:tardisIsomorph()
     return HandleE2(this, "Setter", "Isomorph", self)
 end
 
-e2function number entity:tardisPhase()
-    return HandleE2(this, "Setter", "Phase", self)
+e2function number entity:tardisIsomorph(on)
+    return HandleE2(this, "Setter", "SetIsomorph", self, on)
 end
 
 --Extra
@@ -118,16 +135,40 @@ e2function number entity:tardisPower()
     return HandleE2(this, "Setter", "Power", self)
 end
 
+e2function number entity:tardisPower(on)
+    return HandleE2(this, "Setter", "SetPower", self, on)
+end
+
 e2function number entity:tardisSelfrepair()
     return HandleE2(this, "Setter", "Selfrepair", self)
+end
+
+e2function number entity:tardisSelfrepair(on)
+    return HandleE2(this, "Setter", "SetSelfrepair", self, on)
 end
 
 e2function number entity:tardisPhase()
     return HandleE2(this, "Setter", "Phase", self)
 end
 
+e2function number entity:tardisPhase(on)
+    return HandleE2(this, "Setter", "SetPhase", self, on)
+end
+
+e2function number entity:tardisDoor(number open)
+    return HandleE2(this, "Setter", "SetDoors", self, open)
+end
+
 e2function number entity:tardisDoor()
-    return HandleE2(this, "Setter", "Door", self)
+    return HandleE2(this, "Setter", "ToggleDoors", self)
+end
+
+e2function number entity:tardisHandbrake(on)
+    return HandleE2(this, "Setter", "SetBrake", self, on)
+end
+
+e2function number entity:tardisHandbrake()
+    return HandleE2(this, "Setter", "ToggleBrake", self)
 end
 
 --[[
@@ -194,6 +235,10 @@ e2function number entity:tardisSelfrepairing()
     return HandleE2(this, "Getter", "GetSelfrepairing", self)
 end
 
+e2function number entity:tardisSelfrepairTime()
+    return HandleE2(this, "Getter", "GetRepairTime", self)
+end
+
 --Security
 
 e2function number entity:tardisIsomorphic()
@@ -214,6 +259,10 @@ e2function number entity:tardisPowered()
     return HandleE2(this, "Getter", "GetPowered", self)
 end
 
-e2function number entity:tardisDoorOpen()
-    return HandleE2(this, "Getter", "GetDoor", self)
+e2function number entity:tardisOpened()
+    return HandleE2(this, "Getter", "GetDoors", self)
+end
+
+e2function number entity:tardisBraking()
+    return HandleE2(this, "Getter", "GetBrake", self)
 end

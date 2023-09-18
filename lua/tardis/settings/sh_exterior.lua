@@ -30,6 +30,21 @@ TARDIS:AddSetting({
 })
 
 TARDIS:AddSetting({
+    id="extlight-size-dynamic",
+    type="number",
+    value=1,
+    min=0.1,
+    max=5,
+
+    class="local",
+
+    option=true,
+    section=SETTING_SECTION,
+    subsection="Light",
+    name="DynamicLightSize",
+})
+
+TARDIS:AddSetting({
     id="extlight-alwayson",
     type="bool",
     value=false,

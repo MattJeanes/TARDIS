@@ -1,13 +1,18 @@
 -- Hostile Action Displacement System
 
 if SERVER then
+    function ENT:GetHADS()
+        return self:GetData("hads",false)
+    end
+
     function ENT:SetHADS(on)
         self:CallCommonHook("HadsToggled", on)
-        return self:SetData("hads",on,true)
+        self:SetData("hads",on,true)
+        return true
     end
 
     function ENT:ToggleHADS()
-        local on = not self:GetData("hads",false)
+        local on = not self:GetHADS()
         return self:SetHADS(on)
     end
 
@@ -15,7 +20,7 @@ if SERVER then
         if self:CallHook("CanTriggerHads") == false then
             return false
         end
-        if (self:GetData("hads",false) == true
+        if (self:GetHADS() == true
             and self:GetData("hads-triggered",false)==false)
             and (not self:GetData("teleport",false))
         then
@@ -59,6 +64,16 @@ if SERVER then
         self:TriggerHADS()
     end)
 
+    ENT:AddHook("HADSTrigger", "warning", function(self)
+        self:UpdateWarning()
+    end)
+
+    ENT:AddHook("ShouldWarningBeEnabled","hads", function(self)
+        if self:GetData("hads-triggered") then
+            return true
+        end
+    end)
+
     ENT:AddHook("MatStart", "hads-cancel-remat", function(self)
         self:SetData("hads-need-remat", nil, true)
     end)
@@ -66,6 +81,7 @@ if SERVER then
     ENT:AddHook("StopDemat","hads",function(self)
         if self:GetData("hads-triggered",false) then
             self:SetData("hads-triggered",false,true)
+            self:UpdateWarning()
         end
     end)
 
@@ -94,11 +110,25 @@ if SERVER then
         end
     end)
 
-    ENT:AddHook("HandleE2", "hads", function(self,name,e2)
+    ENT:AddHook("HandleE2", "hads", function(self, name, e2, ...)
+        local args = {...}
         if name == "GetHADS" then
-            return self:GetData("hads",false) and 1 or 0
+            return self:GetHADS() and 1 or 0
         elseif name == "HADS" and TARDIS:CheckPP(e2.player, self) then
-            return self:ToggleHADS()
+            return self:ToggleHADS() and 1 or 0
+        elseif name == "SetHADS" and TARDIS:CheckPP(e2.player, self) then
+            local on = args[1]
+            local enabled = self:GetHADS()
+            if on == 1 then
+                if (not enabled) and self:SetHADS(true) then
+                    return 1
+                end
+            else
+                if enabled and self:SetHADS(false) then
+                    return 1
+                end
+            end
+            return 0
         end
     end)
 end

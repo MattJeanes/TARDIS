@@ -112,6 +112,7 @@ else
             if TARDIS:GetSetting("extlight-override-color", self) then
                 col = TARDIS:GetSetting("extlight-color", self)
             end
+            local size = TARDIS:GetSetting("extlight-size-dynamic", self)
             local dlight = DynamicLight( self:EntIndex() )
             if ( dlight ) then
                 local c=Color(col.r,col.g,col.b)
@@ -120,8 +121,8 @@ else
                 dlight.g = c.g
                 dlight.b = c.b
                 dlight.Brightness = light.dynamicbrightness
-                dlight.Decay = light.dynamicsize * light.dynamicbrightness
-                dlight.Size = light.dynamicsize * mult
+                dlight.Decay = 1500
+                dlight.Size = light.dynamicsize * mult * size
                 dlight.DieTime = CurTime() + 1
             end
         end

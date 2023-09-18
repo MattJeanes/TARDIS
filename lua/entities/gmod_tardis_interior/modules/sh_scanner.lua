@@ -30,7 +30,7 @@ ENT:AddHook("Initialize", "scanner", function(self)
     if self.metadata.Interior.Scanners then
         for k,v in pairs(self.metadata.Interior.Scanners) do
             local scanner = {}
-            scanner.uid = "tardisi_scanner_"..self:EntIndex().."_"..k.."_"..v.width.."_"..v.height.."_"..v.fov
+            scanner.uid = "tardisi_scanner_"..self:GetCreationID().."_"..k.."_"..v.width.."_"..v.height.."_"..v.fov
 
             if SERVER then
                 local ent = self

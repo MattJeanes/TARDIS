@@ -16,7 +16,7 @@ ENT:AddHook("SettingChanged","maxhealth-changed", function(self, id, val)
 end)
 
 function ENT:ChangeHealth(newhealth)
-    if self:GetData("repairing", false) then
+    if self:GetRepairing() then
         return
     end
     local maxhealth = TARDIS:GetSetting("health-max")
@@ -68,8 +68,16 @@ if SERVER then
         explode:Fire("Explode", 0, 0 )
     end
 
+    function ENT:GetRepairPrimed()
+        return self:GetData("repair-primed",false)
+    end
+
+    function ENT:GetRepairing()
+        return self:GetData("repairing",false)
+    end
+
     function ENT:ToggleRepair()
-        local on = not self:GetData("repair-primed",false)
+        local on = not self:GetRepairPrimed()
         return self:SetRepair(on)
     end
     function ENT:SetRepair(on)
@@ -146,39 +154,6 @@ if SERVER then
         self:FlashLight(1.5)
     end
 
-    function ENT:StartSmoke()
-        local smoke = ents.Create("env_smokestack")
-        smoke:SetPos(self:LocalToWorld(Vector(0,0,80)))
-        smoke:SetAngles(self:GetAngles()+Angle(-90,0,0))
-        smoke:SetKeyValue("InitialState", "1")
-        smoke:SetKeyValue("WindAngle", "0 0 0")
-        smoke:SetKeyValue("WindSpeed", "0")
-        smoke:SetKeyValue("rendercolor", "50 50 50")
-        smoke:SetKeyValue("renderamt", "170")
-        smoke:SetKeyValue("SmokeMaterial", "particle/smokesprites_0001.vmt")
-        smoke:SetKeyValue("BaseSpread", "5")
-        smoke:SetKeyValue("SpreadSpeed", "10")
-        smoke:SetKeyValue("Speed", "50")
-        smoke:SetKeyValue("StartSize", "30")
-        smoke:SetKeyValue("EndSize", "70")
-        smoke:SetKeyValue("roll", "20")
-        smoke:SetKeyValue("Rate", "10")
-        smoke:SetKeyValue("JetLength", "100")
-        smoke:SetKeyValue("twist", "5")
-        smoke:Spawn()
-        smoke:SetParent(self)
-        smoke:Activate()
-        self.smoke=smoke
-    end
-
-    function ENT:StopSmoke()
-        if self.smoke and IsValid(self.smoke) and self:GetData("smoke-killdelay")==nil then
-            self.smoke:Fire("TurnOff")
-            local jetlength = self.smoke:GetInternalVariable("JetLength")
-            local speed = self.smoke:GetInternalVariable("Speed")
-            self:SetData("smoke-killdelay",CurTime()+(speed/jetlength)*5)
-        end
-    end
 
     ENT:AddHook("CanRepair", "health", function(self, ignore_health)
         if (self:GetHealth() >= TARDIS:GetSetting("health-max"))
@@ -189,37 +164,37 @@ if SERVER then
     end)
 
     ENT:AddHook("CanTogglePower", "health", function(self)
-        if (not (self:GetData("health-val", 0) > 0)) or (self:GetData("repairing",false) or self:GetData("repair-primed", false)) then
+        if (not (self:GetData("health-val", 0) > 0)) or (self:GetRepairing() or self:GetRepairPrimed()) then
             return false
         end
     end)
 
     ENT:AddHook("CanLock", "repair", function(self)
-        if (not self:GetData("repairing",false)) then return true end
+        if (not self:GetRepairing()) then return true end
     end)
 
     ENT:AddHook("PostPlayerExit", "repair", function(self,ply,forced,notp)
-        if (self:GetData("repair-primed",false)==true) and (table.IsEmpty(self.occupants)) then
+        if (self:GetRepairPrimed()==true) and (table.IsEmpty(self.occupants)) then
             self:SetData("repair-shouldstart", true)
             self:SetData("repair-delay", CurTime()+0.3)
         end
     end)
 
     ENT:AddHook("PlayerEnter", "repair", function(self,ply,forced,notp)
-        if (self:GetData("repair-primed",false)==true) and table.Count(self.occupants)>=0 then
+        if (self:GetRepairPrimed()==true) and table.Count(self.occupants)>=0 then
             self:SetData("repair-shouldstart", false)
         end
     end)
 
     ENT:AddHook("LockedUse", "repair", function(self, a)
-        if self:GetData("repairing") then
+        if self:GetRepairing() then
             TARDIS:Message(a, "Health.Repairing", math.floor(self:GetRepairTime()))
             return true
         end
     end)
 
     ENT:AddHook("Think", "repair", function(self)
-        if self:GetData("repair-primed", false) and self:CallHook("CanRepair") == false then
+        if self:GetRepairPrimed() and self:CallHook("CanRepair") == false then
             self:SetData("repair-primed", false, true)
             self:SetPower(true)
             for k,_ in pairs(self.occupants) do
@@ -227,39 +202,13 @@ if SERVER then
             end
         end
 
-        if self:GetData("repair-primed",false) and self:GetData("repair-shouldstart") and CurTime() > self:GetData("repair-delay") then
+        if self:GetRepairPrimed() and self:GetData("repair-shouldstart") and CurTime() > self:GetData("repair-delay") then
             self:SetData("repair-shouldstart", false)
             self:StartRepair()
         end
 
-        if (self:GetData("repairing",false) and CurTime()>self:GetData("repair-time",0)) then
+        if (self:GetRepairing() and CurTime()>self:GetData("repair-time",0)) then
             self:FinishRepair()
-        end
-    end)
-
-    ENT:AddHook("Think", "health-warning", function(self)
-        if self:CallHook("ShouldStartSmoke") and self:CallHook("ShouldStopSmoke")~=true then
-            if self.smoke then return end
-            self:StartSmoke()
-        else
-            self:StopSmoke()
-        end
-    end)
-
-    ENT:AddHook("Think", "RemoveSmoke", function(self)
-        local smokedelay = self:GetData("smoke-killdelay")
-        if smokedelay ~= nil and CurTime() >= smokedelay then
-            if IsValid(self.smoke) then
-                self.smoke:Remove()
-                self.smoke = nil
-                self:SetData("smoke-killdelay",nil)
-            end
-        end
-    end)
-
-    ENT:AddHook("ShouldStartSmoke", "health-warning", function(self)
-        if self:GetData("health-warning",false) then
-            return true
         end
     end)
 
@@ -268,7 +217,7 @@ if SERVER then
     end)
 
     ENT:AddHook("ShouldTakeDamage", "repair", function(self, dmginfo)
-        if self:GetData("repairing",false) then return false end
+        if self:GetRepairing() then return false end
     end)
 
     ---------------------------------
@@ -328,32 +277,37 @@ if SERVER then
     end)
 
     ENT:AddHook("OnHealthChange", "warning", function(self)
-        if self:GetHealthPercent() <= 20 and (not self:GetData("health-warning",false)) then
-            self:SetData("health-warning", true, true)
-            self:CallCommonHook("HealthWarningToggled",true)
+        self:UpdateWarning()
+    end)
+
+    ENT:AddHook("ShouldWarningBeEnabled","health-warning", function(self)
+        if self:GetHealthPercent() <= 20 then
+            return true
         end
     end)
 
-    ENT:AddHook("OnHealthChange", "warning-stop", function(self)
-        if self:GetHealthPercent() > 20 and (self:GetData("health-warning",false)) then
-            self:SetData("health-warning", false, true)
-            self:CallCommonHook("HealthWarningToggled", false)
-        end
-    end)
-
-    ENT:AddHook("HealthWarningToggled", "client", function(self, on)
-        self:SendMessage("health_warning_toggled", {on})
-    end)
-
-    ENT:AddHook("HandleE2", "health", function(self,name,e2)
+    ENT:AddHook("HandleE2", "health", function(self, name, e2, ...)
+        local args = {...}
         if name == "GetHealth" then
             return self:GetHealthPercent()
         elseif name == "Selfrepair" and TARDIS:CheckPP(e2.player, self) then
-            self:ToggleRepair()
-            return self:GetData("repair-primed",false) and 1 or 0
+            return self:ToggleRepair() and 1 or 0
+        elseif name == "SetSelfrepair" and TARDIS:CheckPP(e2.player, self) then
+            local on = args[1]
+            local primed = self:GetRepairPrimed()
+            if on == 1 then
+                if (not primed) and self:SetRepair(true) then
+                    return 1
+                end
+            else
+                if primed and self:SetRepair(false) then
+                    return 1
+                end
+            end
+            return 0
         elseif name == "GetSelfrepairing" then
-            local repairing = self:GetData("repairing",false)
-            local primed = self:GetData("repair-primed",false)
+            local repairing = self:GetRepairing()
+            local primed = self:GetRepairPrimed()
             if repairing then
                 return 1
             elseif primed then
@@ -361,20 +315,22 @@ if SERVER then
             else
                 return 0
             end
+        elseif name == "GetRepairTime" then
+            if self:GetRepairing() then
+                return self:GetRepairTime()
+            else
+                return 0
+            end
         end
     end)
 
     ENT:AddHook("ShouldUpdateArtron", "repair", function(self)
-        if self:GetData("repair-primed") or self:GetData("repairing") then
+        if self:GetRepairPrimed() or self:GetRepairing() then
             return false
         end
     end)
 
     ENT:AddHook("ShouldUpdateArtron", "health", function(self)
         if self:GetHealth() == 0 then return false end
-    end)
-else
-    ENT:OnMessage("health_warning_toggled", function(self, data, ply)
-        self:CallCommonHook("HealthWarningToggled", data[1])
     end)
 end

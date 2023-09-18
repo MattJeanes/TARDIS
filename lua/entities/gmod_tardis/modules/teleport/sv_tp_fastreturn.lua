@@ -19,7 +19,7 @@ function ENT:FastReturn(callback)
         return
     end
 
-    self:SetData("demat-fast-prev", self:GetData("demat-fast", false));
+    self:SetData("demat-fast-prev", self:GetFastRemat());
     self:SetFastRemat(true)
     self:SetData("fastreturn",true)
     self:CallHook("FastReturnTriggered")
