@@ -88,17 +88,21 @@ if SERVER then
 
     ENT:AddHook("StopDemat", "redecorate_remove_parent", function(self)
         if self:GetData("redecorate") then
-            local child = self:GetData("redecorate_child")
-            if IsValid(child) then
-                child:SetData("redecorate_parent", nil, true)
+            if self:GetData("redecorate_pending_remove") then
+                local child = self:GetData("redecorate_child")
+                if IsValid(child) then
+                    child:SetData("redecorate_parent", nil, true)
+                end
+                self:Remove()
+            else
+                self:SetData("redecorate_pending_remove", true)
             end
-            self:Remove()
         end
     end)
 
     ENT:AddHook("MatStart", "redecorate_sync", function(self)
         local parent = self:GetData("redecorate_parent")
-        if not parent then return end
+        if not IsValid(parent) then return end
 
         parent:ForcePlayerDrop()
         self:SetCollisionGroup(COLLISION_GROUP_WORLD)
@@ -106,6 +110,18 @@ if SERVER then
         self:SetAngles(parent:GetAngles())
         parent:SetParent(self)
         self:SetData("is_redecorate_child", true, true)
+        if parent:GetData("redecorate_pending_remove") then
+            parent:Remove()
+            self:SetData("redecorate_parent", nil, true)
+        else
+            parent:SetData("redecorate_pending_remove", true)
+        end
+    end)
+
+    ENT:AddHook("CanMat", "redecorate", function(self)
+        if self:GetData("redecorate") then
+            return false
+        end
     end)
 
     ENT:AddHook("StopMat", "redecorate_sync", function(self)
@@ -163,7 +179,7 @@ if SERVER then
         local phys = self:GetPhysicsObject()
 
         constraint.RemoveAll(parent) -- drop everything attached
-        parent:SetFastRemat(true)
+        parent:SetFastRemat(true, true)
 
         parent:SetPhyslock(true)
         parent:ForcePlayerDrop()
@@ -175,7 +191,7 @@ if SERVER then
             parent:SetData("redecorate_mat_started", true)
 
             phys:Wake()
-            self:SetFastRemat(true)
+            self:SetFastRemat(true, true)
             self:Mat()
 
             local ply = self:GetCreator()

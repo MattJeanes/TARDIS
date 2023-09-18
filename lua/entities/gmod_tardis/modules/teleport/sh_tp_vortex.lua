@@ -22,8 +22,8 @@ function ENT:ToggleFastRemat()
     return self:SetFastRemat(on)
 end
 
-function ENT:SetFastRemat(on)
-    if self:CallHook("CanToggleFastRemat") == false then
+function ENT:SetFastRemat(on, force)
+    if (not force) and (self:CallHook("CanToggleFastRemat") == false) then
         return false
     end
 
