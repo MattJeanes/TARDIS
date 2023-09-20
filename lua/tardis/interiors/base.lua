@@ -35,6 +35,7 @@ T.Interior = {
         SequenceFail = "drmatt/tardis/seq_bad.wav",
         Cloister = "drmatt/tardis/cloisterbell_loop.wav",
         Lock = "drmatt/tardis/lock_int.wav",
+        Unlock = "p00gie/tardis/base/door_unlock.wav",
     },
     Tips = {},
     CustomTips = {},
@@ -103,6 +104,7 @@ T.Exterior = {
         },
         RepairFinish = "p00gie/tardis/base/repairfinish.wav",
         Lock = "drmatt/tardis/lock.wav",
+        Unlock = "p00gie/tardis/base/door_unlock_ext.wav",
         Spawn = "p00gie/tardis/base/repairfinish.wav",
         Delete = "p00gie/tardis/tardis_delete.wav",
         Door = {

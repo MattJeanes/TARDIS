@@ -97,13 +97,23 @@ if SERVER then
     end)
 else
     ENT:OnMessage("locksound", function(self, data, ply)
-        local extsound = self.metadata.Exterior.Sounds.Lock
-        local intsound = self.metadata.Interior.Sounds.Lock or extsound
+        local extsoundon = self.metadata.Exterior.Sounds.Lock
+        local extsoundoff = self.metadata.Exterior.Sounds.Unlock
+        local intsoundon = self.metadata.Interior.Sounds.Lock or extsoundon
+        local intsoundoff = self.metadata.Interior.Sounds.Unlock or extsoundoff
 
         if TARDIS:GetSetting("locksound-enabled") and TARDIS:GetSetting("sound") then
-            self:EmitSound(extsound)
+            if not self:GetData("locked") then
+                self:EmitSound(extsoundoff)
+            else
+                self:EmitSound(extsoundon)
+            end
             if IsValid(self.interior) then
-                self.interior:EmitSound(intsound)
+                if not self:GetData("locked") then
+                    self.interior:EmitSound(intsoundoff)
+                else
+                    self.interior:EmitSound(intsoundon)
+                end
             end
         end
     end)
