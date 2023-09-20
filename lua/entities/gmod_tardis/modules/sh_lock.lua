@@ -17,7 +17,7 @@ if SERVER then
         self:SetData("locking",false,true)
         self:SetData("locked",locked,true)
         self:FlashLight(0.6)
-        if not silent then self:SendMessage("locksound") end
+        if not silent then self:SendMessage("locksound", {locked}) end
         self:CallHook("DoorLockToggled", locked)
         if callback then callback(true) end
     end
@@ -97,23 +97,22 @@ if SERVER then
     end)
 else
     ENT:OnMessage("locksound", function(self, data, ply)
+        if not (TARDIS:GetSetting("locksound-enabled") and TARDIS:GetSetting("sound")) then return end
+        local locked = data[1]
         local extsoundon = self.metadata.Exterior.Sounds.Lock
         local extsoundoff = self.metadata.Exterior.Sounds.Unlock
         local intsoundon = self.metadata.Interior.Sounds.Lock or extsoundon
         local intsoundoff = self.metadata.Interior.Sounds.Unlock or extsoundoff
-
-        if TARDIS:GetSetting("locksound-enabled") and TARDIS:GetSetting("sound") then
-            if not self:GetData("locked") then
-                self:EmitSound(extsoundoff)
+        if locked then
+            self:EmitSound(extsoundon)
+        else
+            self:EmitSound(extsoundoff)
+        end
+        if IsValid(self.interior) then
+            if locked then
+                self.interior:EmitSound(intsoundon)
             else
-                self:EmitSound(extsoundon)
-            end
-            if IsValid(self.interior) then
-                if not self:GetData("locked") then
-                    self.interior:EmitSound(intsoundoff)
-                else
-                    self.interior:EmitSound(intsoundon)
-                end
+                self.interior:EmitSound(intsoundoff)
             end
         end
     end)
