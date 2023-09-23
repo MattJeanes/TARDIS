@@ -52,6 +52,14 @@ function ENT:GetRepairTime()
     return self:GetData("repair-time")-CurTime()
 end
 
+function ENT:GetRepairPrimed()
+    return self:GetData("repair-primed",false)
+end
+
+function ENT:GetRepairing()
+    return self:GetData("repairing",false)
+end
+
 if SERVER then
     ENT:AddWireOutput("Health", "Wiremod.Outputs.Health")
 
@@ -66,14 +74,6 @@ if SERVER then
         explode:Spawn()
         explode:SetKeyValue("iMagnitude", force)
         explode:Fire("Explode", 0, 0 )
-    end
-
-    function ENT:GetRepairPrimed()
-        return self:GetData("repair-primed",false)
-    end
-
-    function ENT:GetRepairing()
-        return self:GetData("repairing",false)
     end
 
     function ENT:ToggleRepair()
