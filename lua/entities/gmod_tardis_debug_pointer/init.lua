@@ -11,7 +11,7 @@ function ENT:Initialize()
     self:SetModel(self.model or "models/brundoob/precision.mdl" )
     self:SetModelScale(self.scale or 1)
 
-    self:PhysicsInit( MOVETYPE_VPHYSICS )
+    self:PhysicsInit( SOLID_VPHYSICS )
     self:SetMoveType( MOVETYPE_NONE )
     self:SetSolid( SOLID_VPHYSICS )
     self:SetCollisionGroup( COLLISION_GROUP_WORLD )
