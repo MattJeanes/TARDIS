@@ -11,6 +11,9 @@ TARDIS.debug_lamps_enabled = GetConVar("tardis2_debug_lamps"):GetBool()
 
 local function ParseLightTable(lt, interior, default_falloff)
     if SERVER then return end
+
+    if not lt then return end
+
     lt.falloff = lt.falloff or default_falloff
     -- default falloff values were taken from cl_render.lua::predraw_o
 
