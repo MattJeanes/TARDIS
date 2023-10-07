@@ -95,18 +95,6 @@ if SERVER then
         self:SetData("hads-auto-remat", nil, true)
     end)
 
-    hook.Add("OnPhysgunPickup", "tardis-hads", function(ply,ent)
-        if ent:GetClass()=="gmod_tardis" and ent:TriggerHADS() then
-            ent:ForcePlayerDrop()
-        end
-    end)
-
-    hook.Add("PhysgunPickup", "tardis-hads", function(ply,ent)
-        if ent:GetClass()=="gmod_tardis" and ent:GetData("hads-triggered") then
-            return false
-        end
-    end)
-
     ENT:AddHook("ShouldUpdateArtron", "hads", function(self)
         if self:GetData("hads-triggered")
             or self:GetData("hads-need-remat")

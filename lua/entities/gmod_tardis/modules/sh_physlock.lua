@@ -61,18 +61,6 @@ function ENT:TogglePhyslock()
     return self:SetPhyslock(on)
 end
 
-hook.Add("PlayerUnfrozeObject", "tardis-physlock", function(ply,ent,phys)
-    if ent:GetClass()=="gmod_tardis" and ent:GetPhyslock()==true then
-        phys:EnableMotion(false)
-    end
-end)
-
-hook.Add("PhysgunDrop", "tardis-physlock", function(ply,ent)
-    if ent:GetClass()=="gmod_tardis" and ent:GetPhyslock()==true then
-        ent:GetPhysicsObject():EnableMotion(false)
-    end
-end)
-
 ENT:AddHook("MatStart", "physlock", function(self)
     if not self:GetPhyslock() then
         self.phys:EnableMotion(true)
