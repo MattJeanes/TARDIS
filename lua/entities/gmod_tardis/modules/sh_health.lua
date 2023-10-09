@@ -34,11 +34,11 @@ function ENT:ChangeHealth(new_health)
 
     new_health = math.Clamp(new_health, 0, max_health)
 
+    self:SetData("health-val", new_health, true)
+    self:CallCommonHook("OnHealthChange", new_health, old_health)
     if new_health == 0 and old_health ~= 0 then
         self:CallCommonHook("OnHealthDepleted")
     end
-    self:SetData("health-val", new_health, true)
-    self:CallCommonHook("OnHealthChange", new_health, old_health)
 end
 
 if SERVER then
