@@ -121,7 +121,7 @@ if SERVER then
     end)
 
     ENT:AddHook("Initialize", "legacy_door_type", function(self,open)
-        local islegacy = TARDIS:GetSetting("legacy_door_type", self)
+        local islegacy = self.metadata.Exterior.UseLegacyDoors or TARDIS:GetSetting("legacy_door_type", self)
         self:SetData("legacy_door_type", islegacy, true)
     end)
 

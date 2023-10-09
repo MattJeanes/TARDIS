@@ -21,7 +21,7 @@ if SERVER then
                 end
             end
         else
-            if a:KeyDown(IN_WALK) then
+            if a:KeyDown(IN_WALK) or self:GetData("legacy_door_type") then
                 self.exterior:PlayerExit(a)
             end
         end
