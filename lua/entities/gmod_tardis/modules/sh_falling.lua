@@ -1,21 +1,24 @@
 if SERVER then
 	ENT:AddHook("PhysicsUpdate", "falling", function(self,ph)
         if self:GetData("float") or self:GetData("flight") or self:IsPlayerHolding()
-            or not ph:IsGravityEnabled()
+            or not ph:IsGravityEnabled() or not self:IsAlive()
         then
             if self:GetData("falling") then
                 self:SetData("falling", false, true)
             end
-            if self:GetData("free_movement") then
-                self:SetData("free_movement", false, true)
+            if self:GetData("falling_start_time") then
+                self:SetData("falling_start_time", nil, true)
+            end
+            if self:GetData("free_movement_start_time") then
+                self:SetData("free_movement_start_time", nil, true)
             end
             return
         end
 
         local vel=ph:GetVelocity()
 
-        if not self:GetData("free_movement") then
-            self:SetData("free_movement", true, true)
+        if not self:GetData("free_movement_start_time") then
+            self:SetData("free_movement_start_time", CurTime(), true)
         end
 
         local phm=FrameTime()*66
@@ -32,8 +35,9 @@ if SERVER then
 
         local falling = self:GetData("falling")
         local stop_time = self:GetData("falling_stop_time")
+        local start_time = self:GetData("falling_start_time")
 
-        if vel.z < -100 then
+        if vel.z < -100 and start_time and CurTime() - start_time > 0.8 then
             falling = true
             self:SetData("falling", falling, true)
             self:SetData("falling_stop_time", nil)
@@ -54,6 +58,11 @@ if SERVER then
                     ph:SetAngleVelocityInstantaneous(Vector(angv.x * 0.9, angv.y * 0.9, angv.z))
                 end
             end
+        elseif vel.z < -100 then
+            if not start_time then
+                self:SetData("falling_start_time", CurTime())
+            end
+
         elseif falling and vel.z >= 0 then
 
             if not stop_time then
@@ -100,10 +109,14 @@ else
     end)
 
     ENT:AddHook("Think", "falling", function(self)
-        if self:GetData("free_movement")
+        local free_movement_start = self:GetData("free_movement_start_time")
+        if free_movement_start and CurTime() - free_movement_start > 1
             and TARDIS:GetSetting("flight-externalsound")
             and TARDIS:GetSetting("sound")
         then
+
+            local time_mult = math.Clamp((CurTime() - free_movement_start - 1) / 5, 0, 1)
+
             local p=math.Clamp(self:GetVelocity():Length()/125,0,15)
             if self.fallsound and self.fallsound:IsPlaying() then
                 local ply=LocalPlayer()
@@ -126,11 +139,11 @@ else
                     self.fallsound:ChangePitch(math.Clamp(95+p+doppler,80,120),0.1)
                 end
 
-                self.fallsound:ChangeVolume(0.75 * p / 20)
+                self.fallsound:ChangeVolume(time_mult * 0.75 * p / 20)
             else
                 self.fallsound = CreateSound(self, self.metadata.Exterior.Sounds.FlightFallWind)
                 self.fallsound:SetSoundLevel(90)
-                self.fallsound:ChangeVolume(0.75 * p / 20)
+                self.fallsound:ChangeVolume(time_mult * 0.75 * p / 20)
                 self.fallsound:Play()
             end
         elseif self.fallsound then
