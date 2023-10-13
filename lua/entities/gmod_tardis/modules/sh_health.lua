@@ -253,13 +253,21 @@ if SERVER then
             self:SetData("damage_last_by_ply", 0)
         end
 
+        local speed_border = self:GetData("falling") and 1200 or 300
+        local speed_dmg_mult = self:GetData("falling") and 0.3 or 1
+
         if not TARDIS:GetSetting("health-enabled") then return end
-        if (data.Speed < 300) then return end
-        local new_health = self:GetHealth() - (data.Speed / 23)
+        if (data.Speed < speed_border) then return end
+
+        local new_health = self:GetHealth() - (speed_dmg_mult * data.Speed / 23)
+
         self:ChangeHealth(new_health)
+
         if not IsValid(self.interior) then return end
+
         local phys = self:GetPhysicsObject()
         local vel = phys:GetVelocity():Length()
+
         if self:GetHealth() ~= 0 and vel < 900 then
             int = self.metadata.Interior.Sounds.Damage
             self.interior:EmitSound(int.Crash)
