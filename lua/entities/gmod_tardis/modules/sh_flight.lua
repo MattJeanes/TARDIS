@@ -205,6 +205,71 @@ if SERVER then
         end
     end)
 
+    ENT:AddHook("PhysicsUpdate", "flight-landing", function(self,ph)
+        if self:GetData("float") or self:GetData("flight") or not ph:IsGravityEnabled() then
+            if self:GetData("falling") then
+                self:SetData("falling", false)
+            end
+            return
+        end
+
+        local vel=ph:GetVelocity()
+
+        local phm=FrameTime()*66
+        local up=self:GetUp()
+        local ri2=self:GetRight()
+        local fwd2=self:GetForward()
+        local ang=self:GetAngles()
+        local vel=ph:GetVelocity()
+        local vell=ph:GetVelocity():Length()
+        local cen=ph:GetMassCenter()
+        local mass=ph:GetMass()
+        local lev=ph:GetInertia():Length()
+        local angv=ph:GetAngleVelocity()
+
+        local falling = self:GetData("falling")
+        local stop_time = self:GetData("falling_stop_time")
+
+        if vel.z < -100 then
+            falling = true
+            self:SetData("falling", falling)
+            self:SetData("falling_stop_time", nil)
+
+            local angv_fast = (angv.x > 50 or angv.y > 50)
+
+            if (math.abs(ang.p) > 5 or math.abs(ang.r) > 5) and not angv_fast then
+                ph:ApplyForceOffset( up * -ang.p * 5, cen - fwd2 * lev)
+                ph:ApplyForceOffset(-up * -ang.p * 5, cen + fwd2 * lev)
+                ph:ApplyForceOffset( up * -ang.r * 5, cen - ri2 * lev)
+                ph:ApplyForceOffset(-up * -ang.r * 5, cen + ri2 * lev)
+            else
+                if angv_fast then
+                    ph:SetAngleVelocityInstantaneous(Vector(angv.x * 0.9, angv.y * 0.9, angv.z))
+                end
+            end
+        elseif falling and vel.z >= 0 then
+
+            if not stop_time then
+                self:SetData("falling_stop_time", CurTime())
+            elseif CurTime() - stop_time > 1 then
+                self:SetData("falling", false)
+            end
+
+            if math.abs(ang.p) <= 45 and math.abs(ang.r) <= 45 and vel.z > 0 then
+                local newvel_x = math.Clamp(vel.x * 0.05,-30,30)
+                local newvel_y = math.Clamp(vel.y * 0.05,-30,30)
+
+                ph:SetVelocityInstantaneous(-up * 50 * phm)
+                ph:AddVelocity(Vector(newvel_x,newvel_y,0))
+
+                local newavel_x = math.Clamp(angv.x * 0.1,-300,300)
+                local newavel_y = math.Clamp(angv.y * 0.1,-300,300)
+                local newavel_z = math.Clamp(angv.z * 0.1,-300,300)
+                ph:SetAngleVelocityInstantaneous(Vector(newavel_x,newavel_y,newavel_z))
+            end
+        end
+    end)
+
     ENT:AddHook("PhysicsUpdate", "flight", function(self,ph)
         if self:GetData("flight") then
             local phm=FrameTime()*66
