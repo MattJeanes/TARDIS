@@ -40,7 +40,7 @@ if SERVER then
             self:SetData("hads-attempt", nil)
             TARDIS:Message(self:GetCreator(), "HADS.Triggered")
             TARDIS:Message(self:GetCreator(), "HADS.UnderAttack")
-            self:SetData("hads-triggered", true)
+            self:SetData("hads-triggered", true, true)
             self:SetFastRemat(false)
             self:SetRandomDestination(true)
             self:AutoDemat()
@@ -93,12 +93,6 @@ if SERVER then
         self:SetData("hads-triggered",false,true)
         self:SetData("hads-need-remat", nil, true)
         self:SetData("hads-auto-remat", nil, true)
-    end)
-
-    hook.Add("OnPhysgunPickup", "tardis-hads", function(ply,ent)
-        if ent:GetClass()=="gmod_tardis" and ent:TriggerHADS() then
-            ent:ForcePlayerDrop()
-        end
     end)
 
     ENT:AddHook("ShouldUpdateArtron", "hads", function(self)

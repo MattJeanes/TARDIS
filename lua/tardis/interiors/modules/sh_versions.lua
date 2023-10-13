@@ -144,6 +144,7 @@ function TARDIS:SelectNewRandomInterior(current, ply)
     while not chosen_int or TARDIS:GetMainVersionId(chosen_int) == current
         or TARDIS.Metadata[chosen_int].IsVersionOf
         or TARDIS.Metadata[chosen_int].Base == true
+        or TARDIS.Metadata[chosen_int].Hidden == true
         or not TARDIS:ShouldRedecorateInto(chosen_int, ply)
     do
         chosen_int = table.Random(TARDIS.Metadata).ID

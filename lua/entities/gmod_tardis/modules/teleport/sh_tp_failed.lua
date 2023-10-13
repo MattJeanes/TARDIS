@@ -216,8 +216,10 @@ ENT:AddHook("Think","breakdown-effects", function(self)
         end
 
         if self:GetData("interior-lights-blinking", false) and timediff > 4 then
-            local newhealth = self:GetHealth() * math.random(75, 95) * 0.01
-            self:ChangeHealth(newhealth)
+            if SERVER then
+                local newhealth = self:GetHealth() * math.random(75, 95) * 0.01
+                self:ChangeHealth(newhealth)
+            end
             if showeffects then self:InteriorExplosion() end
             self:SetData("interior-lights-blinking", false, true)
         end

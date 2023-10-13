@@ -274,7 +274,7 @@ T.Exterior = {
         },
         Spawn = "drmatt/tardis/repairfinish.wav",
         RepairFinish = "drmatt/tardis/repairfinish.wav",
-        Delete = "p00gie/tardis/base/tardis_delete.wav",
+        Delete = "p00gie/tardis/tardis_delete.wav",
     },
     Light = {
         warncolor = Color(255,200,200),

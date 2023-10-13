@@ -1,45 +1,56 @@
 -- Health
 
-ENT:AddHook("Initialize","health-init",function(self)
-    self:SetData("health-val", TARDIS:GetSetting("health-max"), true)
-    if SERVER and WireLib then
-        self:TriggerWireOutput("Health", self:GetHealth())
-    end
-end)
+if SERVER then
+    ENT:AddHook("Initialize","health-init",function(self)
+        self:SetData("health-val", TARDIS:GetSetting("health-max"), true)
+        if WireLib then
+            self:TriggerWireOutput("Health", self:GetHealth())
+        end
+    end)
 
-ENT:AddHook("SettingChanged","maxhealth-changed", function(self, id, val)
-    if id ~= "health-max" then return end
+    ENT:AddHook("SettingChanged","maxhealth-changed", function(self, id, val)
+        if id ~= "health-max" then return end
 
-    if self:GetHealth() > val then
-        self:ChangeHealth(val)
-    end
-end)
+        if self:GetHealth() > val then
+            self:ChangeHealth(val)
+        end
+    end)
 
-function ENT:ChangeHealth(newhealth)
-    if self:GetRepairing() then
-        return
-    end
-    local maxhealth = TARDIS:GetSetting("health-max")
-    if not TARDIS:GetSetting("health-enabled") then
-        self:SetData("health-val", maxhealth, true)
-        return
-    end
-    local oldhealth = self:GetHealth()
-    if newhealth > oldhealth and oldhealth+newhealth > maxhealth then
-        newhealth = maxhealth
-    end
-    if newhealth <= 0 then
-        newhealth = 0
-        if newhealth ~= oldhealth then
+    function ENT:ChangeHealth(new_health)
+        if self:GetRepairing() then
+            return
+        end
+        local max_health = TARDIS:GetSetting("health-max")
+        if not TARDIS:GetSetting("health-enabled") then
+            self:SetData("health-val", max_health, true)
+            return
+        end
+        local old_health = self:GetHealth()
+
+        new_health = math.Clamp(new_health, 0, max_health)
+
+        self:SetData("health-val", new_health, true)
+        self:CallCommonHook("OnHealthChange", new_health, old_health)
+        if new_health == 0 and old_health ~= 0 then
             self:CallCommonHook("OnHealthDepleted")
         end
     end
-    self:SetData("health-val", newhealth, true)
-    self:CallCommonHook("OnHealthChange", newhealth, oldhealth)
 end
 
 function ENT:GetHealth()
     return self:GetData("health-val", 0)
+end
+
+function ENT:IsAlive()
+    return (self:GetHealth() ~= 0)
+end
+
+function ENT:GetRepairPrimed()
+    return self:GetData("repair-primed",false)
+end
+
+function ENT:GetRepairing()
+    return self:GetData("repairing",false)
 end
 
 function ENT:GetHealthPercent()
@@ -50,14 +61,6 @@ end
 
 function ENT:GetRepairTime()
     return self:GetData("repair-time")-CurTime()
-end
-
-function ENT:GetRepairPrimed()
-    return self:GetData("repair-primed",false)
-end
-
-function ENT:GetRepairing()
-    return self:GetData("repairing",false)
 end
 
 if SERVER then
@@ -127,10 +130,10 @@ if SERVER then
     function ENT:StartRepair()
         if not IsValid(self) then return end
         self:SetLocked(true,nil,true,true)
-        local maxhealth = TARDIS:GetSetting("health-max")
-        local curhealth = self:GetData("health-val")
+        local max_health = TARDIS:GetSetting("health-max")
+        local cur_health = self:GetData("health-val")
         local maxtime = TARDIS:GetSetting("long_repair") and 60 or 15
-        local repairtime = math.Clamp(maxtime * (maxhealth - curhealth) / maxhealth, 1, maxtime)
+        local repairtime = math.Clamp(maxtime * (max_health - cur_health) / max_health, 1, maxtime)
 
         local time = CurTime() + repairtime
         self:SetData("repair-time", time, true)
@@ -231,8 +234,8 @@ if SERVER then
             return
         end
         if dmginfo:GetDamage() <= 0 then return end
-        local newhealth = self:GetHealth() - (dmginfo:GetDamage()/2)
-        self:ChangeHealth(newhealth)
+        local new_health = self:GetHealth() - (dmginfo:GetDamage()/2)
+        self:ChangeHealth(new_health)
         if not IsValid(self.interior) then return end
         if dmginfo:IsDamageType(DMG_BLAST) and self:GetHealth() ~= 0 then
             int = self.metadata.Interior.Sounds.Damage
@@ -241,10 +244,19 @@ if SERVER then
     end)
 
     ENT:AddHook("PhysicsCollide", "Health", function(self, data, collider)
+
+        if self:IsPlayerHolding() then
+            local last_dmg = self:GetData("damage_last_by_ply", 0)
+            if CurTime() - last_dmg < 1 then return end
+            self:SetData("damage_last_by_ply", CurTime())
+        else
+            self:SetData("damage_last_by_ply", 0)
+        end
+
         if not TARDIS:GetSetting("health-enabled") then return end
         if (data.Speed < 300) then return end
-        local newhealth = self:GetHealth() - (data.Speed / 23)
-        self:ChangeHealth(newhealth)
+        local new_health = self:GetHealth() - (data.Speed / 23)
+        self:ChangeHealth(new_health)
         if not IsValid(self.interior) then return end
         local phys = self:GetPhysicsObject()
         local vel = phys:GetVelocity():Length()

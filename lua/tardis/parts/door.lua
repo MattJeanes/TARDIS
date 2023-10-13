@@ -58,7 +58,15 @@ if SERVER then
                 self:EmitSound(self.exterior.metadata.Exterior.Sounds.Door.locked)
             end
         else
-            if a:KeyDown(IN_WALK) or not IsValid(self.interior) or self:GetData("legacy_door_type") then
+            if self:GetData("legacy_door_type") and a:KeyDown(IN_WALK) then
+                if self.ExteriorPart then
+                    self.exterior:PlayerEnter(a)
+                    self.exterior:PlayerThirdPerson(a, true)
+                else
+                    self.exterior:PlayerExit(a)
+                    a:ScreenFade(SCREENFADE.IN, color_black, 1, 0)
+                end
+            elseif a:KeyDown(IN_WALK) or not IsValid(self.interior) or self:GetData("legacy_door_type") then
                 if self.ExteriorPart then
                     self.exterior:PlayerEnter(a)
                     a:ScreenFade(SCREENFADE.IN, color_black, 1, 0)
