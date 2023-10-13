@@ -235,6 +235,10 @@ if SERVER then
             self:SetData("falling", falling)
             self:SetData("falling_stop_time", nil)
 
+            if vel.z < -1000 then
+                self:SetData("falling_hard", true)
+            end
+
             local angv_fast = (angv.x > 50 or angv.y > 50)
 
             if (math.abs(ang.p) > 5 or math.abs(ang.r) > 5) and not angv_fast then
@@ -251,7 +255,9 @@ if SERVER then
 
             if not stop_time then
                 self:SetData("falling_stop_time", CurTime())
-            elseif CurTime() - stop_time > 1 then
+                self:SendMessage("fall_landing", { self:GetData("falling_hard") } )
+                self:SetData("falling_hard", nil)
+            elseif CurTime() - stop_time > 1 and not self:GetData("mat") then
                 self:SetData("falling", false)
             end
 
@@ -488,5 +494,25 @@ else
         local old=data[1]
         local new=data[2]
         self:CallHook("PilotChanged",old,new)
+    end)
+
+    ENT:OnMessage("fall_landing", function(self, data, ply)
+        if not TARDIS:GetSetting("sound") then return end
+
+        local hard = data[1]
+        local snds = self.metadata.Exterior.Sounds
+
+        if TARDIS:GetSetting("flight-externalsound") then
+            if not hard then
+                self:EmitSound(snds.FlightLand)
+            else
+                self:EmitSound(snds.FlightFall)
+            end
+        end
+
+        if IsValid(self.interior) and TARDIS:GetSetting("flight-internalsound") then
+            local snds_i = self.metadata.Interior.Sounds
+            self.interior:EmitSound(snds_i.FlightLand or snds.FlightLand)
+        end
     end)
 end
