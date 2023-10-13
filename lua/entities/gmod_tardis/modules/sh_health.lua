@@ -1,50 +1,40 @@
 -- Health
 
-ENT:AddHook("Initialize","health-init",function(self)
-    self:SetData("health-val", TARDIS:GetSetting("health-max"), true)
-    if SERVER and WireLib then
-        self:TriggerWireOutput("Health", self:GetHealth())
-    end
-end)
-
-ENT:AddHook("SettingChanged","maxhealth-changed", function(self, id, val)
-    if id ~= "health-max" then return end
-
-    if self:GetHealth() > val then
-        self:ChangeHealth(val)
-    end
-end)
-
-function ENT:ChangeHealth(new_health)
-
-    if CLIENT then
-        self:SendMessage("health_change", {new_health})
-        return
-    end
-
-    if self:GetRepairing() then
-        return
-    end
-    local max_health = TARDIS:GetSetting("health-max")
-    if not TARDIS:GetSetting("health-enabled") then
-        self:SetData("health-val", max_health, true)
-        return
-    end
-    local old_health = self:GetHealth()
-
-    new_health = math.Clamp(new_health, 0, max_health)
-
-    self:SetData("health-val", new_health, true)
-    self:CallCommonHook("OnHealthChange", new_health, old_health)
-    if new_health == 0 and old_health ~= 0 then
-        self:CallCommonHook("OnHealthDepleted")
-    end
-end
-
 if SERVER then
-    ENT:OnMessage("health_change", function(self, data, ply)
-        self:ChangeHealth(data[1])
+    ENT:AddHook("Initialize","health-init",function(self)
+        self:SetData("health-val", TARDIS:GetSetting("health-max"), true)
+        if WireLib then
+            self:TriggerWireOutput("Health", self:GetHealth())
+        end
     end)
+
+    ENT:AddHook("SettingChanged","maxhealth-changed", function(self, id, val)
+        if id ~= "health-max" then return end
+
+        if self:GetHealth() > val then
+            self:ChangeHealth(val)
+        end
+    end)
+
+    function ENT:ChangeHealth(new_health)
+        if self:GetRepairing() then
+            return
+        end
+        local max_health = TARDIS:GetSetting("health-max")
+        if not TARDIS:GetSetting("health-enabled") then
+            self:SetData("health-val", max_health, true)
+            return
+        end
+        local old_health = self:GetHealth()
+
+        new_health = math.Clamp(new_health, 0, max_health)
+
+        self:SetData("health-val", new_health, true)
+        self:CallCommonHook("OnHealthChange", new_health, old_health)
+        if new_health == 0 and old_health ~= 0 then
+            self:CallCommonHook("OnHealthDepleted")
+        end
+    end
 end
 
 function ENT:GetHealth()
@@ -71,14 +61,6 @@ end
 
 function ENT:GetRepairTime()
     return self:GetData("repair-time")-CurTime()
-end
-
-function ENT:GetRepairPrimed()
-    return self:GetData("repair-primed",false)
-end
-
-function ENT:GetRepairing()
-    return self:GetData("repairing",false)
 end
 
 if SERVER then
