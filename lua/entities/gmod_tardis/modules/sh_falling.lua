@@ -37,7 +37,10 @@ if SERVER then
         local stop_time = self:GetData("falling_stop_time")
         local start_time = self:GetData("falling_start_time")
 
-        if vel.z < -100 and start_time and CurTime() - start_time > 0.8 then
+        local should_align_vertically = (vel.z < -100 and start_time and CurTime() - start_time > 0.8)
+        local pressing = IsValid(self.pilot) and TARDIS:IsBindDown(self.pilot,"flight-down")
+
+        if should_align_vertically or pressing then
             falling = true
             self:SetData("falling", falling, true)
             self:SetData("falling_stop_time", nil)
