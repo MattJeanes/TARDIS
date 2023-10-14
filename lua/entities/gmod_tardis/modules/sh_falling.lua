@@ -26,7 +26,12 @@ if SERVER then
 
         self:SetData("free_movement", free_movement, true)
 
-        if not free_movement then return end
+        if not free_movement then
+            if self:GetData("vertbrakes") then
+                self:SetData("vertbrakes", false)
+            end
+            return
+        end
 
         local phm=FrameTime()*66
         local up=self:GetUp()
