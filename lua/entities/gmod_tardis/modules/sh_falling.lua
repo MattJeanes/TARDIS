@@ -33,14 +33,40 @@ if SERVER then
         local lev=ph:GetInertia():Length()
         local angv=ph:GetAngleVelocity()
 
+        local function is_ground_underneath()
+            local td = {}
+            local ply = self:GetCreator()
+            td.mins = self:OBBMins()
+            td.maxs = self:OBBMaxs()
+            td.maxs.z = (td.maxs.z - td.mins.z) * 0.5
+            td.mins.z = 0
+            td.filter = { self, }
+
+            for k,v in pairs(self:GetParts()) do
+                table.insert(td.filter, v)
+            end
+
+            local bottom = Vector(0, 0, -td.maxs.z * 1.01)
+            bottom:Rotate(self:GetAngles())
+            local point = self:GetPos() + bottom
+
+            td.start = point
+            td.endpos = point
+            return util.TraceHull(td).Hit
+        end
+
         local falling = self:GetData("falling")
         local stop_time = self:GetData("falling_stop_time")
         local start_time = self:GetData("falling_start_time")
 
-        local pressing = IsValid(self.pilot) and TARDIS:IsBindDown(self.pilot,"flight-down")
-        local should_align_vertically = vel.z < -100 and ((start_time and CurTime() - start_time > 0.8) or pressing)
+        local z_ang_max = math.max(math.abs(ang.x), math.abs(ang.y))
+        local xy_vel_max = math.max(math.abs(vel.x), math.abs(vel.y))
 
-        if should_align_vertically then
+        local pressing_down = IsValid(self.pilot) and TARDIS:IsBindDown(self.pilot,"flight-down")
+        local should_align_vertically = (start_time and CurTime() - start_time > 0.8)
+        should_align_vertically = should_align_vertically and xy_vel_max < 400 and z_ang_max < 20
+
+        if (vel.z < -100 and should_align_vertically) or pressing_down then
             falling = true
             self:SetData("falling", falling, true)
             self:SetData("falling_stop_time", nil)
@@ -51,7 +77,7 @@ if SERVER then
 
             local angv_fast = (angv.x > 50 or angv.y > 50)
 
-            if (math.abs(ang.p) > 5 or math.abs(ang.r) > 5) and not angv_fast then
+            if (math.abs(ang.p) > 10 or math.abs(ang.r) > 10) and not angv_fast then
                 ph:ApplyForceOffset( up * -ang.p * 5, cen - fwd2 * lev)
                 ph:ApplyForceOffset(-up * -ang.p * 5, cen + fwd2 * lev)
                 ph:ApplyForceOffset( up * -ang.r * 5, cen - ri2 * lev)
@@ -76,7 +102,7 @@ if SERVER then
                 self:SetData("falling", false, true)
             end
 
-            if math.abs(ang.p) <= 45 and math.abs(ang.r) <= 45 and vel.z > 0 then
+            if is_ground_underneath() and math.abs(ang.p) <= 35 and math.abs(ang.r) <= 35 and vel.z > 0 then
                 local newvel_x = math.Clamp(vel.x * 0.05,-30,30)
                 local newvel_y = math.Clamp(vel.y * 0.05,-30,30)
 
@@ -97,7 +123,7 @@ else
         local hard = data[1]
         local snds = self.metadata.Exterior.Sounds
 
-        if CurTime() - self:GetData("fall_sound_last", 0) < 3 then return end
+        if not hard and CurTime() - self:GetData("fall_sound_last", 0) < 2 then return end
         self:SetData("fall_sound_last", CurTime())
 
         if TARDIS:GetSetting("flight-externalsound") then
