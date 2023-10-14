@@ -33,14 +33,14 @@ if SERVER then
         return self:SetPower(not self:GetPower())
     end
     function ENT:SetPower(on)
-        if (self:CallCommonHook("CanTogglePower") == false) then return false end
+        if (self:CallCommonHook("CanTogglePower", on) == false) then return false end
         self:SetData("power-state",on,true)
         self:CallCommonHook("PowerToggled", on)
         self:SendMessage("power_toggled", {on})
         return true
     end
 
-    ENT:AddHook("CanTogglePower", "vortex", function(self)
+    ENT:AddHook("CanTogglePower", "vortex", function(self, on)
         if self:GetData("teleport") or self:GetData("vortex") then
             return false
         end

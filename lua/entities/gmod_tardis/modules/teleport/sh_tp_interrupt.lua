@@ -75,8 +75,8 @@ if SERVER then
         self:CancelTimer("matdelay")
     end)
 
-    ENT:AddHook("CanTogglePower", "tp_interrupt", function(self)
-        if self:GetData("teleport-interrupted", false) then
+    ENT:AddHook("CanTogglePower", "tp_interrupt", function(self, on)
+        if on and self:GetData("teleport-interrupted", false) then
             return false
         end
     end)
