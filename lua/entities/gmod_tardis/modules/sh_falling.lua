@@ -21,14 +21,12 @@ if SERVER then
 
 	ENT:AddHook("PhysicsUpdate", "falling", function(self,ph)
 
-        if self:GetData("float") or self:GetData("flight") or self:IsPlayerHolding()
-            or not ph:IsGravityEnabled() or not self:IsAlive()
-        then
-            if self:GetData("free_movement_start_time") then
-                self:SetData("free_movement_start_time", nil, true)
-            end
-            return
-        end
+        local free_movement = not self:GetData("float") and not self:GetData("flight") and not self:IsPlayerHolding()
+        free_movement = free_movement and ph:IsGravityEnabled() and self:IsAlive()
+
+        self:SetData("free_movement", free_movement, true)
+
+        if not free_movement then return end
 
         local phm=FrameTime()*66
         local up=self:GetUp()
@@ -41,10 +39,6 @@ if SERVER then
         local mass=ph:GetMass()
         local lev=ph:GetInertia():Length()
         local angv=ph:GetAngleVelocity()
-
-        if not self:GetData("free_movement_start_time") then
-            self:SetData("free_movement_start_time", CurTime(), (vel:Length() > 10))
-        end
 
         local function align_in_flight()
             local angmax = math.max(math.abs(ang.p), math.abs(ang.r))
@@ -124,54 +118,67 @@ else
         end
     end)
 
-    ENT:AddHook("Think", "wind_sound", function(self)
-        local free_movement_start = self:GetData("free_movement_start_time")
-        if free_movement_start and CurTime() - free_movement_start > 1
-            and TARDIS:GetSetting("flight-externalsound")
-            and TARDIS:GetSetting("sound")
-        then
+    function ENT:CreateWindSound(time_mult, p)
+        time_mult = time_mult or 0
+        self.wind_sound = self.wind_sound or CreateSound(self, self.metadata.Exterior.Sounds.FlightFallWind)
+        self.wind_sound:SetSoundLevel(90)
+        self.wind_sound:ChangeVolume(time_mult * 0.75 * p / 20)
+        self.wind_sound:Play()
+    end
 
-            local time_mult = math.Clamp((CurTime() - free_movement_start - 1) / 5, 0, 1)
-
-            local p=math.Clamp(self:GetVelocity():Length()/125,0,15)
-            if self.wind_sound and self.wind_sound:IsPlaying() then
-                local ply=LocalPlayer()
-                local e=ply:GetViewEntity()
-                if not IsValid(e) then e=ply end
-                if e:EntIndex()==-1 then -- clientside prop
-                    local ext=ply:GetTardisData("exterior")
-                    if ext then
-                        e=ext
-                    else
-                        e=ply
-                    end
-                end
-                if ply:GetTardisData("exterior")==self and e==self.thpprop and ply:GetTardisData("outside") then
-                    self.wind_sound:ChangePitch(95+p,0.1)
-                else
-                    local pos = e:GetPos()
-                    local spos = self:GetPos()
-                    local doppler = (pos:Distance(spos + e:GetVelocity()) - pos:Distance(spos + self:GetVelocity())) / 200
-                    self.wind_sound:ChangePitch(math.Clamp(95+p+doppler,80,120),0.1)
-                end
-
-                self.wind_sound:ChangeVolume(time_mult * 0.75 * p / 20)
-            else
-                self.wind_sound = CreateSound(self, self.metadata.Exterior.Sounds.FlightFallWind)
-                self.wind_sound:SetSoundLevel(90)
-                self.wind_sound:ChangeVolume(time_mult * 0.75 * p / 20)
-                self.wind_sound:Play()
-            end
-        elseif self.wind_sound then
-            self.wind_sound:Stop()
-            self.wind_sound=nil
-        end
-    end)
-
-    ENT:AddHook("OnRemove", "wind_sound", function(self)
+    function ENT:StopWindSound()
         if self.wind_sound then
             self.wind_sound:Stop()
             self.wind_sound = nil
         end
+    end
+
+    ENT:AddHook("Think", "wind_sound", function(self)
+        if not self:GetData("free_movement") then
+            self:SetData("free_movement_start", nil)
+        elseif not self:GetData("free_movement_start") then
+            self:SetData("free_movement_start", CurTime())
+        end
+
+        local free_movement_start = self:GetData("free_movement_start")
+        local wind_sound_required = free_movement_start and (CurTime() - free_movement_start > 1)
+
+        if not TARDIS:GetSetting("sound") or not TARDIS:GetSetting("flight-externalsound") or not wind_sound_required then
+            self:StopWindSound()
+            return
+        end
+
+        local time_mult = math.Clamp((CurTime() - free_movement_start - 1) / 5, 0, 1)
+
+        local p=math.Clamp(self:GetVelocity():Length()/125,0,15)
+
+        if not self.wind_sound or not self.wind_sound:IsPlaying() then
+            self:CreateWindSound(time_mult, p)
+            return
+        end
+
+        local ply=LocalPlayer()
+        local e=ply:GetViewEntity()
+        if not IsValid(e) then e=ply end
+
+        if e:EntIndex()==-1 then -- clientside prop
+            local ext=ply:GetTardisData("exterior")
+            e = ext or ply
+        end
+
+        if ply:GetTardisData("exterior")==self and e==self.thpprop and ply:GetTardisData("outside") then
+            self.wind_sound:ChangePitch(95+p,0.1)
+        else
+            local pos = e:GetPos()
+            local spos = self:GetPos()
+            local doppler = (pos:Distance(spos + e:GetVelocity()) - pos:Distance(spos + self:GetVelocity())) / 200
+            self.wind_sound:ChangePitch(math.Clamp(95+p+doppler,80,120),0.1)
+        end
+
+        self.wind_sound:ChangeVolume(time_mult * 0.75 * p / 20)
+    end)
+
+    ENT:AddHook("OnRemove", "wind_sound", function(self)
+        self:StopWindSound()
     end)
 end
