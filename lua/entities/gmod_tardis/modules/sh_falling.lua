@@ -79,9 +79,9 @@ if SERVER then
 
         local pressing_down = IsValid(self.pilot) and TARDIS:IsBindDown(self.pilot,"flight-down")
         local vertbrakes = self:GetData("vertbrakes")
-        local stopped = (vel:Length() < 0.05)
+        local stopped = (vell < 0.1)
 
-        if pressing_down and not vertbrakes then
+        if pressing_down and not vertbrakes and vell > 5 then
             align_in_flight()
         end
 
