@@ -463,9 +463,16 @@ function ENT:GetDestinationAng(auto)
     return self:GetData("destination_ang") or (auto and self:GetAngles() or nil)
 end
 
-local function TraceVertical(point, up)
-    local trace_vector = Vector(0, 0, up and 1 or -1)
-    return util.QuickTrace(point + Vector(0, 0, 50), trace_vector * 99999999).HitPos
+local TRACE_DISTANCE = 9999999999
+local TRACE_DOWN_VECTOR = Vector(0, 0, -TRACE_DISTANCE)
+
+local function TraceDown(point, vertical_offset)
+    local vertical_offset = vertical_offset or 50
+    return util.QuickTrace(point + Vector(0, 0, vertical_offset), TRACE_DOWN_VECTOR)
+end
+
+local function TraceDownHit(point, vertical_offset)
+    return TraceDown(point, vertical_offset).HitPos
 end
 
 local function GenerateTracePoints(self, yaw)
@@ -560,12 +567,12 @@ function ENT:GetGroundedPos(point, get_angle)
     local prop_yaw = Angle(0,prop:GetAngles().y,0)
 
     local traces = {}
-    table.insert(traces, TraceVertical(point))
+    table.insert(traces, TraceDownHit(point))
 
     -- a number of point quick-traces is more precise than TraceEntityHull or TraceEntity since they don't take rotation into account
 
     for k,offset in ipairs(GenerateTracePoints(self,prop_yaw)) do
-        table.insert(traces, TraceVertical(point + offset))
+        table.insert(traces, TraceDownHit(point + offset))
     end
 
     -- finding top 3 points
@@ -634,8 +641,28 @@ function ENT:GetGroundedPos(point, get_angle)
     return pos, Angle(0,prop_yaw.y,0)
 end
 
+function ENT:CanFit(point)
+    return not util.TraceEntity({start = point, endpos = point}, self).Hit
+end
 
-local function FindFreePos(obj, xmin, xmax, ymin, ymax, zmin, zmax)
+local function IsTraceBelowWorld(trace_result)
+    if trace_result.HitPos.z < -16384 then
+        return true
+    end
+    local texture = trace_result.HitTexture
+    if texture == "**empty**"
+        or texture == "TOOLS/TOOLSNODRAW"
+        or texture == "TOOLS/TOOLSSKYBOX"
+    then
+        return true
+    end
+    return false
+end
+
+function ENT:FindPosInBox(p1, p2)
+    local xmin, ymin, zmin = p1:Unpack()
+    local xmax, ymax, zmax = p2:Unpack()
+
     local tries = 1000
     local point
 
@@ -652,7 +679,7 @@ local function FindFreePos(obj, xmin, xmax, ymin, ymax, zmin, zmax)
 
         point=Vector(x,y,z)
 
-        if not util.TraceEntityHull({start = point, endpos = point}, obj).Hit then
+        if self:CanFit(point) and not IsTraceBelowWorld(TraceDown(point, -50)) then
             return point
         end
     end
@@ -661,10 +688,51 @@ end
 function ENT:GetRandomLocation(grounded)
     local max = 16384
 
-    local pos = FindFreePos(self, -max, max, -max, max, -max, max)
+    local pos = self:FindPosInBox(Vector(-max,-max,-max), Vector(max,max,max))
 
-    if grounded then
-        return self:GetGroundedPos(pos)
+    if not pos then
+        return self:GetPos()
+    elseif not grounded then
+        return pos
+    end
+
+    pos = self:GetGroundedPos(pos)
+
+    if math.random(0,5) == 0 then
+        return pos
+    end
+
+    -- Searching for underground / indoor locations
+    -- the probability of them is rather low, but much higher than after the initial search
+    -- plus, the chances of skybox landing are lower
+
+    local locations = {}
+
+    local trace_res, trace_good, trace_last_hitpos
+
+    local function trace_down_next()
+        trace_res = TraceDown(trace_last_hitpos, -50)
+        trace_last_hitpos = trace_res.HitPos
+        trace_good = not IsTraceBelowWorld(trace_res)
+    end
+
+    trace_last_hitpos = pos
+    trace_down_next()
+    while trace_good do
+        table.insert(locations, trace_last_hitpos)
+        trace_down_next()
+    end
+
+    if #locations < 1 then return pos end
+
+    local newpos = locations[math.random(#locations)]
+    local z_size = self:OBBMaxs().z - self:OBBMins().z + 50
+
+    -- we gotta make sure the TARDIS fits
+    newpos = self:FindPosInBox(Vector(pos.x,pos.y,newpos.z - z_size), Vector(pos.x,pos.y,newpos.z + z_size))
+
+    if newpos then
+        pos = self:GetGroundedPos(newpos)
     end
 
     return pos
