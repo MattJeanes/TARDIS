@@ -96,11 +96,16 @@ TARDIS:AddKeyBind("destination-snaptofloor",{
     name="SnapToFloor",
     section="Destination",
     func=function(self,down,ply)
-        if ply:GetTardisData("destination") then
+        if down and ply:GetTardisData("destination") then
             local prop = self:GetData("destinationprop")
             if IsValid(prop) then
-                local pos = util.QuickTrace(prop:GetPos()+Vector(0,0,50), Vector(0,0,-1)*99999999).HitPos
+                local prevpos = self:GetData("destination_snaptofloor_lastpos")
+                local should_glue = (prevpos == prop:GetPos())
+
+                local pos, ang = self:GetGroundedPos(prop:GetPos(), should_glue)
                 prop:SetPos(pos)
+                prop:SetAngles(ang)
+                self:SetData("destination_snaptofloor_lastpos", (not should_glue and pos))
             end
         end
     end,
@@ -114,10 +119,13 @@ TARDIS:AddKeyBind("destination-find-random",{
     func=function(self,down,ply)
         if down and ply:GetTardisData("destination") then
             local prop = self:GetData("destinationprop")
+            prop:SetAngles(Angle(0,prop:GetAngles().y,0))
             if IsValid(prop) then
                 local grounded = not self:GetData("destination_random_grounded")
                 self:SetData("destination_random_grounded", grounded)
-                prop:SetPos(self:GetRandomLocation(grounded))
+                local pos = self:GetRandomLocation(grounded)
+                prop:SetPos(pos)
+                self:SetData("destination_snaptofloor_lastpos", grounded and pos)
             end
         end
     end,
@@ -155,8 +163,7 @@ if SERVER then
         local randomLocation = self:GetRandomLocation(grounded)
         if randomLocation then
             self:CallHook("RandomDestinationSet", randomLocation)
-            self:SetDestination(randomLocation, Angle(0,0,0))
-            return true
+            return self:SetDestination(randomLocation, Angle(0,0,0))
         else
             return false
         end
@@ -387,7 +394,7 @@ else
             local angslowmul = 0.5
             local fwd=eye:Forward()
             local ri=eye:Right()
-            local up=prop:GetUp()
+            local up=Vector(0,0,1)
 
             local mv = Vector(0,0,0)
             local rt = Angle(0,0,0)
@@ -429,9 +436,16 @@ else
 
             if not mv:IsZero() then
                 prop:SetPos(prop:GetPos() + mv)
+                prop:SetAngles(Angle(0,prop:GetAngles().y,0) + rt)
             end
             if not rt:IsZero() then
-                prop:SetAngles(prop:GetAngles() + rt)
+                local ang = prop:GetAngles()
+                local na = ang
+                --na.p = na.p - 90
+                local n = na:Up()
+
+                ang:RotateAroundAxis(n, rt.y)
+                prop:SetAngles(ang)
             end
         end
     end)
@@ -449,26 +463,209 @@ function ENT:GetDestinationAng(auto)
     return self:GetData("destination_ang") or (auto and self:GetAngles() or nil)
 end
 
-function ENT:GetRandomLocation(grounded)
-    local td = {}
-    td.mins = self:OBBMins()
-    td.maxs = self:OBBMaxs()
-    local max = 16384
-    local tries = 1000
-    local point
-    while tries > 0 do
-        tries = tries - 1
-        point=Vector(math.random(-max, max),math.random(-max, max),math.random(-max, max))
-        td.start=point
-        td.endpos=point
-        if not util.TraceHull(td).Hit
-        then
-            if grounded then
-                local down = util.QuickTrace(point + Vector(0, 0, 50), Vector(0, 0, -1) * 99999999).HitPos
-                return down, true
-            else
-                return point, false
-            end
+local function TraceVertical(point, up)
+    local trace_vector = Vector(0, 0, up and 1 or -1)
+    return util.QuickTrace(point + Vector(0, 0, 50), trace_vector * 99999999).HitPos
+end
+
+local function GenerateTracePoints(self, yaw)
+    local trace_offsets = { Vector(0,0,0), }
+
+    local xmin, ymin, zmin = self:OBBMins():Unpack()
+    local xmax, ymax, zmax = self:OBBMaxs():Unpack()
+
+    -- add points on the border rectangle
+
+    table.insert(trace_offsets, Vector(xmin, ymin, zmin))
+    table.insert(trace_offsets, Vector(xmax, ymax, zmin))
+    table.insert(trace_offsets, Vector(xmin, ymax, zmin))
+    table.insert(trace_offsets, Vector(xmax, ymin, zmin))
+
+    table.insert(trace_offsets, Vector(xmin, 0.5 * ymin, zmin))
+    table.insert(trace_offsets, Vector(xmin, 0.5 * ymax, zmin))
+    table.insert(trace_offsets, Vector(xmax, 0.5 * ymin, zmin))
+    table.insert(trace_offsets, Vector(xmax, 0.5 * ymax, zmin))
+    table.insert(trace_offsets, Vector(0.5 * xmin, ymin, zmin))
+    table.insert(trace_offsets, Vector(0.5 * xmax, ymin, zmin))
+    table.insert(trace_offsets, Vector(0.5 * xmin, ymax, zmin))
+    table.insert(trace_offsets, Vector(0.5 * xmax, ymax, zmin))
+
+    for i,v in ipairs(trace_offsets) do
+        v:Rotate(yaw)
+    end
+
+    local r = self:OBBMins() / math.sqrt(2)
+
+    -- add points from a circle in the middle
+    local num_dirs = 9
+    for i = 0,num_dirs do
+        r:Rotate(Angle(0,360 / num_dirs,0))
+        table.insert(trace_offsets, (Vector() + r))
+        table.insert(trace_offsets, (Vector() + r) * 0.75)
+    end
+
+    return trace_offsets
+end
+
+local function GetPlaneNormal(p1, p2, p3)
+    local d1 = p1 - p2
+    local d2 = p1 - p3
+
+    local normal = d1:Cross(d2)
+    if normal.z < 0 then normal = -normal end
+
+    return normal:GetNormalized()
+end
+
+local function SelectPlaneDefiningPoints(points)
+    local a,b = points[1], points[2]
+
+    local todelete = {}
+    for i,c in ipairs(points) do
+        local ca = c - a
+        local cb = c - b
+
+        local ca_h = Vector(ca.x, ca.y, 0)
+        local cb_h = Vector(cb.x, cb.y, 0)
+
+        -- removing points on the same line as the first two selected
+        if ca_h:Cross(cb_h):IsEqualTol(Vector(0,0,0), 0.01) then
+            table.insert(todelete, i)
         end
     end
+    table.sort(todelete, function(a,b) return a > b end)
+    for i,c in ipairs(todelete) do
+        table.remove(points, c)
+    end
+
+    -- select the third highest point
+    local c = points[3]
+
+    if not c then
+        -- all the points were in one line
+        -- this means we're probably landing horizontally
+        return nil
+    end
+
+    return a,b,c
+end
+
+function ENT:GetGroundedPos(point, get_angle)
+    --[[
+    -- Debugging code, might be useful in the future
+        RunConsoleCommand("tardis2_debug_pointer_clear")
+    ]]
+
+    local prop = self:GetData("destinationprop")
+    local prop_yaw = Angle(0,prop:GetAngles().y,0)
+
+    local traces = {}
+    table.insert(traces, TraceVertical(point))
+
+    -- a number of point quick-traces is more precise than TraceEntityHull or TraceEntity since they don't take rotation into account
+
+    for k,offset in ipairs(GenerateTracePoints(self,prop_yaw)) do
+        table.insert(traces, TraceVertical(point + offset))
+    end
+
+    -- finding top 3 points
+    table.sort(traces, function(a, b) return a.z > b.z end)
+
+    local pos = Vector(point.x, point.y, traces[1].z)
+
+    if not get_angle then
+        return pos, prop_yaw
+    end
+
+    local a,b,c = SelectPlaneDefiningPoints(traces)
+    if a == nil then
+        return pos, prop_yaw
+    end
+
+    local cur_normal = GetPlaneNormal(a,b,c)
+
+    -- looking for the highest selected plane with the first two points
+    for j,c2 in ipairs(traces) do
+        local n = GetPlaneNormal(a, b, c2)
+        if n.z > cur_normal.z then
+            c = c2
+            cur_normal = n
+        end
+    end
+
+    local ca = c - a
+    local cb = c - b
+
+    --[[
+    -- Debugging code, might be useful in the future
+    for k,v in ipairs(traces) do
+        if not v:IsEqualTol(a, 0.0001) and not v:IsEqualTol(b, 0.0001) and not v:IsEqualTol(c, 0.0001) then
+            RunConsoleCommand("tardis2_debug_pointer", "worldpos", v.x, v.y, v.z)
+        end
+    end
+    RunConsoleCommand("tardis2_debug_pointer_color")
+    RunConsoleCommand("tardis2_debug_pointer", "worldpos", a.x, a.y, a.z)
+    RunConsoleCommand("tardis2_debug_pointer", "worldpos", b.x, b.y, b.z)
+    RunConsoleCommand("tardis2_debug_pointer", "worldpos", c.x, c.y, c.z)
+    ]]
+
+    local normal = ca:Cross(cb):GetNormalized()
+
+    if normal.z < 0 then
+        -- looking down
+        normal = - normal
+    end
+
+    local ang = normal:Angle() + Angle(90,0,0)
+    ang:RotateAroundAxis(normal, prop_yaw.y)
+
+    if normal ~= Vector(0,0,0) and normal.z > 0.5 then
+        -- the TARDIS can land there and the selected position is not vertical
+
+        local A,B,C = normal:Unpack()
+        local x0,y0,z0 = a:Unpack()
+
+        local D = - A * x0 - B * y0 - C * z0
+        local z = (- D - A * point.x - B * point.y) / C
+
+        return Vector(point.x, point.y, z), ang
+    end
+
+    return pos, Angle(0,prop_yaw.y,0)
+end
+
+
+local function FindFreePos(obj, xmin, xmax, ymin, ymax, zmin, zmax)
+    local tries = 1000
+    local point
+
+    if xmin > xmax or ymin > ymax or zmin > zmax then
+        return
+    end
+
+    while tries > 0 do
+        tries = tries - 1
+
+        local x = (xmin == xmax) and xmin or math.Rand(xmin, xmax)
+        local y = (ymin == ymax) and ymin or math.Rand(ymin, ymax)
+        local z = (zmin == zmax) and zmin or math.Rand(zmin, zmax)
+
+        point=Vector(x,y,z)
+
+        if not util.TraceEntityHull({start = point, endpos = point}, obj).Hit then
+            return point
+        end
+    end
+end
+
+function ENT:GetRandomLocation(grounded)
+    local max = 16384
+
+    local pos = FindFreePos(self, -max, max, -max, max, -max, max)
+
+    if grounded then
+        return self:GetGroundedPos(pos)
+    end
+
+    return pos
 end
