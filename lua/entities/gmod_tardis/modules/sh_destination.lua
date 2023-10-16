@@ -108,6 +108,23 @@ TARDIS:AddKeyBind("destination-snaptofloor",{
     clientonly=true,
     exterior=true
 })
+TARDIS:AddKeyBind("destination-find-random",{
+    name="FindRandom",
+    section="Destination",
+    func=function(self,down,ply)
+        if down and ply:GetTardisData("destination") then
+            local prop = self:GetData("destinationprop")
+            if IsValid(prop) then
+                local grounded = not self:GetData("destination_random_grounded")
+                self:SetData("destination_random_grounded", grounded)
+                prop:SetPos(self:GetRandomLocation(grounded))
+            end
+        end
+    end,
+    key=KEY_F,
+    clientonly=true,
+    exterior=true
+})
 
 if SERVER then
     function ENT:SetDestination(pos, ang)

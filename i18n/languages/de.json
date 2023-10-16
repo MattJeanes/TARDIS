@@ -11,6 +11,8 @@
     "Binds.Sections.Destination.Boost": "Boost",
     "Binds.Sections.Destination.Boost.Description": "Halte diese Taste beim Navigieren gedrückt, um die Geschwindigkeit zu erhöhen",
     "Binds.Sections.Destination.Down": "Runter",
+    "Binds.Sections.Destination.FindRandom": "",
+    "Binds.Sections.Destination.FindRandom.Description": "",
     "Binds.Sections.Destination.Forward": "Vorwärts",
     "Binds.Sections.Destination.Left": "Links",
     "Binds.Sections.Destination.Right": "Rechts",

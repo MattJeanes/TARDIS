@@ -11,6 +11,8 @@
     "Binds.Sections.Destination.Boost": "加速",
     "Binds.Sections.Destination.Boost.Description": "按住此鍵以加速移動",
     "Binds.Sections.Destination.Down": "下",
+    "Binds.Sections.Destination.FindRandom": "",
+    "Binds.Sections.Destination.FindRandom.Description": "",
     "Binds.Sections.Destination.Forward": "前",
     "Binds.Sections.Destination.Left": "左",
     "Binds.Sections.Destination.Right": "右",

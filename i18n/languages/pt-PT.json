@@ -11,6 +11,8 @@
     "Binds.Sections.Destination.Boost": "Acelerar",
     "Binds.Sections.Destination.Boost.Description": "Segure esta tecla enquanto estiver a navegar para acelerar",
     "Binds.Sections.Destination.Down": "Para baixo",
+    "Binds.Sections.Destination.FindRandom": "",
+    "Binds.Sections.Destination.FindRandom.Description": "",
     "Binds.Sections.Destination.Forward": "Para frente",
     "Binds.Sections.Destination.Left": "Esquerda",
     "Binds.Sections.Destination.Right": "Direita",

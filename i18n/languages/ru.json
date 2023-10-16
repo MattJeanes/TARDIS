@@ -11,6 +11,8 @@
     "Binds.Sections.Destination.Boost": "Ускорение",
     "Binds.Sections.Destination.Boost.Description": "Зажимайте эту клавишу для ускорения при выборе точки назначения",
     "Binds.Sections.Destination.Down": "Вниз",
+    "Binds.Sections.Destination.FindRandom": "",
+    "Binds.Sections.Destination.FindRandom.Description": "",
     "Binds.Sections.Destination.Forward": "Вперёд",
     "Binds.Sections.Destination.Left": "Влево",
     "Binds.Sections.Destination.Right": "Вправо",

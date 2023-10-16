@@ -11,6 +11,8 @@
     "Binds.Sections.Destination.Boost": "Boosti",
     "Binds.Sections.Destination.Boost.Description": "",
     "Binds.Sections.Destination.Down": "",
+    "Binds.Sections.Destination.FindRandom": "",
+    "Binds.Sections.Destination.FindRandom.Description": "",
     "Binds.Sections.Destination.Forward": "Eteenpäin",
     "Binds.Sections.Destination.Left": "Vasen",
     "Binds.Sections.Destination.Right": "Oikea",
