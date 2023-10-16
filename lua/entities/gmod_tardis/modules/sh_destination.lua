@@ -1,5 +1,13 @@
 -- Destination
 
+local TRACE_DISTANCE = 9999999999
+local TRACE_DOWN_VECTOR = Vector(0, 0, -TRACE_DISTANCE)
+
+local TRACE_ENT_FILTER = function(ent)
+    if ent:IsNPC() or ent:IsPlayer() then return false end
+    return true
+end
+
 -- Binds
 
 TARDIS:AddKeyBind("destination-open",{
@@ -102,7 +110,6 @@ TARDIS:AddKeyBind("destination-jump",{
             elseif self:GetData("destination-trace") then
                 local prop = self:GetData("destinationprop")
                 local pos,ang = self:GetDestinationPropTrace(ply,ply:EyeAngles())
-                --local pos,ang = self:GetDestinationPropTrace(ply,Angle(90,0,0))
 
                 prop:SetPos(pos)
                 prop:SetAngles(ang)
@@ -293,7 +300,7 @@ else
     function ENT:GetDestinationPropTrace(ply,ang)
         local prop = self:GetData("destinationprop")
         local pos,ang=self:GetDestinationPropPos(ply,nil,ang)
-        local trace=util.QuickTrace(pos,ang:Forward()*9999999999,{self,TARDIS:GetPart(self,"door"),prop})
+        local trace=util.QuickTrace(pos,ang:Forward()*TRACE_DISTANCE,{self,TARDIS:GetPart(self,"door"),prop})
         local angle=trace.HitNormal:Angle()
         angle:RotateAroundAxis(angle:Right(),-90)
         return trace.HitPos,angle
@@ -541,12 +548,9 @@ function ENT:GetDestinationAng(auto)
     return self:GetData("destination_ang") or (auto and self:GetAngles() or nil)
 end
 
-local TRACE_DISTANCE = 9999999999
-local TRACE_DOWN_VECTOR = Vector(0, 0, -TRACE_DISTANCE)
-
 local function TraceDown(point, vertical_offset)
     local vertical_offset = vertical_offset or 50
-    return util.QuickTrace(point + Vector(0, 0, vertical_offset), TRACE_DOWN_VECTOR)
+    return util.QuickTrace(point + Vector(0, 0, vertical_offset), TRACE_DOWN_VECTOR, TRACE_ENT_FILTER)
 end
 
 local function TraceDownHit(point, vertical_offset)
