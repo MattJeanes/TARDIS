@@ -9,7 +9,9 @@ if SERVER then
     ENT:AddHook("PhysicsCollide", "falling", function(self, data, collider)
 
         if self:IsVerticalLanding(data) then
-            self:SendMessage((data.OurOldVelocity.z < -1500) and "fall_crashing_sound" or "fall_landing_sound")
+            if not self:GetData("teleport") then
+                self:SendMessage((data.OurOldVelocity.z < -1500) and "fall_crashing_sound" or "fall_landing_sound")
+            end
 
             self:SetData("vertbrakes", true)
             self:Timer("vertbrakes", 1, function()
