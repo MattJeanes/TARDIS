@@ -14,6 +14,8 @@
     "Binds.Sections.Destination.FindRandom": "",
     "Binds.Sections.Destination.FindRandom.Description": "",
     "Binds.Sections.Destination.Forward": "İleri",
+    "Binds.Sections.Destination.Jump": "",
+    "Binds.Sections.Destination.Jump.Description": "",
     "Binds.Sections.Destination.Left": "Ayrıldı",
     "Binds.Sections.Destination.Right": "Doğru",
     "Binds.Sections.Destination.Rotate": "Döndür",

@@ -14,6 +14,8 @@
     "Binds.Sections.Destination.FindRandom": "",
     "Binds.Sections.Destination.FindRandom.Description": "",
     "Binds.Sections.Destination.Forward": "Vorwärts",
+    "Binds.Sections.Destination.Jump": "",
+    "Binds.Sections.Destination.Jump.Description": "",
     "Binds.Sections.Destination.Left": "Links",
     "Binds.Sections.Destination.Right": "Rechts",
     "Binds.Sections.Destination.Rotate": "Rotieren",

@@ -14,6 +14,8 @@
     "Binds.Sections.Destination.FindRandom": "Find Random",
     "Binds.Sections.Destination.FindRandom.Description": "Press this key to find a random destination",
     "Binds.Sections.Destination.Forward": "Forward",
+    "Binds.Sections.Destination.Jump": "Jump to surface",
+    "Binds.Sections.Destination.Jump.Description": "Hold this key to select a surface and move to it",
     "Binds.Sections.Destination.Left": "Left",
     "Binds.Sections.Destination.Right": "Right",
     "Binds.Sections.Destination.Rotate": "Rotate",

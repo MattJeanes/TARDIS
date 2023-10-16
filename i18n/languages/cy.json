@@ -14,6 +14,8 @@
     "Binds.Sections.Destination.FindRandom": "",
     "Binds.Sections.Destination.FindRandom.Description": "",
     "Binds.Sections.Destination.Forward": "Ymlaen",
+    "Binds.Sections.Destination.Jump": "",
+    "Binds.Sections.Destination.Jump.Description": "",
     "Binds.Sections.Destination.Left": "Chwith",
     "Binds.Sections.Destination.Right": "Dde",
     "Binds.Sections.Destination.Rotate": "Cylchdroi",

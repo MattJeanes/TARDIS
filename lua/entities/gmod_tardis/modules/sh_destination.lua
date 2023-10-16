@@ -92,6 +92,29 @@ TARDIS:AddKeyBind("destination-demat",{
     clientonly=true,
     exterior=true
 })
+TARDIS:AddKeyBind("destination-jump",{
+    name="Jump",
+    section="Destination",
+    func=function(self,down,ply)
+        if ply:GetTardisData("destination") then
+            if down then
+                self:SetData("destination-trace",true)
+            elseif self:GetData("destination-trace") then
+                local prop = self:GetData("destinationprop")
+                local pos,ang = self:GetDestinationPropTrace(ply,ply:EyeAngles())
+                --local pos,ang = self:GetDestinationPropTrace(ply,Angle(90,0,0))
+
+                prop:SetPos(pos)
+                prop:SetAngles(ang)
+
+                self:SetData("destination-trace",false)
+            end
+        end
+    end,
+    key=MOUSE_RIGHT,
+    clientonly=true,
+    exterior=true
+})
 TARDIS:AddKeyBind("destination-snaptofloor",{
     name="SnapToFloor",
     section="Destination",
@@ -251,6 +274,15 @@ else
             ignoreworld=self:GetData("vortex")
         })
         return tr.HitPos+(ang:Forward()*10), Angle(ang.p,ang.y,0)
+    end
+
+    function ENT:GetDestinationPropTrace(ply,ang)
+        local prop = self:GetData("destinationprop")
+        local pos,ang=self:GetDestinationPropPos(ply,nil,ang)
+        local trace=util.QuickTrace(pos,ang:Forward()*9999999999,{self,TARDIS:GetPart(self,"door"),prop})
+        local angle=trace.HitNormal:Angle()
+        angle:RotateAroundAxis(angle:Right(),-90)
+        return trace.HitPos,angle
     end
 
     local function setup(ent, model, pos, ang)
