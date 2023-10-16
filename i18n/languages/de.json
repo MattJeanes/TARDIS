@@ -234,6 +234,7 @@
     "Destination.LockedDemat": "Ziel erfasst, dematerialisiere...",
     "Destination.LockedReadyToDemat": "Ziel erfasst, bereit zur Dematerialisierung",
     "Destination.LockedReadyToMat": "Ziel erfasst, bereit zur Materialisierung",
+    "Destination.RotationMode": "",
     "Expression2.Error": "TARDIS-Funktionen können nicht auf etwas anderem als einer TARDIS aufgerufen werden",
     "Expression2.Security.UseDenied": "Kann keine TARDIS Set-Functions aufrufen, wenn die Isomorphe Sicherheit aktiv ist",
     "Exteriors.Categories.Misc": "Sonstiges",

@@ -234,6 +234,7 @@
     "Destination.LockedDemat": "Destino establecido, desmaterializando...",
     "Destination.LockedReadyToDemat": "Destino establecido, listo para desmaterializar",
     "Destination.LockedReadyToMat": "Destino establecido, listo para materializar",
+    "Destination.RotationMode": "",
     "Expression2.Error": "No se pueden cargar funciones en otra cosa que no sea el TARDIS",
     "Expression2.Security.UseDenied": "No se pueden cargar las funciones fijadas en el TARDIS de otra persona con la Seguridad Isomórfica activada",
     "Exteriors.Categories.Misc": "Miscelánea",

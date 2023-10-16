@@ -234,6 +234,7 @@
     "Destination.LockedDemat": "目的地锁定，起飞中……",
     "Destination.LockedReadyToDemat": "目的地锁定，准备起飞",
     "Destination.LockedReadyToMat": "目的地锁定，准备降落",
+    "Destination.RotationMode": "",
     "Expression2.Error": "无法在塔迪斯以外的东西上调用塔迪斯功能",
     "Expression2.Security.UseDenied": "无法在对方的塔迪斯激活同构安全时调用塔迪斯设置功能",
     "Exteriors.Categories.Misc": "各种各样的",

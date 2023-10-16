@@ -234,6 +234,7 @@
     "Destination.LockedDemat": "",
     "Destination.LockedReadyToDemat": "",
     "Destination.LockedReadyToMat": "",
+    "Destination.RotationMode": "",
     "Expression2.Error": "",
     "Expression2.Security.UseDenied": "",
     "Exteriors.Categories.Misc": "",

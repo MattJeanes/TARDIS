@@ -234,6 +234,7 @@
     "Destination.LockedDemat": "Cyrchfan wedi'i chloi, yn diystyru...",
     "Destination.LockedReadyToDemat": "Cyrchfan wedi'i chloi, yn barod i'w dad-wneud",
     "Destination.LockedReadyToMat": "Cyrchfan ar glo, yn barod i'w gwireddu",
+    "Destination.RotationMode": "",
     "Expression2.Error": "Methu â galw swyddogaethau TARDIS ar rywbeth heblaw TARDIS",
     "Expression2.Security.UseDenied": "Methu â galw swyddogaethau set TARDIS ar TARDIS rhywun arall gyda Diogelwch Isomorffig yn weithredol",
     "Exteriors.Categories.Misc": "Amrywiol",

@@ -234,6 +234,7 @@
     "Destination.LockedDemat": "Hedef kilitlendi, kaydileştiriliyor...",
     "Destination.LockedReadyToDemat": "Hedef kilitli, kaydileştirilmeye hazır",
     "Destination.LockedReadyToMat": "Hedef kilitlendi, gerçekleşmeye hazır",
+    "Destination.RotationMode": "",
     "Expression2.Error": "TARDIS işlevlerini TARDIS dışında bir şeyde çağıramazsınız",
     "Expression2.Security.UseDenied": "İzomorfik Güvenlik etkinken başka birinin TARDIS'inde TARDIS ayarlı işlevler çağrılamaz",
     "Exteriors.Categories.Misc": "Çeşitli",

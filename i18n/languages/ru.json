@@ -234,6 +234,7 @@
     "Destination.LockedDemat": "Маршрут построен, ТАРДИС дематериализуется!",
     "Destination.LockedReadyToDemat": "Маршрут построен, ТАРДИС готова к дематериализации!",
     "Destination.LockedReadyToMat": "Маршрут построен. ТАРДИС готова к материализации!",
+    "Destination.RotationMode": "",
     "Expression2.Error": "Невозможно вызывать функции ТАРДИС на чем-то другом, кроме ТАРДИС.",
     "Expression2.Security.UseDenied": "Невозможно вызвать функции набора ТАРДИС на чужой ТАРДИС с активной изоморфной защитой.",
     "Exteriors.Categories.Misc": "Разнообразный",

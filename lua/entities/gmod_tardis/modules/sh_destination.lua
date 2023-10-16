@@ -136,14 +136,28 @@ TARDIS:AddKeyBind("destination-snaptofloor",{
     clientonly=true,
     exterior=true
 })
+TARDIS:AddKeyBind("destination-rotation-toggle",{
+    name="ToggleRotationMode",
+    section="Destination",
+    func=function(self,down,ply)
+        if down and ply:GetTardisData("destination") then
+            local rotating = not self:GetData("destination-rotating")
+            self:SetData("destination-rotating", rotating)
+            TARDIS:StatusMessage(ply, "Destination.RotationMode", rotating)
+        end
+    end,
+    key=KEY_T,
+    clientonly=true,
+    exterior=true
+})
 TARDIS:AddKeyBind("destination-find-random",{
     name="FindRandom",
     section="Destination",
     func=function(self,down,ply)
         if down and ply:GetTardisData("destination") then
             local prop = self:GetData("destinationprop")
-            prop:SetAngles(Angle(0,prop:GetAngles().y,0))
             if IsValid(prop) then
+                prop:SetAngles(Angle(0,prop:GetAngles().y,0))
                 local grounded = not self:GetData("destination_random_grounded")
                 self:SetData("destination_random_grounded", grounded)
                 local pos = self:GetRandomLocation(grounded)
@@ -152,7 +166,7 @@ TARDIS:AddKeyBind("destination-find-random",{
             end
         end
     end,
-    key=KEY_F,
+    key=KEY_G,
     clientonly=true,
     exterior=true
 })
@@ -394,6 +408,10 @@ else
         end
     end)
 
+    ENT:AddHook("Destination", "rotation_mode", function(self, enabled)
+        self:SetData("destination-rotating", nil)
+    end)
+
     ENT:OnMessage("destination", function(self, data, ply)
         local enabled = data[1]
         self:CallHook("Destination", enabled)
@@ -410,26 +428,29 @@ else
     end)
 
     ENT:AddHook("Think", "destination", function(self)
-        if LocalPlayer():GetTardisData("destination") then
-            local prop=self:GetData("destinationprop")
-            if not IsValid(prop) then return end
-            local dt=FrameTime()*66
-            local eye=LocalPlayer():EyeAngles()
-            eye.r = 0
-            if not eye then
-                eye=angle_zero
-            end
-            local force = 15
-            local angforce = 6
-            local boostmul = 15
-            local slowmul = 0.1
-            local angslowmul = 0.5
-            local fwd=eye:Forward()
-            local ri=eye:Right()
-            local up=Vector(0,0,1)
+        if not LocalPlayer():GetTardisData("destination") then return end
 
-            local mv = Vector(0,0,0)
-            local rt = Angle(0,0,0)
+        local prop=self:GetData("destinationprop")
+        if not IsValid(prop) then return end
+        local dt=FrameTime()*66
+        local eye=LocalPlayer():EyeAngles()
+        eye.r = 0
+        if not eye then
+            eye=angle_zero
+        end
+        local force = 15
+        local angforce = 6
+        local boostmul = 15
+        local slowmul = 0.1
+        local angslowmul = 0.5
+        local fwd=eye:Forward()
+        local ri=eye:Right()
+        local up=Vector(0,0,1)
+
+        local mv = Vector(0,0,0)
+        local rt = Angle(0,0,0)
+
+        if not self:GetData("destination-rotating") then
             if TARDIS:IsBindDown("destination-forward") then
                 mv:Add(force*fwd*dt)
             elseif TARDIS:IsBindDown("destination-backward") then
@@ -465,20 +486,45 @@ else
                 mv=mv*boostmul
                 rt=rt*boostmul
             end
+        else
+            angforce = angforce * 0.25
 
-            if not mv:IsZero() then
-                prop:SetPos(prop:GetPos() + mv)
-                prop:SetAngles(Angle(0,prop:GetAngles().y,0) + rt)
+            if TARDIS:IsBindDown("destination-rotate") then
+                if TARDIS:IsBindDown("destination-left") then
+                    rt = rt + Angle(0,0,angforce*dt)
+                end
+                if TARDIS:IsBindDown("destination-right") then
+                    rt = rt + Angle(0,0,angforce*-1*dt)
+                end
+            else
+                if TARDIS:IsBindDown("destination-left") then
+                    rt = rt + Angle(0,angforce*dt,0)
+                end
+                if TARDIS:IsBindDown("destination-right") then
+                    rt = rt + Angle(0,angforce*-1*dt,0)
+                end
             end
-            if not rt:IsZero() then
-                local ang = prop:GetAngles()
-                local na = ang
-                --na.p = na.p - 90
-                local n = na:Up()
+            if TARDIS:IsBindDown("destination-forward") then
+                rt = rt + Angle(angforce*dt,0,0)
+            elseif TARDIS:IsBindDown("destination-backward") then
+                rt = rt + Angle(angforce*-1*dt,0,0)
+            end
 
-                ang:RotateAroundAxis(n, rt.y)
-                prop:SetAngles(ang)
+            if TARDIS:IsBindDown("destination-boost") then
+                rt = rt * 2
             end
+        end
+
+        if not mv:IsZero() then
+            prop:SetPos(prop:GetPos() + mv)
+        end
+        if not rt:IsZero() then
+            local ang = prop:GetAngles()
+
+            ang:RotateAroundAxis(ang:Up(), rt.y)
+            ang:RotateAroundAxis(ang:Right(), rt.x)
+            ang:RotateAroundAxis(ang:Forward(), rt.z)
+            prop:SetAngles(ang)
         end
     end)
 end
