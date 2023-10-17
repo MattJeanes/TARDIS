@@ -14,7 +14,7 @@ if SERVER then
             end
 
             self:SetData("vertbrakes", true)
-            self:Timer("vertbrakes", 1, function()
+            self:Timer("vertbrakes", 0.3, function()
                 self:SetData("vertbrakes", false)
             end)
         end
@@ -81,9 +81,12 @@ if SERVER then
 
         local pressing_down = IsValid(self.pilot) and TARDIS:IsBindDown(self.pilot,"flight-down")
         local vertbrakes = self:GetData("vertbrakes")
-        local stopped = (vell < 0.1)
+        local stopped = (vell < 1)
 
-        if pressing_down and not vertbrakes and vell > 5 then
+        local height = self:OBBMaxs().z - self:OBBMins().z
+        local tr = util.QuickTrace(self:GetPos(), Vector(0,0,-height))
+
+        if pressing_down and not vertbrakes and not tr.Hit then
             align_in_flight()
         end
 
