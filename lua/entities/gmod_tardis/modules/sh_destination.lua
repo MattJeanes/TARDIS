@@ -646,14 +646,14 @@ function ENT:GetGroundedPos(point, get_angle)
     ]]
 
     local prop = self:GetData("destinationprop")
-    local prop_yaw = Angle(0,prop:GetAngles().y,0)
+    local initial_yaw = Angle(0, IsValid(prop) and prop:GetAngles().y or self:GetAngles().y, 0)
 
     local traces = {}
     table.insert(traces, TraceDownHit(point))
 
     -- a number of point quick-traces is more precise than TraceEntityHull or TraceEntity since they don't take rotation into account
 
-    for k,offset in ipairs(GenerateTracePoints(self,prop_yaw)) do
+    for k,offset in ipairs(GenerateTracePoints(self,initial_yaw)) do
         table.insert(traces, TraceDownHit(point + offset))
     end
 
@@ -663,12 +663,12 @@ function ENT:GetGroundedPos(point, get_angle)
     local pos = Vector(point.x, point.y, traces[1].z)
 
     if not get_angle then
-        return pos, prop_yaw
+        return pos, initial_yaw
     end
 
     local a,b,c = SelectPlaneDefiningPoints(traces)
     if a == nil then
-        return pos, prop_yaw
+        return pos, initial_yaw
     end
 
     local cur_normal = GetPlaneNormal(a,b,c)
@@ -706,7 +706,7 @@ function ENT:GetGroundedPos(point, get_angle)
     end
 
     local ang = normal:Angle() + Angle(90,0,0)
-    ang:RotateAroundAxis(normal, prop_yaw.y)
+    ang:RotateAroundAxis(normal, initial_yaw.y)
 
     if normal ~= Vector(0,0,0) and normal.z > 0.5 then
         -- the TARDIS can land there and the selected position is not vertical
@@ -720,7 +720,7 @@ function ENT:GetGroundedPos(point, get_angle)
         return Vector(point.x, point.y, z), ang
     end
 
-    return pos, Angle(0,prop_yaw.y,0)
+    return pos, initial_yaw
 end
 
 function ENT:CanFit(point)
