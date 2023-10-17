@@ -10,18 +10,29 @@ end)
 
 hook.Add("PostDrawTranslucentRenderables", "tardis-trace", function()
     local ext=TARDIS:GetExteriorEnt()
-    if IsValid(ext) and ext:GetData("teleport-trace") then
-        local pos,ang=ext:GetThirdPersonTrace(LocalPlayer(),LocalPlayer():EyeAngles())
-        local fw=ang:Forward()
-        local bk=fw*-1
-        local ri=ang:Right()
-        local le=ri*-1
+    if not IsValid(ext) then return end
 
-        local size=10
-        local col=Color(255,0,0)
-        render.DrawLine(pos,pos+(fw*size),col)
-        render.DrawLine(pos,pos+(bk*size),col)
-        render.DrawLine(pos,pos+(ri*size),col)
-        render.DrawLine(pos,pos+(le*size),col)
+    local tp_trace = ext:GetData("teleport-trace")
+    local dst_trace = ext:GetData("destination-trace") and LocalPlayer():GetTardisData("destination")
+
+    if not tp_trace and not dst_trace then return end
+
+    local pos, ang
+    if tp_trace then
+        pos,ang=ext:GetThirdPersonTrace(LocalPlayer(),LocalPlayer():EyeAngles())
+    else
+        pos,ang=ext:GetDestinationPropTrace(LocalPlayer(),LocalPlayer():EyeAngles())
     end
+
+    local fw=ang:Forward()
+    local bk=fw*-1
+    local ri=ang:Right()
+    local le=ri*-1
+
+    local size=10
+    local col=Color(255,0,0)
+    render.DrawLine(pos,pos+(fw*size),col)
+    render.DrawLine(pos,pos+(bk*size),col)
+    render.DrawLine(pos,pos+(ri*size),col)
+    render.DrawLine(pos,pos+(le*size),col)
 end)

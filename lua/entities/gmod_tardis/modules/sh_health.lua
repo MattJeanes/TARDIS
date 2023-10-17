@@ -166,8 +166,8 @@ if SERVER then
         end
     end)
 
-    ENT:AddHook("CanTogglePower", "health", function(self)
-        if (not (self:GetData("health-val", 0) > 0)) or (self:GetRepairing() or self:GetRepairPrimed()) then
+    ENT:AddHook("CanTogglePower", "health", function(self, on)
+        if on and (not (self:GetData("health-val", 0) > 0)) or (self:GetRepairing() or self:GetRepairPrimed()) then
             return false
         end
     end)
@@ -253,13 +253,22 @@ if SERVER then
             self:SetData("damage_last_by_ply", 0)
         end
 
+        local vert = self:IsVerticalLanding(data)
+        local speed_border = vert and 1500 or 300
+        local speed_dmg_mult = vert and 0.2 or 1
+
         if not TARDIS:GetSetting("health-enabled") then return end
-        if (data.Speed < 300) then return end
-        local new_health = self:GetHealth() - (data.Speed / 23)
+        if (data.Speed < speed_border) then return end
+
+        local new_health = self:GetHealth() - (speed_dmg_mult * data.Speed / 25)
+
         self:ChangeHealth(new_health)
+
         if not IsValid(self.interior) then return end
+
         local phys = self:GetPhysicsObject()
         local vel = phys:GetVelocity():Length()
+
         if self:GetHealth() ~= 0 and vel < 900 then
             int = self.metadata.Interior.Sounds.Damage
             self.interior:EmitSound(int.Crash)

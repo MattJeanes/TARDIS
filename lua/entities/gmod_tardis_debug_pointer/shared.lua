@@ -11,6 +11,20 @@ ENT.Category        = "Doctor Who - TARDIS"
 ENT.Spawnable       = false
 ENT.AdminOnly       = true
 
+-- debugging functions
+
+concommand.Add("tardis2_debug_pointer_clear", function(ply,cmd,args)
+    for k,v in pairs(ents.FindByClass("gmod_tardis_debug_pointer")) do
+        v:Remove()
+    end
+end)
+
+concommand.Add("tardis2_debug_pointer_color", function(ply,cmd,args)
+    for k,v in pairs(ents.FindByClass("gmod_tardis_debug_pointer")) do
+        v:SetColor(Color(10,0,255))
+    end
+end)
+
 concommand.Add("tardis2_debug_pointer", function(ply,cmd,args)
     if not (ply:IsAdmin() and gamemode.Call("PlayerSpawnSENT", ply, "gmod_tardis_debug_pointer")) then return end
 
@@ -43,14 +57,16 @@ concommand.Add("tardis2_debug_pointer", function(ply,cmd,args)
             if part then ent.model = part.Model end
         elseif v == "scale" then
             ent.scale = args[i + 1]
-        elseif v == "pos" or v == "ang" then
-            a = tonumber(args[i + 1])
-            b = tonumber(args[i + 2])
-            c = tonumber(args[i + 3])
-            ok = (a and b and c)
+        elseif v == "pos" or v == "ang" or v == "worldpos" then
+            local a = tonumber(args[i + 1])
+            local b = tonumber(args[i + 2])
+            local c = tonumber(args[i + 3])
+            local ok = (a and b and c)
 
             if ok and v == "pos" and interior then
                 ent:SetPos(interior:LocalToWorld(Vector(a, b, c)))
+            elseif ok and v == "worldpos" then
+                ent:SetPos(Vector(a, b, c))
             elseif ok then
                 ent:SetAngles(Angle(a, b, c))
             end
