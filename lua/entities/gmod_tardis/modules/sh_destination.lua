@@ -129,10 +129,15 @@ TARDIS:AddKeyBind("destination-snaptofloor",{
         if down and ply:GetTardisData("destination") then
             local prop = self:GetData("destinationprop")
             if IsValid(prop) then
-                local prevpos = self:GetData("destination_snaptofloor_lastpos")
-                local should_glue = (prevpos == prop:GetPos())
+                local pos, ang
+                if TARDIS:IsBindDown("destination-boost") then
+                    pos,ang = self:GetDestinationPropTrace(ply,Angle(90,0,0))
+                else
+                    local prevpos = self:GetData("destination_snaptofloor_lastpos")
+                    local should_glue = (prevpos == prop:GetPos())
 
-                local pos, ang = self:GetGroundedPos(prop:GetPos(), should_glue)
+                    pos, ang = self:GetGroundedPos(prop:GetPos(), should_glue)
+                end
                 prop:SetPos(pos)
                 prop:SetAngles(ang)
                 self:SetData("destination_snaptofloor_lastpos", (not should_glue and pos))
@@ -165,10 +170,10 @@ TARDIS:AddKeyBind("destination-find-random",{
             local prop = self:GetData("destinationprop")
             if IsValid(prop) then
                 prop:SetAngles(Angle(0,prop:GetAngles().y,0))
-                local grounded = not self:GetData("destination_random_grounded")
-                self:SetData("destination_random_grounded", grounded)
-                local pos = self:GetRandomLocation(grounded)
+                local pos, ang = self:GetGroundedPos(self:GetRandomLocation(true), true)
                 prop:SetPos(pos)
+                prop:SetAngles(ang)
+
                 self:SetData("destination_snaptofloor_lastpos", grounded and pos)
             end
         end
