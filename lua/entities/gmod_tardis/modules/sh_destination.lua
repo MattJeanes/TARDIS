@@ -560,8 +560,8 @@ end
 local function GenerateTracePoints(self, yaw)
     local trace_offsets = { Vector(0,0,0), }
 
-    local xmin, ymin, zmin = (0.8 * self:OBBMins()):Unpack()
-    local xmax, ymax, zmax = (0.8 * self:OBBMaxs()):Unpack()
+    local xmin, ymin, zmin = self:OBBMins():Unpack()
+    local xmax, ymax, zmax = self:OBBMaxs():Unpack()
 
     -- add points on the border rectangle
 
@@ -570,27 +570,21 @@ local function GenerateTracePoints(self, yaw)
     table.insert(trace_offsets, Vector(xmin, ymax, zmin))
     table.insert(trace_offsets, Vector(xmax, ymin, zmin))
 
-    table.insert(trace_offsets, Vector(xmin, 0.5 * ymin, zmin))
-    table.insert(trace_offsets, Vector(xmin, 0.5 * ymax, zmin))
-    table.insert(trace_offsets, Vector(xmax, 0.5 * ymin, zmin))
-    table.insert(trace_offsets, Vector(xmax, 0.5 * ymax, zmin))
-    table.insert(trace_offsets, Vector(0.5 * xmin, ymin, zmin))
-    table.insert(trace_offsets, Vector(0.5 * xmax, ymin, zmin))
-    table.insert(trace_offsets, Vector(0.5 * xmin, ymax, zmin))
-    table.insert(trace_offsets, Vector(0.5 * xmax, ymax, zmin))
-
     for i,v in ipairs(trace_offsets) do
         v:Rotate(yaw)
     end
 
-    local r = self:OBBMins() / 2
+    local r = self:OBBMins() * 0.9
 
     -- add points from a circle in the middle
-    local num_dirs = 16
+    local num_dirs = 32
     for i = 0,num_dirs do
         r:Rotate(Angle(0,360 / num_dirs,0))
         table.insert(trace_offsets, (Vector() + r))
-        table.insert(trace_offsets, (Vector() + r) * 0.75)
+        if i % 2 == 0 then
+            table.insert(trace_offsets, (Vector() + r) * 0.5)
+            table.insert(trace_offsets, (Vector() + r) * 0.75)
+        end
     end
 
     return trace_offsets
