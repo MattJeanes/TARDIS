@@ -3,10 +3,6 @@
 local TRACE_DISTANCE = 9999999999
 local TRACE_DOWN_VECTOR = Vector(0, 0, -TRACE_DISTANCE)
 local TRACE_DEBUG = false
-local TRACE_ENT_FILTER = function(ent)
-    if ent:IsNPC() or ent:IsPlayer() then return false end
-    return true
-end
 
 -- Binds
 
@@ -553,13 +549,20 @@ function ENT:GetDestinationAng(auto)
     return self:GetData("destination_ang") or (auto and self:GetAngles() or nil)
 end
 
-local function TraceDown(point, vertical_offset)
+function ENT:DestinationTraceDown(point, vertical_offset)
     local vertical_offset = vertical_offset or 50
-    return util.QuickTrace(point + Vector(0, 0, vertical_offset), TRACE_DOWN_VECTOR, TRACE_ENT_FILTER)
+
+    local filter = function(ent)
+        if ent:IsNPC() or ent:IsPlayer() then return false end
+        if ent == self or ent.TardisPart then return false end
+        return true
+    end
+
+    return util.QuickTrace(point + Vector(0, 0, vertical_offset), TRACE_DOWN_VECTOR, filter)
 end
 
-local function TraceDownHit(point, vertical_offset)
-    return TraceDown(point, vertical_offset).HitPos
+function ENT:DestinationTraceDownHit(point, vertical_offset)
+    return self:DestinationTraceDown(point, vertical_offset).HitPos
 end
 
 local function GenerateTracePoints(self, yaw)
@@ -647,12 +650,12 @@ function ENT:GetGroundedPos(point, get_angle)
     local initial_yaw = Angle(0, IsValid(prop) and prop:GetAngles().y or self:GetAngles().y, 0)
 
     local traces = {}
-    table.insert(traces, TraceDownHit(point))
+    table.insert(traces, self:DestinationTraceDownHit(point))
 
     -- a number of point quick-traces is more precise than TraceEntityHull or TraceEntity since they don't take rotation into account
 
     for k,offset in ipairs(GenerateTracePoints(self,initial_yaw)) do
-        table.insert(traces, TraceDownHit(point + offset))
+        table.insert(traces, self:DestinationTraceDownHit(point + offset))
     end
 
     -- finding top 3 points
@@ -759,7 +762,7 @@ function ENT:FindPosInBox(p1, p2)
 
         point=Vector(x,y,z)
 
-        if self:CanFit(point) and not IsTraceBelowWorld(TraceDown(point, -50)) then
+        if self:CanFit(point) and not IsTraceBelowWorld(self:DestinationTraceDown(point, -50)) then
             return point
         end
     end
@@ -791,7 +794,7 @@ function ENT:GetRandomLocation(grounded)
     local trace_res, trace_good, trace_last_hitpos
 
     local function trace_down_next()
-        trace_res = TraceDown(trace_last_hitpos, -50)
+        trace_res = self:DestinationTraceDown(trace_last_hitpos, -50)
         trace_last_hitpos = trace_res.HitPos
         trace_good = not IsTraceBelowWorld(trace_res)
     end
