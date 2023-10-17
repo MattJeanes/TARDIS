@@ -35,6 +35,8 @@ if SERVER then
             return
         end
 
+        if not self:IsAlive() then return end
+
         local phm=FrameTime()*66
         local up=self:GetUp()
         local ri2=self:GetRight()
