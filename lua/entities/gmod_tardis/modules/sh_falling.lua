@@ -3,7 +3,12 @@ if SERVER then
         local ang = self:GetAngles()
         local angmax = math.max(math.abs(ang.p), math.abs(ang.r))
 
-        return (angmax < 30 and collision_data.HitNormal.z < -0.85 and collision_data.OurOldVelocity.z < 0)
+        local hit_normal_z = collision_data.HitNormal.z
+        local vel = collision_data.OurOldVelocity
+        local velh = Vector(vel.x, vel.y, 0):Length()
+        local velv = math.abs(vel.z)
+
+        return (angmax < 30 and hit_normal_z < -0.85 and vel.z < 0 and (velh <= 1500 or velv > 500))
     end
 
     ENT:AddHook("PhysicsCollide", "falling", function(self, data, collider)
