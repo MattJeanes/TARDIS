@@ -356,6 +356,12 @@ if SERVER then
             return self:GetData("pilot", NULL) or NULL
         end
     end)
+
+    ENT:AddHook("ShouldNotPlayLandingSound", "flight", function(self)
+        if self:GetData("flight") or self:GetData("float") then
+            return true
+        end
+    end)
 else
     ENT:AddHook("OnRemove", "flight", function(self)
         if self.flightsound then
