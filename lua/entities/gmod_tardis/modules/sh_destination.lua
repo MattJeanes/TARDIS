@@ -2,7 +2,7 @@
 
 local TRACE_DISTANCE = 9999999999
 local TRACE_DOWN_VECTOR = Vector(0, 0, -TRACE_DISTANCE)
-
+local TRACE_DEBUG = false
 local TRACE_ENT_FILTER = function(ent)
     if ent:IsNPC() or ent:IsPlayer() then return false end
     return true
@@ -560,8 +560,8 @@ end
 local function GenerateTracePoints(self, yaw)
     local trace_offsets = { Vector(0,0,0), }
 
-    local xmin, ymin, zmin = self:OBBMins():Unpack()
-    local xmax, ymax, zmax = self:OBBMaxs():Unpack()
+    local xmin, ymin, zmin = (0.8 * self:OBBMins()):Unpack()
+    local xmax, ymax, zmax = (0.8 * self:OBBMaxs()):Unpack()
 
     -- add points on the border rectangle
 
@@ -583,10 +583,10 @@ local function GenerateTracePoints(self, yaw)
         v:Rotate(yaw)
     end
 
-    local r = self:OBBMins() / math.sqrt(2)
+    local r = self:OBBMins() / 2
 
     -- add points from a circle in the middle
-    local num_dirs = 9
+    local num_dirs = 16
     for i = 0,num_dirs do
         r:Rotate(Angle(0,360 / num_dirs,0))
         table.insert(trace_offsets, (Vector() + r))
@@ -640,10 +640,9 @@ local function SelectPlaneDefiningPoints(points)
 end
 
 function ENT:GetGroundedPos(point, get_angle)
-    --[[
-    -- Debugging code, might be useful in the future
+    if TRACE_DEBUG then
         RunConsoleCommand("tardis2_debug_pointer_clear")
-    ]]
+    end
 
     local prop = self:GetData("destinationprop")
     local initial_yaw = Angle(0, IsValid(prop) and prop:GetAngles().y or self:GetAngles().y, 0)
@@ -685,18 +684,18 @@ function ENT:GetGroundedPos(point, get_angle)
     local ca = c - a
     local cb = c - b
 
-    --[[
-    -- Debugging code, might be useful in the future
-    for k,v in ipairs(traces) do
-        if not v:IsEqualTol(a, 0.0001) and not v:IsEqualTol(b, 0.0001) and not v:IsEqualTol(c, 0.0001) then
-            RunConsoleCommand("tardis2_debug_pointer", "worldpos", v.x, v.y, v.z)
+    if TRACE_DEBUG then
+        -- Debugging code, might be useful in the future
+        for k,v in ipairs(traces) do
+            if not v:IsEqualTol(a, 0.0001) and not v:IsEqualTol(b, 0.0001) and not v:IsEqualTol(c, 0.0001) then
+                RunConsoleCommand("tardis2_debug_pointer", "worldpos", v.x, v.y, v.z)
+            end
         end
+        RunConsoleCommand("tardis2_debug_pointer_color")
+        RunConsoleCommand("tardis2_debug_pointer", "worldpos", a.x, a.y, a.z)
+        RunConsoleCommand("tardis2_debug_pointer", "worldpos", b.x, b.y, b.z)
+        RunConsoleCommand("tardis2_debug_pointer", "worldpos", c.x, c.y, c.z)
     end
-    RunConsoleCommand("tardis2_debug_pointer_color")
-    RunConsoleCommand("tardis2_debug_pointer", "worldpos", a.x, a.y, a.z)
-    RunConsoleCommand("tardis2_debug_pointer", "worldpos", b.x, b.y, b.z)
-    RunConsoleCommand("tardis2_debug_pointer", "worldpos", c.x, c.y, c.z)
-    ]]
 
     local normal = ca:Cross(cb):GetNormalized()
 
