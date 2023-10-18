@@ -95,7 +95,7 @@ if SERVER then
                 end
             end
         end
-        if ent.TardisPart then
+        if ent.TardisPart and IsValid(ent.exterior) then
             if ent.ID == "door" and ent.exterior:GetSkin()~=i then
                 ent.exterior:SetSkin(i)
             end
