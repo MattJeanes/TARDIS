@@ -31,12 +31,19 @@ ENT:AddHook("CustomData", "metadata", function(self, customData)
     end
 end)
 
-function ENT:Initialize()
+function ENT:InitializeReal()
     self.metadata=TARDIS:CreateInteriorMetadata(self.metadataID, self)
     self.Model=self.metadata.Exterior.Model
     self.Portal=self.metadata.Exterior.Portal
     self.Fallback=self.metadata.Exterior.Fallback
     self.BaseClass.Initialize(self)
+end
+
+function ENT:Initialize()
+    if not IsValid(self:GetCreator()) then
+        return
+    end
+    self:InitializeReal()
 end
 
 function ENT:PhysicsCollide(colData, collider)
@@ -46,3 +53,10 @@ function ENT:OnTakeDamage(dmginfo)
     if self:CallHook("ShouldTakeDamage",dmginfo)==false then return end
     self:CallHook("OnTakeDamage", dmginfo)
 end
+
+duplicator.RegisterEntityClass("gmod_tardis", function(ply, data)
+    local ent = duplicator.GenericDuplicatorFunction(ply, data)
+    ent:SetCreator(ply)
+    ent:InitializeReal()
+    return ent
+end, "Data")
