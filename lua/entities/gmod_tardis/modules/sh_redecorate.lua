@@ -12,6 +12,9 @@ local saved_data_names = {
     "fastreturn-ang",
     "artron-val",
     "security",
+    "chameleon_active",
+    "chameleon_current_exterior",
+    "chameleon_exterior_last_selector",
 }
 
 if SERVER then
