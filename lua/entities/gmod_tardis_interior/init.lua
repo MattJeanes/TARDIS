@@ -16,6 +16,11 @@ ENT:AddHook("PostPlayerInitialize", "senddata", function(self,ply)
 end)
 
 function ENT:Initialize()
+    if not IsValid(self.exterior) then
+        self:Remove()
+        return
+    end
+
     if self.spacecheck then
         self.metadata=TARDIS:CreateInteriorMetadata(self.exterior.metadataID, self)
         self.Model=self.metadata.Interior.Model

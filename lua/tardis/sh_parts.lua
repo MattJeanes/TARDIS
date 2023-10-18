@@ -336,6 +336,10 @@ if SERVER then
     end
     net.Receive("TARDIS-SetupPart", function(_,ply)
         local e=net.ReadEntity()
+        if not IsValid(e:GetExterior()) then
+            e:Remove()
+            return
+        end
         if e.ID then
             net.Start("TARDIS-SetupPart")
                 net.WriteEntity(e)
