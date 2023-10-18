@@ -10,7 +10,7 @@ PART.Collision = true
 
 if CLIENT then
     function PART:Think()
-        if not self.exterior:GetData("flight") then return end
+        if not self:GetData("flight") then return end
         local spindir = self.exterior:GetSpinDir()
         if spindir == 0 then return end
         local pos = self:GetPoseParameter("switch")

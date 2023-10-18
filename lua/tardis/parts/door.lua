@@ -50,7 +50,7 @@ if SERVER then
     end
 
     function PART:Use(a)
-        if self.exterior:GetData("locked") then
+        if self:GetData("locked") then
             if IsValid(a) and a:IsPlayer() then
                 if self.exterior:CallHook("LockedUse",a)==nil then
                     TARDIS:Message(a, "Parts.Door.Locked")
@@ -95,10 +95,8 @@ if SERVER then
                 end
             end
         end
-        if ent.TardisPart and IsValid(ent.exterior) then
-            if ent.ID == "door" and ent.exterior:GetSkin()~=i then
-                ent.exterior:SetSkin(i)
-            end
+        if ent.TardisPart and ent.ID == "door" and IsValid(ent.exterior) and ent.exterior:GetSkin()~=i then
+            ent.exterior:SetSkin(i)
         end
     end)
 else
@@ -109,7 +107,7 @@ else
 
     function PART:Think()
         if self.ExteriorPart then
-            self.DoorTarget=self.exterior.DoorOverride or (self.exterior:GetData("doorstatereal",false) and 1 or 0)
+            self.DoorTarget=self.exterior.DoorOverride or (self:GetData("doorstatereal",false) and 1 or 0)
 
             local animtime = self.exterior.metadata.Exterior.DoorAnimationTime
 

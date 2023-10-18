@@ -19,7 +19,7 @@ local Seq = {
             -- Fail stuff
         end,
         Condition = function(self)
-            return self.exterior:GetData("vortex",false)==false and self.exterior:GetData("teleport",false)==false
+            return self:GetData("vortex",false)==false and self:GetData("teleport",false)==false
         end
     }
 }

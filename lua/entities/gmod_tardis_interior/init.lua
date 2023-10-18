@@ -21,6 +21,7 @@ function ENT:Initialize()
         return
     end
 
+    self.interior = self
     if self.spacecheck then
         self.metadata=TARDIS:CreateInteriorMetadata(self.exterior.metadataID, self)
         self.Model=self.metadata.Interior.Model

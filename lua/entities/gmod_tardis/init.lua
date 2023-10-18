@@ -32,6 +32,7 @@ ENT:AddHook("CustomData", "metadata", function(self, customData)
 end)
 
 function ENT:InitializeReal()
+    self.exterior = self
     self.metadata=TARDIS:CreateInteriorMetadata(self.metadataID, self)
     self.Model=self.metadata.Exterior.Model
     self.Portal=self.metadata.Exterior.Portal

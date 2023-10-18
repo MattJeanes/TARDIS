@@ -317,8 +317,8 @@ T.Interior.CustomHooks = {
     think_rotor = {
         "Think",
         function(self)
-            local moving = self.exterior:GetData("teleport",false)
-            local flightmode = self.exterior:GetData("flight",false)
+            local moving = self:GetData("teleport",false)
+            local flightmode = self:GetData("flight",false)
             local active = (moving or flightmode)
             if not CLIENT then return end
             if active or self.timerotor.pos > 0 then
