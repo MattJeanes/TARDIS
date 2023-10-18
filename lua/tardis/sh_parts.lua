@@ -43,13 +43,21 @@ end
 local overrides={
     ["Draw"]={TARDIS.DrawOverride, CLIENT},
     ["Initialize"]={function(self)
-        if self.Animate then
-            self.posepos=0
+        if CLIENT then
+            if self.Animate then
+                self.posepos=0
+            end
+            net.Start("TARDIS-SetupPart")
+                net.WriteEntity(self)
+            net.SendToServer()
+        else
+            if not IsValid(self.exterior) then
+                self:Remove()
+                return
+            end
+            self.o.Initialize(self)
         end
-        net.Start("TARDIS-SetupPart")
-            net.WriteEntity(self)
-        net.SendToServer()
-    end, CLIENT},
+    end, CLIENT or SERVER},
     ["Think"]={function(self)
         local int=self.interior
         local ext=self.exterior
@@ -336,10 +344,6 @@ if SERVER then
     end
     net.Receive("TARDIS-SetupPart", function(_,ply)
         local e=net.ReadEntity()
-        if not IsValid(e:GetExterior()) then
-            e:Remove()
-            return
-        end
         if e.ID then
             net.Start("TARDIS-SetupPart")
                 net.WriteEntity(e)
