@@ -11,12 +11,11 @@ if SERVER then
 
     ENT:AddHook("PostInitialize", "chameleon", function(self)
         local id = self.metadata.ID
-        local ply = self:GetCreator()
 
-        local default_ext = TARDIS:GetCustomSetting(id, "exterior_default", ply)
+        local default_ext = TARDIS:GetCustomSetting(id, "exterior_default", self)
         if not default_ext then return end
 
-        local ext_enabled = TARDIS:GetCustomSetting(id, "exterior_enabled", ply)
+        local ext_enabled = TARDIS:GetCustomSetting(id, "exterior_enabled", self)
         if not ext_enabled then return end
 
         self:ChangeExterior(default_ext, false)

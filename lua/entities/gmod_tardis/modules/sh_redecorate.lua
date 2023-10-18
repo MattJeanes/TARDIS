@@ -31,12 +31,11 @@ if SERVER then
             return false
         end
 
-        local ply = self:GetCreator()
-        local chosen_int = TARDIS:GetSetting("redecorate-interior", ply)
+        local chosen_int = TARDIS:GetSetting("redecorate-interior", self)
         local random_int = false
         if not chosen_int then
             random_int = true
-            chosen_int = TARDIS:SelectNewRandomInterior(self.metadata.ID, ply)
+            chosen_int = TARDIS:SelectNewRandomInterior(self.metadata.ID, self)
         end
 
         self:SetData("redecorate-interior", chosen_int)
@@ -49,7 +48,7 @@ if SERVER then
             return false
         end
         if random_int then
-            TARDIS:Message(ply, "Controls.Redecorate.RandomInteriorWarning")
+            TARDIS:Message(self:GetCreator(), "Controls.Redecorate.RandomInteriorWarning")
         end
         return true
     end
@@ -197,7 +196,7 @@ if SERVER then
             self:Mat()
 
             local ply = self:GetCreator()
-            if ply and ply.linked_tardis == parent then
+            if IsValid(ply) and ply.linked_tardis == parent then
                 ply.linked_tardis = self
                 net.Start("Sonic-SetLinkedTARDIS")
                     net.WriteEntity(self)
