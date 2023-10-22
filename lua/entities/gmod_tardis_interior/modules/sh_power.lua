@@ -20,6 +20,12 @@ if SERVER then
         self.exterior:SetPower(on)
     end
 
+    ENT:AddHook("PostInitialize","power-init", function(self)
+        if self:GetData("power_disabled_first") then
+            self:SetPower(false)
+        end
+    end)
+
     ENT:AddHook("PowerToggled", "interior-power", function(self, state)
         self:SendMessage("power-toggled", {state} )
     end)
