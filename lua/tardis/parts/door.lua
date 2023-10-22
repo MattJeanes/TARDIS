@@ -12,16 +12,12 @@ PART.BypassIsomorphic = true
 
 if SERVER then
     function PART:Initialize()
-        self:SetBodygroup(1,1) -- Sticker
-        self:SetBodygroup(2,1) -- Lit sign
-
         if self.ExteriorPart then
             self.ClientDrawOverride = true
             self:SetSolid(SOLID_VPHYSICS)
             --self:SetCollisionGroup(COLLISION_GROUP_WORLD)
         elseif self.InteriorPart then
             self.DrawThroughPortal = true
-            self:SetBodygroup(3,1) -- 3D sign
             table.insert(self.interior.stuckfilter, self)
         end
 
@@ -47,6 +43,8 @@ if SERVER then
             self:SetAngles(self.parent:LocalToWorldAngles(ang))
             self:SetParent(self.parent)
         end
+
+        self:SetSkin(self.exterior:GetSkin())
     end
 
     function PART:Use(a)
