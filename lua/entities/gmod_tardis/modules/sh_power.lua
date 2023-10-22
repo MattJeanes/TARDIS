@@ -14,7 +14,9 @@ TARDIS:AddKeyBind("power",{
 })
 
 ENT:AddHook("Initialize","power-init", function(self)
-    self:SetData("power-state",true,true)
+    if self:GetData("power-state") ~= false then
+        self:SetData("power-state",true,true)
+    end
 end)
 
 function ENT:GetPower()
