@@ -117,6 +117,9 @@ end
 
 function TARDIS:GetSetting(id, src)
     local ply
+    if IsValid(src) and not src:IsPlayer() and not src.TardisExterior then
+        src = src.exterior
+    end
     if IsEntity(src) then
         ply = (src:IsPlayer() and src) or src:GetCreator()
     end
@@ -149,14 +152,17 @@ function TARDIS:GetSetting(id, src)
             return select_return_val(self.NetworkedSettings[id])
         end
 
-        if IsValid(ply) then
-            if self.ClientSettings[ply:UserID()] then
-                return select_return_val(self.ClientSettings[ply:UserID()][id])
-            end
+        local user_id = (IsValid(ply) and ply:UserID()) or src.CreatorID
+
+        if not user_id then
+            print("[TARDIS] WARNING: Networked setting " .. id .. " was requested for invalid source " .. tostring(src))
+        end
+
+        if not user_id or not self.ClientSettings[user_id] then
             return select_return_val(nil)
         end
 
-        error("Networked setting " .. id .. " was requested for invalid player " .. tostring(ply))
+        return select_return_val(self.ClientSettings[user_id][id])
     end
 
     error("Requested setting " .. id .. " either doesn't exist or has no defined class")
