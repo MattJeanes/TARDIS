@@ -359,8 +359,10 @@ T.CustomHooks = {
             local door_ext = IsValid(ext) and ext:GetPart("door")
             local door_int = IsValid(int) and int:GetPart("door")
 
-            door_ext:SetBodygroup(1,1)
-            door_ext:SetBodygroup(2,1)
+            if IsValid(door_ext) then
+                door_ext:SetBodygroup(1,1)
+                door_ext:SetBodygroup(2,1)
+            end
 
             if IsValid(door_int) then
                 door_int:SetBodygroup(1,1)
