@@ -142,12 +142,12 @@ function TARDIS:SelectNewRandomInterior(current, ent)
     local attempts = 1000
 
     while not chosen_int or TARDIS:GetMainVersionId(chosen_int) == current
-        or TARDIS.Metadata[chosen_int].IsVersionOf
-        or TARDIS.Metadata[chosen_int].Base == true
-        or TARDIS.Metadata[chosen_int].Hidden == true
+        or TARDIS.MetadataRaw[chosen_int].IsVersionOf
+        or TARDIS.MetadataRaw[chosen_int].Base == true
+        or TARDIS.MetadataRaw[chosen_int].Hidden == true
         or not TARDIS:ShouldRedecorateInto(chosen_int, ent)
     do
-        chosen_int = table.Random(TARDIS.Metadata).ID
+        chosen_int = table.Random(TARDIS.MetadataRaw).ID
         attempts = attempts - 1
         if attempts < 1 then
             return "default"
