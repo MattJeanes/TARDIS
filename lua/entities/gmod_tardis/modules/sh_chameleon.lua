@@ -6,11 +6,21 @@ if SERVER then
     end)
 
     ENT:AddHook("Initialize", "chameleon", function(self)
+        local init_ext = self:GetData("chameleon_current_exterior")
+        if init_ext ~= nil then
+            self:SetData("chameleon_initial_exterior", init_ext, true)
+        end
         self:SetData("chameleon_current_exterior", false, true)
     end)
 
     ENT:AddHook("PostInitialize", "chameleon", function(self)
         local id = self.metadata.ID
+
+        local init_ext = self:GetData("chameleon_initial_exterior")
+        if init_ext then
+            self:ChangeExterior(init_ext, false)
+            return
+        end
 
         local default_ext = TARDIS:GetCustomSetting(id, "exterior_default", self)
         if not default_ext then return end
