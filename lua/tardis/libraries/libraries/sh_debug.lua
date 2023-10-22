@@ -1,3 +1,46 @@
+-- I often need to run custom code in the TARDIS, this is a template for that
+TARDIS.DebugFunction = function(ext,int,ply,cmd,args)
+    tardisdebug("Debug function")
+    tardisdebug("Exterior:", ext, "")
+    tardisdebug("Interior:", int, "")
+
+    if IsValid(ext) then
+        -- paste code here
+    end
+
+    if IsValid(int) then
+        -- paste code here
+    end
+
+    if IsValid(ext) and IsValid(int) then
+        -- paste code here
+    end
+
+    if ply.linked_tardis then
+        local lext = ply.linked_tardis
+        local lint = lext.interior
+    end
+
+    if IsValid(lext) then
+        -- paste code here
+    end
+
+    if IsValid(lint) then
+        -- paste code here
+    end
+
+    if IsValid(lext) and IsValid(lint) then
+        -- paste code here
+    end
+end
+
+concommand.Add("tardis2_debug_func", function(ply,cmd,args)
+    if not ply:IsAdmin() then return end
+    local ext = ply:GetTardisData("exterior")
+    local int = ply:GetTardisData("interior")
+
+    TARDIS.DebugFunction(ext,int,ply,cmd,args)
+end)
 
 -- Debug messages
 
