@@ -14,6 +14,9 @@ TARDIS:AddKeyBind("power",{
 })
 
 ENT:AddHook("Initialize","power-init", function(self)
+    if SERVER and self:GetData("power-state") == false then
+        self:SetData("power_disabled_first", true)
+    end
     self:SetData("power-state",true,true)
 end)
 
@@ -39,6 +42,12 @@ if SERVER then
         self:SendMessage("power_toggled", {on})
         return true
     end
+
+    ENT:AddHook("PostInitialize","power-init", function(self)
+        if self:GetData("power_disabled_first") then
+            self:SetPower(false)
+        end
+    end)
 
     ENT:AddHook("CanTogglePower", "vortex", function(self, on)
         if self:GetData("teleport") or self:GetData("vortex") then

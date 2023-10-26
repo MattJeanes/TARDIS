@@ -96,7 +96,7 @@ if SERVER then
                     return 1
                 end
             else
-                if open and self:CloseDoor() then 
+                if open and self:CloseDoor() then
                     return 1
                 end
             end
@@ -105,18 +105,6 @@ if SERVER then
             return self:ToggleDoor() and 1 or 0
         elseif name == "GetDoors" then
             return self:DoorOpen(true) and 1 or 0
-        end
-    end)
-
-    ENT:AddHook("ToggleDoor", "intdoors", function(self,open)
-        local intdoor=TARDIS:GetPart(self.interior,"door")
-        if IsValid(intdoor) then
-            local override = self:CallHook("DoorCollisionOverride")
-            if (override == nil and open) or override==false then
-                intdoor:SetCollisionGroup( COLLISION_GROUP_WORLD )
-            elseif override or override==nil then
-                intdoor:SetCollisionGroup( COLLISION_GROUP_NONE )
-            end
         end
     end)
 
@@ -147,17 +135,31 @@ if SERVER then
         end
     end)
 
-    ENT:AddHook("ToggleDoor", "extcollision",function(self,open)
-        local door = TARDIS:GetPart(self,"door")
-        if IsValid(door) then
-            local override = self:CallHook("DoorCollisionOverride")
-            if (override == nil and open) or override==false then
-                door:SetSolid(SOLID_NONE)
-            elseif override or override==nil then
-                door:SetSolid(SOLID_VPHYSICS)
-            end
+    ENT:AddHook("ToggleDoor", "doorcollision",function(self,open)
+        self:UpdateDoorCollision()
+    end)
+
+    ENT:AddHook("SlowThink", "doorcollision",function(self,open)
+        if self:DoorOpen(true) then
+            self:UpdateDoorCollision()
         end
     end)
+
+    function ENT:UpdateDoorCollision()
+        local open = self:DoorOpen(true)
+        local override = self:CallHook("DoorCollisionOverride")
+
+        local door_ext = TARDIS:GetPart(self,"door")
+        local door_int=TARDIS:GetPart(self.interior,"door")
+
+        if (override == nil and open) or override==false then
+            if IsValid(door_ext) then door_ext:SetSolid(SOLID_NONE) end
+            if IsValid(door_int) then door_int:SetCollisionGroup( COLLISION_GROUP_WORLD ) end
+        elseif override or override==nil then
+            if IsValid(door_ext) then door_ext:SetSolid(SOLID_VPHYSICS) end
+            if IsValid(door_int) then door_int:SetCollisionGroup( COLLISION_GROUP_NONE ) end
+        end
+    end
 
     ENT:AddHook("ShouldExteriorDoorCollide", "dooropen", function(self,open)
         local override = self:CallHook("DoorCollisionOverride")
@@ -170,6 +172,10 @@ if SERVER then
 
     ENT:AddHook("ToggleDoorReal", "doors", function(self,open)
         self:SendMessage("ToggleDoorReal", {open})
+    end)
+
+    ENT:AddHook("ToggleDoor", "doors", function(self,open)
+        self:SendMessage("ToggleDoor", {open})
     end)
 
     ENT:AddHook("Think", "doors", function(self)
@@ -257,6 +263,10 @@ else
 
     ENT:OnMessage("ToggleDoorReal", function(self, data, ply)
         self:CallHook("ToggleDoorReal", data[1])
+    end)
+
+    ENT:OnMessage("ToggleDoor", function(self, data, ply)
+        self:CallHook("ToggleDoor", data[1])
     end)
 
     ENT:AddHook("ToggleDoorReal","doorsounds",function(self,open)

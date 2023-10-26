@@ -15,7 +15,7 @@ if SERVER then
             TARDIS:Control(self.Control, ply, self)
         end
 
-        if self.exterior:GetData("teleport") == true or self.exterior:GetData("vortex") == true
+        if self:GetData("teleport") == true or self:GetData("vortex") == true
             or not self.interior:GetSequencesEnabled()
         then
             TARDIS:Control("teleport_double", ply, self)

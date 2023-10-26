@@ -8,7 +8,7 @@ ENT:AddHook("OnRemove", "flight", function(self)
 end)
 
 local function ChooseFlightSound(ent)
-    if ent.exterior:GetData("health-warning", false) then
+    if ent:GetData("health-warning", false) then
         local current_sound = ent.metadata.Interior.Sounds.FlightLoopDamaged or
             ent.metadata.Exterior.Sounds.FlightLoopDamaged
         ent.flightsound = CreateSound(ent, current_sound)
@@ -22,7 +22,7 @@ local function ChooseFlightSound(ent)
 end
 
 ENT:AddHook("Think", "flight", function(self)
-    if self.exterior:GetData("flight") and TARDIS:GetSetting("flight-internalsound")
+    if self:GetData("flight") and TARDIS:GetSetting("flight-internalsound")
         and TARDIS:GetSetting("sound")
     then
         if self.flightsound and self.flightsound:IsPlaying() then
@@ -30,7 +30,7 @@ ENT:AddHook("Think", "flight", function(self)
             self.flightsound:ChangePitch(95+p,0.1)
             self.flightsound:ChangeVolume(0.4)
 
-            if self.flightsounddamaged ~= self.exterior:GetData("health-warning",false)
+            if self.flightsounddamaged ~= self:GetData("health-warning",false)
             then
                 self.flightsound:Stop()
                 ChooseFlightSound(self)

@@ -317,8 +317,8 @@ T.Interior.CustomHooks = {
     think_rotor = {
         "Think",
         function(self)
-            local moving = self.exterior:GetData("teleport",false)
-            local flightmode = self.exterior:GetData("flight",false)
+            local moving = self:GetData("teleport",false)
+            local flightmode = self:GetData("flight",false)
             local active = (moving or flightmode)
             if not CLIENT then return end
             if active or self.timerotor.pos > 0 then
@@ -345,6 +345,32 @@ T.Interior.CustomHooks = {
             end
         end,
     },
+}
+
+T.CustomHooks = {
+    init_door = {
+        exthooks = {
+            ["PostInitialize"] = true,
+        },
+        inthooks = {
+            ["PostInitialize"] = true,
+        },
+        func = function(ext,int)
+            local door_ext = IsValid(ext) and ext:GetPart("door")
+            local door_int = IsValid(int) and int:GetPart("door")
+
+            if IsValid(door_ext) then
+                door_ext:SetBodygroup(1,1)
+                door_ext:SetBodygroup(2,1)
+            end
+
+            if IsValid(door_int) then
+                door_int:SetBodygroup(1,1)
+                door_int:SetBodygroup(2,1)
+                door_int:SetBodygroup(3,1) -- 3D sign
+            end
+        end,
+    }
 }
 
 TARDIS:AddInterior(T)

@@ -89,6 +89,10 @@ if SERVER then
         self:SetData("hads-auto-remat", nil, true)
     end)
 
+    ENT:AddHook("ShouldStopSmoke", "hads", function(self)
+        if self:GetData("hads-triggered") then return true end
+    end)
+
     ENT:AddHook("InterruptTeleport", "hads-data", function(self)
         self:SetData("hads-triggered",false,true)
         self:SetData("hads-need-remat", nil, true)

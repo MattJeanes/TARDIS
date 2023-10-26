@@ -39,7 +39,7 @@ ENT:AddHook("CanToggleFastRemat", "vortex", function(self, force)
 end)
 
 ENT:AddHook("ShouldStopSmoke", "vortex", function(self)
-    if self:GetData("vortex") then return true end
+    if self:GetData("vortex") or self:GetData("demat") then return true end
 end)
 
 ENT:AddHook("ShouldTakeDamage", "vortex", function(self)

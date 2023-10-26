@@ -106,8 +106,7 @@ ENT:AddHook("HandleE2", "physlock", function(self, name, e2, ...)
     end
 end)
 
-
-ENT:AddHook("MigrateData", "music", function(self, parent, parent_data)
+ENT:AddHook("MigrateData", "physlock", function(self, parent, parent_data)
     self:SetPhyslock(parent_data["physlock"])
 end)
 

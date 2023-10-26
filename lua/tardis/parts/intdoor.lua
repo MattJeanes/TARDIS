@@ -14,7 +14,7 @@ PART.BypassIsomorphic = true
 if SERVER then
     function PART:Use(a)
 
-        if self.exterior:GetData("locked") then
+        if self:GetData("locked") then
             if IsValid(a) and a:IsPlayer() then
                 if self.exterior:CallHook("LockedUse",a)==nil then
                     TARDIS:Message(a, "Parts.Door.Locked")
@@ -34,7 +34,7 @@ else
     end
 
     function PART:Think()
-        self.IntDoorTarget=self.exterior.IntDoorOverride or (self.exterior:GetData("doorstatereal",false) and 1 or 0)
+        self.IntDoorTarget=self.exterior.IntDoorOverride or (self:GetData("doorstatereal",false) and 1 or 0)
         local animtime = self.exterior.metadata.Interior.IntDoorAnimationTime
             or self.exterior.metadata.Exterior.DoorAnimationTime
 

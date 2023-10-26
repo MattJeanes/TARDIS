@@ -4,26 +4,60 @@ if SERVER then
     util.AddNetworkString("TARDIS-SetupPart")
 end
 
-function TARDIS.DrawOverride(self,override)
-    if self.NoDraw then return end
+
+function TARDIS.ShouldDrawInteriorPart(self)
     local int=self.interior
     local ext=self.exterior
-    
-    if IsValid(ext) then
 
-        if (self.InteriorPart and IsValid(int)
-            and ((int:CallHook("ShouldDraw")~=false)
-                or (ext:DoorOpen()
-                        and (self.ClientDrawOverride and LocalPlayer():GetPos():Distance(ext:GetPos()) < TARDIS:GetSetting("portals-closedist"))
-                        or (self.DrawThroughPortal and (int.scannerrender or (IsValid(wp.drawingent) and wp.drawingent:GetParent()==int)))
-                    )
-                )
-            ) or (self.ExteriorPart
-                and (ext:CallHook("ShouldDraw")~=false)
-                or self.ShouldDrawOverride
-            )
+    if not IsValid(int) then
+        return false
+    end
+
+    if int:CallHook("ShouldDraw") ~= false then
+        return true
+    end
+
+    if ext:DoorOpen() and self.ClientDrawOverride then
+        local dist_to_portal = LocalPlayer():GetPos():Distance(ext:GetPos())
+        local close_dist = TARDIS:GetSetting("portals-closedist")
+        if dist_to_portal < close_dist then
+            return true
+        end
+    end
+
+    if self.DrawThroughPortal then
+        return (int.scannerrender or (IsValid(wp.drawingent) and wp.drawingent:GetParent()==int))
+    end
+
+    return false
+end
+
+function TARDIS.ShouldDrawExteriorPart(self)
+    local ext=self.exterior
+
+    if ext:CallHook("ShouldDraw") ~= false then
+        return true
+    end
+
+    if self.ShouldDrawOverride then
+        return true
+    end
+
+    return false
+end
+
+function TARDIS.DrawOverride(self,override)
+    if self.NoDraw then return end
+
+    local int=self.interior
+    local ext=self.exterior
+
+    if IsValid(ext) then
+        if (self.InteriorPart and TARDIS.ShouldDrawInteriorPart(self))
+            or (self.ExteriorPart and TARDIS.ShouldDrawExteriorPart(self))
         then
-           
+            if not IsValid(self.parent) then return end
+
             if self.parent:CallHook("ShouldDrawPart", self) == false then return end
             if self.parent:CallHook("PreDrawPart",self) == false then return end
             if self.PreDraw then self:PreDraw() end
@@ -43,13 +77,21 @@ end
 local overrides={
     ["Draw"]={TARDIS.DrawOverride, CLIENT},
     ["Initialize"]={function(self)
-        if self.Animate then
-            self.posepos=0
+        if CLIENT then
+            if self.Animate then
+                self.posepos=0
+            end
+            net.Start("TARDIS-SetupPart")
+                net.WriteEntity(self)
+            net.SendToServer()
+        else
+            if not IsValid(self.exterior) then
+                self:Remove()
+                return
+            end
+            self.o.Initialize(self)
         end
-        net.Start("TARDIS-SetupPart")
-            net.WriteEntity(self)
-        net.SendToServer()
-    end, CLIENT},
+    end, CLIENT or SERVER},
     ["Think"]={function(self)
         local int=self.interior
         local ext=self.exterior

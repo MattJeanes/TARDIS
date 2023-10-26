@@ -32,18 +32,18 @@ function TARDIS:SetupVersions(int_id)
     end
 end
 
-function TARDIS:ShouldUseClassicDoors(ply)
-    return TARDIS:GetSetting("use_classic_door_interiors", ply)
+function TARDIS:ShouldUseClassicDoors(ent)
+    return TARDIS:GetSetting("use_classic_door_interiors", ent)
 end
 
-function TARDIS:SelectDoorVersionID(x, ply)
+function TARDIS:SelectDoorVersionID(x, ent)
     local version = (istable(x) and x) or self.MetadataVersions[x].main
     if not version then return end
 
     if not version.classic_doors_id then return version.id end
 
-    local use_classic = TARDIS:ShouldUseClassicDoors(ply)
-    local custom = TARDIS:GetCustomSetting(version.classic_doors_id, "preferred_door_type", ply, nil)
+    local use_classic = TARDIS:ShouldUseClassicDoors(ent)
+    local custom = TARDIS:GetCustomSetting(version.classic_doors_id, "preferred_door_type", ent, nil)
 
     if custom ~= nil and custom ~= "default" then
         if custom == "classic" then
@@ -76,11 +76,11 @@ function TARDIS:DefaultPreferredVersion(int_id)
     return "main"
 end
 
-function TARDIS:SelectSpawnID(id, ply)
+function TARDIS:SelectSpawnID(id, ent)
     local versions = self.MetadataVersions[id]
     if not versions then return id end
 
-    local preferred_version = TARDIS:GetCustomSetting(id, "preferred_version", ply, "main")
+    local preferred_version = TARDIS:GetCustomSetting(id, "preferred_version", ent, "main")
 
     local version = versions.main
 
@@ -96,7 +96,7 @@ function TARDIS:SelectSpawnID(id, ply)
         version = id
     end
 
-    return TARDIS:SelectDoorVersionID(version, ply)
+    return TARDIS:SelectDoorVersionID(version, ent)
 end
 
 function TARDIS:GetMainVersionId(int_id)
@@ -131,30 +131,30 @@ end
 ----------------------------------------------------------------------------------------------------
 -- Redecoration
 
-function TARDIS:ShouldRedecorateInto(int_id, ply)
+function TARDIS:ShouldRedecorateInto(int_id, ent)
     local int_id = TARDIS:GetMainVersionId(int_id)
-    return not TARDIS:GetCustomSetting(int_id, "redecoration_exclude", ply)
+    return not TARDIS:GetCustomSetting(int_id, "redecoration_exclude", ent)
 end
 
-function TARDIS:SelectNewRandomInterior(current, ply)
+function TARDIS:SelectNewRandomInterior(current, ent)
     local current = TARDIS:GetMainVersionId(current)
     local chosen_int
     local attempts = 1000
 
     while not chosen_int or TARDIS:GetMainVersionId(chosen_int) == current
-        or TARDIS.Metadata[chosen_int].IsVersionOf
-        or TARDIS.Metadata[chosen_int].Base == true
-        or TARDIS.Metadata[chosen_int].Hidden == true
-        or not TARDIS:ShouldRedecorateInto(chosen_int, ply)
+        or TARDIS.MetadataRaw[chosen_int].IsVersionOf
+        or TARDIS.MetadataRaw[chosen_int].Base == true
+        or TARDIS.MetadataRaw[chosen_int].Hidden == true
+        or not TARDIS:ShouldRedecorateInto(chosen_int, ent)
     do
-        chosen_int = table.Random(TARDIS.Metadata).ID
+        chosen_int = table.Random(TARDIS.MetadataRaw).ID
         attempts = attempts - 1
         if attempts < 1 then
             return "default"
         end
     end
 
-    return TARDIS:SelectSpawnID(TARDIS:GetMainVersionId(chosen_int), ply)
+    return TARDIS:SelectSpawnID(TARDIS:GetMainVersionId(chosen_int), ent)
 end
 
 TARDIS:LoadInteriors()

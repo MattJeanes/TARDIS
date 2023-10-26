@@ -15,7 +15,53 @@ ENT:AddHook("PostPlayerInitialize", "senddata", function(self,ply)
     self:SendData(ply)
 end)
 
+ENT:AddHook("PostInitialize", "save_interior_position", function(self,ply)
+    self:SetData("interior_saved_pos", self:GetPos())
+    self:SetData("interior_saved_map", game.GetMap())
+end)
+
+ENT:AddHook("SetupPosition", "restore_position", function(self,pos)
+    local saved_pos = self:GetData("interior_saved_pos")
+    if not saved_pos then return end
+
+    if game.GetMap() ~= self:GetData("interior_saved_map") then return end
+
+    local td={
+        mins=self.mins or self:OBBMins(),
+        maxs=self.maxs or self:OBBMaxs(),
+        start=saved_pos,
+        endpos=saved_pos,
+        filter = function(ent)
+            if ent.TardisInterior then return true end
+            return false
+        end
+    }
+
+    if not util.TraceHull(td).Hit and
+        self:CallHook("AllowInteriorPos",nil,saved_pos,td.mins,td.maxs)~=false
+    then
+        return saved_pos
+    end
+
+    return pos
+end)
+
+ENT:AddHook("ShouldRemoveProp", "restore", function(self,prop)
+    if prop:IsVehicle() then
+        return true
+    end
+    if not IsValid(self.exterior) and not self.exterior_deleted and not prop.TardisPart then
+        return false
+    end
+end)
+
 function ENT:Initialize()
+    if not IsValid(self.exterior) then
+        self:Remove()
+        return
+    end
+
+    self.interior = self
     if self.spacecheck then
         self.metadata=TARDIS:CreateInteriorMetadata(self.exterior.metadataID, self)
         self.Model=self.metadata.Interior.Model

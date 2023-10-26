@@ -1,5 +1,5 @@
-function TARDIS:GetCustomSettings(ply)
-    return TARDIS:GetSetting("interior_custom_settings", ply) or {} -- nil is never allowed
+function TARDIS:GetCustomSettings(ent)
+    return TARDIS:GetSetting("interior_custom_settings", ent) or {} -- nil is never allowed
 end
 
 function TARDIS:SetupCustomSettings(int_id)
@@ -28,10 +28,10 @@ local default_custom_setting_values = {
     ["exterior_default"] = "ttcapsule_type40",
 }
 
-function TARDIS:GetCustomSetting(int_id, setting_id, ply, default_val)
+function TARDIS:GetCustomSetting(int_id, setting_id, ent, default_val)
     local int_id = self:GetMainVersionId(int_id)
 
-    local custom_settings = self:GetCustomSettings(ply)
+    local custom_settings = self:GetCustomSettings(ent)
     local settings = custom_settings[int_id]
     if settings and settings[setting_id] ~= nil then
         return settings[setting_id]
@@ -85,7 +85,7 @@ if CLIENT then
     end
 
     function TARDIS:ToggleCustomSetting(int_id, setting_id)
-        local value = TARDIS:GetCustomSetting(int_id, setting_id, ply)
+        local value = TARDIS:GetCustomSetting(int_id, setting_id, ent)
         TARDIS:SetCustomSetting(int_id, setting_id, (not value))
     end
 end
@@ -93,13 +93,13 @@ end
 ----------------------------------------------------------------------------------------------------
 -- Favorites
 
-function TARDIS:IsFavoriteInt(id, ply)
-    return self:GetCustomSetting(id, "is_favorite", ply, false)
+function TARDIS:IsFavoriteInt(id, ent)
+    return self:GetCustomSetting(id, "is_favorite", ent, false)
 end
 
 if CLIENT then
     function TARDIS:SetFavoriteInt(id, favorite)
-        self:SetCustomSetting(id, "is_favorite", favorite, ply)
+        self:SetCustomSetting(id, "is_favorite", favorite, ent)
     end
 
     function TARDIS:ToggleFavoriteInt(id)
