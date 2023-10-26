@@ -2,6 +2,9 @@
 
 local function predraw_o(self)
     if not TARDIS:GetSetting("lightoverride-enabled") then return end
+
+    local smooth = TARDIS:GetSetting("smooth-light-transitions")
+
     local lo = self.metadata.Interior.LightOverride
     if not lo then return end
 
@@ -51,6 +54,7 @@ local function predraw_o(self)
 
     local function GetLightRenderTable(lt)
         local sel = SelectLightRenderTable(lt)
+        if not smooth then return sel end
 
         if ltempty(sel) then
             sel.color = sel.color or Vector(0,0,0)
@@ -69,7 +73,7 @@ local function predraw_o(self)
         end
 
         if not ltcmp(lt.selected, sel) then
-            lt.prevsel = lt.selected
+            lt.prevsel = lt.current
             lt.selected = sel
             lt.select_time = CurTime()
         end
@@ -83,10 +87,10 @@ local function predraw_o(self)
         if ltcmp(sel, lt.current, true) then
             -- same positions but different colors
 
-            local col_approach = math.Clamp(dt,0,1)
-            local ap2 = 1 - col_approach
+            local k1 = math.Clamp(dt,0,1)
+            local k2 = 1 - k1
 
-            local newc = lt.prevsel.color * ap2 + sel.color * col_approach
+            local newc = lt.prevsel.color * k2 + sel.color * k1
 
             lt.current = {
                 type = sel.type,
@@ -103,14 +107,10 @@ local function predraw_o(self)
         end
 
         if dt < 0.5 then
-            local col_approach = math.Clamp(2 * dt,0,1)
-            local ap2 = 1 - col_approach
+            local k1 = math.Clamp(2 * dt,0,1)
+            local k2 = 1 - k1
 
-            --local nc = lt.prevsel.color:ToColor()
-            --local newcol2 = Color(nc.r * ap2, nc.g * ap2, nc.b * ap2)
-            --local newc = newcol2:ToVector() --lt.prevsel.color * ap2
-
-            local newc = lt.prevsel.color * ap2
+            local newc = lt.prevsel.color * k2
 
             lt.current = {
                 type = sel.type,
@@ -128,10 +128,10 @@ local function predraw_o(self)
 
         -- dt > 0.5
 
-        local col_approach = math.Clamp((dt - 0.5) * 2,0,1)
-        local ap2 = 1 - col_approach
+        local k1 = math.Clamp((dt - 0.5) * 2,0,1)
+        local k2 = 1 - k1
 
-        local newc = sel.color * col_approach
+        local newc = sel.color * k1
 
         lt.current = {
             type = sel.type,
@@ -143,8 +143,40 @@ local function predraw_o(self)
 
     end
 
+    local function GetLOBrightness(br)
+        if not smooth then return br end
+
+        self.lo_model_brightness_data = self.lo_model_brightness_data or {}
+        local d = self.lo_model_brightness_data
+
+        if not d.aim or not d.now then
+            d.aim = d.aim or br
+            d.now = d.now or d.aim
+            d.change_time = CurTime()
+        end
+
+        if d.aim ~= br then
+            d.old = d.now
+            d.aim = br
+            d.change_time = CurTime()
+        end
+
+        if d.now == br then
+            return br
+        end
+
+        local dt = (CurTime() - d.change_time) / 2
+        local k1 = math.Clamp(dt,0,1)
+        local k2 = 1 - k1
+
+        d.now = d.old * k2 + d.aim * k1
+
+        return d.now
+    end
+
     render.SuppressEngineLighting(true)
     local br = power and lo.basebrightness or lo.nopowerbrightness
+    br = GetLOBrightness(br)
     render.ResetModelLighting(br, br, br)
 
     table.insert(tab, GetLightRenderTable(light))
