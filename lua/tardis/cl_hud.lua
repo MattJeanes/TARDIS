@@ -39,7 +39,8 @@ local fgcolor = NamedColor("FgColor")
 local red = NamedColor("Caution")
 local bgcolor = NamedColor("BgColor")
 local health_icon = Material("vgui/tardis_health.png")
-local energy_icon=  Material("vgui/tardis_energy.png")
+local energy_icon = Material("vgui/tardis_energy.png")
+local shields_icon = Material("vgui/tardis_shields.png")
 
 local function DrawNumber(icon_mat, value, red_level, x, y)
     local bad = (value < red_level)
@@ -71,10 +72,12 @@ hook.Add("HUDPaint", "TARDIS-HUD", function()
 
     local draw_health = TARDIS:GetSetting("health-enabled")
     local draw_artron = TARDIS:GetSetting("artron_energy")
+    local draw_shields = TARDIS:GetSetting("health-enabled") and tardis:GetShieldsOn()
 
     local count = 0
     if draw_health then count = count + 1 end
     if draw_artron then count = count + 1 end
+    if draw_shields then count = count + 1 end
     if count == 0 then return end
 
     local yc = y
@@ -89,6 +92,10 @@ hook.Add("HUDPaint", "TARDIS-HUD", function()
     end
     if draw_artron then
         DrawNumber(energy_icon, math.ceil(tardis:GetArtron()), TARDIS:GetSetting("artron_energy_max") * 0.1, x + x_offset, yc)
+        yc = yc + y_offset
+    end
+    if draw_shields then
+        DrawNumber(shields_icon, math.ceil(tardis:GetShieldsPercent()), 1, x + x_offset, yc)
         yc = yc + y_offset
     end
 end)

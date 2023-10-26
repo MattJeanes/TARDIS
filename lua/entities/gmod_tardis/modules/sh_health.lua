@@ -37,6 +37,11 @@ if SERVER then
     end
 end
 
+function ENT:AddHealth(value)
+    local newhealth = self:GetHealth() + value
+    self:ChangeHealth(newhealth)
+end
+
 function ENT:GetHealth()
     return self:GetData("health-val", 0)
 end
@@ -61,6 +66,18 @@ end
 
 function ENT:GetRepairTime()
     return self:GetData("repair-time")-CurTime()
+end
+
+function ENT:ApplyDamage(dmg)
+    local shields = self:GetShields()
+    if shields then
+        self:AddShieldsLevel(-dmg)
+        if shields - dmg < 0 then
+            self:AddHealth(shields - dmg)
+        end
+    else
+        self:AddHealth(-dmg)
+    end
 end
 
 if SERVER then
@@ -234,8 +251,7 @@ if SERVER then
             return
         end
         if dmginfo:GetDamage() <= 0 then return end
-        local new_health = self:GetHealth() - (dmginfo:GetDamage()/2)
-        self:ChangeHealth(new_health)
+        self:ApplyDamage(dmginfo:GetDamage() / 2)
         if not IsValid(self.interior) then return end
         if dmginfo:IsDamageType(DMG_BLAST) and self:GetHealth() ~= 0 then
             int = self.metadata.Interior.Sounds.Damage
@@ -260,9 +276,7 @@ if SERVER then
         if not TARDIS:GetSetting("health-enabled") then return end
         if (data.Speed < speed_border) then return end
 
-        local new_health = self:GetHealth() - (speed_dmg_mult * data.Speed / 25)
-
-        self:ChangeHealth(new_health)
+        self:ApplyDamage(speed_dmg_mult * data.Speed / 25)
 
         if not IsValid(self.interior) then return end
 
