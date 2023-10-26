@@ -445,6 +445,9 @@ ENT:AddHook("Think","teleport",function(self,delta)
     if self:GetData("health-warning",false) then
         sequencespeed = (fast and teleport_md.SequenceSpeedWarnFast or teleport_md.SequenceSpeedWarning)
     end
+    if self:GetData("hads-triggered") then
+        sequencespeed = teleport_md.SequenceSpeedHads
+    end
     alpha=math.Approach(alpha,target,delta*66*sequencespeed)
     self:SetData("alpha",alpha)
     self:SetAttachedTransparency(alpha)
