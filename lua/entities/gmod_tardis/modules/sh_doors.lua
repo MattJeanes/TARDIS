@@ -242,6 +242,29 @@ if SERVER then
             return false,false,"Chameleon.FailReasons.DoorsOpen",false
         end
     end)
+
+    ENT:AddHook("DoorCollisionOverride", "doors", function(self)
+        local td = {}
+        local ply = self:GetCreator()
+        td.mins = ply:OBBMins()
+        td.mins.z = td.mins.z * 0.5
+        td.maxs = ply:OBBMaxs()
+        td.maxs.z = td.maxs.z * 0.5
+        td.mask = MASK_NPCWORLDSTATIC
+        local fallback = self:LocalToWorld(self.Fallback.pos)
+
+        local z_ops = {0, 0.2, 0.4, 0.5, 0.6, 0.8, 1}
+        for i, k in ipairs(z_ops) do
+            local point = fallback + Vector(0, 0, td.maxs.z * k)
+            td.start = point
+            td.endpos = point
+            if not util.TraceHull(td).Hit then
+                return
+            end
+        end
+        return true
+    end)
+
 else
     function ENT:DoorOpen(real)
         local door=self:GetPart("door")
