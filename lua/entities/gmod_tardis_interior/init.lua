@@ -77,3 +77,13 @@ function ENT:OnTakeDamage(dmginfo)
     if self:CallHook("ShouldTakeDamage",dmginfo)==false then return end
     self:CallHook("OnTakeDamage", dmginfo)
 end
+
+function ENT:Think()
+    self.BaseClass.Think(self)
+    if not self._init then return end
+
+    if CurTime() >= (self.nextslowthink or 0) then
+        self.nextslowthink = CurTime() + 1
+        self:CallHook("SlowThink")
+    end
+end
