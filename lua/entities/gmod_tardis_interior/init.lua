@@ -17,11 +17,14 @@ end)
 
 ENT:AddHook("PostInitialize", "save_interior_position", function(self,ply)
     self:SetData("interior_saved_pos", self:GetPos())
+    self:SetData("interior_saved_map", game.GetMap())
 end)
 
 ENT:AddHook("SetupPosition", "restore_position", function(self,pos)
     local saved_pos = self:GetData("interior_saved_pos")
     if not saved_pos then return end
+
+    if game.GetMap() ~= self:GetData("interior_saved_map") then return end
 
     local td={
         mins=self.mins or self:OBBMins(),
