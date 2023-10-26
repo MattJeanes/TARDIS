@@ -174,6 +174,10 @@ if SERVER then
         self:SendMessage("ToggleDoorReal", {open})
     end)
 
+    ENT:AddHook("ToggleDoor", "doors", function(self,open)
+        self:SendMessage("ToggleDoor", {open})
+    end)
+
     ENT:AddHook("Think", "doors", function(self)
         if self:GetData("doorchangewait",false) and CurTime()>self:GetData("doorchange",0) then
             self:SetData("doorchangewait",nil)
@@ -259,6 +263,10 @@ else
 
     ENT:OnMessage("ToggleDoorReal", function(self, data, ply)
         self:CallHook("ToggleDoorReal", data[1])
+    end)
+
+    ENT:OnMessage("ToggleDoor", function(self, data, ply)
+        self:CallHook("ToggleDoor", data[1])
     end)
 
     ENT:AddHook("ToggleDoorReal","doorsounds",function(self,open)
