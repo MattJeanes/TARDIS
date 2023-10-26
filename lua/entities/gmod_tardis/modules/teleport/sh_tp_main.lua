@@ -242,6 +242,7 @@ else
             local sound_demat_ext = ext.demat
             local sound_demat_fast_ext = ext.demat_fast
             local sound_demat_int = int.demat or ext.demat
+            local sound_demat_hads = ext.demat_hads
             local sound_fullflight_ext = ext.fullflight
             local sound_fullflight_int = int.fullflight or ext.fullflight
 
@@ -279,11 +280,15 @@ else
                 if self:GetFastRemat() then
                     sound.Play(sound_demat_fast_ext,self:GetPos())
                 else
-                    sound.Play(sound_demat_ext,self:GetPos())
+                    if self:GetData("hads-triggered") then
+                        sound.Play(sound_demat_hads,self:GetPos())
+                    else
+                        sound.Play(sound_demat_ext,self:GetPos())
+                    end
                 end
                 if pos and self:GetFastRemat() then
                     if not IsValid(self) then return end
-                    if self:GetData("health-warning", false) and (self:GetFastRemat())==true then
+                    if self:GetData("health-warning", false) and self:GetFastRemat() then
                         sound.Play(ext.mat_damaged_fast, pos)
                     else
                         sound.Play(ext.mat_fast, pos)
@@ -446,7 +451,7 @@ ENT:AddHook("Think","teleport",function(self,delta)
         sequencespeed = (fast and teleport_md.SequenceSpeedWarnFast or teleport_md.SequenceSpeedWarning)
     end
     if self:GetData("hads-triggered") then
-        sequencespeed = teleport_md.SequenceSpeedFast*1.3
+        sequencespeed = teleport_md.SequenceSpeedHads
     end
     alpha=math.Approach(alpha,target,delta*66*sequencespeed)
     self:SetData("alpha",alpha)
