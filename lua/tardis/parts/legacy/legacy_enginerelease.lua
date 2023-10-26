@@ -1,7 +1,7 @@
 -- Default Interior - Engine Release
 
 local PART = {}
-PART.ID = "default_enginerelease"
+PART.ID = "legacy_enginerelease"
 PART.Name = "Default Engine Release"
 PART.Model = "models/drmatt/tardis/longflighttoggle.mdl"
 PART.AutoSetup = true

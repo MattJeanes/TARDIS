@@ -1,7 +1,7 @@
 -- Default Interior - HADS Switch
 
 local PART = {}
-PART.ID = "default_hads"
+PART.ID = "legacy_hads"
 PART.Name = "Default HADS Switch"
 PART.Model = "models/drmatt/tardis/handbrake.mdl"
 PART.AutoSetup = true

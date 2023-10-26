@@ -1,7 +1,7 @@
 -- Default Interior - Atom Accelerator
 
 local PART = {}
-PART.ID = "default_atomaccel"
+PART.ID = "legacy_atomaccel"
 PART.Name = "Default Atom Accelerator"
 PART.Text = "Parts.DefaultAtomAccelerator.Text"
 PART.Model = "models/drmatt/tardis/atomaccel.mdl"

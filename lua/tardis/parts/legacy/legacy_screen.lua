@@ -1,7 +1,7 @@
 -- Default Interior - Screen
 
 local PART = {}
-PART.ID = "default_screen"
+PART.ID = "legacy_screen"
 PART.Name = "Default Screen"
 PART.Text = "Parts.DefaultScreen.Text"
 PART.Model = "models/drmatt/tardis/screen.mdl"

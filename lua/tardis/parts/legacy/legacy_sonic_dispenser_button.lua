@@ -1,7 +1,7 @@
 -- Default Interior - Sonic charger
 
 local PART = {}
-PART.ID = "default_sonicdispenser"
+PART.ID = "legacy_sonicdispenser"
 PART.Name = "Default Sonic Screwdriver Dispenser"
 PART.AutoSetup = true
 PART.Collision = true

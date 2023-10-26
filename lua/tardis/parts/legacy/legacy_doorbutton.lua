@@ -1,7 +1,7 @@
 -- Default Interior - Door button
 
 local PART = {}
-PART.ID = "default_doorbutton"
+PART.ID = "legacy_doorbutton"
 PART.Name = "Default Door Button"
 PART.Model = "models/drmatt/tardis/longflighttoggle.mdl"
 PART.AutoSetup = true

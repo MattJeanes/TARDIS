@@ -1,7 +1,7 @@
 -- Default Interior - Throttle
 
 local PART = {}
-PART.ID = "default_throttle"
+PART.ID = "legacy_throttle"
 PART.Name = "Default Throttle"
 PART.Model = "models/drmatt/tardis/throttle.mdl"
 PART.AutoSetup = true

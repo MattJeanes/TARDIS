@@ -1,7 +1,7 @@
 -- Default Interior - Wibbly Lever
 
 local PART = {}
-PART.ID = "default_wibblylever"
+PART.ID = "legacy_wibblylever"
 PART.Name = "Default Wibbly lever"
 PART.Text = "Parts.DefaultWibblyLever.Text"
 PART.Model = "models/drmatt/tardis/wibblylever.mdl"

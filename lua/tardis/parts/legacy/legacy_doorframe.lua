@@ -1,7 +1,7 @@
 -- Default Interior - Door frame
 
 local PART = {}
-PART.ID = "default_doorframe"
+PART.ID = "legacy_doorframe"
 PART.Name = "Default Door Frame"
 PART.Model = "models/drmatt/tardis/door.mdl"
 PART.BypassIsomorphic = true
@@ -13,7 +13,7 @@ PART.Animate = true
 TARDIS:AddPart(PART)
 
 local PART = {}
-PART.ID = "default_doorframe_bottom"
+PART.ID = "legacy_doorframe_bottom"
 PART.Name = "Default Door Frame Bottom"
 PART.Model = "models/hunter/blocks/cube025x1x025.mdl"
 PART.BypassIsomorphic = true
@@ -28,5 +28,5 @@ end
 
 TARDIS:AddPart(PART)
 
-PART.ID = "default_doorframe_bottom2" -- make a copy
+PART.ID = "legacy_doorframe_bottom2" -- make a copy
 TARDIS:AddPart(PART)

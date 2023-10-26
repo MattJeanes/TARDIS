@@ -1,7 +1,7 @@
 -- Default Interior - Handbrake
 
 local PART = {}
-PART.ID = "default_handbrake"
+PART.ID = "legacy_handbrake"
 PART.Name = "Default Handbrake"
 PART.Model = "models/drmatt/tardis/handbrake.mdl"
 PART.AutoSetup = true

@@ -1,7 +1,7 @@
 -- Default Interior - Flightmode Lever
 
 local PART = {}
-PART.ID = "default_flightlever"
+PART.ID = "legacy_flightlever"
 PART.Name = "Default Flight Lever"
 PART.Model = "models/drmatt/tardis/handbrake.mdl"
 PART.AutoSetup = true

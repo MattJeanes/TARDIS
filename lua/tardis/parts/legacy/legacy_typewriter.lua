@@ -1,7 +1,7 @@
 -- Default Interior - Typewriter
 
 local PART = {}
-PART.ID = "default_typewriter"
+PART.ID = "legacy_typewriter"
 PART.Name = "Default Typewriter"
 PART.Model = "models/drmatt/tardis/typewriter.mdl"
 PART.AutoSetup = true

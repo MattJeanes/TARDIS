@@ -1,7 +1,7 @@
 -- Default Interior - Gramophone
 
 local PART = {}
-PART.ID = "default_gramophone"
+PART.ID = "legacy_gramophone"
 PART.Name = "Default Gramophone"
 PART.Text = "Parts.DefaultGramophone.Text"
 PART.Model = "models/drmatt/tardis/gramophone.mdl"

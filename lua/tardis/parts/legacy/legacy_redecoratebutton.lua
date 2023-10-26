@@ -1,7 +1,7 @@
 -- Default Interior - Redecorate button
 
 local PART = {}
-PART.ID = "default_redecoratebutton"
+PART.ID = "legacy_redecoratebutton"
 PART.Name = "Default Redecotate Button"
 PART.Model = "models/drmatt/tardis/smallbutton.mdl"
 PART.AutoSetup = true
