@@ -446,7 +446,7 @@ ENT:AddHook("Think","teleport",function(self,delta)
         sequencespeed = (fast and teleport_md.SequenceSpeedWarnFast or teleport_md.SequenceSpeedWarning)
     end
     if self:GetData("hads-triggered") then
-        sequencespeed = teleport_md.SequenceSpeedHads
+        sequencespeed = teleport_md.SequenceSpeedFast*1.3
     end
     alpha=math.Approach(alpha,target,delta*66*sequencespeed)
     self:SetData("alpha",alpha)

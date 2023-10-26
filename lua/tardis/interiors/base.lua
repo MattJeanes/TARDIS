@@ -136,7 +136,6 @@ T.Exterior = {
     Teleport = {
         SequenceSpeed = 0.77,
         SequenceSpeedWarning = 0.6,
-        SequenceSpeedHads = 1.1,
         SequenceSpeedFast = 0.935,
         SequenceSpeedWarnFast = 0.97,
         DematSequence = {
