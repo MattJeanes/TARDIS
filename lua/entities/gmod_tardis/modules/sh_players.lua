@@ -87,3 +87,18 @@ ENT:AddHook("Initialize", "creatorID", function(self)
     self.CreatorNick = self:GetCreator():Nick()
     self.CreatorSteamID = self:GetCreator():SteamID64()
 end)
+
+ENT:AddHook("PlayerInitialize", "restore_rights", function(self,ply)
+    if IsValid(self:GetCreator()) then return end
+
+    tardisdebug(ply, ply:Nick(), self.CreatorNick)
+    tardisdebug(ply:SteamID64(), self.CreatorSteamID)
+
+    if self.CreatorNick == ply:Nick() and self.CreatorSteamID == ply:SteamID64() then
+        tardisdebug("ASSIGNING")
+        if SERVER then
+            self:SetCreator(ply)
+        end
+        self.CreatorID = ply:UserID()
+    end
+end)
