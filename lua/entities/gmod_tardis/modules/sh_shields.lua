@@ -1,9 +1,10 @@
-function ENT:GetMaxShields()
-    return TARDIS:GetSetting("health-max")
+function ENT:GetShieldsMax()
+    return math.max(1, 1.5 * TARDIS:GetSetting("health_max") - self:GetHealthMax())
 end
+
 if SERVER then
     function ENT:SetShieldsLevel(value)
-        local MaxShields = self:GetMaxShields()-- change to shields_max in future --
+        local MaxShields = self:GetShieldsMax()
         value = math.Clamp(value, 0 , MaxShields)
         if self:GetData("shields_val") > value then
             self:SetData("shields_last_hit", CurTime())
@@ -17,7 +18,7 @@ if SERVER then
     end
 
     ENT:AddHook("Initialize", "shields", function(self)
-        local max = self:GetMaxShields()
+        local max = self:GetShieldsMax()
         self:SetData("shields_val", max, true)
         self:SetData("shields_on", true, true)
     end)
@@ -39,8 +40,8 @@ if SERVER then
         if CurTime() - 10 < self:GetData("shields_last_hit", 0) then return end
 
         if CurTime() < self:GetData("shields_regen_time", 0) then return end
-        self:SetData("shields_regen_time", CurTime() + 1)
-        self:AddShieldsLevel(self:GetMaxShields() * 0.01)
+        self:SetData("shields_regen_time", CurTime() + 0.75)
+        self:AddShieldsLevel(self:GetShieldsMax() * 0.01)
     end)
 end
 
@@ -50,7 +51,7 @@ end
 
 function ENT:GetShieldsPercent()
     local val = self:GetShieldsLevel()
-    local percent = (val * 100)/self:GetMaxShields()
+    local percent = (val * 100)/self:GetShieldsMax()
     return percent
 end
 

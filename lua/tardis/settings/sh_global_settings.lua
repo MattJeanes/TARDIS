@@ -20,9 +20,9 @@ TARDIS:AddSetting({
 })
 
 TARDIS:AddSetting({
-    id="health-max",
+    id="health_max",
     type="integer",
-    value=1000,
+    value=1500,
     min=1,
     max=10000,
     round_func = function(x)

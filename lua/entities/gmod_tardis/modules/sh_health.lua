@@ -1,15 +1,19 @@
 -- Health
 
+function ENT:GetHealthMax()
+    return math.max(1, 0.1 * TARDIS:GetSetting("health_max"))
+end
+
 if SERVER then
     ENT:AddHook("Initialize","health-init",function(self)
-        self:SetData("health-val", TARDIS:GetSetting("health-max"), true)
+        self:SetData("health-val", self:GetHealthMax(), true)
         if WireLib then
             self:TriggerWireOutput("Health", self:GetHealth())
         end
     end)
 
     ENT:AddHook("SettingChanged","maxhealth-changed", function(self, id, val)
-        if id ~= "health-max" then return end
+        if id ~= "health_max" then return end
 
         if self:GetHealth() > val then
             self:ChangeHealth(val)
@@ -20,17 +24,17 @@ if SERVER then
         if self:GetRepairing() then
             return
         end
-        local max_health = TARDIS:GetSetting("health-max")
+        local max_health = self:GetHealthMax()
         if not TARDIS:GetSetting("health-enabled") then
             self:SetData("health-val", max_health, true)
             return
         end
+
         local old_health = self:GetHealth()
-
         new_health = math.Clamp(new_health, 0, max_health)
-
         self:SetData("health-val", new_health, true)
         self:CallCommonHook("OnHealthChange", new_health, old_health)
+
         if new_health == 0 and old_health ~= 0 then
             self:CallCommonHook("OnHealthDepleted")
         end
@@ -60,7 +64,7 @@ end
 
 function ENT:GetHealthPercent()
     local val = self:GetData("health-val", 0)
-    local percent = (val * 100)/TARDIS:GetSetting("health-max")
+    local percent = (val * 100) / self:GetHealthMax()
     return percent
 end
 
@@ -102,9 +106,9 @@ if SERVER then
     end
     function ENT:SetRepair(on)
         if not TARDIS:GetSetting("health-enabled")
-            and self:GetHealth() ~= TARDIS:GetSetting("health-max")
+            and self:GetHealth() ~= self:GetHealthMax()
         then
-            self:ChangeHealth(TARDIS:GetSetting("health-max"))
+            self:ChangeHealth(self:GetHealthMax())
             return false
         end
 
@@ -147,7 +151,7 @@ if SERVER then
     function ENT:StartRepair()
         if not IsValid(self) then return end
         self:SetLocked(true,nil,true,true)
-        local max_health = TARDIS:GetSetting("health-max")
+        local max_health = self:GetHealthMax()
         local cur_health = self:GetData("health-val")
         local maxtime = TARDIS:GetSetting("long_repair") and 60 or 15
         local repairtime = math.Clamp(maxtime * (max_health - cur_health) / max_health, 1, maxtime)
@@ -165,7 +169,7 @@ if SERVER then
         end
         self:EmitSound(self.metadata.Exterior.Sounds.RepairFinish)
         self:SetData("repairing", false, true)
-        self:ChangeHealth(TARDIS:GetSetting("health-max"))
+        self:ChangeHealth(self:GetHealthMax())
         self:CallHook("RepairFinished")
         self:SetPower(true)
         self:SetLocked(false, nil, true)
@@ -176,7 +180,7 @@ if SERVER then
 
 
     ENT:AddHook("CanRepair", "health", function(self, ignore_health)
-        if (self:GetHealth() >= TARDIS:GetSetting("health-max"))
+        if (self:GetHealth() >= self:GetHealthMax())
             and not ignore_health and not self:GetData("redecorate")
         then
             return false

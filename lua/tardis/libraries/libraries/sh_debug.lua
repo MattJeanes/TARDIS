@@ -72,7 +72,7 @@ concommand.Add("tardis2_debug_warning", function(ply,cmd,args)
 
     local oldval = ext:GetData("health-val", 0)
 
-    local val = TARDIS:GetSetting("health-max")
+    local val = ext:GetHealthMax()
     if not ext:GetData("health-warning", false) then
         val = val / 10
     end
