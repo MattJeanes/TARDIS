@@ -45,6 +45,28 @@ TARDIS:AddSetting({
 })
 
 TARDIS:AddSetting({
+    id="health_to_shields_ratio",
+    type="number",
+    value=0.2,
+    min=0.05,
+    max=0.95,
+    round_func = function(x)
+        return x - x % 0.05
+    end,
+
+    class="global",
+    convar = {
+        name = "tardis2_health_to_shields_ratio",
+        flags = CONVAR_FLAGS,
+        desc = "TARDIS - the ratio of max health to max shields",
+    },
+
+    option = true,
+    section=SETTING_SECTION,
+    name="HealthToShieldsRatio",
+})
+
+TARDIS:AddSetting({
     id="long_repair",
     type="bool",
     value=true,

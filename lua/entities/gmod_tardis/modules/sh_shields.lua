@@ -1,5 +1,6 @@
 function ENT:GetShieldsMax()
-    return math.max(1, (1 - TARDIS.HealthToShieldsRatio) * TARDIS:GetSetting("health_max"))
+    local ratio = TARDIS:GetSetting("health_to_shields_ratio")
+    return math.max(1, (1 - ratio) * TARDIS:GetSetting("health_max"))
 end
 
 if SERVER then

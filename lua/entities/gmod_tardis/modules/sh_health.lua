@@ -1,9 +1,8 @@
 -- Health
 
-TARDIS.HealthToShieldsRatio = 0.2
-
 function ENT:GetHealthMax()
-    return math.max(1, TARDIS.HealthToShieldsRatio * TARDIS:GetSetting("health_max"))
+    local ratio = TARDIS:GetSetting("health_to_shields_ratio")
+    return math.max(1, ratio * TARDIS:GetSetting("health_max"))
 end
 
 if SERVER then
