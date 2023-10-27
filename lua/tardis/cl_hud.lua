@@ -43,7 +43,7 @@ local energy_icon = Material("vgui/tardis_energy.png")
 local shields_icon = Material("vgui/tardis_shields.png")
 
 local function DrawNumber(icon_mat, value, red_level, x, y)
-    local bad = (value < red_level)
+    local bad = (value <= red_level)
 
     local textcolor = fgcolor
 
