@@ -70,13 +70,13 @@ concommand.Add("tardis2_debug_warning", function(ply,cmd,args)
     local ext = ply:GetTardisData("exterior")
     if not IsValid(ext) or not ply:IsAdmin() then return end
 
-    local oldval = ext:GetData("health-val", 0)
+    local oldval = ext:GetHealth()
 
     local val = ext:GetHealthMax()
     if not ext:GetData("health-warning", false) then
         val = val / 10
     end
-    ext:SetData("health-val", val, true)
+    ext:ChangeHealth(new_health)
     ext:CallHook("OnHealthChange", val, oldval)
 end)
 
