@@ -22,9 +22,9 @@ TARDIS:AddSetting({
 TARDIS:AddSetting({
     id="health_max",
     type="integer",
-    value=1500,
+    value=2000,
     min=1,
-    max=10000,
+    max=25000,
     round_func = function(x)
         if x < 50 then return x end
         if x < 500 then return (x - x % 10) end
