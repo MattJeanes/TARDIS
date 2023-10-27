@@ -3,6 +3,27 @@ function ENT:GetShieldsMax()
     return math.max(1, (1 - ratio) * TARDIS:GetSetting("health_max"))
 end
 
+function ENT:GetShieldsLevel()
+    return self:GetData("shields_val")
+end
+
+function ENT:GetShieldsPercent()
+    local val = self:GetShieldsLevel()
+    local percent = (val * 100)/self:GetShieldsMax()
+    return percent
+end
+
+function ENT:GetShieldsOn()
+    return self:GetData("shields_on")
+end
+
+function ENT:GetShields()
+    if not self:GetShieldsOn() or self:GetShieldsLevel() <= 0 then
+        return false
+    end
+    return self:GetShieldsLevel()
+end
+
 if SERVER then
     function ENT:SetShieldsLevel(value, force)
         if not self:GetShieldsOn() and not force then return end
@@ -51,23 +72,4 @@ if SERVER then
     end)
 end
 
-function ENT:GetShieldsLevel()
-    return self:GetData("shields_val")
-end
 
-function ENT:GetShieldsPercent()
-    local val = self:GetShieldsLevel()
-    local percent = (val * 100)/self:GetShieldsMax()
-    return percent
-end
-
-function ENT:GetShieldsOn()
-    return self:GetData("shields_on")
-end
-
-function ENT:GetShields()
-    if not self:GetShieldsOn() or self:GetShieldsLevel() <= 0 then
-        return false
-    end
-    return self:GetShieldsLevel()
-end
