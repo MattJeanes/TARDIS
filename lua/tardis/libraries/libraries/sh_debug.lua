@@ -76,8 +76,7 @@ concommand.Add("tardis2_debug_warning", function(ply,cmd,args)
     if not ext:GetData("health-warning", false) then
         val = val / 10
     end
-    ext:ChangeHealth(new_health)
-    ext:CallHook("OnHealthChange", val, oldval)
+    ext:ChangeHealth(val)
 end)
 
 concommand.Add("tardis2_debug_power", function(ply,cmd,args)
