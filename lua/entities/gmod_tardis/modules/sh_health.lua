@@ -9,14 +9,29 @@ function ENT:GetHealth()
     return self:GetData("health-val", 0)
 end
 
-function ENT:IsAlive()
-    return (self:GetHealth() ~= 0)
-end
-
 function ENT:GetHealthPercent()
     local val = self:GetHealth()
     local percent = (val * 100) / self:GetHealthMax()
     return percent
+end
+
+ENT.HEALTH_PERCENT_DAMAGED = 40
+ENT.HEALTH_PERCENT_BROKEN = 10
+
+function ENT:IsAlive()
+    return (self:GetHealth() ~= 0)
+end
+
+function ENT:IsDamaged()
+    return not self:IsBroken() and (self:GetHealthPercent() <= self.HEALTH_PERCENT_DAMAGED)
+end
+
+function ENT:IsBroken()
+    return (self:GetHealthPercent() <= self.HEALTH_PERCENT_BROKEN)
+end
+
+function ENT:IsDead()
+    return (self:GetHealth() == 0)
 end
 
 if SERVER then
@@ -73,19 +88,6 @@ if SERVER then
     end
 
     ENT:AddWireOutput("Health", "Wiremod.Outputs.Health")
-
-    function ENT:Explode(f)
-        local force = 60
-        if f ~= nil then
-            force = tostring(f)
-        end
-        local explode = ents.Create("env_explosion")
-        explode:SetPos( self:LocalToWorld(Vector(0,0,50)) )
-        explode:SetOwner( self )
-        explode:Spawn()
-        explode:SetKeyValue("iMagnitude", force)
-        explode:Fire("Explode", 0, 0 )
-    end
 
     ENT:AddHook("CanRepair", "health", function(self, ignore_health)
         if (self:GetHealth() >= self:GetHealthMax())
@@ -176,12 +178,8 @@ if SERVER then
         self:Explode(180)
     end)
 
-    ENT:AddHook("OnHealthChange", "warning", function(self)
-        self:UpdateWarning()
-    end)
-
-    ENT:AddHook("ShouldWarningBeEnabled","health-warning", function(self)
-        if self:GetHealthPercent() <= 20 then
+    ENT:AddHook("ShouldWarningBeEnabled","health", function(self)
+        if self:IsDamaged() or self:IsBroken() then
             return true
         end
     end)

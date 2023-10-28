@@ -87,11 +87,11 @@ hook.Add("HUDPaint", "TARDIS-HUD", function()
     yc = yc + y_offset_2
 
     if draw_health then
-        DrawNumber(health_icon, math.ceil(tardis:GetHealthPercent()), 20, x + x_offset, yc)
+        DrawNumber(health_icon, math.ceil(tardis:GetHealthPercent()), tardis.HEALTH_PERCENT_DAMAGED, x + x_offset, yc)
         yc = yc + y_offset
     end
     if draw_shields then
-        DrawNumber(shields_icon, math.ceil(tardis:GetShieldsPercent()), 1, x + x_offset, yc)
+        DrawNumber(shields_icon, math.ceil(tardis:GetShieldsPercent()), 0, x + x_offset, yc)
         yc = yc + y_offset
     end
     if draw_artron then
