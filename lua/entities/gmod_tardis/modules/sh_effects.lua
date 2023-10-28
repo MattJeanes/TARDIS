@@ -23,15 +23,6 @@ if SERVER then
         end
     end)
 
-    ENT:AddHook("Think", "fire", function(self)
-        if self:CallHook("ShouldStartFire") and self:CallHook("ShouldStopFire")~=true then
-            if self.fire then return end
-            self:StartFire()
-        else
-            self:StopFire()
-        end
-    end)
-
     ENT:AddHook("Think", "RemoveSmoke", function(self)
         local smokedelay = self:GetData("smoke-killdelay")
         if smokedelay ~= nil and CurTime() >= smokedelay then
@@ -40,18 +31,6 @@ if SERVER then
                 self.smoke = nil
                 self:SetData("smoke-killdelay",nil)
             end
-        end
-    end)
-
-    ENT:AddHook("ShouldStartSmoke", "health-warning", function(self)
-        if self:GetData("health-warning",false) then
-            return true
-        end
-    end)
-
-    ENT:AddHook("ShouldStartFire", "health-warning", function(self)
-        if self:IsBroken() and self:GetData("flight") then
-            return true
         end
     end)
 
@@ -90,11 +69,17 @@ if SERVER then
     end
 
     function ENT:StartFire()
-        self.fire = ents.Create("env_fire_trail")
-        self.fire:SetPos(self:LocalToWorld(Vector(0,0,50)))
-        self.fire:SetColor(Color(0,0,0,12))
-        self.fire:Spawn()
+        self.fire = ents.Create("env_fire")
+        self.fire:SetKeyValue("firesize", "5000")
+        self.fire:SetKeyValue("spawnflags", "29")
+        self.fire:SetKeyValue("StartDisabled", "0")
+        self.fire:SetKeyValue("damagescale", "0")
+        self.fire:SetKeyValue("Speed", "50")
+        self.fire:SetPos(self:LocalToWorld(Vector(0,0,30)))
+
         self.fire:SetParent(self)
+        self.fire:Spawn()
+        self.fire:Activate()
     end
 
     function ENT:StopFire()
@@ -103,6 +88,15 @@ if SERVER then
             self.fire=nil
         end
     end
+
+    ENT:AddHook("Think", "fire", function(self)
+        if self:CallHook("ShouldStartFire") and self:CallHook("ShouldStopFire")~=true then
+            if IsValid(self.fire) then return end
+            self:StartFire()
+        else
+            self:StopFire()
+        end
+    end)
 
     -- Rotorwash
 

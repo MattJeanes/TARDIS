@@ -29,6 +29,19 @@ if SERVER then
     ENT:AddHook("HealthWarningToggled", "client", function(self, on)
         self:SendMessage("health_warning_toggled", {on})
     end)
+
+    ENT:AddHook("ShouldStartSmoke", "health-warning", function(self)
+        if self:GetData("health-warning",false) then
+            return true
+        end
+    end)
+
+    ENT:AddHook("ShouldStartFire", "health-warning", function(self)
+        if self:IsBroken() and self:GetData("flight") and not self:GetData("teleport") then
+            return true
+        end
+    end)
+
 else
 
     ENT:OnMessage("health_warning_toggled", function(self, data, ply)
