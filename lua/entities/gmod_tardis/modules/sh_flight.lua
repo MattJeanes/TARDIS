@@ -293,26 +293,37 @@ if SERVER then
                 end
 
                 if (CurTime() > last_dir_change and vell < 2000) or pressed_recently then
-                    if math.random(5) <= 2 then
+
+                    local snds = self.metadata.Exterior.Sounds
+
+                    if math.random(4) == 1 then
                         self:Explode(0)
                         self:SendMessage("ext_sparks", {1})
                         self:SetData("broken_flight_last_explode", CurTime())
 
+                        self:EmitSound(snds.FlightTurnExplosion)
                         ph:SetAngleVelocity(AngleRand():Forward() * vell)
+                    else
+                        self:EmitSound(math.random(3) == 1 and snds.FlightTurnSpecial or snds.FlightTurnNormal)
                     end
 
-                    local stabilize = (math.random(6) == 1 or fbinds.rotate)
+                    local stabilize = (math.random(6) == 1)
                     self:SetData("broken_flight_stabilize", stabilize)
 
                     self:SetData("broken_flight_dir_change_time", CurTime() + math.random(3) - 0.5)
                     ph:AddVelocity(-0.3 * vel + AngleRand():Forward() * vell * math.Rand(2,4))
+
+                    vel = ph:GetVelocity()
+                    if (fbinds.up and vel.z < 0) or (fbinds.down and vel.z > 0) then
+                        ph:SetVelocity(Vector(vel.x, vel.y, -vel.z))
+                    end
                 end
 
                 if vell < 2000 then
                     ph:AddVelocity(vel * 0.02)
                 end
 
-                if self:GetData("broken_flight_stabilize") then
+                if self:GetData("broken_flight_stabilize") or (fbinds.rotate and math.random(5) ~= 1) then
                     stabilize()
                 elseif angvel:Length() > 450 and CurTime() - self:GetData("broken_flight_last_explode", CurTime()) > 1 then
                     local angbrake=angvel*-0.015

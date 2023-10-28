@@ -122,6 +122,9 @@ T.Exterior = {
         CloakOff = "drmatt/tardis/phase_disable.wav",
         Hum = nil,
         Chameleon = "drmatt/tardis/chameleon_circuit.wav",
+        FlightTurnNormal = "p00gie/tardis/flight_turn_normal.wav",
+        FlightTurnSpecial = "p00gie/tardis/flight_turn_special.wav",
+        FlightTurnExplosion = "p00gie/tardis/flight_turn_explosion.wav",
     },
     Chameleon = {
         AnimTime = 4,
