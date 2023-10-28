@@ -70,13 +70,33 @@ concommand.Add("tardis2_debug_warning", function(ply,cmd,args)
     local ext = ply:GetTardisData("exterior")
     if not IsValid(ext) or not ply:IsAdmin() then return end
 
-    local oldval = ext:GetHealth()
+    local max = ext:GetHealthMax()
 
-    local val = ext:GetHealthMax()
-    if not ext:GetData("health-warning", false) then
-        val = val / 10
+    local dead = ext:IsDead()
+    local broken = ext:IsBroken()
+    local damaged = ext:IsDamaged()
+
+    if dead then
+        ext:ChangeHealth(max)
+        ext:SetShieldsLevel(ext:GetShieldsMax(), true)
+        ext:TogglePower()
+        return
     end
-    ext:ChangeHealth(val)
+
+    if broken then
+        return ext:ChangeHealth(0)
+    end
+
+    if damaged and math.abs(ext:GetHealthPercent() - ext.HEALTH_PERCENT_DAMAGED + 1) < 2 then
+        return ext:ChangeHealth(max * (ext.HEALTH_PERCENT_BROKEN + 2) / 100)
+    end
+
+
+    if damaged then
+        return ext:ChangeHealth(max * (ext.HEALTH_PERCENT_BROKEN - 1) / 100)
+    end
+
+    ext:ChangeHealth(max * (ext.HEALTH_PERCENT_DAMAGED - 1) / 100)
 end)
 
 concommand.Add("tardis2_debug_health", function(ply,cmd,args)
