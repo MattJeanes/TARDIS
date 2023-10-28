@@ -63,12 +63,18 @@ if SERVER then
     end
 
     ENT:AddHook("Think", "shields", function(self)
-        if not self:GetShieldsOn() then return end
+        if self:CallCommonHook("ShouldRegenShields") == false then return end
         if CurTime() < self:GetData("shields_last_hit", 0) + 10 then return end
         if CurTime() < self:GetData("shields_regen_time", 0) then return end
 
         self:SetData("shields_regen_time", CurTime() + 0.75)
         self:AddShieldsLevel(self:GetShieldsMax() * 0.01)
+    end)
+
+    ENT:AddHook("ShouldRegenShields", "shields", function(self)
+        if not self:GetShieldsOn() then
+            return false
+        end
     end)
 end
 

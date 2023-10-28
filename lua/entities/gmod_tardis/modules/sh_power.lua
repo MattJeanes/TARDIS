@@ -86,6 +86,13 @@ if SERVER then
             return 0
         end
     end)
+
+    ENT:AddHook("ShouldRegenShields", "power", function(self)
+        if not self:GetPower() then
+            return false
+        end
+    end)
+
 else
     ENT:AddHook("ShouldNotDrawProjectedLight", "power", function(self)
         if not self:GetPower() then return true end
