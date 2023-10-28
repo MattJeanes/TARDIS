@@ -196,4 +196,10 @@ if SERVER then
             return self:GetHealthPercent()
         end
     end)
+
+    ENT:AddHook("DestinationOverride", "broken", function(self,open)
+        if self:IsBroken() then
+            return self:GetRandomLocation(math.random(6) ~= 1), Angle(0,0,0)
+        end
+    end)
 end
