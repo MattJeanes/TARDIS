@@ -79,6 +79,22 @@ concommand.Add("tardis2_debug_warning", function(ply,cmd,args)
     ext:ChangeHealth(val)
 end)
 
+concommand.Add("tardis2_debug_health", function(ply,cmd,args)
+    local ext = ply:GetTardisData("exterior")
+    if not IsValid(ext) or not ply:IsAdmin() then return end
+    if not args[1] or not tonumber(args[1]) then return end
+
+    ext:ChangeHealth(tonumber(args[1]))
+end)
+
+concommand.Add("tardis2_debug_shields", function(ply,cmd,args)
+    local ext = ply:GetTardisData("exterior")
+    if not IsValid(ext) or not ply:IsAdmin() then return end
+    if not args[1] or not tonumber(args[1]) then return end
+
+    ext:SetShieldsLevel(tonumber(args[1]),true)
+end)
+
 concommand.Add("tardis2_debug_power", function(ply,cmd,args)
     local ext = ply:GetTardisData("exterior")
     if not IsValid(ext) or not ply:IsAdmin() then return end
