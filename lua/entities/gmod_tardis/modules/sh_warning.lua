@@ -37,7 +37,7 @@ if SERVER then
     end)
 
     ENT:AddHook("ShouldStartFire", "health-warning", function(self)
-        if self:IsBroken() and self:GetData("flight") and not self:GetData("teleport") then
+        if self:IsBroken() and self:GetData("flight") and not self:GetData("teleport") and not self:GetData("vortex") then
             return true
         end
     end)
