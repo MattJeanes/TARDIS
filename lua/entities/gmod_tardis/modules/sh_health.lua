@@ -186,41 +186,16 @@ if SERVER then
         end
     end)
 
+    ENT:AddHook("ShouldRegenShields", "health", function(self)
+        if not self:IsAlive() then
+            return false
+        end
+    end)
+
     ENT:AddHook("HandleE2", "health", function(self, name, e2, ...)
         local args = {...}
         if name == "GetHealth" then
             return self:GetHealthPercent()
-        elseif name == "Selfrepair" and TARDIS:CheckPP(e2.player, self) then
-            return self:ToggleRepair() and 1 or 0
-        elseif name == "SetSelfrepair" and TARDIS:CheckPP(e2.player, self) then
-            local on = args[1]
-            local primed = self:GetRepairPrimed()
-            if on == 1 then
-                if (not primed) and self:SetRepair(true) then
-                    return 1
-                end
-            else
-                if primed and self:SetRepair(false) then
-                    return 1
-                end
-            end
-            return 0
-        elseif name == "GetSelfrepairing" then
-            local repairing = self:GetRepairing()
-            local primed = self:GetRepairPrimed()
-            if repairing then
-                return 1
-            elseif primed then
-                return 2
-            else
-                return 0
-            end
-        elseif name == "GetRepairTime" then
-            if self:GetRepairing() then
-                return self:GetRepairTime()
-            else
-                return 0
-            end
         end
     end)
 end
