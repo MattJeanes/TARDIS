@@ -76,6 +76,10 @@ if SERVER then
             return false
         end
     end)
+
+    ENT:AddHook("OnHealthDepleted", "shields", function(self)
+        self:SetShieldsLevel(0,true)
+    end)
 end
 
 
