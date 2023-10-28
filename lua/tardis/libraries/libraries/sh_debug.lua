@@ -1,8 +1,8 @@
 -- I often need to run custom code in the TARDIS, this is a template for that
 TARDIS.DebugFunction = function(ext,int,ply,cmd,args)
-    tardisdebug("Debug function")
-    tardisdebug("Exterior:", ext, "")
-    tardisdebug("Interior:", int, "")
+    TARDIS:Debug("Debug function")
+    TARDIS:Debug("Exterior:", ext, "")
+    TARDIS:Debug("Interior:", int, "")
 
     if IsValid(ext) then
         -- paste code here

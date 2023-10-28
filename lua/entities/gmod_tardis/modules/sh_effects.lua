@@ -93,7 +93,6 @@ if SERVER then
         self.fire = ents.Create("env_fire_trail")
         self.fire:SetPos(self:LocalToWorld(Vector(0,0,50)))
         self.fire:SetColor(Color(0,0,0,12))
-        tardisdebug(self.fire:GetSaveTable())
         self.fire:Spawn()
         self.fire:SetParent(self)
     end
