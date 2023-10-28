@@ -34,8 +34,8 @@ function ENT:ChooseFlightSound()
 end
 
 function ENT:IsFlightSoundWrong()
-    if self.flightsounddamaged ~= self:IsDamaged() then return true end
-    if self.flightsoundbroken ~= self:IsBroken() then return true end
+    if self.flightsounddamaged ~= self.exterior:IsDamaged() then return true end
+    if self.flightsoundbroken ~= self.exterior:IsBroken() then return true end
     return false
 end
 
@@ -48,8 +48,7 @@ ENT:AddHook("Think", "flight", function(self)
             self.flightsound:ChangePitch(95+p,0.1)
             self.flightsound:ChangeVolume(0.4)
 
-            if self.flightsounddamaged ~= self:GetData("health-warning",false)
-            then
+            if self:IsFlightSoundWrong() then
                 self.flightsound:Stop()
                 self:ChooseFlightSound()
                 self.flightsound:Play()
