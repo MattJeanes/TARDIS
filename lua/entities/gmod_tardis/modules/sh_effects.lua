@@ -70,10 +70,12 @@ if SERVER then
 
     function ENT:StartFire()
         self.fire = ents.Create("env_fire")
-        self.fire:SetKeyValue("firesize", "5000")
+        self.fire:SetKeyValue("firesize", "500")
         self.fire:SetKeyValue("spawnflags", "29")
         self.fire:SetKeyValue("StartDisabled", "0")
         self.fire:SetKeyValue("damagescale", "0")
+        self.fire:SetKeyValue("firedamage", "0")
+        self.fire:SetKeyValue("fireradius", "0")
         self.fire:SetKeyValue("Speed", "50")
         self.fire:SetPos(self:LocalToWorld(Vector(0,0,30)))
 
