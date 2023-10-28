@@ -96,6 +96,7 @@ if SERVER then
 
         pos = pos or self:GetDestinationPos(true)
         ang = ang or self:GetDestinationAng(true)
+        pos,ang = self:CallCommonHook("DestinationOverride", pos, ang) or pos,ang
         self:SetDestination(pos, ang, true)
 
         self:SendMessage("demat", { self:GetDestinationPos(true) } )
@@ -221,7 +222,7 @@ if SERVER then
     end)
 
     ENT:AddHook("CanChangeDestination", "premat", function(self)
-        if self:GetData("teleport") and self:GetData("vortex") then
+        if self:GetData("teleport") or self:GetData("vortex") then
             return false
         end
     end)
