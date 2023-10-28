@@ -231,6 +231,102 @@ if SERVER then
             local spin = (spindir ~= 0)
             local brakes = false
 
+            local broken = self:IsBroken()
+            local warning = not broken and self:IsDamaged()
+
+            local fbinds = {
+                forward = TARDIS:IsBindDown(self.pilot,"flight-forward"),
+                backward = TARDIS:IsBindDown(self.pilot,"flight-backward"),
+                left = TARDIS:IsBindDown(self.pilot,"flight-left"),
+                right = TARDIS:IsBindDown(self.pilot,"flight-right"),
+                rotate = TARDIS:IsBindDown(self.pilot,"flight-rotate"),
+                up = TARDIS:IsBindDown(self.pilot,"flight-up"),
+                down = TARDIS:IsBindDown(self.pilot,"flight-down"),
+                boost = TARDIS:IsBindDown(self.pilot,"flight-boost"),
+            }
+
+            local function num_keys_pressed()
+                local count = 0
+                for k,v in pairs(fbinds) do
+                    if v then
+                        count = count + 1
+                    end
+                end
+                return count
+            end
+
+            local function VectorClamp(vec, minv, maxv)
+                local x = math.Clamp(vec.x, minv, maxv)
+                local y = math.Clamp(vec.y, minv, maxv)
+                local z = math.Clamp(vec.z, minv, maxv)
+                return Vector(x,y,z)
+            end
+
+            local function stabilize()
+                -- lean into the flight
+                ph:ApplyForceOffset( vel * 0.005,            cen + up * lev)
+                ph:ApplyForceOffset(-vel * 0.005,            cen - up * lev)
+
+                -- stabilise pitch
+                ph:ApplyForceOffset( up * -ang.p,          cen - fwd2 * lev)
+                ph:ApplyForceOffset(-up * -ang.p,          cen + fwd2 * lev)
+
+                -- stabilise roll and apply tilt
+                ph:ApplyForceOffset( up * -(ang.r - tilt), cen - ri2 * lev)
+                ph:ApplyForceOffset(-up * -(ang.r - tilt), cen + ri2 * lev)
+
+                local angbrake=angvel*-0.015
+                ph:AddAngleVelocity(angbrake)
+
+                local brake=vel*-0.01
+                ph:AddVelocity(brake)
+            end
+
+            if broken and vell > 200 then
+                local last_dir_change = self:GetData("broken_flight_dir_change_time", 0)
+
+                local pressed_data = self:GetData("flight_num_keys_pressed", 0)
+                local pressed = num_keys_pressed()
+                local pressed_recently = (pressed_data < pressed)
+                if pressed ~= pressed_data then
+                    self:SetData("flight_num_keys_pressed", pressed)
+                end
+
+                if (CurTime() > last_dir_change and vell < 2000) or pressed_recently then
+                    if math.random(5) <= 2 then
+                        self:Explode(0)
+                        self:SendMessage("ext_sparks", {1})
+                        self:SetData("broken_flight_last_explode", CurTime())
+
+                        ph:SetAngleVelocity(AngleRand():Forward() * vell)
+                    end
+
+                    local stabilize = (math.random(6) == 1 or fbinds.rotate)
+                    self:SetData("broken_flight_stabilize", stabilize)
+
+                    self:SetData("broken_flight_dir_change_time", CurTime() + math.random(3) - 0.5)
+                    ph:AddVelocity(-0.3 * vel + AngleRand():Forward() * vell * math.Rand(2,4))
+                end
+
+                if vell < 2000 then
+                    ph:AddVelocity(vel * 0.02)
+                end
+
+                if self:GetData("broken_flight_stabilize") then
+                    stabilize()
+                elseif angvel:Length() > 450 and CurTime() - self:GetData("broken_flight_last_explode", CurTime()) > 1 then
+                    local angbrake=angvel*-0.015
+                    ph:AddAngleVelocity(angbrake)
+                else
+                    ph:AddAngleVelocity(AngleRand():Forward() * 40)
+                    local vec=Vector(0,vell / 10000,0)
+                    vec:Rotate(ang)
+                    ph:AddAngleVelocity(vec)
+                end
+
+                return
+            end
+
             if self.pilot and IsValid(self.pilot) and control then
                 local p=self.pilot
                 local eye=p:GetTardisData("viewang")
@@ -240,7 +336,7 @@ if SERVER then
                 local fwd=eye:Forward()
                 local ri=eye:Right()
 
-                if TARDIS:IsBindDown(self.pilot,"flight-boost") then
+                if fbinds.boost then
 
                     local force_mult
                     local door = self:GetData("doorstatereal", false)
@@ -269,24 +365,24 @@ if SERVER then
                 elseif self.bad_flight_boost_msg ~= nil then
                     self.bad_flight_boost_msg = nil
                 end
-                if TARDIS:IsBindDown(self.pilot,"flight-forward") then
+                if fbinds.forward then
                     ph:AddVelocity(fwd*force*phm)
                     tilt=tilt+5
                 end
-                if TARDIS:IsBindDown(self.pilot,"flight-backward") then
+                if fbinds.backward then
                     ph:AddVelocity(-fwd*force*phm)
                     tilt=tilt+5
                 end
-                if TARDIS:IsBindDown(self.pilot,"flight-right") then
-                    if TARDIS:IsBindDown(self.pilot,"flight-rotate") then
+                if fbinds.right then
+                    if fbinds.rotate then
                         ph:AddAngleVelocity(Vector(0,0,-rforce))
                     else
                         ph:AddVelocity(ri*force*phm)
                         tilt=tilt+5
                     end
                 end
-                if TARDIS:IsBindDown(self.pilot,"flight-left") then
-                    if TARDIS:IsBindDown(self.pilot,"flight-rotate") then
+                if fbinds.left then
+                    if fbinds.rotate then
                         ph:AddAngleVelocity(Vector(0,0,rforce))
                     else
                         ph:AddVelocity(-ri*force*phm)
@@ -294,9 +390,9 @@ if SERVER then
                     end
                 end
 
-                if TARDIS:IsBindDown(self.pilot,"flight-down") then
+                if fbinds.down then
                     ph:AddVelocity(-up*vforce*phm)
-                elseif TARDIS:IsBindDown(self.pilot,"flight-up") then
+                elseif fbinds.up then
                     ph:AddVelocity(up*vforce*phm)
                 end
             end
@@ -305,27 +401,27 @@ if SERVER then
                 tilt = 0
             end
 
+            if warning then
+                local health_mult = (5 + self.HEALTH_PERCENT_DAMAGED - self:GetHealthPercent()) / 10
 
-            -- lean into the flight
-            ph:ApplyForceOffset( vel * 0.005,            cen + up * lev)
-            ph:ApplyForceOffset(-vel * 0.005,            cen - up * lev)
+                local pressed_data = self:GetData("flight_num_keys_pressed", 0)
+                local pressed = num_keys_pressed()
+                if pressed_data < pressed then
+                    local skid = AngleRand():Forward() * vell * (0.2 + math.random()) * health_mult
+                    ph:AddVelocity(skid)
+                end
 
-            -- stabilise pitch
-            ph:ApplyForceOffset( up * -ang.p,          cen - fwd2 * lev)
-            ph:ApplyForceOffset(-up * -ang.p,          cen + fwd2 * lev)
-
-            -- stabilise roll and apply tilt
-            ph:ApplyForceOffset( up * -(ang.r - tilt), cen - ri2 * lev)
-            ph:ApplyForceOffset(-up * -(ang.r - tilt), cen + ri2 * lev)
+                if pressed ~= pressed_data then
+                    self:SetData("flight_num_keys_pressed", pressed)
+                end
+            end
 
             if spin and not brakes then
                 local twist = Vector(0, 0, -spindir * math.sqrt(vell / tforce))
                 ph:AddAngleVelocity(twist)
             end
-            local angbrake=angvel*-0.015
-            ph:AddAngleVelocity(angbrake)
-            local brake=vel*-0.01
-            ph:AddVelocity(brake)
+
+            stabilize()
         end
     end)
 
@@ -370,14 +466,26 @@ else
         end
     end)
 
-    local function ChooseFlightSound(ent)
-        if ent:GetData("health-warning", false) then
-            ent.flightsound = CreateSound(ent, ent.metadata.Exterior.Sounds.FlightLoopDamaged)
-            ent.flightsounddamaged = true
+    function ENT:ChooseFlightSound()
+        if self:IsBroken() then
+            self.flightsound = CreateSound(self, self.metadata.Exterior.Sounds.FlightLoopBroken)
+            self.flightsounddamaged = false
+            self.flightsoundbroken = true
+        elseif self:IsDamaged() then
+            self.flightsound = CreateSound(self, self.metadata.Exterior.Sounds.FlightLoopDamaged)
+            self.flightsounddamaged = true
+            self.flightsoundbroken = false
         else
-            ent.flightsound = CreateSound(ent, ent.metadata.Exterior.Sounds.FlightLoop)
-            ent.flightsounddamaged = false
+            self.flightsound = CreateSound(self, self.metadata.Exterior.Sounds.FlightLoop)
+            self.flightsounddamaged = false
+            self.flightsoundbroken = false
         end
+    end
+
+    function ENT:IsFlightSoundWrong()
+        if self.flightsounddamaged ~= self:IsDamaged() then return true end
+        if self.flightsoundbroken ~= self:IsBroken() then return true end
+        return false
     end
 
     ENT:AddHook("Think", "flight", function(self)
@@ -407,15 +515,14 @@ else
                 end
                 self.flightsound:ChangeVolume(0.75)
 
-                if self.flightsounddamaged ~= self:GetData("health-warning",false)
-                then
+                if self:IsFlightSoundWrong() then
                     self.flightsound:Stop()
-                    ChooseFlightSound(self)
+                    self:ChooseFlightSound()
                     self.flightsound:SetSoundLevel(90)
                     self.flightsound:Play()
                 end
             else
-                ChooseFlightSound(self)
+                self:ChooseFlightSound()
                 self.flightsound:SetSoundLevel(90)
                 self.flightsound:Play()
             end
@@ -429,5 +536,9 @@ else
         local old=data[1]
         local new=data[2]
         self:CallHook("PilotChanged",old,new)
+    end)
+
+    ENT:OnMessage("ext_sparks", function(self, data, ply)
+        self:ExteriorSparks(data and data[1] or 1)
     end)
 end

@@ -7,18 +7,36 @@ ENT:AddHook("OnRemove", "flight", function(self)
     end
 end)
 
-local function ChooseFlightSound(ent)
-    if ent:GetData("health-warning", false) then
-        local current_sound = ent.metadata.Interior.Sounds.FlightLoopDamaged or
-            ent.metadata.Exterior.Sounds.FlightLoopDamaged
-        ent.flightsound = CreateSound(ent, current_sound)
-        ent.flightsounddamaged = true
+function ENT:ChooseFlightSound()
+    local sounds_int = self.metadata.Interior.Sounds
+    local sounds_ext = self.metadata.Exterior.Sounds
+    local ext = self.exterior
+    local current_sound
+
+    if ext:IsBroken() then
+        current_sound = sounds_int.FlightLoopBroken or sounds_int.FlightLoopDamaged
+            or sounds_ext.FlightLoopBroken
+        -- if the interior has its own damaged sound specified,
+        -- we prefer it to exterior's broken sound for this case
+
+        self.flightsounddamaged = false
+        self.flightsoundbroken = true
+    elseif ext:IsDamaged() then
+        current_sound = sounds_int.FlightLoopDamaged or sounds_ext.FlightLoopDamaged
+        self.flightsounddamaged = true
+        self.flightsoundbroken = false
     else
-        local current_sound = ent.metadata.Interior.Sounds.FlightLoop or
-            ent.metadata.Exterior.Sounds.FlightLoop
-        ent.flightsound = CreateSound(ent, current_sound)
-        ent.flightsounddamaged = false
+        current_sound = sounds_int.FlightLoop or sounds_ext.FlightLoop
+        self.flightsounddamaged = false
+        self.flightsoundbroken = false
     end
+    self.flightsound = CreateSound(self, current_sound)
+end
+
+function ENT:IsFlightSoundWrong()
+    if self.flightsounddamaged ~= self:IsDamaged() then return true end
+    if self.flightsoundbroken ~= self:IsBroken() then return true end
+    return false
 end
 
 ENT:AddHook("Think", "flight", function(self)
@@ -33,11 +51,11 @@ ENT:AddHook("Think", "flight", function(self)
             if self.flightsounddamaged ~= self:GetData("health-warning",false)
             then
                 self.flightsound:Stop()
-                ChooseFlightSound(self)
+                self:ChooseFlightSound()
                 self.flightsound:Play()
             end
         else
-            ChooseFlightSound(self)
+            self:ChooseFlightSound()
             self.flightsound:Play()
         end
     elseif self.flightsound then

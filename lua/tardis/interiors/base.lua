@@ -115,6 +115,7 @@ T.Exterior = {
         },
         FlightLoop = "drmatt/tardis/flight_loop.wav",
         FlightLoopDamaged = "drmatt/tardis/flight_loop_damaged.wav",
+        FlightLoopBroken = "p00gie/tardis/flight_loop_broken.wav",
         FlightLand = "p00gie/tardis/base/tardis_landing.wav",
         FlightFall = "p00gie/tardis/fall.wav",
         Cloak = "drmatt/tardis/phase_enable.wav",
