@@ -246,7 +246,7 @@ else
             local sound_fullflight_ext = ext.fullflight
             local sound_fullflight_int = int.fullflight or ext.fullflight
 
-            if (self:GetData("health-warning", false) or self:GetData("force-demat", false))
+            if (self:HasLowHealth() or self:GetData("force-demat", false))
                 and not self:GetData("redecorate")
             then
                 sound_demat_ext = ext.demat_damaged
@@ -284,7 +284,7 @@ else
                 end
                 if pos and self:GetFastRemat() then
                     if not IsValid(self) then return end
-                    if self:GetData("health-warning", false) and (self:GetFastRemat())==true then
+                    if self:HasLowHealth() and (self:GetFastRemat())==true then
                         sound.Play(ext.mat_damaged_fast, pos)
                     else
                         sound.Play(ext.mat_fast, pos)
@@ -306,7 +306,7 @@ else
             local int = self.metadata.Interior.Sounds.Teleport
             local pos=data[1]
             if LocalPlayer():GetTardisData("exterior")==self and (not self:GetFastRemat()) then
-                if self:GetData("health-warning", false) then
+                if self:HasLowHealth() then
                     if shouldPlayExterior then
                         self:EmitSound(ext.mat_damaged)
                     end
@@ -322,7 +322,7 @@ else
                     end
                 end
             elseif not self:GetFastRemat() and shouldPlayExterior then
-                if self:GetData("health-warning", false) then
+                if self:HasLowHealth() then
                     sound.Play(ext.mat_damaged,pos)
                 else
                     sound.Play(ext.mat,pos)
@@ -443,7 +443,7 @@ ENT:AddHook("Think","teleport",function(self,delta)
 
     if self:GetData("step-delay") and self:GetData("step-delay")>CurTime() then return end
     local sequencespeed = (fast and teleport_md.SequenceSpeedFast or teleport_md.SequenceSpeed)
-    if self:GetData("health-warning",false) then
+    if self:HasLowHealth() then
         sequencespeed = (fast and teleport_md.SequenceSpeedWarnFast or teleport_md.SequenceSpeedWarning)
     end
     alpha=math.Approach(alpha,target,delta*66*sequencespeed)

@@ -30,7 +30,8 @@ if SERVER then
 
         -- every 5 (by default) seconds:
         increase_normal = 15 * 5 / 144,
-        increase_warning = 10 * 5 / 144,
+        increase_damaged = 10 * 5 / 144,
+        increase_broken = 6 * 5 / 144,
         increase_poweroff = 24 * 5 / 144,
         increase_float = 8 * 5 / 144,
 
@@ -145,7 +146,8 @@ if SERVER then
         local handbrake = self:GetHandbrake()
         local cloak = self:GetCloak()
         local float = self:GetData("floatfirst")
-        local warning = self:GetData("health-warning")
+        local damaged = self:IsDamaged()
+        local broken = self:IsBroken()
 
         local change = 0
 
@@ -212,8 +214,12 @@ if SERVER then
             self:AddArtron(TARDIS.artron_values.increase_float)
             return
         end
-        if warning then
-            self:AddArtron(TARDIS.artron_values.increase_warning)
+        if damaged then
+            self:AddArtron(TARDIS.artron_values.increase_damaged)
+            return
+        end
+        if broken then
+            self:AddArtron(TARDIS.artron_values.increase_broken)
             return
         end
         self:AddArtron(TARDIS.artron_values.increase_normal) -- default state

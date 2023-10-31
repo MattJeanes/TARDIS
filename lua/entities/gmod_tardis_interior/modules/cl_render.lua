@@ -18,7 +18,7 @@ local function predraw_o(self)
     --because for some reason SOMEONE OUT THERE didn't define a light.
 
     local lights = self.light_data.extra
-    local warning = self:GetData("health-warning", false)
+    local warning = self:GetData("warning", false)
 
     local tab={}
 

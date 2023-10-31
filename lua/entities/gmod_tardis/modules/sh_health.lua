@@ -30,6 +30,10 @@ function ENT:IsBroken()
     return (self:GetHealthPercent() <= self.HEALTH_PERCENT_BROKEN)
 end
 
+function ENT:HasLowHealth()
+    return self:IsBroken() or self:IsDamaged()
+end
+
 function ENT:IsDead()
     return (self:GetHealth() == 0)
 end
@@ -179,7 +183,7 @@ if SERVER then
     end)
 
     ENT:AddHook("ShouldWarningBeEnabled","health", function(self)
-        if self:IsDamaged() or self:IsBroken() then
+        if self:HasLowHealth() then
             return true
         end
     end)
@@ -200,6 +204,18 @@ if SERVER then
     ENT:AddHook("DestinationOverride", "broken", function(self,open)
         if self:IsBroken() then
             return self:GetRandomLocation(math.random(6) ~= 1), Angle(0,0,0)
+        end
+    end)
+
+    ENT:AddHook("ShouldStartSmoke", "health", function(self)
+        if self:HasLowHealth() then
+            return true
+        end
+    end)
+
+    ENT:AddHook("ShouldStartFire", "health", function(self)
+        if self:IsBroken() and self:GetData("flight") and not self:GetData("teleport") and not self:GetData("vortex") then
+            return true
         end
     end)
 end
