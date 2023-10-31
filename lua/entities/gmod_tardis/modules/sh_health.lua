@@ -201,9 +201,24 @@ if SERVER then
         end
     end)
 
-    ENT:AddHook("DestinationOverride", "broken", function(self,open)
-        if self:IsBroken() and math.random(10) ~= 1 then
+    ENT:AddHook("DestinationOverride", "broken", function(self,pos,ang)
+        if self:IsBroken() and math.random(5) ~= 1 then
+            self:SetData("broken_pre_override_destination_pos", pos)
+            self:SetData("broken_pre_override_destination_ang", ang)
             return self:GetRandomLocation(math.random(6) ~= 1), Angle(0,0,0)
+        elseif self:GetData("broken_pre_override_destination_pos") then
+            self:SetData("broken_pre_override_destination_pos", nil)
+            self:SetData("broken_pre_override_destination_ang", nil)
+        end
+    end)
+
+    ENT:AddHook("StopMat", "broken", function(self)
+        if self:GetData("broken_pre_override_destination_pos") then
+            local pos = self:GetData("broken_pre_override_destination_pos")
+            local ang = self:GetData("broken_pre_override_destination_ang")
+            self:SetData("broken_pre_override_destination_pos", nil)
+            self:SetData("broken_pre_override_destination_ang", nil)
+            self:SetDestination(pos, ang)
         end
     end)
 
