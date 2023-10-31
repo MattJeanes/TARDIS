@@ -202,7 +202,7 @@ if SERVER then
     end)
 
     ENT:AddHook("DestinationOverride", "broken", function(self,open)
-        if self:IsBroken() then
+        if self:IsBroken() and math.random(10) ~= 1 then
             return self:GetRandomLocation(math.random(6) ~= 1), Angle(0,0,0)
         end
     end)
@@ -215,6 +215,12 @@ if SERVER then
 
     ENT:AddHook("ShouldStartFire", "health", function(self)
         if self:IsBroken() and self:GetData("flight") and not self:GetData("teleport") and not self:GetData("vortex") then
+            return true
+        end
+    end)
+
+    ENT:AddHook("ShouldForceDemat", "health", function(self, pos, ang)
+        if self:IsBroken() then
             return true
         end
     end)
