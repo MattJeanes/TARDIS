@@ -233,10 +233,10 @@ if SERVER then
         end
     end)
 
-    ENT:AddHook("HandleNoDemat", "artron", function(self)
+    ENT:AddHook("DematFailed", "artron", function(self)
         if not TARDIS:GetSetting("artron_energy") then return end
 
-        if ArtronDematCheck(self) then return end
+        if not ArtronDematCheck(self) then return end
         self:AddArtron(TARDIS.artron_values.cost_failed_demat)
     end)
 

@@ -28,7 +28,7 @@ if SERVER then
                 self:ToggleDoor()
             end
             self:SetData("hads-attempt", true)
-            if self:CallHook("CanDemat", true) == false then
+            if self:CallHook("CanDemat", true, true) == false then
                 if not self:GetData("hads-failed-time") or CurTime() > self:GetData("hads-failed-time") + 10 then
                     self:SetData("hads-failed-time", CurTime())
                     TARDIS:ErrorMessage(self:GetCreator(), "HADS.DematError")

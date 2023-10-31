@@ -78,11 +78,18 @@ if SERVER then
     end
 
     function ENT:Demat(pos, ang, callback, force)
-        local ignore_failed_demat = self:GetData("redecorate")
 
-        if self:CallHook("CanDemat", force, ignore_failed_demat) == false then
-            self:HandleNoDemat(pos, ang, callback, force)
-            return
+        force = force or self:CallCommonHook("ShouldForceDemat", pos, ang)
+
+        if self:CallHook("CanDemat", force, false) == false then
+            return callback(false)
+        end
+
+        local redecorating = self:GetData("redecorate")
+
+        if self:CallHook("ShouldFailDemat", force, pos, ang) == true and not redecorating then
+            self:FailDemat()
+            return callback(false)
         end
 
         if not self:DematDoorCheck(pos, ang, callback, force) then return end
@@ -97,7 +104,7 @@ if SERVER then
         pos = pos or self:GetDestinationPos(true)
         ang = ang or self:GetDestinationAng(true)
         pos,ang = self:CallCommonHook("DestinationOverride", pos, ang) or pos,ang
-        self:SetDestination(pos, ang, true)
+        self:SetDestination(pos, ang)
 
         self:SendMessage("demat", { self:GetDestinationPos(true) } )
         self:SetData("demat",true)
@@ -196,9 +203,8 @@ if SERVER then
         self:CallHook("StopMat")
     end
 
-    ENT:AddHook("CanDemat", "teleport", function(self, force, ignore_fail_demat)
-        if self:GetData("teleport") or self:GetData("vortex") or (not self:GetPower())
-        then
+    ENT:AddHook("CanDemat", "teleport", function(self, force, check_failed)
+        if self:GetData("teleport") or self:GetData("vortex") or (not self:GetPower()) then
             return false
         end
     end)
