@@ -88,7 +88,8 @@ TARDIS:AddKeyBind("destination-demat",{
         if ply:GetTardisData("destination") then
             local prop = self:GetData("destinationprop")
             if IsValid(prop) then
-                self:SendMessage("destination-demat", {prop:GetPos(), prop:GetAngles()})
+                local prop_chameleon = self:GetData("destination_chameleon")
+                self:SendMessage("destination-demat", {prop:GetPos(), prop:GetAngles(), prop_chameleon})
             end
         end
     end,
@@ -178,6 +179,58 @@ TARDIS:AddKeyBind("destination-find-random",{
     clientonly=true,
     exterior=true
 })
+TARDIS:AddKeyBind("destination-show-current",{
+    name="ShowCurrent",
+    section="Destination",
+    func=function(self,down,ply)
+        if down and ply:GetTardisData("destination") then
+            local prop = self:GetData("destinationprop")
+            if IsValid(prop) then
+                prop:SetPos(self:GetDestinationPos(true))
+                prop:SetAngles(self:GetDestinationAng(true))
+            end
+        end
+    end,
+    key=KEY_H,
+    clientonly=true,
+    exterior=true
+})
+
+TARDIS:AddKeyBind("destination-chameleon",{
+    name="Chameleon",
+    section="Destination",
+    func=function(self,down,ply)
+        if down and ply:GetTardisData("destination") then
+
+            local prop = self:GetData("destinationprop")
+            local pos, ang
+            if IsValid(prop) then
+                pos = prop:GetPos()
+                ang = prop:GetAngles()
+            end
+
+            local ext, ext_id = table.Random(TARDIS:GetExteriors())
+
+            self:CreateDestinationProp(ext_id)
+            self:SetData("destination_chameleon", ext_id)
+
+            prop = self:GetData("destinationprop")
+            if IsValid(prop) then
+                prop:SetPos(pos)
+                prop:SetAngles(ang)
+            end
+        end
+    end,
+    key=KEY_F,
+    clientonly=true,
+    exterior=true
+})
+
+hook.Add("PlayerSwitchFlashlight", "tardis-destination", function(ply,enabled)
+    if ply:GetTardisData("destination") then
+        return false
+    end
+end)
 
 if SERVER then
     function ENT:SetDestination(pos, ang)
@@ -256,9 +309,14 @@ if SERVER then
         end
         local pos = data[1]
         local ang = data[2]
+        local ext = data[3]
+
         if ply:GetTardisData("destination") then
             self:SelectDestination(ply, false)
         end
+
+        self:SetData("chameleon_planned_exterior", ext, true)
+
         if self:GetData("vortex") or self:GetData("teleport") then
             if self:SetDestination(pos,ang) then
                 TARDIS:Message(ply, "Destination.LockedReadyToMat")
@@ -329,10 +387,12 @@ else
         return prop
     end
 
-    function ENT:CreateDestinationProp()
+    function ENT:CreateDestinationProp(exterior_id)
         self:RemoveDestinationProp()
 
-        local cham_ext = self:GetData("chameleon_selected_exterior")
+        local planned_ext = self:GetData("chameleon_planned_exterior")
+        local selected_ext = self:GetData("chameleon_selected_exterior")
+        local cham_ext = exterior_id or planned_ext or selected_ext
         local md
         if cham_ext then
             md = TARDIS:CreateExteriorMetadata(cham_ext)
@@ -459,12 +519,6 @@ else
         local rt = Angle(0,0,0)
 
         if not self:GetData("destination-rotating") then
-            if TARDIS:IsBindDown("destination-forward") then
-                mv:Add(force*fwd*dt)
-            elseif TARDIS:IsBindDown("destination-backward") then
-                mv:Add(force*fwd*-1*dt)
-            end
-
             if TARDIS:IsBindDown("destination-rotate") and TARDIS:IsBindDown("destination-boost") then
                 if TARDIS:IsBindDown("destination-left") then
                     rt = rt + Angle(0,angforce*dt,0)
@@ -472,7 +526,32 @@ else
                 if TARDIS:IsBindDown("destination-right") then
                     rt = rt + Angle(0,angforce*-1*dt,0)
                 end
+
+                local fwd = TARDIS:IsBindDown("destination-forward")
+                local back = TARDIS:IsBindDown("destination-backward")
+
+                if fwd or back then
+                    if not self:GetData("destination_rotate_key") then
+                        local ang = prop:GetAngles()
+
+                        local k = fwd and 1 or ((ang.y % 45) == 0) and -1 or 0
+
+                        if ang:Up() == Vector(0,0,1) then
+                            prop:SetAngles(Angle(ang.x, ang.y + 45 * k - (ang.y % 45), ang.z))
+                        else
+                            rt = rt + Angle(0, 90 * k, 0)
+                        end
+                    end
+                    self:SetData("destination_rotate_key", true)
+                else
+                    self:SetData("destination_rotate_key", nil)
+                end
             else
+                if TARDIS:IsBindDown("destination-forward") then
+                    mv:Add(force*fwd*dt)
+                elseif TARDIS:IsBindDown("destination-backward") then
+                    mv:Add(force*fwd*-1*dt)
+                end
                 if TARDIS:IsBindDown("destination-left") then
                     mv:Add(force*ri*-1*dt)
                 end
