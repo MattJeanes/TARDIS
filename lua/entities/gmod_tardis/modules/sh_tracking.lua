@@ -147,7 +147,6 @@ if SERVER then
         local dist = pos:Distance(ent:LocalToWorld(offset))
         local force=5
 
-        print(dist)
         if dist > MaxTrackingDistanceFromOffset then
             self:SetTracking(nil, pilot)
             TARDIS:ErrorMessage(pilot, "Controls.Tracking.DistanceDisable")
