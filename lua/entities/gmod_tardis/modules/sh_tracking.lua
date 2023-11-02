@@ -5,7 +5,7 @@ local MaxTrackingDistanceFromOffset = 1000
 
 TARDIS:AddKeyBind("tracking",{
     name="Tracking",
-    section="Teleport",
+    section="Flight",
     func=function(self,down,ply)
         local pilot = self:GetData("pilot")
         if self:CallHook("CanTrack") == false then return end
@@ -223,7 +223,7 @@ if SERVER then
         ph:AddVelocity((target-pos)*0.4*phm)
         ph:AddVelocity(vel*-0.5)
 
-        if self:GetSpinDir() == 0 then
+        if not self:GetSpin() then
             local cen=ph:GetMassCenter()
             local fwd=self:GetForward()
             local lev=ph:GetInertia():Length()
