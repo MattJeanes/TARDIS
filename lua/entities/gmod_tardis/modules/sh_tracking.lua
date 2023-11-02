@@ -83,7 +83,8 @@ if SERVER then
         self:SetData("tracking-ent",ent)
         if IsValid(ent) and ent ~= wasTrackingEnt then
             self:SetData("tracking-offset-pos", ent:WorldToLocal(self:GetPos()))
-            self:SetData("tracking-offset-yaw", 0)
+            local yaw = ent:GetAngles().y - self:GetAngles().y
+            self:SetData("tracking-offset-yaw", yaw)
         end
 
         if not isTracking then
@@ -142,8 +143,10 @@ if SERVER then
         end
 
         local pos = self:GetPos()
-        local dist = pos:Distance(ent:GetPos())
+        local entPos = ent:GetPos()
+        local dist = pos:Distance(entPos)
         local pilot = self:GetData("pilot")
+        local phm=FrameTime()*66
 
         if dist > MaxTrackingDistance then
             self:SetTracking(nil, pilot)
@@ -153,6 +156,46 @@ if SERVER then
 
         local offset = self:GetData("tracking-offset-pos", Vector(0,0,0))
         local yawoffset = self:GetData("tracking-offset-yaw", 0)
+        local force=5
+
+        if self.pilot and IsValid(self.pilot) then
+            local p=self.pilot
+            local eye=p:GetTardisData("viewang")
+            if not eye then
+                eye=angle_zero
+            end
+            local fwd=eye:Forward()
+            local ri=eye:Right()
+            if TARDIS:IsBindDown(self.pilot,"flight-boost") then
+                force=force*TARDIS:GetSetting("boost-speed")
+            end
+
+            local adjustedOffset = Vector()
+            if TARDIS:IsBindDown(self.pilot,"flight-forward") then
+                adjustedOffset:Add(fwd * force)
+            end
+            if TARDIS:IsBindDown(self.pilot,"flight-backward") then
+                adjustedOffset:Add(fwd * -force)
+            end
+
+            if TARDIS:IsBindDown(self.pilot,"flight-left") then
+                adjustedOffset:Add(ri * -force)
+            end
+            if TARDIS:IsBindDown(self.pilot,"flight-right") then
+                adjustedOffset:Add(ri * force)
+            end
+
+            if TARDIS:IsBindDown(self.pilot,"flight-up") then
+                adjustedOffset:Add(Vector(0,0,force))
+            elseif TARDIS:IsBindDown(self.pilot,"flight-down") then
+                adjustedOffset:Add(Vector(0,0,-force))
+            end
+
+            if (adjustedOffset ~= vector_origin) then
+                adjustedOffset:Mul(phm)
+                offset:Add(WorldToLocal(adjustedOffset, angle_zero, vector_origin, ent:GetAngles()))
+            end
+        end
 
         local tvel=ent:GetVelocity()
         local tfwd=tvel:Angle():Forward()
@@ -160,8 +203,9 @@ if SERVER then
         local mass=ph:GetMass()
         local vel=ph:GetVelocity()
 
-        ph:ApplyForceCenter((target-pos)*mass)
-        ph:ApplyForceCenter(-vel*mass)
+        ph:AddVelocity((target-pos)*0.4*phm)
+        local brake=vel*-0.5
+        ph:AddVelocity(brake)
 
         if self:GetSpinDir() == 0 then
             local cen=ph:GetMassCenter()
@@ -171,19 +215,20 @@ if SERVER then
             local ang=self:GetAngles()
 
             local a=ent:WorldToLocalAngles(ang+Angle(0,yawoffset,0))
-            ph:ApplyForceOffset( ri*-a.y,cen-fwd*lev)
-            ph:ApplyForceOffset(-ri*-a.y,cen+fwd*lev)
+            ph:AddVelocity( ri*-a.y,cen-fwd*lev)
+            ph:AddVelocity(-ri*-a.y,cen+fwd*lev)
         end
     end)
 
-    ENT:AddHook("CanControlFlight", "tracking", function(self, ply)
+    ENT:AddHook("FlightControl", "tracking", function(self, ply)
         if self:GetTracking() then
-            local lastWarning = self:GetData("tracking-warning", 0)
-            if CurTime() > lastWarning then
-                self:SendMessage("tracking-pilotwarning", nil, ply)
-                self:SetData("tracking-warning", CurTime()+5)
-            end
             return false
+        end
+    end)
+
+    ENT:AddHook("StopDemat", "tracking", function(self)
+        if self:GetTracking() then
+            self:SetTracking(nil)
         end
     end)
 

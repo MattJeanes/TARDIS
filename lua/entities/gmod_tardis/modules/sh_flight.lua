@@ -243,82 +243,64 @@ if SERVER then
                 end
                 local fwd=eye:Forward()
                 local ri=eye:Right()
+          
+                if TARDIS:IsBindDown(self.pilot,"flight-boost") then
+                    local force_mult
+                    local door = self:GetData("doorstatereal", false)
 
-                local boostPressed = TARDIS:IsBindDown(self.pilot,"flight-boost")
-                local forwardPressed = TARDIS:IsBindDown(self.pilot,"flight-forward")
-                local backwardPressed = TARDIS:IsBindDown(self.pilot,"flight-backward")
-                local rightPressed = TARDIS:IsBindDown(self.pilot,"flight-right")
-                local leftPressed = TARDIS:IsBindDown(self.pilot,"flight-left")
-                local downPressed = TARDIS:IsBindDown(self.pilot,"flight-down")
-                local upPressed = TARDIS:IsBindDown(self.pilot,"flight-up")
-
-                if (boostPressed
-                    or forwardPressed
-                    or backwardPressed
-                    or rightPressed
-                    or leftPressed
-                    or downPressed
-                    or upPressed)
-                    and self:CallHook("CanControlFlight", self.pilot) ~= false then
-
-                        if boostPressed then
-                        local force_mult
-                        local door = self:GetData("doorstatereal", false)
-
-                        if door and TARDIS:GetSetting("opened-door-no-boost", self) then
-                            force_mult = 0.25
-                            brakes = true -- no spin, no tilt
-                            local lastmsg = self.bad_flight_boost_msg
-                            if lastmsg == nil or (lastmsg ~= nil and CurTime() - lastmsg > 5.5) then
-                                self.bad_flight_boost_msg = CurTime()
-                                TARDIS:ErrorMessage(self.pilot, "Flight.DoorOpenNoBoost")
-                            end
-                        else
-                            if self.bad_flight_boost_msg ~= nil then
-                                self.bad_flight_boost_msg = nil
-                            end
-                            force_mult = TARDIS:GetSetting("boost-speed")
-                            if not spin then
-                                force_mult = math.max(1, force_mult * 0.6)
-                            end
+                    if door and TARDIS:GetSetting("opened-door-no-boost", self) then
+                        force_mult = 0.25
+                        brakes = true -- no spin, no tilt
+                        local lastmsg = self.bad_flight_boost_msg
+                        if lastmsg == nil or (lastmsg ~= nil and CurTime() - lastmsg > 5.5) then
+                            self.bad_flight_boost_msg = CurTime()
+                            TARDIS:ErrorMessage(self.pilot, "Flight.DoorOpenNoBoost")
                         end
-
-                        force = force * force_mult
-                        vforce = vforce * force_mult
-                        rforce = rforce * force_mult
-                    elseif self.bad_flight_boost_msg ~= nil then
-                        self.bad_flight_boost_msg = nil
+                    else
+                        if self.bad_flight_boost_msg ~= nil then
+                            self.bad_flight_boost_msg = nil
+                        end
+                        force_mult = TARDIS:GetSetting("boost-speed")
+                        if not spin then
+                            force_mult = math.max(1, force_mult * 0.6)
+                        end
                     end
-                    if forwardPressed then
-                        ph:AddVelocity(fwd*force*phm)
+
+                    force = force * force_mult
+                    vforce = vforce * force_mult
+                    rforce = rforce * force_mult
+                elseif self.bad_flight_boost_msg ~= nil then
+                    self.bad_flight_boost_msg = nil
+                end
+                if TARDIS:IsBindDown(self.pilot,"flight-forward") then
+                    ph:AddVelocity(fwd*force*phm)
+                    tilt=tilt+5
+                end
+                if TARDIS:IsBindDown(self.pilot,"flight-backward") then
+                    ph:AddVelocity(-fwd*force*phm)
+                    tilt=tilt+5
+                end
+                if TARDIS:IsBindDown(self.pilot,"flight-right") then
+                    if TARDIS:IsBindDown(self.pilot,"flight-rotate") then
+                        ph:AddAngleVelocity(Vector(0,0,-rforce))
+                    else
+                        ph:AddVelocity(ri*force*phm)
                         tilt=tilt+5
                     end
-                    if backwardPressed then
-                        ph:AddVelocity(-fwd*force*phm)
+                end
+                if TARDIS:IsBindDown(self.pilot,"flight-left") then
+                    if TARDIS:IsBindDown(self.pilot,"flight-rotate") then
+                        ph:AddAngleVelocity(Vector(0,0,rforce))
+                    else
+                        ph:AddVelocity(-ri*force*phm)
                         tilt=tilt+5
                     end
-                    if rightPressed then
-                        if TARDIS:IsBindDown(self.pilot,"flight-rotate") then
-                            ph:AddAngleVelocity(Vector(0,0,-rforce))
-                        else
-                            ph:AddVelocity(ri*force*phm)
-                            tilt=tilt+5
-                        end
-                    end
-                    if leftPressed then
-                        if TARDIS:IsBindDown(self.pilot,"flight-rotate") then
-                            ph:AddAngleVelocity(Vector(0,0,rforce))
-                        else
-                            ph:AddVelocity(-ri*force*phm)
-                            tilt=tilt+5
-                        end
-                    end
+                end
 
-                    if downPressed then
-                        ph:AddVelocity(-up*vforce*phm)
-                    elseif upPressed then
-                        ph:AddVelocity(up*vforce*phm)
-                    end
+                if TARDIS:IsBindDown(self.pilot,"flight-down") then
+                    ph:AddVelocity(-up*vforce*phm)
+                elseif TARDIS:IsBindDown(self.pilot,"flight-up") then
+                    ph:AddVelocity(up*vforce*phm)
                 end
             end
 
