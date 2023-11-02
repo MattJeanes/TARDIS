@@ -84,7 +84,7 @@ if SERVER then
         if IsValid(ent) and ent ~= wasTrackingEnt then
             self:SetData("tracking-offset-pos", ent:WorldToLocal(self:GetPos()))
             local yaw = ent:GetAngles().y - self:GetAngles().y
-            self:SetData("tracking-offset-yaw", yaw)
+            self:SetData("tracking-offset-yaw", 0)
         end
 
         if not isTracking then
@@ -204,8 +204,7 @@ if SERVER then
         local vel=ph:GetVelocity()
 
         ph:AddVelocity((target-pos)*0.4*phm)
-        local brake=vel*-0.5
-        ph:AddVelocity(brake)
+        ph:AddVelocity(vel*-0.5)
 
         if self:GetSpinDir() == 0 then
             local cen=ph:GetMassCenter()
@@ -214,9 +213,10 @@ if SERVER then
             local ri=self:GetRight()
             local ang=self:GetAngles()
 
-            local a=ent:WorldToLocalAngles(ang+Angle(0,yawoffset,0))
-            ph:AddVelocity( ri*-a.y,cen-fwd*lev)
-            ph:AddVelocity(-ri*-a.y,cen+fwd*lev)
+            local targetang=ent:GetAngles().y + yawoffset
+            local angdiff=math.AngleDifference(targetang,ang.y)
+            ph:AddAngleVelocity(Vector(0,0,angdiff*phm))
+            ph:AddAngleVelocity(Vector(0,0,ph:GetAngleVelocity().z*-0.3*phm))
         end
     end)
 
