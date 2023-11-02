@@ -37,7 +37,7 @@ function ENT:GetThirdPersonTrace(ply,ang)
     local trace=util.QuickTrace(pos,ang:Forward()*9999999999,{self,TARDIS:GetPart(self,"door")})
     local angle=trace.HitNormal:Angle()
     angle:RotateAroundAxis(angle:Right(),-90)
-    return trace.HitPos,angle
+    return trace.HitPos,angle,trace.Entity
 end
 
 if SERVER then
