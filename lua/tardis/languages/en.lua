@@ -230,6 +230,7 @@ T.Phrases = {
     ["Controls.Tracking.DistanceDisable"] = "Target lost, too far away",
     ["Controls.Tracking.DistanceFail"] = "Can't track entities that are too far away",
     ["Controls.Tracking.FlightFail"] = "Failed to to enable flight mode for tracking",
+    ["Controls.Tracking.GenericFail"] = "Failed to track entity",
     ["Controls.Tracking.InteriorFail"] = "Can't track entities inside the TARDIS",
     ["Controls.Tracking.PilotWarning"] = "WARNING: Tracking is enabled, press '%s' to change target or disable tracking",
     ["Controls.Tracking.SameTarget"] = "You are already tracking this entity",

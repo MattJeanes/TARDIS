@@ -146,6 +146,7 @@ if SERVER then
         local yawoffset = self:GetData("tracking-offset-yaw", 0)
         local dist = pos:Distance(ent:LocalToWorld(offset))
         local force=5
+        local rforce=2
 
         if dist > MaxTrackingDistanceFromOffset then
             self:SetTracking(nil, pilot)
@@ -163,6 +164,7 @@ if SERVER then
             local ri=eye:Right()
             if TARDIS:IsBindDown(self.pilot,"flight-boost") then
                 force=force*TARDIS:GetSetting("boost-speed")
+                rforce=rforce*TARDIS:GetSetting("boost-speed")
             end
 
             local adjustedOffset = Vector()
@@ -173,11 +175,26 @@ if SERVER then
                 adjustedOffset:Add(fwd * -force)
             end
 
+            local adjustedYawOffset = yawoffset
             if TARDIS:IsBindDown(self.pilot,"flight-left") then
-                adjustedOffset:Add(ri * -force)
+                if TARDIS:IsBindDown(self.pilot,"flight-rotate") then
+                    adjustedYawOffset = adjustedYawOffset + rforce
+                    if adjustedYawOffset > 180 then
+                        adjustedYawOffset = adjustedYawOffset - 360
+                    end
+                else
+                    adjustedOffset:Add(ri * -force)
+                end
             end
             if TARDIS:IsBindDown(self.pilot,"flight-right") then
-                adjustedOffset:Add(ri * force)
+                if TARDIS:IsBindDown(self.pilot,"flight-rotate") then
+                    adjustedYawOffset = adjustedYawOffset - rforce
+                    if adjustedYawOffset < -180 then
+                        adjustedYawOffset = adjustedYawOffset + 360
+                    end
+                else
+                    adjustedOffset:Add(ri * force)
+                end
             end
 
             if TARDIS:IsBindDown(self.pilot,"flight-up") then
@@ -186,9 +203,14 @@ if SERVER then
                 adjustedOffset:Add(Vector(0,0,-force))
             end
 
-            if (adjustedOffset ~= vector_origin) then
+            if adjustedOffset ~= vector_origin then
                 adjustedOffset:Mul(phm)
                 offset:Add(WorldToLocal(adjustedOffset, angle_zero, vector_origin, ent:GetAngles()))
+            end
+
+            if adjustedYawOffset ~= yawoffset then
+                yawoffset = adjustedYawOffset
+                self:SetData("tracking-offset-yaw", yawoffset)
             end
         end
 

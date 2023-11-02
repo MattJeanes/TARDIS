@@ -227,6 +227,7 @@
     "Controls.Tracking.DistanceDisable": "",
     "Controls.Tracking.DistanceFail": "",
     "Controls.Tracking.FlightFail": "",
+    "Controls.Tracking.GenericFail": "",
     "Controls.Tracking.InteriorFail": "",
     "Controls.Tracking.PilotWarning": "",
     "Controls.Tracking.SameTarget": "",
