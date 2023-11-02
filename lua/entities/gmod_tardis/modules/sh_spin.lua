@@ -10,7 +10,6 @@ end
 
 function ENT:GetSpinDirText(ignore_enabled)
     local current = self:GetSpinDir(ignore_enabled)
-    print(current)
 
     local text
     if current == -1 then
@@ -26,7 +25,7 @@ end
 
 if SERVER then
     ENT:AddHook("Initialize", "spin", function(self)
-        self:SetData("spin", false, true)
+        self:SetData("spin", true, true)
         self:SetData("spin-dir", -1, true)
     end)
 
@@ -39,7 +38,6 @@ if SERVER then
         self:SetData("spin", on, true)
         if on and dir ~= nil then
             self:SetData("spin-dir", dir, true)
-            print("setting", dir)
         end
         self:CallHook("SpinChanged", self:GetSpinDir())
     end
@@ -52,7 +50,6 @@ if SERVER then
         local lastCycle = self:GetData("spin-lastcycle", false)
 
         self:SetData("spin-lastcycle", not lastCycle)
-        print(lastCycle)
 
         if lastCycle then
             self:SetSpin(false)
