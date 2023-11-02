@@ -1,38 +1,28 @@
 -- Tracking
 
-local MaxTrackingDistance = 1000
+local MaxTrackingDistanceSet = 1000
+local MaxTrackingDistanceFromOffset = 1000
 
 TARDIS:AddKeyBind("tracking",{
     name="Tracking",
     section="Teleport",
     func=function(self,down,ply)
         local pilot = self:GetData("pilot")
-        if self:GetData("teleport") or self:GetData("vortex") then return end
-        if SERVER then
-            if ply==pilot and down then
-                ply:SetTardisData("tracking-bind-down", true)
-            end
-            if ply==pilot and (not down) and ply:GetTardisData("tracking-bind-down",false) then
-                local _,_,ent=self:GetThirdPersonTrace(ply,ply:GetTardisData("viewang"))
-                if IsValid(ent) then
-                    self:SetTracking(ent, ply)
-                else
-                    self:SetTracking(nil, ply)
-                end
-            end
-            if not down and ply:GetTardisData("tracking-bind-down",false) then
-                ply:SetTardisData("tracking-bind-down", nil)
-            end
-        else
-            if ply==pilot and down then
+        if self:CallHook("CanTrack") == false then return end
+        if ply==pilot then
+            if down then
                 self:SetData("tracking-trace",true)
             else
-                self:SetData("tracking-trace",false)
-                self:SetData("tracking-ent",nil)
+                self:SendMessage("tracking-set", {self:GetData("tracking-ent")})
             end
+        end
+        if not down then
+            self:SetData("tracking-trace",false)
+            self:SetData("tracking-ent",nil)
         end
     end,
     key=KEY_X,
+    clientonly=true,
     exterior=true
 })
 
@@ -66,9 +56,14 @@ if SERVER then
                     TARDIS:ErrorMessage(ply, "Controls.Tracking.SelfFail")
                 end
                 valid = false
-            elseif ent:GetPos():Distance(self:GetPos()) > MaxTrackingDistance then
+            elseif ent:GetPos():Distance(self:GetPos()) > MaxTrackingDistanceSet then
                 if IsValid(ply) then
                     TARDIS:ErrorMessage(ply, "Controls.Tracking.DistanceFail")
+                end
+                valid = false
+            elseif self:CallHook("CanTrack", ent, ply) == false then
+                if IsValid(ply) then
+                    TARDIS:ErrorMessage(ply, "Controls.Tracking.GenericFail")
                 end
                 valid = false
             end
@@ -144,19 +139,20 @@ if SERVER then
 
         local pos = self:GetPos()
         local entPos = ent:GetPos()
-        local dist = pos:Distance(entPos)
         local pilot = self:GetData("pilot")
         local phm=FrameTime()*66
 
-        if dist > MaxTrackingDistance then
+        local offset = self:GetData("tracking-offset-pos", Vector(0,0,0))
+        local yawoffset = self:GetData("tracking-offset-yaw", 0)
+        local dist = pos:Distance(ent:LocalToWorld(offset))
+        local force=5
+
+        print(dist)
+        if dist > MaxTrackingDistanceFromOffset then
             self:SetTracking(nil, pilot)
             TARDIS:ErrorMessage(pilot, "Controls.Tracking.DistanceDisable")
             return
         end
-
-        local offset = self:GetData("tracking-offset-pos", Vector(0,0,0))
-        local yawoffset = self:GetData("tracking-offset-yaw", 0)
-        local force=5
 
         if self.pilot and IsValid(self.pilot) then
             local p=self.pilot
@@ -237,6 +233,14 @@ if SERVER then
             self:SendMessage("tracking-pilotwarning", nil, new)
         end
     end)
+
+    ENT:OnMessage("tracking-set", function(self,data,ply)
+        local ent = data[1]
+
+        if self:GetData("pilot") == ply then
+            self:SetTracking(ent, ply)
+        end
+    end)
 else
     hook.Add("PostDrawTranslucentRenderables", "tardis-tracking", function()
         local ext=TARDIS:GetExteriorEnt()
@@ -270,7 +274,7 @@ else
         if not IsValid(ent) then return end
     
         local dist = ent:GetPos():Distance(ext:GetPos())
-        halo.Add({ent},dist > MaxTrackingDistance and Color(255,0,0) or Color(0,255,0),1,1,1,true,true)
+        halo.Add({ent},dist > MaxTrackingDistanceSet and Color(255,0,0) or Color(0,255,0),1,1,1,true,true)
     end)
 
     ENT:OnMessage("tracking-pilotwarning", function(self)
