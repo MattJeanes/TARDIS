@@ -15,7 +15,7 @@ TARDIS:AddControl({
         popup_only = true,
         toggle = true,
         frame_type = {2, 1},
-        text = "Controls.ToggleShields",
+        text = "Controls.Shields",
         pressed_state_data = "shields_on",
         order = 1,
     },
