@@ -21,6 +21,7 @@ if SERVER then
         spend_flight_static = -5 / 144,
         spend_flight_moving = -24 / 144,
         spend_flight_boost = -45 / 144,
+        spend_flight_broken = -8 / 144,
         spend_cloak = -18 / 144,
         spend_cloak_handbrake = -8 / 144,
 
@@ -148,6 +149,7 @@ if SERVER then
         local float = self:GetData("floatfirst")
         local damaged = self:IsDamaged()
         local broken = self:IsBroken()
+        local broken_flight = self:GetData("broken_flight")
 
         local change = 0
 
@@ -155,6 +157,8 @@ if SERVER then
             return
         elseif vortex then
             change = change + TARDIS.artron_values.spend_vortex_teleport
+        elseif broken_flight then
+            change = change + TARDIS.artron_values.spend_flight_broken
         elseif flight then
             if TARDIS:IsBindDown(self.pilot,"flight-forward")
                 or TARDIS:IsBindDown(self.pilot,"flight-backward")
