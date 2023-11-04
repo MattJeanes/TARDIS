@@ -49,7 +49,7 @@ if SERVER then
     end
 
     function ENT:AddArtron(value)
-        local currentArtron = self:GetData("artron-val", 0)
+        local currentArtron = self:GetArtron()
         self:SetArtron(currentArtron + value)
     end
 
@@ -82,7 +82,7 @@ if SERVER then
 
     local function ArtronDematCheck(self)
         local fast = self:GetFastRemat()
-        local artron = self:GetData("artron-val", 0)
+        local artron = self:GetArtron()
 
         if self:CallHook("ShouldUpdateArtron") == false then return end
 
@@ -109,7 +109,7 @@ if SERVER then
         if self:CallHook("ShouldUpdateArtron") == false then return end
 
         local fast = self:GetFastRemat()
-        local artron = self:GetData("artron-val", 0)
+        local artron = self:GetArtron()
         if not fast and artron < -TARDIS.artron_values.cost_mat then
             return true
         end
@@ -120,12 +120,10 @@ if SERVER then
         if not TARDIS:GetSetting("artron_energy") then return end
         if self:GetData("redecorate") then return end
 
-        if self:GetData("artron-val") <= 0 and self:GetPower() == false then
+        if self:GetArtron() <= 0 and self:GetPower() == false then
             return false
         end
     end)
-
-
 
     --
     -- Decreasing artron energy
@@ -290,7 +288,7 @@ if SERVER then
     ENT:AddHook("CanChangeExterior", "artron", function(self)
         if not TARDIS:GetSetting("artron_energy") then return end
 
-        if self:GetData("artron-val") + TARDIS.artron_values.cost_chameleon < 1 then
+        if self:GetArtron() + TARDIS.artron_values.cost_chameleon < 1 then
             return false,true,"Chameleon.FailReasons.NotEnoughArtron",true
         end
     end)
@@ -338,9 +336,30 @@ if SERVER then
         end
         return false
     end
+
+    ENT:AddHook("HandleE2", "artron", function(self, name, e2, ...)
+        local args = {...}
+        if name == "RemoveArtron" and TARDIS:CheckPP(e2.player, self) then
+            local removeAmount = args[1]
+            local currentAmount = self:GetArtron()
+
+            if removeAmount <= 0 then return currentAmount end
+
+            if currentAmount - removeAmount <= 0 then
+                self:SetArtron(0)
+                return 0
+            elseif removeAmount < currentAmount then
+                self:SetArtron(currentAmount - removeAmount)
+                return currentAmount - removeAmount
+            end
+        elseif name == "GetArtron" then
+            return self:GetArtron()
+        elseif name == "GetMaxArtron" then
+            return TARDIS:GetSetting("artron_energy_max")
+        end
+    end)
 end
 
 function ENT:GetArtron()
     return self:GetData("artron-val", 0)
 end
-
