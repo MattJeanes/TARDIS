@@ -89,7 +89,7 @@ if SERVER then
 
         if self:CallHook("ShouldFailDemat", force, pos, ang) == true and not redecorating then
             self:FailDemat()
-            return callback(false)
+            return callback and callback(false)
         end
 
         if not self:DematDoorCheck(pos, ang, callback, force) then return end
