@@ -13,7 +13,7 @@ function ENT:ChooseFlightSound()
     local ext = self.exterior
     local current_sound
 
-    if ext:IsBroken() then
+    if self:GetData("broken_flight") then
         current_sound = sounds_int.FlightLoopBroken or sounds_int.FlightLoopDamaged
             or sounds_ext.FlightLoopBroken
         -- if the interior has its own damaged sound specified,
@@ -21,7 +21,7 @@ function ENT:ChooseFlightSound()
 
         self.flightsounddamaged = false
         self.flightsoundbroken = true
-    elseif ext:IsDamaged() then
+    elseif self.exterior:HasLowHealth() then
         current_sound = sounds_int.FlightLoopDamaged or sounds_ext.FlightLoopDamaged
         self.flightsounddamaged = true
         self.flightsoundbroken = false
@@ -34,8 +34,8 @@ function ENT:ChooseFlightSound()
 end
 
 function ENT:IsFlightSoundWrong()
-    if self.flightsounddamaged ~= self.exterior:IsDamaged() then return true end
-    if self.flightsoundbroken ~= self.exterior:IsBroken() then return true end
+    if self.flightsoundbroken ~= self:GetData("broken_flight", false) then return true end
+    if self.flightsounddamaged ~= (self.exterior:HasLowHealth() and not self:GetData("broken_flight")) then return true end
     return false
 end
 

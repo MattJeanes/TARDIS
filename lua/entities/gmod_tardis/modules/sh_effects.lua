@@ -96,7 +96,13 @@ if SERVER then
             if IsValid(self.fire) then return end
             self:StartFire()
         else
-            self:StopFire()
+            if not self:GetTimer("fire_stop") then
+                self:Timer("fire_stop", 2, function()
+                    if not self:CallHook("ShouldStartFire") or self:CallHook("ShouldStopFire") then
+                        self:StopFire()
+                    end
+                end)
+            end
         end
     end)
 

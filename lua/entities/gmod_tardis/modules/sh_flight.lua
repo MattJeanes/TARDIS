@@ -96,6 +96,13 @@ TARDIS:AddKeyBind("flight-spindir",{
     exterior=true
 })
 
+function ENT:ShouldPlayFlightSounds()
+    if not TARDIS:GetSetting("sound") then return false end
+    if not TARDIS:GetSetting("flight-externalsound") then return false end
+    if self:CallHook("ShouldTurnOffFlightSound") then return false end
+    return true
+end
+
 if SERVER then
     function ENT:ToggleFlight()
         local on = not self:GetData("flight",false)
@@ -149,6 +156,10 @@ if SERVER then
         end
     end)
 
+    ENT:AddHook("FlightToggled", "client", function(self, on)
+        self:SendMessage("FlightToggled", {on})
+    end)
+
     ENT:AddHook("CanTurnOffFloat", "flight", function(self)
         if self:GetData("flight") then return false end
     end)
@@ -191,6 +202,12 @@ if SERVER then
                 end
                 self:CallHook("PilotChanged",ply,self.pilot)
             end
+        end
+    end)
+
+    ENT:AddHook("FlightToggled","broken_flight",function(self,on)
+        if not on and self:GetData("broken_flight") then
+            self:SetData("broken_flight", false, true)
         end
     end)
 
@@ -283,6 +300,12 @@ if SERVER then
             end
 
             if broken and vell > 200 then
+                if not self:GetData("broken_flight") then
+                    self:SetData("broken_flight", true, true)
+                    local snd = self.metadata.Exterior.Sounds.BrokenFlightEnable
+                    self:EmitSound(snd)
+                end
+
                 local last_dir_change = self:GetData("broken_flight_dir_change_time", 0)
 
                 local pressed_data = self:GetData("flight_num_keys_pressed", 0)
@@ -298,16 +321,19 @@ if SERVER then
 
                     if math.random(4) == 1 then
                         self:Explode(0)
-                        self:SendMessage("ext_sparks", {1})
                         self:SetData("broken_flight_last_explode", CurTime())
 
-                        self:EmitSound(snds.FlightTurnExplosion)
+                        self:EmitSound(snds.BrokenFlightExplosion)
                         ph:SetAngleVelocity(AngleRand():Forward() * vell)
-                    else
-                        self:EmitSound(math.random(3) == 1 and snds.FlightTurnSpecial or snds.FlightTurnNormal)
+                    elseif snds and istable(snds.BrokenFlightTurn) then
+                        local snd = table.Random(snds.BrokenFlightTurn)
+                        if math.random(2) == 1 then
+                            self:SendMessage("ext_sparks", {1})
+                        end
+                        self:EmitSound(snd)
                     end
 
-                    local stabilize = (math.random(6) == 1)
+                    local stabilize = (math.random(4) == 1)
                     self:SetData("broken_flight_stabilize", stabilize)
 
                     self:SetData("broken_flight_dir_change_time", CurTime() + math.random(3) - 0.5)
@@ -336,6 +362,9 @@ if SERVER then
                 end
 
                 return
+            end
+            if self:GetData("broken_flight") then
+                self:SetData("broken_flight", false, true)
             end
 
             if self.pilot and IsValid(self.pilot) and control then
@@ -469,6 +498,12 @@ if SERVER then
             return true
         end
     end)
+
+    ENT:AddHook("ShouldStartFire", "broken_flight", function(self)
+        if self:GetData("broken_flight") and self:GetData("flight") and not self:GetData("teleport") and not self:GetData("vortex") then
+            return true
+        end
+    end)
 else
     ENT:AddHook("OnRemove", "flight", function(self)
         if self.flightsound then
@@ -478,11 +513,11 @@ else
     end)
 
     function ENT:ChooseFlightSound()
-        if self:IsBroken() then
+        if self:GetData("broken_flight") then
             self.flightsound = CreateSound(self, self.metadata.Exterior.Sounds.FlightLoopBroken)
             self.flightsounddamaged = false
             self.flightsoundbroken = true
-        elseif self:IsDamaged() then
+        elseif self:HasLowHealth() then
             self.flightsound = CreateSound(self, self.metadata.Exterior.Sounds.FlightLoopDamaged)
             self.flightsounddamaged = true
             self.flightsoundbroken = false
@@ -494,15 +529,13 @@ else
     end
 
     function ENT:IsFlightSoundWrong()
-        if self.flightsounddamaged ~= self:IsDamaged() then return true end
-        if self.flightsoundbroken ~= self:IsBroken() then return true end
+        if self.flightsoundbroken ~= self:GetData("broken_flight", false) then return true end
+        if self.flightsounddamaged ~= (self:HasLowHealth() and not self:GetData("broken_flight")) then return true end
         return false
     end
 
     ENT:AddHook("Think", "flight", function(self)
-        if self:GetData("flight") and TARDIS:GetSetting("flight-externalsound")
-            and TARDIS:GetSetting("sound") and (not self:CallHook("ShouldTurnOffFlightSound"))
-        then
+        if self:GetData("flight") and self:ShouldPlayFlightSounds() then
             if self.flightsound and self.flightsound:IsPlaying() then
                 local p=math.Clamp(self:GetVelocity():Length()/250,0,15)
                 local ply=LocalPlayer()
@@ -547,6 +580,18 @@ else
         local old=data[1]
         local new=data[2]
         self:CallHook("PilotChanged",old,new)
+    end)
+
+    ENT:OnMessage("FlightToggled", function(self, data, ply)
+        local on = data[1]
+        self:CallCommonHook("FlightToggled",on)
+    end)
+
+    ENT:AddHook("FlightToggled", "broken_flight", function(self,on)
+        if self:ShouldPlayFlightSounds() and not on and self:IsBroken() then
+            local snd = self.metadata.Exterior.Sounds.BrokenFlightDisable
+            self:EmitSound(snd)
+        end
     end)
 
     ENT:OnMessage("ext_sparks", function(self, data, ply)
