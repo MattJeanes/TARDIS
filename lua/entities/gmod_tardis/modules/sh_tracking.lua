@@ -3,12 +3,14 @@
 local MaxTrackingDistanceSet = 1000
 local MaxTrackingDistanceFromOffset = 1000
 
+local DEBUG_TRACKING = false
+
 TARDIS:AddKeyBind("tracking",{
     name="Tracking",
     section="Flight",
     func=function(self,down,ply)
         local pilot = self:GetData("pilot")
-        if self:CallHook("CanTrack") == false then return end
+        if down and self:CallHook("CanTrack") == false then return end
         if ply==pilot then
             if down then
                 self:SetData("tracking-trace",true)
@@ -89,6 +91,9 @@ if SERVER then
             self:SetData("tracking-wasflight", nil)
             self:SetData("tracking-offset-pos", nil)
             self:SetData("tracking-offset-yaw", nil)
+            if IsValid(self.trackingdebugprop) then
+                self.trackingdebugprop:Remove()
+            end
         end
 
         if IsValid(ply) then
@@ -220,6 +225,22 @@ if SERVER then
         local mass=ph:GetMass()
         local vel=ph:GetVelocity()
 
+        if DEBUG_TRACKING then
+            if not IsValid(self.trackingdebugprop) then
+                self.trackingdebugprop = ents.Create("prop_physics")
+                self.trackingdebugprop:SetModel("models/hunter/blocks/cube05x05x05.mdl")
+                self.trackingdebugprop:SetColor(Color(255,0,0))
+                self.trackingdebugprop:SetRenderMode(RENDERMODE_TRANSALPHA)
+                self.trackingdebugprop:SetMoveType(MOVETYPE_NONE)
+                self.trackingdebugprop:SetSolid(SOLID_NONE)
+                self.trackingdebugprop:SetCollisionGroup(COLLISION_GROUP_NONE)
+                self.trackingdebugprop:Activate()
+                self.trackingdebugprop:Spawn()
+            end
+
+            self.trackingdebugprop:SetPos(target)
+        end
+
         ph:AddVelocity((target-pos)*0.4*phm)
         ph:AddVelocity(vel*-0.5)
 
@@ -234,6 +255,16 @@ if SERVER then
             local angdiff=math.AngleDifference(targetang,ang.y)
             ph:AddAngleVelocity(Vector(0,0,angdiff*phm))
             ph:AddAngleVelocity(Vector(0,0,ph:GetAngleVelocity().z*-0.3*phm))
+
+            if DEBUG_TRACKING then
+                self.trackingdebugprop:SetAngles(Angle(0,targetang,0))
+            end
+        end
+    end)
+
+    ENT:AddHook("OnRemove", "tracking", function(self)
+        if IsValid(self.trackingdebugprop) then
+            self.trackingdebugprop:Remove()
         end
     end)
 
