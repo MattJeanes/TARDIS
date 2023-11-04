@@ -242,7 +242,7 @@ if SERVER then
             local brakes = false
 
             local broken = self:IsBroken()
-            local warning = not broken and self:IsDamaged()
+            local damaged = not broken and self:IsDamaged()
 
             local fbinds = {
                 forward = TARDIS:IsBindDown(self.pilot,"flight-forward"),
@@ -432,7 +432,7 @@ if SERVER then
                 tilt = 0
             end
 
-            if warning then
+            if damaged then
                 local health_mult = (5 + self.HEALTH_PERCENT_DAMAGED - self:GetHealthPercent()) / 10
 
                 local pressed_data = self:GetData("flight_num_keys_pressed", 0)
