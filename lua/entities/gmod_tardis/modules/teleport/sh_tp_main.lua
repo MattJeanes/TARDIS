@@ -252,7 +252,7 @@ else
             local sound_fullflight_ext = ext.fullflight
             local sound_fullflight_int = int.fullflight or ext.fullflight
 
-            if (self:HasLowHealth() or self:GetData("force-demat", false))
+            if (self:IsLowHealth() or self:GetData("force-demat", false))
                 and not self:GetData("redecorate")
             then
                 sound_demat_ext = ext.demat_damaged
@@ -303,7 +303,7 @@ else
                 end
                 if pos and self:GetFastRemat() then
                     if not IsValid(self) then return end
-                    if self:HasLowHealth() and self:GetFastRemat() then
+                    if self:IsLowHealth() and self:GetFastRemat() then
                         sound.Play(ext.mat_damaged_fast, pos)
                     else
                         sound.Play(ext.mat_fast, pos)
@@ -325,7 +325,7 @@ else
             local int = self.metadata.Interior.Sounds.Teleport
             local pos=data[1]
             if LocalPlayer():GetTardisData("exterior")==self and (not self:GetFastRemat()) then
-                if self:HasLowHealth() then
+                if self:IsLowHealth() then
                     if shouldPlayExterior then
                         self:EmitSound(ext.mat_damaged)
                     end
@@ -341,7 +341,7 @@ else
                     end
                 end
             elseif not self:GetFastRemat() and shouldPlayExterior then
-                if self:HasLowHealth() then
+                if self:IsLowHealth() then
                     sound.Play(ext.mat_damaged,pos)
                 else
                     sound.Play(ext.mat,pos)
@@ -469,7 +469,7 @@ ENT:AddHook("Think","teleport",function(self,delta)
 
     if self:GetData("step-delay") and self:GetData("step-delay")>CurTime() then return end
     local sequencespeed = (fast and teleport_md.SequenceSpeedFast or teleport_md.SequenceSpeed)
-    if self:HasLowHealth() then
+    if self:IsLowHealth() then
         sequencespeed = (fast and teleport_md.SequenceSpeedWarnFast or teleport_md.SequenceSpeedWarning)
     end
     if self:GetData("hads-demat") then

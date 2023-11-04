@@ -11,7 +11,7 @@ TARDIS:AddControl({
     power_independent = false,
     screen_button = {
         virt_console = true,
-        mmenu = true,
+        mmenu = false,
         popup_only = true,
         toggle = true,
         frame_type = {2, 1},

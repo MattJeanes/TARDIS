@@ -194,6 +194,7 @@
     "Controls.Repair.Tip": "Auto-Réparation",
     "Controls.Scanner.Tip": "Scanneur",
     "Controls.Shields": "",
+    "Controls.Shields.FailedToggle": "",
     "Controls.Shields.Status": "",
     "Controls.Shields.Tip": "Boucliers",
     "Controls.SonicDispenser.AlreadyEquipped": "Vous êtes déjà en possession d'un sonique",

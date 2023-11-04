@@ -27,10 +27,10 @@ function ENT:IsDamaged()
 end
 
 function ENT:IsBroken()
-    return (self:GetHealthPercent() <= self.HEALTH_PERCENT_BROKEN)
+    return self:GetHealthPercent() <= self.HEALTH_PERCENT_BROKEN
 end
 
-function ENT:HasLowHealth()
+function ENT:IsLowHealth()
     return self:IsBroken() or self:IsDamaged()
 end
 
@@ -183,7 +183,7 @@ if SERVER then
     end)
 
     ENT:AddHook("ShouldWarningBeEnabled","health", function(self)
-        if self:HasLowHealth() then
+        if self:IsLowHealth() then
             return true
         end
     end)
@@ -223,7 +223,7 @@ if SERVER then
     end)
 
     ENT:AddHook("ShouldStartSmoke", "health", function(self)
-        if self:HasLowHealth() then
+        if self:IsLowHealth() then
             return true
         end
     end)
@@ -238,5 +238,9 @@ if SERVER then
         if self:IsBroken() then
             return false
         end
+    end)
+
+    ENT:AddHook("ShouldUpdateArtron", "health", function(self)
+        if self:GetHealth() == 0 then return false end
     end)
 end

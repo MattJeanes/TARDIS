@@ -194,6 +194,7 @@
     "Controls.Repair.Tip": "Selbstreparatur",
     "Controls.Scanner.Tip": "Scanner",
     "Controls.Shields": "",
+    "Controls.Shields.FailedToggle": "",
     "Controls.Shields.Status": "",
     "Controls.Shields.Tip": "Schilde",
     "Controls.SonicDispenser.AlreadyEquipped": "Du hältst bereits einen Schallschraubenzieher",

@@ -194,6 +194,7 @@
     "Controls.Repair.Tip": "Itsekorjaus",
     "Controls.Scanner.Tip": "Skanneri",
     "Controls.Shields": "",
+    "Controls.Shields.FailedToggle": "",
     "Controls.Shields.Status": "",
     "Controls.Shields.Tip": "Kilvet",
     "Controls.SonicDispenser.AlreadyEquipped": "",

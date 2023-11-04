@@ -194,6 +194,7 @@
     "Controls.Repair.Tip": "自我修复",
     "Controls.Scanner.Tip": "监视器",
     "Controls.Shields": "",
+    "Controls.Shields.FailedToggle": "",
     "Controls.Shields.Status": "",
     "Controls.Shields.Tip": "护盾",
     "Controls.SonicDispenser.AlreadyEquipped": "您已经有音速起子了",

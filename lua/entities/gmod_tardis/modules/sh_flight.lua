@@ -521,7 +521,7 @@ else
             self.flightsound = CreateSound(self, self.metadata.Exterior.Sounds.FlightLoopBroken)
             self.flightsounddamaged = false
             self.flightsoundbroken = true
-        elseif self:HasLowHealth() then
+        elseif self:IsLowHealth() then
             self.flightsound = CreateSound(self, self.metadata.Exterior.Sounds.FlightLoopDamaged)
             self.flightsounddamaged = true
             self.flightsoundbroken = false
@@ -532,9 +532,9 @@ else
         end
     end
 
-    function ENT:IsFlightSoundWrong()
+    local function IsFlightSoundWrong(self)
         if self.flightsoundbroken ~= self:GetData("broken_flight", false) then return true end
-        if self.flightsounddamaged ~= (self:HasLowHealth() and not self:GetData("broken_flight")) then return true end
+        if self.flightsounddamaged ~= (self:IsLowHealth() and not self:GetData("broken_flight")) then return true end
         return false
     end
 
@@ -563,7 +563,7 @@ else
                 end
                 self.flightsound:ChangeVolume(0.75)
 
-                if self:IsFlightSoundWrong() then
+                if IsFlightSoundWrong(self) then
                     self.flightsound:Stop()
                     self:ChooseFlightSound()
                     self.flightsound:SetSoundLevel(90)

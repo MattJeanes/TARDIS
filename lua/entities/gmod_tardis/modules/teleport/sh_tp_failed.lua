@@ -109,7 +109,7 @@ if SERVER then
         self:SetData("failing-demat", false, true)
 
         if self:CallHook("ShouldFailDemat", false) == true then
-            if not self:HasLowHealth() then
+            if not self:IsLowHealth() then
                 self:ForceDemat(pos, ang, callback)
             else
                 self:SendMessage("engine-release-explode")

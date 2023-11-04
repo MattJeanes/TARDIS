@@ -145,10 +145,6 @@ if SERVER then
         end
     end)
 
-    ENT:AddHook("ShouldUpdateArtron", "health", function(self)
-        if self:GetHealth() == 0 then return false end
-    end)
-
     ENT:AddHook("ShouldTakeDamage", "repair", function(self, dmginfo)
         if self:GetRepairing() then return false end
     end)

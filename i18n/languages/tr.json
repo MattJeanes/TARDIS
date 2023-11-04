@@ -194,6 +194,7 @@
     "Controls.Repair.Tip": "Kendi Kendine Onarım",
     "Controls.Scanner.Tip": "Tarayıcı",
     "Controls.Shields": "",
+    "Controls.Shields.FailedToggle": "",
     "Controls.Shields.Status": "",
     "Controls.Shields.Tip": "Kalkanlar",
     "Controls.SonicDispenser.AlreadyEquipped": "Halihazırda bir Sonik Tornavida tutuyorsunuz",

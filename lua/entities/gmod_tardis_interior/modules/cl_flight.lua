@@ -21,7 +21,7 @@ function ENT:ChooseFlightSound()
 
         self.flightsounddamaged = false
         self.flightsoundbroken = true
-    elseif self.exterior:HasLowHealth() then
+    elseif self.exterior:IsLowHealth() then
         current_sound = sounds_int.FlightLoopDamaged or sounds_ext.FlightLoopDamaged
         self.flightsounddamaged = true
         self.flightsoundbroken = false
@@ -33,9 +33,9 @@ function ENT:ChooseFlightSound()
     self.flightsound = CreateSound(self, current_sound)
 end
 
-function ENT:IsFlightSoundWrong()
+local function IsFlightSoundWrong(self)
     if self.flightsoundbroken ~= self:GetData("broken_flight", false) then return true end
-    if self.flightsounddamaged ~= (self.exterior:HasLowHealth() and not self:GetData("broken_flight")) then return true end
+    if self.flightsounddamaged ~= (self.exterior:IsLowHealth() and not self:GetData("broken_flight")) then return true end
     return false
 end
 
@@ -48,7 +48,7 @@ ENT:AddHook("Think", "flight", function(self)
             self.flightsound:ChangePitch(95+p,0.1)
             self.flightsound:ChangeVolume(0.4)
 
-            if self:IsFlightSoundWrong() then
+            if IsFlightSoundWrong(self) then
                 self.flightsound:Stop()
                 self:ChooseFlightSound()
                 self.flightsound:Play()

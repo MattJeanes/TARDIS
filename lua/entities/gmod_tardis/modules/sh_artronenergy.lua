@@ -323,7 +323,7 @@ if SERVER then
         self:AddArtron(TARDIS.artron_values.increase_engine_release)
 
         local decrease = math.random(53, 432) * self:GetHealthMax() / 1000
-        self:AddHealth(- decrease)
+        self:AddHealth(-decrease)
     end
 
     function ENT:EngineReleaseVortexArtron()
