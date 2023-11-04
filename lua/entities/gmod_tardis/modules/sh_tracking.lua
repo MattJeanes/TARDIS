@@ -48,7 +48,8 @@ if SERVER then
                     end
                     valid = false
                 end
-            elseif ent.TardisPart or ent.TardisInterior or (ent:IsPlayer() and IsValid(TARDIS:GetInteriorEnt(ent))) then
+            end
+            if ent.TardisPart or ent.TardisInterior or (ent:IsPlayer() and IsValid(TARDIS:GetInteriorEnt(ent))) then
                 if IsValid(ply) then
                     TARDIS:ErrorMessage(ply, "Controls.Tracking.InteriorFail")
                 end
