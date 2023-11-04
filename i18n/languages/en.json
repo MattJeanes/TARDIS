@@ -425,7 +425,7 @@
     "Settings.Sections.Global.EnableHealth": "Enable Health",
     "Settings.Sections.Global.EnableHealth.Description": "Should the TARDIS have health and take damage?",
     "Settings.Sections.Global.HealthToShieldsRatio": "Health to shields ratio",
-    "Settings.Sections.Global.HealthToShieldsRatio.Description": "Higher ratio give more health but less shields, combined health / shields remains the same",
+    "Settings.Sections.Global.HealthToShieldsRatio.Description": "Higher ratios give more health but less shields, combined health / shields remains the same",
     "Settings.Sections.Global.MaxHealth": "Max Health",
     "Settings.Sections.Global.MaxHealth.Description": "Maximum ammount of health the TARDIS has",
     "Settings.Sections.Global.WaitLongForRepair": "Enable long repair",
