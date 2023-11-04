@@ -600,7 +600,7 @@ else
 
     ENT:OnMessage("BrokenFlightTurn", function(self, data, ply)
         local snds = self.metadata.Exterior.Sounds
-        if snds and istable(snds.BrokenFlightTurn) then
+        if snds and istable(snds.BrokenFlightTurn) and self:ShouldPlayFlightSounds() then
             local snd = table.Random(snds.BrokenFlightTurn)
             self:EmitSound(snd)
         end
