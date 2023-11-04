@@ -171,6 +171,10 @@ e2function number entity:tardisHandbrake()
     return HandleE2(this, "Setter", "ToggleBrake", self)
 end
 
+e2function number entity:tardisRemoveEnergy(number energy)
+    return HandleE2(this, "Setter", "RemoveArtron", self, energy)
+end
+
 --[[
     ╔════════════╗
     ║Data getters║
@@ -265,4 +269,12 @@ end
 
 e2function number entity:tardisBraking()
     return HandleE2(this, "Getter", "GetBrake", self)
+end
+
+e2function number entity:tardisEnergy()
+    return HandleE2(this, "Getter", "GetArtron", self)
+end
+
+e2function number entity:tardisMaxEnergy()
+    return HandleE2(this, "Getter", "GetMaxArtron", self)
 end

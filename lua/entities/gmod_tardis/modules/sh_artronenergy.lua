@@ -329,6 +329,28 @@ if SERVER then
         end
         return false
     end
+
+    ENT:AddHook("HandleE2", "artron", function(self, name, e2, ...)
+        local args = {...}
+        if name == "RemoveArtron" and TARDIS:CheckPP(e2.player, self) then
+            local setart = args[1]
+            local curart = self:GetData("artron-val", 0)
+
+            if setart < 0 then return curart end
+
+            if curart - setart <= 0 then
+                self:SetArtron(0)
+                return 0
+            elseif setart < curart then
+                self:SetArtron(curart - setart)
+                return curart - setart
+            end
+        elseif name == "GetArtron" and TARDIS:CheckPP(e2.player, self) then
+            return self:GetData("artron-val", 0)
+        elseif name == "GetMaxArtron" and TARDIS:CheckPP(e2.player, self) then
+            return TARDIS:GetSetting("artron_energy_max")
+        end
+    end)
 end
 
 function ENT:GetArtron()
