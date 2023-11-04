@@ -45,5 +45,5 @@ function ENT:ToggleCloisters()
 end
 
 ENT:AddHook("WarningToggled","cloisters",function(self, on)
-    self:SetCloisters(on) 
+    self:SetCloisters(on)
 end)
