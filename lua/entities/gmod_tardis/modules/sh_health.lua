@@ -233,4 +233,10 @@ if SERVER then
             return true
         end
     end)
+
+    ENT:AddHook("CanTurnOnPhyslock", "broken", function(self)
+        if self:IsBroken() then
+            return false
+        end
+    end)
 end
