@@ -39,7 +39,7 @@ local fgcolor = NamedColor("FgColor")
 local red = NamedColor("Caution")
 local bgcolor = NamedColor("BgColor")
 local health_icon = Material("vgui/tardis_health.png")
-local energy_icon=  Material("vgui/tardis_energy.png")
+local energy_icon =  Material("vgui/tardis_energy.png")
 
 local function DrawNumber(icon_mat, value, red_level, x, y)
     local bad = (value < red_level)
