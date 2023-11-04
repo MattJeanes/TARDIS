@@ -92,6 +92,7 @@ T.Exterior = {
             demat = "p00gie/tardis/base/demat.wav",
             demat_damaged = "drmatt/tardis/demat_damaged.wav",
             demat_fast = "p00gie/tardis/base/demat.wav",
+            demat_hads = "p00gie/tardis/base/demat_hads.wav",
             demat_fail = "drmatt/tardis/demat_fail.wav",
             mat = "p00gie/tardis/base/mat.wav",
             mat_damaged = "jeredek/tardis/mat_damaged.wav",
@@ -146,6 +147,7 @@ T.Exterior = {
         SequenceSpeed = 0.77,
         SequenceSpeedWarning = 0.6,
         SequenceSpeedFast = 0.935,
+        SequenceSpeedHads = 1.8,
         SequenceSpeedWarnFast = 0.97,
         DematSequence = {
             200,
@@ -162,7 +164,12 @@ T.Exterior = {
             200,
             150,
             255
-        }
+        },
+        HadsDematSequence = {
+            100,
+            200,
+            0
+        },
     }
 }
 

@@ -41,6 +41,7 @@ if SERVER then
             TARDIS:Message(self:GetCreator(), "HADS.Triggered")
             TARDIS:Message(self:GetCreator(), "HADS.UnderAttack")
             self:SetData("hads-triggered", true, true)
+            self:SetData("hads-demat", true, true)
             self:SetFastRemat(false)
             self:SetRandomDestination(true)
             self:AutoDemat()
@@ -130,3 +131,9 @@ if SERVER then
         end
     end)
 end
+
+ENT:AddHook("StopDemat","hads-demat",function(self)
+    if self:GetData("hads-demat",false) then
+        self:SetData("hads-demat", false, false) -- not networked
+    end
+end)
