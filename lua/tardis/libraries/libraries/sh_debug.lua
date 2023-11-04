@@ -79,6 +79,7 @@ concommand.Add("tardis2_debug_warning", function(ply,cmd,args)
     if dead then
         ext:ChangeHealth(max)
         ext:SetShieldsLevel(ext:GetShieldsMax(), true)
+        ext:SetArtron(TARDIS:GetSetting("artron_energy_max"))
         ext:TogglePower()
         return
     end
