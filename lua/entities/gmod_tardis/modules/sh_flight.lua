@@ -300,6 +300,11 @@ if SERVER then
 
                 local last_dir_change = self:GetData("broken_flight_dir_change_time", 0)
 
+                local collided = self:GetData("broken_flight_collision")
+                if collided then
+                    self:SetData("broken_flight_collision", nil)
+                end
+
                 local pressed_data = self:GetData("flight_num_keys_pressed", 0)
                 local pressed = num_keys_pressed()
                 local pressed_recently = (pressed_data < pressed)
@@ -307,7 +312,7 @@ if SERVER then
                     self:SetData("flight_num_keys_pressed", pressed)
                 end
 
-                if (CurTime() > last_dir_change and vell < 2000) or pressed_recently then
+                if (CurTime() > last_dir_change and vell < 2000) or collided or pressed_recently then
 
                     if math.random(4) == 1 then
                         self:Explode(0)
@@ -448,6 +453,12 @@ if SERVER then
             end
 
             stabilize()
+        end
+    end)
+
+    ENT:AddHook("PhysicsCollide", "broken_flight", function(self, data, collider)
+        if self:GetData("broken_flight") then
+            self:SetData("broken_flight_collision", true)
         end
     end)
 
