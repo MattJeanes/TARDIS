@@ -32,6 +32,8 @@ if SERVER then
         value = math.Clamp(value, 0 , MaxShields)
         if self:GetData("shields_val") > value then
             self:SetData("shields_last_hit", CurTime())
+            self:SetData("shields_charge_start", nil)
+            self:SetData("shields_charge_aim", nil)
         end
         self:SetData("shields_val", value, true)
     end
@@ -64,11 +66,31 @@ if SERVER then
 
     ENT:AddHook("Think", "shields", function(self)
         if self:CallCommonHook("ShouldRegenShields") == false then return end
-        if CurTime() < self:GetData("shields_last_hit", 0) + 10 then return end
         if CurTime() < self:GetData("shields_regen_time", 0) then return end
+
+        local charge_aim = self:GetData("shields_charge_aim")
+
+        if charge_aim and self:GetShieldsLevel() < charge_aim then
+            local charge_start = self:GetData("shields_charge_start", CurTime())
+            local progress = math.Clamp(0.1 * (CurTime() - charge_start), 0, 1)
+            local value = self:GetShieldsMax() * progress
+
+            self:SetShieldsLevel(value)
+            return
+        end
+
+        if charge_aim then
+            self:SetData("shields_charge_aim", nil)
+            self:SetData("shields_charge_start", nil)
+            self:SetData("shields_last_hit", CurTime())
+            return
+        end
+
+        if CurTime() < self:GetData("shields_last_hit", 0) + 10 then return end
 
         self:SetData("shields_regen_time", CurTime() + 0.75)
         self:AddShieldsLevel(self:GetShieldsMax() * 0.01)
+
     end)
 
     ENT:AddHook("ShouldRegenShields", "shields", function(self)
@@ -84,9 +106,22 @@ if SERVER then
     ENT:AddHook("PowerToggled", "shields", function(self, on)
         if on and self:GetData("power_last_shields", false) == true then
             self:SetShieldsOn(true)
+            self:SetData("shields_charge_start", CurTime())
         else
             self:SetData("power_last_shields", self:GetShieldsOn())
+
+            local saved_value = self:GetData("shields_charge_aim") or self:GetShieldsLevel()
+
+            self:SetShieldsLevel(0, true)
+            self:SetData("shields_charge_aim", saved_value)
+
             self:SetShieldsOn(false)
+        end
+    end)
+
+    ENT:AddHook("ShouldThinkFast","shields_charge",function(self)
+        if self:GetData("shields_charge_aim") then
+            return true
         end
     end)
 
