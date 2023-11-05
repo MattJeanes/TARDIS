@@ -1,7 +1,7 @@
 -- Power Exterior
 
 TARDIS:AddKeyBind("power",{
-    name="Power",
+    name="TogglePower",
     section="ThirdPerson",
     func=function(self,down,ply)
         if down and ply == self.pilot then
