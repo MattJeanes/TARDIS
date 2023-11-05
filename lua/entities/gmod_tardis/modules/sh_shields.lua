@@ -106,17 +106,19 @@ if SERVER then
     ENT:AddHook("PowerToggled", "shields", function(self, on)
         if on and self:GetData("power_last_shields", false) == true then
             self:SetShieldsOn(true)
-            self:SetData("shields_charge_start", CurTime())
         else
             self:SetData("power_last_shields", self:GetShieldsOn())
-
-            local saved_value = self:GetData("shields_charge_aim") or self:GetShieldsLevel()
-
-            self:SetShieldsLevel(0, true)
-            self:SetData("shields_charge_aim", saved_value)
-
             self:SetShieldsOn(false)
         end
+    end)
+
+    ENT:AddHook("ShieldsToggled", "charge", function(self, on)
+        if not on then return end
+
+        local saved_value = self:GetData("shields_charge_aim") or self:GetShieldsLevel()
+        self:SetShieldsLevel(0, true)
+        self:SetData("shields_charge_aim", saved_value)
+        self:SetData("shields_charge_start", CurTime())
     end)
 
     ENT:AddHook("ShouldThinkFast","shields_charge",function(self)
