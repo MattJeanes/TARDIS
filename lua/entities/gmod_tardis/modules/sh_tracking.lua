@@ -82,8 +82,8 @@ if SERVER then
         self:SetData("tracking-ent",ent)
         if IsValid(ent) and ent ~= wasTrackingEnt then
             self:SetData("tracking-offset-pos", ent:WorldToLocal(self:GetPos()))
-            local yaw = ent:GetAngles().y - self:GetAngles().y
-            self:SetData("tracking-offset-yaw", 0)
+            local yaw = -ent:GetAngles().y + self:GetAngles().y
+            self:SetData("tracking-offset-yaw", yaw)
         end
 
         if not isTracking then
@@ -154,7 +154,6 @@ if SERVER then
 
         local pos = self:GetPos()
         local entPos = ent:GetPos()
-        local diffang = (entPos - pos):Angle()
         local offset = self:GetData("tracking-offset-pos", Vector(0,0,0))
         local yawoffset = self:GetData("tracking-offset-yaw", 0)
         local pilot = self:GetData("pilot")
@@ -271,6 +270,7 @@ if SERVER then
             return
         end
 
+        local diffang = (entPos - pos):Angle()
         local trace=util.QuickTrace(pos,diffang:Forward()*MaxTrackingTraceDistance,{self,TARDIS:GetPart(self,"door")})
         local targetfound = trace.Entity==ent or tdiff < MaxTrackingDistanceNoLOS
 
