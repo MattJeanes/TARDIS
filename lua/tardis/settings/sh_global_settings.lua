@@ -49,9 +49,9 @@ TARDIS:AddSetting({
     type="number",
     value=0.2,
     min=0.05,
-    max=0.96,
+    max=0.95,
     round_func = function(x)
-        return x - x % 0.05
+        return x - ((x * 100) % 5) * 0.01
     end,
 
     class="global",
