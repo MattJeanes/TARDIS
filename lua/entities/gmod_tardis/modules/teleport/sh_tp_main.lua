@@ -285,9 +285,9 @@ else
                     end
                     if shouldPlayExterior then
                         if self:GetData("hads-demat") then
-                            sound.Play(sound_demat_hads_ext,self:GetPos())
+                            self:EmitSound(sound_demat_hads_ext)
                         else
-                            sound.Play(sound_demat_ext,self:GetPos())
+                            self:EmitSound(sound_demat_ext)
                         end
                     end
                 end
