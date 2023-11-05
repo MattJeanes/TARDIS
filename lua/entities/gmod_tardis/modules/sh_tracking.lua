@@ -1,7 +1,8 @@
 -- Tracking
 
 local MaxTrackingDistanceSet = 1000
-local MaxTrackingDistanceFromOffset = 1000
+local MaxTrackingDistanceNoLOS = 2000
+local MaxTrackingTraceDistance = 10000
 
 local DEBUG_TRACKING = false
 
@@ -145,20 +146,13 @@ if SERVER then
 
         local pos = self:GetPos()
         local entPos = ent:GetPos()
-        local pilot = self:GetData("pilot")
-        local phm=FrameTime()*66
-
+        local targetAng = (entPos - pos):Angle()
         local offset = self:GetData("tracking-offset-pos", Vector(0,0,0))
         local yawoffset = self:GetData("tracking-offset-yaw", 0)
-        local dist = pos:Distance(ent:LocalToWorld(offset))
-        local force=5
-        local rforce=2
-
-        if dist > MaxTrackingDistanceFromOffset then
-            self:SetTracking(nil, pilot)
-            TARDIS:ErrorMessage(pilot, "Controls.Tracking.DistanceDisable")
-            return
-        end
+        local pilot = self:GetData("pilot")
+        local phm=FrameTime()*66
+        local offsetforce=5
+        local offsetrforce=2
 
         if self.pilot and IsValid(self.pilot) then
             local p=self.pilot
@@ -169,44 +163,44 @@ if SERVER then
             local fwd=eye:Forward()
             local ri=eye:Right()
             if TARDIS:IsBindDown(self.pilot,"flight-boost") then
-                force=force*TARDIS:GetSetting("boost-speed")
-                rforce=rforce*TARDIS:GetSetting("boost-speed")
+                offsetforce=offsetforce*TARDIS:GetSetting("boost-speed")
+                offsetrforce=offsetrforce*TARDIS:GetSetting("boost-speed")
             end
 
             local adjustedOffset = Vector()
             if TARDIS:IsBindDown(self.pilot,"flight-forward") then
-                adjustedOffset:Add(fwd * force)
+                adjustedOffset:Add(fwd * offsetforce)
             end
             if TARDIS:IsBindDown(self.pilot,"flight-backward") then
-                adjustedOffset:Add(fwd * -force)
+                adjustedOffset:Add(fwd * -offsetforce)
             end
 
             local adjustedYawOffset = yawoffset
             if TARDIS:IsBindDown(self.pilot,"flight-left") then
                 if TARDIS:IsBindDown(self.pilot,"flight-rotate") then
-                    adjustedYawOffset = adjustedYawOffset + rforce
+                    adjustedYawOffset = adjustedYawOffset + offsetrforce
                     if adjustedYawOffset > 180 then
                         adjustedYawOffset = adjustedYawOffset - 360
                     end
                 else
-                    adjustedOffset:Add(ri * -force)
+                    adjustedOffset:Add(ri * -offsetforce)
                 end
             end
             if TARDIS:IsBindDown(self.pilot,"flight-right") then
                 if TARDIS:IsBindDown(self.pilot,"flight-rotate") then
-                    adjustedYawOffset = adjustedYawOffset - rforce
+                    adjustedYawOffset = adjustedYawOffset - offsetrforce
                     if adjustedYawOffset < -180 then
                         adjustedYawOffset = adjustedYawOffset + 360
                     end
                 else
-                    adjustedOffset:Add(ri * force)
+                    adjustedOffset:Add(ri * offsetforce)
                 end
             end
 
             if TARDIS:IsBindDown(self.pilot,"flight-up") then
-                adjustedOffset:Add(Vector(0,0,force))
+                adjustedOffset:Add(Vector(0,0,offsetforce))
             elseif TARDIS:IsBindDown(self.pilot,"flight-down") then
-                adjustedOffset:Add(Vector(0,0,-force))
+                adjustedOffset:Add(Vector(0,0,-offsetforce))
             end
 
             if adjustedOffset ~= vector_origin then
@@ -222,9 +216,34 @@ if SERVER then
 
         local tvel=ent:GetVelocity()
         local tfwd=tvel:Angle():Forward()
-        local target=ent:LocalToWorld(offset)+(tfwd*tvel:Length())
+        local target=ent:LocalToWorld(offset)
+        local tdiff = target:Distance(pos)
+        local targetpredicted=target+(tfwd*tvel:Length()*phm)
         local mass=ph:GetMass()
         local vel=ph:GetVelocity()
+        local velnorm=vel:GetNormalized()
+        local len=vel:Length()
+
+        if tdiff > MaxTrackingTraceDistance then
+            self:SetTracking(nil, self:GetData("pilot"))
+            TARDIS:ErrorMessage(self:GetData("pilot"), "Controls.Tracking.TargetLost")
+            return
+        end
+
+        local trace=util.QuickTrace(pos,targetAng:Forward()*MaxTrackingTraceDistance,{self,TARDIS:GetPart(self,"door")})
+        local targetfound = trace.Entity==ent or tdiff < MaxTrackingDistanceNoLOS
+
+        local trackinglost = self:GetData("tracking-lost")
+        if trackinglost and CurTime() > trackinglost then
+            self:SetData("tracking-lost", nil)
+            self:SetTracking(nil, pilot)
+            TARDIS:ErrorMessage(pilot, "Controls.Tracking.TargetLost")
+            return
+        elseif (not targetfound) and (not trackinglost) then
+            self:SetData("tracking-lost", CurTime() + 5)
+        elseif targetfound and trackinglost then
+            self:SetData("tracking-lost", nil)
+        end
 
         if DEBUG_TRACKING then
             if not IsValid(self.trackingdebugprop) then
@@ -234,16 +253,24 @@ if SERVER then
                 self.trackingdebugprop:SetRenderMode(RENDERMODE_TRANSALPHA)
                 self.trackingdebugprop:SetMoveType(MOVETYPE_NONE)
                 self.trackingdebugprop:SetSolid(SOLID_NONE)
-                self.trackingdebugprop:SetCollisionGroup(COLLISION_GROUP_NONE)
+                self.trackingdebugprop:SetCollisionGroup(COLLISION_GROUP_IN_VEHICLE)
                 self.trackingdebugprop:Activate()
                 self.trackingdebugprop:Spawn()
             end
 
-            self.trackingdebugprop:SetPos(target)
+            self.trackingdebugprop:SetPos(targetpredicted)
         end
 
-        ph:AddVelocity((target-pos)*0.4*phm)
-        ph:AddVelocity(vel*-0.5)
+        local tpdiff=targetpredicted-pos
+        local tdist=tpdiff:Length()
+        local diffnorm=tpdiff:GetNormalized()
+        local force = math.Clamp((tdist * 0.05), 0, 15*TARDIS:GetSetting("boost-speed"))
+
+        ph:AddVelocity(diffnorm*force*phm)
+
+        local brake = len-tdist
+        local brakeClamped = math.Clamp(brake, 0, len)*0.9
+        ph:AddVelocity(velnorm*-brakeClamped)
 
         if not self:GetSpin() then
             local cen=ph:GetMassCenter()
@@ -284,6 +311,18 @@ if SERVER then
     ENT:AddHook("PilotChanged", "tracking", function(self, old, new)
         if IsValid(new) and self:GetTracking() then
             self:SendMessage("tracking-pilotwarning", nil, new)
+        end
+    end)
+
+    ENT:AddHook("ShouldTeleportPortal", "tracking", function(self,portal,ent)
+        local trackingEnt = self:GetTracking()
+        if not IsValid(trackingEnt) then return end
+
+        if ent == trackingEnt then
+            return false
+        end
+        if table.HasValue(constraint.GetAllConstrainedEntities(trackingEnt), ent) then
+            return false
         end
     end)
 
