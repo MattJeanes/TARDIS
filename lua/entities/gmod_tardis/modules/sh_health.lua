@@ -191,7 +191,7 @@ if SERVER then
     end)
 
     ENT:AddHook("ShouldRegenShields", "health", function(self)
-        if not self:IsAlive() then
+        if self:IsDead() then
             return false
         end
     end)
