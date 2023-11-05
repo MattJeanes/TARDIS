@@ -66,7 +66,7 @@ if SERVER then
         local ply = self:GetCreator()
 
         self:SetData("repairing", false, true)
-        self:ChangeHealth(TARDIS:GetSetting("health-max"))
+        self:ChangeHealth(self:GetHealthMax())
         self:SetPower(true)
 
         -- save tardis state

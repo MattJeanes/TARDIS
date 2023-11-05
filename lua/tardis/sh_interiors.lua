@@ -34,6 +34,10 @@ end
 
 function TARDIS:PreMergeExteriorMetadata(ext_m)
     if ext_m and ext_m.Teleport then
+        if ext_m.Teleport.HadsDematSequence then
+            ext_m.Teleport.HadsDematSequenceSaved = table.Copy(ext_m.Teleport.HadsDematSequence)
+        end
+
         if ext_m.Teleport.DematSequence then
             ext_m.Teleport.DematSequenceSaved = table.Copy(ext_m.Teleport.DematSequence)
         end
@@ -54,6 +58,11 @@ function TARDIS:PostMergeExteriorMetadata(ext_m)
         if ext_m.Teleport.MatSequenceSaved then
             ext_m.Teleport.MatSequence = ext_m.Teleport.MatSequenceSaved
             ext_m.Teleport.MatSequenceSaved = nil
+        end
+
+        if ext_m.Teleport.HadsDematSequenceSaved then
+            ext_m.Teleport.HadsDematSequence = ext_m.Teleport.HadsDematSequenceSaved
+            ext_m.Teleport.HadsDematSequenceSaved = nil
         end
     end
 end

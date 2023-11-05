@@ -117,7 +117,7 @@ if CLIENT then
         local dlight = DynamicLight(id, true)
         if not dlight then return end
 
-        local warning = self:GetData("health-warning", false)
+        local warning = self:GetData("warning", false)
         local power = self:GetPower()
 
         if not power and warning then
@@ -274,7 +274,7 @@ if CLIENT then
 
     local function SelectLampTable(self, lmp)
         local state = self:GetData("light_state")
-        local warning = self:GetData("health-warning", false)
+        local warning = self:GetData("warning", false)
         local power = self:GetPower()
         local l = lmp
 
@@ -329,7 +329,7 @@ if CLIENT then
 
     ENT:AddHook("PowerToggled", "lamps", ReplaceLamps)
 
-    ENT:AddHook("HealthWarningToggled", "lamps", ReplaceLamps)
+    ENT:AddHook("WarningToggled", "lamps", ReplaceLamps)
 
 
     function ENT:RunLampUpdate()

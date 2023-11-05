@@ -1,32 +1,21 @@
 -- Failed and forced teleport functions
 
 if SERVER then
+    function ENT:FailDemat()
+        self:SetData("failing-demat", true, true)
+        self:CallCommonHook("DematFailed")
 
-    function ENT:HandleNoDemat(pos, ang, callback, force)
-        local fail = self:CallHook("ShouldFailDemat", force)
-        local possible = self:CallHook("CanDemat", force, true)
-
-        if self:CallHook("HandleNoDemat", pos, ang, callback, force) == true then
-            return -- when the behaviour is overriden, the hook will return true
-        end
-
-        if fail == true and possible ~= false then
-            self:SetData("failing-demat", true, true)
-            self:SendMessage("failed-demat")
-            self:Timer("failed-demat-stop", 4, function()
-                self:SetData("failing-demat", false, true)
-            end)
-        end
-        if callback then callback(false) end
+        self:SendMessage("failed-demat")
+        self:Timer("failed-demat-stop", 4, function()
+            self:SetData("failing-demat", false, true)
+        end)
     end
 
     function ENT:HandleNoMat(pos, ang, callback)
         local fail = self:CallHook("ShouldFailMat", pos, ang)
         local possible = self:CallHook("CanMat", pos, ang, true)
 
-        if self:CallHook("HandleNoMat", pos, ang, callback) == true then
-            return -- when the behaviour is overriden, the hook will return true
-        end
+        self:CallHook("HandleNoMat", pos, ang, callback)
 
         if fail ~= true or possible == false then
             if callback then callback(false) end
@@ -83,17 +72,19 @@ if SERVER then
     end
 
     function ENT:AutoDemat(pos, ang, callback)
-        if self:CallHook("CanDemat", false) ~= false then
+        if self:CallHook("CanDemat", false, true) ~= false then
             self:Demat(pos, ang, callback)
-        elseif self:CallHook("CanDemat", true) ~= false then
+        elseif self:CallHook("CanDemat", true, true) ~= false then
             self:ForceDemat(pos, ang, callback)
         else
             if callback then callback(false) end
         end
     end
 
-    ENT:AddHook("CanDemat", "failed", function(self, force, ignore_fail_demat)
-        if ignore_fail_demat ~= true and self:CallHook("ShouldFailDemat", force) == true then
+    ENT:AddHook("CanDemat", "failed", function(self, force, check_failed)
+        if not check_failed then return end
+
+        if self:CallHook("ShouldFailDemat", force) == true then
             return false
         end
     end)
@@ -118,7 +109,7 @@ if SERVER then
         self:SetData("failing-demat", false, true)
 
         if self:CallHook("ShouldFailDemat", false) == true then
-            if not self:GetData("health-warning", false) then
+            if not self:IsLowHealth() then
                 self:ForceDemat(pos, ang, callback)
             else
                 self:SendMessage("engine-release-explode")
@@ -149,6 +140,7 @@ if SERVER then
 
 else -- CLIENT
     ENT:OnMessage("failed-demat", function(self, data, ply)
+        self:CallCommonHook("DematFailed")
         if TARDIS:GetSetting("teleport-sound") and TARDIS:GetSetting("sound") then
             local ext = self.metadata.Exterior.Sounds.Teleport
             local int = self.metadata.Interior.Sounds.Teleport

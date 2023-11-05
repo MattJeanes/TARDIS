@@ -21,6 +21,7 @@ if SERVER then
         spend_flight_static = -5 / 144,
         spend_flight_moving = -24 / 144,
         spend_flight_boost = -45 / 144,
+        spend_flight_broken = -8 / 144,
         spend_cloak = -18 / 144,
         spend_cloak_handbrake = -8 / 144,
 
@@ -30,7 +31,8 @@ if SERVER then
 
         -- every 5 (by default) seconds:
         increase_normal = 15 * 5 / 144,
-        increase_warning = 10 * 5 / 144,
+        increase_damaged = 10 * 5 / 144,
+        increase_broken = 6 * 5 / 144,
         increase_poweroff = 24 * 5 / 144,
         increase_float = 8 * 5 / 144,
 
@@ -143,7 +145,9 @@ if SERVER then
         local handbrake = self:GetHandbrake()
         local cloak = self:GetCloak()
         local float = self:GetData("floatfirst")
-        local warning = self:GetData("health-warning")
+        local damaged = self:IsDamaged()
+        local broken = self:IsBroken()
+        local broken_flight = self:GetData("broken_flight")
 
         local change = 0
 
@@ -151,6 +155,8 @@ if SERVER then
             return
         elseif vortex then
             change = change + TARDIS.artron_values.spend_vortex_teleport
+        elseif broken_flight then
+            change = change + TARDIS.artron_values.spend_flight_broken
         elseif flight then
             if TARDIS:IsBindDown(self.pilot,"flight-forward")
                 or TARDIS:IsBindDown(self.pilot,"flight-backward")
@@ -219,8 +225,12 @@ if SERVER then
             self:AddArtron(TARDIS.artron_values.increase_float)
             return
         end
-        if warning then
-            self:AddArtron(TARDIS.artron_values.increase_warning)
+        if damaged then
+            self:AddArtron(TARDIS.artron_values.increase_damaged)
+            return
+        end
+        if broken then
+            self:AddArtron(TARDIS.artron_values.increase_broken)
             return
         end
         self:AddArtron(TARDIS.artron_values.increase_normal) -- default state
@@ -234,10 +244,10 @@ if SERVER then
         end
     end)
 
-    ENT:AddHook("HandleNoDemat", "artron", function(self)
+    ENT:AddHook("DematFailed", "artron", function(self)
         if not TARDIS:GetSetting("artron_energy") then return end
 
-        if ArtronDematCheck(self) then return end
+        if not ArtronDematCheck(self) then return end
         self:AddArtron(TARDIS.artron_values.cost_failed_demat)
     end)
 
@@ -321,9 +331,8 @@ if SERVER then
         end
         self:AddArtron(TARDIS.artron_values.increase_engine_release)
 
-        local decrease = math.random(53, 432) * TARDIS:GetSetting("health-max") / 1000
-        local newhealth = self:GetHealth() - decrease
-        self:ChangeHealth(newhealth)
+        local decrease = math.random(53, 432) * self:GetHealthMax() / 1000
+        self:AddHealth(-decrease)
     end
 
     function ENT:EngineReleaseVortexArtron()

@@ -335,6 +335,11 @@ ENT:AddHook("MigrateData", "chameleon", function(self,parent,data)
 end)
 
 ENT:AddHook("MatStart", "chameleon", function(self)
+    local planned_ext = self:GetData("chameleon_planned_exterior")
+    if planned_ext then
+        self:SetData("chameleon_selected_exterior", planned_ext)
+        self:SetData("chameleon_planned_exterior", nil)
+    end
     self:RetryChameleon(false)
 end)
 

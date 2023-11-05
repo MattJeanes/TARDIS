@@ -14,7 +14,7 @@ function ENT:FastReturn(callback)
         return
     end
 
-    if self:CallHook("CanDemat", true) == false then
+    if self:CallHook("CanDemat", true, true) == false then
         if callback then callback(false) end
         return
     end
