@@ -1,10 +1,10 @@
 -- Tracking
 
-local MaxTrackingDistanceSet = 1000
-local MaxTrackingDistanceNoLOS = 2000
-local MaxTrackingTraceDistance = 10000
+local TRACKING_MAX_DISTANCE_SET = 1000
+local TRACKING_MAX_DISTANCE_NO_LOS = 2000
+local TRACKING_MAX_DISTANCE_TRACE = 10000
 
-local DEBUG_TRACKING = true
+local TRACKING_DEBUG = false
 
 TARDIS:AddKeyBind("tracking",{
     name="Tracking",
@@ -60,7 +60,7 @@ if SERVER then
                     TARDIS:ErrorMessage(ply, "Controls.Tracking.SelfFail")
                 end
                 valid = false
-            elseif ent:GetPos():Distance(self:GetPos()) > MaxTrackingDistanceSet then
+            elseif ent:GetPos():Distance(self:GetPos()) > TRACKING_MAX_DISTANCE_SET then
                 if IsValid(ply) then
                     TARDIS:ErrorMessage(ply, "Controls.Tracking.DistanceFail")
                 end
@@ -264,15 +264,15 @@ if SERVER then
             targetpredicted = targetpredicted + angveloutwards
         end
 
-        if tdiff > MaxTrackingTraceDistance then
+        if tdiff > TRACKING_MAX_DISTANCE_TRACE then
             self:SetTracking(nil, self:GetData("pilot"))
             TARDIS:ErrorMessage(self:GetData("pilot"), "Controls.Tracking.TargetLost")
             return
         end
 
         local diffang = (entPos - pos):Angle()
-        local trace=util.QuickTrace(pos,diffang:Forward()*MaxTrackingTraceDistance,{self,TARDIS:GetPart(self,"door")})
-        local targetfound = trace.Entity==ent or tdiff < MaxTrackingDistanceNoLOS
+        local trace=util.QuickTrace(pos,diffang:Forward()*TRACKING_MAX_DISTANCE_TRACE,{self,TARDIS:GetPart(self,"door")})
+        local targetfound = trace.Entity==ent or tdiff < TRACKING_MAX_DISTANCE_NO_LOS
 
         local trackinglost = self:GetData("tracking-lost")
         if trackinglost and CurTime() > trackinglost then
@@ -286,7 +286,7 @@ if SERVER then
             self:SetData("tracking-lost", nil)
         end
 
-        if DEBUG_TRACKING then
+        if TRACKING_DEBUG then
             if not IsValid(self.trackingdebugprop) then
                 self.trackingdebugprop = ents.Create("prop_physics")
                 self.trackingdebugprop:SetModel("models/hunter/blocks/cube05x05x05.mdl")
@@ -325,7 +325,7 @@ if SERVER then
             ph:AddAngleVelocity(Vector(0,0,angdiff*phm))
             ph:AddAngleVelocity(Vector(0,0,ph:GetAngleVelocity().z*-0.3*phm))
 
-            if DEBUG_TRACKING then
+            if TRACKING_DEBUG then
                 self.trackingdebugprop:SetAngles(Angle(0,targetang,0))
             end
         end
@@ -407,7 +407,7 @@ else
         if not IsValid(ent) then return end
     
         local dist = ent:GetPos():Distance(ext:GetPos())
-        halo.Add({ent},dist > MaxTrackingDistanceSet and Color(255,0,0) or Color(0,255,0),1,1,1,true,true)
+        halo.Add({ent},dist > TRACKING_MAX_DISTANCE_SET and Color(255,0,0) or Color(0,255,0),1,1,1,true,true)
     end)
 
     ENT:OnMessage("tracking-pilotwarning", function(self)
