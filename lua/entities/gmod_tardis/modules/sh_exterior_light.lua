@@ -57,7 +57,7 @@ else
 
         if shouldon and (not shouldoff) then
             local col = light.color
-            if self:GetData("health-warning") and light.warncolor ~= nil then
+            if self:GetData("warning") and light.warncolor ~= nil then
                 col = light.warncolor
             end
             if TARDIS:GetSetting("extlight-override-color", self) then
@@ -106,7 +106,7 @@ else
 
         if shouldon and (not shouldoff) then
             local col = light.color
-            if self:GetData("health-warning") and light.warncolor ~= nil then
+            if self:GetData("warning") and light.warncolor ~= nil then
                 col = light.warncolor
             end
             if TARDIS:GetSetting("extlight-override-color", self) then

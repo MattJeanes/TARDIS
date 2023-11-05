@@ -15,7 +15,7 @@ function ENT:PickProjectedLightColor()
     local override = TARDIS:GetSetting("extprojlight-override-color")
     if override then return TARDIS:GetSetting("extprojlight-color") end
 
-    local warning = self:GetData("health-warning",false)
+    local warning = self:GetData("warning",false)
 
     local pl = self.metadata.Exterior.ProjectedLight
     local ld = self.interior.light_data
