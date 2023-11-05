@@ -240,6 +240,7 @@
     "Controls.Tracking.Status": "",
     "Controls.Tracking.Target": "",
     "Controls.Tracking.TargetLost": "",
+    "Controls.Tracking.TargetTooFar": "",
     "Controls.VirtualConsole.Tip": "Virtuaalikonsoli",
     "Controls.VortexFlight": "",
     "Controls.VortexFlight.FailedToggle": "",

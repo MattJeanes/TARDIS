@@ -243,6 +243,7 @@ T.Phrases = {
     ["Controls.Tracking.Status"] = "Tracking",
     ["Controls.Tracking.Target"] = "Started tracking",
     ["Controls.Tracking.TargetLost"] = "Tracking target lost",
+    ["Controls.Tracking.TargetTooFar"] = "Tracking target too far",
     ["Controls.VirtualConsole.Tip"] = "Virtual Console",
     ["Controls.VortexFlight"] = "Vortex Flight",
     ["Controls.VortexFlight.FailedToggle"] = "Failed to toggle vortex flight",

@@ -240,6 +240,7 @@
     "Controls.Tracking.Status": "",
     "Controls.Tracking.Target": "",
     "Controls.Tracking.TargetLost": "",
+    "Controls.Tracking.TargetTooFar": "",
     "Controls.VirtualConsole.Tip": "虛擬操縱臺",
     "Controls.VortexFlight": "漩渦飛行",
     "Controls.VortexFlight.FailedToggle": "切換漩渦飛行失敗",

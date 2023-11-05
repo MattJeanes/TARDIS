@@ -240,6 +240,7 @@
     "Controls.Tracking.Status": "",
     "Controls.Tracking.Target": "",
     "Controls.Tracking.TargetLost": "",
+    "Controls.Tracking.TargetTooFar": "",
     "Controls.VirtualConsole.Tip": "Виртуальная консоль",
     "Controls.VortexFlight": "Полёт через воронку времени",
     "Controls.VortexFlight.FailedToggle": "Не получилось переключить полёт в воронке",

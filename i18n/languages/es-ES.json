@@ -240,6 +240,7 @@
     "Controls.Tracking.Status": "",
     "Controls.Tracking.Target": "",
     "Controls.Tracking.TargetLost": "",
+    "Controls.Tracking.TargetTooFar": "",
     "Controls.VirtualConsole.Tip": "Consola Virtual",
     "Controls.VortexFlight": "Vuelo de Vórtice",
     "Controls.VortexFlight.FailedToggle": "No se pudo alternar el vuelo de vórtice",
