@@ -19,7 +19,7 @@ ENT.HEALTH_PERCENT_DAMAGED = 40
 ENT.HEALTH_PERCENT_BROKEN = 10
 
 function ENT:IsAlive()
-    return (self:GetHealth() ~= 0)
+    return self:GetHealth() ~= 0
 end
 
 function ENT:IsDamaged()
@@ -35,7 +35,7 @@ function ENT:IsLowHealth()
 end
 
 function ENT:IsDead()
-    return (self:GetHealth() == 0)
+    return self:GetHealth() == 0
 end
 
 if SERVER then
