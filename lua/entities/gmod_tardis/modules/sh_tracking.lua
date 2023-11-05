@@ -135,6 +135,8 @@ if SERVER then
         end
     end)
 
+    local VECTOR_0_0_1 = Vector(0,0,1)
+
     ENT:AddHook("PhysicsUpdate", "tracking", function(self, ph)
         local ent = self:GetTracking()
         if ent and not IsValid(ent) then
@@ -146,7 +148,7 @@ if SERVER then
 
         local pos = self:GetPos()
         local entPos = ent:GetPos()
-        local targetAng = (entPos - pos):Angle()
+        local diffang = (entPos - pos):Angle()
         local offset = self:GetData("tracking-offset-pos", Vector(0,0,0))
         local yawoffset = self:GetData("tracking-offset-yaw", 0)
         local pilot = self:GetData("pilot")
@@ -247,13 +249,23 @@ if SERVER then
         local velnorm=vel:GetNormalized()
         local len=vel:Length()
 
+        local targetph = ent:GetPhysicsObject()
+        if IsValid(targetph) then
+            local tdifftoent = (target-entPos):Angle()
+            local tdifftoentfwd = tdifftoent:Forward()
+            tdifftoentfwd.z = 0
+            local spinvelocity = math.abs(targetph:GetAngleVelocity():Dot(VECTOR_0_0_1))
+            local angveloutwards = (tdifftoentfwd * spinvelocity * 2 * phm)
+            targetpredicted = targetpredicted + angveloutwards
+        end
+
         if tdiff > MaxTrackingTraceDistance then
             self:SetTracking(nil, self:GetData("pilot"))
             TARDIS:ErrorMessage(self:GetData("pilot"), "Controls.Tracking.TargetLost")
             return
         end
 
-        local trace=util.QuickTrace(pos,targetAng:Forward()*MaxTrackingTraceDistance,{self,TARDIS:GetPart(self,"door")})
+        local trace=util.QuickTrace(pos,diffang:Forward()*MaxTrackingTraceDistance,{self,TARDIS:GetPart(self,"door")})
         local targetfound = trace.Entity==ent or tdiff < MaxTrackingDistanceNoLOS
 
         local trackinglost = self:GetData("tracking-lost")
