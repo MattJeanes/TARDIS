@@ -497,7 +497,7 @@ if SERVER then
     end)
 
     ENT:AddHook("ShouldStartFire", "broken_flight", function(self)
-        if self:GetData("broken_flight") and self:GetData("flight") and not self:GetData("teleport") and not self:GetData("vortex") then
+        if self:GetData("broken_flight") and self:GetData("flight") then
             return true
         end
     end)
