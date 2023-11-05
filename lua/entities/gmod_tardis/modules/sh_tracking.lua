@@ -40,16 +40,6 @@ if SERVER then
         local isTracking = IsValid(ent)
         local valid = true
         if isTracking then 
-            local wasFlying = self:GetFlight()
-            if not wasFlying then
-                local success = self:SetFlight(true)
-                if not success then
-                    if IsValid(ply) then
-                        TARDIS:ErrorMessage(ply, "Controls.Tracking.FlightFail")
-                    end
-                    valid = false
-                end
-            end
             if ent.TardisPart or ent.TardisInterior or (ent:IsPlayer() and IsValid(TARDIS:GetInteriorEnt(ent))) then
                 if IsValid(ply) then
                     TARDIS:ErrorMessage(ply, "Controls.Tracking.InteriorFail")
@@ -74,6 +64,18 @@ if SERVER then
             if not valid then
                 return false
             end
+
+            local wasFlying = self:GetFlight()
+            if not wasFlying then
+                local success = self:SetFlight(true)
+                if not success then
+                    if IsValid(ply) then
+                        TARDIS:ErrorMessage(ply, "Controls.Tracking.FlightFail")
+                    end
+                    return false
+                end
+            end
+            
             if not wasTracking then
                 self:SetData("tracking-wasflight", wasFlying)
             end
