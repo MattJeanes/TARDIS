@@ -15,7 +15,7 @@ TARDIS:AddKeyBind("flight-toggle",{
 })
 
 TARDIS:AddKeyBind("handbrake",{
-    name="Handbrake",
+    name="ToggleHandbrake",
     section="ThirdPerson",
     func=function(self,down,ply)
         if down and ply == self.pilot then
