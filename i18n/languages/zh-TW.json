@@ -231,6 +231,7 @@
     "Controls.Tracking.PilotWarning": "",
     "Controls.Tracking.SameTarget": "",
     "Controls.Tracking.SelfFail": "",
+    "Controls.Tracking.SpinWarning": "",
     "Controls.Tracking.Status": "",
     "Controls.Tracking.Target": "",
     "Controls.Tracking.TargetLost": "",

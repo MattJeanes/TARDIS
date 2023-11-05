@@ -231,6 +231,7 @@
     "Controls.Tracking.PilotWarning": "WARNING: Tracking is enabled, press '%s' to change target or disable tracking",
     "Controls.Tracking.SameTarget": "You are already tracking this entity",
     "Controls.Tracking.SelfFail": "Can't track itself",
+    "Controls.Tracking.SpinWarning": "WARNING: You can't change tracking direction while spinning is enabled",
     "Controls.Tracking.Status": "Tracking",
     "Controls.Tracking.Target": "Started tracking",
     "Controls.Tracking.TargetLost": "Tracking target lost",

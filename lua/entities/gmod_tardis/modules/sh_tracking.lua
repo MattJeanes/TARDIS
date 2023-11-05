@@ -153,6 +153,7 @@ if SERVER then
         local phm=FrameTime()*66
         local offsetforce=5
         local offsetrforce=2
+        local spin = self:GetSpin()
 
         if self.pilot and IsValid(self.pilot) then
             local p=self.pilot
@@ -162,44 +163,66 @@ if SERVER then
             end
             local fwd=eye:Forward()
             local ri=eye:Right()
-            if TARDIS:IsBindDown(self.pilot,"flight-boost") then
+
+            local fbinds = {
+                forward = TARDIS:IsBindDown(self.pilot,"flight-forward"),
+                backward = TARDIS:IsBindDown(self.pilot,"flight-backward"),
+                left = TARDIS:IsBindDown(self.pilot,"flight-left"),
+                right = TARDIS:IsBindDown(self.pilot,"flight-right"),
+                rotate = TARDIS:IsBindDown(self.pilot,"flight-rotate"),
+                up = TARDIS:IsBindDown(self.pilot,"flight-up"),
+                down = TARDIS:IsBindDown(self.pilot,"flight-down"),
+                boost = TARDIS:IsBindDown(self.pilot,"flight-boost"),
+            }
+
+            if fbinds.boost then
                 offsetforce=offsetforce*TARDIS:GetSetting("boost-speed")
                 offsetrforce=offsetrforce*TARDIS:GetSetting("boost-speed")
             end
 
             local adjustedOffset = Vector()
-            if TARDIS:IsBindDown(self.pilot,"flight-forward") then
+            if fbinds.forward then
                 adjustedOffset:Add(fwd * offsetforce)
             end
-            if TARDIS:IsBindDown(self.pilot,"flight-backward") then
+            if fbinds.backward then
                 adjustedOffset:Add(fwd * -offsetforce)
             end
 
             local adjustedYawOffset = yawoffset
-            if TARDIS:IsBindDown(self.pilot,"flight-left") then
-                if TARDIS:IsBindDown(self.pilot,"flight-rotate") then
-                    adjustedYawOffset = adjustedYawOffset + offsetrforce
-                    if adjustedYawOffset > 180 then
-                        adjustedYawOffset = adjustedYawOffset - 360
+            if fbinds.left then
+                if fbinds.rotate then
+                    if not spin then
+                        adjustedYawOffset = adjustedYawOffset + offsetrforce
+                        if adjustedYawOffset > 180 then
+                            adjustedYawOffset = adjustedYawOffset - 360
+                        end
                     end
                 else
                     adjustedOffset:Add(ri * -offsetforce)
                 end
             end
-            if TARDIS:IsBindDown(self.pilot,"flight-right") then
-                if TARDIS:IsBindDown(self.pilot,"flight-rotate") then
-                    adjustedYawOffset = adjustedYawOffset - offsetrforce
-                    if adjustedYawOffset < -180 then
-                        adjustedYawOffset = adjustedYawOffset + 360
+            if fbinds.right then
+                if fbinds.rotate then
+                    if not spin then
+                        adjustedYawOffset = adjustedYawOffset - offsetrforce
+                        if adjustedYawOffset < -180 then
+                            adjustedYawOffset = adjustedYawOffset + 360
+                        end
                     end
                 else
                     adjustedOffset:Add(ri * offsetforce)
                 end
             end
 
-            if TARDIS:IsBindDown(self.pilot,"flight-up") then
+            local spinwarning = (fbinds.left or fbinds.right) and fbinds.rotate and spin
+            if spinwarning and self:GetData("lastspinwarning", 0) < CurTime() then
+                self:SetData("lastspinwarning", CurTime() + 1)
+                TARDIS:Message(self.pilot, "Controls.Tracking.SpinWarning")
+            end
+
+            if fbinds.up then
                 adjustedOffset:Add(Vector(0,0,offsetforce))
-            elseif TARDIS:IsBindDown(self.pilot,"flight-down") then
+            elseif fbinds.down then
                 adjustedOffset:Add(Vector(0,0,-offsetforce))
             end
 
@@ -272,7 +295,7 @@ if SERVER then
         local brakeClamped = math.Clamp(brake, 0, len)*0.9
         ph:AddVelocity(velnorm*-brakeClamped)
 
-        if not self:GetSpin() then
+        if not spin then
             local cen=ph:GetMassCenter()
             local fwd=self:GetForward()
             local lev=ph:GetInertia():Length()
