@@ -316,6 +316,9 @@ if SERVER then
         end
 
         self:SetData("chameleon_planned_exterior", ext, true)
+        if ext then
+            TARDIS:Message(ply, "Chameleon.ExteriorPlanned")
+        end
 
         if self:GetData("vortex") or self:GetData("teleport") then
             if self:SetDestination(pos,ang) then
