@@ -30,6 +30,20 @@ TARDIS:AddKeyBind("tracking",{
     exterior=true
 })
 
+TARDIS:AddKeyBind("tracking-rotation",{
+    name="TrackRotation",
+    section="Flight",
+    func=function(self,down,ply)
+        local pilot = self:GetData("pilot")
+        if not self:GetTracking() or ply ~= pilot or not down then return end
+        self:ToggleTrackRotation()
+        TARDIS:StatusMessage(ply, "Controls.Tracking.Rotation", self:GetTrackRotation())
+    end,
+    key=KEY_T,
+    serveronly=true,
+    exterior=true
+})
+
 if SERVER then
     function ENT:GetTracking()
         return self:GetData("tracking-ent")
@@ -84,9 +98,17 @@ if SERVER then
         
         self:SetData("tracking-ent",ent)
         if IsValid(ent) and ent ~= wasTrackingEnt then
-            self:SetData("tracking-offset-pos", ent:WorldToLocal(self:GetPos()))
-            local yaw = -ent:GetAngles().y + self:GetAngles().y
-            self:SetData("tracking-offset-yaw", yaw)
+            local offsetPos
+            local offsetYaw
+            if self:GetTrackRotation() then
+                offsetPos = ent:WorldToLocal(self:GetPos())
+                offsetYaw = -ent:GetAngles().y + self:GetAngles().y
+            else
+                offsetPos = WorldToLocal(self:GetPos(), angle_zero, ent:GetPos(), angle_zero)
+                offsetYaw = self:GetAngles().y
+            end
+            self:SetData("tracking-offset-pos", offsetPos)
+            self:SetData("tracking-offset-yaw", offsetYaw)
         end
 
         if not isTracking then
@@ -122,6 +144,39 @@ if SERVER then
         end
         return true
     end
+
+    function ENT:GetTrackRotation()
+        return self:GetData("tracking-rotation", false)
+    end
+
+    function ENT:SetTrackRotation(on)
+        self:SetData("tracking-rotation", on)
+
+        local ent = self:GetTracking()
+        if not IsValid(ent) then return end
+        local offsetPos = self:GetData("tracking-offset-pos", Vector(0,0,0))
+        local offsetYaw = self:GetData("tracking-offset-yaw", 0)
+        local newOffsetPos, newOffsetYaw
+        if on then
+            local currentTrackingPos = ent:GetPos() + offsetPos
+            newOffsetPos = ent:WorldToLocal(currentTrackingPos)
+            newOffsetYaw = offsetYaw - ent:GetAngles().y
+        else
+            local currentTrackingPos = ent:LocalToWorld(offsetPos)
+            newOffsetPos = WorldToLocal(currentTrackingPos, angle_zero, ent:GetPos(), angle_zero)
+            newOffsetYaw = offsetYaw + ent:GetAngles().y
+        end
+        self:SetData("tracking-offset-pos", newOffsetPos)
+        self:SetData("tracking-offset-yaw", newOffsetYaw)
+    end
+
+    function ENT:ToggleTrackRotation()
+        self:SetTrackRotation(not self:GetTrackRotation())
+    end
+
+    ENT:AddHook("Initialize", "tracking", function(self)
+        self:SetTrackRotation(true)
+    end)
 
     ENT:AddHook("HandleE2", "tracking", function(self, name, e2, ...)
         local args = {...}
@@ -238,6 +293,7 @@ if SERVER then
             if adjustedOffset ~= vector_origin then
                 adjustedOffset:Mul(phm)
                 offset:Add(WorldToLocal(adjustedOffset, angle_zero, vector_origin, ent:GetAngles()))
+                self:SetData("tracking-offset-pos", offset)
             end
 
             if adjustedYawOffset ~= yawoffset then
@@ -246,11 +302,15 @@ if SERVER then
             end
         end
 
-
-
+        local trackrotation = self:GetTrackRotation()
         local tvel = ent:GetVelocity()
         local tfwd = tvel:Angle():Forward()
-        local target = ent:LocalToWorld(offset)
+        local target
+        if trackrotation then
+            target = ent:LocalToWorld(offset)
+        else
+            target = entPos + offset
+        end
         local offsetdist = entPos:Distance(target)
         local tdiff = target:Distance(pos)
         local targetpredicted = target+(tfwd*tvel:Length()*phm)
@@ -268,7 +328,7 @@ if SERVER then
         end
 
         local targetph = ent:GetPhysicsObject()
-        if IsValid(targetph) then
+        if trackrotation and IsValid(targetph) then
             local tdifftoent = (target-entPos):Angle()
             local tdifftoentfwd = tdifftoent:Forward()
             tdifftoentfwd.z = 0
@@ -337,7 +397,10 @@ if SERVER then
             local ri = self:GetRight()
             local ang = self:GetAngles()
 
-            local targetang = ent:GetAngles().y + yawoffset
+            local targetang = yawoffset
+            if trackrotation then
+                targetang = targetang + ent:GetAngles().y
+            end
             local angdiff = math.AngleDifference(targetang,ang.y)
             ph:AddAngleVelocity(Vector(0,0,angdiff*phm))
             ph:AddAngleVelocity(Vector(0,0,ph:GetAngleVelocity().z*-0.3*phm))
