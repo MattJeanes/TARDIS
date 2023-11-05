@@ -502,7 +502,7 @@ if SERVER then
         end
     end)
 else
-    function ENT:ShouldPlayFlightSounds()
+    local function ShouldPlayFlightSounds(self)
         if not TARDIS:GetSetting("sound") then return false end
         if not TARDIS:GetSetting("flight-externalsound") then return false end
         if self:CallHook("ShouldTurnOffFlightSound") then return false end
@@ -539,7 +539,7 @@ else
     end
 
     ENT:AddHook("Think", "flight", function(self)
-        if self:GetData("flight") and self:ShouldPlayFlightSounds() then
+        if self:GetData("flight") and ShouldPlayFlightSounds(self) then
             if self.flightsound and self.flightsound:IsPlaying() then
                 local p=math.Clamp(self:GetVelocity():Length()/250,0,15)
                 local ply=LocalPlayer()
@@ -592,26 +592,26 @@ else
     end)
 
     ENT:AddHook("FlightToggled", "broken_flight", function(self,on)
-        if self:ShouldPlayFlightSounds() and not on and self:IsBroken() then
+        if ShouldPlayFlightSounds(self) and not on and self:IsBroken() then
             local snd = self.metadata.Exterior.Sounds.BrokenFlightDisable
             self:EmitSound(snd)
         end
     end)
 
     ENT:OnMessage("BrokenFlightEnable", function(self, data, ply)
-        if not self:ShouldPlayFlightSounds() then return end
+        if not ShouldPlayFlightSounds(self) then return end
         local snd = self.metadata.Exterior.Sounds.BrokenFlightEnable
         self:EmitSound(snd)
     end)
 
     ENT:OnMessage("BrokenFlightExplosion", function(self, data, ply)
-        if not self:ShouldPlayFlightSounds() then return end
+        if not ShouldPlayFlightSounds(self) then return end
         self:EmitSound(self.metadata.Exterior.Sounds.BrokenFlightExplosion)
     end)
 
     ENT:OnMessage("BrokenFlightTurn", function(self, data, ply)
         local snds = self.metadata.Exterior.Sounds
-        if snds and istable(snds.BrokenFlightTurn) and self:ShouldPlayFlightSounds() then
+        if snds and istable(snds.BrokenFlightTurn) and ShouldPlayFlightSounds(self) then
             local snd = table.Random(snds.BrokenFlightTurn)
             self:EmitSound(snd)
         end
