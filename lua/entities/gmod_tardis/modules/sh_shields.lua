@@ -90,7 +90,6 @@ if SERVER then
 
         self:SetData("shields_regen_time", CurTime() + 0.75)
         self:AddShieldsLevel(self:GetShieldsMax() * 0.01)
-
     end)
 
     ENT:AddHook("ShouldRegenShields", "shields", function(self)
@@ -128,10 +127,14 @@ if SERVER then
     end)
 
     ENT:AddHook("SettingChanged", "shields", function(self, id, val)
-        if id ~= "health_to_shields_ratio" then return end
-
-        self:ChangeHealth(self:GetHealth())
-        self:SetShieldsLevel(self:GetShieldsLevel())
+        if id == "health_to_shields_ratio" then
+            self:ChangeHealth(self:GetHealth())
+            self:SetShieldsLevel(self:GetShieldsLevel())
+            return
+        end
+        if id == "health_max" then
+            self:SetShieldsLevel(self:GetShieldsLevel())
+        end
     end)
 end
 
