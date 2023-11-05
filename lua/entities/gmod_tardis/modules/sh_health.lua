@@ -171,7 +171,9 @@ if SERVER then
         if self:GetData("teleport") or self:GetData("vortex") then
             self:InterruptTeleport()
         end
-        self:SetPower(false)
+        if self:GetPower() then
+            self:SetPower(false)
+        end
         if IsValid(self.interior) then
             local int = self.metadata.Interior.Sounds.Damage
             self.interior:StopSound(int.BigCrash)
