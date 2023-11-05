@@ -455,9 +455,27 @@ if SERVER then
 
                 local pressed_data = self:GetData("flight_num_keys_pressed", 0)
                 local pressed = num_keys_pressed()
-                if pressed_data < pressed then
+                local do_random_skid = false
+
+                if CurTime() > self:GetData("flight_damaged_random", 0) then
+                    self:SetData("flight_damaged_random", CurTime() + math.random(3,5))
+                    do_random_skid = (vell > 400)
+                end
+
+                if pressed_data < pressed or do_random_skid then
                     local skid = AngleRand():Forward() * vell * (0.2 + math.random()) * health_mult
                     ph:AddVelocity(skid)
+
+                    if math.random(5) == 1 then
+                        self:SendMessage("BrokenFlightTurn")
+                    end
+                    local skid_ang = AngleRand():Forward() * vell * health_mult * 0.01
+                    ph:AddAngleVelocity(skid_ang)
+
+                    ph:ApplyForceOffset(-skid * 0.1, cen + up * lev)
+                    ph:ApplyForceOffset( skid * 0.1, cen - up * lev)
+
+                    tforce = tforce * 2
                 end
 
                 if pressed ~= pressed_data then
