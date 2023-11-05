@@ -312,7 +312,7 @@ if SERVER then
                     self:SetData("flight_num_keys_pressed", pressed)
                 end
 
-                local pressed_recently = (pressed_data < pressed) and (math.random(3) == 1)
+                local pressed_recently = (pressed_data < pressed) and (math.random(4) ~= 1)
 
                 if (CurTime() > last_dir_change and vell < 2000) or collided or pressed_recently then
                     local new_direction = AngleRand():Forward() * vell
