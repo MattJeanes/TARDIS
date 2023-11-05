@@ -38,6 +38,8 @@ UpdateHudFont()
 local fgcolor = NamedColor("FgColor")
 local red = NamedColor("Caution")
 local bgcolor = NamedColor("BgColor")
+local deadtextcolor = Color(20, 20, 20, 210)
+local deadheadcolor = Color(200, 200, 200, 200)
 local health_icon = Material("vgui/tardis_health.png")
 local energy_icon = Material("vgui/tardis_energy.png")
 local shields_icon = Material("vgui/tardis_shields.png")
@@ -60,7 +62,7 @@ local function DrawNumber(icon_mat, value, x, y, bad_level, very_bad_level, dead
     textcolor = Color(textcolor.r, textcolor.g, textcolor.b, alpha)
 
     if dead then
-        textcolor = Color(20,20,20, 210)
+        textcolor = deadtextcolor
     end
 
     surface.SetMaterial(icon_mat)
@@ -94,7 +96,7 @@ hook.Add("HUDPaint", "TARDIS-HUD", function()
     local yc = y
 
     draw.RoundedBox( 10, x, y, width, height + y_offset * count, bgcolor )
-    local head_clr = tardis:IsAlive() and fgcolor or Color(0,0,0,200)
+    local head_clr = tardis:IsAlive() and fgcolor or deadheadcolor
     draw.DrawText(TARDIS:GetPhrase("Common.TARDIS"), "HudDefault", x + x_offset, y + y_offset_3, head_clr, TEXT_ALIGN_LEFT )
     yc = yc + y_offset_2
 
