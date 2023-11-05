@@ -4,7 +4,7 @@ local MaxTrackingDistanceSet = 1000
 local MaxTrackingDistanceNoLOS = 2000
 local MaxTrackingTraceDistance = 10000
 
-local DEBUG_TRACKING = false
+local DEBUG_TRACKING = true
 
 TARDIS:AddKeyBind("tracking",{
     name="Tracking",
@@ -105,6 +105,12 @@ if SERVER then
             if isTracking then
                 if wasTrackingEnt ~= ent then
                     local name = ent.PrintName or (isfunction(ent.Name) and ent:Name()) or ent.Name or ent:GetModel() or ent:GetClass()
+                    if ent.GetCreator then
+                        local creator = ent:GetCreator()
+                        if IsValid(creator) then
+                            name = name .. " (" .. creator:Nick() .. ")"
+                        end
+                    end
                     TARDIS:Message(ply, "%s %s", "Controls.Tracking.Target", name)
                 else 
                     TARDIS:Message(ply, "Controls.Tracking.SameTarget")
