@@ -313,25 +313,43 @@ if SERVER then
                 end
 
                 if (CurTime() > last_dir_change and vell < 2000) or collided or pressed_recently then
+                    local new_direction = AngleRand():Forward() * vell
+                    local old_dir_mult = 0.7
+                    local hit_vector = self:GetData("broken_flight_collision_vector")
 
-                    if math.random(4) == 1 then
+                    if hit_vector then
+                        new_direction = new_direction - 2 * hit_vector * vell
+                        self:SetData("broken_flight_collision_vector", nil)
+                    end
+                    if fbinds.boost then
+                        new_direction = new_direction * 3
+                    end
+                    if collided then
+                        old_dir_mult = -2
+                    end
+
+                    if (math.random(5) == 1 or num_keys_pressed() >= 6)
+                        and CurTime() - self:GetData("broken_flight_last_explode", 0) > 2
+                    then
                         self:Explode(0)
                         ph:SetAngleVelocity(AngleRand():Forward() * vell)
 
                         self:SetData("broken_flight_last_explode", CurTime())
                         self:SendMessage("BrokenFlightExplosion")
+                        ph:AddVelocity(-0.75 * vel + new_direction * math.Rand(2,5) )
                     else
                         self:SendMessage("BrokenFlightTurn")
+                        ph:AddVelocity(0.5 * (old_dir_mult * vel + new_direction * math.Rand(2,3)) )
                     end
 
                     local stabilize = (math.random(4) == 1)
+                    stabilize = stabilize or (fbinds.rotate and fbinds.down and not self:SetData("broken_flight_stabilize"))
                     self:SetData("broken_flight_stabilize", stabilize)
 
                     self:SetData("broken_flight_dir_change_time", CurTime() + math.random(3) - 0.5)
-                    ph:AddVelocity(-0.3 * vel + AngleRand():Forward() * vell * math.Rand(2,4))
 
                     vel = ph:GetVelocity()
-                    if (fbinds.up and vel.z < 0) or (fbinds.down and vel.z > 0) then
+                    if (fbinds.up and vel.z < 0) or (fbinds.down and not fbinds.rotate and vel.z > 0) then
                         ph:SetVelocity(Vector(vel.x, vel.y, -vel.z))
                     end
                 end
@@ -340,7 +358,7 @@ if SERVER then
                     ph:AddVelocity(vel * 0.02)
                 end
 
-                if self:GetData("broken_flight_stabilize") or (fbinds.rotate and math.random(5) ~= 1) then
+                if self:GetData("broken_flight_stabilize") and math.random(6) ~= 1 then
                     stabilize()
                 elseif angvel:Length() > 450 and CurTime() - self:GetData("broken_flight_last_explode", CurTime()) > 1 then
                     local angbrake=angvel*-0.015
@@ -459,6 +477,7 @@ if SERVER then
     ENT:AddHook("PhysicsCollide", "broken_flight", function(self, data, collider)
         if self:GetData("broken_flight") then
             self:SetData("broken_flight_collision", true)
+            self:SetData("broken_flight_collision_vector", data.HitNormal)
         end
     end)
 
