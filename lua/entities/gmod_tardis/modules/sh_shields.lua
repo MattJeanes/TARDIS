@@ -81,6 +81,15 @@ if SERVER then
         self:SetShieldsLevel(0,true)
     end)
 
+    ENT:AddHook("PowerToggled", "shields", function(self, on)
+        if on and self:GetData("power_last_shields", false) == true then
+            self:SetShieldsOn(true)
+        else
+            self:SetData("power_last_shields", self:GetShieldsOn())
+            self:SetShieldsOn(false)
+        end
+    end)
+
     ENT:AddHook("SettingChanged", "shields", function(self, id, val)
         if id ~= "health_to_shields_ratio" then return end
 
