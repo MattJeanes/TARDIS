@@ -1,0 +1,15 @@
+"UnlitGeneric"
+{
+	"$basetexture" "models/molda/toyota_int/bulbs"
+	"$surfaceprop" "Metal"
+
+	"$color2" "[0.8 0.8 0.7]"
+
+	"$selfillum" 1
+	"$selfillummask" "/models/molda/toyota_int/bulbs"
+
+	"$nodecal" "1"
+	"$nocull" "0"
+
+}
+

@@ -1,0 +1,14 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/molda/toyota_int/floornew2"
+	"$surfaceprop" "Metal"
+
+	"$envmap" "models/molda/toyota_int/environment"
+//	"$envmaptint" "[0.4 0.4 0.4]"
+	"$envmaptint" "[0.2 0.9 1]"
+	"$envmapmask" "models/molda/toyota_int/smudgeN"
+
+	"$nodecal" "1"
+	"$nocull" "0"
+
+}

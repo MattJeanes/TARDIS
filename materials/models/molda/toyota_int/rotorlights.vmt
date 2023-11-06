@@ -1,0 +1,15 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/molda/toyota_int/rotorlights"
+
+	"$color2" "[0.9 0.7 0.5]"
+
+	"$surfaceprop" "Metal"
+
+	"$selfillumn" "1"
+	"$selfillumnmask" "models/molda/toyota_int/rotorlights"
+
+	"$nodecal" "1"
+	"$nocull" "0"
+
+}
