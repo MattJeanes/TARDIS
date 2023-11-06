@@ -1,4 +1,4 @@
--- Time distortion generator by parar020100 and JEREDEK
+-- Artron Inhibitor by Nova Astral, an edit of the Time Distortion Generator by parar020100 and JEREDEK
 
 include("shared.lua")
 
