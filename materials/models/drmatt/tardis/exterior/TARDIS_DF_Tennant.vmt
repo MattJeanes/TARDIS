@@ -1,6 +1,0 @@
-"VertexLitGeneric"
-{
-	"$basetexture" "models/drmatt/tardis/exterior/TARDIS_DF_Tennant"
-	"$normalmap" "models/drmatt/tardis/exterior/TARDIS_DF_NM"
-	"$surfaceprop" "Wood_Solid"
-}
