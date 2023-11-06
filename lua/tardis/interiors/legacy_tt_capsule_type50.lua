@@ -1,11 +1,11 @@
 -- Default (TT  Mk2 Capsule)
 
 local T = {}
-T.Base = "default"
+T.Base = "legacy"
 T.Name = "Interiors.DefaultTTCapsuleType50"
-T.ID = "default_tt_type50"
+T.ID = "legacy_tt_type50"
 
-T.IsVersionOf = "default"
+T.IsVersionOf = "legacy"
 
 T.Interior = {
     Portal = {
@@ -15,23 +15,23 @@ T.Interior = {
         height = 99
     },
     Parts = {
-        default_doorframe = {
+        legacy_doorframe = {
             pos = Vector(317, 336.3, -80.4),
             ang = Angle(0, -40, 0),
             scale = 0.764,
             matrixScale = Vector(0.88, 1, 1.19)
         },
-        default_doorframe_bottom = {
+        legacy_doorframe_bottom = {
             matrixScale = Vector(0.88, 0.9, 1)
         },
-        default_doorframe_bottom2 = {
+        legacy_doorframe_bottom2 = {
             matrixScale = Vector(0.88, 0.9, 1)
         },
     },
 }
 
 T.Templates = {
-    exterior_ttcapsule_type50 = { override = true, fail = function() ErrorNoHalt("Failed to add ttcapsule_type50 default exterior") end, },
+    exterior_ttcapsule_type50 = { override = true, fail = function() ErrorNoHalt("Failed to add ttcapsule_type50 legacy exterior") end, },
 }
 
 TARDIS:AddInterior(T)

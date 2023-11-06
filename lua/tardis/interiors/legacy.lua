@@ -20,23 +20,23 @@ T.Versions = {
     other = {
         {
             name = "Interiors.Default.Versions.TTCapsuleType40",
-            id = "default_tt_type40",
+            id = "legacy_tt_type40",
         },
         {
             name = "Interiors.Default.Versions.TTCapsuleType50",
-            id = "default_tt_type50",
+            id = "legacy_tt_type50",
         },
         {
             name = "Interiors.Default.Versions.TTCapsuleType55",
-            id = "default_tt_type55",
+            id = "legacy_tt_type55",
         },
         {
             name = "Interiors.Default.Versions.TTCapsuleType55B",
-            id = "default_tt_type55b",
+            id = "legacy_tt_type55b",
         },
         {
             name = "Interiors.Default.Versions.SIDRAT",
-            id = "default_sidrat",
+            id = "legacy_sidrat",
         },
     },
 }
@@ -109,7 +109,7 @@ T.Interior = {
             fullflight = "drmatt/tardis/full.wav",
         },
     },
-    Sequences = "default_sequences",
+    Sequences = "legacy_sequences",
     Parts = {
         door = {
             posoffset=Vector(28,0,-54.6),
@@ -266,6 +266,7 @@ T.Exterior = {
         Teleport = {
             demat = "drmatt/tardis/demat.wav",
             demat_fast = "drmatt/tardis/demat.wav",
+            demat_hads = "p00gie/tardis/demat_hads.wav",
             mat = "drmatt/tardis/mat.wav",
             mat_fast = "p00gie/tardis/mat_fast.wav",
             mat_damaged_fast = "p00gie/tardis/mat_damaged_fast.wav",
@@ -275,6 +276,7 @@ T.Exterior = {
         Spawn = "drmatt/tardis/repairfinish.wav",
         RepairFinish = "drmatt/tardis/repairfinish.wav",
         Delete = "p00gie/tardis/tardis_delete.wav",
+        FlightLand = "p00gie/tardis/tardis_landing.wav",
     },
     Light = {
         warncolor = Color(255,200,200),
@@ -316,8 +318,8 @@ T.Interior.CustomHooks = {
     think_rotor = {
         "Think",
         function(self)
-            local moving = self.exterior:GetData("teleport",false)
-            local flightmode = self.exterior:GetData("flight",false)
+            local moving = self:GetData("teleport",false)
+            local flightmode = self:GetData("flight",false)
             local active = (moving or flightmode)
             if not CLIENT then return end
             if active or self.timerotor.pos > 0 then
@@ -344,6 +346,32 @@ T.Interior.CustomHooks = {
             end
         end,
     },
+}
+
+T.CustomHooks = {
+    init_door = {
+        exthooks = {
+            ["PostInitialize"] = true,
+        },
+        inthooks = {
+            ["PostInitialize"] = true,
+        },
+        func = function(ext,int)
+            local door_ext = IsValid(ext) and ext:GetPart("door")
+            local door_int = IsValid(int) and int:GetPart("door")
+
+            if IsValid(door_ext) then
+                door_ext:SetBodygroup(1,1)
+                door_ext:SetBodygroup(2,1)
+            end
+
+            if IsValid(door_int) then
+                door_int:SetBodygroup(1,1)
+                door_int:SetBodygroup(2,1)
+                door_int:SetBodygroup(3,1) -- 3D sign
+            end
+        end,
+    }
 }
 
 TARDIS:AddInterior(T)
