@@ -21,7 +21,7 @@ function TARDIS:LoadInteriors()
     TARDIS.IntUpdatesPerTemplate = {}
 
     TARDIS.InteriorsLoading = true
-    TARDIS:LoadFolder("interiors/modules")
+    TARDIS:LoadFolder("metadata")
     TARDIS:LoadFolder("interiors/templates", nil, true)
     TARDIS:LoadFolder("interiors", nil, true)
     TARDIS:LoadFolder("interiors/exteriors", nil, true)
