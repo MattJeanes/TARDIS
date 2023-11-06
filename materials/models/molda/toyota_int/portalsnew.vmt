@@ -1,0 +1,14 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/molda/toyota_int/portalsnew"
+	"$surfaceprop" "Metal"
+
+	"$envmap" "models/molda/toyota_int/environment"
+	"$envmaptint" "[0 0.4 0.5]"
+//	"$envmapmask" "models/molda/toyota_int/smudgeN"
+
+	"$bumpmap" "models/molda/toyota_int/grainN"
+	"$nodecal" "1"
+	"$nocull" "0"
+
+}
