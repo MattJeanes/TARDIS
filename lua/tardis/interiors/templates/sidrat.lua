@@ -1,4 +1,4 @@
-T = {
+local T = {
     Exterior = {
         Model="models/artixc/exteriors/sidrat.mdl",
         Mass=5000,

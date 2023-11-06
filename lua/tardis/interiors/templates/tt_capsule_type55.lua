@@ -1,4 +1,4 @@
-T = {
+local T = {
     Exterior = {
         Model="models/artixc/exteriors/mk3.mdl",
         Mass=5000,
@@ -50,6 +50,7 @@ T = {
 }
 
 TARDIS:AddInteriorTemplate("exterior_ttcapsule_type55", T)
+TARDIS:AddInteriorTemplate("ttcapsule", T)
 
 local E = TARDIS:CopyTable(T.Exterior)
 E.ID = "ttcapsule_type55"

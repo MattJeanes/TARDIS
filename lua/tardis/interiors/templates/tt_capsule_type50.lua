@@ -1,4 +1,4 @@
-T = {
+local T = {
     Exterior = {
         Model="models/artixc/exteriors/mk2.mdl",
         Mass=5000,
