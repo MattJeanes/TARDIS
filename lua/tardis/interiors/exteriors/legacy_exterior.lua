@@ -1,8 +1,8 @@
 local E = {
-    ID = "legacy"
+    ID = "legacy",
     Name = "Exteriors.LegacyPoliceBox",
-    Base = "base"
-    Category = "Exteriors.Categories.PoliceBoxes"
+    Base = "base",
+    Category = "Exteriors.Categories.PoliceBoxes",
 
     Parts = {
         door = {
