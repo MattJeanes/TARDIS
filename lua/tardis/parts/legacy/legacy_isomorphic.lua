@@ -1,7 +1,7 @@
 -- Default Interior - Isomorphic Security
 
 local PART = {}
-PART.ID = "default_isomorphic"
+PART.ID = "legacy_isomorphic"
 PART.Name = "Default Isomorphic Security"
 PART.Model = "models/drmatt/tardis/handbrake.mdl"
 PART.AutoSetup = true

@@ -1,7 +1,7 @@
 -- Default Interior - Sonic charger
 
 local PART = {}
-PART.ID = "default_sonic_inserted"
+PART.ID = "legacy_sonic_inserted"
 PART.Name = "Default Sonic Screwdriver in the charger"
 PART.AutoSetup = true
 PART.Collision = true

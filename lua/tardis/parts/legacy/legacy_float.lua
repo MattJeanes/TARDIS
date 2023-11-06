@@ -1,7 +1,7 @@
 -- Default Interior - Anti-Gravs Pull Handle
 
 local PART = {}
-PART.ID = "default_float"
+PART.ID = "legacy_float"
 PART.Name = "Default Float"
 PART.Model = "models/drmatt/tardis/handbrake.mdl"
 PART.AutoSetup = true
