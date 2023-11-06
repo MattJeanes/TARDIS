@@ -257,6 +257,7 @@ T.Phrases = {
     ["Exteriors.Categories.PoliceBoxes"] = "Police Boxes",
     ["Exteriors.Categories.TTCapsules"] = "TT Capsules",
     ["Exteriors.DefaultPoliceBox"] = "Default Police Box",
+    ["Exteriors.LegacyPoliceBox"] = "Legacy Police Box",
     ["Exteriors.SIDRAT"] = "SIDRAT",
     ["Exteriors.TTCapsuleType40"] = "TT Capsule Type 40",
     ["Exteriors.TTCapsuleType50"] = "TT Capsule Type 50",
