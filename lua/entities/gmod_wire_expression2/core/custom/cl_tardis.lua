@@ -39,3 +39,7 @@ E2Helper.Descriptions["tardisSelfrepairTime"] = "Returns the time left on the TA
 E2Helper.Descriptions["tardisRemoveArtronEnergy"] = "Removes Artron Energy from the TARDIS. Returns the TARDISes new Artron Energy amount."
 E2Helper.Descriptions["tardisMaxArtronEnergy"] = "Returns the current Max Artron Energy for the TARDIS."
 E2Helper.Descriptions["tardisArtronEnergy"] = "Returns how much Artron Energy the TARDIS has."
+E2Helper.Descriptions["tardisShield"] = "Toggles or sets the Shields, returns 1 if success or 0 if failure."
+E2Helper.Descriptions["tardisShields"] = "Returns how much Shield power the TARDIS has."
+E2Helper.Descriptions["tardisShieldsPercent"] = "Returns a percentage of how much Shield power the TARDIS has."
+E2Helper.Descriptions["tardisShieldsMax"] = "Return the max amount of Shield power the TARDIS can have."

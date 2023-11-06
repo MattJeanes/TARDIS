@@ -136,6 +136,35 @@ if SERVER then
             self:SetShieldsLevel(self:GetShieldsLevel())
         end
     end)
+
+    ENT:AddHook("HandleE2", "shields", function(self, name, e2, ...)
+        local args = {...}
+        if name == "ToggleShield" and TARDIS:CheckPP(e2.player, self) then
+            self:ToggleShields()
+            if self:GetShieldsOn() == true then
+                return 1
+            else
+                return 0
+            end
+        elseif name == "SetShield" and TARDIS:CheckPP(e2.player, self) then
+            if args[1] == 1 then
+                if (not self:GetShields()) and self:SetShieldsOn(true) then
+                    return 1
+                end
+            else
+                if self:GetShields() and self:SetShieldsOn(false) then
+                    return 1
+                end
+            end
+            return 0
+        elseif name == "GetShields" then
+            return self:GetShieldsLevel()
+        elseif name == "GetShieldsPercent" then
+            return self:GetShieldsPercent()
+        elseif name == "GetShieldMax" then
+            return self:GetShieldsMax()
+        end
+    end)
 end
 
 

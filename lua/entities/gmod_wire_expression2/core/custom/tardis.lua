@@ -175,6 +175,14 @@ e2function number entity:tardisRemoveArtronEnergy(number energy)
     return HandleE2(this, "Setter", "RemoveArtron", self, energy)
 end
 
+e2function number entity:tardisShield()
+    return HandleE2(this, "Setter", "ToggleShield", self)
+end
+
+e2function number entity:tardisShield(number on)
+    return HandleE2(this, "Setter", "SetShield", self, on)
+end
+
 --[[
     ╔════════════╗
     ║Data getters║
@@ -277,4 +285,16 @@ end
 
 e2function number entity:tardisMaxArtronEnergy()
     return HandleE2(this, "Getter", "GetMaxArtron", self)
+end
+
+e2function number entity:tardisShields()
+    return HandleE2(this, "Getter", "GetShields", self)
+end
+
+e2function number entity:tardisShieldsPercent()
+    return HandleE2(this, "Getter", "GetShieldsPercent", self)
+end
+
+e2function number entity:tardisShieldsMax()
+    return HandleE2(this, "Getter", "GetShieldMax", self)
 end
