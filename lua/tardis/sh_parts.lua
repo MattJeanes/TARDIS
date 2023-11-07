@@ -110,8 +110,24 @@ local overrides={
 
             if think_ok or self.ExteriorPart or is_visible_through_door() then
                 if self.Animate then
-                    local target=self:GetOn() and 1 or 0
-                    self.posepos=math.Approach(self.posepos,target,FrameTime()*(self.AnimateSpeed or 1.5))
+
+                    local speed = self.AnimateSpeed or 1.5
+                    local cycle = self.CycleUseAnimation and self:BeingLookedAtByLocalPlayer() and LocalPlayer():KeyDown(IN_USE)
+                    local slow_compensate = self.CompensateSlowdownAnimation
+
+                    if cycle and slow_compensate and
+                        (self.posepos < slow_compensate.start or self.posepos > slow_compensate.stop)
+                    then
+                        speed = slow_compensate.speed or speed
+                    end
+
+                    local target = self:GetOn() and 1 or 0
+                    self.posepos = math.Approach(self.posepos, target, FrameTime()*speed)
+
+                    if cycle and self.posepos == target then
+                        self.posepos = 1 - target
+                    end
+
                     self:SetPoseParameter("switch",self.posepos)
                     self:InvalidateBoneCache()
                 end
@@ -215,6 +231,11 @@ function TARDIS:AddPart(e)
     if parts[e.ID] and parts[e.ID].source ~= source then
         error("Duplicate part ID registered: " .. e.ID .. " (exists in both " .. parts[e.ID].source .. " and " .. source .. ")")
     end
+
+    if not e.Name then
+        e.Name = e.ID -- most creators just copy the ID anyway
+    end
+
     e=table.Copy(e)
     e.HasUseBasic = e.UseBasic ~= nil
     e.HasUse = e.Use ~= nil
