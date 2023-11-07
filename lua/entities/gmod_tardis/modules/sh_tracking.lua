@@ -480,7 +480,9 @@ else
         local pos,ang,ent = ext:GetThirdPersonTrace(LocalPlayer(),LocalPlayer():EyeAngles())
         ext:SetData("tracking-trace-ent",ent)
 
-        ext:DrawViewCrosshair(pos,ang)
+        if not IsValid(ent) then
+            ext:DrawViewCrosshair(pos,ang)
+        end
     end)
 
     hook.Add("PreDrawHalos", "tardis-tracking", function()
