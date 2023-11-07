@@ -475,25 +475,12 @@ else
     hook.Add("PostDrawTranslucentRenderables", "tardis-tracking", function()
         local ext = TARDIS:GetExteriorEnt()
         if not IsValid(ext) then return end
-    
         if not ext:GetData("tracking-trace") then return end
-    
+
         local pos,ang,ent = ext:GetThirdPersonTrace(LocalPlayer(),LocalPlayer():EyeAngles())
-    
-        local fw = ang:Forward()
-        local bk = fw*-1
-        local ri = ang:Right()
-        local le = ri*-1
-    
         ext:SetData("tracking-trace-ent",ent)
-        if not IsValid(ent) then
-            local size = 10
-            local col = Color(255,0,0)
-            render.DrawLine(pos,pos+(fw*size),col)
-            render.DrawLine(pos,pos+(bk*size),col)
-            render.DrawLine(pos,pos+(ri*size),col)
-            render.DrawLine(pos,pos+(le*size),col)
-        end
+
+        ext:DrawViewCrosshair(pos,ang)
     end)
 
     hook.Add("PreDrawHalos", "tardis-tracking", function()
