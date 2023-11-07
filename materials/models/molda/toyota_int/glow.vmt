@@ -1,0 +1,11 @@
+"UnlitGeneric"
+{
+	"$basetexture" "models/molda/toyota_int/glow"
+	"$surfaceprop" "Glass"
+
+	"$additive" "1"
+	"$translucent" "1"
+
+	"$nodecal" "1"
+	"$nocull" "1"
+}

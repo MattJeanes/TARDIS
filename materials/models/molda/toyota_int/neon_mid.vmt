@@ -1,0 +1,12 @@
+"UnlitGeneric"
+{
+	"$basetexture" "models/molda/toyota_int/neon_mid"
+	"$surfaceprop" "Metal"
+
+	"$selfillum" 1
+	"$selfillummask" "/models/molda/toyota_int/neon_mid"
+
+	"$nodecal" "1"
+	"$nocull" "0"
+
+}
