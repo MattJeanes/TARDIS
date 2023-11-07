@@ -174,6 +174,15 @@ if SERVER then
                 end
             end
 
+            if self:GetTracking() then
+                local vel = self:GetVelocity():Length()
+                if vel > 1500 then
+                    change = change + TARDIS.artron_values.spend_flight_boost
+                elseif vel > 200 then
+                    change = change + TARDIS.artron_values.spend_flight_moving                    
+                end
+            end
+
             change = change + TARDIS.artron_values.spend_flight_static
         end
         if cloak then
