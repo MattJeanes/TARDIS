@@ -105,11 +105,8 @@ if SERVER then
         end
 
         if self:GetPhyslock() then
-            local success = self:SetPhyslock(false)
-            if not success then
-                TARDIS:ErrorMessage(ply, "Controls.Tracking.PhyslockFail")
-                return false
-            end
+            TARDIS:ErrorMessage(ply, "Controls.Tracking.PhyslockFail")
+            return false
         end
 
         if not wasTracking then
