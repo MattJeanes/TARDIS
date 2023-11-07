@@ -54,52 +54,71 @@ if SERVER then
         local wasTrackingEnt = self:GetData("tracking-ent")
         local wasTracking = IsValid(wasTrackingEnt)
         local isTracking = IsValid(ent)
-        if isTracking then 
-            if ent.TardisPart and ent.ExteriorPart then
-                ent = ent.exterior
+        if not isTracking then
+            self:SetData("tracking-ent",nil,true)
+            self:SetData("tracking-offset-pos", nil)
+            self:SetData("tracking-offset-yaw", nil)
+
+            if wasTracking and (not self:GetData("tracking-wasflight")) then
+                self:SetFlight(false)
+            end
+            self:SetData("tracking-wasflight", nil)
+            
+            if IsValid(self.trackingdebugprop) then
+                self.trackingdebugprop:Remove()
             end
 
-            if ent.TardisPart or ent.TardisInterior or (ent:IsPlayer() and IsValid(TARDIS:GetInteriorEnt(ent))) then
-                TARDIS:ErrorMessage(ply, "Controls.Tracking.InteriorFail")
-                return false
-            elseif ent == self then
-                TARDIS:ErrorMessage(ply, "Controls.Tracking.SelfFail")
-                return false
-            elseif table.HasValue(constraint.GetAllConstrainedEntities(ent), self) then
-                TARDIS:ErrorMessage(ply, "Controls.Tracking.ConstrainedFail")
-                return false
-            elseif ent:GetPos():Distance(self:GetPos()) > TRACKING_MAX_DISTANCE_SET then
-                TARDIS:ErrorMessage(ply, "Controls.Tracking.DistanceFail")
-                return false
-            elseif self:CallHook("CanTrack", ent, ply) == false then
-                TARDIS:ErrorMessage(ply, "Controls.Tracking.GenericFail")
-                return false
+            if wasTracking ~= isTracking then
+                TARDIS:StatusMessage(ply, "Controls.Tracking.Status", isTracking)
             end
+            return true
+        end
+      
+        if ent.TardisPart and ent.ExteriorPart then
+            ent = ent.exterior
+        end
 
-            local wasFlying = self:GetFlight()
-            if not wasFlying then
-                local success = self:SetFlight(true)
-                if not success then
-                    TARDIS:ErrorMessage(ply, "Controls.Tracking.FlightFail")
-                    return false
-                end
-            end
+        if ent.TardisPart or ent.TardisInterior or (ent:IsPlayer() and IsValid(TARDIS:GetInteriorEnt(ent))) then
+            TARDIS:ErrorMessage(ply, "Controls.Tracking.InteriorFail")
+            return false
+        elseif ent == self then
+            TARDIS:ErrorMessage(ply, "Controls.Tracking.SelfFail")
+            return false
+        elseif table.HasValue(constraint.GetAllConstrainedEntities(ent), self) then
+            TARDIS:ErrorMessage(ply, "Controls.Tracking.ConstrainedFail")
+            return false
+        elseif ent:GetPos():Distance(self:GetPos()) > TRACKING_MAX_DISTANCE_SET then
+            TARDIS:ErrorMessage(ply, "Controls.Tracking.DistanceFail")
+            return false
+        elseif self:CallHook("CanTrack", ent, ply) == false then
+            TARDIS:ErrorMessage(ply, "Controls.Tracking.GenericFail")
+            return false
+        end
 
-            if self:GetPhyslock() then
-                local success = self:SetPhyslock(false)
-                if not success then
-                    TARDIS:ErrorMessage(ply, "Controls.Tracking.PhyslockFail")
-                    return false
-                end
+        local wasFlying = self:GetFlight()
+        if not wasFlying then
+            local success = self:SetFlight(true)
+            if not success then
+                TARDIS:ErrorMessage(ply, "Controls.Tracking.FlightFail")
+                return false
             end
+        end
 
-            if not wasTracking then
-                self:SetData("tracking-wasflight", wasFlying)
+        if self:GetPhyslock() then
+            local success = self:SetPhyslock(false)
+            if not success then
+                TARDIS:ErrorMessage(ply, "Controls.Tracking.PhyslockFail")
+                return false
             end
+        end
+
+        if not wasTracking then
+            self:SetData("tracking-wasflight", wasFlying)
         end
         
         self:SetData("tracking-ent",ent,true)
-        if isTracking and ent ~= wasTrackingEnt then
+
+        if ent ~= wasTrackingEnt then
             local offsetPos
             local offsetYaw
             if self:GetTrackRotation() then
@@ -113,35 +132,23 @@ if SERVER then
             self:SetData("tracking-offset-yaw", offsetYaw)
         end
 
-        if not isTracking then
-            if wasTracking and (not self:GetData("tracking-wasflight")) then
-                self:SetFlight(false)
+        if wasTrackingEnt ~= ent then
+            local name = ent.PrintName or (isfunction(ent.Name) and ent:Name()) or ent.Name or ent:GetModel() or ent:GetClass()
+            if ent.GetCreator then
+                local creator = ent:GetCreator()
+                if IsValid(creator) then
+                    name = name .. " (" .. creator:Nick() .. ")"
+                end
             end
-            self:SetData("tracking-wasflight", nil)
-            self:SetData("tracking-offset-pos", nil)
-            self:SetData("tracking-offset-yaw", nil)
-            if IsValid(self.trackingdebugprop) then
-                self.trackingdebugprop:Remove()
-            end
+            TARDIS:Message(ply, "%s %s", "Controls.Tracking.Target", name)
+        else
+            TARDIS:Message(ply, "Controls.Tracking.SameTarget")
         end
 
         if wasTracking ~= isTracking then
-            TARDIS:StatusMessage(ply, "Controls.Tracking.Status", IsValid(ent))
+            TARDIS:StatusMessage(ply, "Controls.Tracking.Status", isTracking)
         end
-        if isTracking then
-            if wasTrackingEnt ~= ent then
-                local name = ent.PrintName or (isfunction(ent.Name) and ent:Name()) or ent.Name or ent:GetModel() or ent:GetClass()
-                if ent.GetCreator then
-                    local creator = ent:GetCreator()
-                    if IsValid(creator) then
-                        name = name .. " (" .. creator:Nick() .. ")"
-                    end
-                end
-                TARDIS:Message(ply, "%s %s", "Controls.Tracking.Target", name)
-            else
-                TARDIS:Message(ply, "Controls.Tracking.SameTarget")
-            end
-        end
+
         return true
     end
 
