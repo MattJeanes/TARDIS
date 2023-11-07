@@ -219,6 +219,7 @@ if SERVER then
         local offsetforce = 5
         local offsetrforce = 2
         local spin = self:GetSpin()
+        local trackrotation = self:GetTrackRotation()
 
         if IsValid(pilot) then
             local eye = pilot:GetTardisData("viewang")
@@ -292,7 +293,11 @@ if SERVER then
 
             if adjustedOffset ~= vector_origin then
                 adjustedOffset:Mul(phm)
-                offset:Add(WorldToLocal(adjustedOffset, angle_zero, vector_origin, ent:GetAngles()))
+                if trackrotation then
+                    offset:Add(WorldToLocal(adjustedOffset, angle_zero, vector_origin, ent:GetAngles()))
+                else
+                    offset:Add(adjustedOffset)
+                end
                 self:SetData("tracking-offset-pos", offset)
             end
 
@@ -302,7 +307,6 @@ if SERVER then
             end
         end
 
-        local trackrotation = self:GetTrackRotation()
         local tvel = ent:GetVelocity()
         local tfwd = tvel:Angle():Forward()
         local target
