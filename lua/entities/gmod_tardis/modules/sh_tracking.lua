@@ -201,7 +201,7 @@ if SERVER then
     end)
 
     ENT:AddHook("PhyslockToggled", "tracking", function(self, on)
-        if not on then
+        if on then
             self:SetTracking()
         end
     end)
