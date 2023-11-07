@@ -49,7 +49,8 @@ if SERVER then
         return self:GetData("tracking-ent")
     end
 
-    function ENT:SetTracking(ent,ply)
+    function ENT:SetTracking(ent, ply)
+        if not ply then ply = self:GetData("pilot") end
         local wasTrackingEnt = self:GetData("tracking-ent")
         local wasTracking = IsValid(wasTrackingEnt)
         local isTracking = IsValid(ent)
@@ -195,7 +196,13 @@ if SERVER then
 
     ENT:AddHook("FlightToggled", "tracking", function(self, on)
         if not on then
-            self:SetTracking(nil, self:GetData("pilot"))
+            self:SetTracking()
+        end
+    end)
+
+    ENT:AddHook("PhyslockToggled", "tracking", function(self, on)
+        if not on then
+            self:SetTracking()
         end
     end)
 
@@ -204,7 +211,7 @@ if SERVER then
     ENT:AddHook("PhysicsUpdate", "tracking", function(self, ph)
         local ent = self:GetTracking()
         if ent and not IsValid(ent) then
-            self:SetTracking(nil, self:GetData("pilot"))
+            self:SetTracking()
             return
         elseif not ent then
             return
@@ -324,7 +331,7 @@ if SERVER then
         local len = vel:Length()
 
         if offsetdist > TRACKING_MAX_DISTANCE_TARGET_MAX then
-            self:SetTracking(nil, pilot)
+            self:SetTracking()
             if IsValid(pilot) then
                 TARDIS:ErrorMessage(pilot, "Controls.Tracking.TargetTooFar")
             end
@@ -342,7 +349,7 @@ if SERVER then
         end
 
         if tdiff > TRACKING_MAX_DISTANCE_TRACE then
-            self:SetTracking(nil, pilot)
+            self:SetTracking()
             if IsValid(pilot) then
                 TARDIS:ErrorMessage(pilot, "Controls.Tracking.TargetLost")
             end
@@ -356,7 +363,7 @@ if SERVER then
         local trackinglost = self:GetData("tracking-lost")
         if trackinglost and CurTime() > trackinglost then
             self:SetData("tracking-lost", nil)
-            self:SetTracking(nil, pilot)
+            self:SetTracking()
             if IsValid(pilot) then
                 TARDIS:ErrorMessage(pilot, "Controls.Tracking.TargetLost")
             end
@@ -429,7 +436,7 @@ if SERVER then
 
     ENT:AddHook("StopDemat", "tracking", function(self)
         if self:GetTracking() then
-            self:SetTracking(nil)
+            self:SetTracking()
         end
     end)
 
@@ -454,9 +461,9 @@ if SERVER then
     ENT:OnMessage("tracking-set", function(self,data,ply)
         local ent = data[1]
 
-        if self:GetData("pilot") == ply then
-            self:SetTracking(ent, ply)
-        end
+        if self:GetData("pilot") ~= ply then return end
+        
+        self:SetTracking(ent)
     end)
 else
     hook.Add("PostDrawTranslucentRenderables", "tardis-tracking", function()
