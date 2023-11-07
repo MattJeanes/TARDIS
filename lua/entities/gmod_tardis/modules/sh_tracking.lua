@@ -138,7 +138,7 @@ if SERVER then
                         end
                     end
                     TARDIS:Message(ply, "%s %s", "Controls.Tracking.Target", name)
-                else 
+                else
                     TARDIS:Message(ply, "Controls.Tracking.SameTarget")
                 end
             end
@@ -399,7 +399,7 @@ if SERVER then
 
         local brake = len-tdist
         local brakeClamped = math.Clamp(brake, 0, len)*0.9
-        ph:AddVelocity(velnorm*-brakeClamped)
+        ph:AddVelocity(-velnorm*brakeClamped)
 
         if not spin then
             local cen = ph:GetMassCenter()
@@ -414,7 +414,7 @@ if SERVER then
             end
             local angdiff = math.AngleDifference(targetang,ang.y)
             ph:AddAngleVelocity(Vector(0,0,angdiff*phm))
-            ph:AddAngleVelocity(Vector(0,0,ph:GetAngleVelocity().z*-0.3*phm))
+            ph:AddAngleVelocity(Vector(0,0,-ph:GetAngleVelocity().z*0.3*phm))
 
             if TRACKING_DEBUG then
                 self.trackingdebugprop:SetAngles(Angle(0,targetang,0))
