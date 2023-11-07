@@ -245,6 +245,7 @@
     "Controls.Tracking.FlightFail": "",
     "Controls.Tracking.GenericFail": "",
     "Controls.Tracking.InteriorFail": "",
+    "Controls.Tracking.PhyslockFail": "",
     "Controls.Tracking.PilotWarning": "",
     "Controls.Tracking.Rotation": "",
     "Controls.Tracking.SameTarget": "",

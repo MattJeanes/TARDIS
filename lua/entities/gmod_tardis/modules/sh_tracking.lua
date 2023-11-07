@@ -17,12 +17,12 @@ TARDIS:AddKeyBind("tracking",{
             if down then
                 self:SetData("tracking-trace",true)
             else
-                self:SendMessage("tracking-set", {self:GetData("tracking-ent")})
+                self:SendMessage("tracking-set", {self:GetData("tracking-trace-ent")})
             end
         end
         if not down then
             self:SetData("tracking-trace",false)
-            self:SetData("tracking-ent",nil)
+            self:SetData("tracking-trace-ent",nil)
         end
     end,
     key=KEY_X,
@@ -44,11 +44,11 @@ TARDIS:AddKeyBind("tracking-rotation",{
     exterior=true
 })
 
-if SERVER then
-    function ENT:GetTracking()
-        return self:GetData("tracking-ent")
-    end
+function ENT:GetTracking()
+    return self:GetData("tracking-ent")
+end
 
+if SERVER then
     function ENT:SetTracking(ent, ply)
         if not ply then ply = self:GetData("pilot") end
         local wasTrackingEnt = self:GetData("tracking-ent")
@@ -78,12 +78,20 @@ if SERVER then
                 end
             end
 
+            if self:GetPhyslock() then
+                local success = self:SetPhyslock(false)
+                if not success then
+                    TARDIS:ErrorMessage(ply, "Controls.Tracking.PhyslockFail")
+                    return false
+                end
+            end
+
             if not wasTracking then
                 self:SetData("tracking-wasflight", wasFlying)
             end
         end
         
-        self:SetData("tracking-ent",ent)
+        self:SetData("tracking-ent",ent,true)
         if isTracking and ent ~= wasTrackingEnt then
             local offsetPos
             local offsetYaw
@@ -463,7 +471,7 @@ else
         local ri = ang:Right()
         local le = ri*-1
     
-        ext:SetData("tracking-ent",ent)
+        ext:SetData("tracking-trace-ent",ent)
         if not IsValid(ent) then
             local size = 10
             local col = Color(255,0,0)
@@ -478,7 +486,7 @@ else
         local ext = TARDIS:GetExteriorEnt()
         if not IsValid(ext) then return end
     
-        local ent = ext:GetData("tracking-ent")
+        local ent = ext:GetData("tracking-trace-ent")
         if not IsValid(ent) then return end
     
         local dist = ent:GetPos():Distance(ext:GetPos())
