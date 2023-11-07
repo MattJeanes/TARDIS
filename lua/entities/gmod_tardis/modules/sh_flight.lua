@@ -115,6 +115,10 @@ if SERVER then
         self:ExplodeIfFast()
     end
 
+    function ENT:GetFlight(on)
+        return self:GetData("flight",false)
+    end
+
     function ENT:SetFlight(on)
         if not on and self:CallHook("CanTurnOffFlight")==false then
             return false
@@ -514,16 +518,12 @@ if SERVER then
             local spindir = args[1]
             self:SetSpinDir(spindir)
             return self:GetSpinDir()
-        elseif name == "Track" and TARDIS:CheckPP(e2.player, self) then
-            return 0 -- Not yet implemented
         end
     end)
 
     ENT:AddHook("HandleE2", "flight_get", function(self, name, e2)
         if name == "GetFlying" then
             return self:GetData("flight",false) and 1 or 0
-        elseif name == "GetTracking" then
-            return NULL --We don't have flight tracking yet
         elseif name == "GetPilot" then
             return self:GetData("pilot", NULL) or NULL
         end

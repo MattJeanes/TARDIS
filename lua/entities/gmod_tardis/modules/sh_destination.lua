@@ -617,6 +617,16 @@ else
             prop:SetAngles(ang)
         end
     end)
+
+    hook.Add("PostDrawTranslucentRenderables", "destination-trace", function()
+        local ext=TARDIS:GetExteriorEnt()
+        if not IsValid(ext) then return end
+        if not LocalPlayer():GetTardisData("destination") then return end
+        if not ext:GetData("destination-trace") then return end
+    
+        local pos, ang = ext:GetDestinationPropTrace(LocalPlayer(),LocalPlayer():EyeAngles())
+        ext:DrawViewCrosshair(pos,ang)
+    end)    
 end
 
 function ENT:GetDestination()
