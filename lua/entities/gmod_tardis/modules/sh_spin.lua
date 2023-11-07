@@ -36,7 +36,7 @@ if SERVER then
 
     function ENT:SetSpin(on, dir)
         self:SetData("spin", on, true)
-        if on and dir ~= nil then
+        if dir ~= nil then
             self:SetData("spin-dir", dir, true)
         end
         self:CallHook("SpinChanged", self:GetSpinDir())
