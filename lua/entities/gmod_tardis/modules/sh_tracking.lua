@@ -206,7 +206,7 @@ if SERVER then
         end
     end)
 
-    local VECTOR_0_0_1 = Vector(0,0,1)
+    local VECTOR_UP = Vector(0,0,1)
 
     ENT:AddHook("PhysicsUpdate", "tracking", function(self, ph)
         local ent = self:GetTracking()
@@ -343,7 +343,7 @@ if SERVER then
             local tdifftoent = (target-entPos):Angle()
             local tdifftoentfwd = tdifftoent:Forward()
             tdifftoentfwd.z = 0
-            local spinvelocity = math.abs(targetph:GetAngleVelocity():Dot(VECTOR_0_0_1))
+            local spinvelocity = math.abs(targetph:GetAngleVelocity():Dot(VECTOR_UP))
             local angveloutwards = (tdifftoentfwd * spinvelocity * 2 * phm)
             targetpredicted = targetpredicted + angveloutwards
         end
