@@ -58,7 +58,6 @@ local function get_ent_size(ent)
         if ent.GetModelScale then
             local modelscale = ent:GetModelScale()
             if isnumber(modelscale) then
-                print(ent, modelscale)
                 entsize = entsize * modelscale
             end
         end
