@@ -98,7 +98,7 @@ if SERVER then
         end
         
         self:SetData("tracking-ent",ent)
-        if IsValid(ent) and ent ~= wasTrackingEnt then
+        if isTracking and ent ~= wasTrackingEnt then
             local offsetPos
             local offsetYaw
             if self:GetTrackRotation() then
