@@ -241,6 +241,7 @@
     "Controls.ToggleScreens.Status": "Sgriniau mewnol",
     "Controls.ToggleScreens.Tip": "Toglo Sgrin",
     "Controls.Tracking": "",
+    "Controls.Tracking.ConstrainedFail": "",
     "Controls.Tracking.DistanceFail": "",
     "Controls.Tracking.FlightFail": "",
     "Controls.Tracking.GenericFail": "",

@@ -241,6 +241,7 @@
     "Controls.ToggleScreens.Status": "Écrans intérieurs",
     "Controls.ToggleScreens.Tip": "Activer les écrans",
     "Controls.Tracking": "",
+    "Controls.Tracking.ConstrainedFail": "",
     "Controls.Tracking.DistanceFail": "",
     "Controls.Tracking.FlightFail": "",
     "Controls.Tracking.GenericFail": "",

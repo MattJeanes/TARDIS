@@ -241,6 +241,7 @@
     "Controls.ToggleScreens.Status": "內部屏幕",
     "Controls.ToggleScreens.Tip": "切換屏幕",
     "Controls.Tracking": "",
+    "Controls.Tracking.ConstrainedFail": "",
     "Controls.Tracking.DistanceFail": "",
     "Controls.Tracking.FlightFail": "",
     "Controls.Tracking.GenericFail": "",

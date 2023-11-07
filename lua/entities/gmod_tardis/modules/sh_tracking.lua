@@ -55,11 +55,18 @@ if SERVER then
         local wasTracking = IsValid(wasTrackingEnt)
         local isTracking = IsValid(ent)
         if isTracking then 
+            if ent.TardisPart and ent.ExteriorPart then
+                ent = ent.exterior
+            end
+
             if ent.TardisPart or ent.TardisInterior or (ent:IsPlayer() and IsValid(TARDIS:GetInteriorEnt(ent))) then
                 TARDIS:ErrorMessage(ply, "Controls.Tracking.InteriorFail")
                 return false
             elseif ent == self then
                 TARDIS:ErrorMessage(ply, "Controls.Tracking.SelfFail")
+                return false
+            elseif table.HasValue(constraint.GetAllConstrainedEntities(ent), self) then
+                TARDIS:ErrorMessage(ply, "Controls.Tracking.ConstrainedFail")
                 return false
             elseif ent:GetPos():Distance(self:GetPos()) > TRACKING_MAX_DISTANCE_SET then
                 TARDIS:ErrorMessage(ply, "Controls.Tracking.DistanceFail")

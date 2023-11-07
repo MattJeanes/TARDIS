@@ -244,6 +244,7 @@ T.Phrases = {
     ["Controls.ToggleScreens.Status"] = "Interior screens",
     ["Controls.ToggleScreens.Tip"] = "Toggle Screen",
     ["Controls.Tracking"] = "Tracking",
+    ["Controls.Tracking.ConstrainedFail"] = "Can't track entities that are attached to this TARDIS",
     ["Controls.Tracking.DistanceFail"] = "Can't track entities that are too far away",
     ["Controls.Tracking.FlightFail"] = "Failed to enable flight mode for tracking",
     ["Controls.Tracking.GenericFail"] = "Failed to track entity",
