@@ -51,30 +51,21 @@ if SERVER then
 
     function ENT:SetTracking(ent, ply)
         if not ply then ply = self:GetData("pilot") end
-        local plyValid = IsValid(ply)
         local wasTrackingEnt = self:GetData("tracking-ent")
         local wasTracking = IsValid(wasTrackingEnt)
         local isTracking = IsValid(ent)
         if isTracking then 
             if ent.TardisPart or ent.TardisInterior or (ent:IsPlayer() and IsValid(TARDIS:GetInteriorEnt(ent))) then
-                if plyValid then
-                    TARDIS:ErrorMessage(ply, "Controls.Tracking.InteriorFail")
-                end
+                TARDIS:ErrorMessage(ply, "Controls.Tracking.InteriorFail")
                 return false
             elseif ent == self then
-                if plyValid then
-                    TARDIS:ErrorMessage(ply, "Controls.Tracking.SelfFail")
-                end
+                TARDIS:ErrorMessage(ply, "Controls.Tracking.SelfFail")
                 return false
             elseif ent:GetPos():Distance(self:GetPos()) > TRACKING_MAX_DISTANCE_SET then
-                if plyValid then
-                    TARDIS:ErrorMessage(ply, "Controls.Tracking.DistanceFail")
-                end
+                TARDIS:ErrorMessage(ply, "Controls.Tracking.DistanceFail")
                 return false
             elseif self:CallHook("CanTrack", ent, ply) == false then
-                if plyValid then
-                    TARDIS:ErrorMessage(ply, "Controls.Tracking.GenericFail")
-                end
+                TARDIS:ErrorMessage(ply, "Controls.Tracking.GenericFail")
                 return false
             end
 
@@ -82,9 +73,7 @@ if SERVER then
             if not wasFlying then
                 local success = self:SetFlight(true)
                 if not success then
-                    if plyValid then
-                        TARDIS:ErrorMessage(ply, "Controls.Tracking.FlightFail")
-                    end
+                    TARDIS:ErrorMessage(ply, "Controls.Tracking.FlightFail")
                     return false
                 end
             end
@@ -121,23 +110,21 @@ if SERVER then
             end
         end
 
-        if plyValid then
-            if wasTracking ~= isTracking then
-                TARDIS:StatusMessage(ply, "Controls.Tracking.Status", IsValid(ent))
-            end
-            if isTracking then
-                if wasTrackingEnt ~= ent then
-                    local name = ent.PrintName or (isfunction(ent.Name) and ent:Name()) or ent.Name or ent:GetModel() or ent:GetClass()
-                    if ent.GetCreator then
-                        local creator = ent:GetCreator()
-                        if IsValid(creator) then
-                            name = name .. " (" .. creator:Nick() .. ")"
-                        end
+        if wasTracking ~= isTracking then
+            TARDIS:StatusMessage(ply, "Controls.Tracking.Status", IsValid(ent))
+        end
+        if isTracking then
+            if wasTrackingEnt ~= ent then
+                local name = ent.PrintName or (isfunction(ent.Name) and ent:Name()) or ent.Name or ent:GetModel() or ent:GetClass()
+                if ent.GetCreator then
+                    local creator = ent:GetCreator()
+                    if IsValid(creator) then
+                        name = name .. " (" .. creator:Nick() .. ")"
                     end
-                    TARDIS:Message(ply, "%s %s", "Controls.Tracking.Target", name)
-                else
-                    TARDIS:Message(ply, "Controls.Tracking.SameTarget")
                 end
+                TARDIS:Message(ply, "%s %s", "Controls.Tracking.Target", name)
+            else
+                TARDIS:Message(ply, "Controls.Tracking.SameTarget")
             end
         end
         return true
