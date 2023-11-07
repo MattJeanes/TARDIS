@@ -249,6 +249,7 @@
     "Controls.Tracking.PhyslockFail": "",
     "Controls.Tracking.PilotWarning": "",
     "Controls.Tracking.Rotation": "",
+    "Controls.Tracking.RotationHint": "",
     "Controls.Tracking.SameTarget": "",
     "Controls.Tracking.SelfFail": "",
     "Controls.Tracking.SpinWarning": "",

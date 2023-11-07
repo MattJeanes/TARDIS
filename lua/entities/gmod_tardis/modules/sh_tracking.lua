@@ -140,13 +140,16 @@ if SERVER then
                     name = name .. " (" .. creator:Nick() .. ")"
                 end
             end
-            TARDIS:Message(ply, "%s %s", "Controls.Tracking.Target", name)
+            TARDIS:Message(ply, "Controls.Tracking.Target", name)
         else
             TARDIS:Message(ply, "Controls.Tracking.SameTarget")
         end
 
         if wasTracking ~= isTracking then
             TARDIS:StatusMessage(ply, "Controls.Tracking.Status", isTracking)
+            if ply == self:GetData("pilot") then
+                self:SendMessage("tracking-rotationhint", nil, ply)
+            end
         end
 
         return true
@@ -499,5 +502,9 @@ else
     ENT:OnMessage("tracking-pilotwarning", function(self)
         local keyName = input.GetKeyName(TARDIS:GetBindKey("tracking"))
         TARDIS:Message(LocalPlayer(), "Controls.Tracking.PilotWarning", string.upper(keyName))
+    end)
+
+    ENT:OnMessage("tracking-rotationhint", function(self)
+        TARDIS:Message(LocalPlayer(), "Controls.Tracking.RotationHint", TARDIS:GetKeyName(TARDIS:GetBindKey("tracking-rotation")))
     end)
 end
