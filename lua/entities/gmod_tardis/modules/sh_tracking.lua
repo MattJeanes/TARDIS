@@ -51,33 +51,30 @@ if SERVER then
 
     function ENT:SetTracking(ent, ply)
         if not ply then ply = self:GetData("pilot") end
+        local plyValid = IsValid(ply)
         local wasTrackingEnt = self:GetData("tracking-ent")
         local wasTracking = IsValid(wasTrackingEnt)
         local isTracking = IsValid(ent)
-        local valid = true
         if isTracking then 
             if ent.TardisPart or ent.TardisInterior or (ent:IsPlayer() and IsValid(TARDIS:GetInteriorEnt(ent))) then
-                if IsValid(ply) then
+                if plyValid then
                     TARDIS:ErrorMessage(ply, "Controls.Tracking.InteriorFail")
                 end
-                valid = false
+                return false
             elseif ent == self then
-                if IsValid(ply) then
+                if plyValid then
                     TARDIS:ErrorMessage(ply, "Controls.Tracking.SelfFail")
                 end
-                valid = false
+                return false
             elseif ent:GetPos():Distance(self:GetPos()) > TRACKING_MAX_DISTANCE_SET then
-                if IsValid(ply) then
+                if plyValid then
                     TARDIS:ErrorMessage(ply, "Controls.Tracking.DistanceFail")
                 end
-                valid = false
+                return false
             elseif self:CallHook("CanTrack", ent, ply) == false then
-                if IsValid(ply) then
+                if plyValid then
                     TARDIS:ErrorMessage(ply, "Controls.Tracking.GenericFail")
                 end
-                valid = false
-            end
-            if not valid then
                 return false
             end
 
@@ -85,7 +82,7 @@ if SERVER then
             if not wasFlying then
                 local success = self:SetFlight(true)
                 if not success then
-                    if IsValid(ply) then
+                    if plyValid then
                         TARDIS:ErrorMessage(ply, "Controls.Tracking.FlightFail")
                     end
                     return false
@@ -124,7 +121,7 @@ if SERVER then
             end
         end
 
-        if IsValid(ply) then
+        if plyValid then
             if wasTracking ~= isTracking then
                 TARDIS:StatusMessage(ply, "Controls.Tracking.Status", IsValid(ent))
             end
