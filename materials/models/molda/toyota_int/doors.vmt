@@ -1,14 +1,9 @@
-"VertexLitGeneric"
+"VertexlitGeneric"
 {
-	"$basetexture" "models/molda/toyota_int/doors"
-
-	"$surfaceprop" "Wood"
-
-//	"$envmap" "models/molda/toyota_int/environment"
-//	"$envmaptint" "[0 0.4 0.8]"
-//	"$envmapmask" "models/molda/toyota_int/smudge2N"
-
+	"$basetexture" "models/vtalanov98/toyota_ext/doors"
+	"$bumpmap" "models/vtalanov98/toyota_ext/doorsn"
 	"$nodecal" "1"
-	"$nocull" "0"
-
+	"$normalmap" "models/vtalanov98/toyota_ext/doorsn"
+	"$surfaceprop" "Wood_Solid"
+	"$color2" "[2.8 3 3]"
 }

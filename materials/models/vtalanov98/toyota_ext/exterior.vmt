@@ -1,9 +1,7 @@
 "VertexlitGeneric"
 {
-//	"$basealphaenvmapmask" "1"
-	"$basetexture" "models/vtalanov98/toyota_ext/exterior"
+	$basetexture "models/vtalanov98/toyota_ext/exterior"
 	$bumpmap  "models/vtalanov98/toyota_ext/e_box_bumpmap"
-//	$envmap "env_cubemap"
 	$envmaptint "[.0125 .0125 .0125]"
 	$diffuseexp 1
 	$halflambert 1
