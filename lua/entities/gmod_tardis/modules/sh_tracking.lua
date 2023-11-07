@@ -48,6 +48,24 @@ function ENT:GetTracking()
     return self:GetData("tracking-ent")
 end
 
+local function get_ent_size(ent)
+    if not ent.GetModelBounds then return 0 end
+
+    local mins, maxs = ent:GetModelBounds()
+    if mins and maxs then
+        local size = maxs - mins
+        local entsize = math.max(size.x, size.y, size.z)
+        if ent.GetModelScale then
+            local modelscale = ent:GetModelScale()
+            if isnumber(modelscale) then
+                print(ent, modelscale)
+                entsize = entsize * modelscale
+            end
+        end
+        return entsize
+    end
+end
+
 if SERVER then
     function ENT:SetTracking(ent, ply)
         if not ply then ply = self:GetData("pilot") end
@@ -78,6 +96,8 @@ if SERVER then
             ent = ent.exterior
         end
 
+        local entSize = get_ent_size(ent)
+
         if ent.TardisPart or ent.TardisInterior or (ent:IsPlayer() and IsValid(TARDIS:GetInteriorEnt(ent))) then
             TARDIS:ErrorMessage(ply, "Controls.Tracking.InteriorFail")
             return false
@@ -87,7 +107,7 @@ if SERVER then
         elseif table.HasValue(constraint.GetAllConstrainedEntities(ent), self) then
             TARDIS:ErrorMessage(ply, "Controls.Tracking.ConstrainedFail")
             return false
-        elseif ent:GetPos():Distance(self:GetPos()) > TRACKING_MAX_DISTANCE_SET then
+        elseif ent:GetPos():Distance(self:GetPos()) > (TRACKING_MAX_DISTANCE_SET + entSize) then
             TARDIS:ErrorMessage(ply, "Controls.Tracking.DistanceFail")
             return false
         elseif self:CallHook("CanTrack", ent, ply) == false then
@@ -127,6 +147,7 @@ if SERVER then
             end
             self:SetData("tracking-offset-pos", offsetPos)
             self:SetData("tracking-offset-yaw", offsetYaw)
+            self:SetData("tracking-ent-size", entSize)
         end
 
         if wasTrackingEnt ~= ent then
@@ -336,7 +357,9 @@ if SERVER then
         local velnorm = vel:GetNormalized()
         local len = vel:Length()
 
-        if offsetdist > TRACKING_MAX_DISTANCE_TARGET_MAX then
+        local entSize = self:GetData("tracking-ent-size")
+
+        if offsetdist > (TRACKING_MAX_DISTANCE_TARGET_MAX + entSize) then
             self:SetTracking()
             if IsValid(pilot) then
                 TARDIS:ErrorMessage(pilot, "Controls.Tracking.TargetTooFar")
@@ -354,7 +377,7 @@ if SERVER then
             targetpredicted = targetpredicted + angveloutwards
         end
 
-        if tdiff > TRACKING_MAX_DISTANCE_TRACE then
+        if tdiff > (TRACKING_MAX_DISTANCE_TRACE + entSize) then
             self:SetTracking()
             if IsValid(pilot) then
                 TARDIS:ErrorMessage(pilot, "Controls.Tracking.TargetLost")
@@ -363,8 +386,8 @@ if SERVER then
         end
 
         local diffang = (entPos - pos):Angle()
-        local trace = util.QuickTrace(pos,diffang:Forward()*TRACKING_MAX_DISTANCE_TRACE,{self,TARDIS:GetPart(self,"door")})
-        local targetfound = trace.Entity==ent or tdiff < TRACKING_MAX_DISTANCE_NO_LOS
+        local trace = util.QuickTrace(pos,diffang:Forward()*(TRACKING_MAX_DISTANCE_TRACE + entSize),{self,TARDIS:GetPart(self,"door")})
+        local targetfound = trace.Entity==ent or tdiff < (TRACKING_MAX_DISTANCE_NO_LOS + entSize)
 
         local trackinglost = self:GetData("tracking-lost")
         if trackinglost and CurTime() > trackinglost then
@@ -478,7 +501,13 @@ else
         if not ext:GetData("tracking-trace") then return end
 
         local pos,ang,ent = ext:GetThirdPersonTrace(LocalPlayer(),LocalPlayer():EyeAngles())
-        ext:SetData("tracking-trace-ent",ent)
+
+        local currentEnt = ext:GetData("tracking-trace-ent")
+
+        if ent ~= currentEnt then
+            ext:SetData("tracking-trace-ent",ent)
+            ext:SetData("tracking-trace-ent-size", get_ent_size(ent))
+        end
 
         if not IsValid(ent) then
             ext:DrawViewCrosshair(pos,ang)
@@ -491,9 +520,11 @@ else
     
         local ent = ext:GetData("tracking-trace-ent")
         if not IsValid(ent) then return end
+
+        local entSize = ext:GetData("tracking-trace-ent-size")
     
         local dist = ent:GetPos():Distance(ext:GetPos())
-        halo.Add({ent},dist > TRACKING_MAX_DISTANCE_SET and Color(255,0,0) or Color(0,255,0),1,1,1,true,true)
+        halo.Add({ent},dist > (TRACKING_MAX_DISTANCE_SET + entSize) and Color(255,0,0) or Color(0,255,0),1,1,1,true,true)
     end)
 
     ENT:OnMessage("tracking-pilotwarning", function(self)
