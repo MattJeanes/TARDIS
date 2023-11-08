@@ -82,7 +82,7 @@ if SERVER then
         force = force or self:CallCommonHook("ShouldForceDemat", pos, ang)
 
         if self:CallHook("CanDemat", force, false) == false then
-            return callback(false)
+            return callback and callback(false)
         end
 
         local redecorating = self:GetData("redecorate")
