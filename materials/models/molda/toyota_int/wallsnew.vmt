@@ -7,8 +7,9 @@
 	"$surfaceprop" "Metal"
 
 	"$envmap" "models/molda/toyota_int/environment"
-	"$envmaptint" "[0.1 0.3 0.35]"
+//	"$envmaptint" "[0.1 0.3 0.35]"
 //	"$envmaptint" "[0.2 0.9 1]"
+	"$envmaptint" "[0.1 0.45 0.5]"
 	"$envmapmask" "models/molda/toyota_int/smudgeN"
 
 	"$nodecal" "1"
