@@ -27,6 +27,12 @@ ENT:AddHook("VortexEnabled", "demat-fast", function(self, pilot)
     end
 end)
 
+ENT:AddHook("CanTrack","vortex",function(self,state)
+    if self:GetData("vortex") then
+        return false
+    end
+end)
+
 if SERVER then
     ENT:AddHook("PhysicsUpdate","vortex",function(self,ph)
         -- Simulate flight without actually moving anywhere
