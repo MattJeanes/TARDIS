@@ -6,8 +6,6 @@
 
 	"$surfaceprop" "Metal"
 
-	"$additive" "1"
-
 	"$nodecal" "1"
 	"$nocull" "0"
 
