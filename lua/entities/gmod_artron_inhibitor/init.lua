@@ -89,7 +89,7 @@ function ENT:TurnOn(active)
     local phys = self:GetPhysicsObject()
 
     if active and self.FlyTime == nil then
-        self:SetColor(Color(255, 166, 0, self:GetColor().a))
+        self:SetColor(Color(0, 50, 255, self:GetColor().a))
         phys:SetAngleVelocity(Vector(20, -20, -10))
         phys:EnableGravity(false)
         phys:SetVelocity(Vector(0, 0, 15))
@@ -159,7 +159,7 @@ function ENT:Think()
         self.LastActivator = nil
 
         self:GetPhysicsObject():SetVelocity(Vector(0, 0, 0))
-        self:SetColor(Color(164, 90, 250, self:GetColor().a))
+        self:SetColor(Color(255, 166, 0, self:GetColor().a))
         self:TriggerWire("Active",1)
 
         sound.Play("drmatt/tardis/power_on.wav", self:GetPos())
