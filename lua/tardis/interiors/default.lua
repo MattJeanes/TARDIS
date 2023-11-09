@@ -192,9 +192,16 @@ T.Interior = {
             ang = Angle(0, 198.54, 0),
         },
 
+        default_side_toggles_1 = {},
+        default_side_toggles_2 = { ang = Angle(0,160,0), },
+
         --default_monitor = {},
         --default_monitor_2012 = {},
         --default_monitor_2015 = {},
+        default_intdoors = { pos = Vector(73.559, -417.853, 47.506), ang = Angle(0,10,0), },
+
+        default_top_doors_1 = { pos = Vector(-346.742, 125.858, 160.575), ang = Angle(0,70,0), },
+        default_top_doors_2 = { pos = Vector(-346.742, -125.858, 160.575), ang = Angle(0,110,0), },
     },
     Controls = {
 
@@ -218,7 +225,6 @@ TARDIS:AddInterior(T)
 
 _TODO:
 
-side red switches
 console scanner from new version?
 
 add parts' sounds and custom behaviour
@@ -230,12 +236,7 @@ selectable colors
 
 _Choose models:
 
-balls.mdl
 console_scanner.mdl
-sliders.mdl
-telepathic.mdl
-cranks.mdl
-
 
 _Removed:
 
@@ -251,21 +252,5 @@ phone_port.mdl
 sonic_charger.mdl
 lever3.mdl
 
-
-Control materials:
-models/cem/toyota_contr/console.vmt
-models/cem/toyota_contr/console1.vtf
-models/cem/toyota_contr/details_normal.vtf
-models/cem/toyota_contr/details.vmt
-models/cem/toyota_contr/details.vtf
-models/cem/toyota_contr/detailsm.vmt
-models/cem/toyota_contr/glass_normal.vtf
-models/cem/toyota_contr/metal_env.vtf
-models/cem/toyota_contr/metal_normal.vtf
-models/cem/toyota_contr/newswitches.vmt
-models/cem/toyota_contr/newswitches.vtf
-models/cem/toyota_contr/screen.vmt
-models/cem/toyota_contr/screen.vtf
-models/cem/toyota_contr/white.vtf
 
 ]]

@@ -4,7 +4,7 @@
 	"$surfaceprop" "Metal"
 
 	"$envmap" "models/molda/toyota_int/environment"
-	"$envmaptint" "[0.5 0.5 0.5]"
+	"$envmaptint" "[0.2 0.2 0.2]"
 
 	"$nodecal" "1"
 	"$nocull" "0"

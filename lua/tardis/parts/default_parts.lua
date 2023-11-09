@@ -725,3 +725,46 @@ end
 
 TARDIS:AddPart(PART)
 
+
+local PART={}
+PART.Model = "models/molda/toyota_int/side_toggle.mdl"
+PART.AutoSetup = true
+
+PART.ID = "default_side_toggles_1"
+TARDIS:AddPart(PART)
+PART.ID = "default_side_toggles_2"
+TARDIS:AddPart(PART)
+
+local PART={}
+PART.ID = "default_intdoors"
+PART.Model = "models/molda/toyota_int/intdoors.mdl"
+PART.AutoSetup = true
+PART.Animate = true
+PART.Collision = true
+
+if SERVER then
+    function PART:Use(ply)
+        self:SetCollide(self:GetOn())
+
+        if not self:GetOn() then
+            self.interior:Timer(self.ID, 5, function(int)
+                self:SetOn(false)
+                self:SetCollide(true)
+                if self.Sound then
+                    sound.Play(self.Sound, self:LocalToWorld(self.SoundPos))
+                end
+            end)
+        else
+            self.interior:CancelTimer(self.ID)
+        end
+    end
+end
+
+TARDIS:AddPart(PART)
+
+PART.ID = "default_top_doors_1"
+PART.Model = "models/molda/toyota_int/intdoors2.mdl"
+TARDIS:AddPart(PART)
+
+PART.ID = "default_top_doors_2"
+TARDIS:AddPart(PART)
