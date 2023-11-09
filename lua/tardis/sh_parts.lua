@@ -77,9 +77,12 @@ end
 local overrides={
     ["Draw"]={TARDIS.DrawOverride, CLIENT},
     ["Initialize"]={function(self)
+        if self.EnabledOnStart then
+            self:SetOn(true)
+        end
         if CLIENT then
             if self.Animate then
-                self.posepos=0
+                self.posepos = self.EnabledOnStart and 1 or 0
             end
             net.Start("TARDIS-SetupPart")
                 net.WriteEntity(self)
