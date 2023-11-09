@@ -1,0 +1,13 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/cem/toyota_contr/screen"
+	"$bumpmap" "models/cem/toyota_contr/glass_normal"
+	"$selfillum" 1
+	"$selfillummask" "models/cem/toyota_contr/white"
+	"$nodecal" "1"
+
+	$phong 1
+	$phongexponent			20
+	$phongboost			0.15
+	$phongfresnelranges	"[1 1 1]"
+}

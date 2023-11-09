@@ -311,3 +311,377 @@ PART.AutoSetup = true
 PART.Collision = true
 PART.ShouldTakeDamage = false
 TARDIS:AddPart(PART)
+
+
+------------------------------
+-- ported from Toyota addon --
+------------------------------
+
+local PART = {}
+PART.ID = "default_bouncy_lever"
+PART.Model = "models/cem/toyota_contr/bouncy_lever.mdl"
+PART.AutoSetup = true
+PART.Collision = true
+PART.Animate = true
+TARDIS:AddPart(PART)
+
+local PART = {}
+PART.Model = "models/cem/toyota_contr/button.mdl"
+PART.AutoSetup = true
+PART.Collision = true
+PART.Animate = true
+
+PART.ID = "default_button_1"
+TARDIS:AddPart(PART)
+
+PART.ID = "default_button_2"
+TARDIS:AddPart(PART)
+
+local PART = {}
+PART.ID = "default_buttons"
+PART.Model = "models/cem/toyota_contr/buttons.mdl"
+PART.AutoSetup = true
+PART.Collision = true
+PART.Animate = true
+TARDIS:AddPart(PART)
+
+local PART = {}
+PART.ID = "default_crank"
+PART.Model = "models/cem/toyota_contr/crank.mdl"
+PART.AutoSetup = true
+PART.Collision = true
+PART.Animate = true
+TARDIS:AddPart(PART)
+
+local PART = {}
+PART.ID = "default_crank2"
+PART.Model = "models/cem/toyota_contr/crank2.mdl"
+PART.AutoSetup = true
+PART.Collision = true
+PART.Animate = true
+TARDIS:AddPart(PART)
+
+local PART = {}
+PART.ID = "default_crank3"
+PART.Model = "models/cem/toyota_contr/crank3.mdl"
+PART.AutoSetup = true
+PART.Collision = true
+PART.Animate = true
+TARDIS:AddPart(PART)
+
+local PART = {}
+PART.ID = "default_crank4"
+PART.Model = "models/cem/toyota_contr/crank4.mdl"
+PART.AutoSetup = true
+PART.Collision = true
+PART.Animate = true
+TARDIS:AddPart(PART)
+
+local PART = {}
+PART.ID = "default_crank5"
+PART.Model = "models/cem/toyota_contr/crank5.mdl"
+PART.AutoSetup = true
+PART.Collision = true
+PART.Animate = true
+TARDIS:AddPart(PART)
+
+local PART = {}
+PART.ID = "default_crank6"
+PART.Model = "models/cem/toyota_contr/crank6.mdl"
+PART.AutoSetup = true
+PART.Collision = true
+PART.Animate = true
+TARDIS:AddPart(PART)
+
+local PART = {}
+PART.ID = "default_ducks"
+PART.Model = "models/cem/toyota_contr/ducks.mdl"
+PART.AutoSetup = true
+PART.Collision = true
+PART.Animate = true
+TARDIS:AddPart(PART)
+
+local PART = {}
+PART.ID = "default_flippers"
+PART.Model = "models/cem/toyota_contr/flippers.mdl"
+PART.AutoSetup = true
+PART.Collision = true
+PART.Animate = true
+TARDIS:AddPart(PART)
+
+local PART = {}
+PART.ID = "default_fiddle1"
+PART.Model = "models/cem/toyota_contr/fiddle1.mdl"
+PART.AutoSetup = true
+PART.Collision = true
+PART.Animate = true
+TARDIS:AddPart(PART)
+
+local PART = {}
+PART.ID = "default_fiddle2"
+PART.Model = "models/cem/toyota_contr/fiddle2.mdl"
+PART.AutoSetup = true
+PART.Collision = true
+PART.Animate = true
+TARDIS:AddPart(PART)
+
+local PART = {}
+PART.Model = "models/cem/toyota_contr/flat_switch.mdl"
+PART.AutoSetup = true
+PART.Collision = true
+PART.Animate = true
+
+for i = 1,6 do
+    PART.ID = "default_flat_switch_" .. i
+    TARDIS:AddPart(PART)
+end
+
+local PART = {}
+PART.ID = "default_handle1"
+PART.Model = "models/cem/toyota_contr/handle1.mdl"
+PART.AutoSetup = true
+PART.Collision = true
+PART.Animate = true
+TARDIS:AddPart(PART)
+
+local PART = {}
+PART.ID = "default_handle2"
+PART.Model = "models/cem/toyota_contr/handle2.mdl"
+PART.AutoSetup = true
+PART.Collision = true
+PART.Animate = true
+TARDIS:AddPart(PART)
+
+local PART = {}
+PART.ID = "default_key"
+PART.Model = "models/cem/toyota_contr/key.mdl"
+PART.AutoSetup = true
+PART.Collision = true
+PART.Animate = true
+TARDIS:AddPart(PART)
+
+local PART = {}
+PART.Model = "models/cem/toyota_contr/red_lever.mdl"
+PART.AutoSetup = true
+PART.Collision = true
+PART.Animate = true
+
+PART.ID = "default_red_lever_1"
+TARDIS:AddPart(PART)
+PART.ID = "default_red_lever_2"
+TARDIS:AddPart(PART)
+
+local PART = {}
+PART.ID = "default_thick_lever"
+PART.Model = "models/cem/toyota_contr/thick_lever.mdl"
+PART.AutoSetup = true
+PART.Collision = true
+PART.Animate = true
+TARDIS:AddPart(PART)
+
+local PART = {}
+PART.ID = "default_colored_lever_1"
+PART.Model = "models/cem/toyota_contr/colored_lever_1.mdl"
+PART.AutoSetup = true
+PART.Collision = true
+PART.Animate = true
+TARDIS:AddPart(PART)
+
+local PART = {}
+PART.ID = "default_colored_lever_2"
+PART.Model = "models/cem/toyota_contr/colored_lever_2.mdl"
+PART.AutoSetup = true
+PART.Collision = true
+PART.Animate = true
+TARDIS:AddPart(PART)
+
+local PART = {}
+PART.ID = "default_colored_lever_3"
+PART.Model = "models/cem/toyota_contr/colored_lever_3.mdl"
+PART.AutoSetup = true
+PART.Collision = true
+PART.Animate = true
+TARDIS:AddPart(PART)
+
+local PART = {}
+PART.ID = "default_colored_lever_4"
+PART.Model = "models/cem/toyota_contr/colored_lever_4.mdl"
+PART.AutoSetup = true
+PART.Collision = true
+PART.Animate = true
+TARDIS:AddPart(PART)
+
+local PART = {}
+PART.ID = "default_colored_lever_5"
+PART.Model = "models/cem/toyota_contr/colored_lever_5.mdl"
+PART.AutoSetup = true
+PART.Collision = true
+PART.Animate = true
+TARDIS:AddPart(PART)
+
+local PART = {}
+PART.ID = "default_phone"
+PART.Model = "models/cem/toyota_contr/phone.mdl"
+PART.AutoSetup = true
+PART.Collision = true
+PART.Animate = true
+TARDIS:AddPart(PART)
+
+local PART = {}
+PART.ID = "default_red_flick_cover"
+PART.Model = "models/cem/toyota_contr/red_flick_cover.mdl"
+PART.AutoSetup = true
+PART.Collision = true
+PART.Animate = true
+TARDIS:AddPart(PART)
+
+local PART = {}
+PART.ID = "default_red_flick_switch"
+PART.Model = "models/cem/toyota_contr/red_flick_switch.mdl"
+PART.AutoSetup = true
+PART.Collision = true
+PART.Animate = true
+TARDIS:AddPart(PART)
+
+local PART = {}
+PART.ID = "default_sliders"
+PART.Model = "models/cem/toyota_contr/sliders.mdl"
+PART.AutoSetup = true
+PART.Collision = true
+PART.Animate = true
+TARDIS:AddPart(PART)
+
+local PART = {}
+PART.Model = "models/cem/toyota_contr/small_switch.mdl"
+PART.AutoSetup = true
+PART.Collision = true
+PART.Animate = true
+
+for i = 1,18 do
+    PART.ID = "default_small_switch_" .. i
+    TARDIS:AddPart(PART)
+end
+
+local PART = {}
+PART.Model = "models/cem/toyota_contr/spin_a.mdl"
+PART.AutoSetup = true
+PART.Collision = true
+PART.Animate = true
+
+for i = 1,5 do
+    PART.ID = "default_spin_a_" .. i
+    TARDIS:AddPart(PART)
+end
+
+local PART = {}
+PART.Model = "models/cem/toyota_contr/spin_b.mdl"
+PART.AutoSetup = true
+PART.Collision = true
+PART.Animate = true
+
+for i = 1,4 do
+    PART.ID = "default_spin_b_" .. i
+    TARDIS:AddPart(PART)
+end
+
+local PART = {}
+PART.ID = "default_spin_big"
+PART.Model = "models/cem/toyota_contr/spin_big.mdl"
+PART.AutoSetup = true
+PART.Collision = true
+PART.Animate = true
+TARDIS:AddPart(PART)
+
+local PART = {}
+PART.ID = "default_spin_crank"
+PART.Model = "models/cem/toyota_contr/spin_crank.mdl"
+PART.AutoSetup = true
+PART.Collision = true
+PART.Animate = true
+TARDIS:AddPart(PART)
+
+local PART = {}
+PART.ID = "default_spin_switch"
+PART.Model = "models/cem/toyota_contr/spin_switch.mdl"
+PART.AutoSetup = true
+PART.Collision = true
+PART.Animate = true
+TARDIS:AddPart(PART)
+
+local PART = {}
+PART.ID = "default_switch"
+PART.Model = "models/cem/toyota_contr/switch.mdl"
+PART.AutoSetup = true
+PART.Collision = true
+PART.Animate = true
+TARDIS:AddPart(PART)
+
+local PART = {}
+PART.ID = "default_switch2"
+PART.Model = "models/cem/toyota_contr/switch2.mdl"
+PART.AutoSetup = true
+PART.Collision = true
+PART.Animate = true
+TARDIS:AddPart(PART)
+
+local PART = {}
+PART.ID = "default_toggles"
+PART.Model = "models/cem/toyota_contr/toggles.mdl"
+PART.AutoSetup = true
+PART.Collision = true
+PART.Animate = true
+TARDIS:AddPart(PART)
+
+local PART = {}
+PART.ID = "default_toggles2"
+PART.Model = "models/cem/toyota_contr/toggles2.mdl"
+PART.AutoSetup = true
+PART.Collision = true
+PART.Animate = true
+TARDIS:AddPart(PART)
+
+local PART = {}
+PART.ID = "default_tumblers"
+PART.Model = "models/cem/toyota_contr/tumblers.mdl"
+PART.AutoSetup = true
+PART.Collision = true
+PART.Animate = true
+TARDIS:AddPart(PART)
+
+local PART = {}
+PART.ID = "default_balls"
+PART.Model = "models/cem/toyota_contr/balls.mdl"
+PART.AutoSetup = true
+PART.Collision = true
+TARDIS:AddPart(PART)
+
+local PART = {}
+PART.ID = "default_console_scanner"
+PART.Model = "models/cem/toyota_contr/console_scanner.mdl"
+PART.AutoSetup = true
+PART.Collision = true
+TARDIS:AddPart(PART)
+
+local PART = {}
+PART.ID = "default_monitor"
+PART.Model = "models/cem/toyota_contr/monitor.mdl"
+PART.AutoSetup = true
+PART.Collision = true
+PART.Animate = true
+TARDIS:AddPart(PART)
+
+local PART = {}
+PART.ID = "default_monitor_2012"
+PART.Model = "models/cem/toyota_contr/monitor_2012.mdl"
+PART.AutoSetup = true
+PART.Collision = true
+PART.Animate = true
+TARDIS:AddPart(PART)
+
+local PART = {}
+PART.ID = "default_monitor_2015"
+PART.Model = "models/cem/toyota_contr/monitor_2015.mdl"
+PART.AutoSetup = true
+PART.Collision = true
+PART.Animate = true
+TARDIS:AddPart(PART)
