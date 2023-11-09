@@ -9,7 +9,7 @@ T.Interior = {
     Model="models/molda/toyota_int/interior.mdl",
     ExitDistance=1450,
     LightOverride = {
-        basebrightness = 0.25,
+        basebrightness = 0.1,
         nopowerbrightness = 0.001,
     },
     Light={
