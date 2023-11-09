@@ -34,4 +34,12 @@ if CLIENT then
             end
         end
     end)
+
+    ENT:OnMessage("part_use", function(self,data,ply)
+        local part = data[1]
+
+        if IsValid(part) and part.Use then
+            part:Use(unpack(data, 2))
+        end
+    end)
 end
