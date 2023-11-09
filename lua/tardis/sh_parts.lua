@@ -154,16 +154,28 @@ local function ProcessAnimation(self, a)
 
         if a.type == "perpetual_use" then
             local ply = LocalPlayer()
+            local looked_at = self:BeingLookedAtByLocalPlayer()
 
             local function is_sonic_pressed()
+                if not looked_at then
+                    return false
+                end
                 if ply:GetActiveWeapon() ~= ply:GetWeapon("swep_sonicsd") then
                     return false
                 end
                 return ply:KeyDown(IN_ATTACK) or ply:KeyDown(IN_ATTACK2)
             end
 
-            local moving = self:BeingLookedAtByLocalPlayer()
-            moving = moving and (ply:KeyDown(IN_USE) or is_sonic_pressed())
+            local moving = looked_at and ply:KeyDown(IN_USE)
+
+            if is_sonic_pressed() then
+                self.sonic_activation_start = self.sonic_activation_start or CurTime()
+                if CurTime() - self.sonic_activation_start > 0.5 then
+                    moving = true
+                end
+            elseif self.sonic_activation_start then
+                self.sonic_activation_start = nil
+            end
 
             local move = (not a.stop_anywhere) or moving
 
