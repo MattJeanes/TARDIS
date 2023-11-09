@@ -1,8 +1,29 @@
-"VertexLitGeneric"
+"vertexlitgeneric"
 {
+	"$additive" 1
 	"$basetexture" "models/molda/toyota_int/rotorglass"
-	"$surfaceprop" "Metal"
-	"$nodecal" "1"
-	"$nocull" "0"
+	"$bumpmap" "models/molda/toyota_int/glassN"
+	"$surfaceprop" "glass"
+	"$envmap" "models/molda/toyota_int/cubemap1"
+	"$envmaptint" "[ 0.05 0.25 0.25 ]"
+	"$envmapfresnel" "0.75"
+	"$translucent" "1"
+	"$nocull" "1"
+	"$color2" "[ 0.02 0.02 0.02 ]"
 
+//	"$detail"				"detail/metal_detail_01"
+	"$detailscale"			"4.283"
+	"$detailblendfactor"	"0.35"
+	"$detailblendmode"		"0"
+
+	"$phong"     "1"
+	"$phongexponent"  "63"
+	"$phongboost"   "2"
+	"$phongfresnelranges"   "[1 8 4]"
+	"$phongtint"	"[ .5 .5 .5 ]"
+	"$halflambert" "1"
+
+	"$rimlight" "1"
+	"$rimlightexponent" "12"
+	"$rimlightboost" "0.8"
 }
