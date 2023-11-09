@@ -60,7 +60,6 @@ T.Interior = {
         default_floor = {},
         default_entry = {},
         default_walls = {},
-        --default_roof = {},
         default_setroof = {},
         default_pillars = {},
         default_rings = {},

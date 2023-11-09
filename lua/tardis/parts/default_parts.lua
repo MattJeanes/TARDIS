@@ -41,12 +41,6 @@ PART.Collision = true
 TARDIS:AddPart(PART)
 
 local PART={}
-PART.ID = "default_roof"
-PART.Model = "models/molda/toyota_int/roof.mdl"
-PART.AutoSetup = true
-TARDIS:AddPart(PART)
-
-local PART={}
 PART.ID = "default_setroof"
 PART.Model = "models/molda/toyota_int/setroof.mdl"
 PART.AutoSetup = true
