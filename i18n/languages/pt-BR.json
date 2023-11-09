@@ -249,7 +249,6 @@
     "Controls.Tracking.PhyslockFail": "Não é possível ativar o rastreamento quando o travamento físico está ativado",
     "Controls.Tracking.PilotWarning": "AVISO: O rastreamento está ativado, pressione '%s' para alterar o alvo ou desativar o rastreamento",
     "Controls.Tracking.Rotation": "Rotação do Rastreamento",
-    "Controls.Tracking.RotationChangedAuto": "Rastreando a rotação %s automaticamente com base na rotação do alvo",
     "Controls.Tracking.RotationHint": "Pressione '%s' para alternar a rotação do rastreamento do alvo",
     "Controls.Tracking.SameTarget": "Você já está rastreando esta entidade",
     "Controls.Tracking.SelfFail": "A TARDIS não consegue se rastrear",
