@@ -1,0 +1,5 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/molda/toyota_int/white"
+	$color2 "[0.8 0.5 0.1]"
+}
