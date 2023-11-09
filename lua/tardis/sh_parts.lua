@@ -74,6 +74,109 @@ function TARDIS.DrawOverride(self,override)
     end
 end
 
+local function DoPartAnimation(self, can_move, a, target, should_reset)
+    local pose_pos = a.pos
+    local speed = a.speed
+
+    if a.condition_func then
+        can_move = can_move and a.condition_func(a, target, should_reset)
+    end
+
+    if can_move then
+        if a.speed_override_func then
+            speed = a.speed_override_func(a, target, should_reset)
+        end
+
+        --tardisdebug(pose_pos, target, FrameTime() * speed)
+        pose_pos = math.Approach(pose_pos, target, FrameTime() * speed)
+
+        if pose_pos == target then
+            if should_reset then
+                pose_pos = (a.max == pose_pos and a.min) or a.max
+            else
+                a.pos = pose_pos
+                return
+            end
+        end
+    end
+
+    self:SetPoseParameter(a.pose_param, pose_pos)
+    self:InvalidateBoneCache()
+    a.pos = pose_pos
+end
+
+local function InitAnimation(self, anim)
+    -- `anim` is either the part or extra animation table
+
+    local a = {}
+
+    a.type = anim.Type or "toggle"
+    -- toggle / perpetual_use / travel / idle / custom
+
+    a.max = anim.MaxPos or 1
+    a.min = anim.MinPos or 0
+    a.pos = anim.StartPos or (self.EnabledOnStart and self.posemax) or a.min
+    a.speed = anim.Speed or 1.5
+    a.pose_param = anim.PoseParameter or "switch"
+    a.stop_anywhere = anim.StopAnywhere -- applies to perpetual_use
+    a.constant_dir = anim.NoDirectionChange -- applies to perpetual_use and toggle
+    a.no_power = not anim.NoPowerFreeze -- applies to travel and idle
+    a.should_return = anim.ReturnAfterStop -- applies to travel and idle
+    a.speed_override_func = anim.SpeedOverrideFunc
+    a.condition_func = anim.ConditionFunc
+    a.custom_func = anim.CustomAnimationFunc
+
+    if a.pos ~= 0 then
+        self:SetPoseParameter(a.pose_param, a.pos)
+        self:InvalidateBoneCache()
+    end
+
+    return a
+end
+
+local function ProcessAnimation(self, a)
+
+    if a.type == "travel" then
+        local power_ok = self.exterior:GetPower() or a.no_power
+        local returning = a.should_return and a.pos ~= a.min
+        local move = power_ok and (self.exterior:IsTravelling() or returning)
+
+        DoPartAnimation(self, move, a, a.max, move)
+
+    elseif a.type == "idle" then
+        local returning = a.should_return and a.pos ~= a.min
+        local move = self.exterior:GetPower() or a.no_power
+        DoPartAnimation(self, move or returning, a, a.max, true)
+
+    elseif a.type == "perpetual_use" or a.type == "toggle" then
+
+        local target = (a.constant_dir or self:GetOn()) and a.max or a.min
+
+        if a.type == "perpetual_use" then
+            local ply = LocalPlayer()
+
+            local function is_sonic_pressed()
+                if ply:GetActiveWeapon() ~= ply:GetWeapon("swep_sonicsd") then
+                    return false
+                end
+                return ply:KeyDown(IN_ATTACK) or ply:KeyDown(IN_ATTACK2)
+            end
+
+            local moving = self:BeingLookedAtByLocalPlayer()
+            moving = moving and (ply:KeyDown(IN_USE) or is_sonic_pressed())
+
+            local move = (not a.stop_anywhere) or moving
+
+            DoPartAnimation(self, move, a, target, moving)
+        else
+            DoPartAnimation(self, true, a, target, false)
+        end
+
+    elseif a.type == "custom" then
+        a.custom_func(self)
+    end
+end
+
 local overrides={
     ["Draw"]={TARDIS.DrawOverride, CLIENT},
     ["Initialize"]={function(self)
@@ -82,7 +185,21 @@ local overrides={
         end
         if CLIENT then
             if self.Animate then
-                self.posepos = self.EnabledOnStart and 1 or 0
+                self.AnimateOptions = self.AnimateOptions or {}
+
+                -- supporting old format
+                if self.AnimateSpeed then
+                    self.AnimateOptions.Speed = self.AnimateSpeed
+                end
+
+                self.animation = InitAnimation(self, self.AnimateOptions)
+
+                if self.ExtraAnimations then
+                    self.extra_animations = {}
+                    for k,v in pairs(self.ExtraAnimations) do
+                        self.extra_animations[k] = InitAnimation(self, v)
+                    end
+                end
             end
             net.Start("TARDIS-SetupPart")
                 net.WriteEntity(self)
@@ -113,32 +230,23 @@ local overrides={
 
             if think_ok or self.ExteriorPart or is_visible_through_door() then
                 if self.Animate then
+                    ProcessAnimation(self, self.animation)
 
-                    local speed = self.AnimateSpeed or 1.5
-                    local cycle = self.CycleUseAnimation and self:BeingLookedAtByLocalPlayer() and LocalPlayer():KeyDown(IN_USE)
-                    local slow_compensate = self.CompensateSlowdownAnimation
-
-                    if cycle and slow_compensate and
-                        (self.posepos < slow_compensate.start or self.posepos > slow_compensate.stop)
-                    then
-                        speed = slow_compensate.speed or speed
+                    if self.extra_animations then
+                        for k,v in pairs(self.extra_animations) do
+                            ProcessAnimation(self, v)
+                        end
                     end
-
-                    local target = self:GetOn() and 1 or 0
-                    self.posepos = math.Approach(self.posepos, target, FrameTime()*speed)
-
-                    if cycle and self.posepos == target then
-                        self.posepos = 1 - target
-                    end
-
-                    self:SetPoseParameter("switch",self.posepos)
-                    self:InvalidateBoneCache()
                 end
                 return self.o.Think(self)
             end
         end
     end, CLIENT},
     ["Use"]={function(self,a,...)
+        if SERVER then
+            self.parent:SendMessage("part_use", {self, a, ...})
+        end
+
         local call=false
         local res
         if (not self.NoStrictUse) and IsValid(a) and a:IsPlayer() and a:GetEyeTraceNoCursor().Entity~=self then return end
@@ -224,6 +332,7 @@ end
 
 local overridequeue={}
 postinit=postinit or false -- local vars cannot stay on autorefresh
+
 function TARDIS:AddPart(e)
     local source = debug.getinfo(2).short_src
 

@@ -2,14 +2,12 @@ local PART = {}
 PART.ID = "default_doorframe"
 PART.Model = "models/molda/toyota_int/frame.mdl"
 PART.AutoSetup = true
-
 TARDIS:AddPart(PART)
 
 local PART = {}
 PART.ID = "default_doorframe_light"
 PART.Model = "models/molda/toyota_int/frame2.mdl"
 PART.AutoSetup = true
-
 TARDIS:AddPart(PART)
 
 local PART={}
@@ -50,6 +48,11 @@ local PART={}
 PART.ID = "default_rings"
 PART.Model = "models/molda/toyota_int/rings.mdl"
 PART.AutoSetup = true
+PART.Animate = true
+PART.AnimateOptions = {
+    Type = "travel",
+    Speed = 0.075
+}
 TARDIS:AddPart(PART)
 
 local PART={}
@@ -108,6 +111,7 @@ local PART={}
 PART.ID = "default_neon"
 PART.Model = "models/molda/toyota_int/neon_cyan.mdl"
 PART.AutoSetup = true
+PART.Collision = true
 TARDIS:AddPart(PART)
 
 local PART={}
@@ -133,6 +137,13 @@ PART.ID = "default_pistons"
 PART.Model = "models/molda/toyota_int/pistons.mdl"
 PART.AutoSetup = true
 PART.UseTransparencyFix = true
+PART.Animate = true
+PART.AnimateOptions = {
+    Type = "travel",
+    Speed = 0.5,
+    ResetPosAfterStop = true,
+    NoPowerFreeze = true,
+}
 TARDIS:AddPart(PART)
 
 local PART={}
@@ -165,6 +176,13 @@ PART.Model = "models/molda/toyota_int/transparent.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 PART.UseTransparencyFix = true
+PART.Animate = true
+PART.AnimateOptions = {
+    Type = "travel",
+    Speed = 0.075,
+    ResetPosAfterStop = true,
+    NoPowerFreeze = true,
+}
 TARDIS:AddPart(PART)
 
 local PART={}
@@ -172,28 +190,12 @@ PART.ID = "default_ticks"
 PART.Model = "models/molda/toyota_int/ticks.mdl"
 PART.AutoSetup = true
 PART.ShouldTakeDamage = false
-
-if CLIENT then
-    function PART:Initialize()
-        self.posepos = 0
-        self.speed = 0.1
-    end
-
-    function PART:Think()
-        local ext=self.exterior
-
-        local power = ext:GetPower()
-        if not power then return end
-
-        self.posepos=math.Approach(self.posepos,1,FrameTime()*self.speed)
-        if self.posepos==1 then
-            self.posepos=0
-        end
-        self:SetPoseParameter("switch",self.posepos)
-        self:InvalidateBoneCache()
-    end
-end
-
+PART.Animate = true
+PART.AnimateOptions = {
+    Type = "idle",
+    Speed = 0.1,
+    NoPowerFreeze = true,
+}
 TARDIS:AddPart(PART)
 
 local PART={}
@@ -204,24 +206,34 @@ PART.Collision = true
 PART.ShouldTakeDamage = false
 
 PART.Animate = true
-PART.AnimateSpeed = 1.2
-PART.CycleUseAnimation = true
-PART.CompensateSlowdownAnimation = { start = 0.2, stop = 0.8, speed = 3.6 }
---PART.Sound = "molda/toyotaredo/gears.wav"
---PART.PowerOffSound = true
---PART.PowerOffUse = true
+PART.AnimateOptions = {
+    Type = "perpetual_use",
+    Speed = 1.2,
+    StopAnywhere = true,
+    SpeedOverrideFunc = function(a, target, do_reset)
+        if do_reset and (a.pos < 0.2 or a.pos > 0.8) then
+            return a.speed * 3
+        end
+        return a.speed
+    end,
+}
+
+if CLIENT then
+    PART.Use = function(self, ply)
+        self.animation.stop_anywhere = LocalPlayer():KeyDown(IN_WALK)
+    end
+end
+
 TARDIS:AddPart(PART)
 
 PART.ID = "default_gears2"
 PART.Model = "models/molda/toyota_int/gears2.mdl"
-PART.AnimateSpeed = 1.5
-PART.CompensateSlowdownAnimation = { start = 0.2, stop = 0.8, speed = 4.5 }
+PART.AnimateOptions.Speed = 1.5
 TARDIS:AddPart(PART)
 
 PART.ID = "default_gears3"
 PART.Model = "models/molda/toyota_int/gears3.mdl"
-PART.AnimateSpeed = 1
-PART.CompensateSlowdownAnimation = { start = 0.2, stop = 0.8, speed = 3 }
+PART.AnimateOptions.Speed = 0.9
 TARDIS:AddPart(PART)
 
 local PART={}
@@ -230,9 +242,27 @@ PART.Model = "models/molda/toyota_int/handbrake.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 PART.ShouldTakeDamage = false
-PART.Animate = true
-PART.AnimateSpeed = 1.2
+
 PART.EnabledOnStart = true
+
+PART.Animate = true
+PART.AnimateOptions = {
+    Type = "toggle",
+    Speed = 1.2,
+}
+
+if CLIENT then
+    function PART:Use(ply)
+        if not self:GetOn() then return end
+
+        if LocalPlayer():KeyDown(IN_WALK) then
+            self.animation.max = math.Rand(0.2, 0.5)
+        else
+            self.animation.max = math.Rand(0.5, 1)
+        end
+    end
+end
+
 TARDIS:AddPart(PART)
 
 local PART={}
@@ -339,8 +369,14 @@ PART.ID = "default_crank"
 PART.Model = "models/cem/toyota_contr/crank.mdl"
 PART.AutoSetup = true
 PART.Collision = true
-PART.CycleUseAnimation = true
 PART.Animate = true
+
+PART.AnimateOptions = {
+    Type = "perpetual_use",
+    Speed = 1.2,
+    StopAnywhere = true,
+}
+
 TARDIS:AddPart(PART)
 
 local PART = {}
@@ -349,8 +385,13 @@ PART.Model = "models/cem/toyota_contr/crank2.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 PART.Animate = true
-PART.CycleUseAnimation = true
-PART.AnimateSpeed = 1
+
+PART.AnimateOptions = {
+    Type = "perpetual_use",
+    Speed = 1,
+    StopAnywhere = true,
+}
+
 TARDIS:AddPart(PART)
 
 local PART = {}
