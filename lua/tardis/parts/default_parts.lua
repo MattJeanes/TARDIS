@@ -138,6 +138,7 @@ local PART={}
 PART.ID = "default_pistons"
 PART.Model = "models/molda/toyota_int/pistons.mdl"
 PART.AutoSetup = true
+PART.UseTransparencyFix = true
 TARDIS:AddPart(PART)
 
 local PART={}
