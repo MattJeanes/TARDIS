@@ -3,6 +3,11 @@
   "Author": "TARDIS-kehitystiimi",
   "Phrases": {
     "Artron.Depleted": "",
+    "ArtronInhibitor": "",
+    "ArtronInhibitor.Disabled": "",
+    "ArtronInhibitor.Enabled": "",
+    "ArtronInhibitor.Instructions": "",
+    "ArtronInhibitor.Starting": "",
     "Binds.AnyKey": "Paina mitä tahansa näppäintä",
     "Binds.Invalid": "Virheellinen",
     "Binds.Key": "Avain",
