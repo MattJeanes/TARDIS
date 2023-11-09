@@ -232,6 +232,7 @@ PART.Collision = true
 PART.ShouldTakeDamage = false
 PART.Animate = true
 PART.AnimateSpeed = 1.2
+PART.EnabledOnStart = true
 TARDIS:AddPart(PART)
 
 local PART={}
@@ -338,6 +339,7 @@ PART.ID = "default_crank"
 PART.Model = "models/cem/toyota_contr/crank.mdl"
 PART.AutoSetup = true
 PART.Collision = true
+PART.CycleUseAnimation = true
 PART.Animate = true
 TARDIS:AddPart(PART)
 
@@ -347,6 +349,8 @@ PART.Model = "models/cem/toyota_contr/crank2.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 PART.Animate = true
+PART.CycleUseAnimation = true
+PART.AnimateSpeed = 1
 TARDIS:AddPart(PART)
 
 local PART = {}
@@ -403,6 +407,7 @@ PART.Model = "models/cem/toyota_contr/fiddle1.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 PART.Animate = true
+PART.AnimateSpeed = 3
 TARDIS:AddPart(PART)
 
 local PART = {}
@@ -411,6 +416,7 @@ PART.Model = "models/cem/toyota_contr/fiddle2.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 PART.Animate = true
+PART.AnimateSpeed = 3
 TARDIS:AddPart(PART)
 
 local PART = {}
