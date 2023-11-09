@@ -183,6 +183,15 @@ T.Interior = {
         default_balls = {},
         default_console_scanner = {},
 
+        default_side_cranks1 = {
+            pos = Vector(-5.781, -7.625, 0.5),
+            ang = Angle(0, -1.54, 0),
+        },
+        default_side_cranks2 = {
+            pos = Vector(2.98, 9.09, 0.5),
+            ang = Angle(0, 198.54, 0),
+        },
+
         --default_monitor = {},
         --default_monitor_2012 = {},
         --default_monitor_2015 = {},
@@ -209,9 +218,11 @@ TARDIS:AddInterior(T)
 
 _TODO:
 
-add side white cranks
 side red switches
 console scanner from new version?
+
+add parts' sounds and custom behaviour
+
 clean duplicating textures from cem/ subfolder
 fix sonic charger material
 dynamic environment (distance?)

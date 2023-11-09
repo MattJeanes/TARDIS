@@ -77,13 +77,6 @@ PART.AutoSetup = true
 TARDIS:AddPart(PART)
 
 local PART={}
-PART.ID = "default_side_panels"
-PART.Model = "models/molda/toyota_int/sidepanels.mdl"
-PART.AutoSetup = true
-PART.Collision = true
-TARDIS:AddPart(PART)
-
-local PART={}
 PART.ID = "default_chairs"
 PART.Model = "models/molda/toyota_int/chairs.mdl"
 PART.AutoSetup = true
@@ -685,3 +678,49 @@ PART.AutoSetup = true
 PART.Collision = true
 PART.Animate = true
 TARDIS:AddPart(PART)
+
+local PART = {}
+PART.Model = "models/cem/toyota_contr/cranks.mdl"
+PART.AutoSetup = true
+PART.Collision = true
+PART.Animate = true
+PART.NoStrictUse = true
+
+PART.ID = "default_side_cranks1"
+TARDIS:AddPart(PART)
+
+PART.ID = "default_side_cranks2"
+TARDIS:AddPart(PART)
+
+local PART={}
+PART.ID = "default_side_panels"
+PART.Model = "models/molda/toyota_int/sidepanels.mdl"
+PART.AutoSetup = true
+PART.Collision = true
+
+if SERVER then
+    -- temporary fix for side panels collision
+    local function TraceEyeThroughSidePanels(self, ply)
+        local trace = {
+            start = ply:EyePos(),
+            endpos = ply:EyePos() + ( ply:GetAimVector() * ( 4096 * 8 ) ),
+            filter = { ply, self },
+        }
+        return util.TraceLine(trace).Hit and util.TraceLine(trace).Entity
+    end
+
+    function PART:Use(ply)
+        local tr_ent = TraceEyeThroughSidePanels(self, ply)
+        local p1 = self.interior:GetPart("default_side_cranks1")
+        local p2 = self.interior:GetPart("default_side_cranks2")
+
+        if IsValid(tr_ent) and (tr_ent == p1 or tr_ent == p2) then
+            return tr_ent:Use(ply, ply, SIMPLE_USE, 1)
+        end
+
+        TARDIS:Control(self.Control, ply, self)
+    end
+end
+
+TARDIS:AddPart(PART)
+
