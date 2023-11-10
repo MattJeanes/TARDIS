@@ -252,6 +252,7 @@ T.Phrases = {
     ["Controls.Tracking.PhyslockFail"] = "Can't enable tracking when physlock is enabled",
     ["Controls.Tracking.PilotWarning"] = "WARNING: Tracking is enabled, press '%s' to change target or disable tracking",
     ["Controls.Tracking.Rotation"] = "Tracking rotation",
+    ["Controls.Tracking.RotationChangedAuto"] = "Tracking rotation %s automatically based on target's rotation",
     ["Controls.Tracking.RotationHint"] = "Press '%s' to toggle tracking target rotation",
     ["Controls.Tracking.SameTarget"] = "You are already tracking this entity",
     ["Controls.Tracking.SelfFail"] = "The TARDIS can't track itself",

@@ -104,7 +104,7 @@ e2function number entity:tardisPhyslock(on)
 end
 
 e2function number entity:tardisSpinmode(number spinmode)
-    return HandleE2(this, "Setter", "Spinmode", self, spinmode)
+    return HandleE2(this, "Setter", "SetSpinmode", self, spinmode)
 end
 
 e2function number entity:tardisTrack(entity ent)
@@ -175,6 +175,14 @@ e2function number entity:tardisRemoveArtronEnergy(number energy)
     return HandleE2(this, "Setter", "RemoveArtron", self, energy)
 end
 
+e2function number entity:tardisShields()
+    return HandleE2(this, "Setter", "ToggleShield", self)
+end
+
+e2function number entity:tardisShields(number on)
+    return HandleE2(this, "Setter", "SetShield", self, on)
+end
+
 --[[
     ╔════════════╗
     ║Data getters║
@@ -219,6 +227,10 @@ end
 
 e2function entity entity:tardisPilot()
     return HandleE2(this, "Getter", "GetPilot", self)
+end
+
+e2function number entity:tardisSpinmode()
+    return HandleE2(this, "Setter", "GetSpinmode", self)
 end
 
 e2function entity entity:tardisTracking()
@@ -277,4 +289,20 @@ end
 
 e2function number entity:tardisMaxArtronEnergy()
     return HandleE2(this, "Getter", "GetMaxArtron", self)
+end
+
+e2function number entity:tardisShieldsOn()
+    return HandleE2(this, "Getter", "GetShieldsOn", self)
+end
+
+e2function number entity:tardisShieldsLevel()
+    return HandleE2(this, "Getter", "GetShieldsLevel", self)
+end
+
+e2function number entity:tardisShieldsPercent()
+    return HandleE2(this, "Getter", "GetShieldsPercent", self)
+end
+
+e2function number entity:tardisShieldsMax()
+    return HandleE2(this, "Getter", "GetShieldMax", self)
 end
