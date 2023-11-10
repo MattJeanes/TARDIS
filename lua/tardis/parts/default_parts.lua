@@ -342,6 +342,7 @@ PART.Model = "models/cem/toyota_contr/bouncy_lever.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 PART.Animate = true
+PART.AnimateSpeed = 4
 TARDIS:AddPart(PART)
 
 local PART = {}
@@ -349,6 +350,7 @@ PART.Model = "models/cem/toyota_contr/button.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 PART.Animate = true
+PART.AnimateSpeed = 6
 
 PART.ID = "default_button_1"
 TARDIS:AddPart(PART)
@@ -373,7 +375,7 @@ PART.Animate = true
 
 PART.AnimateOptions = {
     Type = "perpetual_use",
-    Speed = 1.2,
+    Speed = 0.8,
     StopAnywhere = true,
 }
 
@@ -400,6 +402,7 @@ PART.Model = "models/cem/toyota_contr/crank3.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 PART.Animate = true
+PART.AnimateSpeed = 0.75
 TARDIS:AddPart(PART)
 
 local PART = {}
