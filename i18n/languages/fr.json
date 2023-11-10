@@ -249,7 +249,6 @@
     "Controls.Tracking.PhyslockFail": "Impossible d'activer le traçage lorsque le verrou physique est enclenché",
     "Controls.Tracking.PilotWarning": "ATTENTION: Le traçage est activé, appuyez sur '%s' pour changer de cible ou désactiver le traçage",
     "Controls.Tracking.Rotation": "",
-    "Controls.Tracking.RotationChangedAuto": "",
     "Controls.Tracking.RotationHint": "Appuyez sur '%s' pour permuter le suivi de la rotation de la cible",
     "Controls.Tracking.SameTarget": "Vous tracez déjà cette entité",
     "Controls.Tracking.SelfFail": "Le TARDIS ne peut se tracer lui-même",
