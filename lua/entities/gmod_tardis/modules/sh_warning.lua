@@ -1,11 +1,11 @@
+function ENT:GetWarning()
+    return self:GetData("warning", false)
+end
+
 if SERVER then
     ENT:AddHook("Initialize","warning-init", function(self)
         self:SetData("warning", false, true)
     end)
-
-    function ENT:GetWarning()
-        return self:GetData("warning", false)
-    end
 
     function ENT:ToggleWarning()
         return self:SetWarning(not self:GetWarning())
