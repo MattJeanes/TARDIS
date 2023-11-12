@@ -49,6 +49,19 @@ T.Interior = {
         pos=Vector(-280,0,100),
         ang=Angle(0,0,0)
     },
+
+    Sounds = {
+        Teleport = {
+            demat = "p00gie/tardis/default/demat_int.ogg",
+            mat = "p00gie/tardis/default/mat_int.ogg",
+            fullflight = "p00gie/tardis/default/full_int.ogg",
+            demat_fail = "p00gie/tardis/default/demat_fail.ogg",
+            demat_hads = "p00gie/tardis/demat_hads.wav",
+            interrupt = "p00gie/tardis/default/demat_interrupt.ogg",
+        },
+        FlightLoop = "p00gie/tardis/default/flight_loop.wav",
+    },
+    
     Parts = {
         door = {
             model="models/vtalanov98/toyota_ext/doors_interior.mdl",
