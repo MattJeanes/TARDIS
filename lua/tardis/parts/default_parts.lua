@@ -193,7 +193,7 @@ PART.ShouldTakeDamage = false
 PART.Animate = true
 PART.AnimateOptions = {
     Type = "idle",
-    Speed = 0.1,
+    Speed = 0.5,
     NoPowerFreeze = true,
 }
 TARDIS:AddPart(PART)
@@ -239,6 +239,8 @@ TARDIS:AddPart(PART)
 local PART={}
 PART.ID = "default_handbrake"
 PART.Model = "models/molda/toyota_int/handbrake.mdl"
+PART.SoundOn = "p00gie/tardis/default/handbrake_on.ogg"
+PART.SoundOff = "p00gie/tardis/default/handbrake_off.ogg"
 PART.AutoSetup = true
 PART.Collision = true
 PART.ShouldTakeDamage = false
@@ -268,11 +270,13 @@ TARDIS:AddPart(PART)
 local PART={}
 PART.ID = "default_throttle"
 PART.Model = "models/molda/toyota_int/throttle.mdl"
+PART.SoundOn = "p00gie/tardis/default/throttle_on.ogg"
+PART.SoundOff = "p00gie/tardis/default/throttle_off.ogg"
 PART.AutoSetup = true
 PART.Collision = true
 PART.ShouldTakeDamage = false
 PART.Animate = true
-PART.AnimateSpeed = 1.2
+PART.AnimateSpeed = 2.3
 TARDIS:AddPart(PART)
 
 local PART={}
@@ -281,6 +285,17 @@ PART.Model = "models/molda/toyota_int/keyboard.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 PART.ShouldTakeDamage = false
+PART.SoundOn = "p00gie/tardis/default/keyboard_2014.ogg"
+PART.SoundOff = "p00gie/tardis/default/keyboard_2015.ogg"
+
+if SERVER then
+	function PART:Use(ply)
+		self.interior:Timer("default_keyboard", 1, function()
+			TARDIS:Control(self.Control, ply)
+		end)
+	end
+end
+
 TARDIS:AddPart(PART)
 
 local PART={}
@@ -375,7 +390,7 @@ PART.Animate = true
 
 PART.AnimateOptions = {
     Type = "perpetual_use",
-    Speed = 0.8,
+    Speed = 1.2,
     StopAnywhere = true,
 }
 
@@ -391,7 +406,7 @@ PART.Animate = true
 PART.AnimateOptions = {
     Type = "perpetual_use",
     Speed = 1,
-    StopAnywhere = true,
+    StopAnywhere = false,
 }
 
 TARDIS:AddPart(PART)
@@ -500,6 +515,8 @@ TARDIS:AddPart(PART)
 
 local PART = {}
 PART.Model = "models/cem/toyota_contr/red_lever.mdl"
+PART.SoundOn = "p00gie/tardis/default/red_lever_on.ogg"
+PART.SoundOff = "p00gie/tardis/default/red_lever_off.ogg"
 PART.AutoSetup = true
 PART.Collision = true
 PART.Animate = true
@@ -517,45 +534,23 @@ PART.Collision = true
 PART.Animate = true
 TARDIS:AddPart(PART)
 
-local PART = {}
-PART.ID = "default_colored_lever_1"
-PART.Model = "models/cem/toyota_contr/colored_lever_1.mdl"
-PART.AutoSetup = true
-PART.Collision = true
-PART.Animate = true
-TARDIS:AddPart(PART)
+for i = 1,5 do
+    local PART = {}
+    PART.ID = "default_colored_lever_" .. i
+    PART.Model = "models/cem/toyota_contr/colored_lever_" .. i .. ".mdl"
 
-local PART = {}
-PART.ID = "default_colored_lever_2"
-PART.Model = "models/cem/toyota_contr/colored_lever_2.mdl"
-PART.AutoSetup = true
-PART.Collision = true
-PART.Animate = true
-TARDIS:AddPart(PART)
+    PART.SoundOn = "p00gie/tardis/default/colored_lever_" .. i .. ".ogg"
+    PART.SoundOff = "p00gie/tardis/default/colored_lever_disable.ogg"
+    PART.SoundOnNoPower = "p00gie/tardis/default/colored_lever_1.ogg"
+    PART.SoundOffNoPower = "p00gie/tardis/default/colored_lever_disable.ogg"
 
-local PART = {}
-PART.ID = "default_colored_lever_3"
-PART.Model = "models/cem/toyota_contr/colored_lever_3.mdl"
-PART.AutoSetup = true
-PART.Collision = true
-PART.Animate = true
-TARDIS:AddPart(PART)
+    PART.AutoSetup = true
+    PART.Collision = true
+    PART.Animate = true
+    PART.AnimateSpeed = 4
 
-local PART = {}
-PART.ID = "default_colored_lever_4"
-PART.Model = "models/cem/toyota_contr/colored_lever_4.mdl"
-PART.AutoSetup = true
-PART.Collision = true
-PART.Animate = true
-TARDIS:AddPart(PART)
-
-local PART = {}
-PART.ID = "default_colored_lever_5"
-PART.Model = "models/cem/toyota_contr/colored_lever_5.mdl"
-PART.AutoSetup = true
-PART.Collision = true
-PART.Animate = true
-TARDIS:AddPart(PART)
+    TARDIS:AddPart(PART)
+end
 
 local PART = {}
 PART.ID = "default_phone"
