@@ -49,9 +49,9 @@
 				off 0
 				demat_fail 30
 				mat_fail 30
-				travel 16
-				demat 70
-				mat 60
+				travel 10
+				demat 55
+				mat 50
 
 				idle_warning 10
 				interrupt_warning 10

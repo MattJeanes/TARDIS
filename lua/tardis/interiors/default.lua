@@ -257,7 +257,7 @@ T.Exterior = {}
 
 T.Timings = {
     DematInterrupt = 3,
-    DematStartingAnimation = 2,
+    DematStartingAnimation = 3,
     MatStoppingAnimation = 4,
 }
 
