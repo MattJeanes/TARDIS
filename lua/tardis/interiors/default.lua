@@ -371,6 +371,8 @@ console scanner from new version?
 
 add parts' sounds and custom behaviour
 
+cleanup materials and get rid of comments
+
 clean duplicating textures from cem/ subfolder
 fix sonic charger material
 dynamic environment (distance?)
