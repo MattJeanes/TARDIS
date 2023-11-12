@@ -12,5 +12,74 @@
 
 	"$nodecal" "1"
 	"$nocull" "0"
+
+	$speed 10
+	$frame 0
+
+	$sine 1
+
+	Proxies {
+		TARDIS_State
+		{
+			resultTextureVar $basetexture
+			resultFrameVar $frame
+
+			textures {
+				idle "models/molda/toyota_int/bulbs"
+				handbrake "models/molda/toyota_int/bulbs"
+				interrupt "models/molda/toyota_int/bulbs_half"
+				demat_fail "models/molda/toyota_int/bulbs_warning"
+				mat_fail "models/molda/toyota_int/bulbs_travel_warning"
+				off "models/molda/toyota_int/bulbs_off"
+				travel "models/molda/toyota_int/bulbs_travel"
+				demat "models/molda/toyota_int/bulbs_travel"
+				mat "models/molda/toyota_int/bulbs_travel"
+
+				idle_warning "models/molda/toyota_int/bulbs_warning"
+				handbrake_warning "models/molda/toyota_int/bulbs_warning_static"
+				interrupt_warning "models/molda/toyota_int/bulbs_warning"
+				demat_fail_warning "models/molda/toyota_int/bulbs_warning"
+				off_warning "models/molda/toyota_int/bulbs_off"
+				travel_warning "models/molda/toyota_int/bulbs_travel_warning"
+				demat_warning "models/molda/toyota_int/bulbs_travel_warning"
+				mat_warning "models/molda/toyota_int/bulbs_travel_warning"
+			}
+			frameRates {
+				idle 0
+				off 0
+				demat_fail 30
+				mat_fail 30
+				travel 16
+				demat 70
+				mat 60
+
+				idle_warning 10
+				interrupt_warning 10
+				demat_fail_warning 40
+				off_warning 0
+				travel_warning 10
+				demat_warning 20
+				mat_warning 20
+			}
+		}
+		Sine {
+			sineperiod 4
+			sinemin 1
+			sinemax 1.4
+			resultVar $sine
+		}
+		Equals {
+			srcVar1 $sine
+			resultVar "$selfillumtint[0]"
+		}
+		Equals {
+			srcVar1 $sine
+			resultVar "$selfillumtint[1]"
+		}
+		Equals {
+			srcVar1 $sine
+			resultVar "$selfillumtint[2]"
+		}
+	}
 }
 

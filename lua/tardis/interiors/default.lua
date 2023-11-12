@@ -9,7 +9,7 @@ T.Interior = {
     Model="models/molda/toyota_int/interior.mdl",
     ExitDistance=1450,
     LightOverride = {
-        basebrightness = 0.1,
+        basebrightness = 0.05,
         nopowerbrightness = 0.001,
     },
     Light={
@@ -23,16 +23,19 @@ T.Interior = {
     },
     Lights={
         console_white = {
-            pos=Vector(0,0,187),
-            brightness=0.3,
-            color=Color(100,140,210),
-            warncolor=Color(255,143,143),
+            pos=Vector(0,0,187.4),
+            brightness=0.4,
+            color=Color(255,255,200),
+            warn_color=Color(255,143,143),
+            off_color=Color(0,120,200),
+            off_brightness=0.1,
+            nopower = true,
         },
         lower_light = {
             color=Color(0,170,255),
             warncolor=Color(51,102,102),
             pos=Vector(0,0,-30),
-            brightness=3,
+            brightness=8,
         },
     },
 
@@ -61,7 +64,7 @@ T.Interior = {
         },
         FlightLoop = "p00gie/tardis/default/flight_loop.wav",
     },
-    
+
     Parts = {
         door = {
             model="models/vtalanov98/toyota_ext/doors_interior.mdl",
@@ -252,10 +255,55 @@ T.Interior = {
 
 T.Exterior = {}
 
+T.Timings = {
+    DematInterrupt = 3,
+    DematStartingAnimation = 2,
+    MatStoppingAnimation = 4,
+}
+
 T.Templates = {
     default_exterior = { override = true, },
 }
 
+T.CustomHooks = {
+    fast_top_bulbs = {
+        exthooks = {
+            ["DematStart"] = true,
+            ["StopMat"] = true,
+        },
+        func = function(ext,int)
+            if SERVER then return end
+            if not IsValid(int) then return end
+
+            local time, data
+
+            if ext:GetData("demat") then
+                time = ext.metadata.Timings.DematStartingAnimation
+                data = "demat_animation"
+            else
+                time = ext.metadata.Timings.MatStoppingAnimation
+                data = "mat_animation"
+            end
+
+            int:SetData(data, true)
+            int:Timer(data, time, function()
+                int:SetData(data, nil)
+            end)
+        end,
+    },
+    fast_top_bulbs_handbrake = {
+        inthooks = {
+            ["HandbrakeToggled"] = true,
+        },
+        func = function(ext,int,on)
+            if CLIENT and on and IsValid(int) and int:GetData("mat_animation") then
+                int:CancelTimer("mat_animation")
+                int:SetData("mat_animation", nil)
+            end
+        end,
+    },
+
+}
 
 TARDIS:AddInterior(T)
 
