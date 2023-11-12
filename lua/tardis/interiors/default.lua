@@ -281,9 +281,9 @@ T.CustomHooks = {
             if not IsValid(int) then return end
             if not int.light_data then return end
 
-            local speed = 0.01
+            local speed = 0.002
 
-            local k = ext:GetData("default_int_color_mult", math.Rand(0,1))
+            local k = ext:GetData("default_int_color_mult", math.random(0,1))
             local target = ext:GetData("default_int_color_target")
             if not target then
                 target = math.random(2) - 1
@@ -302,6 +302,8 @@ T.CustomHooks = {
 
             -- Color(0,180,255) ... Color(0,255,200)
             local col = Color(0, 90 + 37.5 * k, 100 + 27.5 * p)
+            ext:SetData("default_int_env_color", col)
+
             change_light_color(int.light_data.main, col)
             change_light_color(int.light_data.extra.lower_light, col)
 

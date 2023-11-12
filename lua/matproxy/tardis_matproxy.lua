@@ -84,3 +84,26 @@ matproxy.Add({
         mat:SetInt(self.FrameNo, self.current_frame)
     end
 })
+
+matproxy.Add({
+    name = "TARDIS_DefaultInt_EnvColor",
+
+    init = function(self, mat, values)
+        self.ResultTo = values.resultvar
+    end,
+
+    bind = function(self, mat, ent)
+        if not IsValid(ent) or not ent.TardisPart then return end
+
+        local col = ent:GetData("default_int_env_color") or Color(0,200,255)
+
+        col = Color(col.r, col.g, col.b):ToVector()
+
+        if not ent.exterior or not ent.exterior:GetPower() then
+            col = col * 0.1
+        end
+
+        mat:SetVector( self.ResultTo, col);
+    end
+})
+
