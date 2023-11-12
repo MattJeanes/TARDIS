@@ -85,6 +85,40 @@ matproxy.Add({
     end
 })
 
+local function matproxy_tardis_power_init(self, mat, values)
+    self.ResultTo = values.resultvar
+    self.on_var = values.onvar
+    self.off_var = values.offvar
+end
+
+local function matproxy_tardis_power_bind(self, mat, ent)
+    if not IsValid(ent) or not IsValid(ent.exterior) or not ent.TardisPart then return end
+
+    local var = ent.exterior:GetPower() and self.on_var or self.off_var
+    if not var then return end
+
+    mat:SetVector(self.ResultTo, mat:GetVector(var))
+end
+
+matproxy.Add({
+    name = "TARDIS_Power",
+    init = matproxy_tardis_power_init,
+    bind = matproxy_tardis_power_bind,
+})
+
+matproxy.Add({
+    name = "TARDIS_Power2",
+    init = matproxy_tardis_power_init,
+    bind = matproxy_tardis_power_bind,
+})
+
+matproxy.Add({
+    name = "TARDIS_Power3",
+    init = matproxy_tardis_power_init,
+    bind = matproxy_tardis_power_bind,
+})
+
+
 matproxy.Add({
     name = "TARDIS_DefaultInt_EnvColor",
 
@@ -99,11 +133,30 @@ matproxy.Add({
 
         col = Color(col.r, col.g, col.b):ToVector()
 
-        if not ent.exterior or not ent.exterior:GetPower() then
+        if ent.exterior and not ent.exterior:GetPower() then
             col = col * 0.1
         end
 
         mat:SetVector( self.ResultTo, col);
     end
 })
+
+matproxy.Add({
+    name = "TARDIS_DefaultInt_FloorLightsColor",
+
+    init = function(self, mat, values)
+        self.ResultTo = values.resultvar
+    end,
+
+    bind = function(self, mat, ent)
+        if not IsValid(ent) or not ent.TardisPart then return end
+
+        local col = ent:GetData("default_int_floor_lights_color") or Color(230,230,210)
+
+        col = Color(col.r, col.g, col.b):ToVector()
+
+        mat:SetVector( self.ResultTo, col);
+    end
+})
+
 

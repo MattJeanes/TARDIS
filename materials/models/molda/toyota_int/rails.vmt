@@ -9,4 +9,16 @@
 	"$nocull" "1"
 
 	"$surfaceprop" "Metal"
+
+	$envmaptint_on "[0.6 0.8 0.85]"
+	$envmaptint_off "[0.1 0.15 0.15]"
+
+	"Proxies"
+	{
+		TARDIS_Power {
+			onVar "$envmaptint_on"
+			offVar "$envmaptint_off"
+			resultVar "$envmaptint"
+		}
+	}
 }

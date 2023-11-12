@@ -9,14 +9,14 @@
 	"$nodecal" "1"
 	"$nocull" "1"
 
-$sine 0
+    $sine 0
     Proxies
     {
 
         Sine
         {
             sineperiod          10
-            sinemin             0
+            sinemin             0.2
             sinemax             0.5
             resultVar           $sine
         }
@@ -37,3 +37,4 @@ $sine 0
         }
 
     }
+}

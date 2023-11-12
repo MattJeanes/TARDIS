@@ -301,15 +301,23 @@ T.CustomHooks = {
             local p = 1 - k
 
             -- Color(0,180,255) ... Color(0,255,200)
-            local col = Color(0, 90 + 37.5 * k, 100 + 27.5 * p)
+            local col = Color(0, 180 + 55 * k, 200 + 55 * p)
             ext:SetData("default_int_env_color", col)
 
             change_light_color(int.light_data.main, col)
             change_light_color(int.light_data.extra.lower_light, col)
 
+            -- Color(80, 120, 255) ... Color (80, 255, 120)
+            local rotor_col = Color(80, 120 + 125 * k, 120 + 125 * p)
+            ext:SetData("default_int_rotor_color", rotor_col)
+
             -- Color(140,170,255) ... Color(255,255,200)
-            local console_col = Color(70 + 57.5 * k, 85 + 42.5 * k, 27.5 * p + 100)
+            local console_col = Color(140 + 115 * k, 170 + 85 * k, 200 + 55 * p)
             change_light_color(int.light_data.extra.console_white, console_col)
+
+            -- Color(255,255,255) ... Color(255,255,220)
+            local floor_lights_col = Color(255, 255, 220 + 20 * p)
+            ext:SetData("default_int_floor_lights_color", floor_lights_col)
         end,
 
     },

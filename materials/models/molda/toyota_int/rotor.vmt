@@ -13,4 +13,17 @@
 	"$nodecal" "1"
 	"$nocull" "0"
 
+	$envmaptint_mult "1"
+	$envmaptint_color "[0 0.4 0.5]"
+	Proxies {
+		TARDIS_DefaultInt_EnvColor {
+			resultVar	$envmaptint_color
+		}
+		Multiply {
+			srcVar1 $envmaptint_color
+			srcVar2 $envmaptint_mult
+			resultVar $envmaptint
+		}
+	}
+
 }

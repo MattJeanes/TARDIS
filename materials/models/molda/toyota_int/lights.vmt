@@ -12,4 +12,30 @@
 	"$nodecal" "1"
 	"$nocull" "0"
 
+	$selfillum_on "[1 1 1]"
+	$selfillum_off "[0 0 0]"
+	$envmaptint_on "[1 1 1]"
+	$envmaptint_off "[0 0 0]"
+	$color2_on "[1 1 1]"
+	$color2_off "[0.3 0.3 0.3]"
+
+	"Proxies"
+	{
+		TARDIS_Power {
+			onVar "$selfillum_on"
+			offVar "$selfillum_off"
+			resultVar "$selfillumtint"
+		}
+		TARDIS_Power2 {
+			onVar "$envmaptint_on"
+			offVar "$envmaptint_off"
+			resultVar "$envmaptint"
+		}
+		TARDIS_Power3 {
+			onVar "$color2_on"
+			offVar "$color2_off"
+			resultVar "$color2"
+		}
+	}
+
 }

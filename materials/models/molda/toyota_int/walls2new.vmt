@@ -2,7 +2,7 @@
 {
 	"$basetexture" "models/molda/toyota_int/walls2new"
 
-	"$color2" "[0.9 0.9 0.8]"
+	//"$color2" "[0.9 0.9 0.8]"
 
 	"$surfaceprop" "Metal"
 
@@ -12,4 +12,17 @@
 	"$nodecal" "1"
 	"$nocull" "0"
 
+	$envmaptint_mult "0.15"
+	$envmaptint_color "[1 1 1]"
+	Proxies
+	{
+		TARDIS_DefaultInt_EnvColor {
+			resultVar $envmaptint_color
+		}
+		Multiply {
+			srcVar1 $envmaptint_color
+			srcVar2 $envmaptint_mult
+			resultVar $envmaptint
+		}
+	}
 }

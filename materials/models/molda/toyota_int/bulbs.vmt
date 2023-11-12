@@ -18,9 +18,23 @@
 
 	$sine 1
 
+	$envmaptint_on "[0.5 0.5 0.5]"
+	$envmaptint_off "[0.05 0.05 0.05]"
+	$color2_on "[1 1 1]"
+	$color2_off "[0.3 0.3 0.3]"
+
 	Proxies {
-		TARDIS_State
-		{
+		TARDIS_Power {
+			onVar "$envmaptint_on"
+			offVar "$envmaptint_off"
+			resultVar "$envmaptint"
+		}
+		TARDIS_Power2 {
+			onVar "$color2_on"
+			offVar "$color2_off"
+			resultVar "$color2"
+		}
+		TARDIS_State {
 			resultTextureVar $basetexture
 			resultFrameVar $frame
 
@@ -39,6 +53,7 @@
 				handbrake_warning "models/molda/toyota_int/bulbs_warning_static"
 				interrupt_warning "models/molda/toyota_int/bulbs_warning"
 				demat_fail_warning "models/molda/toyota_int/bulbs_warning"
+				mat_fail "models/molda/toyota_int/bulbs_travel_warning"
 				off_warning "models/molda/toyota_int/bulbs_off"
 				travel_warning "models/molda/toyota_int/bulbs_travel_warning"
 				demat_warning "models/molda/toyota_int/bulbs_travel_warning"
@@ -58,8 +73,8 @@
 				demat_fail_warning 40
 				off_warning 0
 				travel_warning 10
-				demat_warning 20
-				mat_warning 20
+				demat_warning 30
+				mat_warning 30
 			}
 		}
 		Sine {

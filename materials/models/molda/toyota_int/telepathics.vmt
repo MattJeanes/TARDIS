@@ -1,14 +1,15 @@
-"UnlitGeneric"
+"VertexLitGeneric"
 {
 	"$basetexture" "models/molda/toyota_int/telepathics"
 
 	"$surfaceprop" "Metal"
 
-	"$envmap" "models/molda/toyota_int/environment"
-	"$envmaptint" "[0.2 0.45 0.6]"
+	//"$envmap" "models/molda/toyota_int/environment"
+	//"$envmaptint" "[0.2 0.45 0.6]"
 
 	"$selfillum" "1"
 	"$selfillummask" "models/molda/toyota_int/white"
+    $selfillumtint "[0 0 0]"
     $color2 "[0 1.4 1.8]"
 
 	"$nodecal" "1"
@@ -19,8 +20,24 @@
     $sine2 1
     $sine3 1
 
+    $selfillum_on "[1 1 1]"
+    $selfillum_off "[0.1 0.1 0.1]"
+
+    $color2_on "[0 1.4 1.8]"
+    $color2_off "[0.5 0.5 0.5]"
+
     "Proxies"
     {
+        TARDIS_Power {
+            onVar "$selfillum_on"
+            offVar "$selfillum_off"
+            resultVar "$selfillumtint"
+        }
+        TARDIS_Power2 {
+            onVar "$color2_on"
+            offVar "$color2_off"
+            resultVar "$color2"
+        }
         Sine
         {
             sineperiod 5
@@ -54,19 +71,20 @@
         {
             srcVar1 $sine1
             srcVar2 $sine
-            resultVar "$color2[0]"
+            resultVar "$color2_on[0]"
         }
         Add
         {
             srcVar1 $sine2
             srcVar2 $sine
-            resultVar "$color2[1]"
+            resultVar "$color2_on[1]"
         }
         Add
         {
             srcVar1 $sine3
             srcVar2 $sine
-            resultVar "$color2[2]"
+            resultVar "$color2_on[2]"
         }
+
     }
 }
