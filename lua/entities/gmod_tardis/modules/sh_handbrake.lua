@@ -19,6 +19,7 @@ if SERVER then
         end
         self:SetData("handbrake", on, true)
         self:CallCommonHook("HandbrakeToggled", on)
+        self:SendMessage("handbrake_toggled", {on})
         return true
     end
 
@@ -64,5 +65,10 @@ if SERVER then
         elseif name == "GetBrake" then
             return self:GetHandbrake() and 1 or 0
         end
+    end)
+else
+    ENT:OnMessage("handbrake_toggled", function(self, data, ply)
+        local on = data[1]
+        self:CallCommonHook("HandbrakeToggled", on)
     end)
 end
