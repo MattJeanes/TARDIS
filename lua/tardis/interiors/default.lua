@@ -265,7 +265,52 @@ T.Templates = {
     default_exterior = { override = true, },
 }
 
+local function change_light_color(lt, col)
+    if lt and lt.brightness and col then
+        lt.color = col
+        lt.color_vec = Vector(col.r/255, col.g/255, col.b/255) * lt.brightness
+        lt.render_table.color = lt.color_vec
+    end
+end
+
 T.CustomHooks = {
+    int_color = {
+        inthooks = { ["Think"] = true },
+        func = function(ext,int,frame_time)
+            if SERVER then return end
+            if not IsValid(int) then return end
+            if not int.light_data then return end
+
+            local speed = 0.01
+
+            local k = ext:GetData("default_int_color_mult", math.Rand(0,1))
+            local target = ext:GetData("default_int_color_target")
+            if not target then
+                target = math.random(2) - 1
+                ext:SetData("default_int_color_target", target)
+            end
+
+            k = math.Approach(k, target, frame_time * speed)
+
+            ext:SetData("default_int_color_mult", k)
+
+            if k == target then
+                ext:SetData("default_int_color_target", 1 - target)
+            end
+
+            local p = 1 - k
+
+            -- Color(0,180,255) ... Color(0,255,200)
+            local col = Color(0, 90 + 37.5 * k, 100 + 27.5 * p)
+            change_light_color(int.light_data.main, col)
+            change_light_color(int.light_data.extra.lower_light, col)
+
+            -- Color(140,170,255) ... Color(255,255,200)
+            local console_col = Color(70 + 57.5 * k, 85 + 42.5 * k, 27.5 * p + 100)
+            change_light_color(int.light_data.extra.console_white, console_col)
+        end,
+
+    },
     fast_top_bulbs = {
         exthooks = {
             ["DematStart"] = true,
