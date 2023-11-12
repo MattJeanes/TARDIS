@@ -254,11 +254,25 @@ PART.AnimateOptions = {
 }
 
 if CLIENT then
+
+    function trace_height(int, ply)
+        local trace = {
+            start = ply:EyePos(),
+            endpos = ply:EyePos() + (ply:GetAimVector() * 4096),
+            filter = { ply, },
+        }
+        if util.TraceLine(trace).Hit then
+            return int:WorldToLocal(util.TraceLine(trace).HitPos).z
+        end
+    end
+
     function PART:Use(ply)
         if not self:GetOn() then return end
 
         if LocalPlayer():KeyDown(IN_WALK) then
-            self.animation.max = math.Rand(0.2, 0.5)
+            -- giving the player some control over the height
+            local h = trace_height(self.interior, ply) - 132
+            self.animation.max = math.Clamp(0.4 + h * 0.16, 0.4, 1)
         else
             self.animation.max = math.Rand(0.5, 1)
         end
@@ -743,7 +757,7 @@ if SERVER then
     local function TraceEyeThroughSidePanels(self, ply)
         local trace = {
             start = ply:EyePos(),
-            endpos = ply:EyePos() + ( ply:GetAimVector() * ( 4096 * 8 ) ),
+            endpos = ply:EyePos() + ( ply:GetAimVector() * 4096 ),
             filter = { ply, self },
         }
         return util.TraceLine(trace).Hit and util.TraceLine(trace).Entity
