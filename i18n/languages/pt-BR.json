@@ -3,6 +3,11 @@
   "Author": "covauski3",
   "Phrases": {
     "Artron.Depleted": "Energia artron esgotada",
+    "ArtronInhibitor": "",
+    "ArtronInhibitor.Disabled": "",
+    "ArtronInhibitor.Enabled": "",
+    "ArtronInhibitor.Instructions": "",
+    "ArtronInhibitor.Starting": "",
     "Binds.AnyKey": "Aperte qualquer tecla",
     "Binds.Invalid": "Inválido",
     "Binds.Key": "Tecla",

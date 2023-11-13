@@ -3,6 +3,11 @@
   "Author": "Kirbe, Piquixel",
   "Phrases": {
     "Artron.Depleted": "Énergie artron épuisée",
+    "ArtronInhibitor": "",
+    "ArtronInhibitor.Disabled": "",
+    "ArtronInhibitor.Enabled": "",
+    "ArtronInhibitor.Instructions": "",
+    "ArtronInhibitor.Starting": "",
     "Binds.AnyKey": "Appuyez sur une touche",
     "Binds.Invalid": "Invalide",
     "Binds.Key": "Touche",

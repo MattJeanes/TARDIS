@@ -3,6 +3,11 @@
   "Author": "TARDIS Development Team",
   "Phrases": {
     "Artron.Depleted": "Artron energy depleted",
+    "ArtronInhibitor": "Artron Inhibitor",
+    "ArtronInhibitor.Disabled": "Artron inhibitor disabled",
+    "ArtronInhibitor.Enabled": "Artron inhibitor enabled",
+    "ArtronInhibitor.Instructions": "Creates an Artron Inhibitor field, which drains Artron Energy from nearby TARDISes",
+    "ArtronInhibitor.Starting": "Starting the artron inhibitor...",
     "Binds.AnyKey": "Press any key",
     "Binds.Invalid": "Invalid",
     "Binds.Key": "Key",
