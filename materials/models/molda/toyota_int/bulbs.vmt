@@ -53,7 +53,7 @@
 				handbrake_warning "models/molda/toyota_int/bulbs_warning_static"
 				interrupt_warning "models/molda/toyota_int/bulbs_warning"
 				demat_fail_warning "models/molda/toyota_int/bulbs_warning"
-				mat_fail "models/molda/toyota_int/bulbs_travel_warning"
+				mat_fail_warning "models/molda/toyota_int/bulbs_travel_warning"
 				off_warning "models/molda/toyota_int/bulbs_off"
 				travel_warning "models/molda/toyota_int/bulbs_travel_warning"
 				demat_warning "models/molda/toyota_int/bulbs_travel_warning"
@@ -61,20 +61,24 @@
 			}
 			frameRates {
 				idle 0
-				off 0
+				handbrake 0
+				interrupt 0
 				demat_fail 30
 				mat_fail 30
+				off 0
 				travel 10
 				demat 55
 				mat 50
 
 				idle_warning 10
+				handbrake_warning 0
 				interrupt_warning 10
 				demat_fail_warning 40
+				mat_fail_warning 40
 				off_warning 0
 				travel_warning 10
-				demat_warning 30
-				mat_warning 30
+				demat_warning 40
+				mat_warning 40
 			}
 		}
 		Sine {
