@@ -141,7 +141,7 @@ PART.Animate = true
 PART.AnimateOptions = {
     Type = "travel",
     Speed = 0.5,
-    ResetPosAfterStop = true,
+    ReturnAfterStop = true,
     NoPowerFreeze = true,
 }
 TARDIS:AddPart(PART)
@@ -180,7 +180,7 @@ PART.Animate = true
 PART.AnimateOptions = {
     Type = "travel",
     Speed = 0.075,
-    ResetPosAfterStop = true,
+    ReturnAfterStop = false,
     NoPowerFreeze = true,
 }
 TARDIS:AddPart(PART)
