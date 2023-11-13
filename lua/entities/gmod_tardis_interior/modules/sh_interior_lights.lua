@@ -510,6 +510,9 @@ if SERVER then
 
         for k,v in pairs(lamps) do
             if v then
+                if not v.color then
+                    v.color = Color(255,255,255)
+                end
                 local lamp = MakeLamp(nil, -- creator
                     v.color.r, v.color.g, v.color.b,
                     KEY_NONE, -- toggle key

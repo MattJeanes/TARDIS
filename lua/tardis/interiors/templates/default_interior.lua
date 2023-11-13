@@ -1,12 +1,69 @@
+local n = 5
+
+local lp = Vector(197, 0, 340)
+local la = Angle(86.8, 0, 90)
+local up = Vector(0,0,1)
+
+local v0 = Vector(0,0,0)
+local a0 = Angle(0,0,0)
+
+local ra = 360 / n
+
+local lamp_positions = {}
+for i = 1,n do
+	lamp_positions[i] = { pos = v0 + lp, ang = a0 + la, }
+	lp:Rotate(Angle(0,ra,0))
+	la:RotateAroundAxis(up, ra)
+end
+
+local lamps = {}
+
+for i = 1,n do
+	lamps[i] = {
+		color = Color(255, 255, 230),
+		texture = "effects/flashlight/soft",
+		fov = 165,
+		distance = 290,
+		brightness = 0.5,
+		shadows = false,
+		pos = lamp_positions[i].pos,
+		ang = lamp_positions[i].ang,
+		states = {
+			["normal"] = {
+				enabled = true,
+			},
+			["teleport"] = {
+				enabled = false,
+			},
+		},
+	}
+end
+
+
 TARDIS:AddInteriorTemplate("default_lamps", {
 	Interior = {
 		LightOverride = {
 			basebrightness = 0.005,
 		},
-		Light = {
-			brightness = 8,
-			warn_brightness = 6,
-		}
+		Lamps = lamps,
+	},
+	CustomHooks = {
+		lamps_toggle = {
+			exthooks = {
+				["DematStart"] = true,
+				["StopMat"] = true,
+			},
+			func = function(ext,int)
+				if SERVER then return end
+				if not IsValid(int) then return end
+
+				if ext:GetData("demat") then
+					int:ApplyLightState("teleport")
+				else
+					int:ApplyLightState("normal")
+				end
+			end,
+		},
 	},
 })
 
