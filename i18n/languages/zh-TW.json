@@ -3,11 +3,6 @@
   "Author": "ALexZekio",
   "Phrases": {
     "Artron.Depleted": "雅昌能源耗盡",
-    "ArtronInhibitor": "",
-    "ArtronInhibitor.Disabled": "",
-    "ArtronInhibitor.Enabled": "",
-    "ArtronInhibitor.Instructions": "",
-    "ArtronInhibitor.Starting": "",
     "Binds.AnyKey": "按下任意鍵",
     "Binds.Invalid": "無效",
     "Binds.Key": "鍵",

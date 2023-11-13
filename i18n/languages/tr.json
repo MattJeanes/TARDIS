@@ -3,11 +3,6 @@
   "Author": "TARDIS Geliştirme Ekibi",
   "Phrases": {
     "Artron.Depleted": "Artron enerjisi tükendi",
-    "ArtronInhibitor": "",
-    "ArtronInhibitor.Disabled": "",
-    "ArtronInhibitor.Enabled": "",
-    "ArtronInhibitor.Instructions": "",
-    "ArtronInhibitor.Starting": "",
     "Binds.AnyKey": "Herhangi bir tuşa basın",
     "Binds.Invalid": "Geçersiz",
     "Binds.Key": "Anahtar",

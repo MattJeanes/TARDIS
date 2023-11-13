@@ -3,11 +3,6 @@
   "Author": "P00gie, parar020100",
   "Phrases": {
     "Artron.Depleted": "Артронная энергия исчерпана",
-    "ArtronInhibitor": "",
-    "ArtronInhibitor.Disabled": "",
-    "ArtronInhibitor.Enabled": "",
-    "ArtronInhibitor.Instructions": "",
-    "ArtronInhibitor.Starting": "",
     "Binds.AnyKey": "Нажмите любую клавишу",
     "Binds.Invalid": "Не указан",
     "Binds.Key": "Клавиша",

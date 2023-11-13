@@ -3,11 +3,6 @@
   "Author": "Franco D.M. (francodml), Custom Doctor (reisoglu.cem), covauski3",
   "Phrases": {
     "Artron.Depleted": "Energía artron agotada",
-    "ArtronInhibitor": "",
-    "ArtronInhibitor.Disabled": "",
-    "ArtronInhibitor.Enabled": "",
-    "ArtronInhibitor.Instructions": "",
-    "ArtronInhibitor.Starting": "",
     "Binds.AnyKey": "Presiona cualquier tecla",
     "Binds.Invalid": "Inválido",
     "Binds.Key": "Tecla",
