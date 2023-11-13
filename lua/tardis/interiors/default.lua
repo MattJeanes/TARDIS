@@ -13,26 +13,34 @@ T.Interior = {
         nopowerbrightness = 0.001,
     },
     Light={
-        color=Color(0,170,255),
-        warncolor=Color(51,102,102),
-        pos=Vector(0,0,-30),
-        brightness=8,
+        color = Color(0,170,255),
+        pos = Vector(0,0,-30),
+        brightness = 8,
+        warn_brightness = 6,
+        NoLO = {
+            brightness = 5,
+            warn_brightness = 3,
+        },
+        NoExtra = {
+            pos = Vector(0,0,187.4),
+            brightness = 1,
+        },
     },
     Lights={
         console_white = {
-            pos=Vector(0,0,187.4),
-            brightness=0.4,
-            color=Color(255,255,200),
-            warn_color=Color(255,143,143),
-            off_color=Color(0,120,200),
-            off_brightness=0.1,
+            pos = Vector(0,0,187.4),
+            brightness = 0.4,
+            color = Color(255,255,200),
+            warn_color = Color(255,143,143),
+            off_color = Color(0,120,200),
+            off_brightness = 0.1,
             nopower = true,
         },
         console_bottom = {
-            color=Color(0,170,255),
-            pos=Vector(0,0,110),
-            brightness=0.5,
-            warn_color=Color(0,51,51),
+            color = Color(0,170,255),
+            pos = Vector(0,0,110),
+            brightness = 0.5,
+            warn_brightness = 0.2,
             nopower = true,
             off_color = Color(0,65,215),
             off_brightness = 0.2,
@@ -281,9 +289,11 @@ T.CustomHooks = {
             if not IsValid(int) then return end
             if not int.light_data then return end
 
-            local speed = 0.002
+            local speed = 0.001
 
-            local k = ext:GetData("default_int_color_mult", math.random(0,1))
+            local start_colors = { 0, 0.5, 0.5, 0.5, 1 }
+
+            local k = ext:GetData("default_int_color_mult", start_colors[math.random(#start_colors)])
             local target = ext:GetData("default_int_color_target")
             if not target then
                 target = math.random(2) - 1
@@ -311,8 +321,8 @@ T.CustomHooks = {
             local rotor_col = Color(80, 120 + 125 * k, 120 + 125 * p)
             ext:SetData("default_int_rotor_color", rotor_col)
 
-            -- Color(140,170,255) ... Color(255,255,200)
-            local console_col = Color(140 + 115 * k, 170 + 85 * k, 200 + 55 * p)
+            -- Color(240,240,255) ... Color(255,255,200)
+            local console_col = Color(240 + 15 * k, 240 + 15 * k, 200 + 55 * p)
             change_light_color(int.light_data.extra.console_white, console_col)
 
             -- Color(255,255,255) ... Color(255,255,220)
