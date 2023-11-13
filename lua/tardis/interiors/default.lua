@@ -269,68 +269,7 @@ T.Timings = {
     MatStoppingAnimation = 4,
 }
 
-T.Templates = {
-    default_exterior = { override = true, },
-}
-
-local function change_light_color(lt, col)
-    if lt and lt.brightness and col then
-        lt.color = col
-        lt.color_vec = Vector(col.r/255, col.g/255, col.b/255) * lt.brightness
-        lt.render_table.color = lt.color_vec
-    end
-end
-
 T.CustomHooks = {
-    int_color = {
-        inthooks = { ["Think"] = true },
-        func = function(ext,int,frame_time)
-            if SERVER then return end
-            if not IsValid(int) then return end
-            if not int.light_data then return end
-
-            local speed = 0.001
-
-            local start_colors = { 0, 0.5, 0.5, 0.5, 1 }
-
-            local k = ext:GetData("default_int_color_mult", start_colors[math.random(#start_colors)])
-            local target = ext:GetData("default_int_color_target")
-            if not target then
-                target = math.random(2) - 1
-                ext:SetData("default_int_color_target", target)
-            end
-
-            k = math.Approach(k, target, frame_time * speed)
-
-            ext:SetData("default_int_color_mult", k)
-
-            if k == target then
-                ext:SetData("default_int_color_target", 1 - target)
-            end
-
-            local p = 1 - k
-
-            -- Color(0,180,255) ... Color(0,255,200)
-            local col = Color(0, 180 + 55 * k, 200 + 55 * p)
-            ext:SetData("default_int_env_color", col)
-
-            change_light_color(int.light_data.main, col)
-            change_light_color(int.light_data.extra.console_bottom, col)
-
-            -- Color(80, 120, 255) ... Color (80, 255, 120)
-            local rotor_col = Color(80, 120 + 125 * k, 120 + 125 * p)
-            ext:SetData("default_int_rotor_color", rotor_col)
-
-            -- Color(240,240,255) ... Color(255,255,200)
-            local console_col = Color(240 + 15 * k, 240 + 15 * k, 200 + 55 * p)
-            change_light_color(int.light_data.extra.console_white, console_col)
-
-            -- Color(255,255,255) ... Color(255,255,220)
-            local floor_lights_col = Color(255, 255, 220 + 20 * p)
-            ext:SetData("default_int_floor_lights_color", floor_lights_col)
-        end,
-
-    },
     fast_top_bulbs = {
         exthooks = {
             ["DematStart"] = true,
@@ -367,7 +306,51 @@ T.CustomHooks = {
             end
         end,
     },
+}
 
+T.CustomSettings = {
+    color = {
+        text = "Interiors.Default.CustomSettings.Color",
+        value_type = "list",
+        value = "dynamic",
+        options = {
+            ["dynamic"] = "Interiors.Default.CustomSettings.Color.Dynamic",
+            ["blue"] = "Interiors.Default.CustomSettings.Color.Blue",
+            ["green"] = "Interiors.Default.CustomSettings.Color.Green",
+            ["turquoise"] = "Interiors.Default.CustomSettings.Color.Turquoise",
+            ["random"] = "Interiors.Default.CustomSettings.Color.Random",
+        },
+    },
+    lamps = {
+        text = "Interiors.Default.CustomSettings.Lamps",
+        value_type = "bool",
+        value = false,
+    }
+}
+
+T.Templates = {
+    default_exterior = { override = true, },
+    default_lamps = {
+        override = true,
+        condition = function(id, ply, ent)
+            return TARDIS:GetCustomSetting(id, "lamps", ply)
+        end,
+    },
+    default_dynamic_color = {
+        override = true,
+        condition = function(id, ply, ent)
+            local setting_val = TARDIS:GetCustomSetting(id, "color", ply)
+            return (setting_val == "dynamic")
+        end,
+    },
+    default_fixed_color = {
+        override = true,
+        condition = function(id, ply, ent)
+            local setting_val = TARDIS:GetCustomSetting(id, "color", ply)
+            return (setting_val ~= "dynamic")
+        end,
+    },
+    default_color_update = {},
 }
 
 TARDIS:AddInterior(T)

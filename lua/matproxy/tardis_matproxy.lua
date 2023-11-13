@@ -130,7 +130,6 @@ matproxy.Add({
         if not IsValid(ent) or not ent.TardisPart then return end
 
         local col = ent:GetData("default_int_env_color") or Color(0,200,255)
-
         col = Color(col.r, col.g, col.b):ToVector()
 
         if ent.exterior and not ent.exterior:GetPower() then
