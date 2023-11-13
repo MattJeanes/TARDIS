@@ -14,12 +14,9 @@ T.Interior = {
     },
     Light={
         color=Color(0,170,255),
-        pos=Vector(0,0,110),
-        brightness=0.5,
-        warn_color=Color(0,51,51),
-        nopower = true,
-        off_color = Color(0,65,215),
-        off_brightness = 0.2,
+        warncolor=Color(51,102,102),
+        pos=Vector(0,0,-30),
+        brightness=8,
     },
     Lights={
         console_white = {
@@ -31,11 +28,14 @@ T.Interior = {
             off_brightness=0.1,
             nopower = true,
         },
-        lower_light = {
+        console_bottom = {
             color=Color(0,170,255),
-            warncolor=Color(51,102,102),
-            pos=Vector(0,0,-30),
-            brightness=8,
+            pos=Vector(0,0,110),
+            brightness=0.5,
+            warn_color=Color(0,51,51),
+            nopower = true,
+            off_color = Color(0,65,215),
+            off_brightness = 0.2,
         },
     },
 
@@ -305,7 +305,7 @@ T.CustomHooks = {
             ext:SetData("default_int_env_color", col)
 
             change_light_color(int.light_data.main, col)
-            change_light_color(int.light_data.extra.lower_light, col)
+            change_light_color(int.light_data.extra.console_bottom, col)
 
             -- Color(80, 120, 255) ... Color (80, 255, 120)
             local rotor_col = Color(80, 120 + 125 * k, 120 + 125 * p)
