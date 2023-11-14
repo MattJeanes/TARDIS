@@ -113,11 +113,19 @@ else
             self.DoorPos = self.exterior.DoorOverride or
                 math.Approach(self.DoorPos, self.DoorTarget, FrameTime() * (1 / animtime))
 
+            -- for extension tweaks
+            if self.ExtOnlyAnimation
+                and self.ExtOnlyAnimation == self.DoorTarget
+                and self.DoorPos == self.DoorTarget
+            then
+                self.ExtOnlyAnimation = nil
+            end
+
             self:SetPoseParameter("switch", self.DoorPos)
             self:InvalidateBoneCache()
         elseif self.InteriorPart then -- copy exterior, no need to redo the calculation
             local door=self.exterior:GetPart("door")
-            if IsValid(door) then
+            if IsValid(door) and not door.ExtOnlyAnimation then
                 self:SetPoseParameter("switch", door.DoorPos)
                 self:InvalidateBoneCache()
             end
