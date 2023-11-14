@@ -76,9 +76,8 @@ TARDIS:AddInteriorTemplate("default_dynamic_color", {
 
 				if SERVER then
 					local speed = 0.001
-					local start_colors = { 0, 0.5, 0.5, 0.5, 1 }
 
-					local k = ext:GetData("default_int_color_mult", start_colors[math.random(#start_colors)])
+					local k = ext:GetData("default_int_color_mult", math.Rand(0,1))
 					local target = ext:GetData("default_int_color_target")
 					if not target then
 						target = math.random(2) - 1
