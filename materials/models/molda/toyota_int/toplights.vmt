@@ -3,7 +3,7 @@
 	"$basetexture" "models/molda/toyota_int/bulbs"
 	"$surfaceprop" "Glass"
 
-	"$color2" "[0.85 0.65 0.5]"
+	//"$color2" "[0.85 0.65 0.5]"
 
 	"$selfillum" "1"
 	"$selfillummask" "/models/molda/toyota_int/bulbs"
@@ -39,42 +39,42 @@
 				handbrake "models/molda/toyota_int/bulbs"
 				interrupt "models/molda/toyota_int/bulbs"
 				demat_fail "models/molda/toyota_int/bulbs"
-				mat_fail "models/molda/toyota_int/bulbs_travel"
-				off "models/molda/toyota_int/bulbs_off"
-				travel "models/molda/toyota_int/bulbs_travel"
-				demat "models/molda/toyota_int/bulbs_travel"
+				mat_fail "models/molda/toyota_int/toplights"
+				travel "models/molda/toyota_int/toplights"
+				demat "models/molda/toyota_int/toplights"
 				mat "models/molda/toyota_int/bulbs"
+				off "models/molda/toyota_int/toplights_off"
 
 				idle_warning "models/molda/toyota_int/bulbs_half"
 				handbrake_warning "models/molda/toyota_int/bulbs_half"
 				interrupt_warning "models/molda/toyota_int/bulbs_half"
 				demat_fail_warning "models/molda/toyota_int/bulbs_half"
-				mat_fail_warning "models/molda/toyota_int/bulbs_travel"
-				off_warning "models/molda/toyota_int/bulbs_off"
-				travel_warning "models/molda/toyota_int/bulbs_travel"
-				demat_warning "models/molda/toyota_int/bulbs_travel"
+				mat_fail_warning "models/molda/toyota_int/toplights"
+				travel_warning "models/molda/toyota_int/toplights"
+				demat_warning "models/molda/toyota_int/toplights"
 				mat_warning "models/molda/toyota_int/bulbs_half"
+				off_warning "models/molda/toyota_int/bulbs_off"
 			}
 			frameRates {
 				idle 0
 				handbrake 0
 				interrupt 0
 				demat_fail 0
-				mat_fail 10
-				off 0
-				travel 10
-				demat 10
+				mat_fail 15
+				travel 15
+				demat 15
 				mat 0
+				off 0
 
 				idle_warning 0
 				handbrake_warning 0
 				interrupt_warning 0
 				demat_fail_warning 0
-				mat_fail_warning 10
-				off_warning 0
-				travel_warning 10
-				demat_warning 10
+				mat_fail_warning 15
+				travel_warning 15
+				demat_warning 15
 				mat_warning 0
+				off_warning 0
 			}
 		}
 	}
