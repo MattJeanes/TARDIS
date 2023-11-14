@@ -43,7 +43,7 @@ end
 TARDIS:AddInteriorTemplate("default_lamps", {
 	Interior = {
 		LightOverride = {
-			basebrightness = 0.005,
+			basebrightness = 0.03,
 		},
 		Lamps = lamps,
 	},
