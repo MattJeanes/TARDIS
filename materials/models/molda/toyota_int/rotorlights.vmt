@@ -7,7 +7,7 @@
 	"$surfaceprop" "Metal"
 
 	"$selfillum" "1"
-	"$selfillumnmask" "models/molda/toyota_int/white"
+	"$selfillummask" "models/molda/toyota_int/white"
 	"$selfillumtint" "[3 3 3]"
 
 	"$nodecal" "1"
