@@ -9,7 +9,7 @@
 	"$nodecal" "1"
 	"$nocull" "1"
 
-	$color2_on "[1.2 1.2 1.2]"
+	$color2_on "[5 5 2]"
 	$color2_off "[0 0 0]"
 
 	"Proxies"
