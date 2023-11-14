@@ -319,6 +319,25 @@ PART.AutoSetup = true
 PART.Collision = true
 PART.ShouldTakeDamage = false
 PART.Sound = "p00gie/tardis/default/telepathics.ogg"
+
+function PART:Use(ply)
+    local last_d_exit = ply:GetTardisData("destination_last_exit")
+
+    if last_d_exit and self.Control == "destination" and CurTime() - last_d_exit < 1 then return end
+
+    if CLIENT then
+        self:SetData("default_telepathic_activation", RealTime() + 1)
+    end
+
+    self.interior:Timer("default_telepathic", 1, function()
+        if SERVER then
+            TARDIS:Control(self.Control, ply)
+        else
+            self:SetData("default_telepathic_activation", nil)
+        end
+    end)
+end
+
 TARDIS:AddPart(PART)
 
 local PART={}

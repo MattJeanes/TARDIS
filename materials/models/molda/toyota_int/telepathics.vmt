@@ -15,10 +15,12 @@
 	"$nodecal" "1"
 	"$nocull" "0"
 
-    $sine 1
-    $sine1 1
-    $sine2 1
-    $sine3 1
+    $sine_basic 1
+    $sine_use 0
+    $sine_add 1
+    $sine_r 1
+    $sine_g 1
+    $sine_b 1
 
     $selfillum_on "[1 1 1]"
     $selfillum_off "[0.1 0.1 0.1]"
@@ -38,19 +40,28 @@
             offVar "$color2_off"
             resultVar "$color2"
         }
+        TARDIS_DefaultInt_TelepathicsAddColor {
+            resultVar "$sine_use"
+        }
         Sine
         {
-            sineperiod 5
-            sinemin -0.2
-            sinemax 0.8
-            resultVar "$sine"
+            sineperiod 10
+            sinemin -0.3
+            sinemax 0
+            resultVar "$sine_basic"
+        }
+        Add
+        {
+            srcVar1 $sine_basic
+            srcVar2 $sine_use
+            resultVar "$sine_add"
         }
         Sine
         {
             sineperiod 32
             sinemin -0.8
             sinemax 0.7
-            resultVar "$sine1"
+            resultVar "$sine_r"
         }
         Sine
         {
@@ -58,31 +69,31 @@
             timeoffset 16
             sinemin 0.8
             sinemax 1.4
-            resultVar "$sine2"
+            resultVar "$sine_g"
         }
         Sine
         {
             sineperiod 16
             sinemin 1
             sinemax 1.8
-            resultVar "$sine3"
+            resultVar "$sine_b"
         }
         Add
         {
-            srcVar1 $sine1
-            srcVar2 $sine
+            srcVar1 $sine_r
+            srcVar2 $sine_add
             resultVar "$color2_on[0]"
         }
         Add
         {
-            srcVar1 $sine2
-            srcVar2 $sine
+            srcVar1 $sine_g
+            srcVar2 $sine_add
             resultVar "$color2_on[1]"
         }
         Add
         {
-            srcVar1 $sine3
-            srcVar2 $sine
+            srcVar1 $sine_b
+            srcVar2 $sine_add
             resultVar "$color2_on[2]"
         }
 

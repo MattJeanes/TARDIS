@@ -344,6 +344,12 @@ if SERVER then
             end
         end
     end)
+
+    ENT:AddHook("Destination", "destination_exit", function(self, ply, enabled)
+        if enabled then return end
+
+        ply:SetTardisData("destination_last_exit", CurTime(), true)
+    end)
 else
     local defaultdist = 210
     function ENT:GetDestinationPropPos(ply, pos, ang)
