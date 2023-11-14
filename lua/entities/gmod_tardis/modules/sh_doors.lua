@@ -242,7 +242,16 @@ if SERVER then
             return false,false,"Chameleon.FailReasons.DoorsOpen",false
         end
     end)
+
+    ENT:AddHook("LockedUse", "door", function(self, a)
+        self:SendMessage("LockedUse", {a})
+    end)
+
 else
+    ENT:OnMessage("LockedUse", function(self,data,ply)
+        self:CallHook("LockedUse", data[1])
+    end)
+
     function ENT:DoorOpen(real)
         local door=self:GetPart("door")
         if real and IsValid(door) then
