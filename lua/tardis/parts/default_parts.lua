@@ -318,6 +318,7 @@ PART.Model = "models/molda/toyota_int/telepathic.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 PART.ShouldTakeDamage = false
+PART.Sound = "p00gie/tardis/default/telepathics.ogg"
 TARDIS:AddPart(PART)
 
 local PART={}
@@ -416,6 +417,7 @@ PART.Model = "models/cem/toyota_contr/crank2.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 PART.Animate = true
+PART.Sound = "p00gie/tardis/default/crank.ogg"
 
 PART.AnimateOptions = {
     Type = "perpetual_use",
@@ -432,6 +434,7 @@ PART.AutoSetup = true
 PART.Collision = true
 PART.Animate = true
 PART.AnimateSpeed = 0.75
+PART.Sound = "p00gie/tardis/default/crank.ogg"
 TARDIS:AddPart(PART)
 
 local PART = {}
@@ -440,6 +443,7 @@ PART.Model = "models/cem/toyota_contr/crank4.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 PART.Animate = true
+PART.Sound = "p00gie/tardis/default/crank2.ogg"
 TARDIS:AddPart(PART)
 
 local PART = {}
@@ -448,6 +452,7 @@ PART.Model = "models/cem/toyota_contr/crank5.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 PART.Animate = true
+PART.Sound = "p00gie/tardis/default/crank.ogg"
 TARDIS:AddPart(PART)
 
 local PART = {}
@@ -456,6 +461,7 @@ PART.Model = "models/cem/toyota_contr/crank6.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 PART.Animate = true
+PART.Sound = "p00gie/tardis/default/crank.ogg"
 TARDIS:AddPart(PART)
 
 local PART = {}
@@ -464,6 +470,8 @@ PART.Model = "models/cem/toyota_contr/ducks.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 PART.Animate = true
+PART.SoundOn = "p00gie/tardis/default/ducks_on.ogg"
+PART.SoundOff = "p00gie/tardis/default/ducks_off.ogg"
 TARDIS:AddPart(PART)
 
 local PART = {}
@@ -481,6 +489,7 @@ PART.AutoSetup = true
 PART.Collision = true
 PART.Animate = true
 PART.AnimateSpeed = 3
+PART.Sound = "p00gie/tardis/default/levers.ogg"
 TARDIS:AddPart(PART)
 
 local PART = {}
@@ -490,6 +499,7 @@ PART.AutoSetup = true
 PART.Collision = true
 PART.Animate = true
 PART.AnimateSpeed = 3
+PART.Sound = "p00gie/tardis/default/levers.ogg"
 TARDIS:AddPart(PART)
 
 local PART = {}
@@ -572,6 +582,8 @@ PART.Model = "models/cem/toyota_contr/phone.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 PART.Animate = true
+PART.Sound = "p00gie/tardis/default/phone.ogg"
+PART.SoundNoPower = false
 TARDIS:AddPart(PART)
 
 local PART = {}
@@ -580,6 +592,14 @@ PART.Model = "models/cem/toyota_contr/red_flick_cover.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 PART.Animate = true
+PART.Sound = "p00gie/tardis/default/levers.ogg"
+if SERVER then
+	function PART:Use(ply)
+		if not self:GetOn() then
+			self:SetCollide(false, true)
+		end
+	end
+end
 TARDIS:AddPart(PART)
 
 local PART = {}
@@ -588,6 +608,22 @@ PART.Model = "models/cem/toyota_contr/red_flick_switch.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 PART.Animate = true
+PART.Sound = "p00gie/tardis/default/switch.ogg"
+if SERVER then
+	function PART:Use(ply)
+		local cover = self.interior:GetPart("default_red_flick_cover")
+		if not IsValid(cover) then return end
+
+		if cover:GetOn() then
+			TARDIS:Control(self.Control, ply)
+			self.interior:Timer("default_redflickswitch_cover", 0.3, function()
+				cover:SetOn(false)
+				cover:SetPoseParameter("switch", 0)
+				cover:SetCollide(true)
+			end)
+		end
+	end
+end
 TARDIS:AddPart(PART)
 
 local PART = {}
@@ -596,6 +632,7 @@ PART.Model = "models/cem/toyota_contr/sliders.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 PART.Animate = true
+PART.Sound = "p00gie/tardis/default/sliders.ogg"
 TARDIS:AddPart(PART)
 
 local PART = {}
@@ -603,6 +640,7 @@ PART.Model = "models/cem/toyota_contr/small_switch.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 PART.Animate = true
+PART.Sound = "p00gie/tardis/default/switch.ogg"
 
 for i = 1,18 do
     PART.ID = "default_small_switch_" .. i
@@ -614,6 +652,7 @@ PART.Model = "models/cem/toyota_contr/spin_a.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 PART.Animate = true
+PART.Sound = "p00gie/tardis/default/switch2.ogg"
 
 for i = 1,5 do
     PART.ID = "default_spin_a_" .. i
@@ -625,6 +664,7 @@ PART.Model = "models/cem/toyota_contr/spin_b.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 PART.Animate = true
+PART.Sound = "p00gie/tardis/default/switch2.ogg"
 
 for i = 1,4 do
     PART.ID = "default_spin_b_" .. i
@@ -637,6 +677,7 @@ PART.Model = "models/cem/toyota_contr/spin_big.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 PART.Animate = true
+PART.Sound = "p00gie/tardis/default/crank2.ogg"
 TARDIS:AddPart(PART)
 
 local PART = {}
@@ -645,6 +686,7 @@ PART.Model = "models/cem/toyota_contr/spin_crank.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 PART.Animate = true
+PART.Sound = "p00gie/tardis/default/crank2.ogg"
 TARDIS:AddPart(PART)
 
 local PART = {}
@@ -653,6 +695,7 @@ PART.Model = "models/cem/toyota_contr/spin_switch.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 PART.Animate = true
+PART.Sound = "p00gie/tardis/default/crank2.ogg"
 TARDIS:AddPart(PART)
 
 local PART = {}
@@ -661,6 +704,8 @@ PART.Model = "models/cem/toyota_contr/switch.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 PART.Animate = true
+PART.SoundOn = "p00gie/tardis/default/switch_on.ogg"
+PART.SoundOff = "p00gie/tardis/default/switch.ogg"
 TARDIS:AddPart(PART)
 
 local PART = {}
@@ -669,6 +714,7 @@ PART.Model = "models/cem/toyota_contr/switch2.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 PART.Animate = true
+PART.Sound = "p00gie/tardis/default/switch.ogg"
 TARDIS:AddPart(PART)
 
 local PART = {}
