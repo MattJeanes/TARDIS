@@ -36,7 +36,7 @@ local E = {
         },
         Door = {
             enabled = true,
-            open = "p00gie/tardis/default/door_open2.ogg",
+            open = "p00gie/tardis/default/door_open.ogg",
             close = "p00gie/tardis/default/door_close.ogg",
         },
         Spawn = "drmatt/tardis/repairfinish.wav",
