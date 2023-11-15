@@ -6,6 +6,7 @@ local E = {
 
     Model="models/vtalanov98/toyota_ext/exterior.mdl",
     Mass=2900,
+    DoorAnimationTime = 0.6,
 
     Parts = {
         door = {
@@ -32,6 +33,11 @@ local E = {
             mat_damaged_fast = "p00gie/tardis/mat_damaged_fast.wav",
             fullflight = "p00gie/tardis/default/full_ext.ogg",
             interrupt = "drmatt/tardis/repairfinish.wav",
+        },
+        Door = {
+            enabled = true,
+            open = "p00gie/tardis/default/door_open2.ogg",
+            close = "p00gie/tardis/default/door_close.ogg",
         },
         Spawn = "drmatt/tardis/repairfinish.wav",
         Delete = "p00gie/tardis/tardis_delete.wav",

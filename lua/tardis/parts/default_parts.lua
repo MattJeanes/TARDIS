@@ -584,6 +584,7 @@ PART.Model = "models/cem/toyota_contr/thick_lever.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 PART.Animate = true
+PART.AnimateSpeed = 5
 PART.Sound = "p00gie/tardis/default/lever5.ogg"
 TARDIS:AddPart(PART)
 
