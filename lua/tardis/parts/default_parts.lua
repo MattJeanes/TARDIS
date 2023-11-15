@@ -391,13 +391,11 @@ PART.Animate = true
 PART.AnimateSpeed = 6
 
 PART.ID = "default_button_1"
-PART.AnimateSpeed = 1
 PART.Sound = "p00gie/tardis/default/buttons.ogg"
 PART.AnimateSpeed = 6
 TARDIS:AddPart(PART)
 
 PART.ID = "default_button_2"
-PART.AnimateSpeed = 1
 PART.Sound = "p00gie/tardis/default/buttons.ogg"
 PART.AnimateSpeed = 6
 TARDIS:AddPart(PART)
@@ -497,8 +495,8 @@ PART.Model = "models/cem/toyota_contr/flippers.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 PART.Animate = true
-PART.AnimateSpeed = 2
-PART.SoundOn = "p00gie/tardis/default/flippers.ogg"
+PART.AnimateSpeed = 1
+PART.Sound = "p00gie/tardis/default/flippers.ogg"
 TARDIS:AddPart(PART)
 
 local PART = {}
@@ -586,7 +584,6 @@ PART.Model = "models/cem/toyota_contr/thick_lever.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 PART.Animate = true
-PART.AnimateSpeed = 3
 PART.Sound = "p00gie/tardis/default/lever5.ogg"
 TARDIS:AddPart(PART)
 
@@ -603,7 +600,7 @@ for i = 1,5 do
     PART.AutoSetup = true
     PART.Collision = true
     PART.Animate = true
-    PART.AnimateSpeed = 4
+    PART.AnimateSpeed = 3
 
     TARDIS:AddPart(PART)
 end
