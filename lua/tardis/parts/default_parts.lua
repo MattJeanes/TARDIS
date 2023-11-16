@@ -710,7 +710,12 @@ PART.Model = "models/cem/toyota_contr/spin_a.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 PART.Animate = true
-PART.AnimateSpeed = 2
+
+PART.AnimateOptions = {
+    Type = "perpetual_use",
+    Speed = 3,
+}
+
 PART.Sound = "p00gie/tardis/default/switch2.ogg"
 
 for i = 1,5 do
