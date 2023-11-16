@@ -13,14 +13,13 @@ local function get_version_from_string(str)
 end
 
 local function get_version_from_file(versionFile)
-    local version
+    local version, success
     if file.Exists(versionFile, "DATA") then
         local versionStr = file.Read(versionFile, "DATA")
-        local success, version = get_version_from_string(versionStr)
+        success, version = get_version_from_string(versionStr)
         if not success then
             error("Invalid version in ".. versionFile .. ": " .. versionStr)
         end
-        version = version
     else
         version = {
             Major = 0,
@@ -67,6 +66,7 @@ function TARDIS:SetLastUsedVersion()
 end
 
 function TARDIS:IsNewVersion()
+    print(self.LastUsedVersion)
     if self.LastUsedVersion.Major == 0
         and self.LastUsedVersion.Minor == 0
         and self.LastUsedVersion.Patch == 0
