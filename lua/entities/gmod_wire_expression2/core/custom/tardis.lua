@@ -104,7 +104,7 @@ e2function number entity:tardisPhyslock(on)
 end
 
 e2function number entity:tardisSpinmode(number spinmode)
-    return HandleE2(this, "Setter", "Spinmode", self, spinmode)
+    return HandleE2(this, "Setter", "SetSpinmode", self, spinmode)
 end
 
 e2function number entity:tardisTrack(entity ent)
@@ -227,6 +227,10 @@ end
 
 e2function entity entity:tardisPilot()
     return HandleE2(this, "Getter", "GetPilot", self)
+end
+
+e2function number entity:tardisSpinmode()
+    return HandleE2(this, "Setter", "GetSpinmode", self)
 end
 
 e2function entity entity:tardisTracking()

@@ -10,7 +10,7 @@ E2Helper.Descriptions["tardisLongflight"] = "Toggles or sets long-flight, return
 E2Helper.Descriptions["tardisMaterialise"] = "Rematerialises, returns 1 if success or 0 if failure."
 E2Helper.Descriptions["tardisSelfrepair"] = "Toggles or sets self-repair, returns 1 if success or 0 if failure."
 E2Helper.Descriptions["tardisTrack"] = "Sets tracking entity, takes entity ent, returns 1 if success or 0 if failure."
-E2Helper.Descriptions["tardisSpinmode"] = "Sets spinmode, takes number spinmode (-1=anti-clockwise|0=none|1=clockwise), returns spinmode as number."
+E2Helper.Descriptions["tardisSpinmode"] = "Gets or sets spinmode, optionally takes number spinmode (-1=anti-clockwise|0=none|1=clockwise), returns spinmode as number."
 E2Helper.Descriptions["tardisSetDestination"] = "Sets destination if in vortex, takes vector pos and optional angle rot, returns 1 if success or 0 if failure."
 E2Helper.Descriptions["tardisFastReturn"] = "Returns TARDIS to its previous takeoff position, returns 1 if success or 0 if failure."
 E2Helper.Descriptions["tardisHADS"] = "Toggles or sets HADS, returns 1 if success or 0 if failure."

@@ -328,8 +328,13 @@ T.CustomSettings = {
     },
     lamps = {
         text = "Interiors.Default.CustomSettings.Lamps",
-        value_type = "bool",
+        value_type = "list",
         value = false,
+        options = {
+            [false] = "Interiors.Default.CustomSettings.Lamps.Off",
+            ["few"] = "Interiors.Default.CustomSettings.Lamps.Few",
+            ["many"] = "Interiors.Default.CustomSettings.Lamps.Many",
+        },
     }
 }
 
@@ -338,7 +343,13 @@ T.Templates = {
     default_lamps = {
         override = true,
         condition = function(id, ply, ent)
-            return TARDIS:GetCustomSetting(id, "lamps", ply)
+            return (TARDIS:GetCustomSetting(id, "lamps", ply) ~= false)
+        end,
+    },
+    default_more_lamps = {
+        override = true,
+        condition = function(id, ply, ent)
+            return (TARDIS:GetCustomSetting(id, "lamps", ply) == "many")
         end,
     },
     default_dynamic_color = {
@@ -356,6 +367,10 @@ T.Templates = {
         end,
     },
     default_color_update = {},
+}
+T.TemplatesMergeOrder = {
+    "default_lamps",
+    "default_more_lamps",
 }
 
 TARDIS:AddInterior(T)

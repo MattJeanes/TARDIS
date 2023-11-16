@@ -1,69 +1,88 @@
-local n = 5
+local function generate_lamps(n, l_brightness, l_fov)
+	local lp = Vector(197, 0, 340)
+	local la = Angle(86.8, 0, 90)
+	local up = Vector(0,0,1)
 
-local lp = Vector(197, 0, 340)
-local la = Angle(86.8, 0, 90)
-local up = Vector(0,0,1)
+	local v0 = Vector(0,0,0)
+	local a0 = Angle(0,0,0)
 
-local v0 = Vector(0,0,0)
-local a0 = Angle(0,0,0)
+	local ra = 360 / n
 
-local ra = 360 / n
+	local lamp_positions = {}
+	for i = 1,n do
+		lamp_positions[i] = { pos = v0 + lp, ang = a0 + la, }
+		lp:Rotate(Angle(0,ra,0))
+		la:RotateAroundAxis(up, ra)
+	end
 
-local lamp_positions = {}
-for i = 1,n do
-	lamp_positions[i] = { pos = v0 + lp, ang = a0 + la, }
-	lp:Rotate(Angle(0,ra,0))
-	la:RotateAroundAxis(up, ra)
-end
+	local lamps = {}
 
-local lamps = {}
-
-for i = 1,n do
-	lamps[i] = {
-		color = Color(255, 255, 230),
-		texture = "effects/flashlight/soft",
-		fov = 165,
-		distance = 290,
-		brightness = 0.5,
-		shadows = false,
-		pos = lamp_positions[i].pos,
-		ang = lamp_positions[i].ang,
-		states = {
-			["normal"] = {
-				enabled = true,
+	for i = 1,n do
+		lamps[i] = {
+			color = Color(255, 255, 230),
+			texture = "effects/flashlight/soft",
+			fov = l_fov,
+			distance = 290,
+			brightness = l_brightness,
+			shadows = false,
+			pos = lamp_positions[i].pos,
+			ang = lamp_positions[i].ang,
+			warn = {
+				brightness = l_brightness * 0.5,
 			},
-			["teleport"] = {
-				enabled = false,
+			states = {
+				["normal"] = {
+					enabled = true,
+					brightness = l_brightness,
+				},
+				["moving"] = {
+					enabled = false,
+				},
 			},
-		},
-	}
-end
+		}
+	end
 
+	return lamps
+end
 
 TARDIS:AddInteriorTemplate("default_lamps", {
 	Interior = {
 		LightOverride = {
-			basebrightness = 0.03,
+			basebrightness = 0.01,
+			parts = {
+				default_rings = 0.05,
+			},
 		},
-		Lamps = lamps,
+		Lamps = generate_lamps(5, 0.6, 165),
+		Light={
+			brightness = 5,
+			warn_brightness = 4,
+		},
 	},
 	CustomHooks = {
 		lamps_toggle = {
 			exthooks = {
 				["DematStart"] = true,
 				["StopMat"] = true,
+				["FlightToggled"] = true,
 			},
 			func = function(ext,int)
 				if SERVER then return end
 				if not IsValid(int) then return end
 
-				if ext:GetData("demat") then
-					int:ApplyLightState("teleport")
+				if ext:GetData("demat") or ext:GetData("flight") then
+					int:ApplyLightState("moving")
 				else
 					int:ApplyLightState("normal")
 				end
 			end,
 		},
+	},
+})
+
+TARDIS:AddInteriorTemplate("default_more_lamps", {
+	Interior = {
+		Lamps = generate_lamps(9, 0.5, 150),
 	},
 })
 
