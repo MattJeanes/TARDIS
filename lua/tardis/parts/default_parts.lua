@@ -967,3 +967,27 @@ PART.SoundOn = "p00gie/tardis/default/topdoor_open.ogg"
 PART.SoundOff = "p00gie/tardis/default/topdoor_close.ogg"
 PART.AnimateSpeed = 2.5
 TARDIS:AddPart(PART)
+
+
+local PART = {}
+PART.Model = "models/molda/toyota_int/monitor.mdl"
+PART.AutoSetup = true
+PART.Collision = true
+PART.Animate = true
+PART.AnimateSpeed = 2
+
+PART.AnimateOptions = {
+    PoseParameter = "arm",
+}
+
+if SERVER then
+    function PART:Initialize(ply)
+        self:SetPoseParameter("flip", 0.5)
+    end
+end
+
+PART.ID = "default_monitor_1"
+TARDIS:AddPart(PART)
+
+PART.ID = "default_monitor_2"
+TARDIS:AddPart(PART)

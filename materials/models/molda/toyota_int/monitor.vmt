@@ -1,0 +1,16 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/molda/toyota_int/monitor"
+
+	"$color2" "[2.5 2.5 2.5]"
+
+	"$surfaceprop" "Metal"
+
+	"$envmap" "models/molda/toyota_int/environment"
+	"$envmaptint" "[0.2 0.9 1]"
+	"$envmapmask" "models/molda/toyota_int/smudgeN"
+	
+	"$nodecal" "1"
+	"$nocull" "0"
+
+}
