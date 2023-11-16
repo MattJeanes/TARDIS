@@ -70,6 +70,7 @@ T.Interior = {
             demat_hads = "p00gie/tardis/demat_hads.wav",
             interrupt = "p00gie/tardis/default/demat_interrupt.ogg",
         },
+        Hum = "p00gie/tardis/default/hum.wav",
         FlightLoop = "p00gie/tardis/default/flight_loop.wav",
     },
 
