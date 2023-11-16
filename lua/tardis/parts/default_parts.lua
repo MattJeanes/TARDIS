@@ -490,6 +490,7 @@ PART.Model = "models/cem/toyota_contr/crank5.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 PART.Animate = true
+PART.AnimateSpeed = 1.1
 PART.Sound = "p00gie/tardis/default/crank.ogg"
 TARDIS:AddPart(PART)
 
@@ -499,6 +500,7 @@ PART.Model = "models/cem/toyota_contr/crank6.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 PART.Animate = true
+PART.AnimateSpeed = 1.1
 PART.Sound = "p00gie/tardis/default/crank.ogg"
 TARDIS:AddPart(PART)
 

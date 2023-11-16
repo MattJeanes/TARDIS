@@ -73,6 +73,17 @@ T.Interior = {
         FlightLoop = "p00gie/tardis/default/flight_loop.wav",
     },
 
+    Scanners = {
+        {
+            part = "default_console_scanner",
+            mat = "models/cem/toyota_contr/screen",
+            width = 1024,
+            height = 1024,
+            ang = Angle(0,0,0),
+            fov = 90,
+        },
+    },
+
     Parts = {
         door = {
             model="models/vtalanov98/toyota_ext/doors_interior.mdl",
@@ -241,20 +252,23 @@ T.Interior = {
         default_side_lever_2 = "physlock",
         default_crank = "random_coords",
         default_buttons = "isomorphic",
-        default_switch  = "door",
-        default_switch2  = "doorlock",
+        default_fiddle1  = "door",
+        default_fiddle2  = "doorlock",
         default_crank6 = "cloak",
         default_crank5 = "spin_switch",
         default_tumblers = "vortex_flight",
         default_button2 = "toggle_scanners",
-        default_handle1 = "flight",
-        default_handle2 = "float",
         default_red_flick_switch = "fastreturn",
         default_key = "toggle_console",
         default_sonic_charger = "sonic_dispenser",
-        default_spin_b_4 = "spin_toggle",
         default_spin_crank = "hads",
         default_small_switch_18 = "exterior_light",
+
+        default_spin_b_1 = "flight",
+        default_spin_b_2 = "float",
+        default_spin_b_3 = "toggle_scanners",
+        default_spin_b_4 = "spin_toggle",
+        default_thick_lever = "shields",
     },
     TipSettings = {},
     CustomTips = {},

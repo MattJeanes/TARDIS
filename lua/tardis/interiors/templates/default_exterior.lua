@@ -53,9 +53,10 @@ local E = {
     },
     Teleport = {
         DematSequenceDelays={
-			[1] = 2.5
-		},
-    }
+            [1] = 2.5
+        },
+    },
+    ScannerOffset = Vector(25,0,50),
 }
 
 TARDIS:AddExterior(E)
