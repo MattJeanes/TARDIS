@@ -42,7 +42,7 @@
 				mat_fail "models/molda/toyota_int/toplights"
 				travel "models/molda/toyota_int/toplights"
 				demat "models/molda/toyota_int/toplights"
-				mat "models/molda/toyota_int/bulbs"
+				mat "models/molda/toyota_int/toplights"
 				off "models/molda/toyota_int/toplights_off"
 
 				idle_warning "models/molda/toyota_int/bulbs_half"
@@ -52,7 +52,7 @@
 				mat_fail_warning "models/molda/toyota_int/toplights"
 				travel_warning "models/molda/toyota_int/toplights"
 				demat_warning "models/molda/toyota_int/toplights"
-				mat_warning "models/molda/toyota_int/bulbs_half"
+				mat_warning "models/molda/toyota_int/toplights"
 				off_warning "models/molda/toyota_int/bulbs_off"
 			}
 			frameRates {
@@ -60,20 +60,20 @@
 				handbrake 0
 				interrupt 0
 				demat_fail 0
-				mat_fail 15
-				travel 15
-				demat 15
-				mat 0
+				mat_fail 10
+				travel 10
+				demat 10
+				mat 100
 				off 0
 
 				idle_warning 0
 				handbrake_warning 0
 				interrupt_warning 0
 				demat_fail_warning 0
-				mat_fail_warning 15
-				travel_warning 15
-				demat_warning 15
-				mat_warning 0
+				mat_fail_warning 10
+				travel_warning 10
+				demat_warning 10
+				mat_warning 100
 				off_warning 0
 			}
 		}

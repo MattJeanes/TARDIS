@@ -2,6 +2,8 @@
 {
 	"$basetexture" "models/molda/toyota_int/rotormid"
 
+	"$color2" "[0.8 0.8 0.8]"
+
 	"$surfaceprop" "Metal"
 
 	"$envmap" "models/molda/toyota_int/environment"
