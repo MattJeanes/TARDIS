@@ -60,7 +60,6 @@ end
 
 function TARDIS:SetLastUsedVersion()
     if self:IsVersionEqualTo(self:GetVersionString(), self:GetVersionString(self.LastUsedVersion)) then
-        print("[TARDIS] Last used version is the same as current version")
         return
     end
     file.Write(VERSION_LAST_USED_FILE, self:GetVersionString())
