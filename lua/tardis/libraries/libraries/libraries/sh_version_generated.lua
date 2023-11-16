@@ -4,5 +4,5 @@
 TARDIS.Version = {
     Major = 2023,
     Minor = 8,
-    Patch = 2
+    Patch = 0
 }

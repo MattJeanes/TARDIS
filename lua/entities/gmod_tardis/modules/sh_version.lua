@@ -2,15 +2,15 @@
 
 ENT:AddHook("Initialize", "version", function(self)
     if TARDIS:IsNewVersion() then
-        self:CallHook("NewVersion")
+        self:CallHook("NewVersion", TARDIS:GetVersion(), TARDIS:GetLastUsedVersion())
     end
 
     TARDIS:SetLastUsedVersion()
 end)
 
 if CLIENT then
-    ENT:AddHook("NewVersion", "version", function(self)
+    ENT:AddHook("NewVersion", "version", function(self, newVersion, oldVersion)
         -- TODO
-        TARDIS:Message(self:GetCreator(), "New version of TARDIS detected! Please check the changelog for more information.")
+        TARDIS:Message(self:GetCreator(), "TARDIS updated from " .. TARDIS:GetVersionString(oldVersion) .. " to " .. TARDIS:GetVersionString(newVersion))
     end)
 end
