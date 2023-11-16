@@ -132,7 +132,6 @@ function TARDIS:RunMigrations()
     local filteredVersions = {}
     local previousVersionStr = self:GetVersionString(get_previous_version())
     for _, version in ipairs(versions) do
-        print("[TARDIS] Checking migration " .. version .. " (" .. previousVersionStr .. ")" )
         if self:IsVersionHigherThan(previousVersionStr, version) then
             table.insert(filteredVersions, version)
         end
