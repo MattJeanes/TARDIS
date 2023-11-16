@@ -180,9 +180,35 @@ end
 --------------------------------------------------------------------------------
 -- Saving
 
-local LOCAL_SETTINGS_FILE = "tardis_settings_cl.txt"
-local NETWORKED_SETTINGS_FILE = "tardis_settings_cl_nw.txt"
-local GLOBAL_SETTINGS_FILE = "tardis_settings_sv.txt"
+local LOCAL_SETTINGS_FILE = "tardis/settings_cl.txt"
+local NETWORKED_SETTINGS_FILE = "tardis/settings_cl_nw.txt"
+local GLOBAL_SETTINGS_FILE = "tardis/settings_sv.txt"
+
+TARDIS:AddMigration("settings-move", "2023.8.0", function(self)
+    if SERVER then
+        if file.Exists("tardis_settings_sv.txt", "DATA") then
+            if file.Exists(GLOBAL_SETTINGS_FILE, "DATA") then
+                file.Delete(GLOBAL_SETTINGS_FILE)
+            end
+            file.Rename("tardis_settings_sv.txt", GLOBAL_SETTINGS_FILE)
+        end
+    else
+        if file.Exists("tardis_settings_cl.txt", "DATA") then
+            if file.Exists(LOCAL_SETTINGS_FILE, "DATA") then
+                file.Delete(LOCAL_SETTINGS_FILE)
+            end
+            file.Rename("tardis_settings_cl.txt", LOCAL_SETTINGS_FILE)
+        end
+        if file.Exists("tardis_settings_cl_nw.txt", "DATA") then
+            if file.Exists(NETWORKED_SETTINGS_FILE, "DATA") then
+                file.Delete(NETWORKED_SETTINGS_FILE)
+            end
+            file.Rename("tardis_settings_cl_nw.txt", NETWORKED_SETTINGS_FILE)
+        end
+    end
+
+    self:LoadSettings()
+end)
 
 function TARDIS:SaveSettings()
 
