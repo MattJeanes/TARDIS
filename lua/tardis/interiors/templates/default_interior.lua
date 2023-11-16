@@ -77,6 +77,22 @@ TARDIS:AddInteriorTemplate("default_lamps", {
 				end
 			end,
 		},
+		thirdperson_lamps_update = {
+			exthooks = {
+				["ThirdPerson"] = true,
+			},
+			func = function(ext,int,ply,enabled)
+				if SERVER then return end
+				if not IsValid(int) then return end
+				if enabled then return end
+
+				if ext:GetData("teleport") or ext:GetData("vortex") or ext:GetData("flight") then
+					int:ApplyLightState("moving")
+				else
+					int:ApplyLightState("normal")
+				end
+			end,
+		},
 	},
 })
 
