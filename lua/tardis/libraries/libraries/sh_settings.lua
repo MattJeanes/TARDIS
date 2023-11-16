@@ -120,7 +120,7 @@ function TARDIS:SetSetting(id, value, ignore_convar)
     return value
 end
 
-function TARDIS:GetSetting(id, src)
+function TARDIS:GetSetting(id, src, no_default)
     local ply
     if IsValid(src) and not src:IsPlayer() and not src.TardisExterior then
         src = src.exterior
@@ -136,6 +136,9 @@ function TARDIS:GetSetting(id, src)
     local function select_return_val(table_value)
         if table_value ~= nil then
             return table_value
+        end
+        if no_default then
+            return nil
         end
         return data.value
     end

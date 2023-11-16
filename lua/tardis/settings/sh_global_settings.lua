@@ -44,6 +44,15 @@ TARDIS:AddSetting({
     name="MaxHealth",
 })
 
+if SERVER then
+    TARDIS:RegisterMigration("health-changed", "2023.8.0", function()
+        local health = TARDIS:GetSetting("health_max", nil, true)
+        if health then
+            TARDIS:SetSetting("health_max", health * 3, true)
+        end
+    end)
+end
+
 TARDIS:AddSetting({
     id="health_to_shields_ratio",
     type="number",
