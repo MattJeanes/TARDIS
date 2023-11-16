@@ -16,9 +16,11 @@ TARDIS.DebugFunction = function(ext,int,ply,cmd,args)
         -- paste code here
     end
 
+    local lext, lint
+
     if ply.linked_tardis then
-        local lext = ply.linked_tardis
-        local lint = lext.interior
+        lext = ply.linked_tardis
+        lint = lext.interior
     end
 
     if IsValid(lext) then
