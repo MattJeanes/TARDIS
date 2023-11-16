@@ -12,25 +12,39 @@ local function get_version_from_string(str)
     }
 end
 
-
-local versionFile = "tardis2_version.txt"
-if file.Exists(versionFile, "DATA") then
-    local previousVersionStr = file.Read(versionFile, "DATA")
-    local success, version = get_version_from_string(previousVersionStr)
-    if not success then
-        error("Invalid version in version.txt: " .. previousVersionStr)
+local function get_previous_version()
+    local versionFile = "tardis2_version.txt"
+    local previousVersion
+    if file.Exists(versionFile, "DATA") then
+        local previousVersionStr = file.Read(versionFile, "DATA")
+        local success, version = get_version_from_string(previousVersionStr)
+        if not success then
+            error("Invalid version in version.txt: " .. previousVersionStr)
+        end
+        previousVersion = version
+    else
+        previousVersion = {
+            Major = 0,
+            Minor = 0,
+            Patch = 0
+        }
     end
-    TARDIS.PreviousVersion = version
-else
-    TARDIS.PreviousVersion = {
-        Major = 0,
-        Minor = 0,
-        Patch = 0
-    }
+
+    return previousVersion
 end
+
+TARDIS.PreviousVersion = TARDIS.PreviousVersion or get_previous_version()
 
 function TARDIS:GetVersion()
     return self.Version
+end
+
+function TARDIS:GetPreviousVersion()
+    return self.PreviousVersion
+end
+
+function TARDIS:IsNewVersion()
+    return self:IsVersionHigherThan(self:GetVersionString(), self:GetVersionString(self:GetPreviousVersion()))
 end
 
 function TARDIS:GetVersionString(version)
@@ -86,14 +100,11 @@ function TARDIS:IsVersionHigherThan(versionStr, compareVersionStr)
 end
 
 function TARDIS:RegisterMigration(name, fromVersion, func)
-    if self:IsVersionHigherOrEqualTo(fromVersion, self:GetVersionString(self.PreviousVersion)) then
-        if self.Migrations[fromVersion] then
-            self.Migrations[fromVersion] = nil
-        end
-        return
-    end
-
     local source = debug.getinfo(2).short_src
+
+    if not TARDIS:IsVersionHigherOrEqualTo(fromVersion) then
+        error("Invalid version for migration '".. name .."': " .. fromVersion .. " (current version is " .. self:GetVersionString() .. ")")
+    end
 
     if self.Migrations[fromVersion] and self.Migrations[fromVersion][name] and self.Migrations[fromVersion][name].source ~= source then
         error("Duplicate migration registered: " .. name .. "(" .. fromVersion .. ") (exists in both " .. self.Migrations[fromVersion][name].source .. " and " .. source .. ")")
@@ -118,11 +129,20 @@ function TARDIS:RunMigrations()
     local versions = table.GetKeys(self.Migrations)
     if #versions == 0 then return end
 
-    table.sort(versions, function(a,b)
+    local filteredVersions = {}
+    local previousVersionStr = self:GetVersionString(get_previous_version())
+    for _, version in ipairs(versions) do
+        print("[TARDIS] Checking migration " .. version .. " (" .. previousVersionStr .. ")" )
+        if self:IsVersionHigherThan(previousVersionStr, version) then
+            table.insert(filteredVersions, version)
+        end
+    end
+
+    table.sort(filteredVersions, function(a,b)
         return TARDIS:IsVersionHigherThan(a,b)
     end)
 
-    for _, version in ipairs(versions) do
+    for _, version in ipairs(filteredVersions) do
         for name, migration in pairs(self.Migrations[version]) do
             print("[TARDIS] Running migration " .. name .. " (" .. version .. ")")
             migration.func()
@@ -130,8 +150,3 @@ function TARDIS:RunMigrations()
     end
     file.Write(versionFile, self:GetVersionString())
 end
-
-
-TARDIS:RegisterMigration("test", "2023.8.0", function()
-    print("test migration 2023.8.0")
-end)
