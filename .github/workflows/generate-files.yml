@@ -1,4 +1,4 @@
-name: Generate
+name: Generate Files
 
 on:
   pull_request_target:
@@ -17,8 +17,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  generate:
-    name: Generate
+  generate_files:
+    name: Generate Files
     runs-on: ubuntu-latest
 
     steps:
