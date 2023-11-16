@@ -1,8 +1,10 @@
 -- Version
 
 ENT:AddHook("Initialize", "version", function(self)
+    if CLIENT and LocalPlayer()~=self:GetCreator() then return end
+
     if TARDIS:IsNewVersion() then
-        self:CallHook("NewVersion", TARDIS:GetVersion(), TARDIS:GetLastUsedVersion())
+        self:CallCommonHook("NewVersion", TARDIS:GetVersion(), TARDIS:GetLastUsedVersion())
     end
 
     TARDIS:SetLastUsedVersion()
