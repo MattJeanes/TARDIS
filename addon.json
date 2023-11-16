@@ -16,6 +16,7 @@
         "i18n/*",
         "assets/*",
         "generate-languages.ps1",
+        "generate-version.ps1",
         "crowdin.yml",
         "version.json"
     ]

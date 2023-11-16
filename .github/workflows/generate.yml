@@ -45,4 +45,4 @@ jobs:
       - name: Git Auto Commit
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: "Update Generated Languages"
+          commit_message: "Update Generated Files"
