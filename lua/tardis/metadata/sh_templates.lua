@@ -140,10 +140,26 @@ function TARDIS:MergeTemplates(metadata, ent)
         end
     elseif SERVER then
         ent.templates = {}
+        local added_already = {}
+
+        local function add_to_list(template_id, template)
+            if not template then return end
+            if not istable(template) then return end
+            if not template.condition or template.condition(id, ent:GetCreator(), ent) then
+                table.insert(ent.templates, template_id)
+            end
+        end
+
+        if metadata.TemplatesMergeOrder then
+            for i, template_id in ipairs(metadata.TemplatesMergeOrder) do
+                add_to_list(template_id, metadata.Templates[template_id])
+                added_already[template_id] = true
+            end
+        end
 
         for template_id, template in pairs(metadata.Templates) do
-            if template and istable(template) and (not template.condition or template.condition(id, ent:GetCreator(), ent)) then
-                table.insert(ent.templates, template_id)
+            if not added_already[template_id] then
+                add_to_list(template_id, template)
             end
         end
 
