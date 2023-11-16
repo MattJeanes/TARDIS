@@ -70,7 +70,7 @@ TARDIS:AddInteriorTemplate("default_lamps", {
 				if SERVER then return end
 				if not IsValid(int) then return end
 
-				if ext:GetData("demat") or ext:GetData("flight") then
+				if ext:GetData("demat") or ext:GetData("flight") or ext:GetData("mat") then
 					int:ApplyLightState("moving")
 				else
 					int:ApplyLightState("normal")
