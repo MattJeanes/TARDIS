@@ -90,13 +90,8 @@ local function DoPartAnimation(self, can_move, a, target, should_reset)
         --tardisdebug(pose_pos, target, FrameTime() * speed)
         pose_pos = math.Approach(pose_pos, target, FrameTime() * speed)
 
-        if pose_pos == target then
-            if should_reset then
-                pose_pos = (a.max == pose_pos and a.min) or a.max
-            else
-                a.pos = pose_pos
-                return
-            end
+        if pose_pos == target and should_reset then
+            pose_pos = (a.max == pose_pos and a.min) or a.max
         end
     end
 
