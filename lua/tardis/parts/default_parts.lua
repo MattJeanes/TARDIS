@@ -322,7 +322,8 @@ PART.Model = "models/molda/toyota_int/telepathic.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 PART.ShouldTakeDamage = false
-PART.Sound = "p00gie/tardis/default/telepathic.ogg"
+PART.SoundOn = "p00gie/tardis/default/telepathic_on.ogg"
+PART.SoundOff = "p00gie/tardis/default/telepathic_off.ogg"
 
 function PART:Use(ply)
     local last_d_exit = ply:GetTardisData("destination_last_exit")
