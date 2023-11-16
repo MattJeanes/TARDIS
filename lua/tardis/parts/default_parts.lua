@@ -785,6 +785,12 @@ PART.AnimateSpeed = 2
 PART.SoundOn = "p00gie/tardis/default/toggles_on.ogg"
 PART.SoundOff = "p00gie/tardis/default/toggles_off.ogg"
 PART.SoundNoPower = "p00gie/tardis/default/toggles.ogg"
+function PART:Use(ply)
+    TARDIS:Control(self.Control, ply, self)
+
+    local pr = "p00gie/tardis/default/toggles_on"
+    self.SoundOn = pr .. (self.exterior:IsTravelling() and ".ogg" or "_2.ogg")
+end
 TARDIS:AddPart(PART)
 
 local PART = {}
