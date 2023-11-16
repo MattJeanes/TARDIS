@@ -59,7 +59,7 @@ function TARDIS:GetLastUsedVersion()
 end
 
 function TARDIS:SetLastUsedVersion()
-    if self:IsVersionEqualTo(self:GetVersionString(), self:GetVersionString(self.LastUsedVersion)) then
+    if self:IsVersionEqualTo(self:GetVersion(), self.LastUsedVersion) then
         return
     end
     file.Write(VERSION_LAST_USED_FILE, self:GetVersionString())
@@ -87,7 +87,7 @@ function TARDIS:IsNewVersion()
             return false
         end
     end
-    return self:IsVersionHigherThan(self:GetVersionString(self.LastUsedVersion))
+    return self:IsVersionHigherThan(self.LastUsedVersion)
 end
 
 function TARDIS:GetVersionString(version)
@@ -95,17 +95,24 @@ function TARDIS:GetVersionString(version)
     return string.format("%d.%d.%d", version.Major, version.Minor, version.Patch)
 end
 
-local function get_versions(versionStr, compareVersionStr)
-    local success, version = get_version_from_string(versionStr)
-    if not success then
-        error("Invalid version string: " .. versionStr)
+local function get_versions(versionStrOrTbl, compareVersionStrOrTbl)
+    local version, compareVersion, success
+
+    if istable(versionStrOrTbl) then
+        version = versionStrOrTbl
+    else
+        success, version = get_version_from_string(versionStrOrTbl)
+        if not success then
+            error("Invalid version string: " .. versionStrOrTbl)
+        end
     end
 
-    local compareVersion
-    if compareVersionStr then
-        success, compareVersion = get_version_from_string(compareVersionStr)
+    if istable(compareVersionStrOrTbl) then
+        compareVersion = compareVersionStrOrTbl
+    elseif compareVersionStrOrTbl then
+        success, compareVersion = get_version_from_string(compareVersionStrOrTbl)
         if not success then
-            error("Invalid version string: " .. compareVersionStr)
+            error("Invalid version string: " .. compareVersionStrOrTbl)
         end
     else
         compareVersion = TARDIS.Version
@@ -114,8 +121,8 @@ local function get_versions(versionStr, compareVersionStr)
     return version, compareVersion
 end
 
-function TARDIS:IsVersionHigherOrEqualTo(versionStr, compareVersionStr)
-    local version, compareVersion = get_versions(versionStr, compareVersionStr)
+function TARDIS:IsVersionHigherOrEqualTo(versionStrOrTbl, compareVersionStrOrTbl)
+    local version, compareVersion = get_versions(versionStrOrTbl, compareVersionStrOrTbl)
 
     if compareVersion.Major > version.Major then return true end
     if compareVersion.Major < version.Major then return false end
@@ -128,8 +135,8 @@ function TARDIS:IsVersionHigherOrEqualTo(versionStr, compareVersionStr)
     return false
 end
 
-function TARDIS:IsVersionHigherThan(versionStr, compareVersionStr)
-    local version, compareVersion = get_versions(versionStr, compareVersionStr)
+function TARDIS:IsVersionHigherThan(versionStrOrTbl, compareVersionStrOrTbl)
+    local version, compareVersion = get_versions(versionStrOrTbl, compareVersionStrOrTbl)
 
     if compareVersion.Major > version.Major then return true end
     if compareVersion.Major < version.Major then return false end
@@ -142,8 +149,8 @@ function TARDIS:IsVersionHigherThan(versionStr, compareVersionStr)
     return false
 end
 
-function TARDIS:IsVersionEqualTo(versionStr, compareVersionStr)
-    local version, compareVersion = get_versions(versionStr, compareVersionStr)
+function TARDIS:IsVersionEqualTo(versionStrOrTbl, compareVersionStrOrTbl)
+    local version, compareVersion = get_versions(versionStrOrTbl, compareVersionStrOrTbl)
 
     if compareVersion.Major ~= version.Major then return false end
     if compareVersion.Minor ~= version.Minor then return false end
@@ -182,9 +189,9 @@ function TARDIS:RunMigrations()
     if #versions == 0 then return end
 
     local filteredVersions = {}
-    local previousVersionStr = self:GetVersionString(get_previous_version())
+    local previousVersion = get_previous_version()
     for _, version in ipairs(versions) do
-        if self:IsVersionHigherThan(previousVersionStr, version) then
+        if self:IsVersionHigherThan(previousVersion, version) then
             table.insert(filteredVersions, version)
         end
     end
