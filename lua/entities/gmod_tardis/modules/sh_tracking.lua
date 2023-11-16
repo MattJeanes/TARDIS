@@ -69,7 +69,7 @@ if SERVER then
     function ENT:SetTracking(ent, ply)
         if not ply then ply = self:GetData("pilot") end
         local wasTrackingEnt = self:GetData("tracking-ent")
-        local wasTracking = IsValid(wasTrackingEnt)
+        local wasTracking = wasTrackingEnt ~= nil
         local isTracking = IsValid(ent)
         if not isTracking then
             self:SetData("tracking-ent",nil,true)
@@ -80,6 +80,10 @@ if SERVER then
                 self:SetFlight(false)
             end
             self:SetData("tracking-wasflight", nil)
+
+            if IsValid(wasTrackingEnt) and wasTrackingEnt.TardisExterior then
+                wasTrackingEnt:SetData("tracking-tracked-by", nil)
+            end
             
             if IsValid(self.trackingdebugprop) then
                 self.trackingdebugprop:Remove()
@@ -131,8 +135,6 @@ if SERVER then
         if not wasTracking then
             self:SetData("tracking-wasflight", wasFlying)
         end
-        
-        self:SetData("tracking-ent",ent,true)
 
         if ent ~= wasTrackingEnt then
             local offsetPos
@@ -147,6 +149,11 @@ if SERVER then
             self:SetData("tracking-offset-pos", offsetPos)
             self:SetData("tracking-offset-yaw", offsetYaw)
             self:SetData("tracking-ent-size", entSize)
+            self:SetData("tracking-ent",ent,true)
+            if ent.TardisExterior then
+                ent:SetData("tracking-tracked-by", self)
+            end
+            self:SetTrackRotationAuto()
         end
 
         if wasTrackingEnt ~= ent then
@@ -177,6 +184,8 @@ if SERVER then
     end
 
     function ENT:SetTrackRotation(on)
+        if self:GetTrackRotation() == on then return end
+
         self:SetData("tracking-rotation", on)
 
         local ent = self:GetTracking()
@@ -199,6 +208,18 @@ if SERVER then
 
     function ENT:ToggleTrackRotation()
         self:SetTrackRotation(not self:GetTrackRotation())
+    end
+
+    function ENT:SetTrackRotationAuto()
+        local ent = self:GetTracking()
+        if not IsValid(ent) then return end
+        if ent.TardisExterior then
+            local trackRotation = ent:GetSpinDir() == 0
+            if trackRotation ~= self:GetTrackRotation() then
+                self:SetTrackRotation(trackRotation)
+                TARDIS:Message(self:GetData("pilot"), "Controls.Tracking.RotationChangedAuto", trackRotation and "Common.Enabled.Lower" or "Common.Disabled.Lower")
+            end
+        end
     end
 
     ENT:AddHook("Initialize", "tracking", function(self)
@@ -451,6 +472,12 @@ if SERVER then
     end)
 
     ENT:AddHook("OnRemove", "tracking", function(self)
+        local trackingEnt = self:GetTracking()
+
+        if IsValid(trackingEnt) and trackingEnt.TardisExterior then
+            trackingEnt:SetData("tracking-tracked-by", nil)
+        end
+
         if IsValid(self.trackingdebugprop) then
             self.trackingdebugprop:Remove()
         end
@@ -483,6 +510,13 @@ if SERVER then
         end
         if table.HasValue(constraint.GetAllConstrainedEntities(trackingEnt), ent) then
             return false
+        end
+    end)
+
+    ENT:AddHook("SpinChanged", "tracking", function(self, dir)
+        local trackedBy = self:GetData("tracking-tracked-by")
+        if IsValid(trackedBy) then
+            trackedBy:SetTrackRotationAuto()
         end
     end)
 
