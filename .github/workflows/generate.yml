@@ -1,4 +1,4 @@
-name: Generate Languages
+name: Generate
 
 on:
   pull_request_target:
@@ -6,16 +6,19 @@ on:
     - dev
     paths:
     - i18n/languages/*.json
+    - version.json
   push:
     branches:
     - dev
     paths:
     - i18n/languages/*.json
+    - version.json
+
   workflow_dispatch:
 
 jobs:
-  generate_languages:
-    name: Generate Languages
+  generate:
+    name: Generate
     runs-on: ubuntu-latest
 
     steps:
@@ -33,6 +36,10 @@ jobs:
 
       - name: Generate Languages
         run: ./generate-languages.ps1
+        shell: pwsh
+
+      - name: Generate Version
+        run: ./generate-version.ps1
         shell: pwsh
 
       - name: Git Auto Commit
