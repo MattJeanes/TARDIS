@@ -44,6 +44,6 @@ function ENT:ToggleCloisters()
     self:SetCloisters(not self:GetData("cloisters",false))
 end
 
-ENT:AddHook("HealthWarningToggled","cloisters",function(self, on)
+ENT:AddHook("WarningToggled","cloisters",function(self, on)
     self:SetCloisters(on)
 end)

@@ -28,7 +28,7 @@ if SERVER then
                 self:ToggleDoor()
             end
             self:SetData("hads-attempt", true)
-            if self:CallHook("CanDemat", true) == false then
+            if self:CallHook("CanDemat", true, true) == false then
                 if not self:GetData("hads-failed-time") or CurTime() > self:GetData("hads-failed-time") + 10 then
                     self:SetData("hads-failed-time", CurTime())
                     TARDIS:ErrorMessage(self:GetCreator(), "HADS.DematError")
@@ -41,6 +41,7 @@ if SERVER then
             TARDIS:Message(self:GetCreator(), "HADS.Triggered")
             TARDIS:Message(self:GetCreator(), "HADS.UnderAttack")
             self:SetData("hads-triggered", true, true)
+            self:SetData("hads-demat", true, true)
             self:SetFastRemat(false)
             self:SetRandomDestination(true)
             self:AutoDemat()
@@ -130,3 +131,9 @@ if SERVER then
         end
     end)
 end
+
+ENT:AddHook("StopDemat","hads-demat",function(self)
+    if self:GetData("hads-demat",false) then
+        self:SetData("hads-demat", false, false) -- not networked
+    end
+end)

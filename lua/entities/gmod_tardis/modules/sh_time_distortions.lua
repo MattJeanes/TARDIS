@@ -65,9 +65,8 @@ if SERVER then
         end
     end)
 
-    ENT:AddHook("HandleNoDemat", "time_distortions", function(self, pos, ang, callback, force)
-        if not force and DistortionsInside(self) and not DistortionsOutside(self) then
-            self:ForceDemat(pos, ang, callback)
+    ENT:AddHook("ShouldForceDemat", "time_distortions", function(self, pos, ang)
+        if DistortionsInside(self) and not DistortionsOutside(self) then
             return true
         end
     end)

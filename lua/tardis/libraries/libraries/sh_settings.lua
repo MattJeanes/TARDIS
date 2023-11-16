@@ -24,7 +24,12 @@ function TARDIS:AddSetting(data)
         cvars.AddChangeCallback(convar.name, function(cvname, oldvalue, newvalue)
             if data.type == "integer" or data.type == "number" then
                 local value = tonumber(newvalue)
-                local set_value = TARDIS:SetSetting(data.id, value)
+
+                local current_setting = TARDIS:GetSetting(data.id)
+                if current_setting == value then return end
+
+                local set_value = TARDIS:SetSetting(data.id, value, true)
+
                 if set_value ~= value then
                     if data.type == "integer" then
                         GetConVar(convar.name):SetInt(set_value)
@@ -52,7 +57,7 @@ end
 --------------------------------------------------------------------------------
 -- Accessing
 
-function TARDIS:SetSetting(id, value)
+function TARDIS:SetSetting(id, value, ignore_convar)
     local data = self.SettingsData[id]
     if not data then error("Requested setting " .. id .. " does not exist") end
 
@@ -62,7 +67,7 @@ function TARDIS:SetSetting(id, value)
 
     if value ~= nil and (data.type == "number" or data.type == "integer") then
         if data.min and data.max then
-            value = math.max(data.min, math.min(data.max, value))
+            value = math.Clamp(value, data.min, data.max)
         end
         if data.round_func then
             value = data.round_func(value)
@@ -77,7 +82,7 @@ function TARDIS:SetSetting(id, value)
         if data.class == "global" then
             self.GlobalSettings[id]=value
 
-            if data.convar then
+            if data.convar and not ignore_convar then
                 local convar = GetConVar(data.convar.name)
                 if data.type == "integer" then
                     convar:SetInt(value)

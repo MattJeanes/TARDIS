@@ -1,8 +1,8 @@
 -- I often need to run custom code in the TARDIS, this is a template for that
 TARDIS.DebugFunction = function(ext,int,ply,cmd,args)
-    tardisdebug("Debug function")
-    tardisdebug("Exterior:", ext, "")
-    tardisdebug("Interior:", int, "")
+    TARDIS:Debug("Debug function")
+    TARDIS:Debug("Exterior:", ext, "")
+    TARDIS:Debug("Interior:", int, "")
 
     if IsValid(ext) then
         -- paste code here
@@ -70,14 +70,50 @@ concommand.Add("tardis2_debug_warning", function(ply,cmd,args)
     local ext = ply:GetTardisData("exterior")
     if not IsValid(ext) or not ply:IsAdmin() then return end
 
-    local oldval = ext:GetData("health-val", 0)
+    local max = ext:GetHealthMax()
 
-    local val = TARDIS:GetSetting("health-max")
-    if not ext:GetData("health-warning", false) then
-        val = val / 10
+    local dead = ext:IsDead()
+    local broken = ext:IsBroken()
+    local damaged = ext:IsDamaged()
+
+    if dead then
+        ext:ChangeHealth(max)
+        ext:SetShieldsLevel(ext:GetShieldsMax(), true)
+        ext:SetArtron(TARDIS:GetSetting("artron_energy_max"))
+        ext:TogglePower()
+        return
     end
-    ext:SetData("health-val", val, true)
-    ext:CallHook("OnHealthChange", val, oldval)
+
+    if broken then
+        return ext:ChangeHealth(0)
+    end
+
+    if damaged and math.abs(ext:GetHealthPercent() - ext.HEALTH_PERCENT_DAMAGED + 1) < 2 then
+        return ext:ChangeHealth(max * (ext.HEALTH_PERCENT_BROKEN + 2) / 100)
+    end
+
+
+    if damaged then
+        return ext:ChangeHealth(max * (ext.HEALTH_PERCENT_BROKEN - 1) / 100)
+    end
+
+    ext:ChangeHealth(max * (ext.HEALTH_PERCENT_DAMAGED - 1) / 100)
+end)
+
+concommand.Add("tardis2_debug_health", function(ply,cmd,args)
+    local ext = ply:GetTardisData("exterior")
+    if not IsValid(ext) or not ply:IsAdmin() then return end
+    if not args[1] or not tonumber(args[1]) then return end
+
+    ext:ChangeHealth(tonumber(args[1]))
+end)
+
+concommand.Add("tardis2_debug_shields", function(ply,cmd,args)
+    local ext = ply:GetTardisData("exterior")
+    if not IsValid(ext) or not ply:IsAdmin() then return end
+    if not args[1] or not tonumber(args[1]) then return end
+
+    ext:SetShieldsLevel(tonumber(args[1]),true)
 end)
 
 concommand.Add("tardis2_debug_power", function(ply,cmd,args)

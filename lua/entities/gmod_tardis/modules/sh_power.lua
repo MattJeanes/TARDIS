@@ -1,7 +1,7 @@
 -- Power Exterior
 
 TARDIS:AddKeyBind("power",{
-    name="Power",
+    name="TogglePower",
     section="ThirdPerson",
     func=function(self,down,ply)
         if down and ply == self.pilot then
@@ -59,6 +59,10 @@ if SERVER then
         if not self:GetPower() then return false end
     end)
 
+    ENT:AddHook("CanToggleShields", "power", function(self, on)
+        if on and not self:GetPower() then return false end
+    end)
+
     ENT:AddHook("CanChangeExterior","power",function(self)
         if not self:GetPower() then
             return false,true,"Chameleon.FailReasons.NoPower",true
@@ -86,6 +90,13 @@ if SERVER then
             return 0
         end
     end)
+
+    ENT:AddHook("ShouldRegenShields", "power", function(self)
+        if not self:GetPower() then
+            return false
+        end
+    end)
+
 else
     ENT:AddHook("ShouldNotDrawProjectedLight", "power", function(self)
         if not self:GetPower() then return true end
