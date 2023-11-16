@@ -74,8 +74,7 @@ function TARDIS:IsNewVersion()
     then
         -- We need to try and determine if this is a new install or an update
         -- If the version file doesn't exist, it would normally be a new install
-        -- However, this feature was added in 2023.8.0, so if that's the current version
-        -- and we are within two weeks of the release date, we can assume it's an update
+        -- However, this feature was added in 2023.8.0 so if we are within two weeks of the release date, we can assume it's an update
 
         -- This code can be removed after 2023.8.0 has been out for two weeks
         -- and this can always return false if the version file doesn't exist
