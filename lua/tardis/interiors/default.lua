@@ -237,7 +237,9 @@ T.Interior = {
         default_top_doors_1 = { pos = Vector(-346.742, 125.858, 160.575), ang = Angle(0,70,0), },
         default_top_doors_2 = { pos = Vector(-346.742, -125.858, 160.575), ang = Angle(0,110,0), },
 
-        default_monitor_1 = {},
+        default_monitor_1 = { ang = Angle(0,-120,0), },
+        default_monitor_1_handles = { ang = Angle(0,-30,0), },
+        default_monitor_1_collision = { ang = Angle(0,-30,0), },
     },
     Controls = {
         default_throttle  = "teleport_double",
