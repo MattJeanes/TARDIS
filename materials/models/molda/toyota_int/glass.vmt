@@ -2,7 +2,7 @@
 {
 	"$basetexture" "models/molda/toyota_int/glass"
 
-	"$color2" "[0.5 0.5 0.5]"
+	"$color2" "[0.1 0.1 0.1]"
 
 	"$bumpmap" "models/molda/toyota_int/glassN"
 
