@@ -152,6 +152,17 @@ if SERVER then
 
         self:UpdateCollision()
     end
+
+    function PART:OnBodygroupChanged(bodygroup, value)
+        local ring = self.interior:GetPart("default_rotor_ring")
+        if not IsValid(ring) then return end
+
+        if bodygroup == 0 and value == 0 then
+            ring:SetBodygroup(0,0)
+        else
+            ring:SetBodygroup(0,1)
+        end
+    end
 end
 
 PART.ID = "default_monitor_1"
@@ -273,4 +284,16 @@ TARDIS:AddPart(PART)
 
 PART.MonitorID = "default_monitor_2"
 PART.ID = PART.MonitorID .. "_collision"
+TARDIS:AddPart(PART)
+
+
+local PART={}
+PART.ID = "default_rotor_ring"
+PART.Model = "models/molda/toyota_int/rotor_ring.mdl"
+PART.AutoSetup = true
+
+function PART:Initialize()
+    self:SetBodygroup(0,1)
+end
+
 TARDIS:AddPart(PART)

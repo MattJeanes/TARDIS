@@ -240,6 +240,8 @@ T.Interior = {
         default_monitor_1 = { ang = Angle(0,-120,0), },
         default_monitor_1_handles = { ang = Angle(0,-30,0), },
         default_monitor_1_collision = { ang = Angle(0,-30,0), },
+
+        default_rotor_ring = {},
     },
     Controls = {
         default_throttle  = "teleport_double",
