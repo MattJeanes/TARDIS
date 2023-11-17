@@ -45,3 +45,14 @@ end
 function ENT:GetData(k,default)
     return IsValid(self.exterior) and self.exterior:GetData(k, default)
 end
+
+hook.Add("BodygroupChanged", "tardis_parts", function(ent,bodygroup,value)
+    if ent.TardisPart then
+        if ent.OnBodygroupChanged then
+            ent.OnBodygroupChanged(ent, bodygroup, value)
+        end
+        if IsValid(ent.parent) then
+            ent.parent:CallHook("PartBodygroupChanged", bodygroup, value)
+        end
+    end
+end)
