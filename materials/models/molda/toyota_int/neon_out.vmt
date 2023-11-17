@@ -1,6 +1,6 @@
 "UnlitGeneric"
 {
-	"$basetexture" "models/molda/toyota_int/neon_out"
+	"$basetexture" "models/molda/toyota_int/neon"
 	"$surfaceprop" "Metal"
 
 	"$additive" "1"
