@@ -269,3 +269,18 @@ PART.SoundOff = "p00gie/tardis/default/topdoor_close.ogg"
 PART.AnimateSpeed = 2.5
 TARDIS:AddPart(PART)
 
+local PART={}
+PART.ID = "default_rotor"
+PART.Model = "models/molda/toyota_int/rotor.mdl"
+PART.AutoSetup = true
+PART.Collision = true
+PART.UseTransparencyFix = true
+PART.ClientThinkOverride = true
+PART.Animate = true
+PART.AnimateOptions = {
+    Type = "travel",
+    Speed = 0.075,
+    ReturnAfterStop = false,
+    NoPowerFreeze = true,
+}
+TARDIS:AddPart(PART)
