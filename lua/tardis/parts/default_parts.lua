@@ -45,6 +45,12 @@ PART.AutoSetup = true
 TARDIS:AddPart(PART)
 
 local PART={}
+PART.ID = "default_roof"
+PART.Model = "models/molda/toyota_int/roof.mdl"
+PART.AutoSetup = true
+TARDIS:AddPart(PART)
+
+local PART={}
 PART.ID = "default_rings"
 PART.Model = "models/molda/toyota_int/rings.mdl"
 PART.AutoSetup = true
@@ -277,6 +283,10 @@ PART.Collision = true
 PART.UseTransparencyFix = true
 PART.ClientThinkOverride = true
 PART.Animate = true
+
+function PART:Initialize()
+    self:SetBodygroup(3,1)
+end
 
 PART.AnimateOptions = {
     Type = "travel",
