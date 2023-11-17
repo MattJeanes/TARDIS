@@ -991,3 +991,13 @@ TARDIS:AddPart(PART)
 
 PART.ID = "default_monitor_2"
 TARDIS:AddPart(PART)
+
+--monitor_handles
+--sonic_cube
+--stage0
+--stage1
+--stage2
+--stage3
+--flip_stage1
+--flip_stage2
+--flip_stage3
