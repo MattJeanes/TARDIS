@@ -277,10 +277,23 @@ PART.Collision = true
 PART.UseTransparencyFix = true
 PART.ClientThinkOverride = true
 PART.Animate = true
+
 PART.AnimateOptions = {
     Type = "travel",
     Speed = 0.075,
     ReturnAfterStop = false,
     NoPowerFreeze = true,
+    PoseParameter = "rings",
 }
+
+PART.ExtraAnimations = {
+    piston = {
+        Type = "travel",
+        Speed = 0.5,
+        ReturnAfterStop = true,
+        NoPowerFreeze = true,
+        PoseParameter = "piston",
+    }
+}
+
 TARDIS:AddPart(PART)
