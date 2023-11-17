@@ -1,9 +1,13 @@
+local HIDE_COLLISIONS = true
 
 local PART = {}
 PART.Model = "models/molda/toyota_int/monitor.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 PART.Animate = true
+
+PART.poses_flip = { 0.5, 1, 0.5, 0, }
+PART.poses_down = { 0.5, 0, 1, }
 
 PART.AnimateOptions = {
     Type = "custom",
@@ -28,23 +32,13 @@ PART.AnimateOptions = {
     end,
 }
 
-PART.poses_flip = { 0.5, 1, 0.5, 0, }
-PART.poses_down = { 0.5, 0, 1, }
-
 PART.ExtraAnimations = {
     {
         Type = "custom",
         PoseParameter = "arm",
         StartPos = 0.5,
         CustomAnimationFunc = function(self, anim)
-            local pos = self:GetData(self.data_arm_pos)
-            if pos then
-                TARDIS.DoPartAnimation(self, true, anim, pos, false)
-                return
-            end
-
-            local pose_no = self:GetData(self.data_down, 1)
-            local target = self.poses_down[pose_no] or 0.5
+            local target = self:GetData(self.data_down_pos, 0.5)
             TARDIS.DoPartAnimation(self, true, anim, target, false)
         end,
     },
@@ -53,8 +47,7 @@ PART.ExtraAnimations = {
         PoseParameter = "flip",
         StartPos = 0.5,
         CustomAnimationFunc = function(self, anim)
-            local pose_no = self:GetData(self.data_flip, 1)
-            local target = self.poses_flip[pose_no] or 0.5
+            local target = self:GetData(self.data_flip_pos, 0.5)
             TARDIS.DoPartAnimation(self, true, anim, target, false)
         end,
     },
@@ -62,15 +55,16 @@ PART.ExtraAnimations = {
 
 function PART:Initialize(ply)
     self.data_flip = self.ID .. "_flip"
+    self.data_flip_pos = self.ID .. "_flip_pos"
     self.data_down = self.ID .. "_down"
+    self.data_down_pos = self.ID .. "_down_pos"
+
     self.data_rotation = self.ID .. "_rotation"
     self.data_rotated_by = self.ID .. "_rotated_by"
-    self.data_rotate_start_yaw = self.ID .. "_rotate_start_yaw"
+
     self.handles_part_id = self.ID .. "_handles"
-    self.handles_part = self.interior:GetPart(self.handles_part_id)
-    self.data_arm_pos = self.ID .. "_arm_pos"
-    self:SetData(self.data_flip, 0, true)
-    self:SetData(self.data_down, 0, true)
+    self.collision_part_id = self.ID .. "_collision"
+
     self:SetBodygroup(0, 2)
 end
 
@@ -85,11 +79,9 @@ local function trace_console_angle(int, ply)
     local r = 70
 
     local p1, p2 = util.IntersectRayWithSphere(origin, delta, circle_pos, 50)
-
     if not p1 then return nil end
 
     local point = int:WorldToLocal(origin + p1 * aim)
-
     if point.z < 140 or point.z > 165 then return nil end
 
     local d = point - Vector(0,0,point.z)
@@ -100,52 +92,65 @@ end
 
 if SERVER then
     function PART:Use(ply)
-        self:SetData(self.ID .. "_rotated_by", ply, true)
+        if ply:KeyDown(IN_WALK) then
+            self:RotateToEyePos(ply)
+        end
     end
 
     function PART:MoveDown()
-        local down_state = self:GetData(self.data_down,1) % #self.poses_down
+        local down_state = self:GetData(self.data_down, 1) % #self.poses_down
         self:SetData(self.data_down, down_state + 1, true)
+        self:SetData(self.data_down_pos, self.poses_down[down_state + 1], true)
+        self:UpdateCollision()
     end
 
     function PART:Flip()
-        local flip_state = self:GetData(self.data_flip,1) % #self.poses_flip
+        local flip_state = self:GetData(self.data_flip, 1) % #self.poses_flip
         self:SetData(self.data_flip, flip_state + 1, true)
+        self:SetData(self.data_flip_pos, self.poses_flip[flip_state + 1], true)
+    end
+
+    function PART:RotateToEyePos(ply)
+        self:SetData(self.data_rotated_by, ply, true)
+    end
+
+    function PART:UpdateCollision()
+        local handles_part = self.interior:GetPart(self.handles_part_id)
+        local collision_part = self.interior:GetPart(self.collision_part_id)
+        local yaw = self:GetData(self.data_rotation, 0)
+        local z = self:GetData(self.data_down_pos, 0.5)
+
+        if IsValid(handles_part) then
+            handles_part:ApplyRotation(yaw)
+            handles_part:ApplyVerticalPos(z)
+        end
+
+        if IsValid(collision_part) then
+            collision_part:ApplyRotation(yaw)
+            collision_part:ApplyVerticalPos(z)
+        end
     end
 
     function PART:Think()
         local ply = self:GetData(self.data_rotated_by)
         if not IsValid(ply) then return end
+
         if not ply:KeyDown(IN_USE) then
-            self:SetData(self.data_rotated_by, nil, true)
-            return
+            return self:RotateToEyePos(nil)
         end
 
         local ang_y, z = trace_console_angle(self.interior, ply)
         if not ang_y then
-            self:SetData(self.data_rotated_by, nil, true)
-            return
+            return self:RotateToEyePos(nil)
         end
 
-        local orig_angle = self:GetAngles().y
-
-        local yaw_rel = (ang_y - orig_angle) % 360
-        local yaw_pos = math.Clamp(yaw_rel / 360, 0, 1)
+        local yaw_pos = math.Clamp((ang_y - self:GetAngles().y) % 360 / 360, 0, 1)
+        local z_pos = 1 - (z - 140) / 25
 
         self:SetData(self.data_rotation, yaw_pos, true)
+        self:SetData(self.data_down_pos, z_pos, true)
 
-        if not IsValid(self.handles_part) then
-            self.handles_part = self.interior:GetPart(self.handles_part_id)
-        end
-
-        if IsValid(self.handles_part) then
-            local curr = self.handles_part:GetAngles()
-            local yaw = self.handles_part.initial_yaw + yaw_rel
-            self.handles_part:SetAngles(Angle(curr.p, yaw, curr.r))
-        end
-
-        local z_pos = 1 - (z - 140) / 25
-        self:SetData(self.data_arm_pos, z_pos, true)
+        self:UpdateCollision()
     end
 end
 
@@ -155,16 +160,23 @@ TARDIS:AddPart(PART)
 PART.ID = "default_monitor_2"
 TARDIS:AddPart(PART)
 
+
+
+-- hitboxes
+
 local PART = {}
 PART.Model = "models/molda/toyota_int/hitboxes/monitor_handles.mdl"
 PART.AutoSetup = true
 PART.Collision = true
-PART.MonitorID = "default_monitor_1"
-PART.ID = PART.MonitorID .. "_handles"
-PART.NoDraw = false
+PART.NoDraw = HIDE_COLLISIONS
 
 function PART:Initialize()
-    self.initial_yaw = self:GetAngles().y
+    self.initial_pos = self:GetPos()
+    self.initial_ang = self:GetAngles()
+
+    if SERVER then
+        self:ApplyVerticalPos(0.5)
+    end
 end
 
 if SERVER then
@@ -175,25 +187,53 @@ if SERVER then
         if ply:KeyDown(IN_WALK) then
             monitor:Flip()
         else
-            local yaw, z = trace_console_angle(self.interior, ply)
-            self:SetData(self.MonitorID .. "_rotated_by", ply, true)
-            --tardisdebug("A", yaw, self:GetAngles().y, self:GetAngles().y - self.initial_yaw)
-            --tardisdebug("B", self:GetData(self.MonitorID .. "_rotation") * 360)
-            --self:SetData(self.MonitorID .. "_rotate_start_yaw", yaw - self:GetAngles().y, true)
+            monitor:RotateToEyePos(ply)
         end
+    end
+
+    function PART:ApplyRotation(y)
+        local yaw = y * 360
+        local a = self:GetAngles()
+        local a0 = self.initial_ang
+        self:SetAngles(Angle(a.p, a0.y + yaw, a.r))
+    end
+
+    function PART:ApplyVerticalPos(k)
+        local z = 0 - k * 8
+        local roll = 0 + k * 2.4
+
+        local p = self:GetPos()
+        local a = self:GetAngles()
+        local p0 = self.initial_pos
+        local a0 = self.initial_ang
+        self:SetPos(Vector(p.x, p.y, p0.z + z))
+        self:SetAngles(Angle(a.p, a.y, a0.r + roll))
     end
 end
 
-
+PART.MonitorID = "default_monitor_1"
+PART.ID = PART.MonitorID .. "_handles"
+TARDIS:AddPart(PART)
+PART.MonitorID = "default_monitor_2"
+PART.ID = PART.MonitorID .. "_handles"
 TARDIS:AddPart(PART)
 
+
+
+
 local PART = {}
-PART.Model = "models/molda/toyota_int/hitboxes/stage2.mdl"
+PART.Model = "models/molda/toyota_int/hitboxes/stage1.mdl"
 PART.AutoSetup = true
 PART.Collision = true
-PART.MonitorID = "default_monitor_1"
-PART.ID = PART.MonitorID .. "_collision"
-PART.NoDraw = true
+PART.NoDraw = HIDE_COLLISIONS
+
+function PART:Initialize()
+    self.initial_pos = self:GetPos()
+    self.initial_ang = self:GetAngles()
+    if SERVER then
+        self:ApplyVerticalPos(0.5)
+    end
+end
 
 if SERVER then
     function PART:Use(ply)
@@ -204,18 +244,33 @@ if SERVER then
             monitor:MoveDown()
         end
     end
+
+    function PART:ApplyRotation(y)
+        local yaw = y * 360
+        local a = self:GetAngles()
+        local a0 = self.initial_ang
+        self:SetAngles(Angle(a.p, a0.y + yaw, a.r))
+    end
+
+    function PART:ApplyVerticalPos(k)
+        local pr = "models/molda/toyota_int/hitboxes/"
+        local model = "stage2.mdl"
+
+        if k < 0.3 then
+            model = "stage1.mdl"
+        elseif k > 0.7 then
+            model = "stage3.mdl"
+        end
+
+        self:SetModel(pr .. model)
+        self:PhysicsInit(SOLID_VPHYSICS)
+    end
 end
 
+PART.MonitorID = "default_monitor_1"
+PART.ID = PART.MonitorID .. "_collision"
 TARDIS:AddPart(PART)
 
-
---monitor_handles
---stage0
---stage1
---stage2
---stage3
---flip_stage1
---flip_stage2
---flip_stage3
-
---sonic_cube
+PART.MonitorID = "default_monitor_2"
+PART.ID = PART.MonitorID .. "_collision"
+TARDIS:AddPart(PART)
