@@ -74,7 +74,7 @@ function TARDIS.DrawOverride(self,override)
     end
 end
 
-local function DoPartAnimation(self, can_move, a, target, should_reset)
+function TARDIS.DoPartAnimation(self, can_move, a, target, should_reset)
     local pose_pos = a.pos
     local speed = a.speed
 
@@ -100,7 +100,7 @@ local function DoPartAnimation(self, can_move, a, target, should_reset)
     a.pos = pose_pos
 end
 
-local function InitAnimation(self, anim)
+function TARDIS.InitAnimation(self, anim)
     -- `anim` is either the part or extra animation table
 
     local a = {}
@@ -129,19 +129,19 @@ local function InitAnimation(self, anim)
     return a
 end
 
-local function ProcessAnimation(self, a)
+function TARDIS.ProcessAnimation(self, a)
 
     if a.type == "travel" then
         local power_ok = self.exterior:GetPower() or a.no_power
         local returning = a.should_return and a.pos ~= a.min
         local move = power_ok and (self.exterior:IsTravelling() or returning)
 
-        DoPartAnimation(self, move, a, a.max, move)
+        TARDIS.DoPartAnimation(self, move, a, a.max, move)
 
     elseif a.type == "idle" then
         local returning = a.should_return and a.pos ~= a.min
         local move = self.exterior:GetPower() or a.no_power
-        DoPartAnimation(self, move or returning, a, a.max, true)
+        TARDIS.DoPartAnimation(self, move or returning, a, a.max, true)
 
     elseif a.type == "perpetual_use" or a.type == "toggle" then
 
@@ -174,13 +174,13 @@ local function ProcessAnimation(self, a)
 
             local move = (not a.stop_anywhere) or moving
 
-            DoPartAnimation(self, move, a, target, moving)
+            TARDIS.DoPartAnimation(self, move, a, target, moving)
         else
-            DoPartAnimation(self, true, a, target, false)
+            TARDIS.DoPartAnimation(self, true, a, target, false)
         end
 
     elseif a.type == "custom" then
-        a.custom_func(self)
+        a.custom_func(self, a)
     end
 end
 
@@ -199,12 +199,12 @@ local overrides={
                     self.AnimateOptions.Speed = self.AnimateSpeed
                 end
 
-                self.animation = InitAnimation(self, self.AnimateOptions)
+                self.animation = TARDIS.InitAnimation(self, self.AnimateOptions)
 
                 if self.ExtraAnimations then
                     self.extra_animations = {}
                     for k,v in pairs(self.ExtraAnimations) do
-                        self.extra_animations[k] = InitAnimation(self, v)
+                        self.extra_animations[k] = TARDIS.InitAnimation(self, v)
                     end
                 end
             end
@@ -237,11 +237,11 @@ local overrides={
 
             if think_ok or self.ExteriorPart or is_visible_through_door() then
                 if self.Animate then
-                    ProcessAnimation(self, self.animation)
+                    TARDIS.ProcessAnimation(self, self.animation)
 
                     if self.extra_animations then
                         for k,v in pairs(self.extra_animations) do
-                            ProcessAnimation(self, v)
+                            TARDIS.ProcessAnimation(self, v)
                         end
                     end
                 end
