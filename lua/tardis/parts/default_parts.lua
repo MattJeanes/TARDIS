@@ -235,7 +235,7 @@ TARDIS:AddPart(PART)
 
 local PART={}
 PART.ID = "default_intdoors"
-PART.Model = "models/molda/toyota_int/intdoors.mdl"
+PART.Model = "models/molda/toyota_int/slidedoors2.mdl"
 PART.AutoSetup = true
 PART.Animate = true
 PART.Collision = true
@@ -263,16 +263,12 @@ end
 TARDIS:AddPart(PART)
 
 PART.ID = "default_top_doors_1"
-PART.Model = "models/molda/toyota_int/intdoors2.mdl"
-PART.SoundOn = "p00gie/tardis/default/topdoor_open.ogg"
-PART.SoundOff = "p00gie/tardis/default/topdoor_close.ogg"
-PART.AnimateSpeed = 2.5
+PART.Model = "models/molda/toyota_int/slidedoors1.mdl"
+PART.Sound = "p00gie/tardis/default/intdoors_open.ogg"
+PART.AnimateSpeed = 0.5
 TARDIS:AddPart(PART)
 
 PART.ID = "default_top_doors_2"
-PART.SoundOn = "p00gie/tardis/default/topdoor_open.ogg"
-PART.SoundOff = "p00gie/tardis/default/topdoor_close.ogg"
-PART.AnimateSpeed = 2.5
 TARDIS:AddPart(PART)
 
 local PART={}
