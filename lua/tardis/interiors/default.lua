@@ -7,7 +7,7 @@ T.ID = "default"
 T.Interior = {
 
     Model="models/molda/toyota_int/interior.mdl",
-    ExitDistance=1450,
+    ExitDistance=600,
     LightOverride = {
         basebrightness = 0.05,
         nopowerbrightness = 0.001,
@@ -102,7 +102,7 @@ T.Interior = {
         default_casing = {},
         --default_corridors1 = {},
         --default_corridors2 = {},
-        default_corridors = { ang = Angle(0,90,0), },
+        default_corridors_minimal = { ang = Angle(0,90,0), },
         default_console = { ang = Angle(0,90,0), },
         --default_neon = {},
         --default_rotor_base = {},
@@ -232,7 +232,6 @@ T.Interior = {
         --default_monitor = {},
         --default_monitor_2012 = {},
         --default_monitor_2015 = {},
-        default_intdoors = { pos = Vector(73.559, -417.853, 47.506), ang = Angle(0,10,0), },
 
         default_top_doors_1 = { pos = Vector(-346.742, 125.858, 160.575), ang = Angle(0,70,0), },
         default_top_doors_2 = { pos = Vector(-346.742, -125.858, 160.575), ang = Angle(0,110,0), },
@@ -244,8 +243,11 @@ T.Interior = {
         default_rotor_ring = {},
         default_rotor = {},
 
-        default_setroof = {},
+        --default_setroof = {},
         default_roof = {},
+
+        default_intdoors_static = { pos = Vector(73.559, -417.853, 47.506), ang = Angle(0,10,0), },
+        default_corridor_doors_static = { pos = Vector(-475.5, 213, 160.8) },
     },
     Controls = {
         default_throttle  = "teleport_double",

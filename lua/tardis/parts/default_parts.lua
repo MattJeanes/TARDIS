@@ -115,7 +115,14 @@ TARDIS:AddPart(PART)
 --TARDIS:AddPart(PART)
 
 local PART={}
-PART.ID = "default_corridors"
+PART.ID = "default_corridors_minimal"
+PART.Model = "models/molda/toyota_int/corridor_version3.mdl"
+PART.AutoSetup = true
+PART.Collision = true
+TARDIS:AddPart(PART)
+
+local PART={}
+PART.ID = "default_corridors_small"
 PART.Model = "models/molda/toyota_int/corridor_version2.mdl"
 PART.AutoSetup = true
 PART.Collision = true
@@ -267,6 +274,11 @@ if SERVER then
     end
 end
 
+PART.ID = "default_intdoors"
+TARDIS:AddPart(PART)
+
+PART.Model = "models/molda/toyota_int/slidedoors3.mdl"
+PART.ID = "default_corridor_doors"
 TARDIS:AddPart(PART)
 
 PART.ID = "default_top_doors_1"
@@ -276,6 +288,19 @@ PART.AnimateSpeed = 0.5
 TARDIS:AddPart(PART)
 
 PART.ID = "default_top_doors_2"
+TARDIS:AddPart(PART)
+
+PART.Use = nil
+PART.Animate = false
+PART.AnimateSpeed = nil
+PART.Sound = nil
+
+PART.ID = "default_intdoors_static"
+PART.Model = "models/molda/toyota_int/slidedoors2.mdl"
+TARDIS:AddPart(PART)
+
+PART.ID = "default_corridor_doors_static"
+PART.Model = "models/molda/toyota_int/slidedoors3.mdl"
 TARDIS:AddPart(PART)
 
 local PART={}
