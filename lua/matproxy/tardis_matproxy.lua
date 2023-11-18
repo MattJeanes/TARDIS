@@ -33,6 +33,10 @@ matproxy.Add({
         local function get_base_mat_name()
             if not ext:GetPower() then
                 return "off"
+            elseif ext:GetData("demat_animation") then
+                return "demat"
+            elseif ext:GetData("mat_animation") then
+                return "mat"
             elseif ext:GetData("failing-demat") then
                 return "demat_fail"
             elseif ext:GetData("failing-mat") then
@@ -41,10 +45,6 @@ matproxy.Add({
                 return "interrupt"
             elseif ext:GetHandbrake() then
                 return "handbrake"
-            elseif ext:GetData("demat_animation") then
-                return "demat"
-            elseif ext:GetData("mat_animation") then
-                return "mat"
             elseif ext:IsTravelling() then
                 return "travel"
             end
