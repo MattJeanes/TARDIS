@@ -305,7 +305,7 @@ TARDIS:AddPart(PART)
 
 local PART={}
 PART.ID = "default_rotor"
-PART.Model = "models/molda/toyota_int/rotor.mdl"
+PART.Model = "models/molda/toyota_int/rotor_small.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 PART.UseTransparencyFix = true
