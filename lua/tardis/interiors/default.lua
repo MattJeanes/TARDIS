@@ -8,10 +8,12 @@ T.Interior = {
 
     Model="models/molda/toyota_int/interior.mdl",
     ExitDistance=600,
+
     LightOverride = {
         basebrightness = 0.05,
         nopowerbrightness = 0.001,
     },
+
     Light={
         color = Color(0,170,255),
         pos = Vector(0,0,-30),
@@ -26,6 +28,7 @@ T.Interior = {
             brightness = 1,
         },
     },
+
     Lights={
         console_white = {
             pos = Vector(0,0,187.4),
@@ -72,6 +75,13 @@ T.Interior = {
         },
         FlightLoop = "p00gie/tardis/default/flight_loop.wav",
     },
+
+	IdleSound={
+		{
+			path="p00gie/tardis/default/hum.wav",
+			volume=0.3
+		}
+	},
 
     Scanners = {
         {
@@ -253,6 +263,7 @@ T.Interior = {
         default_intdoors_static = { pos = Vector(73.559, -417.853, 47.506), ang = Angle(0,10,0), },
         default_corridor_doors_static = { pos = Vector(-475.5, 213, 160.8) },
     },
+
     Controls = {
         default_throttle  = "teleport_double",
         default_handbrake  = "handbrake",
@@ -286,9 +297,10 @@ T.Interior = {
         default_spin_b_4 = "spin_toggle",
         default_thick_lever = "shields",
     },
+
     TipSettings = {},
     CustomTips = {},
-    PartTips = {},
+	PartTips = {},
 }
 
 T.Exterior = {
