@@ -90,6 +90,16 @@ local function trace_console_angle(int, ply)
     return ang.y, point.z
 end
 
+local function select_monitor_pos(ply, part)
+    local ang_y, down = trace_console_angle(part.interior, ply)
+    if not ang_y then return end
+
+    local rotation = math.Clamp((ang_y - part:GetAngles().y) % 360 / 360, 0, 1)
+    local down = 1 - (down - 140) / 25
+
+    return rotation, down
+end
+
 if SERVER then
     function PART:Use(ply)
         if ply:KeyDown(IN_WALK) then
@@ -118,40 +128,55 @@ if SERVER then
         local handles_part = self.interior:GetPart(self.handles_part_id)
         local collision_part = self.interior:GetPart(self.collision_part_id)
         local yaw = self:GetData(self.data_rotation, 0)
-        local z = self:GetData(self.data_down_pos, 0.5)
+        local down = self:GetData(self.data_down_pos, 0.5)
 
         if IsValid(handles_part) then
             handles_part:ApplyRotation(yaw)
-            handles_part:ApplyVerticalPos(z)
+            handles_part:ApplyVerticalPos(down)
         end
 
         if IsValid(collision_part) then
             collision_part:ApplyRotation(yaw)
-            collision_part:ApplyVerticalPos(z)
+            collision_part:ApplyVerticalPos(down)
         end
     end
+
+    function PART:UpdatePosition(rotation, down)
+        self:SetData(self.data_rotation, rotation, true)
+        self:SetData(self.data_down_pos, down, true)
+        self:UpdateCollision()
+    end
+
+    util.AddNetworkString("TARDIS_DefaultMonitorsRequestUpdate")
 
     function PART:Think()
         local ply = self:GetData(self.data_rotated_by)
         if not IsValid(ply) then return end
 
         if not ply:KeyDown(IN_USE) then
-            return self:RotateToEyePos(nil)
+            self:RotateToEyePos(nil)
+            local rotation, down = select_monitor_pos(ply, self)
+            if rotation then
+                self:UpdatePosition(rotation, down)
+            else
+                net.Start("TARDIS_DefaultMonitorsRequestUpdate")
+                    net.WriteEntity(self)
+                net.Send(ply)
+            end
+            return
         end
-
-        local ang_y, z = trace_console_angle(self.interior, ply)
-        if not ang_y then
-            return self:RotateToEyePos(nil)
-        end
-
-        local yaw_pos = math.Clamp((ang_y - self:GetAngles().y) % 360 / 360, 0, 1)
-        local z_pos = 1 - (z - 140) / 25
-
-        self:SetData(self.data_rotation, yaw_pos, true)
-        self:SetData(self.data_down_pos, z_pos, true)
-
-        self:UpdateCollision()
     end
+
+    util.AddNetworkString("TARDIS_DefaultMonitorsUpdate")
+
+    net.Receive("TARDIS_DefaultMonitorsUpdate", function(len,ply)
+        local part = net.ReadEntity()
+        local rotation, down = net.ReadFloat(), net.ReadFloat()
+
+        if not rotation or not down then return end
+
+        part:UpdatePosition(rotation, down)
+    end)
 
     function PART:OnBodygroupChanged(bodygroup, value)
         local ring = self.interior:GetPart("default_rotor_ring")
@@ -161,6 +186,37 @@ if SERVER then
             ring:SetBodygroup(0,0)
         else
             ring:SetBodygroup(0,1)
+        end
+    end
+else
+    function PART:UpdateServerPos()
+        local rotation = self:GetData(self.data_rotation)
+        local down = self:GetData(self.data_down_pos)
+        if not rotation or not down then return end
+
+        net.Start("TARDIS_DefaultMonitorsUpdate")
+            net.WriteEntity(self)
+            net.WriteFloat(rotation)
+            net.WriteFloat(down)
+        net.SendToServer()
+    end
+
+    net.Receive("TARDIS_DefaultMonitorsRequestUpdate", function(len,ply)
+        local part = net.ReadEntity()
+        if IsValid(part) then
+            part:UpdateServerPos()
+        end
+    end)
+
+    function PART:Think()
+        local ply = self:GetData(self.data_rotated_by)
+        if ply ~= LocalPlayer() then return end
+
+        local rotation, down = select_monitor_pos(ply, self)
+
+        if rotation then
+            self:SetData(self.data_rotation, rotation)
+            self:SetData(self.data_down_pos, down)
         end
     end
 end
