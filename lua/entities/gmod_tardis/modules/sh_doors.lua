@@ -246,12 +246,11 @@ if SERVER then
     ENT:AddHook("DoorCollisionOverride", "doors", function(self)
         local td = {}
         local ply = self:GetCreator()
-        td.mins = ply:OBBMins()
-        td.mins.z = td.mins.z * 0.5
-        td.maxs = ply:OBBMaxs()
-        td.maxs.z = td.maxs.z * 0.5
+        td.mins = ply:OBBMins() * 0.5
+        td.maxs = ply:OBBMaxs() * 0.5
         td.mask = MASK_NPCWORLDSTATIC
-        local fallback = self:LocalToWorld(self.Fallback.pos)
+
+        local fallback = self:LocalToWorld(self.Fallback.pos + Vector( -math.abs(td.maxs.x - td.mins.x), 0, 0))
 
         local z_ops = {0, 0.2, 0.4, 0.5, 0.6, 0.8, 1}
         for i, k in ipairs(z_ops) do
