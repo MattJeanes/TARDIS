@@ -3,6 +3,11 @@
   "Author": "covauski3",
   "Phrases": {
     "Artron.Depleted": "Energia artron esgotada",
+    "ArtronInhibitor": "Inibidor Artron",
+    "ArtronInhibitor.Disabled": "Inibidor artron desativado",
+    "ArtronInhibitor.Enabled": "Inibidor artron ativado",
+    "ArtronInhibitor.Instructions": "Cria um campo inibidor de Artron, drenando a Energia Artron de outras TARDISes próximas",
+    "ArtronInhibitor.Starting": "Inicializando o inibidor artron...",
     "Binds.AnyKey": "Aperte qualquer tecla",
     "Binds.Invalid": "Inválido",
     "Binds.Key": "Tecla",
