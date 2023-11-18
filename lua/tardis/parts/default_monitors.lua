@@ -100,6 +100,21 @@ local function select_monitor_pos(ply, part)
     return rotation, down
 end
 
+-- returns (static, vertical)
+function PART:GetMonitorState()
+    local bg = self:GetBodygroup(0)
+
+    if bg == 0 then
+        return true, false
+    end
+
+    if bg == 1 then
+        return false, false
+    end
+
+    return false, (self:GetData(self.data_flip_pos, 0.5) ~= 0.5)
+end
+
 if SERVER then
     function PART:Use(ply)
         if ply:KeyDown(IN_WALK) then
@@ -118,6 +133,7 @@ if SERVER then
         local flip_state = self:GetData(self.data_flip, 1) % #self.poses_flip
         self:SetData(self.data_flip, flip_state + 1, true)
         self:SetData(self.data_flip_pos, self.poses_flip[flip_state + 1], true)
+        self:UpdateCollision()
     end
 
     function PART:RotateToEyePos(ply)
@@ -187,6 +203,8 @@ if SERVER then
         else
             ring:SetBodygroup(0,1)
         end
+
+        self:UpdateCollision()
     end
 else
     function PART:UpdateServerPos()
@@ -229,12 +247,28 @@ TARDIS:AddPart(PART)
 
 
 
+
+
+local function ChangeModel(part, model_name)
+    local pr = "models/molda/toyota_int/hitboxes/"
+    local model = pr .. model_name .. ".mdl"
+
+    part:SetModel(model)
+    part:PhysicsInit(SOLID_VPHYSICS)
+    part:SetMoveType(MOVETYPE_NONE)
+
+    part.phys = part:GetPhysicsObject()
+    if (part.phys:IsValid()) then
+        part.phys:EnableMotion(false)
+    end
+end
+
 -- hitboxes
 
 local PART = {}
 PART.Model = "models/molda/toyota_int/hitboxes/monitor_handles.mdl"
 PART.AutoSetup = true
-PART.Collision = true
+PART.Collision = false
 PART.NoDraw = HIDE_COLLISIONS
 
 function PART:Initialize()
@@ -244,6 +278,18 @@ function PART:Initialize()
     if SERVER then
         self:ApplyVerticalPos(0.5)
     end
+end
+
+function PART:GetMonitor()
+    return self.interior:GetPart(self.MonitorID)
+end
+
+function PART:GetMonitorState()
+    local m = self:GetMonitor()
+    if IsValid(m) then
+        return m:GetMonitorState()
+    end
+    return false,false
 end
 
 if SERVER then
@@ -262,17 +308,51 @@ if SERVER then
         local yaw = y * 360
         local a = self:GetAngles()
         local a0 = self.initial_ang
+
+        local static, vertical = self:GetMonitorState()
+        if static then
+            yaw = 0
+        end
+
         self:SetAngles(Angle(a.p, a0.y + yaw, a.r))
     end
 
     function PART:ApplyVerticalPos(k)
-        local z = 0 - k * 8
-        local roll = 0 + k * 2.4
+        local z, roll, model
 
         local p = self:GetPos()
         local a = self:GetAngles()
         local p0 = self.initial_pos
         local a0 = self.initial_ang
+
+        local static, vertical = self:GetMonitorState()
+
+        if vertical then
+            model = "monitor_handles_vertical_2"
+            z = -1.5
+            roll = 0.5
+
+            if k < 0.3 then
+                model = "monitor_handles_vertical_1"
+                z = 0
+                roll = 0
+            elseif k > 0.7 then
+                model = "monitor_handles_vertical_3"
+                z = 0
+                roll = 0
+            end
+        else
+            model = "monitor_handles"
+            if static then
+                z = 0
+                roll = -3
+            else
+                z = -8 * k
+                roll = k * 2.4
+            end
+        end
+
+        ChangeModel(self, model)
         self:SetPos(Vector(p.x, p.y, p0.z + z))
         self:SetAngles(Angle(a.p, a.y, a0.r + roll))
     end
@@ -291,7 +371,7 @@ TARDIS:AddPart(PART)
 local PART = {}
 PART.Model = "models/molda/toyota_int/hitboxes/stage1.mdl"
 PART.AutoSetup = true
-PART.Collision = true
+PART.Collision = false
 PART.NoDraw = HIDE_COLLISIONS
 
 function PART:Initialize()
@@ -300,6 +380,18 @@ function PART:Initialize()
     if SERVER then
         self:ApplyVerticalPos(0.5)
     end
+end
+
+function PART:GetMonitor()
+    return self.interior:GetPart(self.MonitorID)
+end
+
+function PART:GetMonitorState()
+    local m = self:GetMonitor()
+    if IsValid(m) then
+        return m:GetMonitorState()
+    end
+    return false,false
 end
 
 if SERVER then
@@ -316,21 +408,33 @@ if SERVER then
         local yaw = y * 360
         local a = self:GetAngles()
         local a0 = self.initial_ang
+
+        local static, vertical = self:GetMonitorState()
+        if static then
+            yaw = 0
+        end
+
         self:SetAngles(Angle(a.p, a0.y + yaw, a.r))
     end
 
     function PART:ApplyVerticalPos(k)
-        local pr = "models/molda/toyota_int/hitboxes/"
-        local model = "stage2.mdl"
+        local static, vertical = self:GetMonitorState()
+
+        local model = "stage2"
 
         if k < 0.3 then
-            model = "stage1.mdl"
+            model = "stage1"
         elseif k > 0.7 then
-            model = "stage3.mdl"
+            model = "stage3"
         end
 
-        self:SetModel(pr .. model)
-        self:PhysicsInit(SOLID_VPHYSICS)
+        if static then
+            model = "stage0"
+        elseif vertical then
+            model = "flip_" .. model
+        end
+
+        ChangeModel(self, model)
     end
 end
 
