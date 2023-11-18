@@ -100,16 +100,23 @@ PART.AutoSetup = true
 PART.Collision = true
 TARDIS:AddPart(PART)
 
-local PART={}
-PART.ID = "default_corridors1"
-PART.Model = "models/molda/toyota_int/corridors1.mdl"
-PART.AutoSetup = true
-PART.Collision = true
-TARDIS:AddPart(PART)
+--local PART={}
+--PART.ID = "default_corridors1"
+--PART.Model = "models/molda/toyota_int/corridors1.mdl"
+--PART.AutoSetup = true
+--PART.Collision = true
+--TARDIS:AddPart(PART)
+--
+--local PART={}
+--PART.ID = "default_corridors2"
+--PART.Model = "models/molda/toyota_int/corridors2.mdl"
+--PART.AutoSetup = true
+--PART.Collision = true
+--TARDIS:AddPart(PART)
 
 local PART={}
-PART.ID = "default_corridors2"
-PART.Model = "models/molda/toyota_int/corridors2.mdl"
+PART.ID = "default_corridors"
+PART.Model = "models/molda/toyota_int/corridor_version2.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 TARDIS:AddPart(PART)
