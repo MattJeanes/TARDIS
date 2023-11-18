@@ -240,6 +240,10 @@ T.Interior = {
         default_monitor_1_handles = { ang = Angle(0,-30,0), },
         default_monitor_1_collision = { ang = Angle(0,-30,0), },
 
+        default_monitor_2 = { ang = Angle(0,60,0), },
+        default_monitor_2_handles = { ang = Angle(0,150,0), },
+        default_monitor_2_collision = { ang = Angle(0,150,0), },
+
         default_rotor_ring = {},
         default_rotor = {},
 
@@ -252,7 +256,7 @@ T.Interior = {
     Controls = {
         default_throttle  = "teleport_double",
         default_handbrake  = "handbrake",
-        default_side_lever_1 = "engine_release",
+        default_side_lever1 = "engine_release",
         default_side_speakers = "music",
         default_telepathic  = "destination",
         default_console_scanner = "thirdperson_careful",
@@ -261,7 +265,7 @@ T.Interior = {
         default_crank4 = "repair",
         default_crank2  = "power",
         default_crank3  = "redecorate",
-        default_side_lever_2 = "physlock",
+        default_side_lever2 = "physlock",
         default_crank = "random_coords",
         default_buttons = "isomorphic",
         default_fiddle1  = "door",
