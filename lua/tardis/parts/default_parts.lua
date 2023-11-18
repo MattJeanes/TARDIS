@@ -402,7 +402,7 @@ PART.Model = "models/cem/toyota_contr/bouncy_lever.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 PART.Animate = true
-PART.AnimateSpeed = 1.7
+PART.AnimateSpeed = 3
 PART.Sound = "p00gie/tardis/default/levers.ogg"
 TARDIS:AddPart(PART)
 
@@ -772,6 +772,7 @@ PART.Model = "models/cem/toyota_contr/switch.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 PART.Animate = true
+PART.AnimateSpeed = 5
 PART.SoundOn = "p00gie/tardis/default/switch_on.ogg"
 PART.SoundOff = "p00gie/tardis/default/switch.ogg"
 PART.SoundNoPower = "p00gie/tardis/default/switch.ogg"
@@ -783,6 +784,7 @@ PART.Model = "models/cem/toyota_contr/switch2.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 PART.Animate = true
+PART.AnimateSpeed = 5
 PART.Sound = "p00gie/tardis/default/switch.ogg"
 TARDIS:AddPart(PART)
 
