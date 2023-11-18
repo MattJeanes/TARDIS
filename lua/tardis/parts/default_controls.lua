@@ -201,7 +201,7 @@ PART.Model = "models/cem/toyota_contr/bouncy_lever.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 PART.Animate = true
-PART.AnimateSpeed = 1.7
+PART.AnimateSpeed = 3
 PART.Sound = "p00gie/tardis/default/levers.ogg"
 TARDIS:AddPart(PART)
 
