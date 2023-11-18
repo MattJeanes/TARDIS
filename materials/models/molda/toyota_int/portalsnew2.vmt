@@ -3,15 +3,16 @@
 	"$basetexture" "models/molda/toyota_int/portalsnew2"
 	"$surfaceprop" "Metal"
 
+	"$color2" "[2 2 2]"
+
 	"$envmap" "models/molda/toyota_int/environment"
-	"$envmaptint" "[0 0.2 0.25]"
-//	"$envmapmask" "models/molda/toyota_int/smudgeN"
+	"$envmaptint" "[0 0.175 0.225]"
 
 	"$bumpmap" "models/molda/toyota_int/grainN"
 	"$nodecal" "1"
 	"$nocull" "0"
 
-	$envmaptint_on "[0 0.2 0.25]"
+	$envmaptint_on "[0 0.175 0.225]"
 	$envmaptint_off "[0 0.1 0.1]"
 
 	"Proxies"

@@ -4,7 +4,7 @@
 	"$surfaceprop" "Metal"
 
 	"$selfillum" 1
-	"$selfillummask" "/models/molda/toyota_int/bulbs"
+	"$selfillummask" "models/molda/toyota_int/white"
 	"$selfillumtint" "[1 1 1]"
 
 	"$envmap" "models/molda/toyota_int/cubemap1"
@@ -83,8 +83,8 @@
 		}
 		Sine {
 			sineperiod 4
-			sinemin 1
-			sinemax 1.4
+			sinemin 0.8
+			sinemax 1
 			resultVar $sine
 		}
 		Equals {

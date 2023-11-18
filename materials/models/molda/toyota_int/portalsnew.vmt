@@ -3,24 +3,24 @@
 	"$basetexture" "models/molda/toyota_int/portalsnew"
 	"$surfaceprop" "Metal"
 
+	"$color2" "[2 2 2]"
+
 	"$envmap" "models/molda/toyota_int/environment"
-	"$envmaptint" "[0 0.2 0.25]"
-//	"$envmapmask" "models/molda/toyota_int/smudgeN"
+	"$envmaptint" "[0 0.175 0.225]"
 
 	"$bumpmap" "models/molda/toyota_int/grainN"
 	"$nodecal" "1"
 	"$nocull" "0"
 
-	$envmaptint_mult "0.6"
-	$envmaptint_color "[1 1 1]"
-	Proxies {
-		TARDIS_DefaultInt_EnvColor {
-			resultVar	$envmaptint_color
-		}
-		Multiply {
-			srcVar1 $envmaptint_color
-			srcVar2 $envmaptint_mult
-			resultVar $envmaptint
+	$envmaptint_on "[0 0.175 0.225]"
+	$envmaptint_off "[0 0.1 0.1]"
+
+	"Proxies"
+	{
+		TARDIS_Power2 {
+			onVar "$envmaptint_on"
+			offVar "$envmaptint_off"
+			resultVar "$envmaptint"
 		}
 	}
 }
