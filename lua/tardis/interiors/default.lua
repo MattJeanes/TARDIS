@@ -76,12 +76,12 @@ T.Interior = {
         FlightLoop = "p00gie/tardis/default/flight_loop.wav",
     },
 
-	IdleSound={
-		{
-			path="p00gie/tardis/default/hum.wav",
-			volume=0.3
-		}
-	},
+    IdleSound={
+        {
+            path="p00gie/tardis/default/hum.wav",
+            volume=0.3
+        }
+    },
 
     Scanners = {
         {
@@ -113,7 +113,7 @@ T.Interior = {
         --default_corridors1 = {},
         --default_corridors2 = {},
         default_corridors_minimal = { ang = Angle(0,90,0), },
-        default_console = { ang = Angle(0,90,0), },
+        default_console = { ang = Angle(0,90,0), pos = Vector(0,0,-0.1) },
         --default_neon = {},
         --default_rotor_base = {},
         default_side_details1 = {},
@@ -298,9 +298,54 @@ T.Interior = {
         default_thick_lever = "shields",
     },
 
-    TipSettings = {},
-    CustomTips = {},
-	PartTips = {},
+    TipSettings = {
+        view_range_min = 40,
+        view_range_max = 75,
+    },
+
+    PartTips = {
+        default_throttle = {pos = Vector(44.891, 14.683, 132.679), right = false, down = true, },
+        default_handbrake = {pos = Vector(46.248, -16.804, 131.436), right = true, down = true, },
+        default_side_lever1 = {pos = Vector(103.41, 121.655, 130.044), right = true, down = false, },
+        default_side_lever2 = {pos = Vector(-59.115, -151.548, 126.17), right = true, down = false, },
+        default_telepathic = {pos = Vector(19.919, 35.908, 130.754), right = true, down = false, },
+        default_console_scanner = {pos = Vector(-24.497, 34.429, 130.864), right = false, down = false, },
+        default_keyboard = {pos = Vector(20.96, -43.773, 128.294), right = true, down = false, },
+        default_crank4 = {pos = Vector(-34.917, -29.135, 132.425), right = true, down = true, },
+        default_toggles = {pos = Vector(39.523, 0.016, 133.705), right = true, down = false, },
+        default_buttons = {pos = Vector(10.193, -49.502, 128.582), right = true, down = true,  },
+        default_switch2 = {pos = Vector(-35.645, 12.629, 135.094), right = true, down = true,  },
+        default_switch = {pos = Vector(-45.646, -17.836, 130.267), right = true, down = true,  },
+        default_thick_lever = {pos = Vector(-36.787, -13.688, 134.195), right = true, down = false, },
+        default_crank = {pos = Vector(30.237, -28.123, 132.312), right = true, down = true,  },
+        default_crank2 = {pos = Vector(-9.156, -47.859, 130.481), right = true, down = true, },
+        default_crank3 = {pos = Vector(-6.948, -30.268, 137.647), right = false, down = false, },
+        default_crank5 = {pos = Vector(-24.084, 21.564, 136.681), right = false, down = false, },
+        default_crank6 = {pos = Vector(-6.901, 31.399, 136.842), right = false, down = false, },
+        default_spin_switch = {pos = Vector(33.531, -25.783, 132.247), right = true, down = false,  },
+        default_tumblers = {pos = Vector(35.573, -11.599, 134.216), right = true, down = false, },
+        default_button_1 = {pos = Vector(39.263, -4.64, 132.233), right = false, down = false, },
+        default_button_2 = {pos = Vector(39.263, 4.64, 132.233), right = true, down = false, },
+        default_handle2 = {pos = Vector(-33.066, 10.939, 137.381), right = true, down = false, },
+        default_handle1 = {pos = Vector(-32.921, -10.81, 137.31), right = false, down = false, },
+        default_red_flick_switch = {pos = Vector(47.918, 20.722, 129.642), right = true, down = true, },
+        default_bouncy_lever = {pos = Vector(37.33, 12.944, 133.946), right = true, down = false, },
+        default_red_lever_1 = {pos = Vector(-44.239, -12.951, 131.572), right = true, down = false, },
+        default_red_lever_2 = {pos = Vector(-44.051, 14.102, 131.376), right = false, down = false, },
+        default_fiddle1 = {pos = Vector(-48.039, 20.423, 128.479), right = false, down = true, },
+        default_spin_a_2 = {pos = Vector(-49.221, 4.594, 129.101), right = true, down = true, },
+        default_spin_b_3 = {pos = Vector(-32.958, 36.406, 129.314), right = true, down = true, },
+        default_spin_b_2 = {pos = Vector(-15.003, 46.519, 128.838), right = true, down = true, },
+        default_spin_crank = {pos = Vector(-40.013, -31.619, 130.98), right = false, down = true, },
+        default_key = {pos = Vector(-23.59, -20.837, 137.406), right = true, down = false, },
+    },
+
+    CustomTips = {
+        {pos = Vector(-36.982, -151.084, 128.849), down = true, right = false, part = "default_side_speakers", },
+        {pos = Vector(-106.793, -119.792, 123.778), down = true, right = true, part = "default_side_speakers", },
+        {pos = Vector(88.949, 132.435, 125.284), down = true, right = true, part = "default_side_speakers", },
+        {pos = Vector(139.173, 77.856, 125.267), down = true, right = true, part = "default_side_speakers", },
+    },
 }
 
 T.Exterior = {
