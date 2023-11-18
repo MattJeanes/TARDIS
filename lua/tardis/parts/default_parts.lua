@@ -116,7 +116,7 @@ TARDIS:AddPart(PART)
 
 local PART={}
 PART.ID = "default_corridors_minimal"
-PART.Model = "models/molda/toyota_int/corridor_version3.mdl"
+PART.Model = "models/molda/toyota_int/corridor_version_3.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 TARDIS:AddPart(PART)
