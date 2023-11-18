@@ -5,53 +5,8 @@ PART.Model = "models/molda/toyota_int/monitor.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 PART.Animate = true
-
 PART.poses_flip = { 0.5, 1, 0.5, 0, }
 PART.poses_down = { 0.5, 0, 1, }
-
-PART.AnimateOptions = {
-    Type = "custom",
-    PoseParameter = "Bone",
-    Speed = 0.3,
-    CustomAnimationFunc = function(self, anim)
-        local target = self:GetData(self.data_rotation,0)
-
-        local to_target = math.abs(anim.pos - target)
-        local through_min = anim.pos + math.abs(1 - target)
-        local through_max = math.abs(1 - anim.pos) + target
-
-        local min_path = math.min(to_target, through_min, through_max)
-
-        if min_path == to_target then
-            TARDIS.DoPartAnimation(self, true, anim, target, false)
-        elseif min_path == through_min then
-            TARDIS.DoPartAnimation(self, true, anim, 0, true)
-        else
-            TARDIS.DoPartAnimation(self, true, anim, 1, true)
-        end
-    end,
-}
-
-PART.ExtraAnimations = {
-    {
-        Type = "custom",
-        PoseParameter = "arm",
-        StartPos = 0.5,
-        CustomAnimationFunc = function(self, anim)
-            local target = self:GetData(self.data_down_pos, 0.5)
-            TARDIS.DoPartAnimation(self, true, anim, target, false)
-        end,
-    },
-    {
-        Type = "custom",
-        PoseParameter = "flip",
-        StartPos = 0.5,
-        CustomAnimationFunc = function(self, anim)
-            local target = self:GetData(self.data_flip_pos, 0.5)
-            TARDIS.DoPartAnimation(self, true, anim, target, false)
-        end,
-    },
-}
 
 function PART:Initialize(ply)
     self.data_flip = self.ID .. "_flip"
@@ -62,10 +17,23 @@ function PART:Initialize(ply)
     self.data_rotation = self.ID .. "_rotation"
     self.data_rotated_by = self.ID .. "_rotated_by"
 
+    self.data_other_rotation = self.OtherID .. "_rotation"
+
     self.handles_part_id = self.ID .. "_handles"
     self.collision_part_id = self.ID .. "_collision"
 
     self:SetBodygroup(0, 2)
+end
+
+function PART:GetOther()
+    return self.interior:GetPart(self.OtherID)
+end
+
+function PART:GetOtherRotation()
+    local r = self:GetData(self.data_other_rotation, 0)
+    r = r + 0.5
+    r = (r > 1) and (r - 1) or r
+    return r
 end
 
 local function trace_console_angle(int, ply)
@@ -90,7 +58,7 @@ local function trace_console_angle(int, ply)
     return ang.y, point.z
 end
 
-local function select_monitor_pos(ply, part)
+local function trace_monitor_pos(ply, part)
     local ang_y, down = trace_console_angle(part.interior, ply)
     if not ang_y then return end
 
@@ -98,6 +66,20 @@ local function select_monitor_pos(ply, part)
     local down = 1 - (down - 140) / 25
 
     return rotation, down
+end
+
+local function rotations_colliding (r1, r2)
+    local border = 0.11
+    if math.abs(r1 - r2) < border then
+        return true
+    end
+    if r1 + math.abs(1 - r2) < border then
+        return true
+    end
+    if r2 + math.abs(1 - r1) < border then
+        return true
+    end
+    return false
 end
 
 -- returns (static, vertical)
@@ -113,6 +95,55 @@ function PART:GetMonitorState()
     end
 
     return false, (self:GetData(self.data_flip_pos, 0.5) ~= 0.5)
+end
+
+function PART:ChangePosition(rotation, down)
+    local other_r = self:GetOtherRotation()
+
+    if not rotations_colliding(rotation, other_r) then
+        --tardisdebug(rotation, other_r)
+        self:SetData(self.data_rotation, rotation, SERVER)
+    end
+
+    self:SetData(self.data_down_pos, down, SERVER)
+
+    if SERVER then
+        self:UpdateCollision()
+    end
+end
+
+function PART:GetPosition()
+    local rotation = self:GetData(self.data_rotation, 0)
+    local down = self:GetData(self.data_down_pos, 0.5)
+    return rotation, down
+end
+
+function PART:AnimateRotation(anim)
+    local target = self:GetData(self.data_rotation,0)
+
+    local to_target = math.abs(anim.pos - target)
+    local through_min = anim.pos + math.abs(1 - target)
+    local through_max = math.abs(1 - anim.pos) + target
+
+    local min_path = math.min(to_target, through_min, through_max)
+
+    if min_path == to_target then
+        TARDIS.DoPartAnimation(self, true, anim, target, false)
+    elseif min_path == through_min then
+        TARDIS.DoPartAnimation(self, true, anim, 0, true)
+    else
+        TARDIS.DoPartAnimation(self, true, anim, 1, true)
+    end
+end
+
+function PART:AnimateDownMovement(anim)
+    local target = self:GetData(self.data_down_pos, 0.5)
+    TARDIS.DoPartAnimation(self, true, anim, target, false)
+end
+
+function PART:AnimateFlip(anim)
+    local target = self:GetData(self.data_flip_pos, 0.5)
+    TARDIS.DoPartAnimation(self, true, anim, target, false)
 end
 
 if SERVER then
@@ -143,24 +174,17 @@ if SERVER then
     function PART:UpdateCollision()
         local handles_part = self.interior:GetPart(self.handles_part_id)
         local collision_part = self.interior:GetPart(self.collision_part_id)
-        local yaw = self:GetData(self.data_rotation, 0)
-        local down = self:GetData(self.data_down_pos, 0.5)
+        local rotation, down = self:GetPosition()
 
         if IsValid(handles_part) then
-            handles_part:ApplyRotation(yaw)
+            handles_part:ApplyRotation(rotation)
             handles_part:ApplyVerticalPos(down)
         end
 
         if IsValid(collision_part) then
-            collision_part:ApplyRotation(yaw)
+            collision_part:ApplyRotation(rotation)
             collision_part:ApplyVerticalPos(down)
         end
-    end
-
-    function PART:UpdatePosition(rotation, down)
-        self:SetData(self.data_rotation, rotation, true)
-        self:SetData(self.data_down_pos, down, true)
-        self:UpdateCollision()
     end
 
     util.AddNetworkString("TARDIS_DefaultMonitorsRequestUpdate")
@@ -171,14 +195,13 @@ if SERVER then
 
         if not ply:KeyDown(IN_USE) then
             self:RotateToEyePos(nil)
-            local rotation, down = select_monitor_pos(ply, self)
+            local rotation, down = trace_monitor_pos(ply, self)
             if rotation then
-                self:UpdatePosition(rotation, down)
-            else
-                net.Start("TARDIS_DefaultMonitorsRequestUpdate")
-                    net.WriteEntity(self)
-                net.Send(ply)
+                self:ChangePosition(rotation, down)
             end
+            net.Start("TARDIS_DefaultMonitorsRequestUpdate")
+                net.WriteEntity(self)
+            net.Send(ply)
             return
         end
     end
@@ -191,7 +214,7 @@ if SERVER then
 
         if not rotation or not down then return end
 
-        part:UpdatePosition(rotation, down)
+        part:ChangePosition(rotation, down)
     end)
 
     function PART:OnBodygroupChanged(bodygroup, value)
@@ -208,8 +231,7 @@ if SERVER then
     end
 else
     function PART:UpdateServerPos()
-        local rotation = self:GetData(self.data_rotation)
-        local down = self:GetData(self.data_down_pos)
+        local rotation, down = self:GetPosition()
         if not rotation or not down then return end
 
         net.Start("TARDIS_DefaultMonitorsUpdate")
@@ -230,19 +252,43 @@ else
         local ply = self:GetData(self.data_rotated_by)
         if ply ~= LocalPlayer() then return end
 
-        local rotation, down = select_monitor_pos(ply, self)
+        local rotation, down = trace_monitor_pos(ply, self)
 
         if rotation then
-            self:SetData(self.data_rotation, rotation)
-            self:SetData(self.data_down_pos, down)
+            self:ChangePosition(rotation, down)
         end
     end
 end
 
+
+PART.AnimateOptions = {
+    Type = "custom",
+    PoseParameter = "Bone",
+    Speed = 0.3,
+    CustomAnimationFunc = PART.AnimateRotation,
+}
+
+PART.ExtraAnimations = {
+    down = {
+        Type = "custom",
+        PoseParameter = "arm",
+        StartPos = 0.5,
+        CustomAnimationFunc = PART.AnimateDownMovement,
+    },
+    flip = {
+        Type = "custom",
+        PoseParameter = "flip",
+        StartPos = 0.5,
+        CustomAnimationFunc = PART.AnimateFlip,
+    },
+}
+
 PART.ID = "default_monitor_1"
+PART.OtherID = "default_monitor_2"
 TARDIS:AddPart(PART)
 
 PART.ID = "default_monitor_2"
+PART.OtherID = "default_monitor_1"
 TARDIS:AddPart(PART)
 
 
