@@ -95,8 +95,6 @@ T.Interior = {
         default_floor = {},
         default_entry = {},
         default_walls = {},
-        default_setroof = {},
-        default_roof = {},
         default_pillars = {},
         default_rings = {},
         default_side_panels = {},
@@ -245,6 +243,9 @@ T.Interior = {
 
         default_rotor_ring = {},
         default_rotor = {},
+
+        default_setroof = {},
+        default_roof = {},
     },
     Controls = {
         default_throttle  = "teleport_double",
