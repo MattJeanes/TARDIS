@@ -105,11 +105,11 @@ PART.SoundOff = "p00gie/tardis/default/keyboard_2015.ogg"
 PART.SoundNoPower = "p00gie/tardis/default/keyboard.ogg"
 
 if SERVER then
-	function PART:Use(ply)
-		self.interior:Timer("default_keyboard", 1, function()
-			TARDIS:Control(self.Control, ply)
-		end)
-	end
+    function PART:Use(ply)
+        self.interior:Timer("default_keyboard", 1, function()
+            TARDIS:Control(self.Control, ply)
+        end)
+    end
 end
 
 TARDIS:AddPart(PART)
@@ -449,11 +449,11 @@ PART.Collision = true
 PART.Animate = true
 PART.Sound = "p00gie/tardis/default/levers.ogg"
 if SERVER then
-	function PART:Use(ply)
-		if not self:GetOn() then
-			self:SetCollide(false, true)
-		end
-	end
+    function PART:Use(ply)
+        if not self:GetOn() then
+            self:SetCollide(false, true)
+        end
+    end
 end
 TARDIS:AddPart(PART)
 
@@ -466,19 +466,19 @@ PART.Animate = true
 PART.AnimateSpeed = 6
 PART.Sound = "p00gie/tardis/default/switch.ogg"
 if SERVER then
-	function PART:Use(ply)
-		local cover = self.interior:GetPart("default_red_flick_cover")
-		if not IsValid(cover) then return end
+    function PART:Use(ply)
+        local cover = self.interior:GetPart("default_red_flick_cover")
+        if not IsValid(cover) then return end
 
-		if cover:GetOn() then
-			TARDIS:Control(self.Control, ply)
-			self.interior:Timer("default_redflickswitch_cover", 0.3, function()
-				cover:SetOn(false)
-				cover:SetPoseParameter("switch", 0)
-				cover:SetCollide(true)
-			end)
-		end
-	end
+        if cover:GetOn() then
+            TARDIS:Control(self.Control, ply)
+            self.interior:Timer("default_redflickswitch_cover", 0.3, function()
+                cover:SetOn(false)
+                cover:SetPoseParameter("switch", 0)
+                cover:SetCollide(true)
+            end)
+        end
+    end
 end
 TARDIS:AddPart(PART)
 

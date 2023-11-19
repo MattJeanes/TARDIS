@@ -55,7 +55,7 @@ if SERVER then
                     return 1
                 end
             else
-                if handbrake and self:SetHandbrake(false) then 
+                if handbrake and self:SetHandbrake(false) then
                     return 1
                 end
             end

@@ -21,7 +21,7 @@ function ENT:Initialize()
     self.Radius = 1000
     self.EntMaxHealth = 100
     self.EntHealth = self.EntMaxHealth
-    
+
 
     if phys:IsValid() then
         phys:Wake()
@@ -33,7 +33,7 @@ function ENT:Initialize()
 
         WireLib.CreateSpecialInputs( self,inNames,inTypes)
         Wire_CreateOutputs(self,{"Active","Radius","Health"})
-        
+
         Wire_TriggerOutput(self,"Radius",self.Radius)
         Wire_TriggerOutput(self,"Health",self.EntHealth)
     end
@@ -58,7 +58,7 @@ end
 function ENT:Repair(repair)
     if self.EntHealth >= 0 then
         local hp = self.EntHealth + repair
-        
+
         if self.Broken == true and hp >= 0 then
             self:SetColor(Color(255, 255, 255, self:GetColor().a))
             self.Broken = false
@@ -107,7 +107,7 @@ function ENT:TurnOn(active)
     elseif self.On == true then
         self.FlyTime = nil
         self.ArtronTick = nil
-        
+
         self.On = false
         self:SetEnabled(false)
         self:TriggerWire("Active",0)
@@ -164,7 +164,7 @@ function ENT:Think()
 
         sound.Play("drmatt/tardis/power_on.wav", self:GetPos())
     end
-    
+
     if self.ArtronTick ~= nil and CurTime() - self.ArtronTick > 3 then
         self.ArtronTick = CurTime()
         for i,v in ipairs(ents.FindByClass("gmod_tardis")) do
@@ -203,11 +203,11 @@ function ENT:OnTakeDamage(damage)
     if self.Broken then return end
 
     local dmg = damage:GetDamage()
-    
+
     self.EntHealth = math.Clamp(self.EntHealth - dmg,0,self.EntMaxHealth)
 
     self:TriggerWire("Health",self.EntHealth)
-    
+
     if self.EntHealth <= 0 then
         self:Break()
     end
