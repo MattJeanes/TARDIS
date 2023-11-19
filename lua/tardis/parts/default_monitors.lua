@@ -218,6 +218,7 @@ if SERVER then
     end)
 
     function PART:OnBodygroupChanged(bodygroup, value)
+        if not IsValid(self.interior) then return end
         local ring = self.interior:GetPart("default_rotor_ring")
         if not IsValid(ring) then return end
 
