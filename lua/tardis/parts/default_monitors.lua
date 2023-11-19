@@ -219,13 +219,19 @@ if SERVER then
 
     function PART:OnBodygroupChanged(bodygroup, value)
         if not IsValid(self.interior) then return end
-        local ring = self.interior:GetPart("default_rotor_ring")
-        if not IsValid(ring) then return end
 
-        if bodygroup == 0 and value == 0 then
-            ring:SetBodygroup(0,0)
-        else
-            ring:SetBodygroup(0,1)
+        local other = self:GetOther()
+        if IsValid(other) and other:GetBodygroup(bodygroup) ~= value then
+            other:SetBodygroup(bodygroup, value)
+        end
+
+        local ring = self.interior:GetPart("default_rotor_ring")
+        if IsValid(ring) then
+            if bodygroup == 0 and value == 0 then
+                ring:SetBodygroup(0,0)
+            else
+                ring:SetBodygroup(0,1)
+            end
         end
 
         self:UpdateCollision()
