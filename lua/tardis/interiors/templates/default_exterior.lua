@@ -4,7 +4,7 @@ local E = {
     Base = "base",
     Category = "Exteriors.Categories.PoliceBoxes",
 
-    Model="models/vtalanov98/toyota_ext/exterior.mdl",
+    Model="models/molda/toyota_ext/exterior.mdl",
     Mass=2900,
     DoorAnimationTime = 0.6,
 
