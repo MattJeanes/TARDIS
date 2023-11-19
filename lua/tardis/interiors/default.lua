@@ -239,10 +239,6 @@ T.Interior = {
         default_side_toggles_1 = {},
         default_side_toggles_2 = { ang = Angle(0,160,0), },
 
-        --default_monitor = {},
-        --default_monitor_2012 = {},
-        --default_monitor_2015 = {},
-
         default_top_doors_1 = { pos = Vector(-346.742, 125.858, 160.575), ang = Angle(0,70,0), },
         default_top_doors_2 = { pos = Vector(-346.742, -125.858, 160.575), ang = Angle(0,110,0), },
 

@@ -221,32 +221,6 @@ PART.AnimateOptions = {
 }
 TARDIS:AddPart(PART)
 
-
---local PART = {}
---PART.ID = "default_monitor"
---PART.Model = "models/cem/toyota_contr/monitor.mdl"
---PART.AutoSetup = true
---PART.Collision = true
---PART.Animate = true
---TARDIS:AddPart(PART)
---
---local PART = {}
---PART.ID = "default_monitor_2012"
---PART.Model = "models/cem/toyota_contr/monitor_2012.mdl"
---PART.AutoSetup = true
---PART.Collision = true
---PART.Animate = true
---TARDIS:AddPart(PART)
---
---local PART = {}
---PART.ID = "default_monitor_2015"
---PART.Model = "models/cem/toyota_contr/monitor_2015.mdl"
---PART.AutoSetup = true
---PART.Collision = true
---PART.Animate = true
---TARDIS:AddPart(PART)
-
-
 local PART={}
 PART.ID = "default_intdoors"
 PART.Model = "models/molda/toyota_int/slidedoors2.mdl"
