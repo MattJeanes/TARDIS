@@ -51,6 +51,13 @@ TARDIS:AddInteriorTemplate("default_lamps", {
 			basebrightness = 0.01,
 			parts = {
 				default_rings = 0.05,
+				default_corridors = 0.05,
+				default_intdoors = 0.05,
+				default_intdoors_static = 0.05,
+				default_corridor_doors_static = 0.05,
+			},
+			parts_nopower = {
+				default_rings = 0.001,
 			},
 		},
 		Lamps = generate_lamps(5, 0.6, 165),
@@ -215,6 +222,24 @@ TARDIS:AddInteriorTemplate("default_color_update", {
 					set_interior_color(int, k)
 				end
 			end,
+		},
+	},
+})
+
+
+TARDIS:AddInteriorTemplate("default_small_version", {
+	Interior = {
+		ExitDistance = 600,
+		Parts = {
+			default_rotor = {
+				model = "models/molda/toyota_int/rotor_small.mdl",
+			},
+			default_intdoors = false,
+			default_intdoors_static = { pos = Vector(73.559, -417.853, 47.506), ang = Angle(0,10,0), },
+			default_corridor_doors_static = { pos = Vector(-475.5, 213, 160.8) },
+			default_corridors = {
+				model = "models/molda/toyota_int/corridor_version3.mdl"
+			},
 		},
 	},
 })

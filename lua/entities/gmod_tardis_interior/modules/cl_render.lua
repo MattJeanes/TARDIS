@@ -12,8 +12,10 @@ local function predraw_o(self, part)
     local br = power and lo.basebrightness or lo.nopowerbrightness
     local col = power and lo.basebrightnessRGB or lo.nopowerbrightnessRGB
 
-    if part and lo.parts and lo.parts[part.ID] then
-        local part_br = lo.parts[part.ID]
+    local parts_table = power and lo.parts or lo.parts_nopower
+
+    if part and parts_table and parts_table[part.ID] then
+        local part_br = parts_table[part.ID]
         if istable(part_br) then
             render.ResetModelLighting(part_br[1], part_br[2], part_br[3])
         else

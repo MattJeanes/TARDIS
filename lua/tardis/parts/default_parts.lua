@@ -95,20 +95,6 @@ PART.Collision = true
 TARDIS:AddPart(PART)
 
 local PART={}
-PART.ID = "default_corridors_minimal"
-PART.Model = "models/molda/toyota_int/corridor_version_3.mdl"
-PART.AutoSetup = true
-PART.Collision = true
-TARDIS:AddPart(PART)
-
-local PART={}
-PART.ID = "default_corridors_small"
-PART.Model = "models/molda/toyota_int/corridor_version2.mdl"
-PART.AutoSetup = true
-PART.Collision = true
-TARDIS:AddPart(PART)
-
-local PART={}
 PART.ID = "default_side_details1"
 PART.Model = "models/molda/toyota_int/side_details1.mdl"
 PART.AutoSetup = true
@@ -215,7 +201,7 @@ TARDIS:AddPart(PART)
 
 local PART={}
 PART.ID = "default_rotor"
-PART.Model = "models/molda/toyota_int/rotor_small.mdl"
+PART.Model = "models/molda/toyota_int/rotor.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 PART.UseTransparencyFix = true
@@ -244,4 +230,11 @@ PART.ExtraAnimations = {
     }
 }
 
+TARDIS:AddPart(PART)
+
+local PART={}
+PART.ID = "default_corridors"
+PART.Model = "models/molda/toyota_int/corridor_version2.mdl"
+PART.AutoSetup = true
+PART.Collision = true
 TARDIS:AddPart(PART)

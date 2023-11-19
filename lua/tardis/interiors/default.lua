@@ -7,7 +7,7 @@ T.ID = "default"
 T.Interior = {
 
     Model="models/molda/toyota_int/interior.mdl",
-    ExitDistance=600,
+    ExitDistance = 1450,
 
     LightOverride = {
         basebrightness = 0.05,
@@ -101,16 +101,16 @@ T.Interior = {
             angoffset=Angle(0,180,0),
         },
         default_doorframe = {},
-        default_doorframe_light = {},
+        --default_doorframe_light = {},
         default_floor = {},
         default_entry = {},
         default_walls = {},
+        default_roof = {},
         default_pillars = {},
         default_rings = {},
         default_side_panels = {},
         default_chairs = {},
         default_casing = {},
-        default_corridors_minimal = { ang = Angle(0,90,0), },
         default_console = { ang = Angle(0,90,0), pos = Vector(0,0,-0.1) },
         default_side_details1 = {},
         default_side_details2 = {},
@@ -243,14 +243,11 @@ T.Interior = {
         default_monitor_2 = { ang = Angle(0,60,0), },
         default_monitor_2_handles = { ang = Angle(0,150,0), },
         default_monitor_2_collision = { ang = Angle(0,150,0), },
-
         default_rotor_ring = {},
+
         default_rotor = {},
-
-        default_roof = {},
-
-        default_intdoors_static = { pos = Vector(73.559, -417.853, 47.506), ang = Angle(0,10,0), },
-        default_corridor_doors_static = { pos = Vector(-475.5, 213, 160.8) },
+        default_corridors = { ang = Angle(0,90,0), },
+        default_intdoors = { pos = Vector(73.559, -417.853, 47.506), ang = Angle(0,10,0), },
     },
 
     Controls = {
@@ -411,6 +408,11 @@ T.CustomSettings = {
             ["few"] = "Interiors.Default.CustomSettings.Lamps.Few",
             ["many"] = "Interiors.Default.CustomSettings.Lamps.Many",
         },
+    },
+    small_version = {
+        text = "Interiors.Default.CustomSettings.SmallVersion",
+        value_type = "bool",
+        value = false,
     }
 }
 
@@ -443,6 +445,13 @@ T.Templates = {
         end,
     },
     default_color_update = {},
+
+    default_small_version = {
+        override = true,
+        condition = function(id, ply, ent)
+            return TARDIS:GetCustomSetting(id, "small_version", ply)
+        end,
+    },
 }
 T.TemplatesMergeOrder = {
     "default_lamps",

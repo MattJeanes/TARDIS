@@ -318,6 +318,7 @@ T.Phrases = {
     ["Interiors.Default.CustomSettings.Lamps.Few"] = "Few (optimal for performance)",
     ["Interiors.Default.CustomSettings.Lamps.Many"] = "Many (best visuals)",
     ["Interiors.Default.CustomSettings.Lamps.Off"] = "Disabled",
+    ["Interiors.Default.CustomSettings.SmallVersion"] = "Small interior (less corridors)",
     ["Interiors.Default.Versions.SIDRAT"] = "SIDRAT Exterior",
     ["Interiors.Default.Versions.TTCapsuleType40"] = "TT Capsule Type 40 Exterior",
     ["Interiors.Default.Versions.TTCapsuleType50"] = "TT Capsule Type 50 Exterior",
