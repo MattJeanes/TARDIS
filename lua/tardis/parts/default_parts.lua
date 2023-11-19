@@ -39,12 +39,6 @@ PART.Collision = true
 TARDIS:AddPart(PART)
 
 local PART={}
-PART.ID = "default_setroof"
-PART.Model = "models/molda/toyota_int/setroof.mdl"
-PART.AutoSetup = true
-TARDIS:AddPart(PART)
-
-local PART={}
 PART.ID = "default_roof"
 PART.Model = "models/molda/toyota_int/roof.mdl"
 PART.AutoSetup = true
@@ -100,20 +94,6 @@ PART.AutoSetup = true
 PART.Collision = true
 TARDIS:AddPart(PART)
 
---local PART={}
---PART.ID = "default_corridors1"
---PART.Model = "models/molda/toyota_int/corridors1.mdl"
---PART.AutoSetup = true
---PART.Collision = true
---TARDIS:AddPart(PART)
---
---local PART={}
---PART.ID = "default_corridors2"
---PART.Model = "models/molda/toyota_int/corridors2.mdl"
---PART.AutoSetup = true
---PART.Collision = true
---TARDIS:AddPart(PART)
-
 local PART={}
 PART.ID = "default_corridors_minimal"
 PART.Model = "models/molda/toyota_int/corridor_version_3.mdl"
@@ -129,19 +109,6 @@ PART.Collision = true
 TARDIS:AddPart(PART)
 
 local PART={}
-PART.ID = "default_neon"
-PART.Model = "models/molda/toyota_int/neon_cyan.mdl"
-PART.AutoSetup = true
-PART.Collision = true
-TARDIS:AddPart(PART)
-
-local PART={}
-PART.ID = "default_rotor_base"
-PART.Model = "models/molda/toyota_int/rotor_base_smith.mdl"
-PART.AutoSetup = true
-TARDIS:AddPart(PART)
-
-local PART={}
 PART.ID = "default_side_details1"
 PART.Model = "models/molda/toyota_int/side_details1.mdl"
 PART.AutoSetup = true
@@ -151,21 +118,6 @@ local PART={}
 PART.ID = "default_side_details2"
 PART.Model = "models/molda/toyota_int/side_details2.mdl"
 PART.AutoSetup = true
-TARDIS:AddPart(PART)
-
-local PART={}
-PART.ID = "default_pistons"
-PART.Model = "models/molda/toyota_int/pistons.mdl"
-PART.AutoSetup = true
-PART.UseTransparencyFix = true
-PART.Animate = true
-PART.ClientThinkOverride = true
-PART.AnimateOptions = {
-    Type = "travel",
-    Speed = 0.5,
-    ReturnAfterStop = true,
-    NoPowerFreeze = true,
-}
 TARDIS:AddPart(PART)
 
 local PART={}
@@ -190,22 +142,6 @@ local PART={}
 PART.ID = "default_bulbs"
 PART.Model = "models/molda/toyota_int/bulbs.mdl"
 PART.AutoSetup = true
-TARDIS:AddPart(PART)
-
-local PART={}
-PART.ID = "default_transparent_parts"
-PART.Model = "models/molda/toyota_int/transparent.mdl"
-PART.AutoSetup = true
-PART.Collision = true
-PART.UseTransparencyFix = true
-PART.ClientThinkOverride = true
-PART.Animate = true
-PART.AnimateOptions = {
-    Type = "travel",
-    Speed = 0.075,
-    ReturnAfterStop = false,
-    NoPowerFreeze = true,
-}
 TARDIS:AddPart(PART)
 
 local PART={}

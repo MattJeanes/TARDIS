@@ -110,12 +110,6 @@ T.Interior = {
         default_side_panels = {},
         default_chairs = {},
         default_casing = {},
-        --default_corridors1 = {},
-        --default_corridors2 = {},
-        --default_neon = {},
-        --default_rotor_base = {},
-        --default_pistons = {},
-        --default_transparent_parts = {},
         default_corridors_minimal = { ang = Angle(0,90,0), },
         default_console = { ang = Angle(0,90,0), pos = Vector(0,0,-0.1) },
         default_side_details1 = {},
@@ -253,7 +247,6 @@ T.Interior = {
         default_rotor_ring = {},
         default_rotor = {},
 
-        --default_setroof = {},
         default_roof = {},
 
         default_intdoors_static = { pos = Vector(73.559, -417.853, 47.506), ang = Angle(0,10,0), },
