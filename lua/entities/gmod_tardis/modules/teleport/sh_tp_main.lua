@@ -390,18 +390,19 @@ function ENT:SetStepDelay()
     local demat=self:GetData("demat")
     local fast=self:GetFastRemat()
     local mat=self:GetData("mat")
+    local hads=self:GetData("hads-triggered")
     if not (demat or mat) then return end
 
     local teleport_md = self.metadata.Exterior.Teleport
     local sequence_delays
-    if demat then
+    if demat and not hads then
         if fast then
             sequence_delays = teleport_md.DematFastSequenceDelays
         else
             sequence_delays = teleport_md.DematSequenceDelays
         end
     else
-        if fast then
+        if fast and not hads then
             sequence_delays = teleport_md.MatFastSequenceDelays
         else
             sequence_delays = teleport_md.MatSequenceDelays
