@@ -160,7 +160,9 @@ if SERVER then
             self.interior:Timer(self.ID, 5, function(int)
                 self:SetOn(false)
                 self:SetCollide(true)
-                if self.Sound then
+                if self.SoundOff then
+                    self:EmitSound(self.SoundOff)
+                elseif self.Sound then
                     self:EmitSound(self.Sound)
                 end
             end)
@@ -170,7 +172,6 @@ if SERVER then
     end
 end
 
-PART.ID = "default_intdoors"
 TARDIS:AddPart(PART)
 
 PART.Model = "models/molda/toyota_int/slidedoors3.mdl"
@@ -179,9 +180,12 @@ TARDIS:AddPart(PART)
 
 PART.ID = "default_top_doors_1"
 PART.Model = "models/molda/toyota_int/slidedoors1.mdl"
-PART.Sound = "p00gie/tardis/default/intdoors_open.ogg"
-PART.AnimateSpeed = 0.5
+PART.Sound = nil
+PART.SoundOn = "p00gie/tardis/default/topdoor_open.ogg"
+PART.SoundOff = "p00gie/tardis/default/topdoor_close.ogg"
+PART.AnimateSpeed = 0.6
 TARDIS:AddPart(PART)
+
 
 PART.ID = "default_top_doors_2"
 TARDIS:AddPart(PART)
@@ -189,7 +193,9 @@ TARDIS:AddPart(PART)
 PART.Use = nil
 PART.Animate = false
 PART.AnimateSpeed = nil
-PART.Sound = nil
+PART.SoundOn = nil
+PART.SoundOff = nil
+PART.SoundPos = nil
 
 PART.ID = "default_intdoors_static"
 PART.Model = "models/molda/toyota_int/slidedoors2.mdl"
