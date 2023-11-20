@@ -394,14 +394,16 @@ function ENT:SetStepDelay()
     if not (demat or mat) then return end
 
     local teleport_md = self.metadata.Exterior.Teleport
-    local sequence_delays = 0
-    if demat and not hads then
+    local sequence_delays
+    if hads then
+        sequence_delays = teleport_md.DematHadsSequenceDelays
+    elseif demat then
         if fast then
             sequence_delays = teleport_md.DematFastSequenceDelays
         else
             sequence_delays = teleport_md.DematSequenceDelays
         end
-    elseif not hads then
+    else
         if fast then
             sequence_delays = teleport_md.MatFastSequenceDelays
         else
