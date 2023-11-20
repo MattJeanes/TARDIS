@@ -146,6 +146,14 @@ function PART:AnimateFlip(anim)
     TARDIS.DoPartAnimation(self, true, anim, target, false)
 end
 
+function PART:CanMove()
+    return self:GetBodygroup(0) ~= 0
+end
+
+function PART:CanFlip()
+    return self:GetBodygroup(0) == 2
+end
+
 if SERVER then
     function PART:Use(ply)
         if ply:KeyDown(IN_WALK) then
@@ -154,21 +162,35 @@ if SERVER then
     end
 
     function PART:MoveDown()
+        if not self:CanMove() then return end
+
         local down_state = self:GetData(self.data_down, 1) % #self.poses_down
         self:SetData(self.data_down, down_state + 1, true)
         self:SetData(self.data_down_pos, self.poses_down[down_state + 1], true)
+        self:EmitSound("p00gie/tardis/default/monitor_move_down.ogg")
         self:UpdateCollision()
     end
 
     function PART:Flip()
+        if not self:CanFlip() then return end
+
         local flip_state = self:GetData(self.data_flip, 1) % #self.poses_flip
         self:SetData(self.data_flip, flip_state + 1, true)
         self:SetData(self.data_flip_pos, self.poses_flip[flip_state + 1], true)
+        self:EmitSound("p00gie/tardis/default/monitor_flip.ogg")
         self:UpdateCollision()
     end
 
     function PART:RotateToEyePos(ply)
+        if not self:CanMove() then return end
+
         self:SetData(self.data_rotated_by, ply, true)
+
+        if IsValid(ply) then
+            self:EmitSound("p00gie/tardis/default/monitor_hold.ogg")
+        else
+            self:EmitSound("p00gie/tardis/default/monitor_release.ogg")
+        end
     end
 
     function PART:UpdateCollision()
