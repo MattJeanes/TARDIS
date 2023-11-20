@@ -11,7 +11,7 @@ PART.AnimateOptions = {
     Type = "perpetual_use",
     Speed = 1.2,
     StopAnywhere = true,
-    SpeedOverrideFunc = function(a, target, do_reset)
+    SpeedOverrideFunc = function(self, a, target, do_reset)
         if do_reset and (a.pos < 0.2 or a.pos > 0.8) then
             return a.speed * 3
         end

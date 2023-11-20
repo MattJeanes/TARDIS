@@ -1,4 +1,5 @@
-local HIDE_COLLISIONS = true
+local HIDE_COLLISIONS = false
+
 
 local PART = {}
 PART.Model = "models/molda/toyota_int/monitor.mdl"
@@ -7,6 +8,9 @@ PART.Collision = true
 PART.Animate = true
 PART.poses_flip = { 0.5, 1, 0.5, 0, }
 PART.poses_down = { 0.5, 0, 1, }
+
+
+-- Initialize: set data names for each monitor
 
 function PART:Initialize(ply)
     self.data_flip = self.ID .. "_flip"
@@ -19,11 +23,14 @@ function PART:Initialize(ply)
 
     self.data_other_rotation = self.OtherID .. "_rotation"
 
-    self.handles_part_id = self.ID .. "_handles"
-    self.collision_part_id = self.ID .. "_collision"
+    self.handles_hitbox_id = self.ID .. "_hitbox_handles"
+    self.screen_hitbox_id = self.ID .. "_hitbox_screen"
+    self.static_hitbox_id = self.ID .. "_hitbox_static"
 
-    self:SetBodygroup(0, 2)
+    self:SetBodygroup(0, 1)
 end
+
+-- Getting other monitor and parts
 
 function PART:GetOther()
     return self.interior:GetPart(self.OtherID)
@@ -35,6 +42,78 @@ function PART:GetOtherRotation()
     r = (r > 1) and (r - 1) or r
     return r
 end
+
+function PART:GetHitboxScreen()
+    return self.interior:GetPart(self.screen_hitbox_id)
+end
+
+function PART:GetHitboxHandles()
+    return self.interior:GetPart(self.handles_hitbox_id)
+end
+
+function PART:GetHitboxStatic()
+    return self.interior:GetPart(self.static_hitbox_id)
+end
+
+
+-- Animation functions
+
+function PART:AnimateRotation(anim)
+    local target = self:GetData(self.data_rotation,0)
+
+    local to_target = math.abs(anim.pos - target)
+    local through_min = anim.pos + math.abs(1 - target)
+    local through_max = math.abs(1 - anim.pos) + target
+
+    local min_path = math.min(to_target, through_min, through_max)
+
+    if min_path == to_target then
+        TARDIS.DoPartAnimation(self, true, anim, target, false)
+    elseif min_path == through_min then
+        TARDIS.DoPartAnimation(self, true, anim, 0, true)
+    else
+        TARDIS.DoPartAnimation(self, true, anim, 1, true)
+    end
+end
+
+function PART:AnimateDownMovement(anim)
+    local target = self:GetData(self.data_down_pos, 0.5)
+    TARDIS.DoPartAnimation(self, true, anim, target, false)
+end
+
+function PART:AnimateFlip(anim)
+    local target = self:GetData(self.data_flip_pos, 0.5)
+    TARDIS.DoPartAnimation(self, true, anim, target, false)
+end
+
+
+-- Data / state functions
+
+function PART:IsStatic()
+    return self:GetBodygroup(0) == 0
+end
+
+function PART:IsVertical()
+    return self:GetBodygroup(0) == 1 and (self:GetData(self.data_flip_pos, 0.5) ~= 0.5)
+end
+
+function PART:CanMove()
+    return self:GetBodygroup(0) ~= 0
+end
+
+function PART:CanFlip()
+    return self:GetBodygroup(0) == 2
+end
+
+function PART:GetScreenPosition()
+    local matrix = self:GetBoneMatrix(4)
+    local pos = self.interior:WorldToLocal(matrix:GetTranslation())
+    local ang = matrix:GetAngles()
+    return pos, ang
+end
+
+
+-- Monitor position (all values between 0 and 1)
 
 local function trace_console_angle(int, ply)
     local origin = ply:EyePos()
@@ -68,6 +147,7 @@ local function trace_monitor_pos(ply, part)
     return rotation, down
 end
 
+
 local function rotations_colliding (r1, r2)
     local border = 0.11
     if math.abs(r1 - r2) < border then
@@ -82,34 +162,14 @@ local function rotations_colliding (r1, r2)
     return false
 end
 
--- returns (static, vertical)
-function PART:GetMonitorState()
-    local bg = self:GetBodygroup(0)
-
-    if bg == 0 then
-        return true, false
-    end
-
-    if bg == 1 then
-        return false, false
-    end
-
-    return false, (self:GetData(self.data_flip_pos, 0.5) ~= 0.5)
-end
-
 function PART:ChangePosition(rotation, down)
     local other_r = self:GetOtherRotation()
 
     if not rotations_colliding(rotation, other_r) then
-        --tardisdebug(rotation, other_r)
         self:SetData(self.data_rotation, rotation, SERVER)
     end
 
     self:SetData(self.data_down_pos, down, SERVER)
-
-    if SERVER then
-        self:UpdateCollision()
-    end
 end
 
 function PART:GetPosition()
@@ -118,41 +178,43 @@ function PART:GetPosition()
     return rotation, down
 end
 
-function PART:AnimateRotation(anim)
-    local target = self:GetData(self.data_rotation,0)
 
-    local to_target = math.abs(anim.pos - target)
-    local through_min = anim.pos + math.abs(1 - target)
-    local through_max = math.abs(1 - anim.pos) + target
+-- Hitbox part positions
 
-    local min_path = math.min(to_target, through_min, through_max)
+if SERVER then
+    function PART:UpdateHitboxCollision()
+        local static = self:IsStatic()
 
-    if min_path == to_target then
-        TARDIS.DoPartAnimation(self, true, anim, target, false)
-    elseif min_path == through_min then
-        TARDIS.DoPartAnimation(self, true, anim, 0, true)
-    else
-        TARDIS.DoPartAnimation(self, true, anim, 1, true)
+        local function do_collision(part, collide)
+            if not IsValid(part) then return end
+            if collide then
+                part:SetCollide(true)
+            else
+                part:SetCollide(false, true)
+            end
+        end
+
+        do_collision(self:GetHitboxHandles(), not static)
+        do_collision(self:GetHitboxScreen(), not static)
+        do_collision(self:GetHitboxStatic(), static)
+    end
+
+    function PART:MoveHitboxes(pos, ang)
+        local handles_hitbox = self:GetHitboxHandles()
+        local screen_hitbox = self:GetHitboxScreen()
+
+        if IsValid(handles_hitbox) then
+            handles_hitbox:Move(pos, ang)
+        end
+
+        if IsValid(screen_hitbox) then
+            screen_hitbox:Move(pos, ang)
+        end
     end
 end
 
-function PART:AnimateDownMovement(anim)
-    local target = self:GetData(self.data_down_pos, 0.5)
-    TARDIS.DoPartAnimation(self, true, anim, target, false)
-end
 
-function PART:AnimateFlip(anim)
-    local target = self:GetData(self.data_flip_pos, 0.5)
-    TARDIS.DoPartAnimation(self, true, anim, target, false)
-end
-
-function PART:CanMove()
-    return self:GetBodygroup(0) ~= 0
-end
-
-function PART:CanFlip()
-    return self:GetBodygroup(0) == 2
-end
+-- Actions
 
 if SERVER then
     function PART:Use(ply)
@@ -161,55 +223,44 @@ if SERVER then
         end
     end
 
-    function PART:MoveDown()
+    function PART:MoveDown(ply)
         if not self:CanMove() then return end
 
         local down_state = self:GetData(self.data_down, 1) % #self.poses_down
         self:SetData(self.data_down, down_state + 1, true)
         self:SetData(self.data_down_pos, self.poses_down[down_state + 1], true)
         self:EmitSound("p00gie/tardis/default/monitor_move_down.ogg")
-        self:UpdateCollision()
+
+        self:RequestHitboxUpdate(ply)
     end
 
-    function PART:Flip()
+    function PART:Flip(ply)
         if not self:CanFlip() then return end
 
         local flip_state = self:GetData(self.data_flip, 1) % #self.poses_flip
         self:SetData(self.data_flip, flip_state + 1, true)
         self:SetData(self.data_flip_pos, self.poses_flip[flip_state + 1], true)
         self:EmitSound("p00gie/tardis/default/monitor_flip.ogg")
-        self:UpdateCollision()
+        self:RequestHitboxUpdate(ply)
     end
 
     function PART:RotateToEyePos(ply)
+        local prev = self:GetData(self.data_rotated_by)
+
+        if not ply then
+            if IsValid(prev) then
+                self:EmitSound("p00gie/tardis/default/monitor_release.ogg")
+            end
+            self:SetData(self.data_rotated_by, nil, true)
+            return
+        end
+
         if not self:CanMove() then return end
+        if IsValid() then return end
 
         self:SetData(self.data_rotated_by, ply, true)
-
-        if IsValid(ply) then
-            self:EmitSound("p00gie/tardis/default/monitor_hold.ogg")
-        else
-            self:EmitSound("p00gie/tardis/default/monitor_release.ogg")
-        end
+        self:EmitSound("p00gie/tardis/default/monitor_hold.ogg")
     end
-
-    function PART:UpdateCollision()
-        local handles_part = self.interior:GetPart(self.handles_part_id)
-        local collision_part = self.interior:GetPart(self.collision_part_id)
-        local rotation, down = self:GetPosition()
-
-        if IsValid(handles_part) then
-            handles_part:ApplyRotation(rotation)
-            handles_part:ApplyVerticalPos(down)
-        end
-
-        if IsValid(collision_part) then
-            collision_part:ApplyRotation(rotation)
-            collision_part:ApplyVerticalPos(down)
-        end
-    end
-
-    util.AddNetworkString("TARDIS_DefaultMonitorsRequestUpdate")
 
     function PART:Think()
         local ply = self:GetData(self.data_rotated_by)
@@ -217,27 +268,16 @@ if SERVER then
 
         if not ply:KeyDown(IN_USE) then
             self:RotateToEyePos(nil)
-            local rotation, down = trace_monitor_pos(ply, self)
-            if rotation then
-                self:ChangePosition(rotation, down)
+
+            if self:CanMove() then
+                local rotation, down = trace_monitor_pos(ply, self)
+                if rotation then
+                    self:ChangePosition(rotation, down)
+                end
+                self:RequestFullUpdate(ply)
             end
-            net.Start("TARDIS_DefaultMonitorsRequestUpdate")
-                net.WriteEntity(self)
-            net.Send(ply)
-            return
         end
     end
-
-    util.AddNetworkString("TARDIS_DefaultMonitorsUpdate")
-
-    net.Receive("TARDIS_DefaultMonitorsUpdate", function(len,ply)
-        local part = net.ReadEntity()
-        local rotation, down = net.ReadFloat(), net.ReadFloat()
-
-        if not rotation or not down then return end
-
-        part:ChangePosition(rotation, down)
-    end)
 
     function PART:OnBodygroupChanged(bodygroup, value)
         if not IsValid(self.interior) then return end
@@ -256,28 +296,14 @@ if SERVER then
             end
         end
 
-        self:UpdateCollision()
+        self:UpdateHitboxCollision()
     end
 else
-    function PART:UpdateServerPos()
-        local rotation, down = self:GetPosition()
-        if not rotation or not down then return end
-
-        net.Start("TARDIS_DefaultMonitorsUpdate")
-            net.WriteEntity(self)
-            net.WriteFloat(rotation)
-            net.WriteFloat(down)
-        net.SendToServer()
-    end
-
-    net.Receive("TARDIS_DefaultMonitorsRequestUpdate", function(len,ply)
-        local part = net.ReadEntity()
-        if IsValid(part) then
-            part:UpdateServerPos()
-        end
-    end)
-
     function PART:Think()
+        if self.pending_update and not self:IsAnimationPlaying() then
+            self:SendMonitorsUpdate(self.pending_update_pos, self.pending_update_hitbox)
+        end
+
         local ply = self:GetData(self.data_rotated_by)
         if ply ~= LocalPlayer() then return end
 
@@ -287,7 +313,114 @@ else
             self:ChangePosition(rotation, down)
         end
     end
+
+    function PART:IsAnimationPlaying()
+        local a_rotate = self.animation
+        local a_down = self.extra_animations.down
+        local a_flip = self.extra_animations.flip
+
+        if a_rotate.pos ~= self:GetData(self.data_rotation,0) then
+            return true
+        end
+        if a_down.pos ~= self:GetData(self.data_down_pos, 0.5) then
+            return true
+        end
+        if a_flip.pos ~= self:GetData(self.data_flip_pos, 0.5) then
+            return true
+        end
+        return false
+    end
 end
+
+
+-- Networking
+
+
+if SERVER then
+    util.AddNetworkString("TARDIS_DefaultMonitorsRequestUpdate")
+    util.AddNetworkString("TARDIS_DefaultMonitorsUpdate")
+
+    function PART:RequestUpdate(update_pos, update_hitbox, ply)
+        net.Start("TARDIS_DefaultMonitorsRequestUpdate")
+            net.WriteEntity(self)
+            net.WriteBool(update_pos)
+            net.WriteBool(update_hitbox)
+        net.Send(ply)
+    end
+
+    function PART:RequestHitboxUpdate(ply) self:RequestUpdate(false, true, ply) end
+    function PART:RequestPositionUpdate(ply) self:RequestUpdate(true, false, ply) end
+    function PART:RequestFullUpdate(ply) self:RequestUpdate(true, true, ply) end
+
+    net.Receive("TARDIS_DefaultMonitorsUpdate", function(len,ply)
+        local part = net.ReadEntity()
+        local update_pos = net.ReadBool()
+        local update_hitbox = net.ReadBool()
+
+        local message_valid = IsValid(part) and part.exterior.occupants[ply]
+
+        if update_pos then
+            local rotation, down = net.ReadFloat(), net.ReadFloat()
+            if message_valid and rotation and down then
+                part:ChangePosition(rotation, down)
+            end
+        end
+
+        if update_hitbox then
+            local scr_pos, scr_ang = net.ReadVector(), net.ReadAngle()
+            if message_valid then
+                part:MoveHitboxes(scr_pos, scr_ang)
+            end
+        end
+    end)
+else
+    function PART:SendMonitorsUpdate(update_pos, update_hitbox)
+        net.Start("TARDIS_DefaultMonitorsUpdate")
+
+        net.WriteEntity(self)
+        net.WriteBool(update_pos)
+        net.WriteBool(update_hitbox)
+
+        if update_pos then
+            local rotation, down = self:GetPosition()
+            net.WriteFloat(rotation)
+            net.WriteFloat(down)
+        end
+
+        if update_hitbox then
+            local scr_pos, scr_ang = self:GetScreenPosition()
+            net.WriteVector(scr_pos)
+            net.WriteAngle(scr_ang)
+        end
+
+        net.SendToServer()
+
+        if self.pending_update then
+            self.pending_update = nil
+            self.pending_update_pos = nil
+            self.pending_update_hitbox = nil
+        end
+    end
+
+    net.Receive("TARDIS_DefaultMonitorsRequestUpdate", function(len,ply)
+        local part = net.ReadEntity()
+
+        local update_pos = net.ReadBool()
+        local update_hitbox = net.ReadBool()
+
+        if not IsValid(part) then return end
+
+        if part:IsAnimationPlaying() then
+            part.pending_update = true
+            part.pending_update_pos = update_pos
+            part.pending_update_hitbox = update_hitbox
+        else
+            part:SendMonitorsUpdate(update_pos, update_hitbox)
+        end
+    end)
+end
+
+-- Adding parts
 
 
 PART.AnimateOptions = {
@@ -323,204 +456,106 @@ TARDIS:AddPart(PART)
 
 
 
+-- Hitbox use functions
 
-local function ChangeModel(part, model_name)
-    local pr = "models/molda/toyota_int/hitboxes/"
-    local model = pr .. model_name .. ".mdl"
+local function UseScreen(self,ply)
+    local monitor = self:GetMonitor()
+    if not IsValid(monitor) then return end
 
-    part:SetModel(model)
-    part:PhysicsInit(SOLID_VPHYSICS)
-    part:SetMoveType(MOVETYPE_NONE)
-
-    part.phys = part:GetPhysicsObject()
-    if (part.phys:IsValid()) then
-        part.phys:EnableMotion(false)
+    if ply:KeyDown(IN_WALK) then
+        monitor:MoveDown(ply)
     end
 end
 
--- hitboxes
 
-local PART = {}
-PART.Model = "models/molda/toyota_int/hitboxes/monitor_handles.mdl"
-PART.AutoSetup = true
-PART.Collision = false
-PART.NoDraw = HIDE_COLLISIONS
+local function UseHandle(self,ply)
+    local monitor = self:GetMonitor()
+    if not IsValid(monitor) then return end
 
-function PART:Initialize()
-    self.initial_pos = self:GetPos()
-    self.initial_ang = self:GetAngles()
+    if ply:KeyDown(IN_WALK) and monitor:CanFlip() then
+        monitor:Flip(ply)
+    elseif ply:KeyDown(IN_WALK) then
+        monitor:MoveDown(ply)
+    else
+        monitor:RotateToEyePos(ply)
+    end
+end
+
+local function UseStatic(self,ply)
+    local monitor = self:GetMonitor()
+    if not IsValid(monitor) then return end
+
+end
+
+
+
+
+-- Hitbox parts
+
+local function Setup_Hitbox_Parts(MonitorID)
+    local PART = {}
+    PART.MonitorID = MonitorID
+    PART.AutoSetup = true
+    PART.Collision = false
+    PART.NoDraw = HIDE_COLLISIONS
+
+    if not HIDE_COLLISIONS then
+        function PART:Initialize()
+            self:SetColor(Color(255,255,255,100))
+        end
+    end
+
+    PART.GetMonitor = function(self)
+        return self.interior:GetPart(self.MonitorID)
+    end
+
+
+    -- static
+
+    PART.ID = PART.MonitorID .. "_hitbox_static"
+    PART.Model = "models/molda/toyota_int/hitboxes/static_monitor_hitbox.mdl"
+    if SERVER then
+        PART.Use = UseStatic
+    end
+    TARDIS:AddPart(PART)
+
+
+    -- moving
 
     if SERVER then
-        self:ApplyVerticalPos(0.5)
-    end
-end
-
-function PART:GetMonitor()
-    return self.interior:GetPart(self.MonitorID)
-end
-
-function PART:GetMonitorState()
-    local m = self:GetMonitor()
-    if IsValid(m) then
-        return m:GetMonitorState()
-    end
-    return false,false
-end
-
-if SERVER then
-    function PART:Use(ply)
-        local monitor = self.interior:GetPart(self.MonitorID)
-        if not IsValid(monitor) then return end
-
-        if ply:KeyDown(IN_WALK) then
-            monitor:Flip()
-        else
-            monitor:RotateToEyePos(ply)
+        PART.Move = function(self, pos, ang)
+            self:SetPos(pos)
+            self:SetAngles(ang)
         end
     end
 
-    function PART:ApplyRotation(y)
-        local yaw = y * 360
-        local a = self:GetAngles()
-        local a0 = self.initial_ang
 
-        local static, vertical = self:GetMonitorState()
-        if static then
-            yaw = 0
-        end
+    -- handles
 
-        self:SetAngles(Angle(a.p, a0.y + yaw, a.r))
-    end
-
-    function PART:ApplyVerticalPos(k)
-        local z, roll, model
-
-        local p = self:GetPos()
-        local a = self:GetAngles()
-        local p0 = self.initial_pos
-        local a0 = self.initial_ang
-
-        local static, vertical = self:GetMonitorState()
-
-        if vertical then
-            model = "monitor_handles_vertical_2"
-            z = -1.5
-            roll = 0.5
-
-            if k < 0.3 then
-                model = "monitor_handles_vertical_1"
-                z = 0
-                roll = 0
-            elseif k > 0.7 then
-                model = "monitor_handles_vertical_3"
-                z = 0
-                roll = 0
-            end
-        else
-            model = "monitor_handles"
-            if static then
-                z = 0
-                roll = -3
-            else
-                z = -8 * k
-                roll = k * 2.4
-            end
-        end
-
-        ChangeModel(self, model)
-        self:SetPos(Vector(p.x, p.y, p0.z + z))
-        self:SetAngles(Angle(a.p, a.y, a0.r + roll))
-    end
-end
-
-PART.MonitorID = "default_monitor_1"
-PART.ID = PART.MonitorID .. "_handles"
-TARDIS:AddPart(PART)
-PART.MonitorID = "default_monitor_2"
-PART.ID = PART.MonitorID .. "_handles"
-TARDIS:AddPart(PART)
-
-
-
-
-local PART = {}
-PART.Model = "models/molda/toyota_int/hitboxes/stage1.mdl"
-PART.AutoSetup = true
-PART.Collision = false
-PART.NoDraw = HIDE_COLLISIONS
-
-function PART:Initialize()
-    self.initial_pos = self:GetPos()
-    self.initial_ang = self:GetAngles()
+    PART.ID = PART.MonitorID .. "_hitbox_handles"
+    PART.Model = "models/uriel/toyota_int/monitor_collision_handles.mdl"
     if SERVER then
-        self:ApplyVerticalPos(0.5)
+        PART.Use = UseHandle
     end
+    TARDIS:AddPart(PART)
+
+
+    -- screen
+
+    PART.ID = PART.MonitorID .. "_hitbox_screen"
+    PART.Model = "models/uriel/toyota_int/monitor_collision_screen.mdl"
+    if SERVER then
+        PART.Use = UseScreen
+    end
+    TARDIS:AddPart(PART)
 end
 
-function PART:GetMonitor()
-    return self.interior:GetPart(self.MonitorID)
-end
+Setup_Hitbox_Parts("default_monitor_1")
+Setup_Hitbox_Parts("default_monitor_2")
 
-function PART:GetMonitorState()
-    local m = self:GetMonitor()
-    if IsValid(m) then
-        return m:GetMonitorState()
-    end
-    return false,false
-end
 
-if SERVER then
-    function PART:Use(ply)
-        local monitor = self.interior:GetPart(self.MonitorID)
-        if not IsValid(monitor) then return end
 
-        if ply:KeyDown(IN_WALK) then
-            monitor:MoveDown()
-        end
-    end
-
-    function PART:ApplyRotation(y)
-        local yaw = y * 360
-        local a = self:GetAngles()
-        local a0 = self.initial_ang
-
-        local static, vertical = self:GetMonitorState()
-        if static then
-            yaw = 0
-        end
-
-        self:SetAngles(Angle(a.p, a0.y + yaw, a.r))
-    end
-
-    function PART:ApplyVerticalPos(k)
-        local static, vertical = self:GetMonitorState()
-
-        local model = "stage2"
-
-        if k < 0.3 then
-            model = "stage1"
-        elseif k > 0.7 then
-            model = "stage3"
-        end
-
-        if static then
-            model = "stage0"
-        elseif vertical then
-            model = "flip_" .. model
-        end
-
-        ChangeModel(self, model)
-    end
-end
-
-PART.MonitorID = "default_monitor_1"
-PART.ID = PART.MonitorID .. "_collision"
-TARDIS:AddPart(PART)
-
-PART.MonitorID = "default_monitor_2"
-PART.ID = PART.MonitorID .. "_collision"
-TARDIS:AddPart(PART)
-
+-- Rotor ring
 
 local PART={}
 PART.ID = "default_rotor_ring"

@@ -79,15 +79,14 @@ function TARDIS.DoPartAnimation(self, can_move, a, target, should_reset)
     local speed = a.speed
 
     if a.condition_func then
-        can_move = can_move and a.condition_func(a, target, should_reset)
+        can_move = can_move and a.condition_func(self, a, target, should_reset)
     end
 
     if can_move then
         if a.speed_override_func then
-            speed = a.speed_override_func(a, target, should_reset)
+            speed = a.speed_override_func(self, a, target, should_reset)
         end
 
-        --tardisdebug(pose_pos, target, FrameTime() * speed)
         pose_pos = math.Approach(pose_pos, target, FrameTime() * speed)
 
         if pose_pos == target and should_reset then

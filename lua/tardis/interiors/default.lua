@@ -237,12 +237,15 @@ T.Interior = {
         default_top_doors_2 = { pos = Vector(-346.742, -125.858, 160.575), ang = Angle(0,110,0), },
 
         default_monitor_1 = { ang = Angle(0,-120,0), },
-        default_monitor_1_handles = { ang = Angle(0,-30,0), },
-        default_monitor_1_collision = { ang = Angle(0,-30,0), },
+        default_monitor_1_hitbox_handles = { pos = Vector(-20.06, -34.75, 154.08), ang = Angle(0, -30, 96.16) },
+        default_monitor_1_hitbox_screen = { pos = Vector(-20.06, -34.75, 154.08), ang = Angle(0, -30, 96.16) },
+        default_monitor_1_hitbox_static = { ang = Angle(0,-30,0) },
 
         default_monitor_2 = { ang = Angle(0,60,0), },
-        default_monitor_2_handles = { ang = Angle(0,150,0), },
-        default_monitor_2_collision = { ang = Angle(0,150,0), },
+        default_monitor_2_hitbox_handles = { pos = Vector(20.06, 34.75, 154.08), ang = Angle(0, 150, 96.16) },
+        default_monitor_2_hitbox_screen = { pos = Vector(20.06, 34.75, 154.08), ang = Angle(0, 150, 96.16) },
+        default_monitor_2_hitbox_static = { ang = Angle(0,150,0) },
+
         default_rotor_ring = {},
 
         default_rotor = {},
