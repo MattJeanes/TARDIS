@@ -101,7 +101,14 @@ T.Interior = {
             width = 378,
             height = 198,
             visgui_rows = 3,
-        }
+        },
+        {
+            pos = Vector(-27.484, -23.735, 165.416),
+            ang = Angle(0, -30, 102),
+            width = 378,
+            height = 198,
+            visgui_rows = 3,
+        },
     },
 
     Parts = {
@@ -397,6 +404,34 @@ T.CustomHooks = {
             end
         end,
     },
+    screen_disable = {
+        inthooks = {
+            ["ShouldNotDrawScreen"] = true,
+        },
+        func = function(ext,int,id)
+            if SERVER then return end
+
+            local m = int:GetPart("default_monitor_1")
+            if not IsValid(m) then return true end
+
+            if id == 1 then
+                if m:IsAnimationPlaying() then
+                    return true
+                end
+
+                if m:IsStatic() then
+                    return true
+                end
+            end
+
+            if id == 2 then
+                if not m:IsStatic() then
+                    return true
+                end
+            end
+        end,
+    },
+
 }
 
 T.CustomSettings = {

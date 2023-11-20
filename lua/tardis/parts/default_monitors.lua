@@ -307,19 +307,26 @@ else
 
         local ply = self:GetData(self.data_rotated_by)
 
-        if self.ID == "default_monitor_1" and self.interior:GetScreensOn() then
-            scr_pos, scr_ang = self:GetScreenPosition()
+        if self.ID == "default_monitor_1" then
+            if self.interior:GetScreensOn() then
 
-            local offset = Vector(-11.5, 6.8, 5.7)
+                self:SetSubMaterial(2, "models/molda/toyota_int/screen_loading")
 
-            if ply then -- moving the monitor
-                offset = Vector(-11.5, 6.8, 5.8)
-            end
+                scr_pos, scr_ang = self:GetScreenPosition()
 
-            if scr_pos then
-                offset:Rotate(scr_ang)
-                self.interior.screens3D[1].pos3D = scr_pos + offset
-                self.interior.screens3D[1].ang3D = scr_ang
+                if scr_pos and self.interior.screens3D then
+                    local offset = Vector(-11.5, 6.8, 5.8)
+
+                    if self:GetBodygroup(0) == 2 then
+                        offset = Vector(-11.5, 6.8, 6.8)
+                    end
+
+                    offset:Rotate(scr_ang)
+                    self.interior.screens3D[1].pos3D = scr_pos + offset
+                    self.interior.screens3D[1].ang3D = scr_ang
+                end
+            else
+                self:SetSubMaterial(2, nil)
             end
         end
 
