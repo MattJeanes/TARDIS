@@ -94,6 +94,16 @@ T.Interior = {
         },
     },
 
+    Screens = {
+        {
+            pos = Vector(-33.658, -35.45, 159.97),
+            ang = Angle(0, -30, 96),
+            width = 378,
+            height = 198,
+            visgui_rows = 3,
+        }
+    },
+
     Parts = {
         door = {
             model="models/vtalanov98/toyota_ext/doors_interior.mdl",

@@ -107,6 +107,7 @@ end
 
 function PART:GetScreenPosition()
     local matrix = self:GetBoneMatrix(4)
+    if not matrix then return end
     local pos = self.interior:WorldToLocal(matrix:GetTranslation())
     local ang = matrix:GetAngles()
     return pos, ang
@@ -305,6 +306,23 @@ else
         end
 
         local ply = self:GetData(self.data_rotated_by)
+
+        if self.ID == "default_monitor_1" and self.interior:GetScreensOn() then
+            scr_pos, scr_ang = self:GetScreenPosition()
+
+            local offset = Vector(-11.5, 6.8, 5.7)
+
+            if ply then -- moving the monitor
+                offset = Vector(-11.5, 6.8, 5.8)
+            end
+
+            if scr_pos then
+                offset:Rotate(scr_ang)
+                self.interior.screens3D[1].pos3D = scr_pos + offset
+                self.interior.screens3D[1].ang3D = scr_ang
+            end
+        end
+
         if ply ~= LocalPlayer() then return end
 
         local rotation, down = trace_monitor_pos(ply, self)
@@ -466,7 +484,6 @@ local function UseScreen(self,ply)
         monitor:MoveDown(ply)
     end
 end
-
 
 local function UseHandle(self,ply)
     local monitor = self:GetMonitor()
