@@ -83,6 +83,25 @@ T.Interior = {
         }
     },
 
+    Seats = {
+        {
+            pos = Vector(9, -154., 108),
+            ang=Angle(0,0,0),
+        },
+        {
+            pos = Vector(-134, -77, 108),
+            ang=Angle(0,-65,0),
+        },
+        {
+            pos = Vector(40, 147, 108),
+            ang=Angle(0,170,0),
+        },
+        {
+            pos = Vector(150, 26, 108),
+            ang=Angle(0,100,0),
+        },
+    },
+
     Scanners = {
         {
             part = "default_console_scanner",
