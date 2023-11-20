@@ -1,4 +1,4 @@
-local HIDE_COLLISIONS = false
+local HIDE_COLLISIONS = true
 
 
 local PART = {}
