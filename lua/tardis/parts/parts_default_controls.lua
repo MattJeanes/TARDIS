@@ -62,8 +62,9 @@ if CLIENT then
             endpos = ply:EyePos() + (ply:GetAimVector() * 4096),
             filter = { ply, },
         }
-        if util.TraceLine(trace).Hit then
-            return int:WorldToLocal(util.TraceLine(trace).HitPos).z
+        local trace_res = util.TraceLine(trace)
+        if trace_res.Hit then
+            return int:WorldToLocal(trace_res.HitPos).z
         end
     end
 
