@@ -1,7 +1,8 @@
 TARDIS.Locations = TARDIS.Locations or {}
 
-local LOCATIONS_FILE = "tardis/locations.txt"
+local LOCATIONS_FILE = "tardis2_locations.txt"
 
+--[[ TODO: Add back in before release
 TARDIS:AddMigration("locations-move", "2023.8.0", function(self)
     if file.Exists("tardis2_locations.txt", "DATA") then
         if file.Exists(LOCATIONS_FILE, "DATA") then
@@ -15,6 +16,7 @@ TARDIS:AddMigration("locations-move", "2023.8.0", function(self)
         TARDIS:SaveLocations()
     end
 end)
+]]
 
 function TARDIS:LoadLocations()
     if file.Exists(LOCATIONS_FILE, "DATA") then

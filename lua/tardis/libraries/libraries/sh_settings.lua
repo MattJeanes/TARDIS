@@ -180,10 +180,11 @@ end
 --------------------------------------------------------------------------------
 -- Saving
 
-local LOCAL_SETTINGS_FILE = "tardis/settings_cl.txt"
-local NETWORKED_SETTINGS_FILE = "tardis/settings_cl_nw.txt"
-local GLOBAL_SETTINGS_FILE = "tardis/settings_sv.txt"
+local LOCAL_SETTINGS_FILE = "tardis_settings_cl.txt"
+local NETWORKED_SETTINGS_FILE = "tardis_settings_cl_nw.txt"
+local GLOBAL_SETTINGS_FILE = "tardis_settings_sv.txt"
 
+--[[ TODO: Add back in before release
 TARDIS:AddMigration("settings-move", "2023.8.0", function(self)
     if SERVER then
         if file.Exists("tardis_settings_sv.txt", "DATA") then
@@ -209,6 +210,7 @@ TARDIS:AddMigration("settings-move", "2023.8.0", function(self)
 
     self:LoadSettings()
 end)
+]]
 
 function TARDIS:SaveSettings()
 

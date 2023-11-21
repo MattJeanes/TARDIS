@@ -3,7 +3,7 @@
 --Custom music
 
 local custom_music
-local MUSIC_FILE = "tardis/custom_music.txt"
+local MUSIC_FILE = "tardis2_custom_music.txt"
 
 function TARDIS:LoadCustomMusic()
     if file.Exists(MUSIC_FILE,"DATA") then
@@ -17,6 +17,7 @@ function TARDIS:SaveCustomMusic()
     file.Write(MUSIC_FILE, TARDIS.von.serialize(custom_music))
 end
 
+--[[ TODO: Add back in before release
 TARDIS:AddMigration("music-move", "2023.8.0", function(self)
     if file.Exists("tardis2_custom_music.txt", "DATA") then
         if file.Exists(MUSIC_FILE, "DATA") then
@@ -26,6 +27,7 @@ TARDIS:AddMigration("music-move", "2023.8.0", function(self)
         self:LoadCustomMusic()
     end
 end)
+]]
 
 function TARDIS:AddCustomMusic(name, url)
     if name == nil or name == "" then
