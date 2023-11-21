@@ -140,8 +140,133 @@ function PART:Use(ply)
         end
     end)
 end
-
 TARDIS:AddPart(PART)
+
+local PART={}
+PART.ID = "default_sonic_charger"
+PART.Name = PART.ID
+PART.Model = "models/cem/toyota/controls/sonic_charger.mdl"
+PART.AutoSetup = true
+PART.Collision = true
+PART.SoundOn ="p00gie/tardis/default/sonic_dispenser_on.ogg"
+PART.SoundOff ="p00gie/tardis/default/sonic_dispenser_off.ogg"
+PART.PowerOffUse = false
+
+if SERVER then
+    function PART:Initialize()
+		self:SetColor(Color(0,0,0,0))
+	end
+	function PART:Use(ply)
+		local sonic = self.interior:GetPart("default_sonic_prop")
+
+		if not IsValid(sonic) then
+			TARDIS:Control(self.Control, ply)
+			return
+		end
+
+		if self:GetData("sonic_generating", false) then return end
+		if not self.exterior:GetPower() then return end
+
+		if self:GetOn() then
+			TARDIS:Control(self.Control, ply)
+			self:SetSubMaterial(2 , "models/molda/toyota_int/sonic_charger_lights_top")
+			self:SetSubMaterial(3 , "models/molda/toyota_int/sonic_charger_lights")
+			sonic:SetCollide(false, true)
+			sonic:SetColor(Color(0,0,0,0))
+			return
+		end
+
+		sonic:SetMaterial("models/alyx/emptool_glow")
+		sonic:SetColor(Color(255,255,255,100))
+		sonic:SetCollide(false, true)
+
+		self:SetData("sonic_generating", true)
+
+		self.interior:Timer("default_sonic_charger_step2", 0.2, function()
+			sonic:SetColor(Color(255,255,255,100))
+		end)
+
+		self.interior:Timer("default_sonic_charger", 0.6, function()
+			sonic:SetMaterial(nil)
+			sonic:SetColor(Color(255,255,255,255))
+			sonic:SetCollide(true, true)
+			self:SetData("sonic_generating", false)
+		end)
+	end
+end
+TARDIS:AddPart(PART)
+
+local PART={}
+PART.ID = "default_sonic_prop"
+PART.Name = PART.ID
+PART.Model = "models/doctorwho1200/sonics/11thdoctor/3rdpersonsonic.mdl"
+PART.AutoSetup = true
+PART.Collision = true
+PART.Sound ="p00gie/tardis/default/sonic_dispenser_on.ogg"
+PART.ShouldTakeDamage = true
+
+if SERVER then
+	function PART:Initialize()
+		self:SetCollide(false, true)
+		self:SetColor(Color(0,0,0,0))
+	end
+
+	function PART:Use(ply)
+		local charger = self.interior:GetPart("default_sonic_charger")
+		if not IsValid(charger) then return end
+		if self:GetData("sonic_generating", false) then return end
+
+		charger:SetSubMaterial(2 , "models/molda/toyota_int/sonic_charger_lights_top")
+		charger:SetSubMaterial(3 , "models/molda/toyota_int/sonic_charger_lights")
+		charger:SetOn(false)
+
+		self:SetColor(Color(0,0,0,0))
+
+		self:SetCollide(false, true)
+
+		TARDIS:Control(self.Control, ply)
+	end
+end
+TARDIS:AddPart(PART)
+
+if SERVER then
+	util.AddNetworkString("TARDIS-Default-Sonic")
+end
+
+TARDIS:AddControl({
+	id = "default_sonic_dispenser",
+	int_func=function(self,ply)
+		if TARDIS:IsSonicInstalled() then
+			local sonic_id = "default"
+
+			if IsValid(ply:GetWeapon("swep_sonicsd")) then
+				TARDIS:Message(ply, "Controls.SonicDispenser.Equipped")
+			else
+				ply:Give("swep_sonicsd")
+				TARDIS:Message(ply, "Controls.SonicDispenser.Dispensed")
+			end
+			net.Start("TARDIS-Default-Sonic")
+				net.WriteString(sonic_id)
+			net.Send(ply)
+		else
+			TARDIS:ErrorMessage(ply, "Controls.SonicDispenser.MissingAddon")
+		end
+	end,
+	power_independent = true,
+	bypass_console_toggle = true,
+	bypass_isomorphic = true,
+	serveronly = true,
+	screen_button = false,
+	tip_text = "Controls.SonicDispenser.Tip",
+})
+
+if CLIENT then
+	net.Receive("TARDIS-Default-Sonic", function()
+		local interior_sonic_id = net.ReadString()
+		RunConsoleCommand("sonic_model", interior_sonic_id)
+		RunConsoleCommand("sonicsd_give", interior_sonic_id)
+	end)
+end
 
 local PART={}
 PART.ID = "default_side_lever1"

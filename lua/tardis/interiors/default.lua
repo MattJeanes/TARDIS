@@ -181,6 +181,8 @@ T.Interior = {
         default_keyboard = {},
         default_telepathic = {},
         default_throttle = {},
+        default_sonic_charger = {ang = Angle(0,90,0)},
+        default_sonic_prop = { pos = Vector(4.22, -34.015, 136.396), ang = Angle(15.301, -38.846, 10.003)},
 
         default_side_lever1 = { pos = Vector(100.487, 114.569, 126.76), },
         default_side_lever2 = { pos = Vector(-55.242, -142.028, 126.76), },
@@ -328,7 +330,7 @@ T.Interior = {
         default_button2 = "toggle_scanners",
         default_red_flick_switch = "fastreturn",
         default_key = "toggle_console",
-        default_sonic_charger = "sonic_dispenser",
+        default_sonic_charger = "default_sonic_dispenser",
         default_spin_crank = "hads",
         default_small_switch_18 = "exterior_light",
 
