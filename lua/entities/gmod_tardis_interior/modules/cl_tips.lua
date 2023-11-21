@@ -42,7 +42,7 @@ function ENT:InitializeTips(style_name)
                     end
 
                     if part.Control then
-                        local control = TARDIS:GetControl(part.Control)
+                        local control = TARDIS:GetControl(part.Control, self)
                         if control and control.tip_text then
                             tip.text = control.tip_text
                         else
@@ -57,7 +57,7 @@ function ENT:InitializeTips(style_name)
                 end
             end
             if tip.control then
-                local control = TARDIS:GetControl(tip.control)
+                local control = TARDIS:GetControl(tip.control, self)
                 if control and control.tip_text then
                     tip.text = control.tip_text
                 else
