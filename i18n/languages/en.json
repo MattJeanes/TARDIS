@@ -273,7 +273,7 @@
     "CustomControls.Default.ToggleScreen.1.Status": "Screen 1",
     "CustomControls.Default.ToggleScreen.1.Tip": "Screen 1",
     "CustomControls.Default.ToggleScreen.2": "Toggle screen 2",
-    "CustomControls.Default.ToggleScreen.2.FailedToggle": "Failed to toggle screen 2D",
+    "CustomControls.Default.ToggleScreen.2.FailedToggle": "Failed to toggle screen 2",
     "CustomControls.Default.ToggleScreen.2.Status": "Screen 2",
     "CustomControls.Default.ToggleScreen.2.Tip": "Screen 2",
     "Destination.FailedDemat": "Failed to dematerialise",
