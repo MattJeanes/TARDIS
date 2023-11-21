@@ -37,3 +37,5 @@ TARDIS:LoadFolder("libraries/libraries/libraries")
 TARDIS:LoadFolder("libraries/libraries")
 TARDIS:LoadFolder("libraries")
 TARDIS:LoadFolder()
+
+TARDIS:RunMigrations()
