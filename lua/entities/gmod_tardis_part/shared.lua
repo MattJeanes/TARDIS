@@ -52,7 +52,7 @@ hook.Add("BodygroupChanged", "tardis_parts", function(ent,bodygroup,value)
             ent.OnBodygroupChanged(ent, bodygroup, value)
         end
         if IsValid(ent.parent) then
-            ent.parent:CallHook("PartBodygroupChanged", bodygroup, value)
+            ent.parent:CallHook("PartBodygroupChanged", ent, bodygroup, value)
         end
     end
 end)
