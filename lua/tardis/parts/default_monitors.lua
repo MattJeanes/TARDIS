@@ -230,7 +230,7 @@ if SERVER then
         local down_state = self:GetData(self.data_down, 1) % #self.poses_down
         self:SetData(self.data_down, down_state + 1, true)
         self:SetData(self.data_down_pos, self.poses_down[down_state + 1], true)
-        self:EmitSound("p00gie/tardis/default/monitor_move_down.ogg")
+        self:EmitSound("p00gie/tardis/default/monitor_move_vert.ogg")
 
         self:RequestHitboxUpdate(ply)
     end
