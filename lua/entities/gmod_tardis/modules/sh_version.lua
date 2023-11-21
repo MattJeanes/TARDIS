@@ -4,7 +4,13 @@ ENT:AddHook("Initialize", "version", function(self)
     if CLIENT and LocalPlayer()~=self:GetCreator() then return end
 
     if TARDIS:IsNewVersion() then
-        self:CallCommonHook("NewVersion", TARDIS:GetVersion(), TARDIS:GetLastUsedVersion())
+        local newVersion = TARDIS:GetVersion()
+        local newVersionStr = TARDIS:GetVersionString(newVersion)
+
+        local oldVersion = TARDIS:GetLastUsedVersion()
+        local oldVersionStr = TARDIS:GetVersionString(oldVersion)
+        
+        self:CallCommonHook("NewVersion", newVersion, newVersionStr, oldVersion, oldVersionStr)
     end
 
     TARDIS:SetLastUsedVersion()
@@ -58,6 +64,6 @@ local function get_release_notes(newVersion)
     http.Fetch("https://api.github.com/repos/MattJeanes/TARDIS/releases/tags/" .. newVersion, onsuccess, onfailure, headers)
 end
 
-ENT:AddHook("NewVersion", "version", function(self, newVersion, oldVersion)
-    get_release_notes(newVersion)
+ENT:AddHook("NewVersion", "version", function(self, newVersion, newVersionStr, oldVersion, oldVersionStr)
+    get_release_notes(newVersionStr)
 end)
