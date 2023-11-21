@@ -124,8 +124,8 @@ if SERVER then
         if dmginfo:GetDamage() <= 0 then return end
         self:ApplyDamage(dmginfo:GetDamage() / 2)
         if not IsValid(self.interior) then return end
+        local int = self.metadata.Interior.Sounds.Damage
         if dmginfo:IsDamageType(DMG_BLAST) and self:GetHealth() ~= 0 then
-            int = self.metadata.Interior.Sounds.Damage
             self.interior:EmitSound(int.Explosion)
         end
     end)
@@ -154,11 +154,10 @@ if SERVER then
         local phys = self:GetPhysicsObject()
         local vel = phys:GetVelocity():Length()
 
+        local int = self.metadata.Interior.Sounds.Damage
         if self:GetHealth() ~= 0 and vel < 900 then
-            int = self.metadata.Interior.Sounds.Damage
             self.interior:EmitSound(int.Crash)
         elseif self:GetHealth() ~= 0 and vel > 900 then
-            int = self.metadata.Interior.Sounds.Damage
             self.interior:EmitSound(int.BigCrash)
         end
     end)
