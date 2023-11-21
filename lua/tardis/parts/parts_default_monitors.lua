@@ -27,6 +27,10 @@ function PART:Initialize(ply)
     self.screen_hitbox_id = self.ID .. "_hitbox_screen"
     self.static_hitbox_id = self.ID .. "_hitbox_static"
 
+    if self.ScreenID then
+        self.data_screen_enabled = "default_screen_enabled_" .. self.ScreenID
+    end
+
     self:SetBodygroup(0, 1)
 end
 
@@ -307,8 +311,9 @@ else
 
         local ply = self:GetData(self.data_rotated_by)
 
-        if self.ID == "default_monitor_1" then
-            if self.interior:GetScreensOn() then
+        if self.ScreenID then
+
+            if self.interior:GetScreensOn() and self:GetData(self.data_screen_enabled) then
 
                 self:SetSubMaterial(2, "models/molda/toyota_int/screen_loading")
 
@@ -322,8 +327,8 @@ else
                     end
 
                     offset:Rotate(scr_ang)
-                    self.interior.screens3D[1].pos3D = scr_pos + offset
-                    self.interior.screens3D[1].ang3D = scr_ang
+                    self.interior.screens3D[self.ScreenID].pos3D = scr_pos + offset
+                    self.interior.screens3D[self.ScreenID].ang3D = scr_ang
                 end
             else
                 self:SetSubMaterial(2, nil)
@@ -471,10 +476,12 @@ PART.ExtraAnimations = {
 }
 
 PART.ID = "default_monitor_1"
+PART.ScreenID = 1
 PART.OtherID = "default_monitor_2"
 TARDIS:AddPart(PART)
 
 PART.ID = "default_monitor_2"
+PART.ScreenID = 2
 PART.OtherID = "default_monitor_1"
 TARDIS:AddPart(PART)
 
