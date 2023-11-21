@@ -107,7 +107,7 @@ PART.SoundNoPower = "p00gie/tardis/default/keyboard.ogg"
 if SERVER then
     function PART:Use(ply)
         self.interior:Timer("default_keyboard", 1, function()
-            TARDIS:Control(self.Control, ply)
+            TARDIS:Control(self.Control, ply, self)
         end)
     end
 end
@@ -134,7 +134,7 @@ function PART:Use(ply)
 
     self.interior:Timer("default_telepathic", 1, function()
         if SERVER then
-            TARDIS:Control(self.Control, ply)
+            TARDIS:Control(self.Control, ply, self)
         else
             self:SetData("default_telepathic_activation", nil)
         end
@@ -471,7 +471,7 @@ if SERVER then
         if not IsValid(cover) then return end
 
         if cover:GetOn() then
-            TARDIS:Control(self.Control, ply)
+            TARDIS:Control(self.Control, ply, self)
             self.interior:Timer("default_redflickswitch_cover", 0.3, function()
                 cover:SetOn(false)
                 cover:SetPoseParameter("switch", 0)
