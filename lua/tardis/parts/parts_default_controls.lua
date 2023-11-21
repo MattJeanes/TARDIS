@@ -703,3 +703,23 @@ TARDIS:AddPart(PART)
 PART.ID = "default_side_toggles_2"
 TARDIS:AddPart(PART)
 
+local PART={}
+PART.ID = "default_sonic_dispenser_hitbox"
+PART.Model = "models/molda/toyota_int/hitboxes/sonic_cube.mdl"
+PART.AutoSetup = true
+PART.Collision = true
+PART.NoDraw = true
+PART.Sound = "p00gie/tardis/default/sonic_dispenser.ogg"
+PART.PowerOffUse = false
+
+function PART:Use(ply)
+    TARDIS:Control(self.Control, ply, self)
+
+    self:SetData("default_sonic_charger_active", true, true)
+
+    self.interior:Timer(self.ID, 3, function()
+        self:SetData("default_sonic_charger_active", false, true)
+    end)
+end
+
+TARDIS:AddPart(PART)

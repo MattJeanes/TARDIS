@@ -265,7 +265,9 @@ local overrides={
         end
 
         if self.PowerOffUse == false and not self.interior:GetPower() then
-            TARDIS:ErrorMessage(a, "Common.PowerDisabledControl")
+            if SERVER then
+                TARDIS:ErrorMessage(a, "Common.PowerDisabledControl")
+            end
         else
             if allowed~=false then
                 if self.HasUseBasic then

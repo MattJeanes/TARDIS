@@ -81,3 +81,21 @@ matproxy.Add({
         mat:SetFloat(self.ResultTo, 0)
     end
 })
+
+
+matproxy.Add({
+    name = "TARDIS_DefaultInt_SonicCharger",
+    init = function (self, mat, values)
+        self.ResultTo = values.resultvar
+        self.on_var = values.onvar
+        self.off_var = values.offvar
+    end,
+    bind = function(self, mat, ent)
+        if not IsValid(ent) or not IsValid(ent.exterior) or not ent.TardisPart then return end
+
+        local var = ent:GetData("default_sonic_charger_active") and self.on_var or self.off_var
+        if not var then return end
+
+        mat:SetVector(self.ResultTo, mat:GetVector(var))
+    end,
+})

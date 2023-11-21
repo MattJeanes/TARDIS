@@ -303,6 +303,8 @@ T.Interior = {
         default_rotor = {},
         default_corridors = { ang = Angle(0,90,0), },
         default_intdoors = { pos = Vector(73.559, -417.853, 47.506), ang = Angle(0,10,0), },
+
+        default_sonic_dispenser_hitbox = { ang = Angle(0,90,0), },
     },
 
     Controls = {
@@ -340,6 +342,8 @@ T.Interior = {
 
         default_flat_switch_1 = "toggle_screen_1",
         default_flat_switch_2 = "toggle_screen_2",
+
+        default_sonic_dispenser_hitbox = "sonic_dispenser",
     },
 
     TipSettings = {
