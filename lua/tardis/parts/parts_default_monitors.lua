@@ -40,11 +40,14 @@ function PART:GetOther()
     return self.interior:GetPart(self.OtherID)
 end
 
+local function rotation_get_other(r)
+    r = r + 0.5
+    return (r > 1) and (r - 1) or r
+end
+
 function PART:GetOtherRotation()
     local r = self:GetData(self.data_other_rotation, 0)
-    r = r + 0.5
-    r = (r > 1) and (r - 1) or r
-    return r
+    return rotation_get_other(r)
 end
 
 function PART:GetHitboxScreen()
@@ -65,15 +68,24 @@ end
 function PART:AnimateRotation(anim)
     local target = self:GetData(self.data_rotation,0)
 
-    local to_target = math.abs(anim.pos - target)
-    local through_min = anim.pos + math.abs(1 - target)
-    local through_max = math.abs(1 - anim.pos) + target
+    local other = self:GetOtherRotation()
 
-    local min_path = math.min(to_target, through_min, through_max)
+    local increase = (anim.pos < target)
+    local through_other = false
 
-    if min_path == to_target then
+    if increase then
+        if anim.pos < other and other < target then
+            through_other = true
+        end
+    else
+        if anim.pos > other and other > target then
+            through_other = true
+        end
+    end
+
+    if not through_other then
         TARDIS.DoPartAnimation(self, true, anim, target, false)
-    elseif min_path == through_min then
+    elseif increase then
         TARDIS.DoPartAnimation(self, true, anim, 0, true)
     else
         TARDIS.DoPartAnimation(self, true, anim, 1, true)
@@ -167,6 +179,14 @@ local function rotations_colliding (r1, r2)
     return false
 end
 
+local function rotations_distance(r1, r2)
+    local d1 = math.abs(r1 - r2)
+    local d2 = r1 + math.abs(1 - r2)
+    local d3 = math.abs(1 - r1) + r2
+
+    return math.min(d1, d2, d3)
+end
+
 function PART:ChangePosition(rotation, down)
     local other_r = self:GetOtherRotation()
 
@@ -224,7 +244,24 @@ end
 if SERVER then
     function PART:Use(ply)
         if ply:KeyDown(IN_WALK) then
-            self:RotateToEyePos(ply)
+
+            local rotation, down = trace_monitor_pos(ply, self)
+
+            local rot_this = self:GetData(self.data_other_rotation, 0)
+            local rot_other = self:GetOtherRotation()
+
+            local to_this = rotations_distance(rot_this, rotation)
+            local to_other = rotations_distance(rot_other, rotation)
+
+            -- select closest one
+            if to_other < to_this then
+                local other = self:GetOther()
+                if IsValid(other) then
+                    other:RotateToEyePos(ply)
+                end
+            else
+                self:RotateToEyePos(ply)
+            end
         end
     end
 
