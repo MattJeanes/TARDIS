@@ -243,3 +243,41 @@ TARDIS:AddInteriorTemplate("default_small_version", {
         },
     },
 })
+
+TARDIS:AddInteriorTemplate("default_screens_off", {
+    CustomHooks = {
+        screens_init = {
+            inthooks = {
+                ["Initialize"] = true,
+            },
+            func = function(ext,int,id)
+                ext:SetData("default_screen_enabled_1", false, true)
+                ext:SetData("default_screen_enabled_2", false, true)
+            end,
+        },
+    },
+    Interior = {
+        Parts = {
+            default_flat_switch_1 = { EnabledOnStart = false, },
+        },
+    },
+})
+
+TARDIS:AddInteriorTemplate("default_screens_on", {
+    CustomHooks = {
+        screens_init = {
+            inthooks = {
+                ["Initialize"] = true,
+            },
+            func = function(ext,int,id)
+                ext:SetData("default_screen_enabled_1", true, true)
+                ext:SetData("default_screen_enabled_2", false, true)
+            end,
+        },
+    },
+    Interior = {
+        Parts = {
+            default_flat_switch_1 = { EnabledOnStart = true, },
+        },
+    },
+})

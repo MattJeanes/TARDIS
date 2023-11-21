@@ -186,9 +186,6 @@ end
 local overrides={
     ["Draw"]={TARDIS.DrawOverride, CLIENT},
     ["Initialize"]={function(self)
-        if self.EnabledOnStart then
-            self:SetOn(true)
-        end
         if CLIENT then
             if self.Animate then
                 self.AnimateOptions = self.AnimateOptions or {}
@@ -514,6 +511,9 @@ if SERVER then
             end
 
             SetupPartMetadataControl(e)
+            if e.EnabledOnStart then
+                e:SetOn(true)
+            end
 
             if e.enabled==false then
                 e:Remove()
@@ -559,6 +559,9 @@ else
             end
 
             SetupPartMetadataControl(e)
+            if e.EnabledOnStart then
+                e:SetOn(true)
+            end
 
             if not parent.parts then parent.parts={} end
             parent.parts[name]=e

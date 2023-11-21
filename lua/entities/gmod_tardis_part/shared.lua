@@ -19,7 +19,7 @@ function ENT:Initialize() end
 
 function ENT:SetupDataTables()
     self:NetworkVar("Bool",0,"On")
-    self:SetOn(false)
+    self:SetOn(self.EnabledOnStart or false)
 end
 
 hook.Add("PhysgunPickup", "tardis-part", function(ply,ent)

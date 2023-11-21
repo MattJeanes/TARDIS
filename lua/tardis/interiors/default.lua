@@ -201,12 +201,14 @@ T.Interior = {
         default_ducks = {},
         default_fiddle1 = { pos = Vector(-47.83, 20.39, 128.36), },
         default_fiddle2 = { pos = Vector(-47.83, 17.33, 128.36), },
+
         default_flat_switch_1 = { pos = Vector(-10.1897, 28.1115, 137.23), },
         default_flat_switch_2 = { pos = Vector(-11.3625, 27.4343, 137.23), },
         default_flat_switch_3 = { pos = Vector(-12.5354, 26.7572, 137.23), },
         default_flat_switch_4 = { pos = Vector(-16.7892, 24.3012, 137.23), },
         default_flat_switch_5 = { pos = Vector(-17.9621, 23.6241, 137.23), },
         default_flat_switch_6 = { pos = Vector(-19.1350, 22.9469, 137.23), },
+
         default_flippers = {},
         default_handle1 = {pos = Vector(-32.0253, -11.1286, 136.032), ang = Angle(33.87, 94.5, -24.402)},
         default_handle2 = {pos = Vector(-32.0253, 11.1286, 136.032), },
@@ -440,15 +442,6 @@ T.CustomHooks = {
             end
         end,
     },
-    screens_init = {
-        inthooks = {
-            ["Initialize"] = true,
-        },
-        func = function(ext,int,id)
-            ext:SetData("default_screen_enabled_1", true, true)
-            ext:SetData("default_screen_enabled_2", true, true)
-        end,
-    },
     screen_disable = {
         inthooks = {
             ["ShouldNotDrawScreen"] = true,
@@ -542,6 +535,11 @@ T.CustomSettings = {
         text = "Interiors.Default.CustomSettings.SmallVersion",
         value_type = "bool",
         value = false,
+    },
+    screens_off = {
+        text = "Interiors.Default.CustomSettings.ScreensOff",
+        value_type = "bool",
+        value = false,
     }
 }
 
@@ -579,6 +577,18 @@ T.Templates = {
         override = true,
         condition = function(id, ply, ent)
             return TARDIS:GetCustomSetting(id, "small_version", ply)
+        end,
+    },
+    default_screens_off = {
+        override = true,
+        condition = function(id, ply, ent)
+            return TARDIS:GetCustomSetting(id, "screens_off", ply)
+        end,
+    },
+    default_screens_on = {
+        override = true,
+        condition = function(id, ply, ent)
+            return not TARDIS:GetCustomSetting(id, "screens_off", ply)
         end,
     },
 }
