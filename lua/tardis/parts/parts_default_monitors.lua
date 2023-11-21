@@ -353,6 +353,7 @@ else
             if self.interior:GetScreensOn() and self:GetData(self.data_screen_enabled) then
 
                 self:SetSubMaterial(2, "models/molda/toyota_int/screen_loading")
+                self.loading_mat = true
 
                 scr_pos, scr_ang = self:GetScreenPosition()
 
@@ -367,7 +368,8 @@ else
                     self.interior.screens3D[self.ScreenID].pos3D = scr_pos + offset
                     self.interior.screens3D[self.ScreenID].ang3D = scr_ang
                 end
-            else
+            elseif self.loading_mat then
+                self.loading_mat = nil
                 self:SetSubMaterial(2, nil)
             end
         end
