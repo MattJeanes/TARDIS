@@ -246,6 +246,10 @@ local overrides={
         end
     end, CLIENT},
     ["Use"]={function(self,a,...)
+        if SERVER and TARDIS.debug_tips and self.InteriorPart then
+            return TARDIS.DebugTipsFunction(self, a, ...)
+        end
+
         if SERVER then
             self.parent:SendMessage("part_use", {self, a, ...})
         end
