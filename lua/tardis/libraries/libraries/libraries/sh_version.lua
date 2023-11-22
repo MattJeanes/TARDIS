@@ -66,7 +66,6 @@ function TARDIS:SetLastUsedVersion()
 end
 
 function TARDIS:IsNewVersion()
-    print(self.LastUsedVersion)
     if self.LastUsedVersion.Major == 0
         and self.LastUsedVersion.Minor == 0
         and self.LastUsedVersion.Patch == 0
