@@ -133,9 +133,12 @@ function PART:Use(ply)
         self:SetData("default_telepathic_activation", RealTime() + 1)
     end
 
+    ply:ScreenFade(SCREENFADE.OUT, Color(255,255,255,30), 1.2, 0)
+
     self.interior:Timer("default_telepathic", 1, function()
         if SERVER then
             TARDIS:Control(self.Control, ply, self)
+            ply:ScreenFade(SCREENFADE.IN, Color(255,255,255,30), 0.5, 0)
         else
             self:SetData("default_telepathic_activation", nil)
         end
