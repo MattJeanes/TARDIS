@@ -183,7 +183,7 @@ PART.Model = "models/molda/toyota_int/slidedoors1.mdl"
 PART.Sound = nil
 PART.SoundOn = "p00gie/tardis/default/topdoor_open.ogg"
 PART.SoundOff = "p00gie/tardis/default/topdoor_close.ogg"
-PART.AnimateSpeed = 0.6
+PART.AnimateSpeed = 0.8
 TARDIS:AddPart(PART)
 
 
