@@ -1,12 +1,6 @@
 local PART = {}
 PART.ID = "default_doorframe"
-PART.Model = "models/molda/toyota_int/frame.mdl"
-PART.AutoSetup = true
-TARDIS:AddPart(PART)
-
-local PART = {}
-PART.ID = "default_doorframe_light"
-PART.Model = "models/molda/toyota_int/frame2.mdl"
+PART.Model = "models/molda/toyota_int/doorframe.mdl"
 PART.AutoSetup = true
 TARDIS:AddPart(PART)
 

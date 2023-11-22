@@ -162,7 +162,6 @@ T.Interior = {
             angoffset=Angle(0,180,0),
         },
         default_doorframe = {},
-        --default_doorframe_light = {},
         default_floor = {},
         default_entry = {},
         default_walls = {},
@@ -343,6 +342,7 @@ T.Interior = {
         default_key = "toggle_console",
         default_sonic_charger = "sonic_dispenser",
         default_spin_crank = "hads",
+        default_small_switch_17 = "toggle_doorframe_light",
         default_small_switch_18 = "exterior_light",
 
         default_spin_b_1 = "flight",
@@ -521,6 +521,16 @@ T.CustomControls = {
         screen_button = false,
         tip_text = "CustomControls.Default.ToggleScreen.Tip.2",
     },
+
+    toggle_doorframe_light = {
+        int_func=function(self,ply,part)
+            local doorframe = self:GetPart("default_doorframe")
+            doorframe:SetBodygroup(1,part:GetOn() and 0 or 1)
+        end,
+        power_independent = false,
+        screen_button = false,
+        tip_text = nil, -- let this one be an easter-egg-ish feature
+    },
 }
 
 T.CustomSettings = {
@@ -656,7 +666,6 @@ T.Interior = {
             model = "models/parar020100/toyota_int/classic_doors_entry.mdl",
         },
         default_doorframe = false,
-        default_doorframe_light = false,
         default_door_button = { pos = Vector(-345.457, 30.183, 145.419), },
     },
     Controls = {
