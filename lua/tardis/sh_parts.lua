@@ -174,6 +174,26 @@ function TARDIS.ProcessAnimation(self, a)
 
             local move = (not a.stop_anywhere) or moving
 
+            if moving then
+                self.last_moved = CurTime()
+            end
+
+            local moved_recently = CurTime() - (self.last_moved or 0) < 0.1
+
+            if moving and self.SoundLoop and not self.use_sound then
+                self.use_sound = CreateSound(self, self.SoundLoop)
+                self.use_sound:SetSoundLevel(90)
+                self.use_sound:ChangeVolume(self.SoundLoopVolume or 0.75)
+                self.use_sound:Play()
+            elseif self.use_sound and not moved_recently then
+                self.use_sound:Stop()
+                self.use_sound = nil
+
+                if self.SoundStop then
+                    self:EmitSound(self.SoundStop)
+                end
+            end
+
             TARDIS.DoPartAnimation(self, move, a, target, moving)
         else
             TARDIS.DoPartAnimation(self, true, a, target, false)

@@ -335,7 +335,6 @@ T.Interior = {
         default_fiddle1  = "door",
         default_fiddle2  = "doorlock",
         default_crank6 = "cloak",
-        default_crank5 = "spin_switch",
         default_tumblers = "vortex_flight",
         default_button2 = "toggle_scanners",
         default_red_flick_switch = "engine_release",

@@ -6,6 +6,9 @@ PART.AutoSetup = true
 PART.Collision = true
 PART.ShouldTakeDamage = false
 
+PART.SoundLoop = "p00gie/tardis/default/steeringmech_loop.wav"
+PART.SoundLoopVolume = 0.5
+
 PART.Animate = true
 PART.AnimateOptions = {
     Type = "perpetual_use",
@@ -244,6 +247,9 @@ PART.Model = "models/cem/toyota_contr/crank.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 PART.Animate = true
+
+PART.SoundLoop = "p00gie/tardis/default/crank_loop.wav"
+PART.SoundStop = "p00gie/tardis/default/crank_beep.ogg"
 
 PART.AnimateOptions = {
     Type = "perpetual_use",
