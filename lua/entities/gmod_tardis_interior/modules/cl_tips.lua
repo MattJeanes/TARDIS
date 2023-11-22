@@ -179,7 +179,8 @@ hook.Add("HUDPaint", "TARDIS-DrawTips", function()
         end
 
         local part = tip.part and interior:GetPart(tip.part)
-        local shoulddraw = tip:GetHighlight() or TARDIS:GetSetting("tips_show_all")
+        local untraceable = part and IsValid(part) and part.scale
+        local shoulddraw = tip:GetHighlight() or TARDIS:GetSetting("tips_show_all") or untraceable
         local lookedat = part and IsValid(part) and part:BeingLookedAtByLocalPlayer()
         local pos = interior:LocalToWorld(tip.pos or Vector(0,0,0))
         local dist = pos:Distance(player_pos)
