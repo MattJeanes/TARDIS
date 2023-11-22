@@ -343,6 +343,12 @@ local overrides={
         end
         return res
     end, SERVER or CLIENT},
+    ["OnRemove"]={function(self,a,...)
+        if self.use_sound then
+            self.use_sound:Stop()
+            self.use_sound = nil
+        end
+    end, CLIENT},
 }
 
 function SetupOverrides(e)
