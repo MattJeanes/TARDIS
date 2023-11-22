@@ -287,7 +287,7 @@ local overrides={
                 if self.PowerOffSound ~= false or self.interior:GetPower() then
                     local part_sound = nil
 
-                    if self.HasNoPowerSounds and not self.exterior:GetPower() then
+                    if not self.exterior:GetPower() then
                         if self.SoundOffNoPower and on then
                             part_sound = self.SoundOffNoPower
                         elseif self.SoundOnNoPower and (not on) then
@@ -372,7 +372,6 @@ function TARDIS:AddPart(e)
 
     e=table.Copy(e)
     e.HasUseBasic = e.UseBasic ~= nil
-    e.HasNoPowerSounds = (e.SoundNoPower or e.SoundOffNoPower or e.SoundOnNoPower) ~= nil
     e.HasUse = e.Use ~= nil
     e.Base = "gmod_tardis_part"
     local class="gmod_tardis_part_"..e.ID
