@@ -13,6 +13,8 @@ function TARDIS:LoadCustomMusic()
     end
 end
 
+TARDIS:LoadCustomMusic()
+
 function TARDIS:SaveCustomMusic()
     file.Write(MUSIC_FILE, TARDIS.von.serialize(custom_music))
 end
