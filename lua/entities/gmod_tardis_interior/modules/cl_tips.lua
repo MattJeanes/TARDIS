@@ -29,6 +29,11 @@ function ENT:InitializeTips(style_name)
         for setting,value in pairs(interior_tip) do
             tip[setting]=value
         end
+
+        if TARDIS.debug_tips_show_all then
+            tip.text = " "
+        end
+
         if not tip.text then
             if tip.part then
                 local part = TARDIS:GetRegisteredPart(tip.part)

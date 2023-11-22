@@ -44,7 +44,11 @@ concommand.Add("tardis2_debug_func", function(ply,cmd,args)
     TARDIS.DebugFunction(ext,int,ply,cmd,args)
 end)
 
--- Debug messages
+if SERVER then
+    util.AddNetworkString("TARDIS_Debug_Convar")
+end
+
+local convar_update_funcs = {}
 
 local function CreateBoolDebugConVar(name, desc)
     local id = "tardis2_" .. name
@@ -56,15 +60,30 @@ local function CreateBoolDebugConVar(name, desc)
 
     cvars.AddChangeCallback(id, function()
         convar_update()
+
+        -- fixing https://github.com/Facepunch/garrysmod-issues/issues/3740
+        net.Start("TARDIS_Debug_Convar")
+            net.WriteString(id)
+        net.Broadcast()
     end)
 
     convar_update()
+
+    convar_update_funcs[id] = convar_update
 end
+
+net.Receive("TARDIS_Debug_Convar", function(name, len, ply)
+    local id = net.ReadString()
+    if convar_update_funcs[id] then
+        convar_update_funcs[id]()
+    end
+end)
 
 CreateBoolDebugConVar("debug", "TARDIS - debug enabled")
 CreateBoolDebugConVar("debug_chat", "TARDIS - print debug to chat as well")
 CreateBoolDebugConVar("debug_textures", "TARDIS - print the texture list in TextureSet format")
 CreateBoolDebugConVar("debug_tips", "TARDIS - generate tip code when using the part")
+CreateBoolDebugConVar("debug_tips_show_all", "TARDIS - show all existing tips (not depending on their text)")
 
 concommand.Add("tardis2_debug_tips_print", function(ply,cmd,args)
     local int = ply:GetTardisData("interior")
