@@ -81,7 +81,9 @@ matproxy.Add({
             self.current_frame = 0
         end
 
-        mat:SetInt(self.FrameNo, self.current_frame)
+        if mat:GetInt(self.FrameNo) ~= self.current_frame then
+            mat:SetInt(self.FrameNo, self.current_frame)
+        end
     end
 })
 
