@@ -338,7 +338,8 @@ T.Interior = {
         default_crank5 = "spin_switch",
         default_tumblers = "vortex_flight",
         default_button2 = "toggle_scanners",
-        default_red_flick_switch = "fastreturn",
+        default_red_flick_switch = "engine_release",
+        default_bouncy_lever = "fastreturn",
         default_key = "toggle_console",
         default_sonic_charger = "sonic_dispenser",
         default_spin_crank = "hads",
@@ -347,12 +348,13 @@ T.Interior = {
 
         default_spin_b_1 = "flight",
         default_spin_b_2 = "float",
-        default_spin_b_3 = "toggle_scanners",
-        default_spin_b_4 = "spin_toggle",
+        default_spin_b_3 = "physlock",
+        default_spin_b_4 = "spin_cycle",
         default_thick_lever = "shields",
 
         default_flat_switch_1 = "toggle_screen_1",
         default_flat_switch_2 = "toggle_screen_2",
+        default_flat_switch_3 = "toggle_scanners",
 
         default_sonic_dispenser_hitbox = "sonic_dispenser",
     },
@@ -368,42 +370,103 @@ T.Interior = {
         default_side_lever1 = {pos = Vector(103.41, 121.655, 130.044), right = true, down = false, },
         default_side_lever2 = {pos = Vector(-59.115, -151.548, 126.17), right = true, down = false, },
         default_telepathic = {pos = Vector(19.919, 35.908, 130.754), right = true, down = false, },
-        default_console_scanner = {pos = Vector(-24.497, 34.429, 130.864), right = false, down = false, },
-        default_keyboard = {pos = Vector(20.96, -43.773, 128.294), right = true, down = false, },
+        default_keyboard = {pos = Vector(20.64, -39.63, 129.29), right = true, down = true, },
         default_crank4 = {pos = Vector(-34.917, -29.135, 132.425), right = true, down = true, },
         default_toggles = {pos = Vector(39.523, 0.016, 133.705), right = true, down = false, },
         default_buttons = {pos = Vector(10.193, -49.502, 128.582), right = true, down = true,  },
         default_switch2 = {pos = Vector(-35.645, 12.629, 135.094), right = true, down = true,  },
         default_switch = {pos = Vector(-45.646, -17.836, 130.267), right = true, down = true,  },
         default_thick_lever = {pos = Vector(-36.787, -13.688, 134.195), right = true, down = false, },
-        default_crank = {pos = Vector(30.237, -28.123, 132.312), right = true, down = true,  },
+        default_crank = {pos = Vector(30.237, -28.123, 132.312), right = true, down = false,  },
         default_crank2 = {pos = Vector(-9.156, -47.859, 130.481), right = true, down = true, },
         default_crank3 = {pos = Vector(-6.948, -30.268, 137.647), right = false, down = false, },
-        default_crank5 = {pos = Vector(-24.084, 21.564, 136.681), right = false, down = false, },
-        default_crank6 = {pos = Vector(-6.901, 31.399, 136.842), right = false, down = false, },
+        default_crank5 = {pos = Vector(-24.084, 21.564, 136.681), right = true, down = false, },
+        default_crank6 = {pos = Vector(-6.901, 31.399, 136.842), right = false, down = true, },
         default_spin_switch = {pos = Vector(33.531, -25.783, 132.247), right = true, down = false,  },
-        default_tumblers = {pos = Vector(35.573, -11.599, 134.216), right = true, down = false, },
+        default_tumblers = {pos = Vector(35.573, -11.599, 134.216), right = false, down = false, },
         default_button_1 = {pos = Vector(39.263, -4.64, 132.233), right = false, down = false, },
         default_button_2 = {pos = Vector(39.263, 4.64, 132.233), right = true, down = false, },
         default_handle2 = {pos = Vector(-33.066, 10.939, 137.381), right = true, down = false, },
         default_handle1 = {pos = Vector(-32.921, -10.81, 137.31), right = false, down = false, },
         default_red_flick_switch = {pos = Vector(47.918, 20.722, 129.642), right = true, down = true, },
-        default_bouncy_lever = {pos = Vector(37.33, 12.944, 133.946), right = true, down = false, },
+        default_bouncy_lever = { pos = Vector(36.789, 14.121, 134.479), right = true, down = false, },
         default_red_lever_1 = {pos = Vector(-44.239, -12.951, 131.572), right = true, down = false, },
         default_red_lever_2 = {pos = Vector(-44.051, 14.102, 131.376), right = false, down = false, },
-        default_fiddle1 = {pos = Vector(-48.039, 20.423, 128.479), right = false, down = true, },
         default_spin_a_2 = {pos = Vector(-49.221, 4.594, 129.101), right = true, down = true, },
         default_spin_b_3 = {pos = Vector(-32.958, 36.406, 129.314), right = true, down = true, },
         default_spin_b_2 = {pos = Vector(-15.003, 46.519, 128.838), right = true, down = true, },
         default_spin_crank = {pos = Vector(-40.013, -31.619, 130.98), right = false, down = true, },
-        default_key = {pos = Vector(-23.59, -20.837, 137.406), right = true, down = false, },
+        default_key = {pos = Vector(-23.59, -20.837, 137.406), right = false, down = false, },
+
+        default_fiddle1 = { right = false, down = true, },
+        default_fiddle2 = { right = true, down = true, },
+
+        default_small_switch_1 = {right = false, down = true,},
+        default_small_switch_2 = {right = false, down = false,},
+        default_small_switch_3 = {right = true, down = false,},
+        default_small_switch_4 = {right = true, down = true,},
+        default_small_switch_5 = {right = false, down = true,},
+        default_small_switch_6 = {right = false, down = false,},
+        default_small_switch_7 = {right = true, down = false,},
+        default_small_switch_8 = {right = true, down = true,},
+        default_small_switch_9 = {right = false, down = true,},
+        default_small_switch_10 = {right = true, down = false},
+        default_small_switch_11 = {right = false, down = true,},
+        default_small_switch_12 = {right = false, down = false,},
+        default_small_switch_13 = {right = true, down = false,},
+        default_small_switch_14 = {right = true, down = true,},
+        default_small_switch_15 = {right = false, down = true,},
+        default_small_switch_16 = {right = false, down = false,},
+        default_small_switch_17 = {right = true, down = false,},
+        default_small_switch_18 = {right = true, down = true,},
+
+        default_spin_a_1 = {},
+        default_spin_a_2 = {},
+        default_spin_a_3 = {},
+        default_spin_a_4 = {},
+        default_spin_a_5 = {},
+
+        default_spin_b_1 = { right = false, down = true, },
+        default_spin_b_2 = { right = true, down = true, },
+        default_spin_b_3 = { right = false, down = false, },
+        default_spin_b_4 = { right = true, down = true, },
+
+        default_flat_switch_1 = {right = false, down = false, },
+        default_flat_switch_2 = {right = true, down = false, },
+        default_flat_switch_3 = {right = true, down = true, },
+        default_flat_switch_4 = {right = false, down = false, },
+        default_flat_switch_5 = {right = true, down = true, },
+        default_flat_switch_6 = {right = true, down = false,},
+
+        default_side_cranks1 = { pos = Vector(75.28, 139.87, 129.97), right = true, down = true, },
+        default_side_cranks2 = { pos = Vector(-23.13, -157.55, 130.01), right = true, down = true, },
+
+        default_flippers = { pos = Vector(-36.1, 0.49, 131.31), right = true, down = true, },
+        default_spin_big = { pos = Vector(34.71, -30.58, 130.3), right = true, down = true, },
+        default_gears1 = { pos = Vector(-25.47, -28.1, 133.62), right = true, down = true, },
+        default_gears2 = { pos = Vector(-17.79, -39.58, 131.39), right = true, down = true, },
+        default_gears3 = { pos = Vector(-13.37, -28.16, 135.71), right = true, down = true, },
+        default_sonic_dispenser_hitbox = { pos = Vector(8.4, -37.31, 135.07), right = false, down = false, },
+        default_sliders = { pos = Vector(14.79, -31.19, 134.22), right = true, down = true, },
+        default_toggles2 = { pos = Vector(15.55, -24.79, 136.77), right = true, down = true, },
+        default_phone = { pos = Vector(27.75, -35.17, 130.68), right = true, down = true, },
+        default_ducks = { pos = Vector(31.21, -32.59, 130.36), right = true, down = true, },
+        default_colored_lever_1 = { pos = Vector(31.04, -6.4, 135.01), right = true, down = true, },
+        default_colored_lever_2 = { pos = Vector(31.27, -3.28, 134.69), right = true, down = true, },
+        default_colored_lever_3 = { pos = Vector(31.37, -0.02, 134.47), right = true, down = true, },
+        default_colored_lever_4 = { pos = Vector(31.12, 3.29, 135.1), right = true, down = true, },
+        default_colored_lever_5 = { pos = Vector(31.09, 6.44, 135.21), right = true, down = true, },
     },
 
     CustomTips = {
-        {pos = Vector(-36.982, -151.084, 128.849), down = true, right = false, part = "default_side_speakers", },
-        {pos = Vector(-106.793, -119.792, 123.778), down = true, right = true, part = "default_side_speakers", },
-        {pos = Vector(88.949, 132.435, 125.284), down = true, right = true, part = "default_side_speakers", },
-        {pos = Vector(139.173, 77.856, 125.267), down = true, right = true, part = "default_side_speakers", },
+        {pos = Vector(83.96, 122.99, 125.78), right = true, down = true, part = "default_side_speakers", },
+        {pos = Vector(130.65, 71.77, 125.87), right = true, down = true, part = "default_side_speakers", },
+        {pos = Vector(-38.64, -144.1, 125.97), right = true, down = true, part = "default_side_speakers", },
+        {pos = Vector(-101.11, -110.17, 126.19), right = true, down = true, part = "default_side_speakers", },
+        {pos = Vector(-35.68, 28.74, 131.96), right = true, down = false, part = "default_balls", },
+        {pos = Vector(-6.69, 45.46, 131.72), right = false, down = false, part = "default_balls", },
+
+        {pos = Vector(334.946, -34.611, 40.627), text = "Never Gonna Give You Up!\nNever Gonna Let You Down!"}
     },
 }
 
@@ -511,7 +574,7 @@ T.CustomControls = {
         end,
         power_independent = false,
         screen_button = false,
-        tip_text = "CustomControls.Default.ToggleScreen.Tip.1",
+        tip_text = "CustomControls.Default.ToggleScreen.1.Tip",
     },
     toggle_screen_2 = {
         int_func=function(self,ply)
@@ -519,7 +582,7 @@ T.CustomControls = {
         end,
         power_independent = false,
         screen_button = false,
-        tip_text = "CustomControls.Default.ToggleScreen.Tip.2",
+        tip_text = "CustomControls.Default.ToggleScreen.2.Tip",
     },
 
     toggle_doorframe_light = {
@@ -529,7 +592,7 @@ T.CustomControls = {
         end,
         power_independent = false,
         screen_button = false,
-        tip_text = nil, -- let this one be an easter-egg-ish feature
+        tip_text = nil, -- let this one be an easter-egg-ish feature for now
     },
 }
 
@@ -684,7 +747,10 @@ T.Interior = {
 
 T.Exterior = {}
 
-T.Templates = {}
+T.Templates = {
+    default_exterior = false,
+    exterior_ttcapsule_type50 = {override = true,}
+}
 
 
 T.CustomHooks = {
