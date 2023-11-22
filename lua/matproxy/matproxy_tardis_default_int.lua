@@ -99,3 +99,42 @@ matproxy.Add({
         mat:SetVector(self.ResultTo, mat:GetVector(var))
     end,
 })
+
+matproxy.Add({
+    name = "TARDIS_DefaultInt_ThrottleLights",
+    init = function (self, mat, values)
+        self.ResultTo = values.resultvar
+        self.on_var = values.onvar
+        self.off_var = values.offvar
+
+        self.ResultTo2 = values.resultvar2
+        self.on_var2 = values.onvar2
+        self.off_var2 = values.offvar2
+
+        self.ResultTo3 = values.resultvar3
+        self.on_var3 = values.onvar3
+        self.off_var3 = values.offvar3
+    end,
+    bind = function(self, mat, ent)
+        if not IsValid(ent) or not IsValid(ent.interior) or not ent.TardisPart or ent.ID ~= "default_throttle_lights" then
+            mat:SetVector(self.ResultTo, mat:GetVector(self.on_var))
+            mat:SetVector(self.ResultTo2, mat:GetVector(self.on_var2))
+            mat:SetVector(self.ResultTo3, mat:GetVector(self.on_var3))
+            return
+        end
+
+        local throttle = ent.interior:GetPart("default_throttle")
+        if not IsValid(throttle) then return end
+
+        local on = not throttle:GetOn()
+        local var = on and self.on_var or self.off_var
+        local var2 = on and self.on_var2 or self.off_var2
+        local var3 = on and self.on_var3 or self.off_var3
+        if not var or not var2 or not var3 then return end
+
+        mat:SetVector(self.ResultTo, mat:GetVector(var))
+        mat:SetVector(self.ResultTo2, mat:GetVector(var2))
+        mat:SetVector(self.ResultTo3, mat:GetVector(var3))
+    end,
+})
+
