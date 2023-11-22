@@ -9,6 +9,7 @@ PART.ID = "default_floor"
 PART.Model = "models/molda/toyota_int/floor.mdl"
 PART.AutoSetup = true
 PART.Collision = true
+PART.ShouldTakeDamage = true
 TARDIS:AddPart(PART)
 
 local PART={}
@@ -16,6 +17,7 @@ PART.ID = "default_walls"
 PART.Model = "models/molda/toyota_int/walls.mdl"
 PART.AutoSetup = true
 PART.Collision = true
+PART.ShouldTakeDamage = true
 TARDIS:AddPart(PART)
 
 local PART={}
@@ -23,6 +25,7 @@ PART.ID = "default_entry"
 PART.Model = "models/molda/toyota_int/entry.mdl"
 PART.AutoSetup = true
 PART.Collision = true
+PART.ShouldTakeDamage = true
 TARDIS:AddPart(PART)
 
 local PART={}
@@ -30,12 +33,14 @@ PART.ID = "default_pillars"
 PART.Model = "models/molda/toyota_int/pillars.mdl"
 PART.AutoSetup = true
 PART.Collision = true
+PART.ShouldTakeDamage = true
 TARDIS:AddPart(PART)
 
 local PART={}
 PART.ID = "default_roof"
 PART.Model = "models/molda/toyota_int/roof.mdl"
 PART.AutoSetup = true
+PART.ShouldTakeDamage = true
 TARDIS:AddPart(PART)
 
 local PART={}
@@ -86,6 +91,7 @@ PART.ID = "default_console"
 PART.Model = "models/molda/toyota_int/console.mdl"
 PART.AutoSetup = true
 PART.Collision = true
+PART.ShouldTakeDamage = true
 TARDIS:AddPart(PART)
 
 local PART={}
@@ -143,6 +149,7 @@ PART.Model = "models/molda/toyota_int/slidedoors2.mdl"
 PART.AutoSetup = true
 PART.Animate = true
 PART.Collision = true
+PART.ShouldTakeDamage = true
 PART.AnimateSpeed = 1
 PART.Sound = "p00gie/tardis/default/intdoors_open.ogg"
 
@@ -170,10 +177,12 @@ TARDIS:AddPart(PART)
 
 PART.Model = "models/molda/toyota_int/slidedoors3.mdl"
 PART.ID = "default_corridor_doors"
+PART.ShouldTakeDamage = true
 TARDIS:AddPart(PART)
 
 PART.ID = "default_top_doors_1"
 PART.Model = "models/molda/toyota_int/slidedoors1.mdl"
+PART.ShouldTakeDamage = true
 PART.Sound = nil
 PART.SoundOn = "p00gie/tardis/default/topdoor_open.ogg"
 PART.SoundOff = "p00gie/tardis/default/topdoor_close.ogg"
@@ -182,6 +191,7 @@ TARDIS:AddPart(PART)
 
 
 PART.ID = "default_top_doors_2"
+PART.ShouldTakeDamage = true
 TARDIS:AddPart(PART)
 
 PART.Use = nil
@@ -193,10 +203,12 @@ PART.SoundPos = nil
 
 PART.ID = "default_intdoors_static"
 PART.Model = "models/molda/toyota_int/slidedoors2.mdl"
+PART.ShouldTakeDamage = true
 TARDIS:AddPart(PART)
 
 PART.ID = "default_corridor_doors_static"
 PART.Model = "models/molda/toyota_int/slidedoors3.mdl"
+PART.ShouldTakeDamage = true
 TARDIS:AddPart(PART)
 
 local PART={}
@@ -206,6 +218,7 @@ PART.AutoSetup = true
 PART.Collision = true
 PART.UseTransparencyFix = true
 PART.ClientThinkOverride = true
+PART.ShouldTakeDamage = true
 PART.Animate = true
 
 function PART:Initialize()
@@ -237,4 +250,5 @@ PART.ID = "default_corridors"
 PART.Model = "models/molda/toyota_int/corridor_version2.mdl"
 PART.AutoSetup = true
 PART.Collision = true
+PART.ShouldTakeDamage = true
 TARDIS:AddPart(PART)
