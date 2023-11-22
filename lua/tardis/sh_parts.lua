@@ -48,7 +48,6 @@ end
 
 function TARDIS.DrawOverride(self,override)
     if self.NoDraw then return end
-    if self:IsInvisible() then return end
 
     local int=self.interior
     local ext=self.exterior
