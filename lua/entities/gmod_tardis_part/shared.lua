@@ -56,3 +56,14 @@ hook.Add("BodygroupChanged", "tardis_parts", function(ent,bodygroup,value)
         end
     end
 end)
+
+function ENT:SetInvisible(invisible)
+    return self.parent:SetPartInvisible(self.ID, invisible)
+end
+
+function ENT:IsInvisible()
+    local inv_parts = self:GetData("invisible_int_parts")
+
+    if not inv_parts then return false end
+    return inv_parts[self.ID]
+end

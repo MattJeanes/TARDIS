@@ -691,7 +691,7 @@ T.CustomHooks = {
             if not IsValid(entry_part) then return end
 
             entry_part:SetBodyGroups(button_on and "11" or "00")
-            int:SetPartVisible("default_door_button", button_on)
+            int:SetPartInvisible("default_door_button", not button_on)
 
             local button = int:GetPart("default_door_button")
             if IsValid(button) then
@@ -714,7 +714,7 @@ T.CustomHooks = {
 
                     local button = int:GetPart("default_door_button")
                     if IsValid(button) then
-                        button:SetVisible(not pipes)
+                        button:SetInvisible(pipes)
                         button:SetCollide(not pipes, true)
                     end
                 end
