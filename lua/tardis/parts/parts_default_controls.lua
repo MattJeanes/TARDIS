@@ -723,3 +723,10 @@ function PART:Use(ply)
 end
 
 TARDIS:AddPart(PART)
+
+local PART={}
+PART.ID = "default_door_button"
+PART.Model = "models/parar020100/toyota_int/classic_doors_button.mdl"
+PART.AutoSetup = true
+PART.Collision = true
+TARDIS:AddPart(PART)
