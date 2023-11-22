@@ -56,3 +56,7 @@ hook.Add("BodygroupChanged", "tardis_parts", function(ent,bodygroup,value)
         end
     end
 end)
+
+function ENT:SetVisible(visible)
+    return self.parent:SetPartVisible(self.ID, visible)
+end

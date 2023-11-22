@@ -22,6 +22,18 @@ function ENT:GetParts()
     return self.parts
 end
 
+function ENT:SetPartVisible(id, visible)
+    visible = visible or false
+
+    if SERVER then
+        self:SendMessage("part_visibility_change", {id, visible})
+        return
+    end
+
+    self.parts_visible = self.parts_visible or {}
+    self.parts_visible[id] = visible
+end
+
 if CLIENT then
     -- Special rendering for transparent parts
 
@@ -41,5 +53,9 @@ if CLIENT then
         if IsValid(part) and part.Use then
             part:Use(unpack(data, 2))
         end
+    end)
+
+    ENT:OnMessage("part_visibility_change", function(self,data,ply)
+        self:SetPartVisible(data[1], data[2])
     end)
 end
