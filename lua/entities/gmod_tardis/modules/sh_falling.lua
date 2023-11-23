@@ -26,7 +26,7 @@ if SERVER then
 
     end)
 
-	ENT:AddHook("PhysicsUpdate", "falling", function(self,ph)
+    ENT:AddHook("PhysicsUpdate", "falling", function(self,ph)
 
         local free_movement = not self:GetData("float") and not self:GetData("flight") and not self:IsPlayerHolding()
         free_movement = free_movement and ph:IsGravityEnabled() and self:IsAlive()

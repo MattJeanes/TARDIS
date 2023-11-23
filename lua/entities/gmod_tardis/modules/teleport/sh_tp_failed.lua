@@ -6,7 +6,9 @@ if SERVER then
         self:CallCommonHook("DematFailed")
 
         self:SendMessage("failed-demat")
-        self:Timer("failed-demat-stop", 4, function()
+
+        local time = self.metadata.Timings.DematFail
+        self:Timer("failed-demat-stop", time, function()
             self:SetData("failing-demat", false, true)
         end)
     end
@@ -41,7 +43,8 @@ if SERVER then
 
         self:SetData("failing-mat", true, true)
         self:SendMessage("failed-mat")
-        self:Timer("failed-mat-stop", 4, function()
+        local time = self.metadata.Timings.MatFail
+        self:Timer("failed-mat-stop", time, function()
             self:SetData("failing-mat", false, true)
         end)
         if callback then callback(false) end

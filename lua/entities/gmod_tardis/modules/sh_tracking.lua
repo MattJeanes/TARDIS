@@ -84,7 +84,7 @@ if SERVER then
             if IsValid(wasTrackingEnt) and wasTrackingEnt.TardisExterior then
                 wasTrackingEnt:SetData("tracking-tracked-by", nil)
             end
-            
+
             if IsValid(self.trackingdebugprop) then
                 self.trackingdebugprop:Remove()
             end
@@ -94,7 +94,7 @@ if SERVER then
             end
             return true
         end
-      
+
         if ent.TardisPart and ent.ExteriorPart then
             ent = ent.exterior
         end
@@ -524,7 +524,7 @@ if SERVER then
         local ent = data[1]
 
         if self:GetData("pilot") ~= ply then return end
-        
+
         self:SetTracking(ent)
     end)
 else
@@ -550,12 +550,12 @@ else
     hook.Add("PreDrawHalos", "tardis-tracking", function()
         local ext = TARDIS:GetExteriorEnt()
         if not IsValid(ext) then return end
-    
+
         local ent = ext:GetData("tracking-trace-ent")
         if not IsValid(ent) then return end
 
         local entSize = ext:GetData("tracking-trace-ent-size")
-    
+
         local dist = ent:GetPos():Distance(ext:GetPos())
         halo.Add({ent},dist > (TRACKING_MAX_DISTANCE_SET + entSize) and Color(255,0,0) or Color(0,255,0),1,1,1,true,true)
     end)

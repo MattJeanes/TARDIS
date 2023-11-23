@@ -56,6 +56,12 @@ if SERVER then
             self:SetData("teleport-interrupted", true, true)
             self:SetData("teleport-interrupt-time", CurTime(), true)
             self:SetData("teleport-interrupt-effects", true, true)
+        else
+            local time = self.metadata.Timings.DematInterrupt
+            self:SetData("demat-interrupted", true, true)
+            self:Timer("interrupt_demat", time, function()
+                self:SetData("demat-interrupted", nil, true)
+            end)
         end
     end
 

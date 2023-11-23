@@ -96,6 +96,20 @@ TARDIS:AddKeyBind("flight-spindir",{
     exterior=true
 })
 
+function ENT:GetFlight()
+    return self:GetData("flight",false)
+end
+
+function ENT:IsTravelling()
+    return self:CallHook("IsTravelling")
+end
+
+ENT:AddHook("IsTravelling", "flight", function(self)
+    if self:GetFlight() then
+        return true
+    end
+end)
+
 if SERVER then
     function ENT:ToggleFlight()
         local on = not self:GetData("flight",false)
@@ -113,10 +127,6 @@ if SERVER then
         self:CallCommonHook("FlightInterrupted")
 
         self:ExplodeIfFast()
-    end
-
-    function ENT:GetFlight(on)
-        return self:GetData("flight",false)
     end
 
     function ENT:SetFlight(on)

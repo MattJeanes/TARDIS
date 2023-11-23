@@ -172,6 +172,11 @@ T.Exterior = {
         },
     }
 }
+T.Timings = {
+    DematInterrupt = 1,
+    DematFail = 4,
+    MatFail = 8,
+}
 
 TARDIS:AddInterior(T)
 

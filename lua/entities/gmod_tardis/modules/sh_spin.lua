@@ -83,7 +83,7 @@ if SERVER then
             local spinmode = args[1]
             if spinmode == 0 then
                 self:SetSpin(false)
-            else 
+            else
                 self:SetSpin(true, spinmode)
             end
             return self:GetSpinDir()

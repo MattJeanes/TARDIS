@@ -1,6 +1,6 @@
 -- Rendering override
 
-local function predraw_o(self)
+local function predraw_o(self, part)
     if not TARDIS:GetSetting("lightoverride-enabled") then return end
     local lo = self.metadata.Interior.LightOverride
     if not lo then return end
@@ -8,8 +8,24 @@ local function predraw_o(self)
     local power = self:GetPower()
 
     render.SuppressEngineLighting(true)
+
     local br = power and lo.basebrightness or lo.nopowerbrightness
-    render.ResetModelLighting(br, br, br)
+    local col = power and lo.basebrightnessRGB or lo.nopowerbrightnessRGB
+
+    local parts_table = power and lo.parts or lo.parts_nopower
+
+    if part and parts_table and parts_table[part.ID] then
+        local part_br = parts_table[part.ID]
+        if istable(part_br) then
+            render.ResetModelLighting(part_br[1], part_br[2], part_br[3])
+        else
+            render.ResetModelLighting(part_br, part_br, part_br)
+        end
+    elseif col then
+        render.ResetModelLighting(col[1], col[2], col[3])
+    else
+        render.ResetModelLighting(br, br, br)
+    end
 
     --render.SetLightingMode(1)
     local light = self.light_data.main

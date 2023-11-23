@@ -17,6 +17,12 @@ if CLIENT then
         end
     end)
 
+    ENT:AddHook("ShouldTurnOffCloisters", "handbrake", function(self)
+        if self.exterior:GetHandbrake() then
+            return true
+        end
+    end)
+
     ENT:AddHook("Think", "cloistersound", function(self)
         local shouldon=self:CallHook("ShouldTurnOnCloisters")
         local shouldoff=self:CallHook("ShouldTurnOffCloisters")

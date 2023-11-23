@@ -179,7 +179,7 @@ if SERVER then
                 if vel > 1500 then
                     change = change + TARDIS.artron_values.spend_flight_boost
                 elseif vel > 200 then
-                    change = change + TARDIS.artron_values.spend_flight_moving                    
+                    change = change + TARDIS.artron_values.spend_flight_moving
                 end
             end
 

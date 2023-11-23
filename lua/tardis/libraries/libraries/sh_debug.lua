@@ -16,9 +16,11 @@ TARDIS.DebugFunction = function(ext,int,ply,cmd,args)
         -- paste code here
     end
 
+    local lext, lint
+
     if ply.linked_tardis then
-        local lext = ply.linked_tardis
-        local lint = lext.interior
+        lext = ply.linked_tardis
+        lint = lext.interior
     end
 
     if IsValid(lext) then
@@ -42,29 +44,120 @@ concommand.Add("tardis2_debug_func", function(ply,cmd,args)
     TARDIS.DebugFunction(ext,int,ply,cmd,args)
 end)
 
--- Debug messages
+if SERVER then
+    util.AddNetworkString("TARDIS_Debug_Convar")
+end
 
-CreateConVar("tardis2_debug", 0, {FCVAR_ARCHIVE, FCVAR_REPLICATED}, "TARDIS - debug enabled")
-cvars.AddChangeCallback("tardis2_debug", function()
-    TARDIS.debug = GetConVar("tardis2_debug"):GetBool()
+local convar_update_funcs = {}
+
+local function CreateBoolDebugConVar(name, desc)
+    local id = "tardis2_" .. name
+    CreateConVar(id, 0, {FCVAR_ARCHIVE, FCVAR_REPLICATED}, desc)
+
+    local function convar_update()
+        TARDIS[name] = GetConVar(id):GetBool()
+    end
+
+    cvars.AddChangeCallback(id, function()
+        convar_update()
+
+        -- fixing https://github.com/Facepunch/garrysmod-issues/issues/3740
+        net.Start("TARDIS_Debug_Convar")
+            net.WriteString(id)
+        net.Broadcast()
+    end)
+
+    convar_update()
+
+    convar_update_funcs[id] = convar_update
+end
+
+net.Receive("TARDIS_Debug_Convar", function(name, len, ply)
+    local id = net.ReadString()
+    if convar_update_funcs[id] then
+        convar_update_funcs[id]()
+    end
 end)
 
-CreateConVar("tardis2_debug_chat", 0, {FCVAR_ARCHIVE, FCVAR_REPLICATED}, "TARDIS - print debug to chat as well")
+CreateBoolDebugConVar("debug", "TARDIS - debug enabled")
+CreateBoolDebugConVar("debug_chat", "TARDIS - print debug to chat as well")
+CreateBoolDebugConVar("debug_textures", "TARDIS - print the texture list in TextureSet format")
+CreateBoolDebugConVar("debug_tips", "TARDIS - generate tip code when using the part")
+CreateBoolDebugConVar("debug_tips_show_all", "TARDIS - show all existing tips (not depending on their text)")
 
-cvars.AddChangeCallback("tardis2_debug_chat", function()
-    TARDIS.debug_chat = GetConVar("tardis2_debug_chat"):GetBool()
+concommand.Add("tardis2_debug_tips_print", function(ply,cmd,args)
+    local int = ply:GetTardisData("interior")
+    if not IsValid(int) then return end
+
+    print(int.debug_tips_text or "NO TIPS DEBUG TEXT GENERATED")
 end)
 
-CreateConVar("tardis2_debug_textures", 0, {FCVAR_ARCHIVE, FCVAR_REPLICATED},
-    "TARDIS - print the list of textures in TextureSet / ChangeTexture form")
+concommand.Add("tardis2_debug_tips_reset", function(ply,cmd,args)
+    local int = ply:GetTardisData("interior")
+    if not IsValid(int) then return end
 
-cvars.AddChangeCallback("tardis2_debug_textures", function()
-    TARDIS.debug_textures = GetConVar("tardis2_debug_textures"):GetBool()
+    int.debug_tips_text = nil
 end)
 
-TARDIS.debug = GetConVar("tardis2_debug"):GetBool()
-TARDIS.debug_chat = GetConVar("tardis2_debug_chat"):GetBool()
-TARDIS.debug_textures = GetConVar("tardis2_debug_textures"):GetBool()
+TARDIS.DebugTipsFunction = function(self, ply, ...)
+    local int = self.interior
+
+    local trace = {
+        start = ply:EyePos(),
+        endpos = ply:EyePos() + (ply:GetAimVector() * 4096),
+        filter = { ply, },
+    }
+
+    local trace_res = util.TraceLine(trace)
+
+    if not trace_res.Hit then return end
+
+    int.debug_tips_text = int.debug_tips_text or ""
+
+    local tip_pos = int:WorldToLocal(trace_res.HitPos)
+    tip_pos.z = tip_pos.z - 1
+
+    local ent = trace_res.Entity
+    local id = ent.TardisPart and ent.ID or nil
+
+    local function sm(x) return math.Round(x,2) end
+
+    local function add_tip_text(pos)
+        local tip_string = "{ pos = Vector(" .. sm(pos.x) .. ", " .. sm(pos.y) .. ", " .. sm(pos.z)
+        tip_string = tip_string .. "), right = true, down = true, },"
+
+        if id then
+            tip_string = id .. " = " .. tip_string
+        end
+
+        int.debug_tips_text = int.debug_tips_text .. "    " .. tip_string .. "\n"
+    end
+
+    TARDIS:Debug(id or ent, sm(tip_pos.x), sm(tip_pos.y), sm(tip_pos.z))
+
+    local p_pos = int:LocalToWorld(tip_pos)
+    if IsValid(int.tip_debug_pointer) then
+
+        if ply:KeyDown(IN_WALK) then
+            p_pos = int.tip_debug_pointer:GetPos()
+        end
+
+        int.tip_debug_pointer:Remove()
+    end
+
+    local p = ents.Create("gmod_tardis_debug_pointer")
+    p:SetCreator(ply)
+    p:SetPos(p_pos)
+    p.Use = function(ptr)
+        add_tip_text(int:WorldToLocal(ptr:GetPos()))
+        ply:ChatPrint("Added. Use tardis2_debug_tips_print to get the list.")
+    end
+    p:Spawn()
+    p:Activate()
+    int:DeleteOnRemove(p)
+    int.tip_debug_pointer = p
+
+end
 
 concommand.Add("tardis2_debug_warning", function(ply,cmd,args)
     local ext = ply:GetTardisData("exterior")

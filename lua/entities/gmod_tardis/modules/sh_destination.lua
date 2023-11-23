@@ -344,6 +344,12 @@ if SERVER then
             end
         end
     end)
+
+    ENT:AddHook("Destination", "destination_exit", function(self, ply, enabled)
+        if enabled then return end
+
+        ply:SetTardisData("destination_last_exit", CurTime(), true)
+    end)
 else
     local defaultdist = 210
     function ENT:GetDestinationPropPos(ply, pos, ang)
@@ -623,10 +629,10 @@ else
         if not IsValid(ext) then return end
         if not LocalPlayer():GetTardisData("destination") then return end
         if not ext:GetData("destination-trace") then return end
-    
+
         local pos, ang = ext:GetDestinationPropTrace(LocalPlayer(),LocalPlayer():EyeAngles())
         ext:DrawViewCrosshair(pos,ang)
-    end)    
+    end)
 end
 
 function ENT:GetDestination()
