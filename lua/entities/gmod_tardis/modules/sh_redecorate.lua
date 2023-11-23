@@ -12,6 +12,9 @@ local saved_data_names = {
     "fastreturn-ang",
     "artron-val",
     "security",
+    "chameleon_active",
+    "chameleon_current_exterior",
+    "chameleon_exterior_last_selector",
 }
 
 if SERVER then
@@ -31,12 +34,11 @@ if SERVER then
             return false
         end
 
-        local ply = self:GetCreator()
-        local chosen_int = TARDIS:GetSetting("redecorate-interior", ply)
+        local chosen_int = TARDIS:GetSetting("redecorate-interior", self)
         local random_int = false
         if not chosen_int then
             random_int = true
-            chosen_int = TARDIS:SelectNewRandomInterior(self.metadata.ID, ply)
+            chosen_int = TARDIS:SelectNewRandomInterior(self.metadata.ID, self)
         end
 
         self:SetData("redecorate-interior", chosen_int)
@@ -49,7 +51,7 @@ if SERVER then
             return false
         end
         if random_int then
-            TARDIS:Message(ply, "Controls.Redecorate.RandomInteriorWarning")
+            TARDIS:Message(self:GetCreator(), "Controls.Redecorate.RandomInteriorWarning")
         end
         return true
     end
@@ -64,7 +66,7 @@ if SERVER then
         local ply = self:GetCreator()
 
         self:SetData("repairing", false, true)
-        self:ChangeHealth(TARDIS:GetSetting("health-max"))
+        self:ChangeHealth(self:GetHealthMax())
         self:SetPower(true)
 
         -- save tardis state
@@ -187,15 +189,17 @@ if SERVER then
         parent:SetCollisionGroup(COLLISION_GROUP_IN_VEHICLE)
 
         self:Timer("redecorate_materialise", 1, function()
-            parent:ForcePlayerDrop()
-            parent:SetData("redecorate_mat_started", true)
+            if IsValid(parent) then
+                parent:ForcePlayerDrop()
+                parent:SetData("redecorate_mat_started", true)
+            end
 
             phys:Wake()
             self:SetFastRemat(true, true)
             self:Mat()
 
             local ply = self:GetCreator()
-            if ply and ply.linked_tardis == parent then
+            if IsValid(ply) and ply.linked_tardis == parent then
                 ply.linked_tardis = self
                 net.Start("Sonic-SetLinkedTARDIS")
                     net.WriteEntity(self)

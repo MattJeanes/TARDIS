@@ -78,11 +78,18 @@ if SERVER then
     end
 
     function ENT:Demat(pos, ang, callback, force)
-        local ignore_failed_demat = self:GetData("redecorate")
 
-        if self:CallHook("CanDemat", force, ignore_failed_demat) == false then
-            self:HandleNoDemat(pos, ang, callback, force)
-            return
+        force = force or self:CallCommonHook("ShouldForceDemat", pos, ang)
+
+        if self:CallHook("CanDemat", force, false) == false then
+            return callback and callback(false)
+        end
+
+        local redecorating = self:GetData("redecorate")
+
+        if self:CallHook("ShouldFailDemat", force, pos, ang) == true and not redecorating then
+            self:FailDemat()
+            return callback and callback(false)
         end
 
         if not self:DematDoorCheck(pos, ang, callback, force) then return end
@@ -96,7 +103,8 @@ if SERVER then
 
         pos = pos or self:GetDestinationPos(true)
         ang = ang or self:GetDestinationAng(true)
-        self:SetDestination(pos, ang, true)
+        pos,ang = self:CallCommonHook("DestinationOverride", pos, ang) or pos,ang
+        self:SetDestination(pos, ang)
 
         self:SendMessage("demat", { self:GetDestinationPos(true) } )
         self:SetData("demat",true)
@@ -195,9 +203,8 @@ if SERVER then
         self:CallHook("StopMat")
     end
 
-    ENT:AddHook("CanDemat", "teleport", function(self, force, ignore_fail_demat)
-        if self:GetData("teleport") or self:GetData("vortex") or (not self:GetPower())
-        then
+    ENT:AddHook("CanDemat", "teleport", function(self, force, check_failed)
+        if self:GetData("teleport") or self:GetData("vortex") or (not self:GetPower()) then
             return false
         end
     end)
@@ -245,7 +252,7 @@ else
             local sound_fullflight_ext = ext.fullflight
             local sound_fullflight_int = int.fullflight or ext.fullflight
 
-            if (self:GetData("health-warning", false) or self:GetData("force-demat", false))
+            if (self:IsLowHealth() or self:GetData("force-demat", false))
                 and not self:GetData("redecorate")
             then
                 sound_demat_ext = ext.demat_damaged
@@ -255,11 +262,12 @@ else
                 sound_fullflight_int = int.fullflight_damaged or ext.fullflight_damaged
             end
 
+            local sound_demat_hads_ext = ext.demat_hads
+            local sound_demat_hads_int = int.demat_hads or ext.demat_hads
+
             local pos = data[1]
 
             if LocalPlayer():GetTardisData("exterior")==self then
-                local intsound = int.demat or ext.demat
-                local extsound = ext.demat
                 if self:GetFastRemat() then
                     if shouldPlayInterior then
                         self.interior:EmitSound(sound_fullflight_int)
@@ -269,21 +277,33 @@ else
                     end
                 else
                     if shouldPlayInterior then
-                        self.interior:EmitSound(sound_demat_int)
+                        if self:GetData("hads-demat") then
+                            self.interior:EmitSound(sound_demat_hads_int)
+                        else
+                            self.interior:EmitSound(sound_demat_int)
+                        end
                     end
                     if shouldPlayExterior then
-                        self:EmitSound(sound_demat_ext)
+                        if self:GetData("hads-demat") then
+                            self:EmitSound(sound_demat_hads_ext)
+                        else
+                            self:EmitSound(sound_demat_ext)
+                        end
                     end
                 end
             elseif shouldPlayExterior then
                 if self:GetFastRemat() then
                     sound.Play(sound_demat_fast_ext,self:GetPos())
                 else
-                    sound.Play(sound_demat_ext,self:GetPos())
+                    if self:GetData("hads-demat") then
+                        sound.Play(sound_demat_hads_ext,self:GetPos())
+                    else
+                        sound.Play(sound_demat_ext,self:GetPos())
+                    end
                 end
                 if pos and self:GetFastRemat() then
                     if not IsValid(self) then return end
-                    if self:GetData("health-warning", false) and (self:GetFastRemat())==true then
+                    if self:IsLowHealth() and self:GetFastRemat() then
                         sound.Play(ext.mat_damaged_fast, pos)
                     else
                         sound.Play(ext.mat_fast, pos)
@@ -305,7 +325,7 @@ else
             local int = self.metadata.Interior.Sounds.Teleport
             local pos=data[1]
             if LocalPlayer():GetTardisData("exterior")==self and (not self:GetFastRemat()) then
-                if self:GetData("health-warning", false) then
+                if self:IsLowHealth() then
                     if shouldPlayExterior then
                         self:EmitSound(ext.mat_damaged)
                     end
@@ -321,7 +341,7 @@ else
                     end
                 end
             elseif not self:GetFastRemat() and shouldPlayExterior then
-                if self:GetData("health-warning", false) then
+                if self:IsLowHealth() then
                     sound.Play(ext.mat_damaged,pos)
                 else
                     sound.Play(ext.mat,pos)
@@ -370,11 +390,14 @@ function ENT:SetStepDelay()
     local demat=self:GetData("demat")
     local fast=self:GetFastRemat()
     local mat=self:GetData("mat")
+    local hads=self:GetData("hads-triggered")
     if not (demat or mat) then return end
 
     local teleport_md = self.metadata.Exterior.Teleport
     local sequence_delays
-    if demat then
+    if hads then
+        sequence_delays = teleport_md.DematHadsSequenceDelays
+    elseif demat then
         if fast then
             sequence_delays = teleport_md.DematFastSequenceDelays
         else
@@ -396,10 +419,14 @@ function ENT:SetStepDelay()
 end
 
 function ENT:GetTargetAlpha()
-    local demat=self:GetData("demat")
-    local mat=self:GetData("mat")
-    local step=self:GetData("step",1)
-    if demat and (not mat) then
+    local demat = self:GetData("demat")
+    local mat = self:GetData("mat")
+    local hads = self:GetData("hads-triggered")
+    local step = self:GetData("step",1)
+
+    if demat and hads then
+        return self.metadata.Exterior.Teleport.HadsDematSequence[step]
+    elseif demat and (not mat) then
         return self.metadata.Exterior.Teleport.DematSequence[step]
     elseif mat and (not demat) then
         return self.metadata.Exterior.Teleport.MatSequence[step]
@@ -409,8 +436,9 @@ function ENT:GetTargetAlpha()
 end
 
 ENT:AddHook("Think","teleport",function(self,delta)
-    local demat=self:GetData("demat")
-    local mat=self:GetData("mat")
+    local demat = self:GetData("demat")
+    local hads = self:GetData("hads-demat")
+    local mat = self:GetData("mat")
     if not (demat or mat) then return end
     local alpha=self:GetData("alpha",255)
     local target=self:GetTargetAlpha()
@@ -419,9 +447,11 @@ ENT:AddHook("Think","teleport",function(self,delta)
     local teleport_md = self.metadata.Exterior.Teleport
     local fast = self:GetFastRemat()
 
+    local demat_steps = hads and #teleport_md.HadsDematSequence or #teleport_md.DematSequence
+
     if alpha==target then
         if demat then
-            if step>=#teleport_md.DematSequence then
+            if step >= demat_steps then
                 self:StopDemat()
                 return
             else
@@ -429,7 +459,7 @@ ENT:AddHook("Think","teleport",function(self,delta)
                 self:SetStepDelay()
             end
         elseif mat then
-            if step>=#teleport_md.MatSequence then
+            if step >= #teleport_md.MatSequence then
                 self:StopMat()
                 return
             else
@@ -442,8 +472,11 @@ ENT:AddHook("Think","teleport",function(self,delta)
 
     if self:GetData("step-delay") and self:GetData("step-delay")>CurTime() then return end
     local sequencespeed = (fast and teleport_md.SequenceSpeedFast or teleport_md.SequenceSpeed)
-    if self:GetData("health-warning",false) then
+    if self:IsLowHealth() then
         sequencespeed = (fast and teleport_md.SequenceSpeedWarnFast or teleport_md.SequenceSpeedWarning)
+    end
+    if self:GetData("hads-demat") then
+        sequencespeed = teleport_md.SequenceSpeedHads
     end
     alpha=math.Approach(alpha,target,delta*66*sequencespeed)
     self:SetData("alpha",alpha)
@@ -457,6 +490,11 @@ function ENT:GetSequenceProgress()
     local tp_metadata = self.metadata.Exterior.Teleport
     local demat = self:GetData("demat")
     local sequence = demat and tp_metadata.DematSequence or tp_metadata.MatSequence
+
+    if self:GetData("hads-demat") then
+        sequence = tp_metadata.HadsDematSequence
+    end
+
     local start_alpha = demat and 255 or 0
 
     local steps = #sequence - 1

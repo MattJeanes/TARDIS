@@ -1,7 +1,18 @@
 -- Teleport hooks
 
-if SERVER then
+ENT:AddHook("CanTrack","teleport",function(self,state)
+    if self:GetData("teleport") then
+        return false
+    end
+end)
 
+ENT:AddHook("IsTravelling", "teleport", function(self)
+    if self:GetData("teleport") or self:GetData("vortex") then
+        return true
+    end
+end)
+
+if SERVER then
     ENT:AddHook("CanToggleDoor","teleport",function(self,state)
         if self:GetData("teleport") then
             return false
@@ -38,6 +49,12 @@ if SERVER then
         end
     end)
 
+    ENT:AddHook("ShouldNotPlayLandingSound", "teleport", function(self)
+        if self:GetData("teleport") then
+            return true
+        end
+    end)
+
     ENT:AddHook("ShouldExteriorDoorCollide", "teleport", function(self,open)
         if self:GetData("teleport") or self:GetData("vortex") then
             return false
@@ -61,6 +78,12 @@ if SERVER then
     ENT:AddHook("ShouldDrawShadow", "teleport", function(self)
         if self:GetData("teleport") or self:GetData("vortex") then
             return false
+        end
+    end)
+
+    ENT:AddHook("ShouldStopFire", "teleport", function(self)
+        if self:GetData("teleport") or self:GetData("vortex") then
+            return true
         end
     end)
 else

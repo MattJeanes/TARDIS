@@ -11,6 +11,9 @@ TARDIS.debug_lamps_enabled = GetConVar("tardis2_debug_lamps"):GetBool()
 
 local function ParseLightTable(lt, interior, default_falloff)
     if SERVER then return end
+
+    if not lt then return end
+
     lt.falloff = lt.falloff or default_falloff
     -- default falloff values were taken from cl_render.lua::predraw_o
 
@@ -85,12 +88,38 @@ local function ParseLightTable(lt, interior, default_falloff)
 end
 
 if CLIENT then
+    local function MergeLightTable(tbl, base)
+        local new_table = TARDIS:CopyTable(base)
+        if not tbl then return new_table end
+
+        new_table.NoLO = nil
+        new_table.NoExtra = nil
+        new_table.NoExtraNoLO = nil
+
+        table.Merge(new_table, tbl)
+        return new_table
+    end
+
     function ENT:LoadLights()
-        local light = self.metadata.Interior.Light
-        local lights = self.metadata.Interior.Lights
+        local noLO = not TARDIS:GetSetting("lightoverride-enabled")
+        local noExtra = not TARDIS:GetSetting("extra-lights")
+
+        local int_metadata = self.metadata.Interior
+        local light = int_metadata.Light
+        local lights = int_metadata.Lights
+
+        local light_alt
+
+        if noLO and noExtra then
+            light_alt = light.NoExtraNoLO or light.NoLO
+        elseif noLO then
+            light_alt = light.NoLO
+        elseif noExtra then
+            light_alt = light.NoExtra
+        end
 
         self.light_data = {
-            main = TARDIS:CopyTable(light),
+            main = MergeLightTable(light_alt, light),
             extra = {},
         }
         ParseLightTable(self.light_data.main, self, 20)
@@ -98,7 +127,11 @@ if CLIENT then
         if not lights then return end
         for k,v in pairs(lights) do
             if v and istable(v) then
-                self.light_data.extra[k] = TARDIS:CopyTable(v)
+                local v_alt
+                if noLO then
+                    v_alt = v.NoLO
+                end
+                self.light_data.extra[k] = MergeLightTable(v_alt, v)
                 ParseLightTable(self.light_data.extra[k], self, 10)
             end
         end
@@ -108,13 +141,18 @@ if CLIENT then
         self:LoadLights()
     end)
 
+    ENT:AddHook("SettingChanged", "lights", function(self, id, val)
+        if id ~= "lightoverride-enabled" and id ~= "extra-lights" then return end
+        self:LoadLights()
+    end)
+
     function ENT:DrawLight(id,light)
         if self:CallHook("ShouldDrawLight",id,light)==false then return end
 
         local dlight = DynamicLight(id, true)
         if not dlight then return end
 
-        local warning = self:GetData("health-warning", false)
+        local warning = self:GetData("warning", false)
         local power = self:GetPower()
 
         if not power and warning then
@@ -271,7 +309,7 @@ if CLIENT then
 
     local function SelectLampTable(self, lmp)
         local state = self:GetData("light_state")
-        local warning = self:GetData("health-warning", false)
+        local warning = self:GetData("warning", false)
         local power = self:GetPower()
         local l = lmp
 
@@ -326,7 +364,7 @@ if CLIENT then
 
     ENT:AddHook("PowerToggled", "lamps", ReplaceLamps)
 
-    ENT:AddHook("HealthWarningToggled", "lamps", ReplaceLamps)
+    ENT:AddHook("WarningToggled", "lamps", ReplaceLamps)
 
 
     function ENT:RunLampUpdate()
@@ -472,6 +510,9 @@ if SERVER then
 
         for k,v in pairs(lamps) do
             if v then
+                if not v.color then
+                    v.color = Color(255,255,255)
+                end
                 local lamp = MakeLamp(nil, -- creator
                     v.color.r, v.color.g, v.color.b,
                     KEY_NONE, -- toggle key
@@ -576,9 +617,11 @@ if CLIENT then
     ENT:AddHook("SlowThink", "lights", function(self)
         local pos = self:GetPos()
         if self.lights_lastpos == pos then return end
+        if self.lights_lastpos ~= nil then
+            self:LoadLights()
+            self:LoadLamps()
+            self:CreateLamps()
+        end
         self.lights_lastpos = pos
-        self:LoadLights()
-        self:LoadLamps()
-        self:CreateLamps()
     end)
 end
