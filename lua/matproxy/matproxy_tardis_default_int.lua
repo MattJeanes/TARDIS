@@ -126,7 +126,7 @@ matproxy.Add({
         local throttle = ent.interior:GetPart("default_throttle")
         if not IsValid(throttle) then return end
 
-        local on = not throttle:GetOn()
+        local on = throttle:GetOn()
         local var = on and self.on_var or self.off_var
         local var2 = on and self.on_var2 or self.off_var2
         local var3 = on and self.on_var3 or self.off_var3
