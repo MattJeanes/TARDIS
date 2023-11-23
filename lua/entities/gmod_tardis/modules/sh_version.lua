@@ -51,7 +51,7 @@ local function get_release_notes(newVersion)
                 end,
                 TARDIS:GetPhrase("Common.No"),
                 function() end,
-                TARDIS:GetPhrase("Common.DontAskAgain"),
+                TARDIS:GetPhrase("Update.NeverShow"),
                 function()
                     TARDIS:SetSetting("show_release_notes", false)
                 end
