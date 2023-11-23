@@ -649,7 +649,6 @@
     "TipStyles.Default": "По-умолчанию (определяются интерьером)",
     "TipStyles.WhiteOnBlue": "Белые на синем",
     "TipStyles.WhiteOnGrey": "Белые на cером",
-    "Update.NeverShow": "",
     "Update.ShowReleaseNotes": "",
     "Update.Updated": "",
     "Vortex.ModelMissing": "ПРЕДУПРЕЖДЕНИЕ: Ошибочная модель воронки времени - воронка будет отключена. Проверьте, добавлены ли все необходимые аддоны?",
