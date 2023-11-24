@@ -737,8 +737,8 @@ T.Interior = {
     Sounds = {
         Door={
             enabled=true,
-            open="karmal/toyota/intdoor.wav",
-            close="karmal/toyota/intdoor.wav",
+            open="karmal/toyota_int/intdoor.wav",
+            close="karmal/toyota_int/intdoor.wav",
         },
     },
     IntDoorAnimationTime = 3.5,
