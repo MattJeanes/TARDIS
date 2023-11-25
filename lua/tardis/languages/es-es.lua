@@ -652,7 +652,6 @@ T.Phrases = {
     ["TipStyles.Default"] = "Predeterminado (definido por el interior)",
     ["TipStyles.WhiteOnBlue"] = "Blanco sobre azul",
     ["TipStyles.WhiteOnGrey"] = "Blanco sobre gris",
-    ["Update.NeverShow"] = "Nunca mostrar actualizaciones",
     ["Update.ShowReleaseNotes"] = "¿Quieres saber más?",
     ["Update.Updated"] = "La TARDIS ha sido actualizada a la versión '%s'",
     ["Vortex.ModelMissing"] = "ADVERTENCIA: El modelo del vórtice es inválido - desactivando vórtice. ¿Le falta una dependencia?",
