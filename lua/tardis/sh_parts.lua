@@ -405,7 +405,7 @@ function TARDIS:AddPart(e)
     if postinit then
         SetupOverrides(e)
     else
-        table.insert(overridequeue,e)
+        overridequeue[e.ID] = e
     end
     parts[e.ID] = { class = class, source = source }
 end
