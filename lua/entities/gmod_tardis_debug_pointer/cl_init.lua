@@ -26,7 +26,6 @@ function ENT:UpdateRenderBounds()
     else
         self:SetRenderBounds(self:OBBMins(), self:OBBMaxs())
     end
-
 end
 
 function ENT:Think()

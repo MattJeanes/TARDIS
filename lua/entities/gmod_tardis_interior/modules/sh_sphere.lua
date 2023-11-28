@@ -4,15 +4,15 @@ function ENT:GetSphere()
     return self:GetData("sphere-center", Vector(0, 0, 0)), self:GetData("sphere-radius", 0)
 end
 
-hook.Add("PostDrawTranslucentRenderables", "tardis-sphere", function()
-    for k, v in pairs(ents.FindByClass("gmod_tardis_interior")) do
-        local center,radius = v:GetSphere()
-        if radius then
-            local pos = v:LocalToWorld(center)
-            render.DrawWireframeSphere(pos, radius, 20, 20, Color(255, 255, 255), true)
-        end
-    end
-end)
+-- hook.Add("PostDrawTranslucentRenderables", "tardis-sphere", function()
+--     for k, v in pairs(ents.FindByClass("gmod_tardis_interior")) do
+--         local center,radius = v:GetSphere()
+--         if radius then
+--             local pos = v:LocalToWorld(center)
+--             render.DrawWireframeSphere(pos, radius, 20, 20, Color(255, 255, 255), true)
+--         end
+--     end
+-- end)
 
 if CLIENT then return end
 
