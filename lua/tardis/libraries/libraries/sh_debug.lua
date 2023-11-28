@@ -223,6 +223,52 @@ concommand.Add("tardis2_debug_ply_pos", function(ply,cmd,args)
     print(tostring(int:WorldToLocal(ply:GetPos())))
 end)
 
+concommand.Add("tardis2_debug_minmax", function(ply,cmd,args)
+    local int = ply:GetTardisData("interior")
+    if not IsValid(int) or not ply:IsAdmin() then return end
+
+    int.ExitBox = {
+        Min = Vector(-16384, -16384, -16384),
+        Max = Vector(16384, 16384, 16384),
+    }
+    ply:ChatPrint("ExitDistance/Box disabled")
+
+    local function create_pointer(pos)
+        local p = ents.Create("gmod_tardis_debug_pointer")
+        p:SetCreator(ply)
+        p:SetPos(int:LocalToWorld(pos))
+        int:DeleteOnRemove(p)
+        return p
+    end
+
+    local min, max
+    if args[1] == "exit" and int.metadata.Interior.ExitBox.Min and int.metadata.Interior.ExitBox.Max then
+        min = int.metadata.Interior.ExitBox.Min
+        max = int.metadata.Interior.ExitBox.Max
+        ply:ChatPrint("Created pointers for T.Interior.ExitBox")
+    elseif (args[1] == "size" or not args[1]) and int.metadata.Interior.Size.Min and int.metadata.Interior.Size.Max then
+        min = int.metadata.Interior.Size.Min
+        max = int.metadata.Interior.Size.Max
+        ply:ChatPrint("Created pointers for T.Interior.Size")
+    else
+        ply:ChatPrint("Min/Max not found, creating two default pointers")
+        local hitPos = ply:GetEyeTraceNoCursor().HitPos
+        min = int:WorldToLocal(hitPos)
+        max = int:WorldToLocal(hitPos + Vector(0,0,100))
+    end
+
+    local min_pointer = create_pointer(min)
+    local max_pointer = create_pointer(max)
+    
+    min_pointer:SetOther(max_pointer)
+    min_pointer:SetDrawAABox(true)
+    min_pointer:Spawn()
+    min_pointer:Activate()
+    
+    max_pointer:Spawn()
+    max_pointer:Activate()
+end)
+
 if SERVER then
     util.AddNetworkString("TARDIS-Debug")
 end
