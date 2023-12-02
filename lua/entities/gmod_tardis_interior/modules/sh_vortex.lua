@@ -11,3 +11,11 @@ ENT:AddHook("ShouldTeleportPortal", "vortex", function(self,portal)
         return false
     end
 end)
+
+if CLIENT then
+    ENT:AddHook("ShouldTurnOffFlightSound", "vortex", function(self)
+        if self:GetData("vortex",false) and self.exterior:GetFastRemat() then
+            return true
+        end
+    end)
+end

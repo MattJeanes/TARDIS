@@ -12,7 +12,7 @@ TARDIS:AddControl({
     screen_button = {
         virt_console = true,
         mmenu = false,
-        popup_only = true,
+        popup_only = false,
         toggle = true,
         frame_type = {2, 1},
         text = "Controls.Shields",

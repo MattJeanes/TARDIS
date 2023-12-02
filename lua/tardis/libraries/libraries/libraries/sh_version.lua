@@ -185,25 +185,27 @@ end
 
 function TARDIS:RunMigrations()
     local versions = table.GetKeys(self.Migrations)
-    if #versions == 0 then return end
+    
+    if #versions > 0 then
+        local filteredVersions = {}
+        local previousVersion = get_previous_version()
+        for _, version in ipairs(versions) do
+            if self:IsVersionHigherThan(previousVersion, version) then
+                table.insert(filteredVersions, version)
+            end
+        end
 
-    local filteredVersions = {}
-    local previousVersion = get_previous_version()
-    for _, version in ipairs(versions) do
-        if self:IsVersionHigherThan(previousVersion, version) then
-            table.insert(filteredVersions, version)
+        table.sort(filteredVersions, function(a,b)
+            return self:IsVersionHigherThan(a,b)
+        end)
+
+        for _, version in ipairs(filteredVersions) do
+            for name, migration in pairs(self.Migrations[version]) do
+                print("[TARDIS] Running migration " .. name .. " (" .. version .. ")")
+                migration.func(self)
+            end
         end
     end
-
-    table.sort(filteredVersions, function(a,b)
-        return self:IsVersionHigherThan(a,b)
-    end)
-
-    for _, version in ipairs(filteredVersions) do
-        for name, migration in pairs(self.Migrations[version]) do
-            print("[TARDIS] Running migration " .. name .. " (" .. version .. ")")
-            migration.func(self)
-        end
-    end
+    
     file.Write(VERSION_FILE, self:GetVersionString())
 end

@@ -18,7 +18,7 @@ end)
 
 if SERVER then return end
 
-local function get_release_notes(newVersion)
+local function get_release_notes(version, newVersion)
     local show = TARDIS:GetSetting("show_release_notes")
     if not show then return end
     local headers = {
@@ -26,7 +26,7 @@ local function get_release_notes(newVersion)
     }
     local function onsuccess(body, size, headers, code)
         if code ~= 200 then
-            print("Failed to retrieve TARDIS release notes for " .. newVersion .. ", code: " .. code .. ", body: " .. body)
+            print("Failed to retrieve TARDIS release notes for " .. version .. ", code: " .. code .. ", body: " .. body)
             return
         end
         local data = util.JSONToTable(body)
@@ -51,7 +51,7 @@ local function get_release_notes(newVersion)
                 end,
                 TARDIS:GetPhrase("Common.No"),
                 function() end,
-                TARDIS:GetPhrase("Common.DontAskAgain"),
+                TARDIS:GetPhrase("Update.NeverShow"),
                 function()
                     TARDIS:SetSetting("show_release_notes", false)
                 end
@@ -59,11 +59,25 @@ local function get_release_notes(newVersion)
         end
     end
     local function onfailure(reason)
-        print("Failed to retrieve TARDIS release notes for " .. newVersion .. ": " .. reason)
+        print("Failed to retrieve TARDIS release notes for " .. version .. ": " .. reason)
     end
-    http.Fetch("https://api.github.com/repos/MattJeanes/TARDIS/releases/tags/" .. newVersion, onsuccess, onfailure, headers)
+    http.Fetch("https://api.github.com/repos/MattJeanes/TARDIS/releases/tags/" .. version, onsuccess, onfailure, headers)
 end
 
 ENT:AddHook("NewVersion", "version", function(self, newVersion, newVersionStr, oldVersion, oldVersionStr)
-    get_release_notes(newVersionStr)
+    if oldVersion.Major == newVersion.Major and oldVersion.Minor == newVersion.Minor then
+        return -- only show release notes for major/minor version changes
+    end
+
+    -- always show release notes for the first update of a new major/minor version
+
+    -- this ensures users see the new changes and not the subsequent bug fixes to them
+    -- improvements added in patch versions will be retroactively added to the release notes
+    -- for the first update of a new major/minor version so users see them, however
+    -- this should be relatively uncommon as patch versions are usually just bug fixes
+    
+    local version = table.Copy(newVersion)
+    version.Patch = 0 
+    local versionStr = TARDIS:GetVersionString(version)
+    get_release_notes(versionStr, newVersionStr)
 end)

@@ -5,7 +5,11 @@ end
 
 TARDIS.InteriorIcons = TARDIS.InteriorIcons or {}
 
+list.Set( "ContentCategoryIcons", "#TARDIS.Spawnmenu.Category", "vgui/tardis_icon.png" )
+list.Set( "ContentCategoryIcons", "#TARDIS.Spawnmenu.CategoryTools", "vgui/tardis_icon.png" )
+
 if CLIENT then
+
     -- this option would be very useful for developers but noone else
     CreateClientConVar("tardis2_spawnmenu_copy_id", 0, {FCVAR_ARCHIVE}, "TARDIS - show 'copy id' option in the spawnmenu")
     TARDIS.spawnmenu_copy_id = GetConVar("tardis2_spawnmenu_copy_id"):GetBool()

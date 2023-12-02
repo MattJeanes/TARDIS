@@ -437,7 +437,7 @@ else
                 local attachment
                 if md then
                     local p = md.Parts[k]
-                    attachment = setup(v, p.model, p.pos, p.ang)
+                    attachment = setup(prop, p.model, p.pos, p.ang)
                 else
                     attachment = setup(v)
                 end
