@@ -120,6 +120,25 @@ if SERVER then
         if callback then callback(true) end
     end
 
+    function ENT:FastDemat(pos, ang, callback)
+        if self:GetData("vortex") and not self:GetData("fastdemat") then
+            self:SetDestination(pos, ang)
+            self:Mat(callback)
+            return
+        end
+    
+        if self:CallHook("CanDemat", true, true) == false then
+            if callback then callback(false) end
+            return
+        end
+    
+        self:SetData("demat-fast-prev", self:GetFastRemat());
+        self:SetFastRemat(true)
+        self:SetData("fastdemat",true)
+        self:CallHook("FastDemat")
+        self:AutoDemat(pos, ang, callback)
+    end
+
     function ENT:ChangePosition(pos, ang, phys_enable)
         if self:CallHook("PreTeleportPositionChange", pos, ang, phys_enable) == false then return end
 
@@ -233,6 +252,12 @@ if SERVER then
         end
     end)
 
+    ENT:AddHook("StopMat", "teleport", function(self)
+        if self:GetData("fastdemat",false) then
+            self:SetFastRemat(self:GetData("demat-fast-prev", false))
+            self:SetData("fastdemat",false)
+        end
+    end)
 else
     ENT:OnMessage("demat", function(self, data, ply)
         self:SetData("demat",true)
