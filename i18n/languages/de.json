@@ -3,9 +3,9 @@
   "Author": "TARDIS-Entwicklungsteam",
   "Phrases": {
     "Artron.Depleted": "Artronenergie aufgebraucht",
-    "ArtronInhibitor": "",
-    "ArtronInhibitor.Disabled": "",
-    "ArtronInhibitor.Enabled": "",
+    "ArtronInhibitor": "Artron-Inhibitor",
+    "ArtronInhibitor.Disabled": "Artron-Inhibitor deaktiviert",
+    "ArtronInhibitor.Enabled": "Artron-Inhibitor aktiviert",
     "ArtronInhibitor.Instructions": "",
     "ArtronInhibitor.Starting": "",
     "Binds.AnyKey": "Drücke eine beliebige Taste",
