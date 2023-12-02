@@ -131,6 +131,7 @@ T.Interior = {
             width = 378,
             height = 198,
             gui_rows = 4,
+            power_off_black = false,
         },
         {
             pos = Vector(33.658, 35.45, 159.97),
@@ -138,6 +139,7 @@ T.Interior = {
             width = 378,
             height = 198,
             gui_rows = 4,
+            power_off_black = false,
         },
         {
             pos = Vector(-27.484, -23.735, 165.416),
@@ -145,6 +147,7 @@ T.Interior = {
             width = 378,
             height = 198,
             gui_rows = 4,
+            power_off_black = false,
         },
         {
             pos = Vector(27.484, 23.735, 165.416),
@@ -152,6 +155,7 @@ T.Interior = {
             width = 378,
             height = 198,
             gui_rows = 4,
+            power_off_black = false,
         },
     },
 
@@ -737,8 +741,8 @@ T.Interior = {
     Sounds = {
         Door={
             enabled=true,
-            open="karmal/toyota/intdoor.wav",
-            close="karmal/toyota/intdoor.wav",
+            open="karmal/toyota_int/intdoor.wav",
+            close="karmal/toyota_int/intdoor.wav",
         },
     },
     IntDoorAnimationTime = 3.5,
