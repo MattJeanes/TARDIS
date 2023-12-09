@@ -70,21 +70,7 @@ function TARDIS:IsNewVersion()
         and self.LastUsedVersion.Minor == 0
         and self.LastUsedVersion.Patch == 0
     then
-        -- We need to try and determine if this is a new install or an update
-        -- If the version file doesn't exist, it would normally be a new install
-        -- However, this feature was added in 2023.8.0 so if we are within two weeks of the release date, we can assume it's an update
-
-        -- This code can be removed after 2023.8.0 has been out for two weeks
-        -- and this can always return false if the version file doesn't exist
-
-        local releaseDate = os.time({year=2023, month=11, day=23, hour=0, min=0, sec=0})
-        local now = os.time()
-        local twoWeeks = 60 * 60 * 24 * 14
-        if (now - releaseDate) < twoWeeks then
-            return true
-        else
-            return false
-        end
+        return false
     end
     return self:IsVersionHigherThan(self.LastUsedVersion)
 end
