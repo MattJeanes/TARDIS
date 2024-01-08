@@ -22,6 +22,7 @@ function TARDIS:AddSetting(data)
         CreateConVar(convar.name, tostring(convar_default_value), convar.flags, convar.desc, data.min, data.max)
 
         cvars.AddChangeCallback(convar.name, function(cvname, oldvalue, newvalue)
+            if CLIENT and not LocalPlayer():IsAdmin() then return end
             if data.type == "integer" or data.type == "number" then
                 local value = tonumber(newvalue)
 
