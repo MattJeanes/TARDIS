@@ -17,16 +17,18 @@ local function get_version_from_file(versionFile)
     if file.Exists(versionFile, "DATA") then
         local versionStr = file.Read(versionFile, "DATA")
         success, version = get_version_from_string(versionStr)
-        if not success then
-            error("Invalid version in ".. versionFile .. ": " .. versionStr)
+        if success then
+            return version
+        else
+            ErrorNoHalt("Invalid version in ".. versionFile .. ": " .. versionStr)
         end
-    else
-        version = {
-            Major = 0,
-            Minor = 0,
-            Patch = 0
-        }
     end
+    
+    version = {
+        Major = 0,
+        Minor = 0,
+        Patch = 0
+    }
 
     return version
 end
