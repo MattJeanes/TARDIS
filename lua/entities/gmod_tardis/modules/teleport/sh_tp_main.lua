@@ -504,6 +504,9 @@ ENT:AddHook("Think","teleport",function(self,delta)
     if self:GetData("hads-demat") then
         sequencespeed = teleport_md.SequenceSpeedHads
     end
+    if istable(sequencespeed) then
+        sequencespeed = demat and sequencespeed.Demat or sequencespeed.Mat
+    end
     alpha=math.Approach(alpha,target,delta*66*sequencespeed)
     self:SetData("alpha",alpha)
     self:SetAttachedTransparency(alpha)
