@@ -167,7 +167,8 @@ if SERVER then
             self:SetData("teleport",true)
             self:CallHook("PreMatStart")
 
-            local timerdelay = (self:GetFastRemat() and 1.9 or 8.5)
+            local tp_metadata = self.metadata.Exterior.Teleport
+            local timerdelay = (self:GetFastRemat() and tp_metadata.PrematDelayFast or tp_metadata.PrematDelay)
             self:Timer("matdelay", timerdelay, function()
                 if not IsValid(self) then return end
                 self:SendMessage("mat")
