@@ -82,7 +82,15 @@ concommand.Add("tardis2_debug_pointer", function(ply,cmd,args)
     ply:AddCleanup("sents",ent)
 end)
 
+function ENT:SetupDataTables()
+    self:NetworkVar("Entity",0,"Other")
+    self:NetworkVar("Bool",0,"DrawAABox")
 
+    if CLIENT then
+        self:NetworkVarNotify("DrawAABox",self.UpdateRenderBounds)
+        self:NetworkVarNotify("Other",self.UpdateRenderBounds)
+    end
+end
 
 if SERVER then
     util.AddNetworkString("TARDIS-Pointer-Debug")

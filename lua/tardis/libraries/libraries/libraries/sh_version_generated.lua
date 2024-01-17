@@ -2,7 +2,7 @@
 -- SOURCE FILE: version.json --
 
 TARDIS.Version = {
-    Major = 2023,
-    Minor = 8,
-    Patch = 1
+    Major = 2024,
+    Minor = 1,
+    Patch = 0
 }

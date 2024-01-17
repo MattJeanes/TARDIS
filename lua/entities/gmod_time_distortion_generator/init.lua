@@ -30,7 +30,7 @@ function ENT:Initialize()
         local inNames = {"Activate","Radius"}
         local inTypes = {"NORMAL","NORMAL"}
 
-        WireLib.CreateSpecialInputs( self,inNames,inTypes)
+        WireLib.CreateSpecialInputs(self,inNames,inTypes)
         Wire_CreateOutputs(self,{"Active","Radius","Health"})
 
         Wire_TriggerOutput(self,"Radius",self.Radius)
@@ -158,13 +158,29 @@ function ENT:Think()
         self:TriggerWire("Active",1)
 
         sound.Play("drmatt/tardis/power_on.wav", self:GetPos())
-
+        
+        local int
         for i,v in ipairs(ents.FindByClass("gmod_tardis_interior")) do
-            if v:GetPos():Distance(self:GetPos()) <= v.metadata.Interior.ExitDistance then
-                for occ,_ in pairs(v.occupants) do
-                    TARDIS:ErrorMessage(occ, "TimeDistortionGenerator.Distortions")
+            local size = v.metadata.Interior.Size
+            if size.Min and size.Max then
+                local min = v:LocalToWorld(size.Min)
+                local max = v:LocalToWorld(size.Max)
+                if self:GetPos():WithinAABox(min, max) then
+                    int = v
+                    break
                 end
-                break
+            else
+                local center,radius=v:GetSphere()
+                if v:LocalToWorld(center):Distance(self:GetPos()) <= radius then
+                    int = v
+                    break
+                end
+            end
+        end
+
+        if IsValid(int) and int.occupants then
+            for occ,_ in pairs(int.occupants) do
+                TARDIS:ErrorMessage(occ, "TimeDistortionGenerator.Distortions")
             end
         end
     end

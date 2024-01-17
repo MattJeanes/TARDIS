@@ -73,15 +73,6 @@ else
                     fallback=true
                 end
 
-                if not fallback then
-                    for k,v in pairs(wp.portals) do -- not ideal but does the job
-                        if wp.shouldrender(v) then
-                            fallback=true
-                            break
-                        end
-                    end
-                end
-
                 if fallback then
                     render.DrawSprite(pos, size, size, Color(col.r,col.g,col.b,alpha))
                 else

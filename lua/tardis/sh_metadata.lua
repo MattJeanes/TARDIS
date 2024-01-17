@@ -84,10 +84,68 @@ function TARDIS:ClearMetadata(id)
     end
 end
 
+function TARDIS:ValidateMetadata(t)
+    if t.Interior then
+        if t.Interior.Size and (t.Interior.Size.Min or t.Interior.Size.Max) then
+            if not t.Interior.Size.Min then
+                return "Interior.Size.Min not set"
+            end
+
+            if not t.Interior.Size.Max then
+                return "Interior.Size.Max not set"
+            end
+
+            if t.Interior.Size.Min.x >= t.Interior.Size.Max.x then
+                return "Interior.Size.Min.x >= Maxs.x"
+            end
+
+            if t.Interior.Size.Min.y >= t.Interior.Size.Max.y then
+                return "Interior.Size.Min.y >= Maxs.y"
+            end
+
+            if t.Interior.Size.Min.z >= t.Interior.Size.Max.z then
+                return "Interior.Size.Min.z >= Maxs.z"
+            end
+        end
+
+        if t.Interior.ExitBox and (t.Interior.ExitBox.Min or t.Interior.ExitBox.Max) then
+            if not t.Interior.ExitBox.Min then
+                return "Interior.ExitBox.Min not set"
+            end
+
+            if not t.Interior.ExitBox.Max then
+                return "Interior.ExitBox.Max not set"
+            end
+
+            if t.Interior.ExitDistance then
+                return "Interior.ExitDistance cannot be used with Interior.ExitBox"
+            end
+
+            if t.Interior.ExitBox.Min.x >= t.Interior.ExitBox.Max.x then
+                return "Interior.ExitBox.Min.x >= Maxs.x"
+            end
+
+            if t.Interior.ExitBox.Min.y >= t.Interior.ExitBox.Max.y then
+                return "Interior.ExitBox.Min.y >= Maxs.y"
+            end
+
+            if t.Interior.ExitBox.Min.z >= t.Interior.ExitBox.Max.z then
+                return "Interior.ExitBox.Min.z >= Maxs.z"
+            end
+        end
+    end
+end
+
 function TARDIS:AddInterior(t)
     local id = t.ID
 
     self.MetadataRaw[id] = t
+
+    local error = self:ValidateMetadata(t)
+    if error then
+        ErrorNoHalt("TARDIS: Error in interior '"..id.."' metadata: "..error.."\n")
+        return
+    end
 
     self:ClearMetadata(id)
 

@@ -167,7 +167,8 @@ if SERVER then
             self:SetData("teleport",true)
             self:CallHook("PreMatStart")
 
-            local timerdelay = (self:GetFastRemat() and 1.9 or 8.5)
+            local tp_metadata = self.metadata.Exterior.Teleport
+            local timerdelay = (self:GetFastRemat() and tp_metadata.PrematDelayFast or tp_metadata.PrematDelay)
             self:Timer("matdelay", timerdelay, function()
                 if not IsValid(self) then return end
                 self:SendMessage("mat")
@@ -502,6 +503,9 @@ ENT:AddHook("Think","teleport",function(self,delta)
     end
     if self:GetData("hads-demat") then
         sequencespeed = teleport_md.SequenceSpeedHads
+    end
+    if istable(sequencespeed) then
+        sequencespeed = demat and sequencespeed.Demat or sequencespeed.Mat
     end
     alpha=math.Approach(alpha,target,delta*66*sequencespeed)
     self:SetData("alpha",alpha)

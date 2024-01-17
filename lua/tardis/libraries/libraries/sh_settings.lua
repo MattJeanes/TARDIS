@@ -22,6 +22,7 @@ function TARDIS:AddSetting(data)
         CreateConVar(convar.name, tostring(convar_default_value), convar.flags, convar.desc, data.min, data.max)
 
         cvars.AddChangeCallback(convar.name, function(cvname, oldvalue, newvalue)
+            if CLIENT and not LocalPlayer():IsAdmin() then return end
             if data.type == "integer" or data.type == "number" then
                 local value = tonumber(newvalue)
 
@@ -125,7 +126,7 @@ function TARDIS:GetSetting(id, src, no_default)
     if IsValid(src) and not src:IsPlayer() and not src.TardisExterior then
         src = src.exterior
     end
-    if IsEntity(src) then
+    if IsValid(src) and IsEntity(src) then
         ply = (src:IsPlayer() and src) or src:GetCreator()
     end
 

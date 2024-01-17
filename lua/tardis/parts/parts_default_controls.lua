@@ -136,7 +136,9 @@ function PART:Use(ply)
         self:SetData("default_telepathic_activation", RealTime() + 1)
     end
 
-    ply:ScreenFade(SCREENFADE.OUT, Color(255,255,255,30), 1.2, 0)
+    if SERVER then
+        ply:ScreenFade(SCREENFADE.OUT, Color(255,255,255,30), 1.2, 0)
+    end
 
     self.interior:Timer("default_telepathic", 1, function()
         if SERVER then
