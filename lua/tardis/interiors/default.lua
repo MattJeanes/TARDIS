@@ -17,8 +17,17 @@ T.Versions = {
 
 T.Interior = {
 
-    Model="models/molda/toyota_int/interior.mdl",
-    ExitDistance = 1450,
+    Model = "models/molda/toyota_int/interior.mdl",
+
+    Size = {
+        Min = Vector(-585.336, -1378.008, -33.179),
+        Max = Vector(892.477, 457.64, 381.653)
+    },
+    
+    ExitBox = {
+        Min = Vector(-659.914, -1364.271, -104.82),
+        Max = Vector(984.983, 514.944, 385.095)
+    },
 
     LightOverride = {
         basebrightness = 0.05,

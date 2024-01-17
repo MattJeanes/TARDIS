@@ -68,7 +68,13 @@ function ENT:Initialize()
         self.Fallback=self.metadata.Interior.Fallback
         self.Portal=self.metadata.Interior.Portal
         self.CustomPortals=self.metadata.Interior.CustomPortals
-        self.ExitDistance=self.metadata.Interior.ExitDistance
+        if self.metadata.Interior.ExitBox then
+            self.ExitBox=self.metadata.Interior.ExitBox
+        else
+            self.ExitDistance=self.metadata.Interior.ExitDistance
+        end
+        self.mins=self.metadata.Interior.Size.Min
+        self.maxs=self.metadata.Interior.Size.Max
     end
     self.BaseClass.Initialize(self)
 end

@@ -8,6 +8,7 @@ T.ID = "base"
 T.Interior = {
     Model = "models/drmatt/tardis/interior.mdl",
     ExitDistance = 600,
+    Size = {},
     Portal = {
         pos = Vector(-1,-353.5,136),
         ang = Angle(0,90,0),
