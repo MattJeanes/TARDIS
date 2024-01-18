@@ -1,11 +1,11 @@
 {
-  "Name": "",
-  "Author": "",
+  "Name": "Αγγλικά",
+  "Author": "Δημιουργοί TARDIS",
   "Phrases": {
-    "Artron.Depleted": "",
-    "ArtronInhibitor": "",
-    "ArtronInhibitor.Disabled": "",
-    "ArtronInhibitor.Enabled": "",
+    "Artron.Depleted": "Η Άρτρον ενέργεια εξαντλήθηκε",
+    "ArtronInhibitor": "Αναστολέας Άρτρον",
+    "ArtronInhibitor.Disabled": "Ο αναστολέας Άρτρον απενεργοποιήθηκε",
+    "ArtronInhibitor.Enabled": "Ο αναστολέας Άρτρον ενεργοποιήθηκε",
     "ArtronInhibitor.Instructions": "",
     "ArtronInhibitor.Starting": "",
     "Binds.AnyKey": "",
