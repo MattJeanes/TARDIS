@@ -433,7 +433,7 @@
     "Screens.VirtualConsole.Old.Physlock": "",
     "Screens.VirtualConsole.Old.Repair": "Korjaa TARDIS",
     "Screens.VirtualConsole.Old.TogglePower": "",
-    "Screens.VirtualConsole.Old.UnlockDoor": "",
+    "Screens.VirtualConsole.Old.UnlockDoor": "Avaa oven lukitus",
     "Security.ControlUseDenied": "",
     "Settings.NoPermissionGlobalSettings": "",
     "Settings.Sections.Binds": "",
