@@ -133,6 +133,7 @@ T.Phrases = {
     ["Screens.VirtualConsole.Old.LockDoor"] = "Lukitse ovi",
     ["Screens.VirtualConsole.Old.OpenDoor"] = "Avaa ovi",
     ["Screens.VirtualConsole.Old.Repair"] = "Korjaa TARDIS",
+    ["Screens.VirtualConsole.Old.UnlockDoor"] = "Avaa oven lukitus",
     ["Settings.Sections.Global"] = "Ylläpitäjän asetukset",
     ["Settings.Sections.Global.WaitLongForRepair"] = "Ota pitkä korjaus käyttöön",
     ["Settings.Sections.GUI"] = "Käyttöliittymä",
